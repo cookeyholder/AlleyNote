@@ -29,7 +29,7 @@ class PostValidator extends Validator
     {
         // PostStatus 枚舉驗證
         $this->addRule('post_status', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
-            if ($value == = = = null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 允許空值，由 required 規則處理
             }
 
@@ -42,7 +42,7 @@ class PostValidator extends Validator
 
         // RFC3339 日期時間格式驗證
         $this->addRule('rfc3339_datetime', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
-            if ($value == = = = null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 允許空值，由 required 規則處理
             }
 
@@ -52,8 +52,8 @@ class PostValidator extends Validator
 
             // 支援多種 RFC3339 格式
             $formats = [
-                DateTime => RFC3339,
-                DateTime => :RFC3339_EXTENDED,
+                DateTime::RFC3339,
+                DateTime::RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
                 'Y-m-d\TH:i:s.u\Z',
                 'Y-m-d\TH:i:sP',
@@ -122,7 +122,7 @@ class PostValidator extends Validator
 
         // 使用者 ID 驗證（必須是正整數）
         $this->addRule('user_id', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
-            if ($value == = = = null || $value === '') {
+            if ($value === null || $value === '') {
                 return false;
             }
 
@@ -149,9 +149,9 @@ class PostValidator extends Validator
             // 如果有指定版本限制
             if (!empty($parameters)) {
                 $version = strtolower($parameters[0]);
-                if ($version == = = = 'ipv4') {
+                if ($version === 'ipv4') {
                     return filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
-                } elseif ($version == = = = 'ipv6') {
+                } elseif ($version === 'ipv6') {
                     return filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
                 }
             }
@@ -161,7 +161,7 @@ class PostValidator extends Validator
 
         // 發布日期驗證（不能是過去的日期，除非是草稿）
         $this->addRule('publish_date_future', function (mixed $value, /** @var array<string, mixed> */ array $parameters): bool {
-            if ($value == = = = null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 允許空值
             }
 
@@ -177,7 +177,7 @@ class PostValidator extends Validator
 
             // 如果狀態是草稿，允許任何日期
             $status = $parameters[0] ?? null;
-            if ($status == = = = PostStatus::DRAFT->value) {
+            if ($status === PostStatus::DRAFT->value) {
                 return true;
             }
 

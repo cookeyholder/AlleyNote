@@ -218,7 +218,7 @@ class ActivityLog
      */
     public function isHighSeverity(): bool
     {
-        return in_array($this->severity, [ActivitySeverity => HIGH, ActivitySeverity => :CRITICAL], true);
+        return in_array($this->severity, [ActivitySeverity::HIGH, ActivitySeverity::CRITICAL], true);
     }
 
     /**
@@ -284,9 +284,9 @@ class ActivityLog
             'user' => $this->userId,
             'target' => $this->targetType && $this->targetId
                 ? "{$this->targetType} => {$this->targetId}"
-                 => null,
+                : null,
             'ip' => $this->ipAddress,
-            'timestamp' => $this->occurredAt->format(DateTime => ISO8601),
+            'timestamp' => $this->occurredAt->format(DateTime::ISO8601),
             'description' => $this->description,
         ];
     }
