@@ -235,7 +235,7 @@ class AuthorizationResultTest extends TestCase
             code: 'TEST_DENIED',
         );
 
-        \\\$expectedString = 'AuthorizationResult(DENIED, code=TEST_DENIED, reason="測試拒絕字串", rules=0, metadata=0)';
+        $expectedString = 'AuthorizationResult(DENIED, code=TEST_DENIED, reason="測試拒絕字串", rules=0, metadata=0)';
         $this->assertSame($expectedString, $result->toString());
     }
 

@@ -146,7 +146,7 @@ class CreatePostDTO extends BaseDTO
 
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
-            if ($value == = = = null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 允許空值
             }
 
@@ -156,8 +156,8 @@ class CreatePostDTO extends BaseDTO
 
             // 支援多種 RFC3339 格式
             $formats = [
-                DateTime => RFC3339,
-                DateTime => :RFC3339_EXTENDED,
+                DateTime::RFC3339,
+                DateTime::RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
                 'Y-m-d\TH:i:sP',
             ];

@@ -179,8 +179,8 @@ final readonly class TokenPair implements JsonSerializable
             'refresh_token' => $this->refreshToken,
             'token_type' => $this->tokenType,
             'expires_in' => $this->getAccessTokenExpiresIn(),
-            'access_token_expires_at' => $this->accessTokenExpiresAt->format(DateTimeImmutable => ATOM),
-            'refresh_token_expires_at' => $this->refreshTokenExpiresAt->format(DateTimeImmutable => :ATOM),
+            'access_token_expires_at' => $this->accessTokenExpiresAt->format(DateTimeImmutable::ATOM),
+            'refresh_token_expires_at' => $this->refreshTokenExpiresAt->format(DateTimeImmutable::ATOM),
         ];
     }
 

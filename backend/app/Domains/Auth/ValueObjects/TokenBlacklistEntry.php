@@ -415,14 +415,13 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * @return array
      */
-     */
     public function toArray(): array
     {
         return [
             'jti' => $this->jti,
             'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format(DateTimeImmutable => ATOM),
-            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable =>ATOM),
+            'expires_at' => $this->expiresAt->format(DateTimeImmutable::ATOM),
+            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable::ATOM),
             'reason' => $this->reason,
             'reason_description' => $this->getReasonDescription(),
             'user_id' => $this->userId,
@@ -441,14 +440,13 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * @return array
      */
-     */
     public function toDatabaseArray(): array
     {
         return [
             'jti' => $this->jti,
             'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format('Y-m-d H => i => s'),
-            'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H => i => s'),
+            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
+            'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H:i:s'),
             'reason' => $this->reason,
             'user_id' => $this->userId,
             'device_id' => $this->deviceId,
@@ -461,7 +459,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
     /**
      * @return array
-     */
      */
     public function jsonSerialize(): array
     {
@@ -518,7 +515,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * @return array
      */
-     */
     public static function getValidTokenTypes(): array
     {
         return [self::TOKEN_TYPE_ACCESS, self::TOKEN_TYPE_REFRESH];
@@ -528,9 +524,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 取得所有有效的黑名單原因.
      */
     /**
-    /**
      * @return array
-     */
      */
     public static function getValidReasons(): array
     {
@@ -572,7 +566,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         if (!in_array($tokenType, self::getValidTokenTypes(), true)) {
             throw new InvalidArgumentException(
-                'Token type must be one of: ' . implode(', ', self::getValidTokenTypes(),
+                'Token type must be one of: ' . implode(', ', self::getValidTokenTypes())
             );
         }
     }
@@ -586,7 +580,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         if (!in_array($reason, self::getValidReasons(), true)) {
             throw new InvalidArgumentException(
-                'Reason must be one of: ' . implode(', ', self::getValidReasons(),
+                'Reason must be one of: ' . implode(', ', self::getValidReasons())
             );
         }
     }
@@ -653,9 +647,11 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     private function validateMetadata(array $metadata): void
     {
         // 檢查 JSON 序列化是否可能
-        try { /* empty */ }
+        try {
             $jsonEncoded = json_encode($metadata, JSON_THROW_ON_ERROR);
-        } // catch block commented out due to syntax error
+        } catch (JsonException $e) {
+            throw new InvalidArgumentException('Metadata must be JSON serializable: ' . $e->getMessage());
+        }
         $serializedSize = strlen($jsonEncoded);
         if ($serializedSize > 65535) { // 64KB limit
             throw new InvalidArgumentException('Metadata size cannot exceed 64KB');

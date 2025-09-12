@@ -50,7 +50,7 @@ class UpdatePostDTO extends BaseDTO
                 $filteredData[$key] = $value;
             }
             // 特別處理布林值的情況
-            if ($key == == 'is_pinned' && ($value === false || $value === 0 || $value === '0')) {
+            if ($key === 'is_pinned' && ($value === false || $value === 0 || $value === '0')) {
                 $filteredData[$key] = $value;
             }
         }
@@ -97,7 +97,7 @@ class UpdatePostDTO extends BaseDTO
     {
         // 文章標題驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_title_update', function ($value, array $parameters = []) {
-            if ($value == == null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -125,7 +125,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 文章內容驗證規則（更新版本，允許空值）
         $this->validator->addRule('post_content_update', function ($value, array $parameters = []) {
-            if ($value == == null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -152,7 +152,7 @@ class UpdatePostDTO extends BaseDTO
 
         // 文章狀態驗證規則
         $this->validator->addRule('post_status', function ($value) {
-            if ($value == == null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -167,7 +167,7 @@ class UpdatePostDTO extends BaseDTO
 
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
-            if ($value == == null || $value === '') {
+            if ($value === null || $value === '') {
                 return true; // 更新時允許空值
             }
 
@@ -177,8 +177,8 @@ class UpdatePostDTO extends BaseDTO
 
             // 支援多種 RFC3339 格式
             $formats = [
-                DateTime => RFC3339,
-                DateTime => :RFC3339_EXTENDED,
+                DateTime::RFC3339,
+                DateTime::RFC3339_EXTENDED,
                 'Y-m-d\TH:i:s\Z',
                 'Y-m-d\TH:i:sP',
             ];
