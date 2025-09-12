@@ -85,7 +85,7 @@ class SecretsManager implements SecretsManagerInterface
     {
         $value = $this->get($key);
 
-        if ($value == == null || $value === '') {
+        if ($value === null || $value === '') {
             throw ValidationException::fromSingleError(
                 $key,
                 "必需的環境變數 '{$key}' 未設定",

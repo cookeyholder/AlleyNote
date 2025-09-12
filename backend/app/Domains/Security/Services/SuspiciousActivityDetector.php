@@ -84,7 +84,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     public function detectSuspiciousActivity(int $userId, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('Starting suspicious activity detection for user', [
                 'user_id' => $userId,
                 'time_window_minutes' => $timeWindowMinutes,
@@ -108,7 +108,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity((string) $userId, 'user', $analysisResult);
 
             return $analysisResult;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to detect suspicious user activity', [
+                'user_id' => $userId,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -116,7 +122,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     public function detectSuspiciousIpActivity(string $ipAddress, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('Starting suspicious IP activity detection', [
                 'ip_address' => $ipAddress,
                 'time_window_minutes' => $timeWindowMinutes,
@@ -140,7 +146,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logDetectionActivity($ipAddress, 'ip', $analysisResult);
 
             return $analysisResult;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to detect suspicious IP activity', [
+                'ip_address' => $ipAddress,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -148,7 +160,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array
     {
-        try { /* empty */ }
+        try {
             $this->logger->info('Starting global suspicious pattern detection', ['time_window_minutes' => $timeWindowMinutes]);
 
             // 取得時間範圍
@@ -167,7 +179,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
 
             return $patterns;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to detect suspicious patterns', [
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -495,11 +512,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
 
         // 找出最密集的時間段
-        $maxDensity = max($timeSlots ? true : [0]);
+        $maxDensity = max($timeSlots ?: [0]);
         if ($maxDensity > 50) { // 單分鐘內超過50個活動
             return [
                 'suspicious' => true,
-                'severity' => ActivitySeverity => MEDIUM,
+                'severity' => ActivitySeverity::MEDIUM,
                 'rule' => [
                     'type' => 'high_density_pattern',
                     'message' => '短時間內活動密度異常高',
@@ -524,7 +541,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         if ($this->isSuspiciousIpRange($ipAddress)) {
             return [
                 'suspicious' => true,
-                'severity' => ActivitySeverity => HIGH,
+                'severity' => ActivitySeverity::HIGH,
                 'rule' => [
                     'type' => 'suspicious_ip_range',
                     'message' => 'IP位址屬於可疑範圍',
@@ -599,8 +616,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     private function escalateSeverity(ActivitySeverity $current, ActivitySeverity $new): ActivitySeverity
     {
         $levels = [
-            ActivitySeverity => LOW->value => 1,
-            ActivitySeverity => :MEDIUM->value => 2,
+            ActivitySeverity::LOW->value => 1,
+            ActivitySeverity::MEDIUM->value => 2,
             ActivitySeverity::HIGH->value => 3,
             ActivitySeverity::CRITICAL->value => 4,
         ];
@@ -647,7 +664,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     private function logDetectionActivity(?string $targetId, string $targetType, SuspiciousActivityAnalysisDTO $analysis): void
     {
-        try { /* empty */ }
+        try {
             $activityType = $analysis->isSuspicious()
                 ? ActivityType::SUSPICIOUS_ACTIVITY_DETECTED
                 : ActivityType::SECURITY_ACTIVITY_SCAN_COMPLETED;
@@ -666,7 +683,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             );
 
             $this->activityLogger->log($dto);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to log detection activity', [
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     // 設定相關方法實作
@@ -698,9 +719,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $this->logger->critical('Suspicious activity alert triggered', [
             'analysis_id' => $analysis->getAnalysisId(),
             'target_type' => $analysis->getTargetType(),
-            'target_id' => $analysis->getTargetId(]),
-            'severity' => $analysis->getSeverityLevel(])->value,
-            'summary' => $analysis->getSummary(]),
+            'target_id' => $analysis->getTargetId(),
+            'severity' => $analysis->getSeverityLevel()->value,
+            'summary' => $analysis->getSummary(),
         ]);
     }
 

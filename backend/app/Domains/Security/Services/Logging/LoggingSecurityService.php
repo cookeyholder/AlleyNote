@@ -413,7 +413,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             $stats['files'][basename($file)] = [
                 'size' => filesize($file),
                 'permissions' => sprintf('%o', fileperms($file) & 0o777),
-                'last_modified' => $modifiedTime !== false ? date('Y-m-d H => i => s', $modifiedTime)  => 'Unknown',
+                'last_modified' => $modifiedTime !== false ? date('Y-m-d H:i:s', $modifiedTime) : 'Unknown',
             ];
         }
 

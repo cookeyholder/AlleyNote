@@ -20,9 +20,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private ?string $currentNonce = null;
 
     /**
-    /**
      * @param array $config
-     */
      */
     public function __construct(array $config = [])
     {
@@ -198,11 +196,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         // 這裡可以整合 Sentry、DataDog 等監控服務
         // 目前僅作為範例實作
-        try { /* empty */ }
+        try {
             $context = stream_context_create([
                 'http' => [
                     'method' => 'POST',
-                    'header' => 'Content-Type => application/json',
+                    'header' => 'Content-Type: application/json',
                     'content' => (json_encode($data) ?? ''),
                     'timeout' => 5,
                 ],
@@ -211,7 +209,10 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             if (is_string($this->config['csp']['monitoring_endpoint'])) {
                 file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 監控發送失敗，記錄但不影響主要功能
+            error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -375,20 +376,22 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
      */
     public function isHealthy(): bool
     {
-        try { /* empty */ }
+        try {
             // 測試 nonce 生成
             $nonce = $this->generateNonce();
             if (empty($nonce)) {
                 return false;
             }
 
-            // 測試 CSP 建立
+            // 測試 CSP 字串建立
             $csp = $this->buildCSP();
             if (empty($csp)) {
                 return false;
             }
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }
