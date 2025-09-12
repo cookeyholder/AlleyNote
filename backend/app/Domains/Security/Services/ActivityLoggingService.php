@@ -90,10 +90,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function log(CreateActivityLogDTO $dto): bool
     {
-        try { /* empty */ }
+        try {
             // 檢查是否啟用記錄
             if (!$this->isLoggingEnabled($dto->getActionType())) {
-                $this->logger->warning('Logging disabled for action type', ['action_type' => $dto->getActionType(])->value]);
+                $this->logger->warning('Logging disabled for action type', ['action_type' => $dto->getActionType()->value]);
 
                 return false;
             }
@@ -106,17 +106,23 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             // 記錄到資料庫
             $result = $this->repository->create($dto);
 
-            if ($result == == null) {
+            if ($result === null) {
                 $this->logger->error('Repository returned null for activity log creation', [
-                    'action_type' => $dto->getActionType(])->value,
-                    'user_id' => $dto->getUserId(]),
+                    'action_type' => $dto->getActionType()->value,
+                    'user_id' => $dto->getUserId(),
                 ]);
 
                 return false;
             }
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to log activity', [
+                'error' => $e->getMessage(),
+                'action_type' => $dto->getActionType()->value,
+            ]);
+            return false;
+        }
     }
 
     /**
@@ -266,13 +272,13 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function logBatch(array $dtos): int
     {
-        try { /* empty */ }
+        try {
             // 過濾掉被停用或不符合等級的記錄
             $filteredDtos = [];
             foreach ($dtos as $dto) {
                 if (!$dto instanceof CreateActivityLogDTO) {
                     $this->logger->warning('Invalid DTO type in batch', [
-                        'type' => gettype($dto]),
+                        'type' => gettype($dto),
                     ]);
                     continue;
                 }
@@ -289,7 +295,13 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return $this->repository->createBatch($filteredDtos);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to log activity batch', [
+                'error' => $e->getMessage(),
+                'count' => count($dtos),
+            ]);
+            return 0;
+        }
     }
 
     /**
@@ -329,18 +341,23 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      */
     public function cleanup(): int
     {
-        try { /* empty */ }
+        try {
             $cutoffDate = new DateTimeImmutable('-' . self::DEFAULT_RETENTION_DAYS . ' days');
 
             $deletedCount = $this->repository->deleteOldRecords($cutoffDate);
 
             $this->logger->info('Activity log cleanup completed', [
                 'deleted_count' => $deletedCount,
-                'cutoff_date' => $cutoffDate->format('Y-m-d H => i => s']),
+                'cutoff_date' => $cutoffDate->format('Y-m-d H:i:s'),
             ]);
 
             return $deletedCount;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('Failed to cleanup activity logs', [
+                'error' => $e->getMessage(),
+            ]);
+            return 0;
+        }
     }
 
     /**

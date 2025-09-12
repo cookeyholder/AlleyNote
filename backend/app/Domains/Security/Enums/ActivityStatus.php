@@ -43,7 +43,7 @@ enum ActivityStatus: string
      */
     public function isFailure(): bool
     {
-        return in_array($this, [self => FAILED, self => :ERROR, self::BLOCKED], true);
+        return in_array($this, [self::FAILED, self::ERROR, self::BLOCKED], true);
     }
 
     /**

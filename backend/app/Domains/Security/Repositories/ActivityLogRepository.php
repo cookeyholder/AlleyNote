@@ -110,7 +110,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function create(CreateActivityLogDTO $dto): ?array
     {
-        try { /* empty */ }
+        try {
             $this->db->beginTransaction();
 
             $entity = ActivityLog::fromDTO(
@@ -166,7 +166,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             // 回傳完整的實體資料
             return $this->findById($insertId);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
     }
 
@@ -179,7 +181,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return 0;
         }
 
-        try { /* empty */ }
+        try {
             $this->db->beginTransaction();
 
             $sql = 'INSERT INTO ' . self::TABLE_NAME . ' (
@@ -217,9 +219,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 );
 
                 $stmt->execute([
-                    ' => uuid' => $entity->getUuid(),
-                    ' => user_id' => $entity->getUserId(),
-                    ' => session_id' => $entity->getSessionId(),
+                    ':uuid' => $entity->getUuid(),
+                    ':user_id' => $entity->getUserId(),
+                    ':session_id' => $entity->getSessionId(),
                     ':action_type' => $entity->getActionType()->value,
                     ':action_category' => $entity->getActionCategory()->value,
                     ':target_type' => $entity->getTargetType(),
@@ -241,7 +243,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $this->db->commit();
 
             return $count;
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
     }
 
@@ -274,7 +278,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . ' WHERE uuid = :uuid';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([' => uuid' => $uuid]);
+        $stmt->execute([':uuid' => $uuid]);
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -292,7 +296,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function findAll(int $limit = 20, int $offset = 0): array
     {
-        try { /* empty */ }
+        try {
             $sql = 'SELECT ' . self::SELECT_FIELDS . '
                     FROM ' . self::TABLE_NAME . '
                     ORDER BY occurred_at DESC
@@ -305,12 +309,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return array_map(function (array $row): array {
-                $entity = ActivityLog::fromDatabaseRow($row);
-
+            return array_map(function (array $data): array {
+                $entity = ActivityLog::fromDatabaseRow($data);
                 return $entity->toArray();
             }, $results);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            throw $e;
         }
     }
 
@@ -805,7 +809,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array
     {
-        if ($timeWindow == = = = null) {
+        if ($timeWindow === null) {
             return $this->findByUser($userId);
         }
 

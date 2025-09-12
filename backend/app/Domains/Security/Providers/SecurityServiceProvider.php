@@ -44,7 +44,7 @@ class SecurityServiceProvider
     {
         return [
             // Repository Interfaces
-            ActivityLogRepositoryInterface => class => static function (ContainerInterface $container) => ActivityLogRepository {
+            ActivityLogRepositoryInterface::class => static function (ContainerInterface $container): ActivityLogRepository {
                 return new ActivityLogRepository(
                     $container->get(PDO::class),
                 );
@@ -203,8 +203,8 @@ class SecurityServiceProvider
     public static function getBootableServices(): array
     {
         return [
-            SecurityHeaderServiceInterface => class,
-            ErrorHandlerServiceInterface => :class,
+            SecurityHeaderServiceInterface::class,
+            ErrorHandlerServiceInterface::class,
             SecretsManagerInterface::class,
         ];
     }
@@ -236,7 +236,7 @@ class SecurityServiceProvider
     public static function checkDependencies(ContainerInterface $container): array
     {
         $dependencies = [
-            PDO => class => $container->has(PDO => :class),
+            PDO::class => $container->has(PDO::class),
             LoggerInterface::class => $container->has(LoggerInterface::class),
         ];
 
@@ -258,20 +258,25 @@ class SecurityServiceProvider
                 continue; // 跳過非類別名稱的定義
             }
 
-            try { /* empty */ }
+            try {
                 $service = $container->get($serviceName);
                 $services[$serviceName] = [
                     'status' => 'healthy',
                     'class' => get_class($service),
                     'memory_usage' => memory_get_usage(true),
                 ];
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                $services[$serviceName] = [
+                    'status' => 'error',
+                    'error' => $e->getMessage(),
+                ];
+            }
         }
 
         return [
-            'provider' => self => class,
+            'provider' => self::class,
             'services' => $services,
-            'dependencies' => self => :checkDependencies($container),
+            'dependencies' => self::checkDependencies($container),
             'timestamp' => date('Y-m-d H:i:s'),
         ];
     }

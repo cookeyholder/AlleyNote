@@ -100,7 +100,7 @@ class IpRepository implements IpRepositoryInterface
         $sql = 'INSERT INTO ip_lists (uuid, ip_address, type, unit_id, description, created_at, updated_at)
                 VALUES (:uuid, :ip_address, :type, :unit_id, :description, :created_at, :updated_at)';
 
-        try { /* empty */ }
+        try {
             $this->db->beginTransaction();
 
             $stmt = $this->db->prepare($sql);
@@ -136,7 +136,9 @@ class IpRepository implements IpRepositoryInterface
             $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
 
             return $ipList;
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            throw $e;
         }
     }
 
