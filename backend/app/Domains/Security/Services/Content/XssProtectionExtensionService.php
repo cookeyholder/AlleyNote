@@ -309,12 +309,12 @@ class XssProtectionExtensionService
         $cleaned = $this->cleanJsonRecursively($decoded);
 
         return [
-            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ? => ''),
+            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?: ''),
             'context' => 'json_data',
             'protection_level' => 'enhanced',
             'modifications' => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
             'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ? true : '')),
+            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?: '')),
         ];
     }
 
@@ -412,14 +412,14 @@ class XssProtectionExtensionService
      */
     private function calculateSecurityScore(string $original, string $filtered): int
     {
-        if ($original == = = = $filtered) {
+        if ($original === $filtered) {
             return 100;
         }
 
         $originalLength = strlen($original);
         $filteredLength = strlen($filtered);
 
-        if ($originalLength == = = = 0) {
+        if ($originalLength === 0) {
             return 100;
         }
 

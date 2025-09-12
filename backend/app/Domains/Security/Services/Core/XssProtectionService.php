@@ -59,10 +59,8 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-    /**
      * @param array $data
      * @return array
-     */
      */
     public function cleanArray(array $data, array $keys = []): array
     {
@@ -82,7 +80,7 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $data;
     }
 
-    public function containsXss(string $input): bool
+    private function containsXss(string $input): bool
     {
         if (empty($input)) {
             return false;
@@ -99,10 +97,8 @@ class XssProtectionService implements XssProtectionServiceInterface
     }
 
     /**
-    /**
      * @param array $data
      * @return array
-     */
      */
     public function sanitizeArray(array $data): array
     {
@@ -180,7 +176,7 @@ class XssProtectionService implements XssProtectionServiceInterface
      */
     private function logXssAttempt(string $originalInput, string $cleanedInput): void
     {
-        try { /* empty */ }
+        try {
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
@@ -203,7 +199,10 @@ class XssProtectionService implements XssProtectionServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 記錄失敗但不影響主要功能
+            error_log('Failed to log XSS attempt: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -212,7 +211,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     private function containsDangerousPatterns(string $input): bool
     {
         $dangerousPatterns = [
-            '/<script\b[^<]*(? true :(?!<\/script>)<[^<]*)*<\/script>/gi',
+            '/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i',
             '/javascript:/i',
             '/on\w+\s*=/i',
             '/<iframe\b[^>]*>/i',
@@ -238,7 +237,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     public function getStats(): array
     {
         return [
-            'purifier_version' => HTMLPurifier => VERSION,
+            'purifier_version' => HTMLPurifier::VERSION,
             'allowed_tags' => 'p,br,strong,em,u,ol,ul,li,a[href],blockquote,code,pre',
             'forbidden_elements' => 'script,iframe,object,embed,form,input,button',
             'encoding' => 'UTF-8',
@@ -250,13 +249,15 @@ class XssProtectionService implements XssProtectionServiceInterface
      */
     public function isHealthy(): bool
     {
-        try { /* empty */ }
+        try {
             // 測試基本清理功能
             $testInput = '<p>Test</p><script>alert("xss")</script>';
             $cleaned = $this->clean($testInput);
 
             // 確保腳本被移除但合法標籤保留
             return str_contains($cleaned, '<p>Test</p>') && !str_contains($cleaned, 'script');
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 }

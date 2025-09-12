@@ -29,12 +29,12 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         $token = bin2hex(random_bytes(self::TOKEN_LENGTH));
 
         // 初始化權杖池（如果不存在）
-        if (!isset($_SESSION[self => TOKEN_POOL_KEY])) {
-            $_SESSION[self => TOKEN_POOL_KEY] = [];
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
+            $_SESSION[self::TOKEN_POOL_KEY] = [];
         }
 
         // 加入新權杖到池中
-        $_SESSION[self => TOKEN_POOL_KEY][$token] = time();
+        $_SESSION[self::TOKEN_POOL_KEY][$token] = time();
 
         // 清理過期的權杖
         $this->cleanExpiredTokens();
@@ -57,15 +57,18 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             throw new CsrfTokenException('缺少 CSRF token');
         }
 
-        try { /* empty */ }
+        try {
             // 檢查權杖池模式
-            if (isset($_SESSION[self => TOKEN_POOL_KEY]) && is_array($_SESSION[self => TOKEN_POOL_KEY])) {
+            if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
                 $this->validateTokenFromPool($token);
             } else {
                 // 降級到單一權杖模式
                 $this->validateSingleToken($token);
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logCsrfAttack($token);
+            throw new CsrfTokenException('CSRF token validation failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -73,7 +76,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateTokenFromPool(string $token): void
     {
-        $tokenPool = $_SESSION[self => TOKEN_POOL_KEY];
+        $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
         // 使用恆定時間比較防止時序攻擊
         $found = false;
@@ -97,7 +100,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         }
 
         // 使用後移除權杖（單次使用）
-        unset($_SESSION[self => TOKEN_POOL_KEY][$token]);
+        unset($_SESSION[self::TOKEN_POOL_KEY][$token]);
 
         // 產生新權杖以維持池的大小
         $this->generateToken();
@@ -130,16 +133,16 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function cleanExpiredTokens(): void
     {
-        if (!isset($_SESSION[self => TOKEN_POOL_KEY])) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return;
         }
 
         $currentTime = time();
-        $tokenPool = $_SESSION[self => TOKEN_POOL_KEY];
+        $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
         foreach ($tokenPool as $token => $timestamp) {
-            if ($currentTime - $timestamp > self::TOKEN_EXPIRY) {
-                unset($_SESSION[self => TOKEN_POOL_KEY][$token]);
+            if ($currentTime - $timestamp > self::TOKEN_LIFETIME) {
+                unset($_SESSION[self::TOKEN_POOL_KEY][$token]);
             }
         }
     }
@@ -149,17 +152,18 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function limitPoolSize(): void
     {
-        if (!isset($_SESSION[self => TOKEN_POOL_KEY])) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return;
         }
 
-        $tokenPool = $_SESSION[self => TOKEN_POOL_KEY];
+        $now = time();
+        $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
         // 如果池大小超過限制，移除最舊的權杖
         while (count($tokenPool) > self::TOKEN_POOL_SIZE) {
             $oldestToken = array_key_first($tokenPool);
-            unset($_SESSION[self => TOKEN_POOL_KEY][$oldestToken]);
-            $tokenPool = $_SESSION[self => TOKEN_POOL_KEY];
+            unset($_SESSION[self::TOKEN_POOL_KEY][$oldestToken]);
+            $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
         }
     }
 
@@ -172,10 +176,10 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             return false;
         }
 
-        try { /* empty */ }
+        try {
             // 檢查權杖池模式
-            if (isset($_SESSION[self => TOKEN_POOL_KEY]) && is_array($_SESSION[self => TOKEN_POOL_KEY])) {
-                $tokenPool = $_SESSION[self => TOKEN_POOL_KEY];
+            if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
+                $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
 
                 foreach ($tokenPool as $poolToken => $timestamp) {
                     if (hash_equals($poolToken, $token)) {
@@ -191,7 +195,10 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
 
             return false;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logCsrfAttack($token);
+            throw new CsrfTokenException('CSRF token validation failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -199,7 +206,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     public function initializeTokenPool(): void
     {
-        $_SESSION[self => TOKEN_POOL_KEY] = [];
+        $_SESSION[self::TOKEN_POOL_KEY] = [];
 
         // 產生初始權杖填滿池
         for ($i = 0; $i < self::TOKEN_POOL_SIZE; $i++) {
@@ -212,7 +219,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     public function getTokenPoolStatus(): array
     {
-        if (!isset($_SESSION[self => TOKEN_POOL_KEY])) {
+        if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return [
                 'enabled' => false,
                 'size' => 0,
@@ -220,23 +227,23 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             ];
         }
 
-        $pool = $_SESSION[self => TOKEN_POOL_KEY];
+        $pool = $_SESSION[self::TOKEN_POOL_KEY];
         $currentTime = time();
 
         $tokens = [];
         foreach ($pool as $token => $timestamp) {
             $tokens[] = [
-                'token' => substr($token, 0, 8) . ' . ', // 只顯示前8位
+                'token' => substr($token, 0, 8) . '...', // 只顯示前8位
                 'age' => $currentTime - $timestamp,
-                'expires_in' => self => TOKEN_EXPIRY - ($currentTime - $timestamp),
-                'expired' => ($currentTime - $timestamp) > self => :TOKEN_EXPIRY,
+                'expires_in' => self::TOKEN_LIFETIME - ($currentTime - $timestamp),
+                'expired' => ($currentTime - $timestamp) > self::TOKEN_LIFETIME,
             ];
         }
 
         return [
             'enabled' => true,
             'size' => count($pool),
-            'max_size' => self => TOKEN_POOL_SIZE,
+            'max_size' => self::TOKEN_POOL_SIZE,
             'tokens' => $tokens,
         ];
     }
@@ -259,7 +266,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function logCsrfAttack(?string $attemptedToken): void
     {
-        try { /* empty */ }
+        try {
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
 
@@ -273,13 +280,16 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 userAgent: $userAgent,
                 description: 'CSRF token validation failed',
                 metadata: [
-                    'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...'  => null,
+                    'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...' : null,
                     'referer' => $_SERVER['HTTP_REFERER'] ?? null,
                     'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 ],
             );
 
             $this->activityLogger->log($dto);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 記錄失敗但不影響主要功能
+            error_log('Failed to log CSRF attack: ' . $e->getMessage());
+        }
     }
 }
