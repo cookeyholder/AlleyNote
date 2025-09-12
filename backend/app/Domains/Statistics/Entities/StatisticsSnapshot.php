@@ -22,7 +22,6 @@ use DateTimeImmutable;
 class StatisticsSnapshot extends AggregateRoot
 {
     /**
-    /**
      * @param Uuid $id 識別碼
      * @param array $sourceStats 來源統計
      */
@@ -54,7 +53,8 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($sourceStats as $sourceStatistics) {
             if (!$sourceStatistics instanceof SourceStatistics) {
                 throw new InvalidStatisticsSnapshotException(
-                    '來源統計必須是 SourceStatistics 實例');
+                    '來源統計必須是 SourceStatistics 實例',
+                );
             }
         }
 
@@ -62,7 +62,8 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($additionalMetrics as $key => $metric) {
             if (!$metric instanceof StatisticsMetric) {
                 throw new InvalidStatisticsSnapshotException(
-                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例");
+                    "額外指標 '{$key}' 必須是 StatisticsMetric 實例",
+                );
             }
         }
 
@@ -296,7 +297,8 @@ class StatisticsSnapshot extends AggregateRoot
     {
         if ($newCount < 0) {
             throw new InvalidStatisticsSnapshotException(
-                '文章數量不能為負數');
+                '文章數量不能為負數',
+            );
         }
 
         $this->totalPosts = StatisticsMetric::count($newCount, '總文章數');
@@ -310,7 +312,8 @@ class StatisticsSnapshot extends AggregateRoot
     {
         if ($newCount < 0) {
             throw new InvalidStatisticsSnapshotException(
-                '瀏覽數量不能為負數');
+                '瀏覽數量不能為負數',
+            );
         }
 
         $this->totalViews = StatisticsMetric::count($newCount, '總瀏覽數');
@@ -326,7 +329,8 @@ class StatisticsSnapshot extends AggregateRoot
         foreach ($sourceStats as $sourceStatistics) {
             if (!$sourceStatistics instanceof SourceStatistics) {
                 throw new InvalidStatisticsSnapshotException(
-                    '來源統計必須是 SourceStatistics 實例');
+                    '來源統計必須是 SourceStatistics 實例',
+                );
             }
         }
 
@@ -363,7 +367,7 @@ class StatisticsSnapshot extends AggregateRoot
 
         $this->sourceStats = array_filter(
             $this->sourceStats,
-            fn(SourceStatistics $stats): array => $stats->sourceType !== $sourceType,
+            fn(SourceStatistics $stats): bool => $stats->sourceType !== $sourceType,
         );
 
         // 重新索引陣列
@@ -400,7 +404,7 @@ class StatisticsSnapshot extends AggregateRoot
     public function getAveragePostsPerDay(): StatisticsMetric
     {
         $days = $this->period->getDaysCount();
-        if ($days == == 0) {
+        if ($days === 0) {
             return StatisticsMetric::create(0, '篇/日', '平均每日文章數', 2);
         }
 
@@ -415,7 +419,7 @@ class StatisticsSnapshot extends AggregateRoot
     public function getAverageViewsPerDay(): StatisticsMetric
     {
         $days = $this->period->getDaysCount();
-        if ($days == == 0) {
+        if ($days === 0) {
             return StatisticsMetric::create(0, '次/日', '平均每日瀏覽數', 2);
         }
 
@@ -469,7 +473,7 @@ class StatisticsSnapshot extends AggregateRoot
 
         usort(
             $sortedStats,
-            fn(SourceStatistics $a, SourceStatistics $b): array => $a->compareTo($b),
+            fn(SourceStatistics $a, SourceStatistics $b): int => $a->compareTo($b),
         );
 
         return $sortedStats;
@@ -496,7 +500,6 @@ class StatisticsSnapshot extends AggregateRoot
 
     /**
      * 取得統計資料.
-     * @return array
      */
     public function getData(): array
     {
@@ -507,8 +510,8 @@ class StatisticsSnapshot extends AggregateRoot
             'total_views' => $this->totalViews->toArray(),
             'source_stats' => array_map(fn($stat) => $stat->toArray(), $this->sourceStats),
             'additional_metrics' => array_map(fn($metric) => $metric->toArray(), $this->additionalMetrics),
-            'created_at' => $this->createdAt->format('Y-m-d H => i => s'),
-            'updated_at' => $this->updatedAt?->format('Y-m-d H => i:s'),
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -534,8 +537,8 @@ class StatisticsSnapshot extends AggregateRoot
             'total_views' => $this->totalViews->toArray(),
             'source_stats' => $sourceStatsArray,
             'additional_metrics' => $additionalMetricsArray,
-            'created_at' => $this->createdAt->format('Y-m-d H => i => s'),
-            'updated_at' => $this->updatedAt?->format('Y-m-d H => i => s'),
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
             'summary' => $this->getSummary(),
         ];
     }
@@ -549,7 +552,7 @@ class StatisticsSnapshot extends AggregateRoot
         $this->updatedAt = new DateTimeImmutable();
 
         // 如果是第一次更新，記錄領域事件
-        if ($oldUpdatedAt == == null) {
+        if ($oldUpdatedAt === null) {
             $this->record(new StatisticsSnapshotUpdated(
                 $this->id,
                 $this->period,
