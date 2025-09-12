@@ -1,15 +1,15 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-12 22:17:31
+報告生成時間: 2025-09-12 22:21:29
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 262 |
-| 語法錯誤檔案 | 99 |
-| 健康度 | 72.6% |
+| 健康檔案 | 267 |
+| 語法錯誤檔案 | 94 |
+| 健康度 | 74% |
 
 ## 語法錯誤詳細清單
 
@@ -62,27 +62,6 @@ Parse error: syntax error, unexpected token "private", expecting end of file in 
 Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
 ```
 
-### app/Infrastructure/Database/DatabaseConnection.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/app/Infrastructure/Database/DatabaseConnection.php on line 15
-Errors parsing /var/www/html/app/Infrastructure/Database/DatabaseConnection.php
-```
-
-### app/Infrastructure/Config/container.php
-
-```
-Parse error: syntax error, unexpected token "class" in /var/www/html/app/Infrastructure/Config/container.php on line 49
-Errors parsing /var/www/html/app/Infrastructure/Config/container.php
-```
-
-### app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php
-
-```
-Parse error: Unmatched '}' in /var/www/html/app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php on line 48
-Errors parsing /var/www/html/app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php
-```
-
 ### app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
 
 ```
@@ -123,20 +102,6 @@ Errors parsing /var/www/html/app/Infrastructure/Repositories/Statistics/UserStat
 ```
 Parse error: syntax error, unexpected token "=" in /var/www/html/app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php on line 59
 Errors parsing /var/www/html/app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php
-```
-
-### app/Infrastructure/OpenApi/OpenApiSpec.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/app/Infrastructure/OpenApi/OpenApiSpec.php on line 10
-Errors parsing /var/www/html/app/Infrastructure/OpenApi/OpenApiSpec.php
-```
-
-### app/Infrastructure/Http/Stream.php
-
-```
-Parse error: syntax error, unexpected token "==" in /var/www/html/app/Infrastructure/Http/Stream.php on line 32
-Errors parsing /var/www/html/app/Infrastructure/Http/Stream.php
 ```
 
 ### app/Infrastructure/Http/ServerRequestFactory.php
@@ -723,11 +688,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 基礎設施 (風險: 中)
 
-- app/Infrastructure/Database/DatabaseConnection.php
-- app/Infrastructure/Config/container.php
-- app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php
-- app/Infrastructure/OpenApi/OpenApiSpec.php
-- app/Infrastructure/Http/Stream.php
 - app/Infrastructure/Http/ServerRequestFactory.php
 - app/Infrastructure/Routing/RouteDispatcher.php
 - app/Infrastructure/Routing/Core/Route.php

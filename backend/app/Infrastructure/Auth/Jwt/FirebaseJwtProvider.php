@@ -41,9 +41,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         $this->config = $config;
 
-        try { /* empty */ }
+        try {
             $this->initializeKeys();
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            throw new JwtConfigurationException("JWT 配置初始化失敗: " . $e->getMessage(), 0, $e);
         }
     }
 
@@ -94,7 +95,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
 
-        try { /* empty */ }
+        try {
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
             $payload = (array) $decoded;
 
@@ -110,7 +111,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $this->validateIssuerAndAudience($payload);
 
             return $payload;
-        } // catch block commented out due to syntax error
+        } catch (ExpiredException $e) {
+            throw new TokenExpiredException('Token 已過期', 0, $e);
+        } catch (Exception $e) {
+            throw new TokenValidationException('Token 驗證失敗: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
@@ -126,7 +131,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             throw TokenParsingException::emptyToken();
         }
 
-        try { /* empty */ }
+        try {
             // 分割 JWT token
             $parts = explode('.', is_string($token) ? $token : (string) $token);
             if (count($parts) !== 3) {
@@ -137,7 +142,8 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($parts[1]));
 
             return (array) $payload;
-        } // catch block commented out due to syntax error");
+        } catch (Exception $e) {
+            throw new TokenParsingException('Token 解析失敗: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -148,15 +154,17 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      */
     public function getTokenExpiration(string $token): ?DateTimeImmutable
     {
-        try { /* empty */ }
+        try {
             $payload = $this->parseTokenUnsafe($token);
 
             if (!isset($payload['exp']) || !is_int($payload['exp'])) {
                 return null;
             }
 
-            return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ? true : null;
-        } // catch block commented out due to syntax error
+            return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ?: null;
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -168,7 +176,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         $expiration = $this->getTokenExpiration($token);
 
-        if ($expiration == = = = null) {
+        if ($expiration === null) {
             return false; // 無法確定過期時間，假設未過期
         }
 
@@ -199,7 +207,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         // 檢查私鑰
         $privateKeyResource = openssl_pkey_get_private($this->privateKey);
-        if ($privateKeyResource == = = = false) {
+        if ($privateKeyResource === false) {
             throw new JwtConfigurationException(
                 '私鑰格式無效',
                 JwtConfigurationException::INVALID_PRIVATE_KEY_FORMAT,
@@ -208,7 +216,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         // 檢查公鑰
         $publicKeyResource = openssl_pkey_get_public($this->publicKey);
-        if ($publicKeyResource == = = = false) {
+        if ($publicKeyResource === false) {
             throw new JwtConfigurationException(
                 '公鑰格式無效',
                 JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT,
@@ -270,9 +278,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         // 合併自訂載荷
         $finalPayload = array_merge($claims, $payload);
 
-        try { /* empty */ }
+        try {
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            throw new TokenGenerationException("Token 產生失敗: " . $e->getMessage(), 0, $e);
         }
     }
 
