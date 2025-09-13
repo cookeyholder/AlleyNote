@@ -34,352 +34,347 @@ try {
     echo '
 測試 3: 建立測試請求
 ';
+} catch (Exception $e) {
+    echo '❌ 錯誤: ' . $e->getMessage() . "\n";
+}
 
-    // 建立 PSR-7 相容的請求
-    $request = new class implements ServerRequestInterface
-
-
-{
+// 建立 PSR-7 相容的請求
+$request = new class implements ServerRequestInterface {
     private string $method = 'GET';
 
-        private string $uri = '/api/health';
+    private string $uri = '/api/health';
 
-        private array $headers = [];
+    private array $headers = [];
 
-        public function getServerParams(): array
-        {
-            return [];
-        }
+    public function getServerParams(): array
+    {
+        return [];
+    }
 
     public function getCookieParams(): array
-        {
-            return [];
-        }
+    {
+        return [];
+    }
 
     public function withCookieParams(array $cookies): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getQueryParams(): array
-        {
-            return [];
-        }
+    {
+        return [];
+    }
 
     public function withQueryParams(array $query): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getUploadedFiles(): array
-        {
-            return [];
-        }
+    {
+        return [];
+    }
 
     public function withUploadedFiles(array $uploadedFiles): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getParsedBody()
-        {
-            return null;
-        }
+    {
+        return null;
+    }
 
     public function withParsedBody($data): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getAttributes(): array
-        {
-            return [];
-        }
+    {
+        return [];
+    }
 
     public function getAttribute($name, $default = null)
-        {
-            return $default;
-        }
+    {
+        return $default;
+    }
 
     public function withAttribute($name, $value): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function withoutAttribute($name): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getRequestTarget(): string
-        {
-            return $this->uri;
-        }
+    {
+        return $this->uri;
+    }
 
     public function withRequestTarget($requestTarget): self
-        {
-            $new = clone $this;
-            $new->uri = $requestTarget;
+    {
+        $new = clone $this;
+        $new->uri = $requestTarget;
 
-            return $new;
-        }
+        return $new;
+    }
 
     public function getMethod(): string
-        {
-            return $this->method;
-        }
+    {
+        return $this->method;
+    }
 
     public function withMethod($method): self
-        {
-            $new = clone $this;
-            $new->method = $method;
+    {
+        $new = clone $this;
+        $new->method = $method;
 
-            return $new;
-        }
+        return $new;
+    }
 
     public function getUri()
-        {
-            return new class ($this->uri) {
-                private string $uri;
+    {
+        return new class ($this->uri) {
+            private string $uri;
 
-    }
-    }
-                public function __construct(string $uri)
-                {
-                    $this->uri = $uri;
-                }
+            public function __construct(string $uri)
+            {
+                $this->uri = $uri;
+            }
 
-    public function __toString(): string
-                {
-                    return $this->uri;
-                }
+            public function __toString(): string
+            {
+                return $this->uri;
+            }
+        };
+    }
 
     public function getScheme(): string
-                {
-                    return 'http';
-                }
+    {
+        return 'http';
+    }
 
     public function getAuthority(): string
-                {
-                    return 'localhost';
-                }
+    {
+        return 'localhost';
+    }
 
     public function getUserInfo(): string
-                {
-                    return '';
-                }
+    {
+        return '';
+    }
 
     public function getHost(): string
-                {
-                    return 'localhost';
-                }
+    {
+        return 'localhost';
+    }
 
     public function getPort(): ?int
-                {
-                    return null;
-                }
+    {
+        return null;
+    }
 
     public function getPath(): string
-                {
-                    return $this->uri;
-                }
+    {
+        return $this->uri;
+    }
 
     public function getQuery(): string
-                {
-                    return '';
-                }
+    {
+        return '';
+    }
 
     public function getFragment(): string
-                {
-                    return '';
-                }
+    {
+        return '';
+    }
 
     public function withScheme($scheme): self
-                {
-                    return $this;
-                }
+    {
+        return $this;
+    }
 
     public function withUserInfo($user, $password = null): self
-                {
-                    return $this;
-                }
+    {
+        return $this;
+    }
 
     public function withHost($host): self
-                {
-                    return $this;
-                }
+    {
+        return $this;
+    }
 
     public function withPort($port): self
-                {
-                    return $this;
-                }
+    {
+        return $this;
+    }
 
     public function withPath($path): self
-                {
-                    return $this;
-                }
+    {
+        return $this;
+    }
 
     public function withQuery($query): self
-                {
-                    return $this;
-                }
+    {
+        return $this;
+    }
 
     public function withFragment($fragment): self
-                {
-                    return $this;
-                }
-            };
-        }
+    {
+        return $this;
+    }
 
     public function withUri($uri, $preserveHost = false): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getProtocolVersion(): string
-        {
-            return '1.1';
-        }
+    {
+        return '1.1';
+    }
 
     public function withProtocolVersion($version): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getHeaders(): array
-        {
-            return $this->headers;
-        }
+    {
+        return $this->headers;
+    }
 
     public function hasHeader($name): bool
-        {
-            return isset($this->headers[$name]);
-        }
+    {
+        return isset($this->headers[$name]);
+    }
 
     public function getHeader($name): array
-        {
-            return $this->headers[$name] ?? [];
-        }
+    {
+        return $this->headers[$name] ?? [];
+    }
 
     public function getHeaderLine($name): string
-        {
-            return implode(', ', $this->getHeader($name));
-        }
+    {
+        return implode(', ', $this->getHeader($name));
+    }
 
     public function withHeader($name, $value): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function withAddedHeader($name, $value): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function withoutHeader($name): self
-        {
-            return $this;
-        }
+    {
+        return $this;
+    }
 
     public function getBody()
-        {
-            return new class {
+    {
+        return new class {
+            public function __toString(): string
+            {
+                return '';
+            }
+
+            public function close(): void {}
+
+            public function detach()
+            {
+                return null;
+            }
+
+            public function getSize(): ?int
+            {
+                return 0;
+            }
+
+            public function tell(): int
+            {
+                return 0;
+            }
+
+            public function eof(): bool
+            {
+                return true;
+            }
+
+            public function isSeekable(): bool
+            {
+                return false;
+            }
+
+            public function seek($offset, $whence = SEEK_SET): void {}
+
+            public function rewind(): void {}
+
+            public function isWritable(): bool
+            {
+                return false;
+            }
+
+            public function write($string): int
+            {
+                return 0;
+            }
+
+            public function isReadable(): bool
+            {
+                return false;
+            }
+
+            public function read($length): string
+            {
+                return '';
+            }
+
+            public function getContents(): string
+            {
+                return '';
+            }
+
+            public function getMetadata($key = null)
+            {
+                return null;
+            }
+        };
     }
-    }
-                public function __toString(): string
-                {
-                    return '';
-                }
-
-    public function close(): void {}
-
-    public function detach()
-                {
-                    return null;
-                }
-
-    public function getSize(): ?int
-                {
-                    return 0;
-                }
-
-    public function tell(): int
-                {
-                    return 0;
-                }
-
-    public function eof(): bool
-                {
-                    return true;
-                }
-
-    public function isSeekable(): bool
-                {
-                    return false;
-                }
-
-    public function seek($offset, $whence = SEEK_SET): void {}
-
-    public function rewind(): void {}
-
-    public function isWritable(): bool
-                {
-                    return false;
-                }
-
-    public function write($string): int
-                {
-                    return 0;
-                }
-
-    public function isReadable(): bool
-                {
-                    return false;
-                }
-
-    public function read($length): string
-                {
-                    return '';
-                }
-
-    public function getContents(): string
-                {
-                    return '';
-                }
-
-    public function getMetadata($key = null)
-                {
-                    return null;
-                }
-            };
-        }
 
     public function withBody($body): self
-        {
-            return $this;
-        }
-    };
+    {
+        return $this;
+    }
+};
 
-    echo '✅ 測試請求建立成功
+echo '✅ 測試請求建立成功
 ';
-    echo '   - 方法: ' . $request->getMethod() . '
+echo '   - 方法: ' . $request->getMethod() . '
 ';
-    echo '   - URI: ' . $request->getRequestTarget() . '
+echo '   - URI: ' . $request->getRequestTarget() . '
 ';
 
-    echo '
+echo '
 測試 4: 處理請求
 ';
-    $response = $app->run($request);
-    echo '✅ 請求處理成功
+$response = $app->run($request);
+echo '✅ 請求處理成功
 ';
-    echo '   - 回應狀態: ' . $response->getStatusCode() . '
+echo '   - 回應狀態: ' . $response->getStatusCode() . '
 ';
-    echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . '
+echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . '
 ';
-    echo '   - 回應內容: ' . $response->getBody() . '
+echo '   - 回應內容: ' . $response->getBody() . '
 ';
-}
 
 echo '
 === 測試完成 ===

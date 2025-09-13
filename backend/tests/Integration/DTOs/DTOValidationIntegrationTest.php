@@ -210,7 +210,9 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } // catch block commented out due to syntax error
+        } catch (ValidationException $e) {
+            $this->assertStringContainsString('標題不能為空', $e->getMessage());
+        }
     }
 
     /**
@@ -227,7 +229,12 @@ class DTOValidationIntegrationTest extends TestCase
                 'user_ip' => '192.168.1.1',
             ]);
             $this->fail('應該拋出 ValidationException');
-        } // catch block commented out due to syntax error
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors();
+            $this->assertArrayHasKey('title', $errors);
+            $this->assertArrayHasKey('content', $errors);
+            $this->assertArrayHasKey('status', $errors);
+        }
     }
 
     /**

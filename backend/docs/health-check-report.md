@@ -1,24 +1,17 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 22:01:42
+報告生成時間: 2025-09-13 23:17:29
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 334 |
-| 語法錯誤檔案 | 27 |
-| 健康度 | 92.5% |
+| 健康檔案 | 339 |
+| 語法錯誤檔案 | 22 |
+| 健康度 | 93.9% |
 
 ## 語法錯誤詳細清單
-
-### tests/Integration/JwtAuthenticationIntegrationTest.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php on line 451
-Errors parsing /var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php
-```
 
 ### tests/Integration/DTOs/DTOValidationIntegrationTest.php
 
@@ -27,39 +20,11 @@ Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Inte
 Errors parsing /var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php
 ```
 
-### tests/Integration/Api/V1/AuthEndpointTest.php
-
-```
-Parse error: syntax error, unexpected token "public" in /var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php on line 151
-Errors parsing /var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php
-```
-
 ### tests/Integration/Application/Controllers/Api/Statistics/StatisticsControllerIntegrationTest.php
 
 ```
 Parse error: syntax error, unexpected token "=" in /var/www/html/tests/Integration/Application/Controllers/Api/Statistics/StatisticsControllerIntegrationTest.php on line 217
 Errors parsing /var/www/html/tests/Integration/Application/Controllers/Api/Statistics/StatisticsControllerIntegrationTest.php
-```
-
-### tests/Integration/FileSystemBackupTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Integration/FileSystemBackupTest.php on line 77
-Errors parsing /var/www/html/tests/Integration/FileSystemBackupTest.php
-```
-
-### tests/Integration/DatabaseBackupTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Integration/DatabaseBackupTest.php on line 58
-Errors parsing /var/www/html/tests/Integration/DatabaseBackupTest.php
-```
-
-### tests/Integration/AttachmentUploadTest.php
-
-```
-Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Integration/AttachmentUploadTest.php on line 205
-Errors parsing /var/www/html/tests/Integration/AttachmentUploadTest.php
 ```
 
 ### tests/manual/test_multiple_routes.php
@@ -206,11 +171,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 測試 (風險: 低)
 
-- tests/Integration/JwtAuthenticationIntegrationTest.php
-- tests/Integration/Api/V1/AuthEndpointTest.php
-- tests/Integration/FileSystemBackupTest.php
-- tests/Integration/DatabaseBackupTest.php
-- tests/Integration/AttachmentUploadTest.php
 - tests/manual/test_multiple_routes.php
 - tests/manual/test_route_loader_integration.php
 - tests/manual/test_controller_simple.php
