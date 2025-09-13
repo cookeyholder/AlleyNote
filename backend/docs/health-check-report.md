@@ -1,52 +1,17 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 20:26:19
+報告生成時間: 2025-09-13 20:55:52
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 323 |
-| 語法錯誤檔案 | 38 |
-| 健康度 | 89.5% |
+| 健康檔案 | 329 |
+| 語法錯誤檔案 | 32 |
+| 健康度 | 91.1% |
 
 ## 語法錯誤詳細清單
-
-### tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
-
-```
-Parse error: Unclosed '(' does not match ']' in /var/www/html/tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php on line 69
-Errors parsing /var/www/html/tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
-```
-
-### tests/Unit/Services/Security/FileSecurityServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php on line 110
-Errors parsing /var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php
-```
-
-### tests/Unit/Services/Security/PwnedPasswordServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "\", expecting ")" in /var/www/html/tests/Unit/Services/Security/PwnedPasswordServiceTest.php on line 234
-Errors parsing /var/www/html/tests/Unit/Services/Security/PwnedPasswordServiceTest.php
-```
-
-### tests/Unit/Services/PostServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Services/PostServiceTest.php on line 57
-Errors parsing /var/www/html/tests/Unit/Services/PostServiceTest.php
-```
-
-### tests/Unit/Services/AttachmentServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Services/AttachmentServiceTest.php on line 140
-Errors parsing /var/www/html/tests/Unit/Services/AttachmentServiceTest.php
-```
 
 ### tests/Unit/Validation/ValidatorTest.php
 
@@ -265,13 +230,6 @@ Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Functiona
 Errors parsing /var/www/html/tests/Functional/AttachmentActivityLoggingTest.php
 ```
 
-### tests/Factory/PostFactory.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Factory/PostFactory.php on line 25
-Errors parsing /var/www/html/tests/Factory/PostFactory.php
-```
-
 ### tests/Factory/Abstracts/AbstractFactory.php
 
 ```
@@ -312,16 +270,10 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 - tests/E2E/Shared/Cache/CacheSystemE2ETest.php
 - tests/Functional/PostControllerActivityLoggingTest.php
 - tests/Functional/AttachmentActivityLoggingTest.php
-- tests/Factory/PostFactory.php
 - tests/Factory/Abstracts/AbstractFactory.php
 
 ### 其他 (風險: 低)
 
-- tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
-- tests/Unit/Services/Security/FileSecurityServiceTest.php
-- tests/Unit/Services/Security/PwnedPasswordServiceTest.php
-- tests/Unit/Services/PostServiceTest.php
-- tests/Unit/Services/AttachmentServiceTest.php
 - tests/Integration/DTOs/DTOValidationIntegrationTest.php
 - tests/Integration/Application/Controllers/Api/Statistics/StatisticsControllerIntegrationTest.php
 

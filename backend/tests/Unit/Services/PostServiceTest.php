@@ -54,7 +54,7 @@ class PostServiceTest extends TestCase
             'content' => '這是測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => DRAFT->value,
+            'status' => PostStatus::DRAFT->value,
         ];
 
         $this->validator->shouldReceive('validateOrFail')
@@ -71,8 +71,8 @@ class PostServiceTest extends TestCase
             'content' => '這是測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => DRAFT->value,
-            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable => :RFC3339),
+            'status' => PostStatus::DRAFT->value,
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -84,7 +84,7 @@ class PostServiceTest extends TestCase
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
                 'is_pinned' => false,
-                'status' => PostStatus => DRAFT->value,
+                'status' => PostStatus::DRAFT->value,
                 'publish_date' => null,
             ])
             ->andReturn($expectedPost);
@@ -106,8 +106,8 @@ class PostServiceTest extends TestCase
             'content' => '原始內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => DRAFT->value,
-            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable => :RFC3339),
+            'status' => PostStatus::DRAFT->value,
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -130,9 +130,9 @@ class PostServiceTest extends TestCase
             'content' => '更新的內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => DRAFT->value,
+            'status' => PostStatus::DRAFT->value,
             'created_at' => $initialPost->getCreatedAt(),
-            'updated_at' => new DateTimeImmutable()->format(DateTimeImmutable => :RFC3339),
+            'updated_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
         ]);
 
         $this->repository->shouldReceive('find')
@@ -165,12 +165,12 @@ class PostServiceTest extends TestCase
             'content' => '已發布內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => PUBLISHED->value,
-            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable => :RFC3339),
+            'status' => PostStatus::PUBLISHED->value,
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
-        $updateData = ['status' => PostStatus => DRAFT->value];
+        $updateData = ['status' => PostStatus::DRAFT->value];
 
         $this->validator->shouldReceive('validateOrFail')
             ->once()
@@ -221,8 +221,8 @@ class PostServiceTest extends TestCase
             'content' => '測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => DRAFT->value,
-            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable => :RFC3339),
+            'status' => PostStatus::DRAFT->value,
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -295,8 +295,8 @@ class PostServiceTest extends TestCase
             'content' => '測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => PUBLISHED->value,
-            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable => :RFC3339),
+            'status' => PostStatus::PUBLISHED->value,
+            'created_at' => new DateTimeImmutable()->format(DateTimeImmutable::RFC3339),
             'updated_at' => null,
         ]);
 
@@ -341,7 +341,7 @@ class PostServiceTest extends TestCase
                     'content' => '內容1',
                     'user_id' => 1,
                     'user_ip' => '192.168.1.1',
-                    'status' => PostStatus => PUBLISHED->value,
+                    'status' => PostStatus::PUBLISHED->value,
                 ]),
                 new Post([
                     'id' => 2,
@@ -349,7 +349,7 @@ class PostServiceTest extends TestCase
                     'content' => '內容2',
                     'user_id' => 1,
                     'user_ip' => '192.168.1.1',
-                    'status' => PostStatus => PUBLISHED->value,
+                    'status' => PostStatus::PUBLISHED->value,
                 ]),
             ],
             'total' => 2,
@@ -383,7 +383,7 @@ class PostServiceTest extends TestCase
                 'content' => '置頂內容1',
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
-                'status' => PostStatus => PUBLISHED->value,
+                'status' => PostStatus::PUBLISHED->value,
                 'is_pinned' => true,
             ]),
         ];
@@ -458,7 +458,7 @@ class PostServiceTest extends TestCase
             'content' => '測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => PUBLISHED->value,
+            'status' => PostStatus::PUBLISHED->value,
         ]);
 
         $this->repository->shouldReceive('find')
@@ -504,7 +504,7 @@ class PostServiceTest extends TestCase
             'content' => '測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => PUBLISHED->value,
+            'status' => PostStatus::PUBLISHED->value,
         ]);
 
         $this->repository->shouldReceive('find')
@@ -533,7 +533,7 @@ class PostServiceTest extends TestCase
             'content' => '測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => PUBLISHED->value,
+            'status' => PostStatus::PUBLISHED->value,
         ]);
 
         $this->repository->shouldReceive('find')
@@ -558,7 +558,7 @@ class PostServiceTest extends TestCase
             'content' => '草稿內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus => DRAFT->value,
+            'status' => PostStatus::DRAFT->value,
         ]);
 
         $this->repository->shouldReceive('find')
