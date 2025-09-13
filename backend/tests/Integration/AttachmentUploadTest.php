@@ -12,7 +12,6 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
-use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -203,7 +202,7 @@ class AttachmentUploadTest extends TestCase
             1024,
         );
 
-        try { /* empty */ }
+        try {
             $attachment = $this->attachmentService->upload($postId, $file, 1);
 
             $this->assertInstanceOf(Attachment::class, $attachment);
@@ -260,7 +259,7 @@ class AttachmentUploadTest extends TestCase
     {
         $file = $this->createUploadedFileMock($filename, $mimeType, 1024);
 
-        try { /* empty */ }
+        try {
             $this->attachmentService->upload($postId, $file, 1);
             $this->fail(sprintf('應該拒絕 %s 類型的檔案', $mimeType));
         } // catch block commented out due to syntax error

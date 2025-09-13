@@ -1,9 +1,9 @@
 # 第八輪階段六進度報告 - JwtTokenService 核心語法錯誤完全修復
 
-> **生成時間**: 2024-12-19  
-> **專案**: AlleyNote Backend  
-> **PHP 版本**: 8.4.12  
-> **PHPStan 級別**: Level 10  
+> **生成時間**: 2024-12-19
+> **專案**: AlleyNote Backend
+> **PHP 版本**: 8.4.12
+> **PHPStan 級別**: Level 10
 > **修復範圍**: 最高優先級核心檔案 JwtTokenService.php 完整重構
 
 ## 📋 執行摘要
@@ -70,7 +70,7 @@ PHPStan Level 10 檢測到的 27 個語法錯誤:
 ```bash
 錯誤類型統計:
 1. 不完整 try-catch 結構: 7 個 (30%)
-2. 括號不匹配錯誤: 15 個 (55%)  
+2. 括號不匹配錯誤: 15 個 (55%)
 3. 陣列語法錯誤: 3 個 (11%)
 4. 條件判斷語法錯誤: 2 個 (7%)
 
@@ -92,7 +92,7 @@ PHPStan Level 10 檢測到的 27 個語法錯誤:
 ```php
 保持的業務邏輯:
 ✅ JWT Token 生成 (generateTokenPair)
-✅ Token 驗證 (validateToken) 
+✅ Token 驗證 (validateToken)
 ✅ Token 刷新 (refreshToken)
 ✅ Token 撤銷 (revokeToken)
 ✅ 用戶 Token 管理 (revokeAllUserTokens, revokeDeviceTokens)
@@ -117,11 +117,11 @@ PHPStan Level 10 檢測到的 27 個語法錯誤:
 ```php
 修復前問題範例:
 // 第46行: 空的 try 塊
-try { /* empty */ }
+try {
     $now = new DateTimeImmutable();
     // ... 沒有對應的 catch 或 finally
 
-// 第281行: 嚴重括號不匹配  
+// 第281行: 嚴重括號不匹配
 if (!isset($payload[$key] {
     throw new InvalidArgumentException("Missing required payload key: {$key}"];
 }
@@ -237,7 +237,7 @@ try {
 ```bash
 JWT 認證服務狀態:
 ✅ Token 生成邏輯: 語法正確，可執行
-✅ Token 驗證邏輯: 語法正確，可執行  
+✅ Token 驗證邏輯: 語法正確，可執行
 ✅ Token 撤銷邏輯: 語法正確，可執行
 ✅ 安全檢查機制: 語法正確，可執行
 
@@ -267,7 +267,7 @@ JwtTokenService 修復對系統的影響:
 
 JwtTokenService.php 評分:
 - 複雜度: 高 (27個語法錯誤)
-- 重要性: 極高 (系統核心認證)  
+- 重要性: 極高 (系統核心認證)
 - 嚴重性: 極高 (語法錯誤導致無法執行)
 - 總分: 高×極高×極高 = 完整重構
 
@@ -281,7 +281,7 @@ JwtTokenService.php 評分:
 ```bash
 重構品質控制流程:
 1. 業務邏輯保持: 核心方法邏輯完全保留
-2. 介面相容性: 保持與現有介面的相容性  
+2. 介面相容性: 保持與現有介面的相容性
 3. 錯誤處理改善: 統一例外處理機制
 4. 類型安全提升: 改善類型註解和檢查
 5. 即時驗證: PHPStan Level 10 即時檢查
@@ -297,7 +297,7 @@ JwtTokenService.php 評分:
 JwtTokenService.php 評估:
 - 系統影響範圍: 10/10 (所有認證端點)
 - 安全關鍵性: 10/10 (JWT 核心邏輯)
-- 用戶影響: 10/10 (無法登入使用)  
+- 用戶影響: 10/10 (無法登入使用)
 - 架構重要性: 10/10 (DDD 核心服務)
 - 總風險得分: 10 × 10 × 10 × 10 = 10000 (最高優先級)
 ```
@@ -306,7 +306,7 @@ JwtTokenService.php 評估:
 ```bash
 優先級決策邏輯:
 IF (總風險 > 8000) → 🔴 立即處理 (JwtTokenService)
-ELIF (總風險 > 5000) → 🟡 今日處理 (AuthService)  
+ELIF (總風險 > 5000) → 🟡 今日處理 (AuthService)
 ELIF (總風險 > 2000) → 🟢 本週處理 (SwaggerController)
 ELSE → ⚪ 後續處理
 ```
@@ -348,7 +348,7 @@ JwtTokenService.php 修復成果:
 ✅ 混亂架構 → 標準 DDD 架構 (架構品質提升)
 ```
 
-#### B. **間接影響**  
+#### B. **間接影響**
 ```bash
 系統層級影響:
 ✅ 認證系統: 核心服務恢復可用性
@@ -364,7 +364,7 @@ JwtTokenService.php 修復成果:
 第八輪各階段累計成果:
 - 階段一: 準備與分析工具建立
 - 階段二: SuspiciousActivityDetector (-35 個語法錯誤)
-- 階段三: AttachmentController (-7 個語法錯誤)  
+- 階段三: AttachmentController (-7 個語法錯誤)
 - 階段四: AuthController (-15 個語法錯誤)
 - 階段五: 批量修復 (17 項修復，工具建立)
 - 階段六: JwtTokenService (-27 個語法錯誤) ⭐
@@ -376,7 +376,7 @@ JwtTokenService.php 修復成果:
 ```bash
 專案語法錯誤修復進展:
 - 專案開始: ~2,800+ 語法錯誤
-- 第八輪前: ~896 語法錯誤  
+- 第八輪前: ~896 語法錯誤
 - 第八輪後: ~812 語法錯誤 (預估)
 - 整體改善率: **約 71%**
 - 核心系統安全: **顯著改善**
@@ -389,7 +389,7 @@ JwtTokenService.php 修復成果:
 認證相關服務狀態:
 ✅ JwtTokenService: 語法完全修復，可正常運行
 🟡 AuthenticationService: 下一個修復目標 (17 錯誤)
-🟡 AuthorizationService: 待修復 (17 錯誤)  
+🟡 AuthorizationService: 待修復 (17 錯誤)
 🟡 RefreshTokenRepository: 待修復 (21 錯誤)
 
 整體認證系統: 從"不可用"改善為"部分可用"
@@ -410,7 +410,7 @@ JwtTokenService.php 修復成果:
 
 ### 階段七短期目標 (今日)
 - [ ] **AuthenticationService.php 修復** (17個語法錯誤)
-- [ ] **AuthorizationService.php 修復** (17個語法錯誤)  
+- [ ] **AuthorizationService.php 修復** (17個語法錯誤)
 - [ ] **完善 JwtTokenService 類型錯誤** (75個類型錯誤中的快速修復部分)
 - [ ] 目標：認證核心三角 (JWT + Auth + Authorization) 語法清理完成
 
@@ -424,7 +424,7 @@ JwtTokenService.php 修復成果:
 ```bash
 1. 類型錯誤修復優先級:
    🟢 快速修復: 類型註解、運算子問題 (30-60分鐘)
-   🟡 中等修復: 參數類型、方法簽名 (1-2小時)  
+   🟡 中等修復: 參數類型、方法簽名 (1-2小時)
    🔴 複雜修復: 缺失類別、介面實作 (2-4小時)
 
 2. 依賴關係處理:
@@ -448,13 +448,13 @@ JwtTokenService.php 修復成果:
 ```bash
 修復策略決策流程:
 1. 錯誤數量評估 → 複雜度等級
-2. 系統重要性評估 → 風險等級  
+2. 系統重要性評估 → 風險等級
 3. 架構品質評估 → 品質需求等級
 4. 綜合評估 → 最終修復策略
 
 🔴 完整重構: 高複雜度 + 極高重要性 + 需要架構改善
 🟡 結構化修復: 中複雜度 + 高重要性 + 需要結構調整
-🟢 逐行修補: 低複雜度 + 中重要性 + 維持現有結構  
+🟢 逐行修補: 低複雜度 + 中重要性 + 維持現有結構
 ⚪ 自動化修復: 簡單錯誤 + 批量處理可能
 ```
 
@@ -473,11 +473,11 @@ JwtTokenService.php 修復成果:
 ```bash
 評估維度權重調整:
 系統影響範圍: 35% (最重要)
-安全關鍵性: 30% (次重要)  
+安全關鍵性: 30% (次重要)
 用戶體驗影響: 20% (重要)
 架構重要性: 15% (一般重要)
 
-計算公式: 
+計算公式:
 總風險 = (影響範圍×0.35) + (安全性×0.30) + (用戶體驗×0.20) + (架構×0.15)
 ```
 
@@ -505,7 +505,7 @@ JwtTokenService.php 修復成果:
 
 **技術創新**:
 - 完整重構策略在複雜語法錯誤修復中的成功應用
-- 風險評估模型的多維度量化實現  
+- 風險評估模型的多維度量化實現
 - 業務邏輯保護機制在重構過程中的有效性
 - 語法錯誤轉類型錯誤的質的提升實現
 

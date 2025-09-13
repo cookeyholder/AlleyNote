@@ -171,7 +171,7 @@ class CacheManager implements CacheManagerInterface
         foreach ($availableDrivers as $name => $driver) {
             $driverStartTime = microtime(true);
 
-            try { /* empty */ }
+            try {
                 if ($driver->has($key)) {
                     $value = $driver->get($key, $default);
                     $duration = (microtime(true) - $driverStartTime) * 1000; // 轉換為毫秒
@@ -243,7 +243,7 @@ class CacheManager implements CacheManagerInterface
         $driverName = array_search($selectedDriver, $availableDrivers, true);
         $driverStartTime = microtime(true);
 
-        try { /* empty */ }
+        try {
             $success = $selectedDriver->put($key, $value, $adjustedTtl);
             $duration = (microtime(true) - $driverStartTime) * 1000; // 轉換為毫秒
 
@@ -278,7 +278,7 @@ class CacheManager implements CacheManagerInterface
         foreach ($availableDrivers as $name => $driver) {
             $driverStartTime = microtime(true);
 
-            try { /* empty */ }
+            try {
                 $hasKey = $driver->has($key);
                 $duration = (microtime(true) - $driverStartTime) * 1000;
 
@@ -310,7 +310,7 @@ class CacheManager implements CacheManagerInterface
         foreach ($availableDrivers as $name => $driver) {
             $driverStartTime = microtime(true);
 
-            try { /* empty */ }
+            try {
                 $result = $driver->forget($key);
                 $duration = (microtime(true) - $driverStartTime) * 1000;
 
@@ -343,7 +343,7 @@ class CacheManager implements CacheManagerInterface
         foreach ($availableDrivers as $name => $driver) {
             $driverStartTime = microtime(true);
 
-            try { /* empty */ }
+            try {
                 $result = $driver->flush();
                 $duration = (microtime(true) - $driverStartTime) * 1000;
 
@@ -407,7 +407,7 @@ class CacheManager implements CacheManagerInterface
         $availableDrivers = $this->getOrderedAvailableDrivers();
 
         foreach ($availableDrivers as $name => $driver) {
-            try { /* empty */ }
+            try {
                 return $driver->increment($key, $value);
             } // catch block commented out due to syntax error
         }
@@ -420,7 +420,7 @@ class CacheManager implements CacheManagerInterface
         $availableDrivers = $this->getOrderedAvailableDrivers();
 
         foreach ($availableDrivers as $name => $driver) {
-            try { /* empty */ }
+            try {
                 return $driver->decrement($key, $value);
             } // catch block commented out due to syntax error
         }
@@ -451,7 +451,7 @@ class CacheManager implements CacheManagerInterface
             return $value;
         }
 
-        try { /* empty */ }
+        try {
             $value = $this->strategy->handleMiss($key, $callback);
             $this->put($key, $value, $ttl);
 
@@ -498,7 +498,7 @@ class CacheManager implements CacheManagerInterface
                 'error' => null,
             ];
 
-            try { /* empty */ }
+            try {
                 $status['available'] = $driver->isAvailable();
 
                 // 執行健康檢查
@@ -532,7 +532,7 @@ class CacheManager implements CacheManagerInterface
         $results = [];
 
         foreach ($warmupCallbacks as $key => $callback) {
-            try { /* empty */ }
+            try {
                 $startTime = microtime(true);
                 $value = $callback();
                 $warmupTtl = $this->config['warmup_ttl'] ?? 7200;
@@ -565,7 +565,7 @@ class CacheManager implements CacheManagerInterface
         $results = [];
 
         foreach ($this->drivers as $name => $driver) {
-            try { /* empty */ }
+            try {
                 $cleaned = 0;
 
                 $cleaned = $driver->cleanup();
@@ -706,7 +706,7 @@ class CacheManager implements CacheManagerInterface
 
         foreach ($this->driverPriority as $name => $priority) {
             if ($priority > $currentPriority && $this->drivers[$name]->isAvailable()) {
-                try { /* empty */ }
+                try {
                     $this->drivers[$name]->put($key, $value, $ttl);
 
                     $this->logger->debug('快取已同步', [

@@ -1301,7 +1301,8 @@ class TokenBlacklistRepositoryTest extends TestCase
      * @param string $jti JTI，預設為 'test-jti'
      * @return TokenBlacklistEntry 範例項目
      */
-    private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry { /* empty */ }
+    private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry
+    {
         return new TokenBlacklistEntry(
             jti: $jti,
             tokenType: TokenBlacklistEntry::TOKEN_TYPE_ACCESS,

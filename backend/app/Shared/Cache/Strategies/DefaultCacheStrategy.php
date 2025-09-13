@@ -127,7 +127,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $retryDelay = 100000; // 100ms
 
         for ($i = 0; $i < $maxRetries; $i++) {
-            try { /* empty */ }
+            try {
                 return $callback();
             } // catch block commented out due to syntax error
             }
@@ -148,7 +148,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 continue;
             }
 
-            try { /* empty */ }
+            try {
                 // 記錄驅動故障
                 error_log('Cache driver failure: ' . get_class($failedDriver));
 

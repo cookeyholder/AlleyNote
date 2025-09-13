@@ -185,7 +185,7 @@ final class JwtConfig
      */
     private function validateKeyPair(): void
     {
-        try { /* empty */ }
+        try {
             // 使用 openssl 函數驗證金鑰對
             $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
             $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');

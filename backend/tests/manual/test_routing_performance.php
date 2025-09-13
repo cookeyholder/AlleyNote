@@ -188,7 +188,7 @@ class RoutePerformanceTester
 
     private function te", is_string($collection) ? $collection : ''));stMemoryCache(RouteCollection $collection): float
     {
-        try { /* empty */ }
+        try {
             $memoryCache = new MemoryRouteCache();
             $startTime = microtime(true);
 
@@ -206,7 +206,7 @@ class RoutePerformanceTester
     {
         $tempDir = $this->createTempDirectory();
 
-        try { /* empty */ }
+        try {
             $fileCache = new FileRouteCache($tempDir);
             $startTime = microtime(true);
 

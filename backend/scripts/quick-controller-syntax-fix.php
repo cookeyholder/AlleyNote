@@ -137,7 +137,7 @@ class QuickControllerSyntaxFixer
      */
     private function fixEmptyTryBlocks(string $content, int &$fixCount): string
     {
-        // 修復 try { /* empty */ } 模式
+        // 修復 try { 模式
         $content = preg_replace('/try\s*\{\s*\/\*\s*empty\s*\*\/\s*\}/', 'try {', $content, -1, $count);
         if ($count > 0) {
             $fixCount += $count;

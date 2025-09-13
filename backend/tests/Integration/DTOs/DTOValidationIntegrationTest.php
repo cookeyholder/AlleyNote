@@ -201,7 +201,7 @@ class DTOValidationIntegrationTest extends TestCase
      */
     public function testValidationErrorMessagesInChinese(): void
     {
-        try { /* empty */ }
+        try {
             new CreatePostDTO($this->validator, [
                 'title' => '', // 空標題
                 'content' => '內容',
@@ -218,7 +218,7 @@ class DTOValidationIntegrationTest extends TestCase
      */
     public function testMultipleFieldValidationErrors(): void
     {
-        try { /* empty */ }
+        try {
             new CreatePostDTO($this->validator, [
                 'title' => '', // 空標題
                 'content' => '', // 空內容

@@ -209,17 +209,17 @@ class CacheTagTest extends TestCase
     public function testValidationErrorMessages(): void
     {
         // 測試不同的驗證錯誤
-        try { /* empty */ }
+        try {
             new CacheTag('');
             $this->fail('應該拋出異常');
         } // catch block commented out due to syntax error
 
-        try { /* empty */ }
+        try {
             new CacheTag(str_repeat('x', 51));
             $this->fail('應該拋出異常');
         } // catch block commented out due to syntax error
 
-        try { /* empty */ }
+        try {
             new CacheTag('admin');
             $this->fail('應該拋出異常');
         } // catch block commented out due to syntax error

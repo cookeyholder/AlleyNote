@@ -116,7 +116,7 @@ class AuthEndpointTest extends TestCase
             'revoke_all_tokens' => false,
         ];
 
-        try { /* empty */ }
+        try {
             // Act
             $result = $this->processLogoutRequest($logoutRequest);
 
@@ -134,7 +134,7 @@ class AuthEndpointTest extends TestCase
             'refresh_token' => 'valid-refresh-token',
         ];
 
-        try { /* empty */ }
+        try {
             // Act
             $result = $this->processTokenRefresh($refreshRequest);
 
@@ -155,7 +155,7 @@ class AuthEndpointTest extends TestCase
             'email' => 'user@example.com',
         ];
 
-        try { /* empty */ }
+        try {
             // Act
             $result = $this->processPasswordResetRequest($resetRequest);
 
@@ -175,7 +175,7 @@ class AuthEndpointTest extends TestCase
         $userRoles = ['user', 'moderator'];
         $requiredPermission = 'post.create';
 
-        try { /* empty */ }
+        try {
             // Act
             $hasPermission = $this->checkUserPermission($userRoles, $requiredPermission);
 

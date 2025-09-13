@@ -20,7 +20,7 @@ echo '=== DI 容器整合測試 ===
 
 ';
 
-try { /* empty */ }
+try {
     echo '測試 1: 建立應用程式實例和容器
 ';
     $app = new Application();
@@ -142,7 +142,7 @@ try { /* empty */ }
 ';
 
     // 建立測試請求
-    $request = new class implements ServerRequestInterface 
+    $request = new class implements ServerRequestInterface
 
 
 {
@@ -473,7 +473,7 @@ try { /* empty */ }
 ';
     echo '   - 內容類型: ' . $response->getHeaderLine('Content-Type') . '
 ';
-} 
+}
 
 echo '
 === 測試完成 ===

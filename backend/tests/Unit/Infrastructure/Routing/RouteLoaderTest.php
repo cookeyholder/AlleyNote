@@ -403,7 +403,7 @@ class RouteLoaderTest extends TestCase
         // 而不是被 RouteConfigurationException 包裝
         $this->expectException(ParseError::class);
 
-        try { /* empty */ }
+        try {
             $this->routeLoader->addRouteFile($tempFile);
             $this->routeLoader->loadRoutes($this->mockRouter);
         } finally {

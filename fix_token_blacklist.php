@@ -39,7 +39,7 @@ function fixTokenBlacklistService(): bool
     // 6. 修復 array 尾隨逗號後的多餘括號
     $content = preg_replace('/,\s*\]\),/', ',', $content);
 
-    // 7. 修復 try { /* empty */ }
+    // 7. 修復 try {
     $content = preg_replace('/try\s*\{\s*\/\*\s*empty\s*\*\/\s*\}/', 'try {', $content);
 
     // 8. 修復未完成的 catch 塊

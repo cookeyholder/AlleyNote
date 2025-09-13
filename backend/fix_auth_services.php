@@ -19,7 +19,7 @@ function fixTryCatchSyntax(string $filePath): bool
         return false;
     }
 
-    // 修復模式 1: try { /* empty */ } ... } // catch block commented out due to syntax error
+    // 修復模式 1: try { ... } // catch block commented out due to syntax error
     $pattern1 = '/try\s*\{\s*\/\*\s*empty\s*\*\/\s*\}(.*?)\}\s*\/\/\s*catch\s+block\s+commented\s+out\s+due\s+to\s+syntax\s+error/s';
     $replacement1 = 'try {$1} catch (Throwable $e) {
             error_log("Error in ' . basename($filePath) . ': " . $e->getMessage());

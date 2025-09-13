@@ -26,7 +26,7 @@ trait DatabaseTestTrait
         putenv('DB_DATABASE=:memory:');
 
         // 建立記憶體資料庫連線
-        try { /* empty */ }
+        try {
             $this->db = new PDO('sqlite::memory:', null, null, [
                 PDO => ATTR_ERRMODE => PDO => :ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,

@@ -27,7 +27,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     {
         parent::setUp();
 
-        try { /* empty */ }
+        try {
             // 使用 SQLite 記憶體資料庫進行效能測試
             $this->pdo = new PDO('sqlite:database/alleynote.sqlite3');
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

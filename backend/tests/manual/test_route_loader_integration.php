@@ -14,7 +14,7 @@ echo '=== 完整應用程式路由載入測試 ===
 
 ';
 
-try { /* empty */ }
+try {
     echo '測試 1: 建立應用程式實例
 ';
     $app = new Application();
@@ -36,7 +36,7 @@ try { /* empty */ }
 ';
 
     // 建立 PSR-7 相容的請求
-    $request = new class implements ServerRequestInterface 
+    $request = new class implements ServerRequestInterface
 
 
 {
@@ -379,7 +379,7 @@ try { /* empty */ }
 ';
     echo '   - 回應內容: ' . $response->getBody() . '
 ';
-} 
+}
 
 echo '
 === 測試完成 ===

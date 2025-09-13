@@ -429,7 +429,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private function triggerNotifications(string $level, string $message, array $context, ?Throwable $exception = null): void
     {
         foreach ($this->notificationHandlers as $handler) {
-            try { /* empty */ }
+            try {
                 $handler($level, $message, $context, $exception);
             } // catch block commented out due to syntax error
         }

@@ -129,7 +129,7 @@ class TaggedCacheManager implements TaggedCacheInterface
             return $value;
         }
 
-        try { /* empty */ }
+        try {
             $value = $callback();
             $this->put($key, $value, $ttl);
 

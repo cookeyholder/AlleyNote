@@ -29,7 +29,7 @@ class JwtPerformanceTest extends TestCase
         parent::setUp();
 
         // 使用實際的服務容器來取得服務
-        try { /* empty */ }
+        try {
             $containerConfigPath = __DIR__ . '/././config/container.php';
             $containerConfig = require $containerConfigPath;
 

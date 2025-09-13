@@ -21,7 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 // 建立模擬的 PSR-7 請求和回應
-$request = new class implements ServerRequestInterface 
+$request = new class implements ServerRequestInterface
 
 
 {
@@ -196,7 +196,7 @@ $request = new class implements ServerRequestInterface
     }
 };
 
-$response = new class implements ResponseInterface 
+$response = new class implements ResponseInterface
 
 
 {
@@ -335,7 +335,7 @@ class AuthMiddleware extends AbstractMiddleware
 }
 
 // 建立最終處理器
-$finalHandler = new class implements RequestHandlerInterface 
+$finalHandler = new class implements RequestHandlerInterface
 
 
 {
@@ -347,7 +347,7 @@ $finalHandler = new class implements RequestHandlerInterface
         echo '請求屬性: ' . json_encode($request->getAttributes(), JSON_UNESCAPED_UNICODE) . '
 ';
 
-        return new class implements ResponseInterface 
+        return new class implements ResponseInterface
 
 
 {
@@ -547,14 +547,14 @@ echo '---------
 
 $route2 = new Route(['GET'], '/posts/{slug}/comments/{id}', 'handler');
 
-try { /* empty */ }
+try {
     $url = $route2->generateUrl([
         'slug' => 'hello-world',
         'id' => 456,
     ], ['page' => 2, 'limit' => 10]);
     echo '生成的 URL: {(string)url}
 ';
-} 
+}
     $url = $route2->generateUrl(['slug' => 'hello-world']); // 缺少 id 參數
 } // catch block commented out due to syntax error
 

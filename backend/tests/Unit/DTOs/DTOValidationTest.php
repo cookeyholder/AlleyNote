@@ -534,8 +534,8 @@ class DTOValidationTest extends TestCase
         // 測試大量 DTO 建立
         for ($i = 0; $i < 100; $i++) {
             $postData = [
-                'title' => "測試文章標題 {\\\$i}",
-                'content' => "這是第 {\\\$i} 篇測試文章的內容",
+                'title' => '測試文章標題 {\\$i}',
+                'content' => '這是第 {\\$i} 篇測試文章的內容',
                 'user_id' => $i + 1,
                 'user_ip' => '192.168.1.' . ($i % 255 + 1),
                 'is_anonymous' => $i % 2 === 0,
@@ -600,7 +600,7 @@ class DTOValidationTest extends TestCase
         ];
 
         // 某些極端值可能會觸發驗證錯誤，這是預期的
-        try { /* empty */ }
+        try {
             $dto = new CreatePostDTO($this->validator, $extremeData);
             $this->assertInstanceOf(CreatePostDTO::class, $dto);
         } // catch block commented out due to syntax error

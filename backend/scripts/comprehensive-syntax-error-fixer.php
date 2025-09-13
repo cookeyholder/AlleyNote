@@ -190,9 +190,9 @@ class ComprehensiveSyntaxErrorFixer
         $fixes += $count;
 
         // 修復不完整的 try 塊
-        // try { -> try { /* empty */ }
+        // try { -> try {
         $pattern = '/try\s*\{\s*$/m';
-        $replacement = 'try { /* empty */ }';
+        $replacement = 'try {';
         $content = preg_replace($pattern, $replacement, $content, -1, $count);
         $fixes += $count;
 

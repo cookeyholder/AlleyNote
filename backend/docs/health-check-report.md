@@ -1,24 +1,17 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 11:38:30
+報告生成時間: 2025-09-13 13:17:19
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 277 |
-| 語法錯誤檔案 | 84 |
-| 健康度 | 76.7% |
+| 健康檔案 | 287 |
+| 語法錯誤檔案 | 74 |
+| 健康度 | 79.5% |
 
 ## 語法錯誤詳細清單
-
-### app/Domains/Statistics/Enums/PeriodType.php
-
-```
-Parse error: syntax error, unexpected token ":" in /var/www/html/app/Domains/Statistics/Enums/PeriodType.php on line 62
-Errors parsing /var/www/html/app/Domains/Statistics/Enums/PeriodType.php
-```
 
 ### app/Domains/Statistics/Enums/SourceType.php
 
@@ -60,69 +53,6 @@ Errors parsing /var/www/html/app/Domains/Statistics/Services/PostStatisticsServi
 ```
 Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php on line 51
 Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
-```
-
-### app/Infrastructure/Routing/Core/Route.php
-
-```
-Parse error: syntax error, unexpected token "==" in /var/www/html/app/Infrastructure/Routing/Core/Route.php on line 233
-Errors parsing /var/www/html/app/Infrastructure/Routing/Core/Route.php
-```
-
-### app/Infrastructure/Routing/Core/Router.php
-
-```
-Parse error: syntax error, unexpected token "*", expecting "function" in /var/www/html/app/Infrastructure/Routing/Core/Router.php on line 42
-Errors parsing /var/www/html/app/Infrastructure/Routing/Core/Router.php
-```
-
-### app/Infrastructure/Routing/Cache/RouteCacheFactory.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/app/Infrastructure/Routing/Cache/RouteCacheFactory.php on line 23
-Errors parsing /var/www/html/app/Infrastructure/Routing/Cache/RouteCacheFactory.php
-```
-
-### app/Infrastructure/Routing/Cache/RedisRouteCache.php
-
-```
-Parse error: syntax error, unexpected token "public", expecting end of file in /var/www/html/app/Infrastructure/Routing/Cache/RedisRouteCache.php on line 50
-Errors parsing /var/www/html/app/Infrastructure/Routing/Cache/RedisRouteCache.php
-```
-
-### app/Infrastructure/Routing/Cache/FileRouteCache.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/app/Infrastructure/Routing/Cache/FileRouteCache.php on line 40
-Errors parsing /var/www/html/app/Infrastructure/Routing/Cache/FileRouteCache.php
-```
-
-### app/Infrastructure/Routing/Providers/RoutingServiceProvider.php
-
-```
-Parse error: syntax error, unexpected token "class" in /var/www/html/app/Infrastructure/Routing/Providers/RoutingServiceProvider.php on line 34
-Errors parsing /var/www/html/app/Infrastructure/Routing/Providers/RoutingServiceProvider.php
-```
-
-### app/Infrastructure/Routing/RouteLoader.php
-
-```
-Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/app/Infrastructure/Routing/RouteLoader.php on line 92
-Errors parsing /var/www/html/app/Infrastructure/Routing/RouteLoader.php
-```
-
-### app/Infrastructure/Services/RateLimitService.php
-
-```
-Parse error: syntax error, unexpected token "==" in /var/www/html/app/Infrastructure/Services/RateLimitService.php on line 24
-Errors parsing /var/www/html/app/Infrastructure/Services/RateLimitService.php
-```
-
-### app/Infrastructure/Services/CacheService.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/app/Infrastructure/Services/CacheService.php on line 43
-Errors parsing /var/www/html/app/Infrastructure/Services/CacheService.php
 ```
 
 ### app/Application/Services/Statistics/StatisticsQueryService.php
@@ -609,18 +539,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 - tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
 - tests/Integration/Repositories/PostRepositoryTest.php
 
-### 基礎設施 (風險: 中)
-
-- app/Infrastructure/Routing/Core/Route.php
-- app/Infrastructure/Routing/Core/Router.php
-- app/Infrastructure/Routing/Cache/RouteCacheFactory.php
-- app/Infrastructure/Routing/Cache/RedisRouteCache.php
-- app/Infrastructure/Routing/Cache/FileRouteCache.php
-- app/Infrastructure/Routing/Providers/RoutingServiceProvider.php
-- app/Infrastructure/Routing/RouteLoader.php
-- app/Infrastructure/Services/RateLimitService.php
-- app/Infrastructure/Services/CacheService.php
-
 ### 測試 (風險: 低)
 
 - tests/UI/UserExperienceTest.php
@@ -668,7 +586,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 其他 (風險: 低)
 
-- app/Domains/Statistics/Enums/PeriodType.php
 - app/Domains/Statistics/Enums/SourceType.php
 - app/Domains/Statistics/Commands/StatisticsCalculationCommand.php
 - app/Domains/Statistics/Services/StatisticsCalculationService.php

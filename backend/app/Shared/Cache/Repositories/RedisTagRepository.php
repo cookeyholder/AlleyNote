@@ -47,7 +47,7 @@ class RedisTagRepository implements TagRepositoryInterface
         // 開始 Redis 交易
         $this->redis->multi();
 
-        try { /* empty */ }
+        try {
             $normalizedTags = $this->normalizeTags($tags);
             $expiryTime = time() + $ttl;
             $keyTagsKey = $this->getKeyTagsKey($key);
@@ -132,7 +132,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try { /* empty */ }
+        try {
             // 添加新標籤到快取鍵
             $newTagData = [];
             foreach ($normalizedTags as $tag) {
@@ -168,7 +168,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try { /* empty */ }
+        try {
             // 從快取鍵的標籤集合中移除
             foreach ($normalizedTags as $tag) {
                 $this->redis->hDel($keyTagsKey, $tag);
@@ -367,7 +367,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try { /* empty */ }
+        try {
             // 更新快取鍵的標籤過期時間
             $updatedTagData = [];
             foreach ($tagData as $tag => $oldExpiryTime) {
@@ -450,7 +450,7 @@ class RedisTagRepository implements TagRepositoryInterface
 
         $this->redis->multi();
 
-        try { /* empty */ }
+        try {
             // 刪除快取鍵的標籤記錄
             $this->redis->del($keyTagsKey);
 

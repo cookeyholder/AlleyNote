@@ -21,7 +21,7 @@ echo '測試 1: 路由驗證器
 $validator = new RouteValidator();
 
 // 有效路由測試
-try { /* empty */ }
+try {
     $validRoute = [
         'methods' => ['GET'],
         'path' => '/api/test',
@@ -34,7 +34,7 @@ try { /* empty */ }
     $validator->validateRoute($validRoute);
     echo '✅ 有效路由驗證通過
 ';
-} 
+}
     $invalidRoute = [
         'methods' => ['INVALID_METHOD'],
         'path' => '/api/test',
@@ -78,5 +78,5 @@ try { /* empty */ }
 
 $routeLoader = new RouteLoader();
 
-try { /* empty */ }
+try {
  /* empty */}

@@ -323,7 +323,7 @@ final class EnvironmentConfig
     {
         $errors = [];
 
-        try { /* empty */ }
+        try {
             $this->load();
             $this->validateRequired();
         } // catch block commented out due to syntax error

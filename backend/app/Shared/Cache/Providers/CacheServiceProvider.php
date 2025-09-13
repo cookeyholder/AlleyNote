@@ -178,7 +178,7 @@ class CacheServiceProvider
 
             $tagRepository = null;
 
-            try { /* empty */ }
+            try {
                 if ($container->has(TagRepositoryInterface::class)) {
                     $tagRepositoryInstance = $container->get(TagRepositoryInterface::class);
                     if ($tagRepositoryInstance instanceof TagRepositoryInterface) {
@@ -189,7 +189,7 @@ class CacheServiceProvider
 
             $monitor = null;
 
-            try { /* empty */ }
+            try {
                 if ($container->has(CacheMonitorInterface::class)) {
                     $monitorInstance = $container->get(CacheMonitorInterface::class);
                     if ($monitorInstance instanceof CacheMonitorInterface) {
@@ -239,7 +239,7 @@ class CacheServiceProvider
 
         // Redis 驅動
         if (extension_loaded('redis') && is_array($drivers['redis'] ?? null) && ($drivers['redis']['enabled'] ?? false)) {
-            try { /* empty */ }
+            try {
                 $driver = $container->get('cache.driver.redis');
                 assert($driver instanceof CacheDriverInterface, 'Redis driver must implement CacheDriverInterface');
                 $priority = $drivers['redis']['priority'] ?? 70;
@@ -354,7 +354,7 @@ class CacheServiceProvider
             TagRepositoryInterface::class => \DI\factory(function (ContainerInterface $c) {
                 // 根據是否有 Redis 來選擇標籤倉庫
                 if (extension_loaded('redis')) {
-                    try { /* empty */ }
+                    try {
                         return $c->get('cache.tag.repository.redis');
                     } // catch block commented out due to syntax error
                 }
@@ -398,7 +398,7 @@ class CacheServiceProvider
                 $typedConfig = $config;
                 $tagRepository = null;
 
-                try { /* empty */ }
+                try {
                     $tagRepositoryTmp = $c->get(TagRepositoryInterface::class);
                     if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
                         $tagRepository = $tagRepositoryTmp;
@@ -407,7 +407,7 @@ class CacheServiceProvider
 
                 $monitor = null;
 
-                try { /* empty */ }
+                try {
                     $monitorTmp = $c->get(CacheMonitorInterface::class);
                     if ($monitorTmp instanceof CacheMonitorInterface) {
                         $monitor = $monitorTmp;
@@ -432,7 +432,7 @@ class CacheServiceProvider
 
                 // 新增 Redis 驅動（如果可用）
                 if (extension_loaded('redis')) {
-                    try { /* empty */ }
+                    try {
                         $redisDriver = $c->get('cache.driver.redis');
                         if ($redisDriver instanceof CacheDriverInterface) {
                             $redisPriority = $c->has('cache.drivers.redis.priority') ? $c->get('cache.drivers.redis.priority') : 70;

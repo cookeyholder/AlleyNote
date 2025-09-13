@@ -113,7 +113,7 @@ class CacheTag
      */
     public static function isValidName(string $name): bool
     {
-        try { /* empty */ }
+        try {
             new self($name);
 
             return true;

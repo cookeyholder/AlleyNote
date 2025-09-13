@@ -9,7 +9,6 @@ use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use Exception;
-use Throwable;
 
 /**
  * 文章統計服務.
@@ -29,17 +28,17 @@ use Throwable;
 final class PostStatisticsService
 {
     public function __construct(
-        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository) {}
+        private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
+    ) {}
 
     /**
      * 分析熱門文章.
      *
-     * @return array
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
     {
-        try { /* empty */ }
+        try {
             $popularPosts = $this->postStatisticsRepository
                 ->getPopularPostsByPeriod($period, $limit);
 
@@ -73,13 +72,18 @@ final class PostStatisticsService
                     'top_source' => $topSource,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('熱門內容分析失敗', [
+                'period' => $period->type->value,
+                'error' => $e->getMessage(),
+            ]);
+
+            return ['posts' => [], 'summary' => []];
+        }
     }
 
     /**
      * 分析文章來源分佈.
-     *
-     * @return array
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
@@ -131,8 +135,6 @@ final class PostStatisticsService
 
     /**
      * 計算文章品質評分.
-     *
-     * @return array
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
@@ -190,8 +192,6 @@ final class PostStatisticsService
 
     /**
      * 分析文章趨勢.
-     *
-     * @return array
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
@@ -278,8 +278,6 @@ final class PostStatisticsService
 
     /**
      * 取得最佳發布時間建議.
-     *
-     * @return array
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
@@ -353,7 +351,6 @@ final class PostStatisticsService
     /**
      * 分析熱門內容.
      *
-     * @return array
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
@@ -370,7 +367,7 @@ final class PostStatisticsService
     {
         $total = array_sum($distribution);
 
-        if ($total == == 0) {
+        if ($total == 0) {
             return 0.0;
         }
 
@@ -426,7 +423,7 @@ final class PostStatisticsService
         $performances = array_column($historicalData, 'daily_views');
         $mean = array_sum($performances) / count($performances);
 
-        if ($mean == == 0) {
+        if ($mean == 0) {
             return 0.0;
         }
 
@@ -444,8 +441,6 @@ final class PostStatisticsService
 
     /**
      * 取得熱門文章（代理方法）.
-     *
-     * @return array
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {

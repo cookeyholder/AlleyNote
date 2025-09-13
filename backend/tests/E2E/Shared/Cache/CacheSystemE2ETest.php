@@ -35,7 +35,7 @@ final class CacheSystemE2ETest extends TestCase
             'database' => 14, // E2E 測試專用資料庫
         ]);
 
-        try { /* empty */ }
+        try {
             // 測試連線
             $this->redisClient->ping();
             // 清空測試環境
@@ -48,7 +48,7 @@ final class CacheSystemE2ETest extends TestCase
      */
     private function isRedisAvailable(): bool
     {
-        try { /* empty */ }
+        try {
             $testClient = new Client([
                 'scheme' => 'tcp',
                 'host' => '127.0.0.1',

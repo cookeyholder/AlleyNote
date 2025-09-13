@@ -11,7 +11,6 @@ use App\Domains\Statistics\ValueObjects\StatisticsMetric;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * 統計計算服務.
@@ -40,7 +39,7 @@ final class StatisticsCalculationService
         $totalPosts = $snapshot->getTotalPosts()->value;
         $totalViews = $snapshot->getTotalViews()->value;
 
-        if ($totalPosts == == 0) {
+        if ($totalPosts == 0) {
             return 0.0;
         }
 
@@ -57,7 +56,7 @@ final class StatisticsCalculationService
         StatisticsSnapshot $previousSnapshot,
         StatisticsSnapshot $currentSnapshot,
     ): array {
-        try { /* empty */ }
+        try {
             return [
                 'posts' => $this->calculateMetricGrowthRate(
                     $previousSnapshot->getTotalPosts(),
@@ -72,7 +71,15 @@ final class StatisticsCalculationService
                     $currentSnapshot->getPeriod(),
                 ),
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('計算成長率失敗', [
+                'error' => $e->getMessage(),
+                'previous_period' => $previousSnapshot->getPeriod()->type->value,
+                'current_period' => $currentSnapshot->getPeriod()->type->value,
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -134,7 +141,7 @@ final class StatisticsCalculationService
         $standardDeviation = sqrt($variance);
 
         // 變異係數作為波動性指標
-        if ($mean == == 0) {
+        if ($mean == 0) {
             return 0.0;
         }
 
@@ -232,7 +239,7 @@ final class StatisticsCalculationService
         $numerator = ($n * $sumXY) - ($sumX * $sumY);
         $denominator = sqrt((($n * $sumX2) - ($sumX ** 2)) * (($n * $sumY2) - ($sumY ** 2)));
 
-        if ($denominator == == 0) {
+        if ($denominator == 0) {
             return 0.0;
         }
 
@@ -277,7 +284,7 @@ final class StatisticsCalculationService
             }
         }
 
-        if ($totalMonths == == 0) {
+        if ($totalMonths == 0) {
             return [];
         }
 
@@ -295,9 +302,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算趨勢分析.
-     *
-     * @param array $data
-     * @return array
      */
     public function calculateTrends(array $data): array
     {
@@ -372,20 +376,28 @@ final class StatisticsCalculationService
         StatisticsPeriod $previousPeriod,
         StatisticsPeriod $currentPeriod,
     ): float {
-        try { /* empty */ }
+        try {
             $previousUsers = $this->userStatisticsRepository
                 ->countNewUsersByPeriod($previousPeriod);
             $currentUsers = $this->userStatisticsRepository
                 ->countNewUsersByPeriod($currentPeriod);
 
-            if ($previousUsers == == 0) {
+            if ($previousUsers == 0) {
                 return $currentUsers > 0 ? 100.0 : 0.0;
             }
 
             $growth = (($currentUsers - $previousUsers) / $previousUsers) * 100;
 
             return round($growth, 2);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('計算使用者成長率失敗', [
+                'error' => $e->getMessage(),
+                'previous_period' => $previousPeriod->type->value,
+                'current_period' => $currentPeriod->type->value,
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -409,7 +421,7 @@ final class StatisticsCalculationService
         $sumX2 = array_sum(array_map(fn($val): float => $val ** 2, $x));
 
         $denominator = ($n * $sumX2) - ($sumX ** 2);
-        if ($denominator == == 0) {
+        if ($denominator == 0) {
             return 0.0;
         }
 
@@ -420,8 +432,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算預測信心度.
-     *
-     * @param array $snapshots
      */
     private function calculateForecastConfidence(array $snapshots): float
     {
@@ -441,8 +451,6 @@ final class StatisticsCalculationService
 
     /**
      * 計算簡單波動性.
-     *
-     * @param array $values
      */
     private function calculateSimpleVolatility(array $values): float
     {
@@ -451,7 +459,7 @@ final class StatisticsCalculationService
         }
 
         $mean = array_sum($values) / count($values);
-        if ($mean == == 0) {
+        if ($mean == 0) {
             return 0.0;
         }
 

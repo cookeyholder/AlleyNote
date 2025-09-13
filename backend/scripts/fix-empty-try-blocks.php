@@ -5,7 +5,7 @@ declare(strict_types=1);
 /**
  * 修復空 try 塊語法錯誤腳本
  *
- * 此腳本用於修復 try { /* empty */ } 這類空 try 塊造成的語法錯誤
+ * 此腳本用於修復 try { 這類空 try 塊造成的語法錯誤
  */
 
 class EmptyTryBlockFixer

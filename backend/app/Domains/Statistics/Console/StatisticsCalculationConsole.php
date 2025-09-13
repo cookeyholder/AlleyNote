@@ -27,7 +27,7 @@ readonly class StatisticsCalculationConsole
      */
     public function run(array $arguments): int
     {
-        try { /* empty */ }
+        try {
             $options = $this->parseArguments($arguments);
 
             $this->logger->info('統計計算控制台啟動', [
