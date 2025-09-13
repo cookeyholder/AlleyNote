@@ -40,9 +40,7 @@ class CacheServiceProvider
     private array $config;
 
     /**
-    /**
      * @param array $config
-     */
      */
     public function __construct(Container $container, array $config = [])
     {
@@ -167,7 +165,8 @@ class CacheServiceProvider
                     $logger = $loggerInstance;
                 }
             }
-            if ($logger == == null) {
+
+            if ($logger === null) {
                 $logger = new NullLogger();
             }
 
@@ -185,7 +184,9 @@ class CacheServiceProvider
                         $tagRepository = $tagRepositoryInstance;
                     }
                 }
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // Ignore tag repository errors
+            }
 
             $monitor = null;
 
@@ -196,7 +197,9 @@ class CacheServiceProvider
                         $monitor = $monitorInstance;
                     }
                 }
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // Ignore monitor errors
+            }
 
             $manager = new CacheManager($strategy, $logger, $typedConfig, $tagRepository, $monitor);
 
@@ -245,7 +248,9 @@ class CacheServiceProvider
                 $priority = $drivers['redis']['priority'] ?? 70;
                 assert(is_int($priority), 'Priority must be an integer');
                 $manager->addDriver('redis', $driver, $priority);
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // Redis driver not available, ignore
+            }
         }
 
         // 設定預設驅動
@@ -280,9 +285,9 @@ class CacheServiceProvider
     public static function getDefinitions(): array
     {
         return [
-            CacheStrategyInterface => class => \DI\factory(function (ContainerInterface $c) {
+            CacheStrategyInterface::class => \DI\factory(function (ContainerInterface $c) {
                 /** @var array<string, mixed> $config */
-                $config = $c->has('cache.strategy') ? $c->get('cache.strategy')  => [];
+                $config = $c->has('cache.strategy') ? $c->get('cache.strategy') : [];
 
                 return new DefaultCacheStrategy($config);
             }),
@@ -356,7 +361,9 @@ class CacheServiceProvider
                 if (extension_loaded('redis')) {
                     try {
                         return $c->get('cache.tag.repository.redis');
-                    } // catch block commented out due to syntax error
+                    } catch (Exception $e) {
+                        // Redis 不可用，使用記憶體版本
+                    }
                 }
 
                 return $c->get('cache.tag.repository.memory');
@@ -387,7 +394,7 @@ class CacheServiceProvider
                     throw new RuntimeException('快取策略型別錯誤');
                 }
                 $logger = $c->has(LoggerInterface::class) ? $c->get(LoggerInterface::class) : null;
-                if ($logger !== null && !($logger instanceof LoggerInterface)) {
+                if ($logger === null || !($logger instanceof LoggerInterface)) {
                     $logger = new NullLogger();
                 }
                 $config = $c->has('cache.manager') ? $c->get('cache.manager') : [];
@@ -403,7 +410,9 @@ class CacheServiceProvider
                     if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
                         $tagRepository = $tagRepositoryTmp;
                     }
-                } // catch block commented out due to syntax error
+                } catch (\Exception $e) {
+                    // 忽略錯誤，使用預設值
+                }
 
                 $monitor = null;
 
@@ -412,7 +421,9 @@ class CacheServiceProvider
                     if ($monitorTmp instanceof CacheMonitorInterface) {
                         $monitor = $monitorTmp;
                     }
-                } // catch block commented out due to syntax error
+                } catch (\Exception $e) {
+                    // 忽略錯誤，使用預設值
+                }
 
                 $manager = new CacheManager($strategy, $logger, $typedConfig, $tagRepository, $monitor);
 
@@ -438,7 +449,9 @@ class CacheServiceProvider
                             $redisPriority = $c->has('cache.drivers.redis.priority') ? $c->get('cache.drivers.redis.priority') : 70;
                             $manager->addDriver('redis', $redisDriver, is_int($redisPriority) ? $redisPriority : 70);
                         }
-                    } // catch block commented out due to syntax error
+                    } catch (\Exception $e) {
+                        // 忽略 Redis 連線錯誤
+                    }
                 }
 
                 // 設定預設驅動
@@ -582,7 +595,7 @@ class CacheConfigBuilder
             'ttl' => 3600,
         ];
 
-        if ($path !== null) {
+        if (null) {
             $defaultConfig['path'] = $path;
         }
 

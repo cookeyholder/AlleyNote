@@ -43,9 +43,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     private const TAG_INDEX_PREFIX = 'tag_index:';
 
     /**
-    /**
      * @param array $config
-     */
      */
     public function __construct(array $config = [])
     {
@@ -62,7 +60,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $prefixedKey = $this->getPrefixedKey($key);
             $value = $this->redis->get($prefixedKey);
 
-            if ($value == == false) {
+            if ($value === false) {
                 $this->stats['misses']++;
 
                 return $default;
@@ -72,7 +70,10 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $unserializedValue = is_string($value) ? unserialize($value) : false;
 
             return $unserializedValue === false ? $default : $unserializedValue;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->stats['misses']++;
+            return $default;
+        }
     }
 
     public function put(string $key, mixed $value, int $ttl = self::DEFAULT_TTL): bool
@@ -95,7 +96,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return (bool) $result;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function has(string $key): bool
@@ -105,7 +108,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $result = $this->redis->exists($prefixedKey);
 
             return (int) $result > 0;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function forget(string $key): bool
@@ -120,7 +125,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return false;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function flush(): bool
@@ -134,14 +141,14 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $this->stats['clears']++;
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
-    /**
      * @param array $keys
      * @return array
-     */
      */
     public function many(array $keys): array
     {
@@ -161,16 +168,15 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                     $this->stats['misses']++;
                 }
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 出錯時返回空結果
         }
 
         return $result;
     }
 
     /**
-    /**
      * @param array $values
-     */
      */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
@@ -203,13 +209,13 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return $success;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
-    /**
      * @param array $keys
-     */
      */
     public function forgetMany(array $keys): bool
     {
@@ -230,7 +236,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return false;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function forgetPattern(string $pattern): int
@@ -247,7 +255,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $this->stats['deletes'] += $deleted;
 
             return $deleted;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 
     public function increment(string $key, int $value = 1): int
@@ -256,7 +266,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $result = $this->redis->incrBy($this->getPrefixedKey($key), $value);
 
             return is_int($result) ? $result : 0;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 
     public function decrement(string $key, int $value = 1): int
@@ -265,7 +277,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $result = $this->redis->decrBy($this->getPrefixedKey($key), $value);
 
             return is_int($result) ? $result : 0;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 
     public function remember(string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
@@ -277,6 +291,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
 
         $value = $callback();
+
         if ($value !== null) {
             $this->put($key, $value, $ttl);
         }
@@ -290,9 +305,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     /**
-    /**
      * @return array
-     */
      */
     public function getStats(): array
     {
@@ -308,10 +321,12 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 'redis_memory_peak' => $info['used_memory_peak'] ?? 0,
                 'redis_connected_clients' => $this->redis->info('clients')['connected_clients'] ?? 0,
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略 Redis 資訊獲取錯誤
+        }
 
         return array_merge($this->stats, [
-            'hit_rate' => round($hitRate, 2]),
+            'hit_rate' => round($hitRate, 2),
             'total_requests' => $totalRequests,
         ], $redisStats);
     }
@@ -325,7 +340,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         try {
             return $this->redis->ping() === '+PONG';
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function cleanup(): int
@@ -359,7 +376,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             if (isset($config['database']) && is_int($config['database'])) {
                 $this->redis->select($config['database']);
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            throw new RuntimeException('Failed to connect to Redis: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
@@ -409,7 +428,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             if ($this->redis->isConnected()) {
                 $this->redis->close();
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略關閉連線時的錯誤
+        }
     }
 
     // === 標籤化快取介面實作 ===
@@ -468,7 +489,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
                 $this->stats['deletes'] += is_array($keys) ? count($keys) : 0;
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略標籤清除錯誤
+        }
 
         return $totalDeleted;
     }
@@ -497,7 +520,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return $result;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -533,7 +558,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return $result;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -549,7 +576,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $result = $this->redis->exists($tagIndexKey);
 
             return is_int($result) && $result > 0;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -572,7 +601,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return $tags;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -598,7 +629,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                     'sample_keys' => array_slice($keys, 0, 5), // 顯示前 5 個鍵作為範例
                 ];
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略統計錯誤
+        }
 
         return $statistics;
     }
@@ -627,7 +660,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $this->addKeyToTags($key, $tags);
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -644,7 +679,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $tagIndexKey = $this->getTagIndexKey($tag);
                 $keys = $this->redis->sMembers($tagIndexKey);
                 $allKeys = array_merge($allKeys, $keys);
-            } // catch block commented out due to syntax error
+            } catch (Exception $e) {
+                // 忽略單個標籤的錯誤
+            }
         }
 
         return array_unique($allKeys);
@@ -664,7 +701,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $tags = $this->redis->sMembers($tagKey);
 
             return is_array($tags) ? $tags : [];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -695,7 +734,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -729,7 +770,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
 
             return $cleanedCount;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return 0;
+        }
     }
 
     /**
@@ -746,7 +789,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $tagIndexKey = $this->getTagIndexKey($tag);
                 $this->redis->sAdd($tagIndexKey, $prefixedKey);
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略標籤添加錯誤
+        }
     }
 
     /**
@@ -764,7 +809,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $tagIndexKey = $this->getTagIndexKey($tag);
                 $this->redis->sRem($tagIndexKey, $prefixedKey);
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略標籤移除錯誤
+        }
     }
 
     /**

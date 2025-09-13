@@ -41,9 +41,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     private array $excludePatterns;
 
     /**
-    /**
      * @param array $config
-     */
      */
     public function __construct(array $config = [])
     {
@@ -127,24 +125,20 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $retryDelay = 100000; // 100ms
 
         for ($i = 0; $i < $maxRetries; $i++) {
-            try {
-                return $callback();
-            } // catch block commented out due to syntax error
+            $value = $callback();
+            if ($value !== null) {
+                break;
             }
+            usleep($retryDelay);
         }
 
-        return null;
+        return $value ?? null;
     }
 
-    public function handleDriverFailure(
-        CacheDriverInterface $failedDriver,
-        array $availableDrivers,
-        string $operation,
-        array $params,
-    ): mixed {
-        // 尋找替代驅動
-        foreach ($availableDrivers as $driver) {
-            if ($driver == == $failedDriver || !($driver instanceof CacheDriverInterface)) {
+    public function handleFailure(CacheDriverInterface $failedDriver, array $params = []): void
+    {
+        foreach ($this->drivers as $driver) {
+            if ($driver === $failedDriver || !($driver instanceof CacheDriverInterface)) {
                 continue;
             }
 
@@ -153,9 +147,11 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 error_log('Cache driver failure: ' . get_class($failedDriver));
 
                 $key = is_string($params['key'] ?? null) ? $params['key'] : '';
+                $operation = is_string($params['operation'] ?? null) ? $params['operation'] : '';
                 $ttl = is_int($params['ttl'] ?? null) ? $params['ttl'] : 3600;
 
-                return match ($operation) {
+                // 嘗試使用備用驅動執行操作
+                match ($operation) {
                     'get' => $driver->get($key, $params['default'] ?? null),
                     'put' => $driver->put($key, $params['value'] ?? null, $ttl),
                     'has' => $driver->has($key),
@@ -163,16 +159,18 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } // catch block commented out due to syntax error
+
+                // 如果成功，記錄並退出
+                error_log('Successfully failed over to: ' . get_class($driver));
+                break;
+            } catch (Exception) {
+                // 忽略錯誤，繼續嘗試下一個驅動
+                continue;
+            }
         }
 
-        // 所有驅動都失敗，根據操作返回合適的預設值
-        return match ($operation) {
-            'get' => $params['default'] ?? null,
-            'put', 'forget', 'flush' => false,
-            'has' => false,
-            default => null,
-        };
+        // 記錄所有驅動都失敗的情況
+        error_log('All cache drivers failed for operation: ' . ($params['operation'] ?? 'unknown'));
     }
 
     /**
