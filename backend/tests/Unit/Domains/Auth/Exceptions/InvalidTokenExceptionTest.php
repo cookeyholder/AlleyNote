@@ -91,8 +91,8 @@ class InvalidTokenExceptionTest extends TestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            InvalidTokenException => REASON_MALFORMED => 'Access token format is malformed',
-            InvalidTokenException => :REASON_SIGNATURE_INVALID => 'Access token signature verification failed',
+            InvalidTokenException::REASON_MALFORMED => 'Access token format is malformed',
+            InvalidTokenException::REASON_SIGNATURE_INVALID => 'Access token signature verification failed',
             InvalidTokenException::REASON_ALGORITHM_MISMATCH => 'Access token algorithm does not match expected algorithm',
             InvalidTokenException::REASON_ISSUER_INVALID => 'Access token issuer is invalid',
             InvalidTokenException::REASON_AUDIENCE_INVALID => 'Access token audience is invalid',

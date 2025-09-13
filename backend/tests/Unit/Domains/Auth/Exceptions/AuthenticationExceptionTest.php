@@ -87,8 +87,8 @@ class AuthenticationExceptionTest extends TestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            AuthenticationException => REASON_INVALID_CREDENTIALS => 'Invalid username or password',
-            AuthenticationException => :REASON_ACCOUNT_LOCKED => 'Account has been locked due to security reasons',
+            AuthenticationException::REASON_INVALID_CREDENTIALS => 'Invalid username or password',
+            AuthenticationException::REASON_ACCOUNT_LOCKED => 'Account has been locked due to security reasons',
             AuthenticationException::REASON_ACCOUNT_DISABLED => 'Account has been disabled',
             AuthenticationException::REASON_ACCOUNT_NOT_VERIFIED => 'Account has not been verified',
             AuthenticationException::REASON_TOO_MANY_ATTEMPTS => 'Too many failed authentication attempts',
@@ -112,17 +112,17 @@ class AuthenticationExceptionTest extends TestCase
     public function testUserFriendlyMessages(): void
     {
         $testCases = [
-            [AuthenticationException => REASON_INVALID_CREDENTIALS, '用戶名或密碼錯誤'],
-            [AuthenticationException => REASON_ACCOUNT_LOCKED, '帳戶已被鎖定'],
-            [AuthenticationException => REASON_ACCOUNT_DISABLED, '帳戶已被停用'],
-            [AuthenticationException => REASON_ACCOUNT_NOT_VERIFIED, '帳戶尚未驗證'],
-            [AuthenticationException => REASON_TOO_MANY_ATTEMPTS, '登入嘗試次數過多'],
-            [AuthenticationException => REASON_USER_NOT_FOUND, '找不到此用戶'],
-            [AuthenticationException => REASON_PASSWORD_EXPIRED, '密碼已過期'],
-            [AuthenticationException => REASON_MISSING_CREDENTIALS, '請提供完整的登入資訊'],
-            [AuthenticationException => REASON_INVALID_TOKEN, '認證 Token 無效'],
-            [AuthenticationException => REASON_TOKEN_REQUIRED, '需要提供認證 Token'],
-            [AuthenticationException => REASON_INSUFFICIENT_PRIVILEGES, '沒有足夠的權限'],
+            [AuthenticationException:: REASON_INVALID_CREDENTIALS, '用戶名或密碼錯誤'],
+            [AuthenticationException:: REASON_ACCOUNT_LOCKED, '帳戶已被鎖定'],
+            [AuthenticationException:: REASON_ACCOUNT_DISABLED, '帳戶已被停用'],
+            [AuthenticationException:: REASON_ACCOUNT_NOT_VERIFIED, '帳戶尚未驗證'],
+            [AuthenticationException:: REASON_TOO_MANY_ATTEMPTS, '登入嘗試次數過多'],
+            [AuthenticationException:: REASON_USER_NOT_FOUND, '找不到此用戶'],
+            [AuthenticationException:: REASON_PASSWORD_EXPIRED, '密碼已過期'],
+            [AuthenticationException:: REASON_MISSING_CREDENTIALS, '請提供完整的登入資訊'],
+            [AuthenticationException:: REASON_INVALID_TOKEN, '認證 Token 無效'],
+            [AuthenticationException:: REASON_TOKEN_REQUIRED, '需要提供認證 Token'],
+            [AuthenticationException:: REASON_INSUFFICIENT_PRIVILEGES, '沒有足夠的權限'],
         ];
 
         foreach ($testCases as [$reason, $expectedPhrase]) {
@@ -203,8 +203,8 @@ class AuthenticationExceptionTest extends TestCase
     {
         // 測試帳戶相關錯誤
         $accountReasons = [
-            AuthenticationException => REASON_ACCOUNT_LOCKED,
-            AuthenticationException => :REASON_ACCOUNT_DISABLED,
+            AuthenticationException::REASON_ACCOUNT_LOCKED,
+            AuthenticationException::REASON_ACCOUNT_DISABLED,
             AuthenticationException::REASON_ACCOUNT_NOT_VERIFIED,
             AuthenticationException::REASON_PASSWORD_EXPIRED,
         ];
@@ -218,8 +218,8 @@ class AuthenticationExceptionTest extends TestCase
 
         // 測試憑證相關錯誤
         $credentialsReasons = [
-            AuthenticationException => REASON_INVALID_CREDENTIALS,
-            AuthenticationException => :REASON_MISSING_CREDENTIALS,
+            AuthenticationException::REASON_INVALID_CREDENTIALS,
+            AuthenticationException::REASON_MISSING_CREDENTIALS,
             AuthenticationException::REASON_USER_NOT_FOUND,
         ];
 
@@ -232,8 +232,8 @@ class AuthenticationExceptionTest extends TestCase
 
         // 測試 Token 相關錯誤
         $tokenReasons = [
-            AuthenticationException => REASON_INVALID_TOKEN,
-            AuthenticationException => :REASON_TOKEN_REQUIRED,
+            AuthenticationException::REASON_INVALID_TOKEN,
+            AuthenticationException::REASON_TOKEN_REQUIRED,
         ];
 
         foreach ($tokenReasons as $reason) {
@@ -245,8 +245,8 @@ class AuthenticationExceptionTest extends TestCase
 
         // 測試安全相關錯誤
         $securityReasons = [
-            AuthenticationException => REASON_ACCOUNT_LOCKED,
-            AuthenticationException => :REASON_TOO_MANY_ATTEMPTS,
+            AuthenticationException::REASON_ACCOUNT_LOCKED,
+            AuthenticationException::REASON_TOO_MANY_ATTEMPTS,
         ];
 
         foreach ($securityReasons as $reason) {
@@ -262,8 +262,8 @@ class AuthenticationExceptionTest extends TestCase
     {
         // 不可重試的原因
         $nonRetryableReasons = [
-            AuthenticationException => REASON_ACCOUNT_LOCKED,
-            AuthenticationException => :REASON_ACCOUNT_DISABLED,
+            AuthenticationException::REASON_ACCOUNT_LOCKED,
+            AuthenticationException::REASON_ACCOUNT_DISABLED,
             AuthenticationException::REASON_TOO_MANY_ATTEMPTS,
         ];
 
@@ -274,8 +274,8 @@ class AuthenticationExceptionTest extends TestCase
 
         // 可重試的原因
         $retryableReasons = [
-            AuthenticationException => REASON_INVALID_CREDENTIALS,
-            AuthenticationException => :REASON_USER_NOT_FOUND,
+            AuthenticationException::REASON_INVALID_CREDENTIALS,
+            AuthenticationException::REASON_USER_NOT_FOUND,
             AuthenticationException::REASON_MISSING_CREDENTIALS,
         ];
 
@@ -291,8 +291,8 @@ class AuthenticationExceptionTest extends TestCase
     public function testRequiresAccountAction(): void
     {
         $actionRequiredReasons = [
-            AuthenticationException => REASON_ACCOUNT_NOT_VERIFIED,
-            AuthenticationException => :REASON_PASSWORD_EXPIRED,
+            AuthenticationException::REASON_ACCOUNT_NOT_VERIFIED,
+            AuthenticationException::REASON_PASSWORD_EXPIRED,
         ];
 
         foreach ($actionRequiredReasons as $reason) {

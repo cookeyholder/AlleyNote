@@ -1,38 +1,17 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 13:59:07
+報告生成時間: 2025-09-13 14:41:40
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 293 |
-| 語法錯誤檔案 | 68 |
-| 健康度 | 81.2% |
+| 健康檔案 | 300 |
+| 語法錯誤檔案 | 61 |
+| 健康度 | 83.1% |
 
 ## 語法錯誤詳細清單
-
-### app/Domains/Statistics/Console/StatisticsCalculationConsole.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ";" or "{" in /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php on line 353
-Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
-```
-
-### app/Application/Services/Statistics/StatisticsQueryService.php
-
-```
-Fatal error: Cannot redeclare App\Application\Services\Statistics\StatisticsQueryService::getPostStatistics() in /var/www/html/app/Application/Services/Statistics/StatisticsQueryService.php on line 434
-Errors parsing /var/www/html/app/Application/Services/Statistics/StatisticsQueryService.php
-```
-
-### tests/UI/UserExperienceTest.php
-
-```
-Parse error: syntax error, unexpected token "%" in /var/www/html/tests/UI/UserExperienceTest.php on line 19
-Errors parsing /var/www/html/tests/UI/UserExperienceTest.php
-```
 
 ### tests/Database/Seeds/UserActivityLogsSeederTest.php
 
@@ -139,13 +118,6 @@ Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html
 Errors parsing /var/www/html/tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php
 ```
 
-### tests/Unit/Domains/Auth/ValueObjects/TokenBlacklistEntryTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Domains/Auth/ValueObjects/TokenBlacklistEntryTest.php on line 80
-Errors parsing /var/www/html/tests/Unit/Domains/Auth/ValueObjects/TokenBlacklistEntryTest.php
-```
-
 ### tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
 
 ```
@@ -181,13 +153,6 @@ Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html
 Errors parsing /var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
 ```
 
-### tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php on line 30
-Errors parsing /var/www/html/tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
-```
-
 ### tests/Unit/Infrastructure/Routing/RouteLoaderTest.php
 
 ```
@@ -219,8 +184,11 @@ Errors parsing /var/www/html/tests/Unit/Services/Security/LoggingSecurityService
 ### tests/Unit/Services/Security/FileSecurityServiceTest.php
 
 ```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php on line 110
-Errors parsing /var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php
+Parse 📄 詳細報告已儲存至: /var/www/html/docs/health-check-report.md
+
+✅ 健康檢查完成！
+💡 建議下一步：根據優先修復建議開始批次修復
+t/Services/Security/FileSecurityServiceTest.php
 ```
 
 ### tests/Unit/Services/Security/PwnedPasswordServiceTest.php
@@ -286,25 +254,11 @@ Parse error: syntax error, unexpected token "=" in /var/www/html/tests/Integrati
 Errors parsing /var/www/html/tests/Integration/JwtAuthenticationIntegrationTest.php
 ```
 
-### tests/Integration/Repositories/PostRepositoryTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Integration/Repositories/PostRepositoryTest.php on line 138
-Errors parsing /var/www/html/tests/Integration/Repositories/PostRepositoryTest.php
-```
-
 ### tests/Integration/DTOs/DTOValidationIntegrationTest.php
 
 ```
 Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php on line 204
 Errors parsing /var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php
-```
-
-### tests/Integration/ActivityLogging/UserActivityLogEndToEndTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Integration/ActivityLogging/UserActivityLogEndToEndTest.php on line 54
-Errors parsing /var/www/html/tests/Integration/ActivityLogging/UserActivityLogEndToEndTest.php
 ```
 
 ### tests/Integration/Api/V1/AuthEndpointTest.php
@@ -491,18 +445,11 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ## 修復建議
 
-### 儲存庫 (風險: 中)
-
-- tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
-- tests/Integration/Repositories/PostRepositoryTest.php
-
 ### 測試 (風險: 低)
 
-- tests/UI/UserExperienceTest.php
 - tests/Database/Seeds/UserActivityLogsSeederTest.php
 - tests/Unit/Repository/PostRepositoryPerformanceTest.php
 - tests/Unit/Repository/PostRepositoryTest.php
-- tests/Unit/Domains/Auth/ValueObjects/TokenBlacklistEntryTest.php
 - tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
 - tests/Unit/Shared/Config/JwtConfigTest.php
 - tests/Unit/Models/PostTest.php
@@ -514,7 +461,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 - tests/Security/FileUploadSecurityTest.php
 - tests/Integration/Cache/CacheMonitoringIntegrationTest.php
 - tests/Integration/JwtAuthenticationIntegrationTest.php
-- tests/Integration/ActivityLogging/UserActivityLogEndToEndTest.php
 - tests/Integration/Api/V1/AuthEndpointTest.php
 - tests/Integration/FileSystemBackupTest.php
 - tests/Integration/DatabaseBackupTest.php
@@ -543,8 +489,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 其他 (風險: 低)
 
-- app/Domains/Statistics/Console/StatisticsCalculationConsole.php
-- app/Application/Services/Statistics/StatisticsQueryService.php
 - tests/Unit/Domains/Statistics/Services/PostStatisticsServiceTest.php
 - tests/Unit/Domains/Statistics/Services/StatisticsCalculatorServiceTest.php
 - tests/Unit/Domains/Statistics/Services/StatisticsCacheServiceTest.php

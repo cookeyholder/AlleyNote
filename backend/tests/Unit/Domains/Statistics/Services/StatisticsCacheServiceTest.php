@@ -28,7 +28,7 @@ use RuntimeException;
  * - 來源統計查詢
  * - 時間週期查詢
  */
-#[CoversClass(StatisticsCacheService => class)]
+#[CoversClass(StatisticsCacheService::class)]
 final class StatisticsCacheServiceTest extends TestCase
 {
     private PostStatisticsRepository $postRepository;

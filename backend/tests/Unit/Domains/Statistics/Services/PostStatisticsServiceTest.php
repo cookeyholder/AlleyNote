@@ -26,7 +26,7 @@ use PHPUnit\Framework\TestCase;
  * - 投資報酬率計算
  * - 最佳發布時間建議
  */
-#[CoversClass(PostStatisticsService => class)]
+#[CoversClass(PostStatisticsService::class)]
 final class PostStatisticsServiceTest extends TestCase
 {
     private PostStatisticsService $service;
