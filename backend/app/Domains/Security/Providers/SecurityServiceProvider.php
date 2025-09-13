@@ -25,7 +25,6 @@ use App\Domains\Security\Services\Secrets\SecretsManager;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * Security 領域服務提供者.
@@ -37,8 +36,6 @@ class SecurityServiceProvider
 {
     /**
      * 取得所有 Security 服務定義.
-     *
-     * @return array
      */
     public static function getDefinitions(): array
     {
@@ -142,8 +139,6 @@ class SecurityServiceProvider
 
     /**
      * 取得 Security 領域的設定值.
-     *
-     * @return array
      */
     public static function getConfiguration(): array
     {
@@ -197,8 +192,6 @@ class SecurityServiceProvider
 
     /**
      * 取得需要初始化的服務清單.
-     *
-     * @return array
      */
     public static function getBootableServices(): array
     {
@@ -230,8 +223,6 @@ class SecurityServiceProvider
 
     /**
      * 檢查服務依賴是否滿足.
-     *
-     * @return array
      */
     public static function checkDependencies(ContainerInterface $container): array
     {
@@ -245,8 +236,6 @@ class SecurityServiceProvider
 
     /**
      * 取得服務健康檢查資訊.
-     *
-     * @return array
      */
     public static function getHealthCheck(ContainerInterface $container): array
     {

@@ -9,19 +9,20 @@ use Exception;
 class RateLimitService
 {
     public function __construct(
-        private readonly CacheService $cache) {}
+        private readonly CacheService $cache,
+    ) {}
 
     /**
      * 檢查速率限制.
-     * @return array
+     * @return array<string, mixed>
      */
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
         $key = "rate_limit:{$ip}";
 
-        try { /* empty */ }
+        try {
             $data = $this->cache->get($key);
-            if ($data == == null || !is_array($data)) {
+            if ($data === null || !is_array($data)) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
             }
 
@@ -58,7 +59,14 @@ class RateLimitService
                 'remaining' => max(0, $maxRequests - $data['count']),
                 'reset' => $data['reset'],
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception) {
+            // 發生例外時，預設允許請求
+            return [
+                'allowed' => true,
+                'remaining' => $maxRequests,
+                'reset' => time() + $timeWindow,
+            ];
+        }
     }
 
     /**

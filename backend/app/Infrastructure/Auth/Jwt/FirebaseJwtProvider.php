@@ -44,7 +44,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try {
             $this->initializeKeys();
         } catch (Exception $e) {
-            throw new JwtConfigurationException("JWT 配置初始化失敗: " . $e->getMessage(), 0, $e);
+            throw new JwtConfigurationException('JWT 配置初始化失敗: ' . $e->getMessage(), 0, $e);
         }
     }
 
@@ -281,7 +281,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try {
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
         } catch (Exception $e) {
-            throw new TokenGenerationException("Token 產生失敗: " . $e->getMessage(), 0, $e);
+            throw new TokenGenerationException('Token 產生失敗: ' . $e->getMessage(), 0, $e);
         }
     }
 

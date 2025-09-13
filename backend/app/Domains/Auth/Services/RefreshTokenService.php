@@ -80,7 +80,8 @@ final class RefreshTokenService
 
             return $refreshToken;
         } catch (Throwable $e) {
-            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            error_log('Error in RefreshTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -106,7 +107,8 @@ final class RefreshTokenService
 
             return $cleanedCount;
         } catch (Throwable $e) {
-            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            error_log('Error in RefreshTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -138,7 +140,8 @@ final class RefreshTokenService
 
             return $stats;
         } catch (Throwable $e) {
-            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            error_log('Error in RefreshTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -175,7 +178,7 @@ final class RefreshTokenService
 
                 $blacklistResult = $this->blacklistRepository->addToBlacklist($blacklistEntry);
             } catch (Throwable $e) {
-                error_log("Error adding to blacklist: " . $e->getMessage());
+                error_log('Error adding to blacklist: ' . $e->getMessage());
                 // Continue even if blacklist fails
             }
 
@@ -190,7 +193,8 @@ final class RefreshTokenService
 
             return false;
         } catch (Throwable $e) {
-            error_log("Error in RefreshTokenService.php: " . $e->getMessage());
+            error_log('Error in RefreshTokenService.php: ' . $e->getMessage());
+
             return false;
         }
     }

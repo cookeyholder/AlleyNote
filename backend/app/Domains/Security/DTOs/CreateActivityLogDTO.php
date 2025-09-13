@@ -40,9 +40,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
     }
 
-    /**
-     * @param array $data
-     */
     public static function fromArray(array $data): self
     {
         // 處理 metadata 類型安全
@@ -71,9 +68,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         );
     }
 
-    /**
-     * @param array|null $metadata
-     */
     public static function success(
         ActivityType $actionType,
         ?int $userId = null,
@@ -93,9 +87,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         );
     }
 
-    /**
-     * @param array|null $metadata
-     */
     public static function failure(
         ActivityType $actionType,
         ?int $userId = null,
@@ -117,7 +108,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立安全事件的記錄.
-     * @param array|null $metadata
      */
     public static function securityEvent(
         ActivityType $actionType,
@@ -175,7 +165,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
     /**
-     * @return array|null
      */
     public function getMetadata(): ?array
     {
@@ -265,9 +254,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $new;
     }
 
-    /**
-     * @return array
-     */
     public function toArray(): array
     {
         return [
@@ -289,9 +275,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         ];
     }
 
-    /**
-     * @return array
-     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
@@ -299,7 +282,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化.
-     * @param array $metadata
      */
     private function validateMetadata(array $metadata): void
     {

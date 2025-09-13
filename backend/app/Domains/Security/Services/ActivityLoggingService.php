@@ -121,6 +121,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                 'error' => $e->getMessage(),
                 'action_type' => $dto->getActionType()->value,
             ]);
+
             return false;
         }
     }
@@ -300,6 +301,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                 'error' => $e->getMessage(),
                 'count' => count($dtos),
             ]);
+
             return 0;
         }
     }
@@ -356,6 +358,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             $this->logger->error('Failed to cleanup activity logs', [
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }

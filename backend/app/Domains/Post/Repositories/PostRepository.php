@@ -85,6 +85,7 @@ class PostRepository implements PostRepositoryInterface
             return $result;
         } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -155,9 +156,6 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
-     *
-     * @param array $result
-     * @return array
      */
     private function preparePostData(array $result): array
     {
@@ -180,9 +178,6 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備新文章的資料.
-     *
-     * @param array $data
-     * @return array
      */
     private function prepareNewPostData(array $data): array
     {
@@ -328,9 +323,6 @@ class PostRepository implements PostRepositoryInterface
         });
     }
 
-    /**
-     * @param array $tagIds
-     */
     private function tagsExist(array $tagIds): bool
     {
         if (empty($tagIds)) {
@@ -350,7 +342,6 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 指派標籤到文章.
      * @throws PDOException 當標籤不存在時拋出異常
-     * @param array $data
      */
     public function create(array $data, array $tagIds = []): int
     {
@@ -393,7 +384,6 @@ class PostRepository implements PostRepositoryInterface
      */
     /**
     /**
-     * @param array $tagIds
      */
     private function assignTags(int $postId, array $tagIds): void
     {
@@ -410,9 +400,6 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
-    /**
-     * @param array $data
-     */
     public function update(int $id, array $data): bool
     {
         // 檢查文章是否存在
@@ -480,10 +467,6 @@ class PostRepository implements PostRepositoryInterface
         return $stmt->execute([$id]);
     }
 
-    /**
-     * @param array $conditions
-     * @return array
-     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
@@ -568,9 +551,6 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    /**
-     * @return array
-     */
     public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
@@ -596,9 +576,6 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
-    /**
-     * @return array
-     */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
@@ -697,6 +674,7 @@ class PostRepository implements PostRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -716,9 +694,6 @@ class PostRepository implements PostRepositoryInterface
         return $result;
     }
 
-    /**
-     * @param array $tagIds
-     */
     public function setTags(int $id, array $tagIds): bool
     {
         $this->db->beginTransaction();
@@ -750,6 +725,7 @@ class PostRepository implements PostRepositoryInterface
             return true;
         } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }

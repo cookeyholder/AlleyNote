@@ -81,7 +81,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * @param PDO $db PDO 資料庫連線實例
      */
     public function __construct(
-        private PDO $db) {
+        private PDO $db,
+    ) {
         // 設定 SQLite 外鍵約束
         $this->db->exec('PRAGMA foreign_keys = ON');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -168,6 +169,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return $this->findById($insertId);
         } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -245,6 +247,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return $count;
         } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }
@@ -311,6 +314,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             return array_map(function (array $data): array {
                 $entity = ActivityLog::fromDatabaseRow($data);
+
                 return $entity->toArray();
             }, $results);
         } catch (Exception $e) {

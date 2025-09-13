@@ -7,7 +7,6 @@ namespace App\Infrastructure\Auth\Repositories;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
-use DateTimeImmutable;
 use Exception;
 use PDO;
 use PDOException;

@@ -101,7 +101,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         try {
             return password_verify($password, $hash);
         } catch (Throwable $e) {
-            error_log("Error in PasswordSecurityService.php: " . $e->getMessage());
+            error_log('Error in PasswordSecurityService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -113,7 +114,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
             return true;
         } catch (Throwable $e) {
-            error_log("Error in PasswordSecurityService.php: " . $e->getMessage());
+            error_log('Error in PasswordSecurityService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }

@@ -238,11 +238,11 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
         $period = StatisticsPeriod::create(
             PeriodType::from($row['period_type']),
             new DateTimeImmutable($row['start_date']),
-            new DateTimeImmutable($row['end_date'])
+            new DateTimeImmutable($row['end_date']),
         );
 
-        $totalPosts = StatisticsMetric::count((int)$row['total_posts'], '總文章數');
-        $totalViews = StatisticsMetric::count((int)$row['total_views'], '總瀏覽數');
+        $totalPosts = StatisticsMetric::count((int) $row['total_posts'], '總文章數');
+        $totalViews = StatisticsMetric::count((int) $row['total_views'], '總瀏覽數');
 
         return StatisticsSnapshot::fromData(
             Uuid::fromString($row['uuid']),
@@ -252,7 +252,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
             $snapshotData['source_stats'] ?? [],
             $snapshotData['additional_metrics'] ?? [],
             new DateTimeImmutable($row['created_at']),
-            isset($row['updated_at']) ? new DateTimeImmutable($row['updated_at']) : null
+            isset($row['updated_at']) ? new DateTimeImmutable($row['updated_at']) : null,
         );
     }
 
@@ -273,7 +273,7 @@ final readonly class StatisticsRepository implements StatisticsRepositoryInterfa
      */
     private function extractMetricValue(StatisticsSnapshot $snapshot, string $metricKey): int
     {
-        return match($metricKey) {
+        return match ($metricKey) {
             'total_posts' => $snapshot->getTotalPosts()->value,
             'total_views' => $snapshot->getTotalViews()->value,
             'total_users' => $snapshot->getAdditionalMetric('total_users')?->value ?? 0,

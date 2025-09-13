@@ -13,7 +13,6 @@ use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\SecurityTestInterface;
 use Exception;
-use Throwable;
 
 class SecurityTestService implements SecurityTestInterface
 {

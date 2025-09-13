@@ -24,7 +24,8 @@ class XssProtectionService implements XssProtectionServiceInterface
     private HTMLPurifier $strictPurifier;
 
     public function __construct(
-        private ActivityLoggingServiceInterface $activityLogger) {
+        private ActivityLoggingServiceInterface $activityLogger,
+    ) {
         $this->initializePurifiers();
     }
 
@@ -58,10 +59,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $cleaned;
     }
 
-    /**
-     * @param array $data
-     * @return array
-     */
     public function cleanArray(array $data, array $keys = []): array
     {
         if (empty($keys)) {
@@ -96,10 +93,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $this->clean($input);
     }
 
-    /**
-     * @param array $data
-     * @return array
-     */
     public function sanitizeArray(array $data): array
     {
         return $this->cleanArrayRecursive($data);
@@ -154,9 +147,6 @@ class XssProtectionService implements XssProtectionServiceInterface
 
     /**
      * 遞迴清理陣列中的字串值。
-     *
-     * @param array $data
-     * @return array
      */
     private function cleanArrayRecursive(array $data): array
     {
@@ -231,8 +221,6 @@ class XssProtectionService implements XssProtectionServiceInterface
 
     /**
      * 取得清理統計資訊。
-     *
-     * @return array
      */
     public function getStats(): array
     {

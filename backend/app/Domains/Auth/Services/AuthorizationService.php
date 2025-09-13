@@ -89,6 +89,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('Failed to assign role: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -111,6 +112,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('Failed to remove role: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -146,6 +148,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('Failed to give permission: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -168,6 +171,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('Failed to revoke permission: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -189,6 +193,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('Failed to get user roles: ' . $e->getMessage());
+
             return [];
         }
     }
@@ -229,6 +234,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result;
         } catch (Throwable $e) {
             error_log('Failed to get user permissions: ' . $e->getMessage());
+
             return [];
         }
     }
@@ -270,6 +276,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $post && (int) $post['user_id'] === $userId;
         } catch (Throwable $e) {
             error_log('Failed to check post access: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -289,6 +296,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $result && (int) $result['user_id'] === $userId;
         } catch (Throwable $e) {
             error_log('Failed to check attachment access: ' . $e->getMessage());
+
             return false;
         }
     }

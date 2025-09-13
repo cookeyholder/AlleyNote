@@ -22,7 +22,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     private const TOKEN_POOL_KEY = 'csrf_token_pool';
 
     public function __construct(
-        private ActivityLoggingServiceInterface $activityLogger) {}
+        private ActivityLoggingServiceInterface $activityLogger,
+    ) {}
 
     public function generateToken(): string
     {
@@ -67,6 +68,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
         } catch (Exception $e) {
             $this->logCsrfAttack($token);
+
             throw new CsrfTokenException('CSRF token validation failed: ' . $e->getMessage());
         }
     }
@@ -197,6 +199,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             return false;
         } catch (Exception $e) {
             $this->logCsrfAttack($token);
+
             throw new CsrfTokenException('CSRF token validation failed: ' . $e->getMessage());
         }
     }

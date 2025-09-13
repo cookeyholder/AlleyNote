@@ -11,7 +11,6 @@ use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use PDO;
 use PDOException;
-use Throwable;
 
 /**
  * RefreshToken Repository 實作類別.
@@ -68,9 +67,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @return array|null
-     */
     public function findByJti(string $jti): ?array
     {
         try {
@@ -91,9 +87,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function findByUserId(int $userId, bool $includeExpired = false): array
     {
         try {
@@ -116,9 +109,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @return array|null
-     */
     public function findActiveByUserAndDevice(int $userId, string $deviceId): ?array
     {
         try {
@@ -140,9 +130,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function findByUserIdAndDevice(int $userId, string $deviceId): array
     {
         try {
@@ -318,9 +305,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function findRecentlyUsed(int $userId, int $limit = 10): array
     {
         try {
@@ -339,9 +323,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    /**
-     * @return array|null
-     */
     public function findByTokenHash(string $tokenHash): ?array
     {
         try {

@@ -68,7 +68,7 @@ class RouteLoader
      */
     private function loadRouteFile(RouterInterface $router, string $filePath, string $group): void
     {
-        try { /* empty */ }
+        try {
             // 使用輸出緩衝區來防止路由檔案輸出任何內容
             ob_start();
 
@@ -83,7 +83,13 @@ class RouteLoader
                 $routesTyped = $routes;
                 $this->processArrayRoutes($router, $routesTyped, $group, $filePath);
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            throw new RouteConfigurationException(
+                "Failed to load route file '{$filePath}': " . $e->getMessage(),
+                0,
+                $e,
+            );
+        }
     }
 
     /**
@@ -97,7 +103,7 @@ class RouteLoader
 
     /**
      * 處理陣列格式的路由定義.
-     * @param array $routes
+     * @param array<string, mixed> $routes
      */
     private function processArrayRoutes(RouterInterface $router, array $routes, string $group, string $filePath): void
     {
@@ -140,7 +146,7 @@ class RouteLoader
 
     /**
      * 註冊路由到路由器.
-     * @param array $routeConfig
+     * @param array<string, mixed> $routeConfig
      */
     private function registerRoute(RouterInterface $router, array $routeConfig): void
     {
@@ -196,14 +202,18 @@ class RouteLoader
 
     /**
      * 取得已載入的路由資訊.
-     /**\n      * @return array */\n      */\n    public function getLoadedRoutes(): array
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getLoadedRoutes(): array
     {
         return $this->loadedRoutes;
     }
 
     /**
      * 取得路由統計資訊.
-     * @return array
+     *
+     * @return array<string, mixed>
      */
     public function getRouteStats(): array
     {
@@ -226,6 +236,14 @@ class RouteLoader
     }
 
     /**
+     * 取得已載入的路由總數.
+     */
+    public function getLoadedRoutesCount(): int
+    {
+        return count($this->loadedRoutes);
+    }
+
+    /**
      * 清除已載入的路由.
      */
     public function clearRoutes(): void
@@ -237,7 +255,10 @@ class RouteLoader
 
     /**
      * 透過群組篩選路由.
-     /**\n      * @return array */\n      */\n    public function getRoutesByGroup(string $group): array
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getRoutesByGroup(string $group): array
     {
         return array_filter($this->loadedRoutes, function ($route) use ($group) {
             return ($route['group'] ?? 'default') === $group;
@@ -246,7 +267,10 @@ class RouteLoader
 
     /**
      * 搜尋路由.
-     /**\n      * @return array */\n      */\n    public function findRoutes(callable $filter): array
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function findRoutes(callable $filter): array
     {
         return array_filter($this->loadedRoutes, $filter);
     }

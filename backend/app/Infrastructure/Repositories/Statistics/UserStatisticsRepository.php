@@ -6,7 +6,6 @@ namespace App\Infrastructure\Repositories\Statistics;
 
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use DateTimeInterface;
 use PDO;
 use PDOException;
 use RuntimeException;

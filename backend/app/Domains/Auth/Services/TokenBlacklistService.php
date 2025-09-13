@@ -87,7 +87,8 @@ final class TokenBlacklistService
 
             return $result;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -104,7 +105,8 @@ final class TokenBlacklistService
         try {
             return $this->repository->isBlacklisted($jti);
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -127,7 +129,8 @@ final class TokenBlacklistService
         try {
             return $this->repository->batchIsBlacklisted($validJtis);
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -155,7 +158,8 @@ final class TokenBlacklistService
 
             return $count;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -182,7 +186,8 @@ final class TokenBlacklistService
 
             return $count;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -205,7 +210,8 @@ final class TokenBlacklistService
 
             return $result;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -235,7 +241,8 @@ final class TokenBlacklistService
 
             return $count;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -271,7 +278,8 @@ final class TokenBlacklistService
 
             return $result;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -291,7 +299,8 @@ final class TokenBlacklistService
                 'generated_at' => new DateTimeImmutable(),
             ]);
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -308,7 +317,8 @@ final class TokenBlacklistService
         try {
             return $this->repository->getUserBlacklistStats($userId);
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -341,7 +351,8 @@ final class TokenBlacklistService
                 'has_more' => ($limit !== null) && ($offset + count($entries) < $total),
             ];
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -354,7 +365,8 @@ final class TokenBlacklistService
         try {
             return $this->repository->getHighPriorityEntries($limit);
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -371,7 +383,8 @@ final class TokenBlacklistService
 
             return $result;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -421,7 +434,8 @@ final class TokenBlacklistService
 
             return $status;
         } catch (Throwable $e) {
-            error_log("Error in TokenBlacklistService.php: " . $e->getMessage());
+            error_log('Error in TokenBlacklistService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }

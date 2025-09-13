@@ -82,9 +82,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * @param array $data 黑名單資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
-    /**
-     * @param array $data
-     */
     public static function fromArray(array $data): self
     {
         $requiredFields = ['jti', 'token_type', 'expires_at', 'blacklisted_at', 'reason'];
@@ -116,7 +113,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * @param mixed $metadata
-     * @return array
      */
     private static function sanitizeMetadata($metadata): array
     {
@@ -269,9 +265,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 取得元資料.
      */
-    /**
-     * @param array $data
-     */
     public function getMetadata(): array
     {
         return $this->metadata;
@@ -413,7 +406,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      */
     /**
     /**
-     * @return array
      */
     public function toArray(): array
     {
@@ -438,7 +430,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      */
     /**
     /**
-     * @return array
      */
     public function toDatabaseArray(): array
     {
@@ -458,7 +449,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      */
     /**
     /**
-     * @return array
      */
     public function jsonSerialize(): array
     {
@@ -513,7 +503,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      */
     /**
     /**
-     * @return array
      */
     public static function getValidTokenTypes(): array
     {
@@ -522,9 +511,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的黑名單原因.
-     */
-    /**
-     * @return array
      */
     public static function getValidReasons(): array
     {
@@ -566,7 +552,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         if (!in_array($tokenType, self::getValidTokenTypes(), true)) {
             throw new InvalidArgumentException(
-                'Token type must be one of: ' . implode(', ', self::getValidTokenTypes())
+                'Token type must be one of: ' . implode(', ', self::getValidTokenTypes()),
             );
         }
     }
@@ -580,7 +566,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         if (!in_array($reason, self::getValidReasons(), true)) {
             throw new InvalidArgumentException(
-                'Reason must be one of: ' . implode(', ', self::getValidReasons())
+                'Reason must be one of: ' . implode(', ', self::getValidReasons()),
             );
         }
     }
@@ -640,9 +626,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證元資料.
      * @param array $metadata 元資料
      * @throws InvalidArgumentException 當元資料無效時
-     */
-    /**
-     * @param array $data
      */
     private function validateMetadata(array $metadata): void
     {

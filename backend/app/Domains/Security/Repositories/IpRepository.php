@@ -138,6 +138,7 @@ class IpRepository implements IpRepositoryInterface
             return $ipList;
         } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }

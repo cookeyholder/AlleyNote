@@ -37,8 +37,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     /**
      * 生成 Token 對.
-     *
-     * @param array $customClaims
      */
     public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair
     {
@@ -191,7 +189,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 生成新的 token pair
             return $this->generateTokenPair($userId, $deviceInfo);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         } catch (Throwable $e) {
             throw new InvalidTokenException(
@@ -238,7 +237,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return true;
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -258,7 +258,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return $revokedCount;
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -271,7 +272,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
         try {
             $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -291,15 +293,14 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return $this->blacklistRepository->isBlacklisted((string) $jti);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
 
     /**
      * 從陣列創建 JwtPayload 物件.
-     *
-     * @param array $payload
      */
     private function createJwtPayloadFromArray(array $payload): JwtPayload
     {
@@ -351,7 +352,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 ], true), ARRAY_FILTER_USE_KEY),
             );
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -379,7 +381,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -416,7 +419,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -432,7 +436,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // @phpstan-ignore-next-line
             return $this->createJwtPayloadFromArray((array) $payload);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -474,7 +479,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 產生新的 token pair
             return $this->generateTokenPair($userId, $deviceInfo);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -490,7 +496,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return $jti && $this->blacklistRepository->isBlacklisted((string) $jti);
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -511,7 +518,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return $expiresAt->getTimestamp() - $now->getTimestamp();
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -536,7 +544,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return $payload->getSubject() === (string) $userId;
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }
@@ -552,7 +561,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return ($claims['device_id'] ?? '') === $deviceInfo->getDeviceId();
         } catch (Throwable $e) {
-            error_log("Error in JwtTokenService.php: " . $e->getMessage());
+            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+
             throw $e;
         }
     }

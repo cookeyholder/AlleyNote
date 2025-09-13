@@ -40,7 +40,7 @@ class CacheService implements CacheServiceInterface
         }
 
         $data = file_get_contents($filename);
-        if ($data == = = = false) {
+        if ($data === false) {
             $this->stats['misses']++;
 
             return null;
@@ -71,7 +71,7 @@ class CacheService implements CacheServiceInterface
         $filename = $this->getCacheFilename($key);
         $this->stats['sets']++;
         $cacheData = [
-            'expiry' => time() + ($ttl ? => self => TTL),
+            'expiry' => time() + ($ttl ?: self::TTL),
             'data' => $value,
         ];
 
@@ -114,7 +114,7 @@ class CacheService implements CacheServiceInterface
     public function clear(): bool
     {
         $files = glob($this->cachePath . '/*');
-        if ($files == = = = false) {
+        if ($files === false) {
             return false;
         }
 
@@ -131,7 +131,7 @@ class CacheService implements CacheServiceInterface
     {
         $value = $this->get($key);
 
-        if ($value == = = = null) {
+        if ($value === null) {
             $value = $callback();
             if ($value !== null) {
                 $this->set($key, $value, $ttl ?? self::TTL);
@@ -149,7 +149,7 @@ class CacheService implements CacheServiceInterface
         }
 
         $data = file_get_contents($filename);
-        if ($data == = = = false) {
+        if ($data === false) {
             return false;
         }
 
@@ -169,10 +169,8 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-    /**
-     * @param array $keys
-     * @return array
-     */
+     * @param array<string> $keys
+     * @return array<string, mixed>
      */
     public function getMultiple(array $keys, mixed $default = null): array
     {
@@ -185,9 +183,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-    /**
-     * @param array $values
-     */
+     * @param array<string, mixed> $values
      */
     public function setMultiple(array $values, ?int $ttl = null): bool
     {
@@ -201,9 +197,7 @@ class CacheService implements CacheServiceInterface
     }
 
     /**
-    /**
-     * @param array $keys
-     */
+     * @param array<string> $keys
      */
     public function deleteMultiple(array $keys): bool
     {
@@ -238,7 +232,7 @@ class CacheService implements CacheServiceInterface
 
     /**
      * 取得快取統計資訊.
-     * @return array
+     * @return array<string, int|float|string>
      */
     public function getStats(): array
     {

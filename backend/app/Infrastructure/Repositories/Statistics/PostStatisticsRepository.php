@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repositories\Statistics;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use DateTimeInterface;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -204,6 +202,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             ]);
 
             $result = $stmt->fetchColumn();
+
             return $result ? (float) $result : 0.0;
         } catch (PDOException $e) {
             throw new RuntimeException('無法計算平均文章長度: ' . $e->getMessage(), 0, $e);

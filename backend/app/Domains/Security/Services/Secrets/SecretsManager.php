@@ -96,9 +96,6 @@ class SecretsManager implements SecretsManagerInterface
         return (string) $value;
     }
 
-    /**
-     * @param array $requiredKeys
-     */
     public function validateRequiredSecrets(array $requiredKeys): void
     {
         $missing = [];
@@ -136,9 +133,6 @@ class SecretsManager implements SecretsManagerInterface
         return strtolower((string) $appEnv) === 'development';
     }
 
-    /**
-     * @return array
-     */
     public function getSecretsSummary(): array
     {
         $this->load();
@@ -188,9 +182,6 @@ class SecretsManager implements SecretsManagerInterface
         return bin2hex(random_bytes($length));
     }
 
-    /**
-     * @return array
-     */
     public function validateEnvFile(string $filePath = ''): array
     {
         $filePath = $filePath ? true : $this->envPath;

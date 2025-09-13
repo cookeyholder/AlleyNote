@@ -12,6 +12,7 @@ use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
 use App\Infrastructure\Routing\RouteDispatcher;
 use App\Infrastructure\Routing\RouteLoader;
 use App\Infrastructure\Routing\RouteValidator;
+use DI\Definition\Helper\DefinitionHelper;
 use Exception;
 use Psr\Container\ContainerInterface;
 
@@ -25,13 +26,13 @@ class RoutingServiceProvider
     /**
      * 取得所有路由服務定義。
      *
-     * @return array
+     * @return array<string, DefinitionHelper>
      */
     public static function getDefinitions(): array
     {
         return [
             // 路由器核心服務
-            RouterInterface => class => \DI\create(Router => :class),
+            RouterInterface::class => \DI\create(Router::class),
 
             Router::class => \DI\create(Router::class),
 
@@ -39,19 +40,19 @@ class RoutingServiceProvider
             RouteValidator::class => \DI\create(RouteValidator::class),
 
             // 路由載入器
-            RouteLoader::class => \DI\factory([self => class, 'createRouteLoader']),
+            RouteLoader::class => \DI\factory([self::class, 'createRouteLoader']),
 
             // 控制器解析器
-            ControllerResolver::class => \DI\factory([self => class, 'createControllerResolver']),
+            ControllerResolver::class => \DI\factory([self::class, 'createControllerResolver']),
 
             // 中間件解析器
-            MiddlewareResolver::class => \DI\factory([self => class, 'createMiddlewareResolver']),
+            MiddlewareResolver::class => \DI\factory([self::class, 'createMiddlewareResolver']),
 
             // 中間件分派器
             MiddlewareDispatcher::class => \DI\create(MiddlewareDispatcher::class),
 
             // 路由分派器
-            RouteDispatcher::class => \DI\factory([self => class, 'createRouteDispatcher']),
+            RouteDispatcher::class => \DI\factory([self::class, 'createRouteDispatcher']),
         ];
     }
 
@@ -61,6 +62,7 @@ class RoutingServiceProvider
     public static function createRouteLoader(ContainerInterface $container): RouteLoader
     {
         $validator = $container->get(RouteValidator::class);
+        assert($validator instanceof RouteValidator || $validator === null);
 
         return new RouteLoader($validator);
     }
@@ -91,6 +93,10 @@ class RoutingServiceProvider
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
         $middlewareResolver = $container->get(MiddlewareResolver::class);
 
+        assert($router instanceof RouterInterface);
+        assert($controllerResolver instanceof ControllerResolver);
+        assert($middlewareDispatcher instanceof MiddlewareDispatcher);
+
         return new RouteDispatcher(
             $router,
             $controllerResolver,
@@ -102,7 +108,7 @@ class RoutingServiceProvider
     /**
      * 取得路由配置檔案清單。
      *
-     * @return array
+     * @return array<string, string>
      */
     public static function getRouteFiles(): array
     {
@@ -121,9 +127,12 @@ class RoutingServiceProvider
      */
     public static function loadRoutes(ContainerInterface $container): void
     {
-        try { /* empty */ }
+        try {
             $routeLoader = $container->get(RouteLoader::class);
             $router = $container->get(RouterInterface::class);
+
+            assert($routeLoader instanceof RouteLoader);
+            assert($router instanceof RouterInterface);
 
             // 載入各種路由配置檔案
             foreach (self::getRouteFiles() as $group => $filePath) {
@@ -134,13 +143,16 @@ class RoutingServiceProvider
 
             // 載入所有路由到路由器
             $routeLoader->loadRoutes($router);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略錯誤，記錄日誌
+            error_log('Failed to load routes: ' . $e->getMessage());
+        }
     }
 
     /**
      * 註冊路由中間件。
      *
-     * @return array
+     * @return array<string, string>
      */
     public static function registerMiddleware(ContainerInterface $container): array
     {
@@ -157,21 +169,33 @@ class RoutingServiceProvider
 
     /**
      * 取得路由系統統計資訊。
+     */
+    /**
+     * 取得路由系統統計資訊。
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public static function getRoutingStats(ContainerInterface $container): array
     {
-        try { /* empty */ }
+        try {
             $routeLoader = $container->get(RouteLoader::class);
+            assert($routeLoader instanceof RouteLoader);
 
             return [
                 'route_stats' => $routeLoader->getRouteStats(),
-                'middleware_count' => count(self => registerMiddleware($container)),
-                'route_files' => array_keys(self => :getRouteFiles()),
+                'middleware_count' => count(self::registerMiddleware($container)),
+                'route_files' => array_keys(self::getRouteFiles()),
                 'loaded_routes' => $routeLoader->getLoadedRoutesCount(),
             ];
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return [
+                'route_stats' => [],
+                'middleware_count' => 0,
+                'route_files' => [],
+                'loaded_routes' => 0,
+                'error' => $e->getMessage(),
+            ];
+        }
     }
 
     /**
@@ -179,7 +203,7 @@ class RoutingServiceProvider
      */
     public static function checkHealth(ContainerInterface $container): bool
     {
-        try { /* empty */ }
+        try {
             // 檢查核心服務是否可用
             $router = $container->get(RouterInterface::class);
             $routeLoader = $container->get(RouteLoader::class);
@@ -189,13 +213,15 @@ class RoutingServiceProvider
             return $router instanceof RouterInterface
                 && $routeLoader instanceof RouteLoader
                 && $controllerResolver instanceof ControllerResolver;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
      * 取得預設路由配置。
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public static function getDefaultRouteConfig(): array
     {

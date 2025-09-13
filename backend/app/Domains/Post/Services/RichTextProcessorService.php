@@ -92,8 +92,6 @@ class RichTextProcessorService
 
     /**
      * 根據使用者層級處理富文本內容.
-     *
-     * @return array
      */
     public function processContent(string $content, string $userLevel = 'basic'): array
     {
@@ -136,8 +134,6 @@ class RichTextProcessorService
 
     /**
      * 驗證和清理來自 CKEditor 的內容.
-     *
-     * @return array
      */
     public function processCKEditorContent(string $content, string $userLevel = 'basic'): array
     {
@@ -169,8 +165,6 @@ class RichTextProcessorService
 
     /**
      * 取得允許的標籤和屬性清單.
-     *
-     * @return array
      */
     public function getAllowedElements(string $userLevel = 'basic'): array
     {
@@ -211,8 +205,6 @@ class RichTextProcessorService
 
     /**
      * 生成內容統計資訊.
-     *
-     * @return array
      */
     private function generateStatistics(string $original, string $filtered): array
     {
@@ -250,8 +242,6 @@ class RichTextProcessorService
 
     /**
      * 檢查內容是否安全.
-     *
-     * @return array
      */
     public function validateSecurity(string $content): array
     {

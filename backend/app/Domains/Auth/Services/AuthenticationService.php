@@ -151,6 +151,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return true;
         } catch (Throwable $e) {
             error_log('Logout failed: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -159,6 +160,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             $this->jwtTokenService->validateAccessToken($accessToken);
+
             return true;
         } catch (Throwable $e) {
             return false;
@@ -169,6 +171,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
+
             return $this->refreshTokenRepository->isValid($payload->getJti());
         } catch (Throwable $e) {
             return false;
@@ -179,9 +182,11 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
+
             return $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
         } catch (Throwable $e) {
             error_log('Failed to revoke refresh token: ' . $e->getMessage());
+
             return false;
         }
     }
@@ -192,6 +197,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return $this->refreshTokenRepository->revokeAllByUserId($userId, $reason, $excludeJti);
         } catch (Throwable $e) {
             error_log('Failed to revoke user tokens: ' . $e->getMessage());
+
             return 0;
         }
     }
@@ -202,6 +208,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return $this->refreshTokenRepository->revokeAllByDevice($userId, $deviceId, $reason);
         } catch (Throwable $e) {
             error_log('Failed to revoke device tokens: ' . $e->getMessage());
+
             return 0;
         }
     }
@@ -219,6 +226,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             ];
         } catch (Throwable $e) {
             error_log('Failed to get user token stats: ' . $e->getMessage());
+
             return [
                 'total' => 0,
                 'active' => 0,
@@ -234,6 +242,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return $this->refreshTokenRepository->cleanup($beforeDate);
         } catch (Throwable $e) {
             error_log('Failed to cleanup expired tokens: ' . $e->getMessage());
+
             return 0;
         }
     }
@@ -244,6 +253,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return $this->refreshTokenRepository->cleanupRevoked($days);
         } catch (Throwable $e) {
             error_log('Failed to cleanup revoked tokens: ' . $e->getMessage());
+
             return 0;
         }
     }
@@ -283,6 +293,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             ];
         } catch (Throwable $e) {
             error_log('Failed to get user from token: ' . $e->getMessage());
+
             return null;
         }
     }

@@ -13,7 +13,6 @@ use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
-use Throwable;
 
 /**
  * 可疑活動檢測服務實作.
@@ -113,6 +112,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -151,6 +151,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'ip_address' => $ipAddress,
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
@@ -183,13 +184,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->logger->error('Failed to detect suspicious patterns', [
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
 
     /**
      * 分析使用者活動.
-     * @param array $activities
      */
     private function analyzeUserActivities(array $activities, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -284,7 +285,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析IP活動.
-     * @param array $activities
      */
     private function analyzeIpActivities(array $activities, string $ipAddress, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -380,7 +380,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析全域模式.
-     * @param array $statistics
      */
     private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): array
     {
@@ -425,7 +424,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測失敗率異常.
-     * @param array $activityCounts
      */
     private function detectFailureRateAnomalies(array $activityCounts, array $failureCounts, int $timeWindowMinutes): array
     {
@@ -466,7 +464,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測頻率異常.
-     * @param array $activityCounts
      */
     private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
     {
@@ -500,7 +497,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測模式異常.
-     * @param array $activities
      */
     private function detectPatternAnomalies(array $activities): array
     {
@@ -533,7 +529,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測IP信譽問題.
-     * @param array $activities
      */
     private function detectIpReputationIssues(array $activities, string $ipAddress): array
     {
@@ -630,7 +625,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 產生建議動作.
-     * @param array $rules
      */
     private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, array $rules): ?string
     {
