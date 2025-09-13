@@ -77,10 +77,10 @@ final class TokenBlacklistEntryTest extends TestCase
     {
         $data = [
             'jti' => $this->validJti,
-            'token_type' => TokenBlacklistEntry => TOKEN_TYPE_ACCESS,
+            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             'expires_at' => $this->futureExpiry,
             'blacklisted_at' => $this->blacklistedTime,
-            'reason' => TokenBlacklistEntry => :REASON_LOGOUT,
+            'reason' => TokenBlacklistEntry::REASON_LOGOUT,
             'user_id' => 123,
             'device_id' => 'test-device',
             'metadata' => ['session_id' => 'sess-456'],
@@ -106,8 +106,8 @@ final class TokenBlacklistEntryTest extends TestCase
 
         $data = [
             'jti' => $this->validJti,
-            'token_type' => TokenBlacklistEntry => TOKEN_TYPE_REFRESH,
-            'expires_at' => $futureTime->format('Y-m-d H => i:s'),
+            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
+            'expires_at' => $futureTime->format('Y-m-d H:i:s'),
             'blacklisted_at' => $pastTime->format('Y-m-d H:i:s'),
             'reason' => TokenBlacklistEntry::REASON_REVOKED,
         ];
@@ -211,8 +211,8 @@ final class TokenBlacklistEntryTest extends TestCase
     public function testIsSecurityRelated(): void
     {
         $securityReasons = [
-            TokenBlacklistEntry => REASON_SECURITY_BREACH,
-            TokenBlacklistEntry => :REASON_SUSPICIOUS_ACTIVITY,
+            TokenBlacklistEntry::REASON_SECURITY_BREACH,
+            TokenBlacklistEntry::REASON_SUSPICIOUS_ACTIVITY,
             TokenBlacklistEntry::REASON_DEVICE_LOST,
             TokenBlacklistEntry::REASON_INVALID_SIGNATURE,
         ];
@@ -226,7 +226,7 @@ final class TokenBlacklistEntryTest extends TestCase
                 reason: $reason,
             );
 
-            $this->assertTrue($entry->isSecurityRelated(), "Failed for reason: {\\\$reason}");
+            $this->assertTrue($entry->isSecurityRelated(), 'Failed for reason: {\\$reason}');
         }
 
         $nonSecurityEntry = new TokenBlacklistEntry(
@@ -243,8 +243,8 @@ final class TokenBlacklistEntryTest extends TestCase
     public function testIsUserInitiated(): void
     {
         $userReasons = [
-            TokenBlacklistEntry => REASON_LOGOUT,
-            TokenBlacklistEntry => :REASON_MANUAL_REVOCATION,
+            TokenBlacklistEntry::REASON_LOGOUT,
+            TokenBlacklistEntry::REASON_MANUAL_REVOCATION,
             TokenBlacklistEntry::REASON_DEVICE_LOST,
         ];
 
@@ -257,7 +257,7 @@ final class TokenBlacklistEntryTest extends TestCase
                 reason: $reason,
             );
 
-            $this->assertTrue($entry->isUserInitiated(), "Failed for reason: {\\\$reason}");
+            $this->assertTrue($entry->isUserInitiated(), 'Failed for reason: {\\$reason}');
         }
 
         $systemEntry = new TokenBlacklistEntry(
@@ -274,8 +274,8 @@ final class TokenBlacklistEntryTest extends TestCase
     public function testIsSystemInitiated(): void
     {
         $systemReasons = [
-            TokenBlacklistEntry => REASON_EXPIRED,
-            TokenBlacklistEntry => :REASON_ACCOUNT_SUSPENDED,
+            TokenBlacklistEntry::REASON_EXPIRED,
+            TokenBlacklistEntry::REASON_ACCOUNT_SUSPENDED,
             TokenBlacklistEntry::REASON_SECURITY_BREACH,
             TokenBlacklistEntry::REASON_PASSWORD_CHANGED,
         ];
@@ -289,7 +289,7 @@ final class TokenBlacklistEntryTest extends TestCase
                 reason: $reason,
             );
 
-            $this->assertTrue($entry->isSystemInitiated(), "Failed for reason: {\\\$reason}");
+            $this->assertTrue($entry->isSystemInitiated(), 'Failed for reason: {\\$reason}');
         }
 
         $userEntry = new TokenBlacklistEntry(
@@ -734,7 +734,7 @@ final class TokenBlacklistEntryTest extends TestCase
 
         TokenBlacklistEntry::fromArray([
             'jti' => $this->validJti,
-            'token_type' => TokenBlacklistEntry => TOKEN_TYPE_ACCESS,
+            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
             'expires_at' => $this->futureExpiry,
             'blacklisted_at' => $this->blacklistedTime,
         ]);

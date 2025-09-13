@@ -1,57 +1,22 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 13:17:19
+報告生成時間: 2025-09-13 13:59:07
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 287 |
-| 語法錯誤檔案 | 74 |
-| 健康度 | 79.5% |
+| 健康檔案 | 293 |
+| 語法錯誤檔案 | 68 |
+| 健康度 | 81.2% |
 
 ## 語法錯誤詳細清單
-
-### app/Domains/Statistics/Enums/SourceType.php
-
-```
-Parse error: syntax error, unexpected token ":" in /var/www/html/app/Domains/Statistics/Enums/SourceType.php on line 88
-Errors parsing /var/www/html/app/Domains/Statistics/Enums/SourceType.php
-```
-
-### app/Domains/Statistics/Commands/StatisticsCalculationCommand.php
-
-```
-Parse error: syntax error, unexpected variable "$totalDuration", expecting "function" in /var/www/html/app/Domains/Statistics/Commands/StatisticsCalculationCommand.php on line 89
-Errors parsing /var/www/html/app/Domains/Statistics/Commands/StatisticsCalculationCommand.php
-```
-
-### app/Domains/Statistics/Services/StatisticsCalculationService.php
-
-```
-Parse error: syntax error, unexpected token "==" in /var/www/html/app/Domains/Statistics/Services/StatisticsCalculationService.php on line 43
-Errors parsing /var/www/html/app/Domains/Statistics/Services/StatisticsCalculationService.php
-```
-
-### app/Domains/Statistics/Services/StatisticsCacheService.php
-
-```
-Parse error: Unclosed '(' does not match ']' in /var/www/html/app/Domains/Statistics/Services/StatisticsCacheService.php on line 70
-Errors parsing /var/www/html/app/Domains/Statistics/Services/StatisticsCacheService.php
-```
-
-### app/Domains/Statistics/Services/PostStatisticsService.php
-
-```
-Parse error: syntax error, unexpected token "public", expecting end of file in /var/www/html/app/Domains/Statistics/Services/PostStatisticsService.php on line 84
-Errors parsing /var/www/html/app/Domains/Statistics/Services/PostStatisticsService.php
-```
 
 ### app/Domains/Statistics/Console/StatisticsCalculationConsole.php
 
 ```
-Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php on line 51
+Parse error: syntax error, unexpected token "=>", expecting ";" or "{" in /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php on line 353
 Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
 ```
 
@@ -184,7 +149,7 @@ Errors parsing /var/www/html/tests/Unit/Domains/Auth/ValueObjects/TokenBlacklist
 ### tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
 
 ```
-Parse error: syntax error, unexpected token "try", expecting "function" in /var/www/html/tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php on line 217
+Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php on line 212
 Errors parsing /var/www/html/tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
 ```
 
@@ -205,7 +170,7 @@ Errors parsing /var/www/html/tests/Unit/Models/PostTest.php
 ### tests/Unit/DTOs/DTOValidationTest.php
 
 ```
-Parse error: Unmatched '}' in /var/www/html/tests/Unit/DTOs/DTOValidationTest.php on line 608
+Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Unit/DTOs/DTOValidationTest.php on line 603
 Errors parsing /var/www/html/tests/Unit/DTOs/DTOValidationTest.php
 ```
 
@@ -214,13 +179,6 @@ Errors parsing /var/www/html/tests/Unit/DTOs/DTOValidationTest.php
 ```
 Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php on line 23
 Errors parsing /var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
-```
-
-### tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
-
-```
-Parse error: syntax error, unexpected token "return", expecting "function" in /var/www/html/tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php on line 1305
-Errors parsing /var/www/html/tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
 ```
 
 ### tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
@@ -338,7 +296,7 @@ Errors parsing /var/www/html/tests/Integration/Repositories/PostRepositoryTest.p
 ### tests/Integration/DTOs/DTOValidationIntegrationTest.php
 
 ```
-Parse error: syntax error, unexpected token "public", expecting end of file in /var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php on line 219
+Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php on line 204
 Errors parsing /var/www/html/tests/Integration/DTOs/DTOValidationIntegrationTest.php
 ```
 
@@ -352,7 +310,7 @@ Errors parsing /var/www/html/tests/Integration/ActivityLogging/UserActivityLogEn
 ### tests/Integration/Api/V1/AuthEndpointTest.php
 
 ```
-Parse error: syntax error, unexpected token "public" in /var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php on line 130
+Parse error: syntax error, unexpected token "public" in /var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php on line 151
 Errors parsing /var/www/html/tests/Integration/Api/V1/AuthEndpointTest.php
 ```
 
@@ -380,7 +338,7 @@ Errors parsing /var/www/html/tests/Integration/DatabaseBackupTest.php
 ### tests/Integration/AttachmentUploadTest.php
 
 ```
-Parse error: syntax error, unexpected token "public" in /var/www/html/tests/Integration/AttachmentUploadTest.php on line 216
+Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Integration/AttachmentUploadTest.php on line 205
 Errors parsing /var/www/html/tests/Integration/AttachmentUploadTest.php
 ```
 
@@ -429,7 +387,7 @@ Errors parsing /var/www/html/tests/manual/test_routing_performance.php
 ### tests/manual/test_route_configuration.php
 
 ```
-Parse error: Unmatched '}' in /var/www/html/tests/manual/test_route_configuration.php on line 37
+Parse error: Unmatched '}' in /var/www/html/tests/manual/test_route_configuration.php on line 48
 Errors parsing /var/www/html/tests/manual/test_route_configuration.php
 ```
 
@@ -478,7 +436,7 @@ Errors parsing /var/www/html/tests/Support/DatabaseTestCase.php
 ### tests/Performance/JwtPerformanceTest.php
 
 ```
-Parse error: syntax error, unexpected variable "$this", expecting "function" in /var/www/html/tests/Performance/JwtPerformanceTest.php on line 41
+Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Performance/JwtPerformanceTest.php on line 32
 Errors parsing /var/www/html/tests/Performance/JwtPerformanceTest.php
 ```
 
@@ -492,14 +450,14 @@ Errors parsing /var/www/html/tests/Performance/DatabaseOptimizationValidationTes
 ### tests/Performance/SimpleUserActivityLogPerformanceTest.php
 
 ```
-Parse error: syntax error, unexpected token "public" in /var/www/html/tests/Performance/SimpleUserActivityLogPerformanceTest.php on line 41
+Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Performance/SimpleUserActivityLogPerformanceTest.php on line 158
 Errors parsing /var/www/html/tests/Performance/SimpleUserActivityLogPerformanceTest.php
 ```
 
 ### tests/E2E/Shared/Cache/CacheSystemE2ETest.php
 
 ```
-Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/tests/E2E/Shared/Cache/CacheSystemE2ETest.php on line 49
+Fatal error: Cannot use try without catch or finally in /var/www/html/tests/E2E/Shared/Cache/CacheSystemE2ETest.php on line 38
 Errors parsing /var/www/html/tests/E2E/Shared/Cache/CacheSystemE2ETest.php
 ```
 
@@ -535,7 +493,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 儲存庫 (風險: 中)
 
-- tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
 - tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
 - tests/Integration/Repositories/PostRepositoryTest.php
 
@@ -586,11 +543,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 其他 (風險: 低)
 
-- app/Domains/Statistics/Enums/SourceType.php
-- app/Domains/Statistics/Commands/StatisticsCalculationCommand.php
-- app/Domains/Statistics/Services/StatisticsCalculationService.php
-- app/Domains/Statistics/Services/StatisticsCacheService.php
-- app/Domains/Statistics/Services/PostStatisticsService.php
 - app/Domains/Statistics/Console/StatisticsCalculationConsole.php
 - app/Application/Services/Statistics/StatisticsQueryService.php
 - tests/Unit/Domains/Statistics/Services/PostStatisticsServiceTest.php

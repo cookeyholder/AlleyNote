@@ -301,7 +301,7 @@ final readonly class SourceDistributionDTO implements JsonSerializable
             'period_info' => [
                 'display_name' => $this->period->getDisplayName(),
                 'start_date' => $this->period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $this->period->endDate->format('Y-m-d H => i:s'),
+                'end_date' => $this->period->endDate->format('Y-m-d H:i:s'),
                 'type' => $this->period->type->value,
             ],
             'overview' => [
