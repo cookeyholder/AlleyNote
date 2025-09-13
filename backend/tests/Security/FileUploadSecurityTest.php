@@ -88,7 +88,8 @@ class FileUploadSecurityTest extends TestCase
             'application/x-msdownload',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo "malicioussprintf(sprintf("; ?>');
+            '<?php echo "malicioussprintf(sprintf("; ?>',
+        );
 
         // 模擬文章存在
         $post = new Post([
@@ -119,12 +120,13 @@ class FileUploadSecurityTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
-        \\\$file = %s->createUploadedFileMock(
+        $file = $this->createUploadedFileMock(
             'image.jpg.php',
             'image/jpeg',
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo ", is_string($this) ? $this : '')malicioussprintf(sprintf("; ?>');
+            '<?php echo "malicious"; ?>',
+        );
 
         // 模擬文章存在
         $post = new Post([
@@ -192,12 +194,12 @@ class FileUploadSecurityTest extends TestCase
     {
         // 準備測試資料
         $postId = 1;
-        \\\$file = %s->createUploadedFileMock(
+        $file = $this->createUploadedFileMock(
             'script.txt',
             'application/x-php', // 惡意 MIME 類型
             1024,
             UPLOAD_ERR_OK,
-            '<?php echo ", is_string($this) ? $this : '')malicious"; ?>',
+            '<?php echo "malicious"; ?>',
         );
 
         // 模擬文章存在

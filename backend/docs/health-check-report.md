@@ -1,52 +1,17 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 20:55:52
+報告生成時間: 2025-09-13 21:47:20
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 329 |
-| 語法錯誤檔案 | 32 |
-| 健康度 | 91.1% |
+| 健康檔案 | 334 |
+| 語法錯誤檔案 | 27 |
+| 健康度 | 92.5% |
 
 ## 語法錯誤詳細清單
-
-### tests/Unit/Validation/ValidatorTest.php
-
-```
-Parse error: syntax error, unexpected fully qualified name "\n", expecting "function" in /var/www/html/tests/Unit/Validation/ValidatorTest.php on line 642
-Errors parsing /var/www/html/tests/Unit/Validation/ValidatorTest.php
-```
-
-### tests/Security/SqlInjectionTest.php
-
-```
-Parse error: syntax error, unexpected token "%" in /var/www/html/tests/Security/SqlInjectionTest.php on line 77
-Errors parsing /var/www/html/tests/Security/SqlInjectionTest.php
-```
-
-### tests/Security/XssPreventionTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Security/XssPreventionTest.php on line 204
-Errors parsing /var/www/html/tests/Security/XssPreventionTest.php
-```
-
-### tests/Security/FileUploadSecurityTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Security/FileUploadSecurityTest.php on line 122
-Errors parsing /var/www/html/tests/Security/FileUploadSecurityTest.php
-```
-
-### tests/Integration/Cache/CacheMonitoringIntegrationTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Integration/Cache/CacheMonitoringIntegrationTest.php on line 31
-Errors parsing /var/www/html/tests/Integration/Cache/CacheMonitoringIntegrationTest.php
-```
 
 ### tests/Integration/JwtAuthenticationIntegrationTest.php
 
@@ -241,11 +206,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 測試 (風險: 低)
 
-- tests/Unit/Validation/ValidatorTest.php
-- tests/Security/SqlInjectionTest.php
-- tests/Security/XssPreventionTest.php
-- tests/Security/FileUploadSecurityTest.php
-- tests/Integration/Cache/CacheMonitoringIntegrationTest.php
 - tests/Integration/JwtAuthenticationIntegrationTest.php
 - tests/Integration/Api/V1/AuthEndpointTest.php
 - tests/Integration/FileSystemBackupTest.php

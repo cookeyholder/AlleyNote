@@ -376,18 +376,18 @@ class ValidatorTest extends TestCase
     {
         // 測試手機號碼格式
         $phonePattern = '/^09\d{8}$/';
-        $result = $this->validator->validate(['phone' => '0912345678'], ['phone' => "regex => {\\\$phonePattern}"]);
+        $result = $this->validator->validate(['phone' => '0912345678'], ['phone' => "regex:{$phonePattern}"]);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['phone' => '1234567890'], ['phone' => "regex => {\\\$phonePattern}"]);
+        $result = $this->validator->validate(['phone' => '1234567890'], ['phone' => "regex:{$phonePattern}"]);
         $this->assertFalse($result->isValid());
 
         // 測試英數字格式
         $alphanumPattern = '/^[a-zA-Z0-9]+$/';
-        $result = $this->validator->validate(['code' => 'ABC123'], ['code' => "regex => {\\\$alphanumPattern}"]);
+        $result = $this->validator->validate(['code' => 'ABC123'], ['code' => "regex:{$alphanumPattern}"]);
         $this->assertTrue($result->isValid());
 
-        $result = $this->validator->validate(['code' => 'ABC-123'], ['code' => "regex => {\\\$alphanumPattern}"]);
+        $result = $this->validator->validate(['code' => 'ABC-123'], ['code' => "regex:{$alphanumPattern}"]);
         $this->assertFalse($result->isValid());
     }
 
@@ -638,14 +638,16 @@ class ValidatorTest extends TestCase
 
     /**
      * 生成效能測試資料的助手方法.
+     *
      * @param int $count 生成資料的數量
-     /**\n      * @return array */\n      */\n    private function generatePerformanceTestData(int $count): array
+     */
+    private function generatePerformanceTestData(int $count): array
     {
         $testData = [];
         for ($i = 0; $i < $count; $i++) {
             $testData[] = [
-                'name' => "user_{\\\$i}",
-                'email' => "user{\\\$i}@example.com",
+                'name' => "user_{$i}",
+                'email' => "user{$i}@example.com",
                 'age' => 20 + ($i % 50),
                 'bio' => str_repeat('a', 50 + ($i % 100)),
             ];
@@ -722,7 +724,7 @@ class ValidatorTest extends TestCase
             $result = $this->validator->validate([$field => $value], [$field => $rule]);
             $this->assertTrue(
                 $result->isValid(),
-                "值 '" . $this->valueToString(\\\$value) . "' 應該通過 {$rule} 驗證",
+                "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證",
             );
         }
     }
@@ -736,8 +738,8 @@ class ValidatorTest extends TestCase
         foreach ($invalidValues as $value) {
             $result = $this->validator->validate([$field => $value], [$field => $rule]);
             $this->assertFalse(
-                \\\$result->isValid(),
-                "值 '" . $this->valueToString(\\\$value) . "' 不應該通過 {$rule} 驗證",
+                $result->isValid(),
+                "值 '" . $this->valueToString($value) . "' 不應該通過 {$rule} 驗證",
             );
         }
     }
@@ -783,8 +785,8 @@ class ValidatorTest extends TestCase
     {
         $result = $this->validator->validate([$field => $value], [$field => $rule]);
         $this->assertTrue(
-            \\\$result->isValid(),
-            "值 '" . $this->valueToString(\\\$value) . "' 應該通過 {$rule} 驗證",
+            $result->isValid(),
+            "值 '" . $this->valueToString($value) . "' 應該通過 {$rule} 驗證",
         );
     }
 
