@@ -6,6 +6,7 @@ namespace App\Infrastructure\Routing\Cache;
 
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
+use JsonException;
 
 /**
  * 檔案快取實作.
@@ -16,6 +17,9 @@ class FileRouteCache implements RouteCacheInterface
 {
     private int $ttl = 3600; // 預設 1 小時
 
+    /**
+     * @var array{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -24,8 +28,12 @@ class FileRouteCache implements RouteCacheInterface
         'last_used' => 0,
     ];
 
+    /**
+     * @param string $cachePath 快取檔案路徑
+     */
     public function __construct(
-        private readonly string $cachePath) {
+        private readonly string $cachePath,
+    ) {
         $this->ensureCacheDirectory();
         $this->loadStats();
     }
@@ -37,7 +45,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $mtime = filemtime($this->getCacheFile());
-        if ($mtime == = = = false) {
+        if ($mtime === false) {
             return false;
         }
 
@@ -59,7 +67,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $content = file_get_contents($this->getCacheFile());
-        if ($content == = = = false) {
+        if ($content === false) {
             $this->stats['misses']++;
             $this->saveStats();
 
@@ -67,7 +75,7 @@ class FileRouteCache implements RouteCacheInterface
         }
 
         $data = unserialize($content);
-        if (!$data instanceof RouteCollectionInterface) {
+        if (!($data instanceof RouteCollectionInterface)) {
             $this->stats['misses']++;
             $this->saveStats();
 
@@ -128,16 +136,31 @@ class FileRouteCache implements RouteCacheInterface
         return $this->cachePath;
     }
 
+    /**
+     * 設定快取存活時間.
+     *
+     * @param int $ttl 快取存活時間（秒）
+     */
     public function setTtl(int $ttl): void
     {
         $this->ttl = $ttl;
     }
 
+    /**
+     * 取得快取存活時間.
+     *
+     * @return int 快取存活時間（秒）
+     */
     public function getTtl(): int
     {
         return $this->ttl;
     }
 
+    /**
+     * 取得快取統計資料.
+     *
+     * @return array{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     */
     public function getStats(): array
     {
         return $this->stats;
@@ -178,9 +201,11 @@ class FileRouteCache implements RouteCacheInterface
         if (file_exists($statsFile)) {
             $content = file_get_contents($statsFile);
             if ($content !== false) {
-                $stats = json_decode(is_string($content) ? $content : (string) $content, true);
+                $stats = json_decode($content, true);
                 if (is_array($stats)) {
-                    $this->stats = array_merge($this->stats, $stats);
+                    /** @var array{hits?: int, misses?: int, size?: int, created_at?: int, last_used?: int} $stats */
+                    $filteredStats = array_intersect_key($stats, $this->stats);
+                    $this->stats = array_merge($this->stats, $filteredStats);
                 }
             }
         }
@@ -191,7 +216,11 @@ class FileRouteCache implements RouteCacheInterface
      */
     private function saveStats(): void
     {
-        $content = (json_encode($this->stats, JSON_PRETTY_PRINT) ?? '') ? true : '';
-        file_put_contents($this->getStatsFile(), $content, LOCK_EX);
+        try {
+            $content = json_encode($this->stats, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+            file_put_contents($this->getStatsFile(), $content, LOCK_EX);
+        } catch (JsonException $e) {
+            // 忽略 JSON 編碼錯誤
+        }
     }
 }

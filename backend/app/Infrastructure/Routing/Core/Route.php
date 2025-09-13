@@ -28,8 +28,8 @@ class Route implements RouteInterface
     private array $parameterNames = [];
 
     /**
-     * @param array $methods HTTP 方法列表
-     * @param callable|string $handler
+     * @param array<string> $methods HTTP 方法列表
+     * @param callable|string|array<mixed> $handler
      */
     public function __construct(
         private readonly array $methods,
@@ -39,9 +39,6 @@ class Route implements RouteInterface
         $this->parameterNames = $this->extractParameterNames($pattern);
     }
 
-    /**
-     * @return array
-     */
     public function getMethods(): array
     {
         return array_keys($this->methods);
@@ -58,7 +55,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
     public function getHandler(): array
     {
@@ -73,7 +70,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array $middlewares
+     * @param array<MiddlewareInterface|string> $middlewares
      */
     public function addMiddlewares(array $middlewares): self
     {
@@ -84,6 +81,9 @@ class Route implements RouteInterface
         return $this;
     }
 
+    /**
+     * @return array<MiddlewareInterface|string>
+     */
     public function getMiddlewares(): array
     {
         return $this->middlewares;
@@ -91,7 +91,10 @@ class Route implements RouteInterface
 
     public function matchesMethod(string $method): bool
     {
-        return in_array(strtoupper($method), array_map('strtoupper', $this->methods), true);
+        /** @var array<string> $upperMethods */
+        $upperMethods = array_map(static fn(string $m): string => strtoupper($m), $this->methods);
+
+        return in_array(strtoupper($method), $upperMethods, true);
     }
 
     public function matchesPath(string $path): RouteMatchResult
@@ -129,8 +132,8 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array $parameters
-     * @param array $queryParams
+     * @param array<string, mixed> $parameters
+     * @param array<string, mixed> $queryParams
      */
     public function generateUrl(array $parameters = [], array $queryParams = []): string
     {
@@ -162,7 +165,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array $attributes
+     * @param array<string, mixed> $attributes
      */
     public function withAttributes(array $attributes): self
     {
@@ -207,7 +210,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function extractParameters(string $path): array
     {
@@ -230,7 +233,7 @@ class Route implements RouteInterface
 
         // 先將參數佔位符替換為特殊標記
         $pattern = preg_replace('/{([^}]+)}/', 'ROUTEPARAM', $pattern);
-        if ($pattern == == null) {
+        if ($pattern === null) {
             $pattern = $this->pattern;
         }
 
@@ -308,7 +311,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @param array $methods
+     * @param array<string> $methods
      * @param callable|string $handler
      */
     public static function match(array $methods, string $pattern, $handler): self

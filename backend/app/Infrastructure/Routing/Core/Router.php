@@ -36,9 +36,7 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function get(string $pattern, $handler): RouteInterface
     {
@@ -46,9 +44,7 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function post(string $pattern, $handler): RouteInterface
     {
@@ -56,9 +52,7 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function put(string $pattern, $handler): RouteInterface
     {
@@ -66,9 +60,7 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function patch(string $pattern, $handler): RouteInterface
     {
@@ -76,9 +68,7 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function delete(string $pattern, $handler): RouteInterface
     {
@@ -86,9 +76,7 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function options(string $pattern, $handler): RouteInterface
     {
@@ -96,27 +84,31 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param array<string> $methods
+     * @param callable|string|array<mixed> $handler
      */
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
         // 套用群組前綴
-        if (!empty($this->currentGroupAttributes['prefix'])) {
+        if (!empty($this->currentGroupAttributes['prefix']) && is_string($this->currentGroupAttributes['prefix'])) {
             $pattern = $this->applyPrefix($this->currentGroupAttributes['prefix'], $pattern);
         }
 
         // 套用命名空間到處理器
-        if (!empty($this->currentGroupAttributes['namespace']) && is_array($handler)) {
-            $handler[0] = $this->currentGroupAttributes['namespace'] . '\\' . $handler[0];
+        if (!empty($this->currentGroupAttributes['namespace']) && is_string($this->currentGroupAttributes['namespace']) && is_array($handler)) {
+            if (is_string($handler[0])) {
+                $handler[0] = $this->currentGroupAttributes['namespace'] . '\\' . $handler[0];
+            }
         }
 
         $route = new Route($methods, $pattern, $handler);
 
         // 套用群組中間件
         if (!empty($this->currentGroupAttributes['middleware'])) {
-            $route->middleware($this->currentGroupAttributes['middleware']);
+            $middleware = $this->currentGroupAttributes['middleware'];
+            if ($middleware instanceof MiddlewareInterface || is_string($middleware)) {
+                $route->middleware($middleware);
+            }
         }
 
         $this->routes->add($route);
@@ -125,21 +117,24 @@ class Router implements RouterInterface
     }
 
     /**
-    /**
-     * @param array $handler
-     */
+     * @param callable|string|array<mixed> $handler
      */
     public function any(string $pattern, $handler): RouteInterface
     {
         return $this->map(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $pattern, $handler);
     }
 
+    /**
+     * @param array<string, mixed> $attributes
+     */
     public function group(array $attributes, callable $callback): void
     {
         $previousAttributes = $this->currentGroupAttributes;
 
         // 合併群組屬性
-        $this->currentGroupAttributes = $this->mergeGroupAttributes($previousAttributes, $attributes);
+        /** @var array<string, mixed> $mergedAttributes */
+        $mergedAttributes = $this->mergeGroupAttributes($previousAttributes, $attributes);
+        $this->currentGroupAttributes = $mergedAttributes;
 
         // 執行群組回呼
         $callback($this);
@@ -161,7 +156,7 @@ class Router implements RouterInterface
         // 尋找匹配的路由
         $matchedRoute = $this->routes->match($request);
 
-        if ($matchedRoute == = = = null) {
+        if ($matchedRoute === null) {
             return RouteMatchResult::failed('No route matched the request');
         }
 
@@ -176,11 +171,14 @@ class Router implements RouterInterface
         return $this->routes;
     }
 
-    public function url(string $name, /** @var array<string, mixed> */ array $parameters = []): string
+    /**
+     * @param array<string, mixed> $parameters
+     */
+    public function url(string $name, array $parameters = []): string
     {
         $route = $this->routes->getByName($name);
 
-        if ($route == = = = null) {
+        if ($route === null) {
             throw new InvalidArgumentException("Route named '{$name}' not found");
         }
 
@@ -266,30 +264,38 @@ class Router implements RouterInterface
 
     /**
      * 合併群組屬性.
+     * @param array<string, mixed> $previous
+     * @param array<string, mixed> $new
+     * @return array<string, mixed>
      */
-    private function mergeGroupAttributes(array $previous, /** @var array<string, mixed> */ array $new): array
+    private function mergeGroupAttributes(array $previous, array $new): array
     {
         $merged = $previous;
 
         // 合併前綴
-        if (!empty($new['prefix'])) {
+        if (!empty($new['prefix']) && is_string($new['prefix'])) {
             $existingPrefix = $merged['prefix'] ?? '';
-            $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix']);
+            if (is_string($existingPrefix)) {
+                $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix']);
+            }
         }
 
         // 合併中間件
         if (!empty($new['middleware'])) {
+            /** @var array<mixed> $existingMiddleware */
             $existingMiddleware = $merged['middleware'] ?? [];
             $newMiddleware = is_array($new['middleware']) ? $new['middleware'] : [$new['middleware']];
             $merged['middleware'] = array_merge($existingMiddleware, $newMiddleware);
         }
 
         // 合併命名空間
-        if (!empty($new['namespace'])) {
+        if (!empty($new['namespace']) && is_string($new['namespace'])) {
             $existingNamespace = $merged['namespace'] ?? '';
-            $merged['namespace'] = empty($existingNamespace)
-                ? $new['namespace']
-                : $existingNamespace . '\\' . $new['namespace'];
+            if (is_string($existingNamespace)) {
+                $merged['namespace'] = empty($existingNamespace)
+                    ? $new['namespace']
+                    : $existingNamespace . '\\' . $new['namespace'];
+            }
         }
 
         // 其他屬性直接覆蓋

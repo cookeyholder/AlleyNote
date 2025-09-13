@@ -23,7 +23,8 @@ use RuntimeException;
 class ControllerResolver
 {
     public function __construct(
-        private ContainerInterface $container) {}
+        private ContainerInterface $container,
+    ) {}
 
     /**
      * 解析並執行控制器方法.

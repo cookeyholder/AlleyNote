@@ -1,15 +1,15 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 10:35:52
+報告生成時間: 2025-09-13 11:38:30
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 273 |
-| 語法錯誤檔案 | 88 |
-| 健康度 | 75.6% |
+| 健康檔案 | 277 |
+| 語法錯誤檔案 | 84 |
+| 健康度 | 76.7% |
 
 ## 語法錯誤詳細清單
 
@@ -62,20 +62,6 @@ Parse error: syntax error, unexpected token "private", expecting end of file in 
 Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
 ```
 
-### app/Infrastructure/Http/ServerRequestFactory.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/app/Infrastructure/Http/ServerRequestFactory.php on line 34
-Errors parsing /var/www/html/app/Infrastructure/Http/ServerRequestFactory.php
-```
-
-### app/Infrastructure/Routing/RouteDispatcher.php
-
-```
-Parse error: syntax error, unexpected token "==" in /var/www/html/app/Infrastructure/Routing/RouteDispatcher.php on line 47
-Errors parsing /var/www/html/app/Infrastructure/Routing/RouteDispatcher.php
-```
-
 ### app/Infrastructure/Routing/Core/Route.php
 
 ```
@@ -123,13 +109,6 @@ Errors parsing /var/www/html/app/Infrastructure/Routing/Providers/RoutingService
 ```
 Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/app/Infrastructure/Routing/RouteLoader.php on line 92
 Errors parsing /var/www/html/app/Infrastructure/Routing/RouteLoader.php
-```
-
-### app/Infrastructure/Routing/ControllerResolver.php
-
-```
-Parse error: syntax error, unexpected token "==" in /var/www/html/app/Infrastructure/Routing/ControllerResolver.php on line 418
-Errors parsing /var/www/html/app/Infrastructure/Routing/ControllerResolver.php
 ```
 
 ### app/Infrastructure/Services/RateLimitService.php
@@ -214,13 +193,6 @@ Errors parsing /var/www/html/tests/Unit/Domains/Security/Enums/ActivitySeverityT
 ```
 Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Security/Enums/ActivityStatusTest.php on line 11
 Errors parsing /var/www/html/tests/Unit/Domains/Security/Enums/ActivityStatusTest.php
-```
-
-### tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
-
-```
-Parse error: syntax error, unexpected token ":" in /var/www/html/tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php on line 247
-Errors parsing /var/www/html/tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
 ```
 
 ### tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
@@ -633,15 +605,12 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 儲存庫 (風險: 中)
 
-- tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
 - tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
 - tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
 - tests/Integration/Repositories/PostRepositoryTest.php
 
 ### 基礎設施 (風險: 中)
 
-- app/Infrastructure/Http/ServerRequestFactory.php
-- app/Infrastructure/Routing/RouteDispatcher.php
 - app/Infrastructure/Routing/Core/Route.php
 - app/Infrastructure/Routing/Core/Router.php
 - app/Infrastructure/Routing/Cache/RouteCacheFactory.php
@@ -649,7 +618,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 - app/Infrastructure/Routing/Cache/FileRouteCache.php
 - app/Infrastructure/Routing/Providers/RoutingServiceProvider.php
 - app/Infrastructure/Routing/RouteLoader.php
-- app/Infrastructure/Routing/ControllerResolver.php
 - app/Infrastructure/Services/RateLimitService.php
 - app/Infrastructure/Services/CacheService.php
 

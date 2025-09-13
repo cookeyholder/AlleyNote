@@ -6,8 +6,8 @@ namespace App\Infrastructure\Routing\Cache;
 
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
+use Exception;
 use Redis;
-use RedisException;
 
 /**
  * Redis 快取實作.
@@ -22,6 +22,9 @@ class RedisRouteCache implements RouteCacheInterface
 
     private int $ttl = 3600; // 預設 1 小時
 
+    /**
+     * @var array{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -30,6 +33,10 @@ class RedisRouteCache implements RouteCacheInterface
         'last_used' => 0,
     ];
 
+    /**
+     * @param Redis $redis Redis 連線實例
+     * @param string $keyPrefix 快取鍵前綴
+     */
     public function __construct(
         private readonly Redis $redis,
         private readonly string $keyPrefix = 'routes',
@@ -39,21 +46,30 @@ class RedisRouteCache implements RouteCacheInterface
 
     public function isValid(): bool
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $exists = $this->redis->exists($cacheKey);
 
             return is_int($exists) && $exists > 0;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function load(): ?RouteCollectionInterface
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $content = $this->redis->get($cacheKey);
 
-            if ($content == == false) {
+            if ($content === false) {
+                $this->stats['misses']++;
+                $this->saveStats();
+
+                return null;
+            }
+
+            if (!is_string($content)) {
                 $this->stats['misses']++;
                 $this->saveStats();
 
@@ -61,7 +77,7 @@ class RedisRouteCache implements RouteCacheInterface
             }
 
             $data = unserialize($content);
-            if (!$data instanceof RouteCollectionInterface) {
+            if (!($data instanceof RouteCollectionInterface)) {
                 $this->stats['misses']++;
                 $this->saveStats();
 
@@ -73,12 +89,14 @@ class RedisRouteCache implements RouteCacheInterface
             $this->saveStats();
 
             return $data;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return null;
+        }
     }
 
     public function store(RouteCollectionInterface $routes): bool
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $content = serialize($routes);
 
@@ -95,12 +113,14 @@ class RedisRouteCache implements RouteCacheInterface
             }
 
             return false;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function clear(): bool
     {
-        try { /* empty */ }
+        try {
             $cacheKey = $this->getCacheKey();
             $statsKey = self::STATS_KEY;
 
@@ -120,7 +140,9 @@ class RedisRouteCache implements RouteCacheInterface
             ];
 
             return is_array($results) && count($results) === 2;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public function getCachePath(): string
@@ -128,20 +150,30 @@ class RedisRouteCache implements RouteCacheInterface
         return "redis://{$this->keyPrefix}";
     }
 
+    /**
+     * 設定快取存活時間.
+     *
+     * @param int $ttl 快取存活時間（秒）
+     */
     public function setTtl(int $ttl): void
     {
         $this->ttl = $ttl;
     }
 
+    /**
+     * 取得快取存活時間.
+     *
+     * @return int 快取存活時間（秒）
+     */
     public function getTtl(): int
     {
         return $this->ttl;
     }
 
     /**
-    /**
-     * @return array
-     */
+     * 取得快取統計資料.
+     *
+     * @return array{hits: int, misses: int, size: int, created_at: int, last_used: int}
      */
     public function getStats(): array
     {
@@ -161,9 +193,11 @@ class RedisRouteCache implements RouteCacheInterface
      */
     public function isConnected(): bool
     {
-        try { /* empty */ }
+        try {
             return $this->redis->ping() === '+PONG';
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -179,15 +213,19 @@ class RedisRouteCache implements RouteCacheInterface
      */
     private function loadStats(): void
     {
-        try { /* empty */ }
+        try {
             $content = $this->redis->get(self::STATS_KEY);
-            if ($content !== false) {
-                $stats = json_decode(is_string($content) ? $content : (string) $content, true);
+            if ($content !== false && is_string($content)) {
+                $stats = json_decode($content, true);
                 if (is_array($stats)) {
-                    $this->stats = array_merge($this->stats, $stats);
+                    /** @var array{hits?: int, misses?: int, size?: int, created_at?: int, last_used?: int} $stats */
+                    $filteredStats = array_intersect_key($stats, $this->stats);
+                    $this->stats = array_merge($this->stats, $filteredStats);
                 }
             }
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 忽略錯誤，使用預設值
+        }
     }
 
     /**
@@ -195,11 +233,11 @@ class RedisRouteCache implements RouteCacheInterface
      */
     private function saveStats(): void
     {
-        try { /* empty */ }
-            $content = json_encode($this->stats);
-            if ($content !== false) {
-                $this->redis->set(self::STATS_KEY, $content);
-            }
-        } // catch block commented out due to syntax error
+        try {
+            $content = json_encode($this->stats, JSON_THROW_ON_ERROR);
+            $this->redis->set(self::STATS_KEY, $content);
+        } catch (Exception $e) {
+            // 忽略錯誤
+        }
     }
 }
