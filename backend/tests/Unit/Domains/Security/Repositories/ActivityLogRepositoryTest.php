@@ -18,7 +18,7 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(ActivityLogRepository => class)]
+#[CoversClass(ActivityLogRepository::class)]
 class ActivityLogRepositoryTest extends TestCase
 {
     private PDO|MockObject $pdo;
@@ -68,7 +68,7 @@ class ActivityLogRepositoryTest extends TestCase
         $selectStatement = $this->createMock(PDOStatement::class);
         $selectStatement->expects($this->once())
             ->method('execute')
-            ->with([' => id' => 1]);
+            ->with(['id' => 1]);
         $selectStatement->expects($this->once())
             ->method('fetch')
             ->with(PDO::FETCH_ASSOC)
@@ -77,8 +77,8 @@ class ActivityLogRepositoryTest extends TestCase
                 'uuid' => '550e8400-e29b-41d4-a716-446655440000',
                 'user_id' => 1,
                 'session_id' => null,
-                'action_type' => ActivityType => LOGIN_SUCCESS->value,
-                'action_category' => ActivityType => :LOGIN_SUCCESS->getCategory()->value,
+                'action_type' => ActivityType::LOGIN_SUCCESS->value,
+                'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
                 'target_type' => null,
                 'target_id' => null,
                 'status' => ActivityStatus::SUCCESS->value,
@@ -126,8 +126,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_SUCCESS->value,
-            'action_category' => ActivityType => :LOGIN_SUCCESS->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::SUCCESS->value,
@@ -197,8 +197,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => $uuid,
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_SUCCESS->value,
-            'action_category' => ActivityType => :LOGIN_SUCCESS->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::SUCCESS->value,
@@ -243,8 +243,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_SUCCESS->value,
-            'action_category' => ActivityType => :LOGIN_SUCCESS->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::SUCCESS->value,
@@ -290,7 +290,7 @@ class ActivityLogRepositoryTest extends TestCase
     {
         // Arrange
         $dtos = [
-            CreateActivityLogDTO => success(ActivityType => :LOGIN_SUCCESS, 1),
+            CreateActivityLogDTO::success(ActivityType::LOGIN_SUCCESS, 1),
             CreateActivityLogDTO::failure(ActivityType::LOGIN_FAILED, 2),
         ];
 
@@ -368,8 +368,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_SUCCESS->value,
-            'action_category' => ActivityType => :LOGIN_SUCCESS->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::SUCCESS->value,
@@ -419,8 +419,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_FAILED->value,
-            'action_category' => ActivityType => :LOGIN_FAILED->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_FAILED->value,
+            'action_category' => ActivityType::LOGIN_FAILED->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::FAILED->value,
@@ -470,8 +470,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_FAILED->value,
-            'action_category' => ActivityType => :LOGIN_FAILED->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_FAILED->value,
+            'action_category' => ActivityType::LOGIN_FAILED->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::FAILED->value,
@@ -659,8 +659,8 @@ class ActivityLogRepositoryTest extends TestCase
             'uuid' => '550e8400-e29b-41d4-a716-446655440000',
             'user_id' => 1,
             'session_id' => null,
-            'action_type' => ActivityType => LOGIN_SUCCESS->value,
-            'action_category' => ActivityType => :LOGIN_SUCCESS->getCategory()->value,
+            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
             'target_type' => null,
             'target_id' => null,
             'status' => ActivityStatus::SUCCESS->value,
@@ -681,10 +681,10 @@ class ActivityLogRepositoryTest extends TestCase
         $this->statement->expects($this->exactly(3))
             ->method('bindValue')
             ->willReturnCallback(function ($param, $value, $type = null) use ($searchTerm) {
-                if ($param == = = = ':search_term') {
+                if ($param === ':search_term') {
                     $this->assertEquals('%' . $searchTerm . '%', $value);
                 } else {
-                    $this->assertTrue(in_array($param, [' => limit', ' => offset'], true));
+                    $this->assertTrue(in_array($param, [':limit', ':offset'], true));
                 }
 
                 return true;

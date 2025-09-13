@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
@@ -44,7 +45,7 @@ class RouteDispatcher
         }
 
         $route = $matchResult->getRoute();
-        if ($route == == null) {
+        if ($route === null) {
             return $this->handleNotFound($request);
         }
 
@@ -52,18 +53,24 @@ class RouteDispatcher
 
         // 2. 準備中間件鏈（解析字串別名）
         $middlewares = $route->getMiddlewares();
+        /** @var array<MiddlewareInterface> */
         $resolvedMiddlewares = [];
 
         foreach ($middlewares as $middleware) {
-            try { /* empty */ }
+            try {
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
                 } else {
                     // 已經是實例，直接使用
-                    $resolvedMiddlewares[] = $middleware;
+                    if ($middleware instanceof MiddlewareInterface) {
+                        $resolvedMiddlewares[] = $middleware;
+                    } else {
+                        throw new RuntimeException('Invalid middleware type: ' . gettype($middleware));
+                    }
                 }
-            } // catch block commented out due to syntax error", 0, $e);
+            } catch (Exception $e) {
+                throw new RuntimeException('Failed to resolve middleware: ' . $e->getMessage(), 0, $e);
             }
         }
 
@@ -102,13 +109,15 @@ class RouteDispatcher
         }
 
         $body = $response->getBody();
-        $body->write(json_encode([
+        $jsonResult = json_encode([
             'error' => 'Not Found',
             'message' => '請求的路由不存在',
             'path' => $request->getUri()->getPath(),
             'method' => $request->getMethod(),
             'timestamp' => date('c'),
-        ], JSON_UNESCAPED_UNICODE) ? true : '{"error": "JSON encoding failed"}');
+        ], JSON_UNESCAPED_UNICODE);
+
+        $body->write($jsonResult !== false ? $jsonResult : '{"error": "JSON encoding failed"}');
 
         return $response
             ->withStatus(404)

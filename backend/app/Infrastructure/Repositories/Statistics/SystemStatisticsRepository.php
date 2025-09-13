@@ -18,16 +18,16 @@ use RuntimeException;
  */
 final readonly class SystemStatisticsRepository implements SystemStatisticsRepositoryInterface
 {
-    public function __construct(): mixed {}
+    public function __construct(private readonly PDO $pdo) {}
 
     /**
      * 取得系統整體效能統計.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSystemPerformanceStats(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             // 取得基本統計資料
             $totalSql = '
                 SELECT
@@ -56,10 +56,10 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             ];
 
             if (is_array($totalsResult)) {
-                ($$totals['total_posts'] ?? null) = isset(($$totalsResult['total_posts'] ?? null)) && is_numeric(($$totalsResult['total_posts'] ?? null)) ? (int) ($$totalsResult['total_posts'] ?? null) : 0;
-                ($$totals['total_users'] ?? null) = isset(($$totalsResult['total_users'] ?? null)) && is_numeric(($$totalsResult['total_users'] ?? null)) ? (int) ($$totalsResult['total_users'] ?? null) : 0;
-                ($$totals['total_views'] ?? null) = isset(($$totalsResult['total_views'] ?? null)) && is_numeric(($$totalsResult['total_views'] ?? null)) ? (int) ($$totalsResult['total_views'] ?? null) : 0;
-                ($$totals['total_activities'] ?? null) = isset(($$totalsResult['total_activities'] ?? null)) && is_numeric(($$totalsResult['total_activities'] ?? null)) ? (int) ($$totalsResult['total_activities'] ?? null) : 0;
+                $totals['total_posts'] = isset($totalsResult['total_posts']) && is_numeric($totalsResult['total_posts']) ? (int) $totalsResult['total_posts'] : 0;
+                $totals['total_users'] = isset($totalsResult['total_users']) && is_numeric($totalsResult['total_users']) ? (int) $totalsResult['total_users'] : 0;
+                $totals['total_views'] = isset($totalsResult['total_views']) && is_numeric($totalsResult['total_views']) ? (int) $totalsResult['total_views'] : 0;
+                $totals['total_activities'] = isset($totalsResult['total_activities']) && is_numeric($totalsResult['total_activities']) ? (int) $totalsResult['total_activities'] : 0;
             }
 
             // 取得週期內統計資料
@@ -85,8 +85,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($periodSql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
             $periodStatsResult = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -99,29 +99,29 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             ];
 
             if (is_array($periodStatsResult)) {
-                ($$periodStats['period_posts'] ?? null) = isset(($$periodStatsResult['period_posts'] ?? null)) && is_numeric(($$periodStatsResult['period_posts'] ?? null)) ? (int) ($$periodStatsResult['period_posts'] ?? null) : 0;
-                ($$periodStats['period_users'] ?? null) = isset(($$periodStatsResult['period_users'] ?? null)) && is_numeric(($$periodStatsResult['period_users'] ?? null)) ? (int) ($$periodStatsResult['period_users'] ?? null) : 0;
-                ($$periodStats['period_views'] ?? null) = isset(($$periodStatsResult['period_views'] ?? null)) && is_numeric(($$periodStatsResult['period_views'] ?? null)) ? (int) ($$periodStatsResult['period_views'] ?? null) : 0;
-                ($$periodStats['period_activities'] ?? null) = isset(($$periodStatsResult['period_activities'] ?? null)) && is_numeric(($$periodStatsResult['period_activities'] ?? null)) ? (int) ($$periodStatsResult['period_activities'] ?? null) : 0;
+                $periodStats['period_posts'] = isset($periodStatsResult['period_posts']) && is_numeric($periodStatsResult['period_posts']) ? (int) $periodStatsResult['period_posts'] : 0;
+                $periodStats['period_users'] = isset($periodStatsResult['period_users']) && is_numeric($periodStatsResult['period_users']) ? (int) $periodStatsResult['period_users'] : 0;
+                $periodStats['period_views'] = isset($periodStatsResult['period_views']) && is_numeric($periodStatsResult['period_views']) ? (int) $periodStatsResult['period_views'] : 0;
+                $periodStats['period_activities'] = isset($periodStatsResult['period_activities']) && is_numeric($periodStatsResult['period_activities']) ? (int) $periodStatsResult['period_activities'] : 0;
             }
 
             // 計算成長率 - 使用直接存取，因為陣列鍵現在保證存在
             $growthRates = [
                 'posts_growth' => $this->calculateGrowthRate(
-                    ($$totals['total_posts'] ?? null),
-                    ($$periodStats['period_posts'] ?? null),
+                    $totals['total_posts'],
+                    $periodStats['period_posts'],
                 ),
                 'users_growth' => $this->calculateGrowthRate(
-                    ($$totals['total_users'] ?? null),
-                    ($$periodStats['period_users'] ?? null),
+                    $totals['total_users'],
+                    $periodStats['period_users'],
                 ),
                 'views_growth' => $this->calculateGrowthRate(
-                    ($$totals['total_views'] ?? null),
-                    ($$periodStats['period_views'] ?? null),
+                    $totals['total_views'],
+                    $periodStats['period_views'],
                 ),
                 'activities_growth' => $this->calculateGrowthRate(
-                    ($$totals['total_activities'] ?? null),
-                    ($$periodStats['period_activities'] ?? null),
+                    $totals['total_activities'],
+                    $periodStats['period_activities'],
                 ),
             ];
 
@@ -132,16 +132,16 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'system_health' => [
                     'status' => 'healthy',
                     'uptime_percentage' => 99.9,
-                    'last_check' => date('Y-m-d H => i => s'),
+                    'last_check' => date('Y-m-d H:i:s'),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get system performance stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * StatisticsQueryService 需要的方法.
-     *
-     * @return array
      */
     public function getPerformanceMetrics(StatisticsPeriod $period): array
     {
@@ -159,7 +159,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     /**
      * StatisticsQueryService 需要的方法.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getErrorStatistics(StatisticsPeriod $period): array
     {
@@ -177,7 +177,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     /**
      * StatisticsQueryService 需要的方法.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getResourceUsageStatistics(StatisticsPeriod $period): array
     {
@@ -211,11 +211,11 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     /**
      * 取得資料庫使用統計.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getDatabaseUsageStats(): array
     {
-        try { /* empty */ }
+        try {
             $tableStatsSql = '
                 SELECT
                     table_name,
@@ -241,17 +241,19 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                     'total_rows' => $totalRows,
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get database usage stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得系統活動熱圖資料.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSystemActivityHeatmap(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(created_at) as date,
@@ -266,17 +268,12 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $activities = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $heatmap = [];
-
-            // 確保 $activities 是陣列
-            if (!is_array($activities)) {
-                $activities = [];
-            }
 
             foreach ($activities as $activity) {
                 // 安全地處理每個活動記錄
@@ -284,9 +281,9 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                     continue;
                 }
 
-                $date = isset(($$activity['date'] ?? null)) && is_string(($$activity['date'] ?? null)) ? ($$activity['date'] ?? null) : '';
-                $hour = isset(($$activity['hour'] ?? null)) && is_numeric(($$activity['hour'] ?? null)) ? (int) ($$activity['hour'] ?? null) : 0;
-                $count = isset(($$activity['activity_count'] ?? null)) && is_numeric(($$activity['activity_count'] ?? null)) ? (int) ($$activity['activity_count'] ?? null) : 0;
+                $date = isset($activity['date']) && is_string($activity['date']) ? $activity['date'] : '';
+                $hour = isset($activity['hour']) && is_numeric($activity['hour']) ? (int) $activity['hour'] : 0;
+                $count = isset($activity['activity_count']) && is_numeric($activity['activity_count']) ? (int) $activity['activity_count'] : 0;
 
                 if ($date !== '' && !isset($heatmap[$date])) {
                     $heatmap[$date] = array_fill(0, 24, 0);
@@ -298,13 +295,13 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             }
 
             return $heatmap;
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get system activity heatmap: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得快取效能統計.
-     *
-     * @return array
      */
     public function getCachePerformanceStats(StatisticsPeriod $period): array
     {
@@ -321,11 +318,11 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     /**
      * 取得 API 使用統計.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getApiUsageStats(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     endpoint,
@@ -341,8 +338,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $endpointStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -358,17 +355,19 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                     'total_endpoints' => count($endpointStats),
                 ],
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get API usage stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得錯誤與異常統計.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getErrorAndExceptionStats(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     DATE(created_at) as date,
@@ -383,8 +382,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $dailyTrends = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -400,13 +399,13 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 ],
                 'daily_trends' => $dailyTrends,
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get error and exception stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得系統資源使用統計.
-     *
-     * @return array
      */
     public function getSystemResourceUsageStats(): array
     {
@@ -423,12 +422,10 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統安全統計.
-     *
-     * @return array
      */
     public function getSystemSecurityStats(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     COUNT(*) as security_events,
@@ -450,8 +447,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -469,26 +466,26 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             }
 
             return [
-                'security_events' => isset(($$result['security_events'] ?? null)) && is_numeric(($$result['security_events'] ?? null)) ? (int) ($$result['security_events'] ?? null) : 0,
-                'unique_users_involved' => isset(($$result['unique_users_involved'] ?? null)) && is_numeric(($$result['unique_users_involved'] ?? null)) ? (int) ($$result['unique_users_involved'] ?? null) : 0,
-                'unique_ips' => isset(($$result['unique_ips'] ?? null)) && is_numeric(($$result['unique_ips'] ?? null)) ? (int) ($$result['unique_ips'] ?? null) : 0,
-                'failed_login_attempts' => isset(($$result['failed_login_attempts'] ?? null)) && is_numeric(($$result['failed_login_attempts'] ?? null)) ? (int) ($$result['failed_login_attempts'] ?? null) : 0,
-                'suspicious_activities' => isset(($$result['suspicious_activities'] ?? null)) && is_numeric(($$result['suspicious_activities'] ?? null)) ? (int) ($$result['suspicious_activities'] ?? null) : 0,
-                'blocked_ips' => isset(($$result['blocked_ips'] ?? null)) && is_numeric(($$result['blocked_ips'] ?? null)) ? (int) ($$result['blocked_ips'] ?? null) : 0,
+                'security_events' => isset($result['security_events']) && is_numeric($result['security_events']) ? (int) $result['security_events'] : 0,
+                'unique_users_involved' => isset($result['unique_users_involved']) && is_numeric($result['unique_users_involved']) ? (int) $result['unique_users_involved'] : 0,
+                'unique_ips' => isset($result['unique_ips']) && is_numeric($result['unique_ips']) ? (int) $result['unique_ips'] : 0,
+                'failed_login_attempts' => isset($result['failed_login_attempts']) && is_numeric($result['failed_login_attempts']) ? (int) $result['failed_login_attempts'] : 0,
+                'suspicious_activities' => isset($result['suspicious_activities']) && is_numeric($result['suspicious_activities']) ? (int) $result['suspicious_activities'] : 0,
+                'blocked_ips' => isset($result['blocked_ips']) && is_numeric($result['blocked_ips']) ? (int) $result['blocked_ips'] : 0,
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get system security stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得系統備份與維護統計.
-     *
-     * @return array
      */
     public function getSystemBackupAndMaintenanceStats(): array
     {
         // 簡化實作
         return [
-            'last_backup_date' => date('Y-m-d H => i => s', strtotime('-1 day')),
+            'last_backup_date' => date('Y-m-d H:i:s', strtotime('-1 day')),
             'backup_frequency_days' => 1,
             'backup_size_mb' => 256.8,
             'maintenance_windows' => 4,
@@ -498,21 +495,19 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統配置與版本資訊.
-     *
-     * @return array
      */
     public function getSystemConfigurationInfo(): array
     {
-        $appEnv = ($$_ENV['APP_ENV'] ?? null) ?? 'production';
+        $appEnv = $_ENV['APP_ENV'] ?? 'production';
 
         return [
             'php_version' => PHP_VERSION,
-            'php_memory_limit' => ini_get('memory_limit') ? => 'unknown',
-            'php_max_execution_time' => ini_get('max_execution_time') ? true  => 'unknown',
+            'php_memory_limit' => ini_get('memory_limit') ?: 'unknown',
+            'php_max_execution_time' => ini_get('max_execution_time') ?: 'unknown',
             'database_type' => 'SQLite3',
             'database_version' => $this->getDatabaseVersion(),
             'system_timezone' => date_default_timezone_get(),
-            'system_time' => date('Y-m-d H => i:s'),
+            'system_time' => date('Y-m-d H:i:s'),
             'application_environment' => is_string($appEnv) ? $appEnv : 'production',
         ];
     }
@@ -520,7 +515,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     /**
      * 取得系統健康檢查統計.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSystemHealthCheckStats(StatisticsPeriod $period): array
     {
@@ -531,8 +526,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地處理錯誤統計
         $totalErrors = 0;
-        if (isset(($$errors['summary'] ?? null)) && is_array(($$errors['summary'] ?? null)) && isset(($$errors['summary'] ?? null)['total_errors'])) {
-            $totalErrorsValue = ($$errors['summary'] ?? null)['total_errors'];
+        if (isset($errors['summary']) && is_array($errors['summary']) && isset($errors['summary']['total_errors'])) {
+            $totalErrorsValue = $errors['summary']['total_errors'];
             $totalErrors = is_numeric($totalErrorsValue) ? (int) $totalErrorsValue : 0;
         }
 
@@ -542,8 +537,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地處理效能指標
         $performanceMetrics = [];
-        if (isset(($$performance['total_statistics'] ?? null)) && is_array(($$performance['total_statistics'] ?? null))) {
-            $performanceMetrics = ($$performance['total_statistics'] ?? null);
+        if (isset($performance['total_statistics']) && is_array($performance['total_statistics'])) {
+            $performanceMetrics = $performance['total_statistics'];
         }
 
         return [
@@ -562,11 +557,11 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     /**
      * 取得系統負載統計.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getSystemLoadStats(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     COUNT(*) as total_requests,
@@ -578,8 +573,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -589,8 +584,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
             $peakConcurrentUsers = 0;
 
             if (is_array($result)) {
-                $totalRequests = isset(($$result['total_requests'] ?? null)) && is_numeric(($$result['total_requests'] ?? null)) ? (int) ($$result['total_requests'] ?? null) : 0;
-                $peakConcurrentUsers = isset(($$result['peak_concurrent_users'] ?? null)) && is_numeric(($$result['peak_concurrent_users'] ?? null)) ? (int) ($$result['peak_concurrent_users'] ?? null) : 0;
+                $totalRequests = isset($result['total_requests']) && is_numeric($result['total_requests']) ? (int) $result['total_requests'] : 0;
+                $peakConcurrentUsers = isset($result['peak_concurrent_users']) && is_numeric($result['peak_concurrent_users']) ? (int) $result['peak_concurrent_users'] : 0;
             }
 
             $totalSeconds = $period->endDate->getTimestamp() - $period->startDate->getTimestamp();
@@ -602,13 +597,13 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'total_requests' => $totalRequests,
                 'avg_requests_per_second' => round($avgRequestsPerSecond, 4),
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get system load stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得系統儲存空間統計.
-     *
-     * @return array
      */
     public function getSystemStorageStats(): array
     {
@@ -624,12 +619,10 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統網路統計.
-     *
-     * @return array
      */
     public function getSystemNetworkStats(StatisticsPeriod $period): array
     {
-        try { /* empty */ }
+        try {
             $sql = '
                 SELECT
                     COUNT(DISTINCT user_ip) as unique_ip_addresses
@@ -641,8 +634,8 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H => i => s'),
-                'end_date' => $period->endDate->format('Y-m-d H => i:s'),
+                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
+                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
             $uniqueIps = (int) $stmt->fetchColumn();
@@ -653,13 +646,13 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
                 'outgoing_traffic_mb' => 256.2,
                 'unique_ip_addresses' => $uniqueIps,
             ];
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            throw new RuntimeException('Failed to get system network stats: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     /**
      * 取得系統會話統計.
-     *
-     * @return array
      */
     public function getSystemSessionStats(StatisticsPeriod $period): array
     {
@@ -674,8 +667,6 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統版本更新統計.
-     *
-     * @return array
      */
     public function getSystemVersionUpdateStats(): array
     {
@@ -690,8 +681,6 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
     /**
      * 取得系統監控警報統計.
-     *
-     * @return array
      */
     public function getSystemMonitoringAlertStats(StatisticsPeriod $period): array
     {
@@ -711,15 +700,13 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
     public function isSystemHealthyInPeriod(StatisticsPeriod $period): bool
     {
         $errors = $this->getErrorAndExceptionStats($period);
-        $errorCount = (($$errors['summary'] ?? null) ?? [])['total_errors'] ?? 0;
+        $errorCount = ($errors['summary'] ?? [])['total_errors'] ?? 0;
 
         return $errorCount < 100; // 簡化的健康檢查
     }
 
     /**
      * 取得系統關鍵指標摘要
-     *
-     * @return array
      */
     public function getSystemKeyMetricsSummary(StatisticsPeriod $period): array
     {
@@ -728,24 +715,20 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
 
         // 安全地提取錯誤率
         $errorRate = 0.05; // 預設值
-        if (isset(($$errors['summary'] ?? null)) && is_array(($$errors['summary'] ?? null)) && isset(($$errors['summary'] ?? null)['error_rate_percentage'])) {
-            $errorRateValue = ($$errors['summary'] ?? null)['error_rate_percentage'];
+        if (isset($errors['summary']) && is_array($errors['summary']) && isset($errors['summary']['error_rate_percentage'])) {
+            $errorRateValue = $errors['summary']['error_rate_percentage'];
             $errorRate = is_numeric($errorRateValue) ? (float) $errorRateValue : 0.05;
         }
 
         // 安全地提取平均回應時間
         $avgResponseTime = 0.25; // 預設值
-        if (isset(($$load['avg_response_time'] ?? null))) {
-            $responseTimeValue = ($$load['avg_response_time'] ?? null);
-            $avgResponseTime = is_numeric($responseTimeValue) ? (float) $responseTimeValue : 0.25;
-        }
+        $responseTimeValue = $load['avg_response_time'];
+        $avgResponseTime = is_numeric($responseTimeValue) ? (float) $responseTimeValue : 0.25;
 
         // 安全地提取總事件數
         $totalEvents = 1000; // 預設值
-        if (isset(($$load['total_requests'] ?? null))) {
-            $totalRequestsValue = ($$load['total_requests'] ?? null);
-            $totalEvents = is_numeric($totalRequestsValue) ? (int) $totalRequestsValue : 1000;
-        }
+        $totalRequestsValue = $load['total_requests'];
+        $totalEvents = is_numeric($totalRequestsValue) ? (int) $totalRequestsValue : 1000;
 
         return [
             'uptime_percentage' => 99.95,
@@ -761,7 +744,7 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
      */
     private function calculateGrowthRate(int $total, int $period): float
     {
-        if ($total == == 0) {
+        if ($total === 0) {
             return 0.0;
         }
 
@@ -775,17 +758,19 @@ final readonly class SystemStatisticsRepository implements SystemStatisticsRepos
      */
     private function getDatabaseVersion(): string
     {
-        try { /* empty */ }
+        try {
             $stmt = $this->pdo->query('SELECT sqlite_version()');
 
             // 安全地處理 PDO query 結果
-            if ($stmt == == false) {
+            if ($stmt === false) {
                 return 'Unknown';
             }
 
             $version = $stmt->fetchColumn();
 
             return is_string($version) ? $version : 'Unknown';
-        } // catch block commented out due to syntax error
+        } catch (PDOException $e) {
+            return 'Unknown';
+        }
     }
 }

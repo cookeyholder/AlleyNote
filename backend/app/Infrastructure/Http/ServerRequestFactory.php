@@ -18,7 +18,7 @@ class ServerRequestFactory
         $headers = self::parseHeaders();
         $body = file_get_contents('php://input');
 
-        $request = new ServerRequest($method, $uri, $headers, $body, '1.1', $_SERVER);
+        $request = new ServerRequest((string) $method, $uri, $headers, $body, '1.1', $_SERVER);
 
         // 設定查詢參數
         if (!empty($_GET)) {
@@ -31,12 +31,12 @@ class ServerRequestFactory
         }
 
         // 解析 POST 資料
-        if ($method == = = = 'POST' && !empty($_POST)) {
-            $request = $request->withParsedBody($_POST);
-        } elseif ($method == = = = 'POST' && strpos($request->getHeaderLine('Content-Type'), 'application/json') === 0) {
+        if ($method === 'POST' && !empty($_POST)) {
+            $request = $request->withParsedBody((array) $_POST);
+        } elseif ($method === 'POST' && strpos($request->getHeaderLine('Content-Type'), 'application/json') === 0) {
             $jsonData = json_decode(is_string($body) ? $body : (string) $body, true);
             if ($jsonData !== null) {
-                $request = $request->withParsedBody($jsonData);
+                $request = $request->withParsedBody((array) $jsonData);
             }
         }
 
@@ -51,21 +51,21 @@ class ServerRequestFactory
         $path = $_SERVER['REQUEST_URI'] ?? '/';
 
         // 移除查詢字串
-        if (($pos = strpos($path, '?')) !== false) {
-            $path = substr($path, 0, $pos);
+        if (($pos = strpos((string) $path, '?')) !== false) {
+            $path = substr((string) $path, 0, $pos);
         }
 
         $uri = new Uri();
         $uri = $uri->withScheme($scheme)
-            ->withHost($host)
-            ->withPath($path);
+            ->withHost((string) $host)
+            ->withPath((string) $path);
 
         if ($port !== null && !self::isDefaultPort($scheme, $port)) {
             $uri = $uri->withPort($port);
         }
 
         if (!empty($_SERVER['QUERY_STRING'])) {
-            $uri = $uri->withQuery($_SERVER['QUERY_STRING']);
+            $uri = $uri->withQuery((string) $_SERVER['QUERY_STRING']);
         }
 
         return $uri;
@@ -76,6 +76,9 @@ class ServerRequestFactory
         return ($scheme === 'http' && $port === 80) || ($scheme === 'https' && $port === 443);
     }
 
+    /**
+     * @return array<string, array<string>>
+     */
     private static function parseHeaders(): array
     {
         $headers = [];
@@ -83,10 +86,10 @@ class ServerRequestFactory
         foreach ($_SERVER as $key => $value) {
             if (strpos($key, 'HTTP_') === 0) {
                 $name = str_replace('_', '-', strtolower(substr($key, 5)));
-                $headers[$name] = [$value];
+                $headers[$name] = [(string) $value];
             } elseif (in_array($key, ['CONTENT_TYPE', 'CONTENT_LENGTH'], true)) {
                 $name = str_replace('_', '-', strtolower($key));
-                $headers[$name] = [$value];
+                $headers[$name] = [(string) $value];
             }
         }
 

@@ -411,11 +411,11 @@ class ControllerResolver
         }
 
         // 如果容器中沒有，嘗試建立實例
-        try { /* empty */ }
+        try {
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
 
-            if ($constructor == == null) {
+            if ($constructor === null) {
                 return new $controllerClass();
             }
 
@@ -423,7 +423,8 @@ class ControllerResolver
             $args = $this->resolveConstructorArguments($constructor);
 
             return new $controllerClass(...$args);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            throw new RuntimeException("Failed to create controller instance: {$controllerClass}", 0, $e);
         }
     }
 
@@ -437,7 +438,7 @@ class ControllerResolver
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type == = = = null) {
+            if ($type === null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
                 } else {
@@ -476,9 +477,10 @@ class ControllerResolver
         /** @var array<string, mixed> */
         array $routeParameters,
     ): array {
-        try { /* empty */ }
+        try {
             $reflection = new ReflectionMethod($controller, $methodName);
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            throw new RuntimeException("Method not found: {$methodName}", 0, $e);
         }
 
         $args = [];
@@ -542,7 +544,7 @@ class ControllerResolver
      */
     private function convertParameter(string $value, ?ReflectionType $type): mixed
     {
-        if ($type == = = = null || !$type instanceof ReflectionNamedType) {
+        if ($type === null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
 

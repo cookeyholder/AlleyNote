@@ -1,15 +1,15 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 00:01:18
+報告生成時間: 2025-09-13 10:35:52
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 272 |
-| 語法錯誤檔案 | 89 |
-| 健康度 | 75.3% |
+| 健康檔案 | 273 |
+| 語法錯誤檔案 | 88 |
+| 健康度 | 75.6% |
 
 ## 語法錯誤詳細清單
 
@@ -60,13 +60,6 @@ Errors parsing /var/www/html/app/Domains/Statistics/Services/PostStatisticsServi
 ```
 Parse error: syntax error, unexpected token "private", expecting end of file in /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php on line 51
 Errors parsing /var/www/html/app/Domains/Statistics/Console/StatisticsCalculationConsole.php
-```
-
-### app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php on line 59
-Errors parsing /var/www/html/app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php
 ```
 
 ### app/Infrastructure/Http/ServerRequestFactory.php
@@ -226,7 +219,7 @@ Errors parsing /var/www/html/tests/Unit/Domains/Security/Enums/ActivityStatusTes
 ### tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
 
 ```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php on line 21
+Parse error: syntax error, unexpected token ":" in /var/www/html/tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php on line 247
 Errors parsing /var/www/html/tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
 ```
 
@@ -640,7 +633,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 儲存庫 (風險: 中)
 
-- app/Infrastructure/Repositories/Statistics/SystemStatisticsRepository.php
 - tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
 - tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
 - tests/Unit/Infrastructure/Repositories/Statistics/StatisticsRepositoryTest.php
