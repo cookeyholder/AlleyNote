@@ -73,7 +73,10 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->redis->discard();
+            return false;
+        }
     }
 
     /**
@@ -149,7 +152,10 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->redis->discard();
+            return false;
+        }
     }
 
     /**
@@ -183,7 +189,10 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->redis->discard();
+            return false;
+        }
     }
 
     /**
@@ -196,7 +205,7 @@ class RedisTagRepository implements TagRepositoryInterface
         $keyTagsKey = $this->getKeyTagsKey($key);
         $expiryTime = $this->redis->hGet($keyTagsKey, $tag);
 
-        if ($expiryTime == == false) {
+        if ($expiryTime === false) {
             return false;
         }
 
@@ -385,7 +394,10 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->redis->discard();
+            return false;
+        }
     }
 
     /**
@@ -463,7 +475,10 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->redis->discard();
+            return false;
+        }
     }
 
     /**

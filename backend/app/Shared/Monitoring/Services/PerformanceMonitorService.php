@@ -129,9 +129,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 記錄詳細資訊
         $this->logger->info("Operation completed: {$operation}", [
             'operation' => $operation,
-            'duration_ms' => (float]) $duration,
+            'duration_ms' => (float) $duration,
             'status' => 'success',
-            'memory_peak' => memory_get_peak_usage(true]),
+            'memory_peak' => memory_get_peak_usage(true),
             'context' => $context,
         ]);
     }
@@ -420,8 +420,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         ];
 
         $this->logger->warning("Slow operation detected: {$operation}", [
-            'duration_ms' => round($duration, 2]),
-            'threshold_ms' => (float]) $this->slowQueryThreshold,
+            'duration_ms' => round($duration, 2),
+            'threshold_ms' => (float) $this->slowQueryThreshold,
             'context' => $context,
         ]);
     }
@@ -524,7 +524,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function percentile(array $values, int $percentile): float
     {
         $count = count($values);
-        if ($count == = = = 0) {
+        if ($count === 0) {
             return 0.0;
         }
 
@@ -532,7 +532,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $lower = (int) floor($index);
         $upper = (int) ceil($index);
 
-        if ($lower == = = = $upper) {
+        if ($lower === $upper) {
             $value = $values[$lower] ?? 0;
 
             return is_numeric($value) ? (float) $value : 0.0;
@@ -557,7 +557,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $memoryLimit = trim($memoryLimit);
 
-        if ($memoryLimit == = = = '-1') {
+        if ($memoryLimit === '-1') {
             return 0;
         }
 

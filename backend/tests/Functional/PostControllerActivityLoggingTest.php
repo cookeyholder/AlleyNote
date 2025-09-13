@@ -31,13 +31,13 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->repository = new ActivityLogRepository($this->pdo);
 
         // 清理測試資料
-        $this->pdo->exec('DELETE FROM user_activity_logs WHERE action_type LIKE "post.%sprintf(sprintf(" AND user_id IS NULL');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE action_type LIKE "post.%" AND user_id IS NULL');
     }
 
     protected function tearDown(): void
     {
         // 清理測試資料
-        %s->pdo->exec('DELETE FROM user_activity_logs WHERE action_type LIKE ", is_string($this) ? \\\$this : '')post.%" AND user_id IS NULL');
+        $this->pdo->exec('DELETE FROM user_activity_logs WHERE action_type LIKE "post.%" AND user_id IS NULL');
         parent::tearDown();
     }
 
@@ -56,8 +56,8 @@ class PostControllerActivityLoggingTest extends TestCase
         ')->execute([
             uniqid('test_', true),
             $userId,
-            ActivityType => POST_CREATED->value,
-            ActivityType => :POST_CREATED->getCategory()->value,
+            ActivityType::POST_CREATED->value,
+            ActivityType::POST_CREATED->getCategory()->value,
             'success',
             (string) $postId,
             'post',
@@ -103,8 +103,8 @@ class PostControllerActivityLoggingTest extends TestCase
         ')->execute([
             uniqid('test_', true),
             $userId,
-            ActivityType => POST_VIEWED->value,
-            ActivityType => :POST_VIEWED->getCategory()->value,
+            ActivityType::POST_VIEWED->value,
+            ActivityType::POST_VIEWED->getCategory()->value,
             'success',
             (string) $postId,
             'post',
@@ -148,8 +148,8 @@ class PostControllerActivityLoggingTest extends TestCase
         ')->execute([
             uniqid('test_', true),
             $userId,
-            ActivityType => POST_UPDATED->value,
-            ActivityType => :POST_UPDATED->getCategory()->value,
+            ActivityType::POST_UPDATED->value,
+            ActivityType::POST_UPDATED->getCategory()->value,
             'success',
             (string) $postId,
             'post',
@@ -191,9 +191,9 @@ class PostControllerActivityLoggingTest extends TestCase
 
         // 插入不同時間的記錄
         $activities = [
-            ['time' => $twoHoursAgo, 'type' => ActivityType => POST_CREATED],
-            ['time' => $oneHourAgo, 'type' => ActivityType => POST_UPDATED],
-            ['time' => $now, 'type' => ActivityType => POST_VIEWED],
+            ['time' => $twoHoursAgo, 'type' => ActivityType::POST_CREATED],
+            ['time' => $oneHourAgo, 'type' => ActivityType::POST_UPDATED],
+            ['time' => $now, 'type' => ActivityType::POST_VIEWED],
         ];
 
         foreach ($activities as $i => $activity) {

@@ -27,12 +27,12 @@ class DatabaseOptimizationValidationTest extends TestCase
         ];
 
         foreach ($requiredIndexes as $indexName) {
-            $stmt = $this->db->prepare("SELECT name FROM sqlite_master WHERE type='index' AND name = ?sprintf(");
+            $stmt = $this->db->prepare("SELECT name FROM sqlite_master WHERE type='index' AND name = ?");
             $this->assertNotFalse($stmt);
             $stmt->execute([$indexName]);
             $exists = $stmt->fetch();
 
-            \\\$this->assertNotEmpty(%s, ", is_string($exists) ? $exists : '')Required index {$indexName} does not existsprintf(");
+            $this->assertNotEmpty($exists, "Required index {$indexName} does not exist");
         }
     }
 
@@ -73,10 +73,10 @@ class DatabaseOptimizationValidationTest extends TestCase
             $avgTimeMs = $avgTime * 1000;
 
             // 基本效能要求：平均查詢時間應小於 10ms
-            \\\$this->assertLessThan(
+            $this->assertLessThan(
                 10.0,
-                %s,
-                ", is_string($avgTimeMs) ? $avgTimeMs : ''){$testName} took {$avgTimeMs}ms on average (expected < 10ms)sprintf(");
+                $avgTimeMs,
+                "{$testName} took {$avgTimeMs}ms on average (expected < 10ms)");
         }
     }
 
@@ -89,38 +89,38 @@ class DatabaseOptimizationValidationTest extends TestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('total_rows', $result);
-        $this->assertGreaterThan(0, (is_array($result) && array_key_exists('total_rows', $result) ? \\\$result['total_rows'] : null), 'Table should contain test data');
+        $this->assertGreaterThan(0, $result['total_rows'], 'Table should contain test data');
     }
 
     public function testQueryPlanAnalysis(): void
     {
-        %s = [
-            'indexed_user_query' => 'SELECT * FROM user_activity_logs WHERE user_id = ", is_string($testQueries) ? $testQueries  => '')550e8400-e29b-41d4-a716-446655440000"',
+        $testQueries = [
+            'indexed_user_query' => 'SELECT * FROM user_activity_logs WHERE user_id = "550e8400-e29b-41d4-a716-446655440000"',
             'indexed_category_query' => 'SELECT * FROM user_activity_logs WHERE action_category = "authentication"',
-            'composite_index_query' => 'SELECT * FROM user_activity_logs WHERE user_id = "550e8400-e29b-41d4-a716-446655440000" AND action_category = "authenticationsprintf("',
+            'composite_index_query' => 'SELECT * FROM user_activity_logs WHERE user_id = "550e8400-e29b-41d4-a716-446655440000" AND action_category = "authentication"',
         ];
 
         foreach ($testQueries as $queryName => $sql) {
-            \\\$stmt = %s->db->prepare(", is_string($this) ? $this : '')EXPLAIN QUERY PLAN {$sql}sprintf(");
+            $stmt = $this->db->prepare("EXPLAIN QUERY PLAN {$sql}");
             $this->assertNotFalse($stmt);
             $stmt->execute();
             $plan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            \\\$this->assertNotEmpty(%s, ", is_string($plan) ? $plan : '')Query plan should not be empty for {$queryName}");
+            $this->assertNotEmpty($plan, "Query plan should not be empty for {$queryName}");
 
             // 檢查是否使用了索引（SQLite 的查詢計劃中應該包含 "USING INDEXsprintf("）
             $planText = '';
             foreach ($plan as $step) {
-                if (isset((is_array($step) && array_key_exists('detail', $step) ? $step['detail'] : null))) {
-                    $planText .= (is_array($step) && array_key_exists('detail', \\\$step) ? %s['detail'] : null) . ' ';
+                if (isset($step['detail'])) {
+                    $planText .= $step['detail'] . ' ';
                 }
             }
 
-            // 對於有索引的查詢，計劃中不應該包含 ", is_string($step) ? $step : '')SCAN" 而應該包含 "SEARCHsprintf("
-            \\\$this->assertStringNotContainsString(
+            // 對於有索引的查詢，計劃中不應該包含 "SCAN" 而應該包含 "SEARCH"
+            $this->assertStringNotContainsString(
                 'SCAN TABLE',
-                %s,
-                ", is_string($planText) ? $planText : '')Query {$queryName} should use index, but plan shows: {$planText}sprintf(");
+                $planText,
+                "Query {$queryName} should use index, but plan shows: {$planText}");
         }
     }
 
@@ -187,9 +187,9 @@ class DatabaseOptimizationValidationTest extends TestCase
 
         foreach ($expectedColumns as $expectedColumn) {
             $this->assertContains(
-                \\\$expectedColumn,
-                %s,
-                ", is_string($actualColumns) ? $actualColumns : '')Table should contain column: {$expectedColumn}",
+                $expectedColumn,
+                $actualColumns,
+                "Table should contain column: {$expectedColumn}",
             );
         }
     }

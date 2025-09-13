@@ -29,9 +29,7 @@ class LayeredCacheDriver implements CacheDriverInterface
     ];
 
     /**
-    /**
      * @param array $layers 快取層級，按優先順序排列
-     */
      */
     public function __construct(array $layers)
     {
@@ -307,8 +305,8 @@ class LayeredCacheDriver implements CacheDriverInterface
         }
 
         return array_merge($this->stats, [
-            'total_layers' => count($this->layers]),
-            'hit_rate' => round($hitRate, 2]),
+            'total_layers' => count($this->layers),
+            'hit_rate' => round($hitRate, 2),
             'layers' => $layerStats,
         ]);
     }

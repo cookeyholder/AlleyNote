@@ -42,7 +42,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
             'stack_trace' => $error->getTraceAsString(),
-            'previous' => $error->getPrevious() ? get_class($error->getPrevious()]) . ' => ' . $error->getPrevious(])->getMessage(])  => null,
+            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage() : null,
         ]), $error);
     }
 
@@ -72,7 +72,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
             'stack_trace' => $error->getTraceAsString(),
-            'previous' => $error->getPrevious() ? get_class($error->getPrevious()]) . ' => ' . $error->getPrevious(])->getMessage(])  => null,
+            'previous' => $error->getPrevious() ? get_class($error->getPrevious()) . ' => ' . $error->getPrevious()->getMessage() : null,
         ]), $error);
 
         // 觸發所有通知處理器
@@ -95,7 +95,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $stats = [
             'total_errors' => count($recentErrors),
             'time_period_hours' => $hours,
-            'error_rate_per_hour' => $hours > 0 ? count($recentErrors) / $hours  => 0,
+            'error_rate_per_hour' => $hours > 0 ? count($recentErrors) / $hours : 0,
             'levels' => [],
             'error_types' => [],
             'top_error_files' => [],
@@ -327,7 +327,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $this->logger->info('Error records cleanup completed', [
             'days_kept' => $daysToKeep,
             'records_cleaned' => $cleanedCount,
-            'records_remaining' => count($this->errorRecords]),
+            'records_remaining' => count($this->errorRecords),
         ]);
 
         return $cleanedCount;
@@ -431,7 +431,10 @@ class ErrorTrackerService implements ErrorTrackerInterface
         foreach ($this->notificationHandlers as $handler) {
             try {
                 $handler($level, $message, $context, $exception);
-            } // catch block commented out due to syntax error
+            } catch (Throwable $e) {
+                // 忽略通知處理器中的例外，避免無限循環
+                error_log('Notification handler failed: ' . $e->getMessage());
+            }
         }
     }
 

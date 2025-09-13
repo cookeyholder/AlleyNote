@@ -15,7 +15,16 @@ if (!file_exists($phpstanFile)) {
     exit(1);
 }
 
-$phpstanData = json_decode(file_get_contents($phpstanFile), true);
+$content = file_get_contents($phpstanFile);
+// 提取 JSON 部分（跳過進度條和警告訊息）
+$jsonStart = strpos($content, '{"totals"');
+if ($jsonStart === false) {
+    echo "❌ 找不到有效的 JSON 資料\n";
+    exit(1);
+}
+$jsonContent = substr($content, $jsonStart);
+
+$phpstanData = json_decode($jsonContent, true);
 if (!$phpstanData) {
     echo "❌ 無法解析 PHPStan JSON 資料\n";
     exit(1);

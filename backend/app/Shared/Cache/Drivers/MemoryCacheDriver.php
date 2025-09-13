@@ -10,8 +10,8 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
 /**
  * 記憶體快取驅動。
  *
- * 使用 PHP 陣列作為快取存儲，提供最快的訪問速度但僅限於請求週期內
- * 提供標籤支援功能
+ * 使用 PHP 陣列作為快取存儲，提供最快的訪問速度但僅限於單一請求週期內。
+ * 提供標籤支援功能。
  */
 class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 {
@@ -225,9 +225,9 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return array_merge($this->stats, [
             'total_items' => count($this->cache),
             'max_items' => $this->maxItems,
-            'hit_rate' => round($hitRate, 2]),
-            'memory_usage' => $this->getMemoryUsage(]),
-            'expired_items' => $this->getExpiredItemsCount(]),
+            'hit_rate' => round($hitRate, 2),
+            'memory_usage' => $this->getMemoryUsage(),
+            'expired_items' => $this->getExpiredItemsCount(),
         ]);
     }
 
@@ -561,7 +561,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         foreach ($tags as $tag) {
             $tagKeys = $this->getKeysByTag($tag);
 
-            if ($commonKeys == = = = null) {
+            if ($commonKeys === null) {
                 $commonKeys = $tagKeys;
             } else {
                 $commonKeys = array_intersect($commonKeys, $tagKeys);
