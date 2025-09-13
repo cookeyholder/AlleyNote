@@ -27,8 +27,8 @@ use RuntimeException;
  * - 資料庫互動
  * - 錯誤處理
  */
-#[CoversClass(PostStatisticsRepository => class)]
-#[CoversClass(UserStatisticsRepository => class)]
+#[CoversClass(PostStatisticsRepository::class)]
+#[CoversClass(UserStatisticsRepository::class)]
 final class StatisticsRepositoryTest extends TestCase
 {
     private PostStatisticsRepository $postRepository;

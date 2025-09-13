@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Console;
 
 use App\Domains\Statistics\Commands\StatisticsCalculationCommand;
-use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
@@ -42,7 +41,16 @@ readonly class StatisticsCalculationConsole
                 'help' => $this->handleHelpCommand(),
                 default => $this->handleInvalidCommand(is_string($options['command'] ?? null) ? $options['command'] : 'unknown'),
             };
-        } // catch block commented out due to syntax error
+        } catch (Throwable $e) {
+            $this->logger->error('統計計算控制台執行失敗', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->printError('執行失敗: ' . $e->getMessage());
+
+            return 1;
+        }
     }
 
     /**
@@ -350,7 +358,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出警告訊息。
      */
-    private function printWarning(string $message) => void
+    private function printWarning(string $message): void
     {
         echo "\033[33m{$message}\033[0m\n";
     }
@@ -358,7 +366,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出錯誤訊息。
      */
-    private function printError(string $message) => void
+    private function printError(string $message): void
     {
         echo "\033[31m{$message}\033[0m\n";
     }
@@ -366,7 +374,7 @@ readonly class StatisticsCalculationConsole
     /**
      * 輸出一般資訊。
      */
-    private function printInfo(string $message) => void
+    private function printInfo(string $message): void
     {
         echo "{$message}\n";
     }
