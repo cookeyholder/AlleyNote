@@ -7,15 +7,15 @@ namespace App\Shared\Schemas;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
-    schema => 'User',
-    type => 'object',
-    title => '使用者',
+    schema: 'User',
+    type: 'object',
+    title: '使用者',
     description: '使用者資料結構',
     properties: [
         new OA\Property(
-            property => 'id',
-            type => 'integer',
-            description => '使用者ID',
+            property: 'id',
+            type: 'integer',
+            description: '使用者ID',
             example: 1,
         ),
         new OA\Property(
@@ -48,16 +48,16 @@ use OpenApi\Attributes as OA;
     ],
 )]
 #[OA\Schema(
-    schema => 'LoginRequest',
-    type => 'object',
-    title => '登入請求',
+    schema: 'LoginRequest',
+    type: 'object',
+    title: '登入請求',
     description: '使用者登入請求',
     required: ['username', 'password'],
     properties: [
         new OA\Property(
-            property => 'username',
-            type => 'string',
-            description => '使用者名稱',
+            property: 'username',
+            type: 'string',
+            description: '使用者名稱',
             example: 'admin',
         ),
         new OA\Property(
@@ -77,15 +77,15 @@ use OpenApi\Attributes as OA;
     ],
 )]
 #[OA\Schema(
-    schema => 'LoginResponse',
-    type => 'object',
-    title => '登入回應',
+    schema: 'LoginResponse',
+    type: 'object',
+    title: '登入回應',
     description: '登入成功回應',
     properties: [
         new OA\Property(
-            property => 'success',
-            type => 'boolean',
-            description => '登入是否成功',
+            property: 'success',
+            type: 'boolean',
+            description: '登入是否成功',
             example: true,
         ),
         new OA\Property(
