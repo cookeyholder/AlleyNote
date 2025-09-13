@@ -134,7 +134,14 @@ class TaggedCacheManager implements TaggedCacheInterface
             $this->put($key, $value, $ttl);
 
             return $value;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->logger->error('記憶化回呼函數執行失敗', [
+                'key' => $key,
+                'error' => $e->getMessage(),
+            ]);
+
+            throw $e;
+        }
     }
 
     /**
@@ -360,9 +367,9 @@ class TaggedCacheManager implements TaggedCacheInterface
         }
 
         $this->logger->info('批量設定標籤化快取', [
-            'items_count' => count($items]),
+            'items_count' => count($items),
             'tags' => $tags,
-            'success_count' => count(array_filter($results])]),
+            'success_count' => count(array_filter($results)),
         ]);
 
         return $results;

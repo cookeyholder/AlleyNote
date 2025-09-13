@@ -39,9 +39,6 @@ class CacheServiceProvider
     /** @var array<string, mixed> 設定 */
     private array $config;
 
-    /**
-     * @param array $config
-     */
     public function __construct(Container $container, array $config = [])
     {
         $this->container = $container;
@@ -280,7 +277,6 @@ class CacheServiceProvider
 
     /**
      * 取得 DI 容器定義。
-     * @return array
      */
     public static function getDefinitions(): array
     {
@@ -410,7 +406,7 @@ class CacheServiceProvider
                     if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
                         $tagRepository = $tagRepositoryTmp;
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // 忽略錯誤，使用預設值
                 }
 
@@ -421,7 +417,7 @@ class CacheServiceProvider
                     if ($monitorTmp instanceof CacheMonitorInterface) {
                         $monitor = $monitorTmp;
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // 忽略錯誤，使用預設值
                 }
 
@@ -449,7 +445,7 @@ class CacheServiceProvider
                             $redisPriority = $c->has('cache.drivers.redis.priority') ? $c->get('cache.drivers.redis.priority') : 70;
                             $manager->addDriver('redis', $redisDriver, is_int($redisPriority) ? $redisPriority : 70);
                         }
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         // 忽略 Redis 連線錯誤
                     }
                 }
@@ -472,7 +468,6 @@ class CacheServiceProvider
 
     /**
      * 取得預設設定。
-     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -526,7 +521,6 @@ class CacheServiceProvider
 
     /**
      * 取得設定。
-     * @return array
      */
     public function getConfig(): array
     {
@@ -535,7 +529,6 @@ class CacheServiceProvider
 
     /**
      * 更新設定。
-     * @param array $config
      */
     public function updateConfig(array $config): void
     {
@@ -566,7 +559,6 @@ class CacheConfigBuilder
 
     /**
      * 設定記憶體驅動。
-     * @param array $config
      */
     public function memoryDriver(array $config = []): self
     {
@@ -585,7 +577,6 @@ class CacheConfigBuilder
 
     /**
      * 設定檔案驅動。
-     * @param array $config
      */
     public function fileDriver(?string $path = null, array $config = []): self
     {
@@ -609,7 +600,6 @@ class CacheConfigBuilder
 
     /**
      * 設定 Redis 驅動。
-     * @param array $config
      */
     public function redisDriver(array $config = []): self
     {
@@ -631,7 +621,6 @@ class CacheConfigBuilder
 
     /**
      * 設定快取策略。
-     * @param array $config
      */
     public function strategy(array $config): self
     {
@@ -647,7 +636,6 @@ class CacheConfigBuilder
 
     /**
      * 設定管理器。
-     * @param array $config
      */
     public function manager(array $config): self
     {
@@ -663,7 +651,6 @@ class CacheConfigBuilder
 
     /**
      * 建構設定。
-     * @return array
      */
     public function build(): array
     {

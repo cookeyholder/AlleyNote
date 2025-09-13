@@ -40,9 +40,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     /** @var array<string> 排除模式 */
     private array $excludePatterns;
 
-    /**
-     * @param array $config
-     */
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -175,8 +172,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得策略統計資訊。
-     *
-     * @return array
      */
     public function getStats(): array
     {
@@ -212,8 +207,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得配置。
-     *
-     * @return array
      */
     public function getConfig(): array
     {
@@ -222,8 +215,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 更新配置。
-     *
-     * @param array $config
      */
     public function updateConfig(array $config): void
     {
@@ -300,8 +291,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
     /**
      * 取得預設配置。
-     *
-     * @return array
      */
     private function getDefaultConfig(): array
     {

@@ -261,15 +261,15 @@ class ValidatorFactory
             }
 
             // 檢查是否包含危險字元
-            $dangerousChars = ['/', '\\', ' => ', '*', '?', '"', '<', '>', '|', "\0"];
+            $dangerousChars = ['/', '\\', '=>', '*', '?', '"', '<', '>', '|', "\0"];
             foreach ($dangerousChars as $char) {
                 if (strpos($filename, $char) !== false) {
                     return false;
                 }
             }
 
-            // 不能是 . 或 .
-            if ($filename == = = = '.' || $filename === '.') {
+            // 不能是 . 或 ..
+            if ($filename === '.' || $filename === '..') {
                 return false;
             }
 
@@ -318,7 +318,7 @@ class ValidatorFactory
 
             $password = $allData['password'] ?? null;
 
-            if ($password == = = = null) {
+            if ($password === null) {
                 return false;
             }
 

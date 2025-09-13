@@ -21,10 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 // 建立模擬的 PSR-7 請求和回應
-$request = new class implements ServerRequestInterface
-
-
-{
+$request = new class implements ServerRequestInterface {
     private array $attributes = [];
 
     public function getMethod(): string
@@ -35,8 +32,6 @@ $request = new class implements ServerRequestInterface
     public function getUri()
     {
         return new class {
-    }
-    }
             public function getPath(): string
             {
                 return '/users/123';
@@ -111,8 +106,6 @@ $request = new class implements ServerRequestInterface
     public function getBody()
     {
         return new class {
-    }
-    }
             public function __toString(): string
             {
                 return '';
@@ -196,13 +189,9 @@ $request = new class implements ServerRequestInterface
     }
 };
 
-$response = new class implements ResponseInterface
-
-
-{
+$response = new class implements ResponseInterface {
     private string $body = '';
 
-    }
     public function __construct(string $body = '')
     {
         $this->body = $body;
@@ -211,11 +200,9 @@ $response = new class implements ResponseInterface
     public function getBody()
     {
         return new class ($this->body) {
-    }
-    }
-            function __construct(private string $content) {}
+            public function __construct(private string $content) {}
 
-    public function __toString(): string
+            public function __toString(): string
             {
                 return $this->content;
             }
@@ -291,34 +278,24 @@ $response = new class implements ResponseInterface
 
 // 建立測試中介軟體
 class LoggingMiddleware extends AbstractMiddleware
-
-
-
 {
-    }
-    function __construct(private string $message, int $priority = 0)
+    public function __construct(private string $message, int $priority = 0)
     {
         parent::__construct('logging-' . md5($message), $priority);
     }
 
     protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        echo '執行中介軟體: {(string)this->message}
-';
+        echo '執行中介軟體: {(string)this->message}';
         $response = $handler->handle($request);
-        echo '完成中介軟體: {(string)this->message}
-';
+        echo '完成中介軟體: {(string)this->message}';
 
         return $response;
     }
 }
 
 class AuthMiddleware extends AbstractMiddleware
-
-
-
 {
-    }
     public function __construct(int $priority = 10)
     {
         parent::__construct('auth', $priority);
@@ -335,11 +312,7 @@ class AuthMiddleware extends AbstractMiddleware
 }
 
 // 建立最終處理器
-$finalHandler = new class implements RequestHandlerInterface
-
-
-{
-    }
+$finalHandler = new class implements RequestHandlerInterface {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         echo '執行最終處理器
@@ -347,17 +320,10 @@ $finalHandler = new class implements RequestHandlerInterface
         echo '請求屬性: ' . json_encode($request->getAttributes(), JSON_UNESCAPED_UNICODE) . '
 ';
 
-        return new class implements ResponseInterface
-
-
-{
-    }
-    }
-    public function getBody()
+        return new class implements ResponseInterface {
+            public function getBody()
             {
                 return new class {
-    }
-    }
                     public function __toString(): string
                     {
                         return 'Hello, World!';
@@ -371,62 +337,62 @@ $finalHandler = new class implements RequestHandlerInterface
                 return 200;
             }
 
-    public function withStatus($code, $reasonPhrase = ''): self
+            public function withStatus($code, $reasonPhrase = ''): self
             {
                 return $this;
             }
 
-    public function getReasonPhrase(): string
+            public function getReasonPhrase(): string
             {
                 return 'OK';
             }
 
-    public function getProtocolVersion(): string
+            public function getProtocolVersion(): string
             {
                 return '1.1';
             }
 
-    public function withProtocolVersion($version): self
+            public function withProtocolVersion($version): self
             {
                 return $this;
             }
 
-    public function getHeaders(): array
+            public function getHeaders(): array
             {
                 return [];
             }
 
-    public function hasHeader($name): bool
+            public function hasHeader($name): bool
             {
                 return false;
             }
 
-    public function getHeader($name): array
+            public function getHeader($name): array
             {
                 return [];
             }
 
-    public function getHeaderLine($name): string
+            public function getHeaderLine($name): string
             {
                 return '';
             }
 
-    public function withHeader($name, $value): self
+            public function withHeader($name, $value): self
             {
                 return $this;
             }
 
-    public function withAddedHeader($name, $value): self
+            public function withAddedHeader($name, $value): self
             {
                 return $this;
             }
 
-    public function withoutHeader($name): self
+            public function withoutHeader($name): self
             {
                 return $this;
             }
 
-    public function withBody($body): self
+            public function withBody($body): self
             {
                 return $this;
             }
@@ -534,7 +500,6 @@ echo '路由匹配: ' . ($matchResult->isMatched() ? '成功' : '失敗') . '
 if ($matchResult->isMatched()) {
     echo '路由參數: ' . json_encode($matchResult->getParameters(), JSON_UNESCAPED_UNICODE) . '
 ';
-    }
 }
 echo '
 ';
@@ -552,11 +517,11 @@ try {
         'slug' => 'hello-world',
         'id' => 456,
     ], ['page' => 2, 'limit' => 10]);
-    echo '生成的 URL: {(string)url}
+    echo '生成的 URL: ' . $url . '
 ';
+} catch (Exception $e) {
+    echo '錯誤: ' . $e->getMessage() . "\n";
 }
-    $url = $route2->generateUrl(['slug' => 'hello-world']); // 缺少 id 參數
-} // catch block commented out due to syntax error
 
 echo '
 ';

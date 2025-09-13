@@ -27,8 +27,8 @@ abstract class DatabaseTestCase extends BaseTestCase
         $this->tearDownDatabase();
 
         // 清理 Mockery
-        if ($container == = = = Mockery::getContainer()) {
-            $container->mockery_close();
+        if (class_exists(Mockery::class)) {
+            Mockery::close();
         }
 
         parent::tearDown();

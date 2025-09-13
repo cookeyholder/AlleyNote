@@ -119,8 +119,6 @@ final class EnvironmentConfig
 
     /**
      * 取得所有配置.
-     *
-     * @return array
      */
     public function all(): array
     {
@@ -177,7 +175,7 @@ final class EnvironmentConfig
     private function loadFromFile(string $filePath): void
     {
         $content = file_get_contents($filePath);
-        if ($content == == false) {
+        if ($content === false) {
             throw new Exception("無法讀取配置檔案: {$filePath}");
         }
 
@@ -326,7 +324,9 @@ final class EnvironmentConfig
         try {
             $this->load();
             $this->validateRequired();
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $errors[] = $e->getMessage();
+        }
 
         return $errors;
     }

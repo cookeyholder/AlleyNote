@@ -142,8 +142,8 @@ class PostRepositoryPerformanceTest extends TestCase
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {\\\$i}",
-                'content' => "內容 {\\\$i}",
+                'title' => '文章 {\\$i}',
+                'content' => '內容 {\\$i}',
                 'user_id' => 1,
             ]);
             $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
@@ -166,8 +166,8 @@ class PostRepositoryPerformanceTest extends TestCase
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {\\\$i}",
-                'content' => "內容 {\\\$i}",
+                'title' => '文章 {\\$i}',
+                'content' => '內容 {\\$i}',
                 'user_id' => 1,
                 'status' => 'published',
             ]);
@@ -226,7 +226,7 @@ class PostRepositoryPerformanceTest extends TestCase
         for ($i = 0; $i < $concurrentCount; $i++) {
             $this->repository->incrementViews(
                 $post->getId(),
-                "192.168.1.{\\\$i}",
+                '192.168.1.{\\$i}',
                 $i + 1,
             );
         }

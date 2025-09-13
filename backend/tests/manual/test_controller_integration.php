@@ -5,11 +5,6 @@ declare(strict_types=1);
 // 自動載入 Composer 依賴
 require_once __DIR__ . '/././vendor/autoload.php';
 
-use App\Application\Controllers\PostController;
-use App\Infrastructure\Routing\ControllerResolver;
-use App\Infrastructure\Routing\Core\Route;
-use App\Infrastructure\Routing\Core\Router;
-use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -17,9 +12,6 @@ use Psr\Http\Message\UriInterface;
 
 // 簡單的 Mock 實作用於測試
 class MockStream implements StreamInterface
-
-
-
 {
     private string $content = '';
 
@@ -93,12 +85,8 @@ class MockStream implements StreamInterface
 }
 
 class MockUri implements UriInterface
-
-
-
 {
-    }
-    function __construct(private string $path) {}
+    public function __construct(private string $path) {}
 
     public function getScheme(): string
     {
@@ -182,9 +170,6 @@ class MockUri implements UriInterface
 }
 
 class MockResponse implements ResponseInterface
-
-
-
 {
     private MockStream $body;
 
@@ -192,7 +177,6 @@ class MockResponse implements ResponseInterface
 
     private array $headers = [];
 
-    }
     public function __construct()
     {
         $this->body = new MockStream();
@@ -276,9 +260,6 @@ class MockResponse implements ResponseInterface
 }
 
 class MockRequest implements ServerRequestInterface
-
-
-
 {
     private MockUri $uri;
 
@@ -286,7 +267,6 @@ class MockRequest implements ServerRequestInterface
 
     private array $attributes = [];
 
-    }
     public function __construct(string $method, string $path)
     {
         $this->method = $method;
@@ -452,4 +432,7 @@ echo '=== 控制器整合測試 ===
 ';
 
 try {
- /* empty */}
+    // 測試程式碼
+} catch (Exception $e) {
+    echo '錯誤: ' . $e->getMessage();
+}

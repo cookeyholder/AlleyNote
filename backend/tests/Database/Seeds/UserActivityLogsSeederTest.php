@@ -255,7 +255,7 @@ class UserActivityLogsSeederTest extends TestCase
         // 檢查是否有錯誤（但忽略 warning 訊息）
         if (is_string($output)) {
             if (strpos($output, 'error') !== false || strpos($output, 'Error') !== false || strpos($output, 'FAILED') !== false) {
-                $this->fail("Seeder 執行時發生錯誤: \\\$output");
+                $this->fail('Seeder 執行時發生錯誤: \\$output');
             }
         }
     }
@@ -335,8 +335,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得安全事件.
-     *
-     * @return array
      */
     private function getSecurityEvents(): array
     {
@@ -349,7 +347,6 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 檢查是否有被阻擋的安全事件.
-     * @param array $securityEvents
      */
     private function hasBlockedSecurityEvent(array $securityEvents): bool
     {

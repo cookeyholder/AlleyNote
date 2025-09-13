@@ -112,8 +112,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 建立批次插入參數.
-     *
-     * @return array
      */
     private function createBatchInsertParams(int $index, int $batchSize): array
     {
@@ -197,8 +195,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 取得查詢測試場景.
-     *
-     * @return array
      */
     private function getQueryTestScenarios(): array
     {
@@ -275,8 +271,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行分頁測試.
-     *
-     * @return array
      */
     private function executePaginationTests(int $pageSize, int $totalPages): array
     {
@@ -315,13 +309,12 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 執行分頁查詢.
-     *
-     * @return array
      */
     private function executePaginationQuery(int $pageSize, int $offset): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?');
+            'SELECT * FROM user_activity_logs WHERE user_id = 1 ORDER BY created_at DESC LIMIT ? OFFSET ?',
+        );
         $stmt->execute([$pageSize, $offset]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -329,8 +322,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 輸出分頁效能報告.
-     *
-     * @param array $results
      */
     private function outputPaginationReport(array $results, int $totalPages): void
     {
@@ -384,8 +375,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 建立測試資料參數.
-     *
-     * @return array
      */
     private function createTestDataParams(int $index, int $count): array
     {
@@ -469,8 +458,6 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
 
     /**
      * 輸出效能報告.
-     *
-     * @param array $results
      */
     private function outputPerformanceReport(string $title, array $results): void
     {

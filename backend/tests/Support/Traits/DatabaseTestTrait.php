@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Support\Traits;
 
 use App\Infrastructure\Database\DatabaseConnection;
+use Exception;
 use PDO;
+use RuntimeException;
 
 /**
  * 資料庫測試功能 Trait.
@@ -28,7 +30,7 @@ trait DatabaseTestTrait
         // 建立記憶體資料庫連線
         try {
             $this->db = new PDO('sqlite::memory:', null, null, [
-                PDO => ATTR_ERRMODE => PDO => :ERRMODE_EXCEPTION,
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
@@ -40,7 +42,9 @@ trait DatabaseTestTrait
 
             // 設定全域資料庫連線實例
             DatabaseConnection::setInstance($this->db);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            throw new RuntimeException('Failed to setup test database: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -210,7 +214,7 @@ trait DatabaseTestTrait
      */
     protected function createUserActivityLogsTable(): void
     {
-        \\\$this->db->exec('
+        $this->db->exec('
             CREATE TABLE IF NOT EXISTS user_activity_logs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid TEXT NOT NULL UNIQUE,

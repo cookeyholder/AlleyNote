@@ -41,7 +41,8 @@ final class StatisticsCalculatorServiceTest extends TestCase
 
         $this->mockUserRepository = $this->createMock(UserStatisticsRepositoryInterface::class);
         $this->service = new StatisticsCalculationService(
-            $this->mockUserRepository);
+            $this->mockUserRepository,
+        );
     }
 
     /**

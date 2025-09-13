@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Throwable;
@@ -30,7 +29,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
     private int $maxRecords = 1000;
 
     public function __construct(
-        private LoggerInterface $logger) {}
+        private LoggerInterface $logger,
+    ) {}
 
     /**
      * 記錄一個錯誤。
@@ -440,8 +440,6 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 計算錯誤趨勢（每小時）。
-     *
-     * @param array $errors
      */
     private function calculateErrorTrend(array $errors, int $hours): array
     {

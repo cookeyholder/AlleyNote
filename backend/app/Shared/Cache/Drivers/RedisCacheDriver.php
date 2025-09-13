@@ -8,7 +8,6 @@ use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use Exception;
 use Redis;
-use RedisException;
 
 /**
  * Redis 快取驅動.
@@ -42,9 +41,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     /** @var string 標籤索引前綴 */
     private const TAG_INDEX_PREFIX = 'tag_index:';
 
-    /**
-     * @param array $config
-     */
     public function __construct(array $config = [])
     {
         $this->redis = new Redis();
@@ -72,6 +68,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             return $unserializedValue === false ? $default : $unserializedValue;
         } catch (Exception $e) {
             $this->stats['misses']++;
+
             return $default;
         }
     }
@@ -146,10 +143,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
-    /**
-     * @param array $keys
-     * @return array
-     */
     public function many(array $keys): array
     {
         $result = [];
@@ -175,9 +168,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $result;
     }
 
-    /**
-     * @param array $values
-     */
     public function putMany(array $values, int $ttl = self::DEFAULT_TTL): bool
     {
         try {
@@ -214,9 +204,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
     }
 
-    /**
-     * @param array $keys
-     */
     public function forgetMany(array $keys): bool
     {
         try {
@@ -304,9 +291,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         return $this->remember($key, $callback, 0);
     }
 
-    /**
-     * @return array
-     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
@@ -353,8 +337,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 連線到 Redis.
-     *
-     * @param array $config
      */
     private function connect(array $config): void
     {
@@ -667,8 +649,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得指定標籤的所有快取鍵.
-     *
-     * @return array
      */
     public function getTaggedKeys(): array
     {
@@ -689,8 +669,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 取得快取項目的所有標籤.
-     *
-     * @return array
      */
     public function getTagsByKey(string $key): array
     {
@@ -741,8 +719,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /**
      * 使用指定標籤存放快取項目.
-     *
-     * @param array $tags
      */
     public function putWithTags(string $key, mixed $value, array $tags, int $ttl = self::DEFAULT_TTL): bool
     {

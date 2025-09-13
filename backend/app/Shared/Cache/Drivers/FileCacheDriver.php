@@ -351,6 +351,7 @@ class FileCacheDriver implements CacheDriverInterface
     private function getTotalFiles(): int
     {
         $files = glob($this->cacheDir . '/*', GLOB_NOSORT);
+
         return $files !== false ? count($files) : 0;
     }
 

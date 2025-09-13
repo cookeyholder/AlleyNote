@@ -33,7 +33,7 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // 清除測試數據
-        $this->pdo->exec("DELETE FROM user_activity_logs WHERE action_type LIKE 'attachment.%' AND user_id IS NULLsprintf(");
+        $this->pdo->exec("DELETE FROM user_activity_logs WHERE action_type LIKE 'attachment.%' AND user_id IS NULL");
 
         // 建立服務
         $repository = new ActivityLogRepository($this->pdo);
@@ -67,13 +67,13 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->assertTrue($result, 'ActivityLogger::log 應該成功');
 
         // 驗證記錄
-        \\\$logs = %s->pdo->query(", is_string($this) ? $this : '')
-            SELECT * FROM user_activity_logs
+        $logs = $this->pdo->query(
+            "SELECT * FROM user_activity_logs
             WHERE action_type = 'attachment.uploaded'
             AND user_id IS NULL
             ORDER BY created_at DESC
-            LIMIT 1
-        sprintf(")->fetch(PDO::FETCH_ASSOC);
+            LIMIT 1",
+        )->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件上傳活動');
         $this->assertEquals('attachment.uploaded', (is_array($logs) && array_key_exists('action_type', $logs) ? (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null) : null));
@@ -109,13 +109,13 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->assertTrue($result, 'ActivityLogger::log 應該成功');
 
         // 驗證記錄
-        \\\$logs = %s->pdo->query(", is_string($this) ? $this : '')
-            SELECT * FROM user_activity_logs
+        $logs = $this->pdo->query(
+            "SELECT * FROM user_activity_logs
             WHERE action_type = 'attachment.downloaded'
             AND user_id IS NULL
             ORDER BY created_at DESC
-            LIMIT 1
-        sprintf(")->fetch(PDO::FETCH_ASSOC);
+            LIMIT 1",
+        )->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件下載活動');
         $this->assertEquals('attachment.downloaded', (is_array($logs) && array_key_exists('action_type', $logs) ? (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null) : null));
@@ -150,13 +150,13 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->assertTrue($result, 'ActivityLogger::log 應該成功');
 
         // 驗證記錄
-        \\\$logs = %s->pdo->query(", is_string($this) ? $this : '')
-            SELECT * FROM user_activity_logs
+        $logs = $this->pdo->query(
+            "SELECT * FROM user_activity_logs
             WHERE action_type = 'attachment.deleted'
             AND user_id IS NULL
             ORDER BY created_at DESC
-            LIMIT 1
-        sprintf(")->fetch(PDO::FETCH_ASSOC);
+            LIMIT 1",
+        )->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件刪除活動');
         $this->assertEquals('attachment.deleted', (is_array($logs) && array_key_exists('action_type', $logs) ? (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null) : null));
@@ -193,13 +193,13 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->assertTrue($result, 'ActivityLogger::log 應該成功');
 
         // 驗證記錄
-        \\\$logs = %s->pdo->query(", is_string($this) ? $this : '')
-            SELECT * FROM user_activity_logs
+        $logs = $this->pdo->query(
+            "SELECT * FROM user_activity_logs
             WHERE action_type = 'attachment.permission_denied'
             AND user_id IS NULL
             ORDER BY created_at DESC
-            LIMIT 1
-        sprintf(")->fetch(PDO::FETCH_ASSOC);
+            LIMIT 1",
+        )->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄附件權限被拒絕活動');
         $this->assertEquals('attachment.permission_denied', (is_array($logs) && array_key_exists('action_type', $logs) ? (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null) : null));
@@ -237,13 +237,13 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->assertTrue($result, 'ActivityLogger::log 應該成功');
 
         // 驗證記錄
-        \\\$logs = %s->pdo->query(", is_string($this) ? $this : '')
-            SELECT * FROM user_activity_logs
+        $logs = $this->pdo->query(
+            "SELECT * FROM user_activity_logs
             WHERE action_type = 'attachment.size_exceeded'
             AND user_id IS NULL
             ORDER BY created_at DESC
-            LIMIT 1
-        sprintf(")->fetch(PDO::FETCH_ASSOC);
+            LIMIT 1",
+        )->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄檔案大小超限活動');
         $this->assertEquals('attachment.size_exceeded', (is_array($logs) && array_key_exists('action_type', $logs) ? (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null) : null));
@@ -280,13 +280,13 @@ class AttachmentActivityLoggingTest extends TestCase
         $this->assertTrue($result, 'ActivityLogger::log 應該成功');
 
         // 驗證記錄
-        \\\$logs = %s->pdo->query(", is_string($this) ? $this : '')
-            SELECT * FROM user_activity_logs
+        $logs = $this->pdo->query(
+            "SELECT * FROM user_activity_logs
             WHERE action_type = 'attachment.virus_detected'
             AND user_id IS NULL
             ORDER BY created_at DESC
-            LIMIT 1
-        sprintf(")->fetch(PDO::FETCH_ASSOC);
+            LIMIT 1",
+        )->fetch(PDO::FETCH_ASSOC);
 
         $this->assertNotFalse($logs, '應該要記錄病毒檢測活動');
         $this->assertEquals('attachment.virus_detected', (is_array($logs) && array_key_exists('action_type', $logs) ? (is_array($logs) && array_key_exists('action_type', $logs) ? $logs['action_type'] : null) : null));
@@ -302,8 +302,8 @@ class AttachmentActivityLoggingTest extends TestCase
     protected function tearDown(): void
     {
         // 清除測試數據
-        if (isset(\\\$this->pdo)) {
-            %s->pdo->exec(", is_string($this) ? $this : '')DELETE FROM user_activity_logs WHERE action_type LIKE 'attachment.%' AND user_id IS NULL");
+        if (isset($this->pdo)) {
+            $this->pdo->exec("DELETE FROM user_activity_logs WHERE action_type LIKE 'attachment.%' AND user_id IS NULL");
         }
         parent::tearDown();
     }

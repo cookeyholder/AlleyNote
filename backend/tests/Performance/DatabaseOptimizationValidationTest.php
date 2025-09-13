@@ -76,7 +76,8 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertLessThan(
                 10.0,
                 $avgTimeMs,
-                "{$testName} took {$avgTimeMs}ms on average (expected < 10ms)");
+                "{$testName} took {$avgTimeMs}ms on average (expected < 10ms)",
+            );
         }
     }
 
@@ -120,7 +121,8 @@ class DatabaseOptimizationValidationTest extends TestCase
             $this->assertStringNotContainsString(
                 'SCAN TABLE',
                 $planText,
-                "Query {$queryName} should use index, but plan shows: {$planText}");
+                "Query {$queryName} should use index, but plan shows: {$planText}",
+            );
         }
     }
 

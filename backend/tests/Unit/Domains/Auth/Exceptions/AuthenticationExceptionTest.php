@@ -112,17 +112,17 @@ class AuthenticationExceptionTest extends TestCase
     public function testUserFriendlyMessages(): void
     {
         $testCases = [
-            [AuthenticationException:: REASON_INVALID_CREDENTIALS, '用戶名或密碼錯誤'],
-            [AuthenticationException:: REASON_ACCOUNT_LOCKED, '帳戶已被鎖定'],
-            [AuthenticationException:: REASON_ACCOUNT_DISABLED, '帳戶已被停用'],
-            [AuthenticationException:: REASON_ACCOUNT_NOT_VERIFIED, '帳戶尚未驗證'],
-            [AuthenticationException:: REASON_TOO_MANY_ATTEMPTS, '登入嘗試次數過多'],
-            [AuthenticationException:: REASON_USER_NOT_FOUND, '找不到此用戶'],
-            [AuthenticationException:: REASON_PASSWORD_EXPIRED, '密碼已過期'],
-            [AuthenticationException:: REASON_MISSING_CREDENTIALS, '請提供完整的登入資訊'],
-            [AuthenticationException:: REASON_INVALID_TOKEN, '認證 Token 無效'],
-            [AuthenticationException:: REASON_TOKEN_REQUIRED, '需要提供認證 Token'],
-            [AuthenticationException:: REASON_INSUFFICIENT_PRIVILEGES, '沒有足夠的權限'],
+            [AuthenticationException::REASON_INVALID_CREDENTIALS, '用戶名或密碼錯誤'],
+            [AuthenticationException::REASON_ACCOUNT_LOCKED, '帳戶已被鎖定'],
+            [AuthenticationException::REASON_ACCOUNT_DISABLED, '帳戶已被停用'],
+            [AuthenticationException::REASON_ACCOUNT_NOT_VERIFIED, '帳戶尚未驗證'],
+            [AuthenticationException::REASON_TOO_MANY_ATTEMPTS, '登入嘗試次數過多'],
+            [AuthenticationException::REASON_USER_NOT_FOUND, '找不到此用戶'],
+            [AuthenticationException::REASON_PASSWORD_EXPIRED, '密碼已過期'],
+            [AuthenticationException::REASON_MISSING_CREDENTIALS, '請提供完整的登入資訊'],
+            [AuthenticationException::REASON_INVALID_TOKEN, '認證 Token 無效'],
+            [AuthenticationException::REASON_TOKEN_REQUIRED, '需要提供認證 Token'],
+            [AuthenticationException::REASON_INSUFFICIENT_PRIVILEGES, '沒有足夠的權限'],
         ];
 
         foreach ($testCases as [$reason, $expectedPhrase]) {
@@ -211,9 +211,9 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($accountReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertTrue($exception->isAccountRelated(), "Reason \\\$reason should be account related");
-            $this->assertFalse($exception->isCredentialsRelated(), "Reason \\\$reason should not be credentials related");
-            $this->assertFalse($exception->isTokenRelated(), "Reason \\\$reason should not be token related");
+            $this->assertTrue($exception->isAccountRelated(), 'Reason \\$reason should be account related');
+            $this->assertFalse($exception->isCredentialsRelated(), 'Reason \\$reason should not be credentials related');
+            $this->assertFalse($exception->isTokenRelated(), 'Reason \\$reason should not be token related');
         }
 
         // 測試憑證相關錯誤
@@ -225,9 +225,9 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($credentialsReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertTrue($exception->isCredentialsRelated(), "Reason \\\$reason should be credentials related");
-            $this->assertFalse($exception->isAccountRelated(), "Reason \\\$reason should not be account related");
-            $this->assertFalse($exception->isTokenRelated(), "Reason \\\$reason should not be token related");
+            $this->assertTrue($exception->isCredentialsRelated(), 'Reason \\$reason should be credentials related');
+            $this->assertFalse($exception->isAccountRelated(), 'Reason \\$reason should not be account related');
+            $this->assertFalse($exception->isTokenRelated(), 'Reason \\$reason should not be token related');
         }
 
         // 測試 Token 相關錯誤
@@ -238,9 +238,9 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($tokenReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertTrue($exception->isTokenRelated(), "Reason \\\$reason should be token related");
-            $this->assertFalse($exception->isAccountRelated(), "Reason \\\$reason should not be account related");
-            $this->assertFalse($exception->isCredentialsRelated(), "Reason \\\$reason should not be credentials related");
+            $this->assertTrue($exception->isTokenRelated(), 'Reason \\$reason should be token related');
+            $this->assertFalse($exception->isAccountRelated(), 'Reason \\$reason should not be account related');
+            $this->assertFalse($exception->isCredentialsRelated(), 'Reason \\$reason should not be credentials related');
         }
 
         // 測試安全相關錯誤
@@ -251,7 +251,7 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($securityReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertTrue($exception->isSecurityRelated(), "Reason \\\$reason should be security related");
+            $this->assertTrue($exception->isSecurityRelated(), 'Reason \\$reason should be security related');
         }
     }
 
@@ -269,7 +269,7 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($nonRetryableReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertFalse($exception->isRetryable(), "Reason \\\$reason should not be retryable");
+            $this->assertFalse($exception->isRetryable(), 'Reason \\$reason should not be retryable');
         }
 
         // 可重試的原因
@@ -281,7 +281,7 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($retryableReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertTrue($exception->isRetryable(), "Reason \\\$reason should be retryable");
+            $this->assertTrue($exception->isRetryable(), 'Reason \\$reason should be retryable');
         }
     }
 
@@ -297,7 +297,7 @@ class AuthenticationExceptionTest extends TestCase
 
         foreach ($actionRequiredReasons as $reason) {
             $exception = new AuthenticationException($reason);
-            $this->assertTrue($exception->requiresAccountAction(), "Reason \\\$reason should require account action");
+            $this->assertTrue($exception->requiresAccountAction(), 'Reason \\$reason should require account action');
         }
 
         $otherException = new AuthenticationException(AuthenticationException::REASON_INVALID_CREDENTIALS);

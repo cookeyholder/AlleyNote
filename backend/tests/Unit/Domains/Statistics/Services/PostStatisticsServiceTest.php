@@ -40,7 +40,8 @@ final class PostStatisticsServiceTest extends TestCase
         $this->mockPostRepository = $this->createMock(PostStatisticsRepositoryInterface::class);
 
         $this->service = new PostStatisticsService(
-            $this->mockPostRepository);
+            $this->mockPostRepository,
+        );
     }
 
     /**

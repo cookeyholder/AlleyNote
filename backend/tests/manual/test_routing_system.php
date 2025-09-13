@@ -11,15 +11,9 @@ declare(strict_types=1);
 require_once __DIR__ . '/././vendor/autoload.php';
 
 // 引入路由系統類別
-use App\Infrastructure\Routing\Core\Route;
-use App\Infrastructure\Routing\Core\RouteCollection;
-use App\Infrastructure\Routing\Core\Router;
 
 // 建立一個模擬的 PSR-7 請求物件
 class MockServerRequest
-
-
-
 {
     public function __construct(
         private string $method,
@@ -38,12 +32,8 @@ class MockServerRequest
 }
 
 class MockUri
-
-
-
 {
-    }
-    function __construct(private string $path) {}
+    public function __construct(private string $path) {}
 
     public function getPath(): string
     {
@@ -56,4 +46,7 @@ echo '=== AlleyNote 路由系統測試 ===
 ';
 
 try {
- /* empty */}
+    // 測試程式碼
+} catch (Exception $e) {
+    echo '錯誤: ' . $e->getMessage();
+}

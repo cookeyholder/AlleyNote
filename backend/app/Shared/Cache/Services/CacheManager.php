@@ -14,7 +14,6 @@ use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use RuntimeException;
 
 /**
  * 快取管理器.
@@ -59,9 +58,6 @@ class CacheManager implements CacheManagerInterface
         'strategy_cache_denials' => 0,
     ];
 
-    /**
-     * @param array $config
-     */
     public function __construct(
         CacheStrategyInterface $strategy,
         ?LoggerInterface $logger = null,
@@ -111,17 +107,11 @@ class CacheManager implements CacheManagerInterface
         return $this->drivers[$name] ?? null;
     }
 
-    /**
-     * @return array
-     */
     public function getDrivers(): array
     {
         return $this->drivers;
     }
 
-    /**
-     * @return array
-     */
     public function getAvailableDrivers(): array
     {
         return array_filter($this->drivers, fn($driver): bool => $driver->isAvailable());
@@ -387,10 +377,6 @@ class CacheManager implements CacheManagerInterface
         return $success;
     }
 
-    /**
-     * @param array $keys
-     * @return array
-     */
     public function many(array $keys): array
     {
         $result = [];
@@ -404,9 +390,6 @@ class CacheManager implements CacheManagerInterface
         return $result;
     }
 
-    /**
-     * @param array $values
-     */
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -492,6 +475,7 @@ class CacheManager implements CacheManagerInterface
                 'key' => $key,
                 'error' => $e->getMessage(),
             ]);
+
             return $callback();
         }
     }
@@ -516,9 +500,6 @@ class CacheManager implements CacheManagerInterface
         return $driverInstance;
     }
 
-    /**
-     * @return array
-     */
     public function getHealthStatus(): array
     {
         $healthStatus = [];
@@ -557,10 +538,6 @@ class CacheManager implements CacheManagerInterface
         return $healthStatus;
     }
 
-    /**
-     * @param array $warmupCallbacks
-     * @return array
-     */
     public function warmup(array $warmupCallbacks): array
     {
         $results = [];
@@ -583,7 +560,7 @@ class CacheManager implements CacheManagerInterface
                     'key' => $key,
                     'duration' => $results[$key]['duration'],
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $results[$key] = [
                     'success' => false,
                     'error' => $e->getMessage(),
@@ -594,9 +571,6 @@ class CacheManager implements CacheManagerInterface
         return $results;
     }
 
-    /**
-     * @return array
-     */
     public function cleanup(): array
     {
         $results = [];
@@ -616,7 +590,7 @@ class CacheManager implements CacheManagerInterface
                     'driver' => $name,
                     'cleaned_items' => $cleaned,
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $results[$name] = [
                     'success' => false,
                     'error' => $e->getMessage(),
@@ -627,9 +601,6 @@ class CacheManager implements CacheManagerInterface
         return $results;
     }
 
-    /**
-     * @param array|string $tags
-     */
     public function tags(string|array $tags): TaggedCacheInterface
     {
         // 標準化為陣列
@@ -650,13 +621,10 @@ class CacheManager implements CacheManagerInterface
         return new TaggedCacheManager(
             $this,  // 傳入當前的 CacheManager 實例
             $this->tagRepository,
-            $this->logger
+            $this->logger,
         );
     }
 
-    /**
-     * @return array
-     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['total_gets'];
@@ -707,8 +675,6 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 根據優先級取得可用驅動.
-     *
-     * @return array
      */
     private function getOrderedAvailableDrivers(): array
     {
@@ -756,8 +722,6 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 處理驅動錯誤.
-     *
-     * @param array $params
      */
     private function handleDriverError(string $driverName, Exception $error, string $operation, array $params): mixed
     {
@@ -787,8 +751,6 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 取得預設設定.
-     *
-     * @return array
      */
     private function getDefaultConfig(): array
     {
@@ -804,8 +766,6 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 更新設定.
-     *
-     * @param array $config
      */
     public function updateConfig(array $config): void
     {
@@ -818,8 +778,6 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 取得設定.
-     *
-     * @return array
      */
     public function getConfig(): array
     {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\E2E\Shared\Cache;
 
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Predis\Client;
 
@@ -40,7 +41,9 @@ final class CacheSystemE2ETest extends TestCase
             $this->redisClient->ping();
             // 清空測試環境
             $this->redisClient->flushdb();
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->markTestSkipped('Redis connection failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -54,10 +57,12 @@ final class CacheSystemE2ETest extends TestCase
                 'host' => '127.0.0.1',
                 'port' => 6379,
             ]);
-        } // catch block commented out due to syntax error
-        $testClient->ping();
+            $testClient->ping();
 
-        return true;
+            return true;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     // Test methods would go here..

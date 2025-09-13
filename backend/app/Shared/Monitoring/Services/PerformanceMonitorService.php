@@ -34,7 +34,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private float $slowQueryThreshold = 1000.0;
 
     public function __construct(
-        private LoggerInterface $logger) {}
+        private LoggerInterface $logger,
+    ) {}
 
     /**
      * 設定慢查詢閾值。

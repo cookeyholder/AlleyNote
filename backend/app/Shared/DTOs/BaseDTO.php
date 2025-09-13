@@ -88,7 +88,7 @@ abstract class BaseDTO implements JsonSerializable
     protected function getBool(array $data, string $key, ?bool $default = null): ?bool
     {
         $value = $this->getValue($data, $key, $default);
-        if ($value == = = = null) {
+        if ($value === null) {
             return $default;
         }
 

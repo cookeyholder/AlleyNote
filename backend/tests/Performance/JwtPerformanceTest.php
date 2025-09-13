@@ -9,6 +9,7 @@ use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Shared\Config\JwtConfig;
 use DI\ContainerBuilder;
+use Exception;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
@@ -30,13 +31,15 @@ class JwtPerformanceTest extends TestCase
 
         // 使用實際的服務容器來取得服務
         try {
-            $containerConfigPath = __DIR__ . '/././config/container.php';
+            $containerConfigPath = __DIR__ . '/../../config/container.php';
             $containerConfig = require $containerConfigPath;
 
             $builder = new ContainerBuilder();
             $builder->addDefinitions($containerConfig);
             $container = $builder->build();
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->markTestSkipped('Container build failed: ' . $e->getMessage());
+        }
 
         $this->jwtTokenService = $container->get(JwtTokenServiceInterface::class);
         $this->jwtConfig = $container->get(JwtConfig::class);
