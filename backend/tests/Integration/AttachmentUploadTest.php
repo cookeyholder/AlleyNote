@@ -208,7 +208,9 @@ class AttachmentUploadTest extends TestCase
             $this->assertInstanceOf(Attachment::class, $attachment);
 
             return true;
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     #[Test]
@@ -262,7 +264,9 @@ class AttachmentUploadTest extends TestCase
         try {
             $this->attachmentService->upload($postId, $file, 1);
             $this->fail(sprintf('應該拒絕 %s 類型的檔案', $mimeType));
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->assertInstanceOf(Exception::class, $e);
+        }
     }
 
     #[Test]

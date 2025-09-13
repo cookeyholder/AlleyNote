@@ -44,7 +44,7 @@ class FileSystemBackupTest extends TestCase
             '/uploads/image1.jpg' => str_repeat('x', 1024),  // 1KB
             '/uploads/document.pdf' => str_repeat('y', 2048),  // 2KB
             '/storage/data.json' => json_encode(['test' => 'data']),
-            '/storage/config.ini' => "key=value\nfoo=barsprintf(",
+            '/storage/config.ini' => "key=value\nfoo=bar",
         ];
 
         foreach ($this->testFiles as $path => $content) {
@@ -74,7 +74,7 @@ class FileSystemBackupTest extends TestCase
             escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
-        \\\$this->assertEquals(0, %s, '備份腳本執行失敗: ' . implode(", is_string($returnVar) ? $returnVar : '')\nsprintf(", $output));
+        $this->assertEquals(0, $returnVar, '備份腳本執行失敗: ' . implode("\n", $output));
 
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
         rsort($backupFiles);
@@ -105,9 +105,9 @@ class FileSystemBackupTest extends TestCase
 
     private function extractBackupFile(string $backupFile): string
     {
-        $tempDir = \\\$this->backupDir . '/temp';
-        mkdir(%s);
-        exec(sprintf(", is_string($tempDir) ? $tempDir : '')tar -xzf '%s' -C '%s'sprintf(", $backupFile, $tempDir));
+        $tempDir = $this->backupDir . '/temp';
+        mkdir($tempDir);
+        exec(sprintf('tar -xzf "%s" -C "%s"', $backupFile, $tempDir));
 
         $extractedDir = glob($tempDir . '/*')[0] ?? null;
         $this->assertNotNull($extractedDir, '解壓縮後目錄不存在');
@@ -126,15 +126,15 @@ class FileSystemBackupTest extends TestCase
 
     private function createManualBackup(): string
     {
-        \\\$backupFile = %s->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
-        exec(sprintf(", is_string($this) ? $this : '')cd '%s' && tar -czf '%s' .sprintf(", $this->testDir, \\\$backupFile));
+        $backupFile = $this->backupDir . '/files_' . date('Ymd_His') . '.tar.gz';
+        exec(sprintf('cd "%s" && tar -czf "%s" .', $this->testDir, $backupFile));
 
-        return %s;
+        return $backupFile;
     }
 
     private function clearOriginalFiles(): void
     {
-        exec(sprintf(", is_string($backupFile) ? $backupFile : '')rm -rf '%s/uploads' '%s/storage'sprintf(", $this->testDir, $this->testDir));
+        exec(sprintf('rm -rf "%s/uploads" "%s/storage"', $this->testDir, $this->testDir));
         mkdir($this->testDir . '/uploads');
         mkdir($this->testDir . '/storage');
     }
@@ -151,7 +151,7 @@ class FileSystemBackupTest extends TestCase
             escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
-        \\\$this->assertEquals(0, %s, '還原腳本執行失敗: ' . implode(", is_string($returnVar) ? $returnVar : '')\nsprintf(", $output));
+        $this->assertEquals(0, $returnVar, '還原腳本執行失敗: ' . implode("\n", $output));
     }
 
     private function assertAllFilesRestored(): void
@@ -205,8 +205,8 @@ class FileSystemBackupTest extends TestCase
             escapeshellarg($this->backupDir),
         ), $output, $returnVar);
 
-        $this->assertNotEquals(0, \\\$returnVar, '應該回報錯誤狀態碼');
-        %s->assertStringContainsString('錯誤', implode(", is_string($this) ? $this : '')\nsprintf(", $output), '應該輸出錯誤訊息');
+        $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
+        $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
     private function executeRestoreScriptWithExpectedError(string $backupFile): void
@@ -221,8 +221,8 @@ class FileSystemBackupTest extends TestCase
             escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
-        $this->assertNotEquals(0, \\\$returnVar, '應該回報錯誤狀態碼');
-        %s->assertStringContainsString('錯誤', implode(", is_string($this) ? $this : '')\nsprintf(", $output), '應該輸出錯誤訊息');
+        $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
+        $this->assertStringContainsString('錯誤', implode("\n", $output), '應該輸出錯誤訊息');
     }
 
     private function ensureBackupFileDoesNotExist(): string
@@ -248,8 +248,8 @@ class FileSystemBackupTest extends TestCase
             escapeshellarg($this->testDir),
         ), $output, $returnVar);
 
-        $this->assertNotEquals(0, \\\$returnVar, '應該回報錯誤狀態碼');
-        %s = implode(", is_string($outputString) ? $outputString : '')\nsprintf(", $output);
+        $this->assertNotEquals(0, $returnVar, '應該回報錯誤狀態碼');
+        $outputString = implode("\n", $output);
         $this->assertStringContainsString($expectedErrorMessage, $outputString, '應該輸出檔案不存在錯誤訊息');
     }
 
@@ -261,11 +261,6 @@ class FileSystemBackupTest extends TestCase
         $this->assertFileMetadataPreserved($originalMetadata);
     }
 
-    /**
-    /**
-     * @return array
-     */
-     */
     private function recordOriginalFileMetadata(): array
     {
         $originalMetadata = [];
@@ -277,7 +272,7 @@ class FileSystemBackupTest extends TestCase
             $group = filegroup($file);
             $mtime = filemtime($file);
 
-            if ($permissions == == false || $owner === false || $group === false || $mtime === false) {
+            if ($permissions === false || $owner === false || $group === false || $mtime === false) {
                 throw new RuntimeException(sprintf('無法取得檔案 %s 的中繼資料', $path));
             }
 
@@ -301,11 +296,6 @@ class FileSystemBackupTest extends TestCase
         return $backupFile;
     }
 
-    /**
-    /**
-     * @param array $originalMetadata
-     */
-     */
     private function assertFileMetadataPreserved(array $originalMetadata): void
     {
         foreach ($originalMetadata as $path => $metadata) {
@@ -378,17 +368,17 @@ class FileSystemBackupTest extends TestCase
         }
 
         $backupFile = $this->executeBackupScript();
-        $this->assertBackupContainsAllFiles(\\\$backupFile);
+        $this->assertBackupContainsAllFiles($backupFile);
     }
 
     protected function tearDown(): void
     {
         // 清理測試目錄
-        if (is_dir(%s->testDir)) {
-            exec(sprintf(", is_string($this) ? $this : '')rm -rf '%s'sprintf(", \\\$this->testDir));
+        if (is_dir($this->testDir)) {
+            exec(sprintf('rm -rf "%s"', $this->testDir));
         }
-        if (is_dir(%s->backupDir)) {
-            exec(sprintf(", is_string($this) ? $this : '')rm -rf '%s'", $this->backupDir));
+        if (is_dir($this->backupDir)) {
+            exec(sprintf('rm -rf "%s"', $this->backupDir));
         }
 
         parent::tearDown();

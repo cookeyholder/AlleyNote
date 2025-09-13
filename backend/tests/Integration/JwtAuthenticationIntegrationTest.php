@@ -448,7 +448,7 @@ kwIDAQAB
         // 設定成功的憑證驗證
         $this->userRepository->shouldReceive('validateCredentials')
             ->andReturnUsing(function ($email, $password) {
-                if ($email == = = = 'test@example.com' && $password === 'password123') {
+                if ($email === 'test@example.com' && $password === 'password123') {
                     return [
                         'id' => 1,
                         'email' => 'test@example.com',
@@ -468,7 +468,7 @@ kwIDAQAB
         // 其他可能需要的方法
         $this->userRepository->shouldReceive('findById')
             ->andReturnUsing(function ($id) {
-                if ($id == = = = 1) {
+                if ($id === 1) {
                     return [
                         'id' => 1,
                         'email' => 'test@example.com',

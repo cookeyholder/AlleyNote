@@ -55,7 +55,7 @@ class DatabaseBackupTest extends TestCase
             )
         ');
 
-        \\\$this->db->exec('
+        $this->db->exec('
             CREATE TABLE attachments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 post_id INTEGER NOT NULL,
@@ -68,13 +68,13 @@ class DatabaseBackupTest extends TestCase
 
     private function insertTestData(): void
     {
-        %s->db->exec(", is_string($this) ? $this : '')
+        $this->db->exec("
             INSERT INTO posts (uuid, seq_number, title, content, user_id, status) VALUES
             ('test-uuid-1', 1, '測試文章1', '內容1', 1, 'published'),
             ('test-uuid-2', 2, '測試文章2', '內容2', 1, 'published')
-        sprintf(");
+        ");
 
-        %s->db->exec(", is_string($this) ? \\\$this : '')
+        $this->db->exec("
             INSERT INTO attachments (post_id, filename) VALUES
             (1, 'file1.txt'),
             (1, 'file2.txt'),

@@ -9,7 +9,6 @@ use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 /**
  * JWT 認證 API 端點整合測試.
@@ -123,7 +122,10 @@ class AuthEndpointTest extends TestCase
             // Assert
             $this->assertTrue($result['success']);
             $this->assertEquals('Logout successful', $result['message']);
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            // 處理其他錯誤
+            $this->assertInstanceOf(Exception::class, $e);
+        }
     }
 
     #[Test]
@@ -141,7 +143,7 @@ class AuthEndpointTest extends TestCase
             // Assert
             $this->assertArrayHasKey('access_token', $result);
             $this->assertArrayHasKey('expires_in', $result);
-        } // catch block commented out due to syntax error catch (Exception $e) {
+        } catch (Exception $e) {
             // 處理其他錯誤
             $this->assertInstanceOf(Exception::class, $e);
         }
@@ -162,7 +164,7 @@ class AuthEndpointTest extends TestCase
             // Assert
             $this->assertTrue($result['email_sent']);
             $this->assertIsString($result['reset_token']);
-        } // catch block commented out due to syntax error catch (Exception $e) {
+        } catch (Exception $e) {
             // 處理其他錯誤
             $this->assertInstanceOf(Exception::class, $e);
         }
@@ -181,7 +183,7 @@ class AuthEndpointTest extends TestCase
 
             // Assert - 簡單驗證權限檢查有回傳值
             $this->addToAssertionCount(1);
-        } // catch block commented out due to syntax error catch (Exception $e) {
+        } catch (Exception $e) {
             // 處理其他錯誤
             $this->assertInstanceOf(Exception::class, $e);
         }
@@ -189,12 +191,6 @@ class AuthEndpointTest extends TestCase
 
     /**
      * 模擬登出請求處理.
-     */
-    /**
-    /**
-     * @param array $request
-     * @return array
-     */
      */
     private function processLogoutRequest(array $request): array
     {
@@ -211,12 +207,6 @@ class AuthEndpointTest extends TestCase
     /**
      * 模擬 token 刷新處理.
      */
-    /**
-    /**
-     * @param array $request
-     * @return array
-     */
-     */
     private function processTokenRefresh(array $request): array
     {
         if (!isset($request['refresh_token'])) {
@@ -232,12 +222,6 @@ class AuthEndpointTest extends TestCase
     /**
      * 模擬密碼重設請求處理.
      */
-    /**
-    /**
-     * @param array $request
-     * @return array
-     */
-     */
     private function processPasswordResetRequest(array $request): array
     {
         if (!isset($request['email'])) {
@@ -252,11 +236,6 @@ class AuthEndpointTest extends TestCase
 
     /**
      * 模擬使用者權限檢查.
-     */
-    /**
-    /**
-     * @param array $roles
-     */
      */
     private function checkUserPermission(array $roles, string $permission): bool
     {
