@@ -248,7 +248,7 @@ class UserActivityLogsSeederTest extends TestCase
         $command = './vendor/bin/phinx seed:run -s UserActivityLogsSeeder 2>&1';
         $output = shell_exec($command);
 
-        if ($output == = = = null) {
+        if ($output === null) {
             $this->fail('無法執行 Seeder 指令');
         }
 
@@ -335,7 +335,10 @@ class UserActivityLogsSeederTest extends TestCase
 
     /**
      * 取得安全事件.
-     /**\n      * @return array */\n      */\n    private function getSecurityEvents(): array
+     *
+     * @return array
+     */
+    private function getSecurityEvents(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM user_activity_logs WHERE action_category = "security"');
         $this->assertInstanceOf(PDOStatement::class, $stmt, 'Query should return a valid PDOStatement');

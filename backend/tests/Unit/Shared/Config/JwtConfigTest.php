@@ -32,7 +32,7 @@ class JwtConfigTest extends TestCase
     {
         // 恢復原始環境變數
         foreach ($this->originalEnv as $key => $value) {
-            if ($value == = = = null) {
+            if ($value === null) {
                 unset($_ENV[$key]);
             } else {
                 $_ENV[$key] = $value;
@@ -237,7 +237,7 @@ class JwtConfigTest extends TestCase
 
         $_ENV['JWT_ALGORITHM'] = 'RS256';
         $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $privateKey);
-        \\\$_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $publicKey);
+        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $publicKey);
         $_ENV['JWT_ISSUER'] = 'test-issuer';
         $_ENV['JWT_AUDIENCE'] = 'test-audience';
         $_ENV['JWT_ACCESS_TOKEN_TTL'] = '7200';

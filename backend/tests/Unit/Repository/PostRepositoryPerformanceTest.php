@@ -120,9 +120,9 @@ class PostRepositoryPerformanceTest extends TestCase
         $count = 100;
 
         for ($i = 0; $i < $count; $i++) {
-            \\\$data = PostFactory::make([
+            $data = PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {\\\$i}",
+                'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
             $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);

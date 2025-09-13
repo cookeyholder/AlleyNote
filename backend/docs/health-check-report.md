@@ -1,194 +1,30 @@
 # AlleyNote 專案健康檢查報告
 
-報告生成時間: 2025-09-13 14:41:40
+報告生成時間: 2025-09-13 20:26:19
 
 ## 專案概覽
 
 | 項目 | 數量 |
 |------|------|
 | 總檔案數 | 361 |
-| 健康檔案 | 300 |
-| 語法錯誤檔案 | 61 |
-| 健康度 | 83.1% |
+| 健康檔案 | 323 |
+| 語法錯誤檔案 | 38 |
+| 健康度 | 89.5% |
 
 ## 語法錯誤詳細清單
-
-### tests/Database/Seeds/UserActivityLogsSeederTest.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/tests/Database/Seeds/UserActivityLogsSeederTest.php on line 251
-Errors parsing /var/www/html/tests/Database/Seeds/UserActivityLogsSeederTest.php
-```
-
-### tests/Unit/Repository/PostRepositoryPerformanceTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Repository/PostRepositoryPerformanceTest.php on line 123
-Errors parsing /var/www/html/tests/Unit/Repository/PostRepositoryPerformanceTest.php
-```
-
-### tests/Unit/Repository/PostRepositoryTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Repository/PostRepositoryTest.php on line 195
-Errors parsing /var/www/html/tests/Unit/Repository/PostRepositoryTest.php
-```
-
-### tests/Unit/Domains/Statistics/Services/PostStatisticsServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Statistics/Services/PostStatisticsServiceTest.php on line 29
-Errors parsing /var/www/html/tests/Unit/Domains/Statistics/Services/PostStatisticsServiceTest.php
-```
-
-### tests/Unit/Domains/Statistics/Services/StatisticsCalculatorServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Statistics/Services/StatisticsCalculatorServiceTest.php on line 31
-Errors parsing /var/www/html/tests/Unit/Domains/Statistics/Services/StatisticsCalculatorServiceTest.php
-```
-
-### tests/Unit/Domains/Statistics/Services/StatisticsCacheServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Statistics/Services/StatisticsCacheServiceTest.php on line 31
-Errors parsing /var/www/html/tests/Unit/Domains/Statistics/Services/StatisticsCacheServiceTest.php
-```
-
-### tests/Unit/Domains/Security/Enums/ActivitySeverityTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Security/Enums/ActivitySeverityTest.php on line 11
-Errors parsing /var/www/html/tests/Unit/Domains/Security/Enums/ActivitySeverityTest.php
-```
-
-### tests/Unit/Domains/Security/Enums/ActivityStatusTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Security/Enums/ActivityStatusTest.php on line 11
-Errors parsing /var/www/html/tests/Unit/Domains/Security/Enums/ActivityStatusTest.php
-```
 
 ### tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
 
 ```
-Parse error: Unclosed '(' does not match ']' in /var/www/html/tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php on line 68
+Parse error: Unclosed '(' does not match ']' in /var/www/html/tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php on line 69
 Errors parsing /var/www/html/tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
-```
-
-### tests/Unit/Domains/Security/Services/ActivityLoggingServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Domains/Security/Services/ActivityLoggingServiceTest.php on line 22
-Errors parsing /var/www/html/tests/Unit/Domains/Security/Services/ActivityLoggingServiceTest.php
-```
-
-### tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php on line 94
-Errors parsing /var/www/html/tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php
-```
-
-### tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php on line 90
-Errors parsing /var/www/html/tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
-```
-
-### tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php on line 88
-Errors parsing /var/www/html/tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php
-```
-
-### tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php on line 96
-Errors parsing /var/www/html/tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php
-```
-
-### tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting "]" in /var/www/html/tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php on line 726
-Errors parsing /var/www/html/tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php
-```
-
-### tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
-
-```
-Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php on line 212
-Errors parsing /var/www/html/tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
-```
-
-### tests/Unit/Shared/Config/JwtConfigTest.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/tests/Unit/Shared/Config/JwtConfigTest.php on line 35
-Errors parsing /var/www/html/tests/Unit/Shared/Config/JwtConfigTest.php
-```
-
-### tests/Unit/Models/PostTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Models/PostTest.php on line 89
-Errors parsing /var/www/html/tests/Unit/Models/PostTest.php
-```
-
-### tests/Unit/DTOs/DTOValidationTest.php
-
-```
-Fatal error: Cannot use try without catch or finally in /var/www/html/tests/Unit/DTOs/DTOValidationTest.php on line 603
-Errors parsing /var/www/html/tests/Unit/DTOs/DTOValidationTest.php
-```
-
-### tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php on line 23
-Errors parsing /var/www/html/tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
-```
-
-### tests/Unit/Infrastructure/Routing/RouteLoaderTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Infrastructure/Routing/RouteLoaderTest.php on line 314
-Errors parsing /var/www/html/tests/Unit/Infrastructure/Routing/RouteLoaderTest.php
-```
-
-### tests/Unit/Infrastructure/Services/Statistics/StatisticsCacheServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=>", expecting ")" in /var/www/html/tests/Unit/Infrastructure/Services/Statistics/StatisticsCacheServiceTest.php on line 27
-Errors parsing /var/www/html/tests/Unit/Infrastructure/Services/Statistics/StatisticsCacheServiceTest.php
-```
-
-### tests/Unit/Services/Security/XssProtectionServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Services/Security/XssProtectionServiceTest.php on line 36
-Errors parsing /var/www/html/tests/Unit/Services/Security/XssProtectionServiceTest.php
-```
-
-### tests/Unit/Services/Security/LoggingSecurityServiceTest.php
-
-```
-Parse error: syntax error, unexpected token "=" in /var/www/html/tests/Unit/Services/Security/LoggingSecurityServiceTest.php on line 60
-Errors parsing /var/www/html/tests/Unit/Services/Security/LoggingSecurityServiceTest.php
 ```
 
 ### tests/Unit/Services/Security/FileSecurityServiceTest.php
 
 ```
-Parse 📄 詳細報告已儲存至: /var/www/html/docs/health-check-report.md
-
-✅ 健康檢查完成！
-💡 建議下一步：根據優先修復建議開始批次修復
-t/Services/Security/FileSecurityServiceTest.php
+Parse error: syntax error, unexpected token "\" in /var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php on line 110
+Errors parsing /var/www/html/tests/Unit/Services/Security/FileSecurityServiceTest.php
 ```
 
 ### tests/Unit/Services/Security/PwnedPasswordServiceTest.php
@@ -447,14 +283,6 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 測試 (風險: 低)
 
-- tests/Database/Seeds/UserActivityLogsSeederTest.php
-- tests/Unit/Repository/PostRepositoryPerformanceTest.php
-- tests/Unit/Repository/PostRepositoryTest.php
-- tests/Unit/Shared/Cache/ValueObjects/CacheTagTest.php
-- tests/Unit/Shared/Config/JwtConfigTest.php
-- tests/Unit/Models/PostTest.php
-- tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
-- tests/Unit/Infrastructure/Routing/RouteLoaderTest.php
 - tests/Unit/Validation/ValidatorTest.php
 - tests/Security/SqlInjectionTest.php
 - tests/Security/XssPreventionTest.php
@@ -489,22 +317,7 @@ Errors parsing /var/www/html/tests/Factory/Abstracts/AbstractFactory.php
 
 ### 其他 (風險: 低)
 
-- tests/Unit/Domains/Statistics/Services/PostStatisticsServiceTest.php
-- tests/Unit/Domains/Statistics/Services/StatisticsCalculatorServiceTest.php
-- tests/Unit/Domains/Statistics/Services/StatisticsCacheServiceTest.php
-- tests/Unit/Domains/Security/Enums/ActivitySeverityTest.php
-- tests/Unit/Domains/Security/Enums/ActivityStatusTest.php
 - tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
-- tests/Unit/Domains/Security/Services/ActivityLoggingServiceTest.php
-- tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php
-- tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
-- tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php
-- tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php
-- tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php
-- tests/Unit/DTOs/DTOValidationTest.php
-- tests/Unit/Infrastructure/Services/Statistics/StatisticsCacheServiceTest.php
-- tests/Unit/Services/Security/XssProtectionServiceTest.php
-- tests/Unit/Services/Security/LoggingSecurityServiceTest.php
 - tests/Unit/Services/Security/FileSecurityServiceTest.php
 - tests/Unit/Services/Security/PwnedPasswordServiceTest.php
 - tests/Unit/Services/PostServiceTest.php

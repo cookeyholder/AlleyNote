@@ -311,7 +311,7 @@ class RouteLoaderTest extends TestCase
         $tempFile2 = tempnam(sys_get_temp_dir(), 'route_test_');
 
         file_put_contents($tempFile1, '<?php return ["api1" => ["methods" => ["GET"], "path" => "/api1", "handler" => ["Controller", "method"]]];');
-        file_put_contents(\\\$tempFile2, '<?php return ["web1" => ["methods" => ["GET"], "path" => "/web1", "handler" => ["Controller", "method"]]];');
+        file_put_contents($tempFile2, '<?php return ["web1" => ["methods" => ["GET"], "path" => "/web1", "handler" => ["Controller", "method"]]];');
 
         $this->mockValidator->shouldReceive('reset')->once();
         $this->mockValidator->shouldReceive('validateRoute')->twice();
@@ -378,7 +378,7 @@ class RouteLoaderTest extends TestCase
     public function testClearRoutes(): void
     {
         $tempFile = tempnam(sys_get_temp_dir(), 'route_test_');
-        file_put_contents(\\\$tempFile, '<?php return ["test" => ["methods" => ["GET"], "path" => "/test", "handler" => ["Controller", "method"]]];');
+        file_put_contents($tempFile, '<?php return ["test" => ["methods" => ["GET"], "path" => "/test", "handler" => ["Controller", "method"]]];');
 
         $this->mockValidator->shouldReceive('reset')->once(); // 只在 clearRoutes 時呼叫
 

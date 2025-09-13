@@ -212,16 +212,22 @@ class CacheTagTest extends TestCase
         try {
             new CacheTag('');
             $this->fail('應該拋出異常');
-        } // catch block commented out due to syntax error
+        } catch (InvalidArgumentException $e) {
+            $this->assertNotEmpty($e->getMessage());
+        }
 
         try {
             new CacheTag(str_repeat('x', 51));
             $this->fail('應該拋出異常');
-        } // catch block commented out due to syntax error
+        } catch (InvalidArgumentException $e) {
+            $this->assertNotEmpty($e->getMessage());
+        }
 
         try {
             new CacheTag('admin');
             $this->fail('應該拋出異常');
-        } // catch block commented out due to syntax error
+        } catch (InvalidArgumentException $e) {
+            $this->assertNotEmpty($e->getMessage());
+        }
     }
 }

@@ -192,9 +192,9 @@ class PostRepositoryTest extends TestCase
     {
         // 建立 15 篇文章
         for ($i = 1; $i <= 15; $i++) {
-            \\\$this->repository->create(PostFactory::make([
+            $this->repository->create(PostFactory::make([
                 'title' => "文章 {$i}",
-                'content' => "內容 {\\\$i}",
+                'content' => "內容 {$i}",
             ]));
         }
 
@@ -276,7 +276,9 @@ class PostRepositoryTest extends TestCase
         try {
             $this->repository->setTags($post->getId(), [999]); // 使用不存在的標籤 ID
             $this->fail('應該拋出異常');
-        } // catch block commented out due to syntax error
+        } catch (Exception $e) {
+            $this->assertNotEmpty($e->getMessage());
+        }
     }
 
     public function testShouldCommitOnTagAssignmentSuccess(): void
@@ -293,7 +295,7 @@ class PostRepositoryTest extends TestCase
         $result = $this->repository->setTags($post->getId(), [1]);
 
         $this->assertTrue($result);
-        $tags = \\\$this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
+        $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
         $this->assertCount(1, $tags);
     }
 }

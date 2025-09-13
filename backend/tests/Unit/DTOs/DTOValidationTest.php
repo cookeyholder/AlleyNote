@@ -603,6 +603,8 @@ class DTOValidationTest extends TestCase
         try {
             $dto = new CreatePostDTO($this->validator, $extremeData);
             $this->assertInstanceOf(CreatePostDTO::class, $dto);
-        } // catch block commented out due to syntax error
+        } catch (ValidationException $e) {
+            $this->assertNotEmpty($e->getMessage());
+        }
     }
 }

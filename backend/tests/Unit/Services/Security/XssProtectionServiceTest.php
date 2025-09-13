@@ -33,7 +33,7 @@ class XssProtectionServiceTest extends TestCase
     #[Test]
     public function removesHarmfulAttributes(): void
     {
-        \\\$input = '<a href="javascript:alert(\'XSS\')" onclick="alert(\'XSS\')">Click me</a>';
+        $input = '<a href="javascript:alert(\'XSS\')" onclick="alert(\'XSS\')">Click me</a>';
         $expected = '<a>Click me</a>'; // HTMLPurifier 移除有害屬性但保留基本標籤
 
         $result = $this->service->clean($input);
@@ -51,7 +51,7 @@ class XssProtectionServiceTest extends TestCase
     #[Test]
     public function cleansArrayOfStrings(): void
     {
-        \\\$input = [
+        $input = [
             'title' => '<script>alert("XSS");</script>',
             'content' => '<img src="x" onerror="alert(\'XSS\')" />',
         ];

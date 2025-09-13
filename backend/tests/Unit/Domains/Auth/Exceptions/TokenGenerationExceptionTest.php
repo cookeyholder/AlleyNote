@@ -93,8 +93,8 @@ class TokenGenerationExceptionTest extends TestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            TokenGenerationException => REASON_KEY_INVALID => 'private key is invalid or corrupted',
-            TokenGenerationException => :REASON_KEY_MISSING => 'private key is missing',
+            TokenGenerationException::REASON_KEY_INVALID => 'private key is invalid or corrupted',
+            TokenGenerationException::REASON_KEY_MISSING => 'private key is missing',
             TokenGenerationException::REASON_PAYLOAD_INVALID => 'payload contains invalid data',
             TokenGenerationException::REASON_ALGORITHM_UNSUPPORTED => 'algorithm is not supported',
             TokenGenerationException::REASON_CLAIMS_INVALID => 'claims validation failed',

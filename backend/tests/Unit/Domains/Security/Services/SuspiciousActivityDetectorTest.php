@@ -65,7 +65,13 @@ class SuspiciousActivityDetectorTest extends TestCase
 
         // 模擬高失敗率的活動記錄（確保超過預設閾值 5）
         $activities = [
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'user_id' => $userId, 'ip_address' => '192.168.1.1', 'occurred_at' => $now->format('Y-m-d H:i:s'])],
         ];
 
         $this->mockRepository
@@ -98,7 +104,12 @@ class SuspiciousActivityDetectorTest extends TestCase
 
         // 模擬可疑IP活動（確保超過閾值）
         $activities = [
-            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 1, 'occurred_at' => $now->format('Y-m-d H:i:s')], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 2, 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 3, 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 4, 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 5, 'occurred_at' => $now->format('Y-m-d H:i:s'])], ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 6, 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 1, 'occurred_at' => $now->format('Y-m-d H:i:s')],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 2, 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 3, 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 4, 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 5, 'occurred_at' => $now->format('Y-m-d H:i:s'])],
+            ['action_type' => 'auth.login.failed', 'status' => 'failed', 'ip_address' => $ipAddress, 'user_id' => 6, 'occurred_at' => $now->format('Y-m-d H:i:s'])],
         ];
 
         $this->mockRepository

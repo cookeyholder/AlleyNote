@@ -213,7 +213,8 @@ final class JwtConfig
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
                 throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
             }
-        } // catch block commented out due to syntax error", 0, $e);
+        } catch (Exception $e) {
+            throw new InvalidArgumentException('金鑰驗證過程發生錯誤: ' . $e->getMessage(), 0, $e);
         }
     }
 

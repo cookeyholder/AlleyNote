@@ -21,19 +21,8 @@ class LoggingSecurityServiceTest extends TestCase
         $this->tempLogsDir = sys_get_temp_dir() . '/alleynote_test_logs_' . uniqid();
         mkdir($this->tempLogsDir, 0o750, true);
 
-        // 模擬 storage_path 函式
-        if (!function_exists('storage_path')) {
-            function storage_path(string $path = ''): string
-            {
-                global $tempLogsDir;
-
-                return $tempLogsDir . ($path ? '/' . ltrim($path, '/') : '');
-            }
-        }
-
-        // 設定全域變數供函式使用
-        global $tempLogsDir;
-        $tempLogsDir = $this->tempLogsDir;
+        // 設定環境變數來模擬 storage 路徑
+        $_ENV['STORAGE_PATH'] = $this->tempLogsDir;
 
         $this->service = new LoggingSecurityService();
     }
@@ -57,7 +46,7 @@ class LoggingSecurityServiceTest extends TestCase
 
         $files = scandir($dir);
         foreach ($files as $file) {
-            if ($file == = = = '.' || $file === '.') {
+            if ($file === '.' || $file === '..') {
                 continue;
             }
 
