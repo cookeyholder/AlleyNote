@@ -16,31 +16,37 @@ interface ActivityLogRepositoryInterface
 {
     /**
      * 建立活動記錄.
+     * @return array<string, mixed>|null
      */
     public function create(CreateActivityLogDTO $dto): ?array;
 
     /**
      * 批次建立多個活動記錄.
+     * @param array<int, CreateActivityLogDTO> $dtos
      */
     public function createBatch(array $dtos): int;
 
     /**
      * 根據 ID 查詢活動記錄.
+     * @return array<string, mixed>|null
      */
     public function findById(int $id): ?array;
 
     /**
      * 根據 UUID 查詢活動記錄.
+     * @return array<string, mixed>|null
      */
     public function findByUuid(string $uuid): ?array;
 
     /**
      * 取得所有活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findAll(int $limit = 20, int $offset = 0): array;
 
     /**
      * 查詢使用者的活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findByUser(
         int $userId,
@@ -52,6 +58,7 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 查詢指定時間範圍的活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findByTimeRange(
         DateTimeInterface $startTime,
@@ -63,6 +70,7 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 查詢使用者在指定時間範圍的活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findByUserAndTimeRange(
         int $userId,
@@ -74,6 +82,9 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 查詢指定 IP 在指定時間範圍的活動記錄.
+    /**
+     * 查詢 IP 位址在指定時間範圍的活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findByIpAddressAndTimeRange(
         string $ipAddress,
@@ -85,6 +96,7 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 查詢安全相關的活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findSecurityEvents(
         int $limit = 100,
@@ -94,6 +106,7 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 查詢失敗的活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function findFailedActivities(
         int $limit = 100,
@@ -118,6 +131,7 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 取得活動統計資料（依類型分組）.
+     * @return array<string, mixed>
      */
     public function getActivityStatistics(
         DateTimeInterface $startTime,
@@ -126,17 +140,20 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 取得熱門活動類型.
+     * @return array<int, array<string, mixed>>
      */
     public function getPopularActivityTypes(int $limit = 10): array;
 
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
+     * @return array<int, array<string, mixed>>
      */
     public function getSuspiciousIPs(int $minFailedAttempts = 5): array;
 
     /**
      * Find activity logs by user ID within time window.
      * @param int $userId User ID to filter by
+     * @return array<int, array<string, mixed>>
      */
     public function findByUserIdAndTimeWindow(int $userId, ?DateTimeInterface $timeWindow = null): array;
 
@@ -147,11 +164,13 @@ interface ActivityLogRepositoryInterface
 
     /**
      * 根據條件刪除記錄.
+     * @param array<string, mixed> $conditions
      */
     public function deleteByConditions(array $conditions): int;
 
     /**
      * 搜尋活動記錄.
+     * @return array<int, array<string, mixed>>
      */
     public function search(
         ?string $searchTerm = null,

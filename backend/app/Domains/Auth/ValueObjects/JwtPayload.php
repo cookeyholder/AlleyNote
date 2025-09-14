@@ -30,7 +30,7 @@ final readonly class JwtPayload implements JsonSerializable
         private string $jti,
         private string $sub,
         private string $iss,
-        /** @var array<string, mixed> */
+        /** @var array<int, string> */
         private array $aud,
         private DateTimeImmutable $iat,
         private DateTimeImmutable $exp,
@@ -48,7 +48,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 從陣列建立 JWT Payload.
-     * @param array $data JWT payload 資料
+     * @param array<string, mixed> $data JWT payload 資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -126,10 +126,11 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 取得受眾.
+     * @return array<int, string>
      */
     public function getAudience(): array
     {
-        return array_filter(array_map('strval', array_values($this->aud)));
+        return array_filter(array_map(static fn(string $item): string => $item, array_values($this->aud)));
     }
 
     /**
@@ -158,6 +159,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 取得自訂宣告.
+     * @return array<string, mixed>
      */
     public function getCustomClaims(): array
     {
@@ -213,6 +215,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 轉換為陣列格式（用於 JWT 編碼）.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -235,6 +238,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -336,6 +340,11 @@ final readonly class JwtPayload implements JsonSerializable
      * @param array $aud 受眾陣列
      * @throws InvalidArgumentException 當受眾無效時
      */
+    /**
+     * 驗證受眾宣告.
+     * @param array<int, string> $aud 受眾陣列
+     * @throws InvalidArgumentException 當受眾無效時
+     */
     private function validateAud(array $aud): void
     {
         if (empty($aud)) {
@@ -343,7 +352,7 @@ final readonly class JwtPayload implements JsonSerializable
         }
 
         foreach ($aud as $key => $audience) {
-            if (!is_string($audience) || empty($audience)) {
+            if (empty($audience)) {
                 throw new InvalidArgumentException('All audience values must be non-empty strings');
             }
         }
@@ -367,7 +376,7 @@ final readonly class JwtPayload implements JsonSerializable
 
     /**
      * 驗證自訂宣告.
-     * @param array $customClaims 自訂宣告
+     * @param array<string, mixed> $customClaims 自訂宣告
      * @throws InvalidArgumentException 當自訂宣告無效時
      */
     private function validateCustomClaims(array $customClaims): void
@@ -389,22 +398,19 @@ final readonly class JwtPayload implements JsonSerializable
      * 標準化受眾參數為 array<string, mixed> 格式.
      * @param mixed $aud 受眾參數
      */
+    /**
+     * 標準化受眾格式.
+     * @param mixed $aud 受眾資料
+     * @return array<int, string> 標準化的受眾陣列
+     */
     private static function normalizeAudience(mixed $aud): array
     {
         if (is_array($aud)) {
-            // 確保是關聯陣列格式
-            $result = [];
-            foreach ($aud as $key => $value) {
-                $stringKey = is_string($key) ? $key : (string) $value;
-                $result[$stringKey] = $value;
-            }
-
-            return $result;
+            // 確保是索引陣列格式，包含字串值
+            return array_values(array_filter(array_map(static fn(mixed $item): string => (string) $item, $aud)));
         }
 
-        // 單一值轉換為關聯陣列
-        $stringAud = (string) $aud;
-
-        return [$stringAud => $stringAud];
+        // 單一值轉換為索引陣列
+        return [(string) $aud];
     }
 }
