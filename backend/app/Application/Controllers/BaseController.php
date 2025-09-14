@@ -12,6 +12,8 @@ abstract class BaseController
 {
     /**
      * 建立JSON回應.
+     *
+     * @param array<string, mixed> $data
      */
     public function json(ResponseInterface $response, array $data, int $status = 200): ResponseInterface
     {
@@ -28,6 +30,8 @@ abstract class BaseController
 
     /**
      * JSON響應輔助方法.
+     *
+     * @param array<string, mixed> $data
      */
     public function jsonResponse(array $data, int $httpCode = 200): string
     {
@@ -57,6 +61,8 @@ abstract class BaseController
 
     /**
      * 分頁響應輔助方法.
+     *
+     * @param array<string, mixed> $data
      */
     public function paginatedResponse(array $data, int $total, int $page, int $perPage): string
     {

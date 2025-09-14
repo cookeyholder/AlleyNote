@@ -128,6 +128,8 @@ class TagManagementController extends BaseController
      * 清除單個標籤.
      *
      * POST /admin/cache/tags/{tag}/flush
+     *
+     * @param array<string, mixed> $args
      */
     public function flushTag(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
     {

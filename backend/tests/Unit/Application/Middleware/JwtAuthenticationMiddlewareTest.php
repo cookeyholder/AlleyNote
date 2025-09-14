@@ -234,15 +234,15 @@ class JwtAuthenticationMiddlewareTest extends TestCase
             ->shouldReceive('validateAccessToken')
             ->once()
             ->with($token)
-            ->andThrow(new InvalidTokenException('Token 無效'));
+            ->andThrow(new InvalidTokenException());
 
         $response = $this->middleware->process($request, $this->handler);
 
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Access token is invalid', $body['error']);
+        $this->assertEquals('INVALID_TOKEN', $body['code']);
     }
 
     public function testShouldValidateIpAddressWhenPresentInToken(): void
@@ -292,8 +292,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Access token is invalid', $body['error']);
+        $this->assertEquals('INVALID_TOKEN', $body['code']);
     }
 
     public function testShouldRejectWhenIpAddressMismatch(): void
@@ -313,8 +313,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Access token is invalid', $body['error']);
+        $this->assertEquals('INVALID_TOKEN', $body['code']);
     }
 
     public function testShouldValidateDeviceFingerprint(): void
@@ -363,8 +363,8 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('Token 無效', $body['error']);
-        $this->assertEquals('TOKEN_INVALID', $body['code']);
+        $this->assertEquals('Access token is invalid', $body['error']);
+        $this->assertEquals('INVALID_TOKEN', $body['code']);
     }
 
     public function testShouldSkipProcessingWhenDisabled(): void
@@ -399,7 +399,7 @@ class JwtAuthenticationMiddlewareTest extends TestCase
         $this->assertEquals(401, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertEquals('認證驗證失敗', $body['error']);
+        $this->assertEquals('認證失敗', $body['error']);
         $this->assertEquals('AUTH_FAILED', $body['code']);
     }
 

@@ -22,6 +22,9 @@ class IpController
 
     /**
      * 建立IP規則.
+     *
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
      */
     public function create(array $request): array
     {
@@ -42,7 +45,10 @@ class IpController
     }
 
     /**
-     * 根據類型取得IP規則.
+     * 依類型取得IP規則列表.
+     *
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
      */
     public function getByType(array $request): array
     {
@@ -75,6 +81,9 @@ class IpController
 
     /**
      * 檢查IP存取權限.
+     *
+     * @param array<string, mixed> $request
+     * @return array<string, mixed>
      */
     public function checkAccess(array $request): array
     {

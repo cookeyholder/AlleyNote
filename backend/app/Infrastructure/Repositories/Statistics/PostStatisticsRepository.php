@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repositories\Statistics;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
+use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeInterface;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -210,42 +212,155 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     }
 
     /**
-     * 取得每日文章發布數量統計.
-     *
-     * @return array<string, int>
+     * 取得每日文章數量統計.
      */
     public function getDailyPostCounts(StatisticsPeriod $period): array
     {
         try {
             $sql = '
-                SELECT
-                    DATE(p.created_at) as post_date,
-                    COUNT(*) as count
-                FROM posts p
-                WHERE p.created_at >= :start_date
-                    AND p.created_at <= :end_date
-                    AND p.deleted_at IS NULL
-                    AND p.status = "published"
-                GROUP BY DATE(p.created_at)
-                ORDER BY post_date ASC
+                SELECT DATE(created_at) as date, COUNT(*) as count
+                FROM posts
+                WHERE created_at >= :start_date
+                    AND created_at <= :end_date
+                    AND deleted_at IS NULL
+                    AND status = "published"
+                GROUP BY DATE(created_at)
+                ORDER BY date ASC
             ';
 
             $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
+            $executed = $stmt->execute([
                 'start_date' => $period->startDate->format('Y-m-d H:i:s'),
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $dailyCounts = [];
-
-            foreach ($results as $result) {
-                $dailyCounts[$result['post_date']] = (int) $result['count'];
+            if (!$executed) {
+                throw new RuntimeException('查詢執行失敗');
             }
 
-            return $dailyCounts;
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new RuntimeException('無法查詢每日文章統計: ' . $e->getMessage(), 0, $e);
+            throw new RuntimeException("查詢每日文章數量統計時發生錯誤: {$e->getMessage()}", 0, $e);
         }
+    }
+
+    public function getSourceDistributionByPeriod(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function countPostsBySourceAndPeriod(SourceType $sourceType, StatisticsPeriod $period): int
+    {
+        // 簡單實作
+        return 0;
+    }
+
+    public function countViewsBySourceAndPeriod(SourceType $sourceType, StatisticsPeriod $period): int
+    {
+        // 簡單實作
+        return 0;
+    }
+
+    public function getPostTrendsByPeriod(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getViewTrendsByPeriod(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getAverageViewsPerPostByPeriod(StatisticsPeriod $period): float
+    {
+        // 簡單實作
+        return 0.0;
+    }
+
+    public function getMostViewedPostByPeriod(StatisticsPeriod $period): ?array
+    {
+        // 簡單實作
+        return null;
+    }
+
+    public function getNewPostsStatsByPeriod(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getViewsDistributionByPeriod(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getTotalPostsAsOfDate(DateTimeInterface $date): int
+    {
+        // 簡單實作
+        return 0;
+    }
+
+    public function getTotalViewsAsOfDate(DateTimeInterface $date): int
+    {
+        // 簡單實作
+        return 0;
+    }
+
+    public function getPostActivityHeatmapByPeriod(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getMostActiveAuthorsByPeriod(StatisticsPeriod $period, int $limit = 10): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getEngagementRateByPeriod(StatisticsPeriod $period): float
+    {
+        // 簡單實作
+        return 0.0;
+    }
+
+    public function getTagUsageStatsByPeriod(StatisticsPeriod $period, int $limit = 20): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function hasPostDataInPeriod(StatisticsPeriod $period): bool
+    {
+        // 簡單實作
+        return false;
+    }
+
+    public function getPostStatsByPeriod(int $postId, StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getPostsByPublishTime(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
+    }
+
+    public function getStatisticsTrends(StatisticsPeriod $period): array
+    {
+        // 簡單實作
+        return [];
     }
 }

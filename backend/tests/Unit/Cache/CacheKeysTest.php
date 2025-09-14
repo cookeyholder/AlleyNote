@@ -98,7 +98,7 @@ class CacheKeysTest extends TestCase
         $key = CacheKeys::userByEmail($email);
 
         $expectedHash = md5($email);
-        $this->assertEquals('alleynote:user:email:{\\$expectedHash}', $key);
+        $this->assertEquals("alleynote:user:email:{$expectedHash}", $key);
         $this->assertTrue(CacheKeys::isValidKey($key));
     }
 

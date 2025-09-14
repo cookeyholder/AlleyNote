@@ -17,6 +17,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 /**
  * 統計計算服務單元測試.
@@ -35,13 +36,17 @@ final class StatisticsCalculatorServiceTest extends TestCase
 
     private UserStatisticsRepositoryInterface&MockObject $mockUserRepository;
 
+    private \Psr\Log\LoggerInterface&MockObject $mockLogger;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->mockUserRepository = $this->createMock(UserStatisticsRepositoryInterface::class);
+        $this->mockLogger = $this->createMock(LoggerInterface::class);
         $this->service = new StatisticsCalculationService(
             $this->mockUserRepository,
+            $this->mockLogger,
         );
     }
 

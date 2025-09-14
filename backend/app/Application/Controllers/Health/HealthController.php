@@ -26,6 +26,11 @@ class HealthController extends BaseController
     public function check(Request $request, Response $response): Response
     {
         try {
+            $this->logger?->info('Health check requested', [
+                'remote_addr' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
+                'user_agent' => $request->getHeaderLine('User-Agent'),
+            ]);
+
             $healthData = [
                 'status' => 'ok',
                 'timestamp' => date('c'),
@@ -41,6 +46,11 @@ class HealthController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
+            $this->logger?->error('Health check failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             $errorResponse = json_encode([
                 'status' => 'error',
                 'error' => $e->getMessage(),

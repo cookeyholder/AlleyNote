@@ -61,6 +61,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         array $config = [],
         ?LoggerInterface $logger = null,
     ) {
+        /** @var array<string, mixed> $config */
         $this->config = array_merge($this->getDefaultConfig(), $config);
         $this->logger = $logger;
     }
@@ -134,7 +135,13 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 執行授權檢查.
+     *
      * @param int $userId 使用者 ID
+     * @param string|null $userRole 使用者角色
+     * @param array<string, mixed> $userPermissions 使用者權限
+     * @param string $resource 資源名稱
+     * @param string $action 動作名稱
+     * @param ServerRequestInterface $request HTTP 請求
      * @return AuthorizationResult 授權結果
      */
     private function authorize(
@@ -505,7 +512,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function extractResource(ServerRequestInterface $request): string
     {
         $path = $request->getUri()->getPath();
-        $segments = explode('/', is_string($path) ? $path : (string) $path);
+        $segments = array_filter(explode('/', is_string($path) ? $path : (string) $path), static function ($segment) {
+            return $segment !== '';
+        });
+        $segments = array_values($segments); // 重新索引
 
         // 假設 API 路徑格式為 /api/v1/{resource}/{id?}
         if (count($segments) >= 3 && $segments[0] === 'api') {
@@ -533,7 +543,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         $method = strtoupper($request->getMethod());
         $path = trim($request->getUri()->getPath(), '/');
-        $segments = explode('/', is_string($path) ? $path : (string) $path);
+        $segments = array_filter(explode('/', is_string($path) ? $path : (string) $path), static function ($segment) {
+            return $segment !== '';
+        });
+        $segments = array_values($segments); // 重新索引
 
         // 從路由屬性中提取（如果有設定）
         $routeAction = $request->getAttribute('route_action');
@@ -561,7 +574,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function extractResourceId(ServerRequestInterface $request, string $resource): ?int
     {
         $path = trim($request->getUri()->getPath(), '/');
-        $segments = explode('/', is_string($path) ? $path : (string) $path);
+        $segments = array_filter(explode('/', is_string($path) ? $path : (string) $path), static function ($segment) {
+            return $segment !== '';
+        });
+        $segments = array_values($segments); // 重新索引
 
         $resourceId = $this->extractResourceIdFromPath($segments);
         if ($resourceId !== null) {
@@ -594,13 +610,13 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         // 假設 API 路徑格式為 /api/v1/{resource}/{id}
         if (count($segments) >= 4 && $segments[0] === 'api' && is_numeric($segments[3])) {
-            return (int) $segments[3];
+            return (string) $segments[3];
         }
 
         // 尋找數字片段
         foreach ($segments as $segment) {
             if (is_numeric($segment)) {
-                return (int) $segment;
+                return (string) $segment;
             }
         }
 
@@ -948,7 +964,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface $request HTTP 請求物件
      * @return bool 是否應該處理
      */
-    private function shouldProcess(ServerRequestInterface $request): bool
+    public function shouldProcess(ServerRequestInterface $request): bool
     {
         if (!$this->enabled) {
             return false;
@@ -1074,12 +1090,63 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 設定授權配置.
-     * @param array $config 配置陣列
+     *
+     * @param array<string, mixed> $config 配置陣列
      */
     public function updateConfig(array $config): self
     {
         $this->config = [...$this->config, ...$config];
 
         return $this;
+    }
+
+    /**
+     * 記錄授權失敗.
+     */
+    private function logAuthorizationFailure(ServerRequestInterface $request, string $reason): void
+    {
+        $this->logger->warning('授權失敗', [
+            'uri' => $request->getUri()->getPath(),
+            'method' => $request->getMethod(),
+            'reason' => $reason,
+            'ip' => $this->getClientIpAddress($request),
+            'user_agent' => $request->getHeaderLine('User-Agent'),
+        ]);
+    }
+
+    /**
+     * 獲取客戶端 IP 地址.
+     */
+    private function getClientIpAddress(ServerRequestInterface $request): string
+    {
+        $serverParams = $request->getServerParams();
+
+        // 檢查常見的代理頭
+        $headers = [
+            'HTTP_CF_CONNECTING_IP',     // CloudFlare
+            'HTTP_CLIENT_IP',            // 代理伺服器
+            'HTTP_X_FORWARDED_FOR',      // 負載平衡器或代理
+            'HTTP_X_FORWARDED',          // 代理
+            'HTTP_X_CLUSTER_CLIENT_IP',  // 集群
+            'HTTP_FORWARDED_FOR',        // 代理
+            'HTTP_FORWARDED',            // 標準化代理
+            'REMOTE_ADDR',                // 標準
+        ];
+
+        foreach ($headers as $header) {
+            if (!empty($serverParams[$header])) {
+                $ip = $serverParams[$header];
+                // 如果有多個 IP（通過逗號分隔），取第一個
+                if (str_contains($ip, ',')) {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+                // 驗證 IP 格式
+                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
     }
 }

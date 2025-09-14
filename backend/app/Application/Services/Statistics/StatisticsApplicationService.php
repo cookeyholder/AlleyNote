@@ -18,6 +18,7 @@ use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * 統計應用服務.
@@ -50,6 +51,8 @@ final class StatisticsApplicationService
 
     /**
      * 取得系統統計摘要.
+     *
+     * @return array<string, mixed>
      */
     public function getSystemStatisticsSummary(): array
     {
@@ -180,6 +183,8 @@ final class StatisticsApplicationService
      * 取得統計概覽.
      *
      * 提供統計資料的概覽資訊，包含快取機制。
+     *
+     * @return array<string, mixed>
      */
     public function getStatisticsOverview(StatisticsPeriod $period): array
     {
@@ -280,6 +285,8 @@ final class StatisticsApplicationService
      * 分析熱門內容.
      *
      * 分析指定週期內的熱門內容，提供詳細的分析資料。
+     *
+     * @return array<string, mixed>
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 20): array
     {
