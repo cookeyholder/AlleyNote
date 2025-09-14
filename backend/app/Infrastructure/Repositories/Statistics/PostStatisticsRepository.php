@@ -142,108 +142,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         }
     }
 
-    /**
-     * 根據來源類型計算文章數量.
-     *
-     * @return array<string, int>
-     */
-    public function countPostsBySource(StatisticsPeriod $period): array
-    {
-        try {
-            $sql = '
-                SELECT
-                    COALESCE(p.source_type, "direct") as source_type,
-                    COUNT(*) as count
-                FROM posts p
-                WHERE p.created_at >= :start_date
-                    AND p.created_at <= :end_date
-                    AND p.deleted_at IS NULL
-                    AND p.status = "published"
-                GROUP BY p.source_type
-                ORDER BY count DESC
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
-                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-            ]);
-
-            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $sourceCounts = [];
-
-            foreach ($results as $result) {
-                $sourceCounts[$result['source_type']] = (int) $result['count'];
-            }
-
-            return $sourceCounts;
-        } catch (PDOException $e) {
-            throw new RuntimeException('無法查詢來源分布: ' . $e->getMessage(), 0, $e);
-        }
-    }
-
-    /**
-     * 計算平均文章長度.
-     */
-    public function getAveragePostLength(StatisticsPeriod $period): float
-    {
-        try {
-            $sql = '
-                SELECT AVG(CHAR_LENGTH(p.content)) as avg_length
-                FROM posts p
-                WHERE p.created_at >= :start_date
-                    AND p.created_at <= :end_date
-                    AND p.deleted_at IS NULL
-                    AND p.status = "published"
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
-                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-            ]);
-
-            $result = $stmt->fetchColumn();
-
-            return $result ? (float) $result : 0.0;
-        } catch (PDOException $e) {
-            throw new RuntimeException('無法計算平均文章長度: ' . $e->getMessage(), 0, $e);
-        }
-    }
-
-    /**
-     * 取得每日文章數量統計.
-     */
-    public function getDailyPostCounts(StatisticsPeriod $period): array
-    {
-        try {
-            $sql = '
-                SELECT DATE(created_at) as date, COUNT(*) as count
-                FROM posts
-                WHERE created_at >= :start_date
-                    AND created_at <= :end_date
-                    AND deleted_at IS NULL
-                    AND status = "published"
-                GROUP BY DATE(created_at)
-                ORDER BY date ASC
-            ';
-
-            $stmt = $this->pdo->prepare($sql);
-            $executed = $stmt->execute([
-                'start_date' => $period->startDate->format('Y-m-d H:i:s'),
-                'end_date' => $period->endDate->format('Y-m-d H:i:s'),
-            ]);
-
-            if (!$executed) {
-                throw new RuntimeException('查詢執行失敗');
-            }
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            throw new RuntimeException("查詢每日文章數量統計時發生錯誤: {$e->getMessage()}", 0, $e);
-        }
-    }
-
     public function getSourceDistributionByPeriod(StatisticsPeriod $period): array
     {
         // 簡單實作
@@ -358,7 +256,7 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         return [];
     }
 
-    public function getStatisticsTrends(StatisticsPeriod $period): array
+    public function getStatisticsTrends(StatisticsPeriod $period, int $dataPoints = 30): array
     {
         // 簡單實作
         return [];

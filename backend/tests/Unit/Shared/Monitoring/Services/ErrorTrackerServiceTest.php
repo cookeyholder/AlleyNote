@@ -6,6 +6,7 @@ namespace Tests\Unit\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Services\ErrorTrackerService;
 use Exception;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -16,7 +17,7 @@ class ErrorTrackerServiceTest extends TestCase
 {
     private ErrorTrackerService $errorTracker;
 
-    private LoggerInterface $mockLogger;
+    private MockObject&LoggerInterface $mockLogger;
 
     protected function setUp(): void
     {

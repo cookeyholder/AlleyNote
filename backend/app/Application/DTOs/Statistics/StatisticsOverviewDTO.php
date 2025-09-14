@@ -47,6 +47,9 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從統計快照建立 DTO.
+     *
+     * @param array<SourceStatistics> $sourceStatistics
+     * @param array<string, mixed> $additionalMetrics
      */
     public static function fromSnapshot(
         StatisticsPeriod $period,
@@ -67,6 +70,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
+     *
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -159,6 +164,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得格式化的統計概覽.
+     *
+     * @return array<string, mixed>
      */
     public function getFormattedOverview(): array
     {
@@ -204,6 +211,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得摘要資訊.
+     *
+     * @return array<string, mixed>
      */
     public function getSummary(): array
     {
@@ -219,6 +228,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 取得主要來源.
+     *
+     * @return array<string, mixed>|null
      */
     public function getTopSource(): ?array
     {
@@ -267,6 +278,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -318,6 +331,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -339,6 +354,8 @@ final readonly class StatisticsOverviewDTO implements JsonSerializable
 
     /**
      * 驗證來源統計資料.
+     *
+     * @param array<SourceStatistics> $sourceStatistics
      */
     private function validateSourceStatistics(array $sourceStatistics): void
     {

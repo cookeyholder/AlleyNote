@@ -262,7 +262,7 @@ final class RefreshTokenRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with([$userId, RefreshToken => STATUS_ACTIVE]); // 現在包含狀態參數
+            ->with([$userId, RefreshToken::STATUS_ACTIVE]); // 現在包含狀態參數
 
         $this->mockStatement
             ->expects($this->once())

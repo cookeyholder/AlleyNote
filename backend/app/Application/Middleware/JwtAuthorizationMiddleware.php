@@ -55,13 +55,20 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     private ?LoggerInterface $logger = null;
 
+    /**
+     * 建構 JWT 授權中介軟體.
+     *
+     * @param int $priority 優先順序
+     * @param bool $enabled 是否啟用
+     * @param array<string, mixed> $config 設定選項
+     * @param LoggerInterface|null $logger 記錄器
+     */
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
         array $config = [],
         ?LoggerInterface $logger = null,
     ) {
-        /** @var array<string, mixed> $config */
         $this->config = array_merge($this->getDefaultConfig(), $config);
         $this->logger = $logger;
     }
@@ -138,7 +145,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param int $userId 使用者 ID
      * @param string|null $userRole 使用者角色
-     * @param array<string, mixed> $userPermissions 使用者權限
+     * @param array<string> $userPermissions 使用者權限清單
      * @param string $resource 資源名稱
      * @param string $action 動作名稱
      * @param ServerRequestInterface $request HTTP 請求
@@ -239,7 +246,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 基於權限的授權檢查.
-     * @param array $userPermissions 使用者權限
+     * @param array<string> $userPermissions 使用者權限清單
+     * @param string $resource 資源名稱
+     * @param string $action 操作名稱
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByPermission(array $userPermissions, string $resource, string $action): AuthorizationResult
@@ -316,6 +325,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 基於自訂規則的授權檢查.
      * @param int $userId 使用者 ID
+     * @param string|null $userRole 使用者角色
+     * @param array<string> $userPermissions 使用者權限清單
+     * @param string $resource 資源名稱
+     * @param string $action 操作名稱
+     * @param ServerRequestInterface $request 請求物件
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByCustomRules(
@@ -580,8 +594,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $segments = array_values($segments); // 重新索引
 
         $resourceId = $this->extractResourceIdFromPath($segments);
-        if ($resourceId !== null) {
-            return $resourceId;
+        if ($resourceId !== null && is_numeric($resourceId)) {
+            return (int) $resourceId;
         }
 
         // 從請求參數中提取
@@ -603,7 +617,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 從路徑中提取資源 ID.
-     * @param array $segments 路徑分段
+     * @param array<string> $segments 路徑分段
      * @return string|null 資源 ID
      */
     private function extractResourceIdFromPath(array $segments): ?string
@@ -693,11 +707,12 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 檢查 IP 是否在指定清單中.
      * @param string $ip 要檢查的 IP 位址
+     * @param array<string> $ipList IP 位址清單
      */
     private function isIpInList(string $ip, array $ipList): bool
     {
         foreach ($ipList as $pattern) {
-            if ($this->ipMatches($ip, $pattern)) {
+            if (is_string($pattern) && $this->ipMatches($ip, $pattern)) {
                 return true;
             }
         }
@@ -1010,6 +1025,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得預設配置.
+     *
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -1082,6 +1099,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 取得授權配置.
+     *
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {

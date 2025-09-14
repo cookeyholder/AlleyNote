@@ -55,6 +55,10 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 從統計資料建立 DTO.
+     *
+     * @param array<string, mixed> $userStats
+     * @param array<array<string, mixed>> $topUsers
+     * @param array<string, mixed> $patterns
      */
     public static function fromStatistics(
         StatisticsPeriod $period,
@@ -97,6 +101,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 從陣列資料建立 DTO.
+     *
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -255,6 +261,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得最活躍使用者摘要.
+     *
+     * @return array<array<string, mixed>>
      */
     public function getActivityTrends(): array
     {
@@ -277,6 +285,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得活動時間分析.
+     *
+     * @return array<string, mixed>
      */
     public function getActivityTimeAnalysis(): array
     {
@@ -288,6 +298,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得高峰活動時間.
+     *
+     * @return array<string, mixed>
      */
     public function getEngagementAnalysis(): array
     {
@@ -305,12 +317,14 @@ final readonly class UserActivityDTO implements JsonSerializable
                 ? ((int) $countB <=> (int) $countA) : 0;
         });
 
-        /** @var array<int, array<string, mixed>> $timeAnalysis */
+        /** @var array<string, mixed> */
         return array_slice($timeAnalysis, 0, 3, true);
     }
 
     /**
      * 取得使用者活動摘要
+     *
+     * @return array<string, mixed>
      */
     public function getActivitySummary(): array
     {
@@ -339,6 +353,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 取得格式化的活動資訊.
+     *
+     * @return array<string, mixed>
      */
     public function getFormattedActivity(): array
     {
@@ -376,6 +392,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 比較與另一個週期的活動差異.
+     *
+     * @return array<string, mixed>
      */
     public function compareWith(UserActivityDTO $other): array
     {
@@ -422,6 +440,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -455,6 +475,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
+     *
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -476,6 +498,9 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 計算參與度指標.
+     *
+     * @param array<string, mixed> $userStats
+     * @return array<string, mixed>
      */
     private static function calculateEngagementMetrics(array $userStats): array
     {
@@ -497,6 +522,8 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證最活躍使用者資料.
+     *
+     * @param array<array<string, mixed>> $topUsers
      */
     private function validateTopActiveUsers(array $topUsers): void
     {
@@ -511,9 +538,36 @@ final readonly class UserActivityDTO implements JsonSerializable
 
     /**
      * 驗證活動模式資料.
+     *
+     * @param array<string, mixed> $patterns
      */
     private function validateActivityPatterns(array $patterns): void
     {
         // 活動模式陣列格式已通過型別檢查確認
+    }
+
+    /**
+     * 取得活動高峰時段.
+     *
+     * @return array<string, mixed>
+     */
+    public function getPeakActivityHours(): array
+    {
+        /** @var array<string, mixed> */
+        return $this->activityPatterns['peak_hours'] ?? [];
+    }
+
+    /**
+     * 取得最活躍使用者摘要.
+     *
+     * @return array<array<string, mixed>>
+     */
+    public function getTopActiveUsersSummary(): array
+    {
+        return array_map(static fn($user) => [
+            'user_id' => $user['user_id'],
+            'activity_count' => $user['activity_count'] ?? 0,
+            'username' => $user['username'] ?? '未知使用者',
+        ], $this->topActiveUsers);
     }
 }

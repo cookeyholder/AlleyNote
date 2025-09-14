@@ -322,8 +322,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnMap([
-                ['user_id', $userId, PDO => PARAM_INT, true],
-                ['limit', $limit, PDO => PARAM_INT, true],
+                ['user_id', $userId, PDO::PARAM_INT, true],
+                ['limit', $limit, PDO::PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -383,8 +383,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnMap([
-                ['device_id', $deviceId, PDO => PARAM_STR, true],
-                ['limit', $limit, PDO => PARAM_INT, true],
+                ['device_id', $deviceId, PDO::PARAM_STR, true],
+                ['limit', $limit, PDO::PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -711,7 +711,7 @@ class TokenBlacklistRepositoryTest extends TestCase
         $this->mockStatement
             ->expects($this->once())
             ->method('execute')
-            ->with(['before_date' => '2024-01-01 00 => 00 => 00']);
+            ->with(['before_date' => '2024-01-01 00:00:00']);
 
         $this->mockStatement
             ->expects($this->once())
@@ -868,8 +868,8 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(2))
             ->method('bindValue')
             ->willReturnMap([
-                ['since', '2024-01-01 00 => 00 => 00', PDO => PARAM_STR, true],
-                ['limit', $limit, PDO => PARAM_INT, true],
+                ['since', '2024-01-01 00:00:00', PDO::PARAM_STR, true],
+                ['limit', $limit, PDO::PARAM_INT, true],
             ]);
 
         $this->mockStatement
@@ -936,12 +936,12 @@ class TokenBlacklistRepositoryTest extends TestCase
             ->expects($this->exactly(6))
             ->method('bindValue')
             ->willReturnMap([
-                ['user_id', 123, PDO => PARAM_INT, true],
-                ['device_id', 'device-123', PDO => PARAM_STR, true],
-                ['token_type', 'access', PDO => PARAM_STR, true],
-                ['reason', 'logout', PDO => PARAM_STR, true],
-                ['limit', 10, PDO => PARAM_INT, true],
-                ['offset', 5, PDO => PARAM_INT, true],
+                ['user_id', 123, PDO::PARAM_INT, true],
+                ['device_id', 'device-123', PDO::PARAM_STR, true],
+                ['token_type', 'access', PDO::PARAM_STR, true],
+                ['reason', 'logout', PDO::PARAM_STR, true],
+                ['limit', 10, PDO::PARAM_INT, true],
+                ['offset', 5, PDO::PARAM_INT, true],
             ]);
 
         $this->mockStatement

@@ -35,6 +35,7 @@ enum ActivityType: string
 
     // === 附件管理行為 ===
     case ATTACHMENT_UPLOADED = 'attachment.uploaded';
+    case ATTACHMENT_UPLOAD_FAILED = 'attachment.upload_failed';
     case ATTACHMENT_DOWNLOADED = 'attachment.downloaded';
     case ATTACHMENT_DELETED = 'attachment.deleted';
     case ATTACHMENT_VIRUS_DETECTED = 'attachment.virus_detected';
@@ -103,7 +104,7 @@ enum ActivityType: string
             self::POST_PUBLISHED, self::POST_UNPUBLISHED, self::POST_VIEWED,
             self::POST_PINNED, self::POST_UNPINNED => ActivityCategory::CONTENT,
 
-            self::ATTACHMENT_UPLOADED, self::ATTACHMENT_DOWNLOADED,
+            self::ATTACHMENT_UPLOADED, self::ATTACHMENT_UPLOAD_FAILED, self::ATTACHMENT_DOWNLOADED,
             self::ATTACHMENT_DELETED, self::ATTACHMENT_VIRUS_DETECTED,
             self::ATTACHMENT_SIZE_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED => ActivityCategory::FILE,
 
@@ -168,7 +169,7 @@ enum ActivityType: string
             self::LOGIN_FAILED, self::BRUTE_FORCE_ATTEMPT,
             self::SUSPICIOUS_ACTIVITY_DETECTED, self::PERMISSION_DENIED,
             self::API_UNAUTHORIZED_ACCESS, self::API_RATE_LIMIT_EXCEEDED,
-            self::ATTACHMENT_PERMISSION_DENIED => ActivitySeverity::HIGH,
+            self::ATTACHMENT_PERMISSION_DENIED, self::ATTACHMENT_UPLOAD_FAILED => ActivitySeverity::HIGH,
 
             // CRITICAL 等級：關鍵安全事件
             self::CSRF_ATTACK_BLOCKED, self::XSS_ATTACK_BLOCKED,
@@ -184,7 +185,8 @@ enum ActivityType: string
         return match ($this) {
             self::LOGIN_FAILED, self::PERMISSION_DENIED,
             self::API_UNAUTHORIZED_ACCESS, self::ATTACHMENT_SIZE_EXCEEDED,
-            self::API_RATE_LIMIT_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED => true,
+            self::API_RATE_LIMIT_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED,
+            self::ATTACHMENT_UPLOAD_FAILED => true,
             default => false,
         };
     }
@@ -211,6 +213,7 @@ enum ActivityType: string
             self::POST_UPDATED => '更新文章',
             self::POST_DELETED => '刪除文章',
             self::ATTACHMENT_UPLOADED => '上傳附件',
+            self::ATTACHMENT_UPLOAD_FAILED => '附件上傳失敗',
             self::ATTACHMENT_DOWNLOADED => '下載附件',
             self::ATTACHMENT_DELETED => '刪除附件',
             self::ATTACHMENT_VIRUS_DETECTED => '附件病毒檢測',

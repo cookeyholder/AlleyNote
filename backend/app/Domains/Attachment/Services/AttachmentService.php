@@ -15,6 +15,7 @@ use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
+use Throwable;
 
 class AttachmentService implements AttachmentServiceInterface
 {

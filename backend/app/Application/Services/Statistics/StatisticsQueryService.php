@@ -14,6 +14,7 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Domain\ValueObjects\Uuid;
 use DateTimeImmutable;
 use DateTimeInterface;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -425,5 +426,23 @@ final class StatisticsQueryService
             'first_value' => $firstValue,
             'last_value' => $lastValue,
         ];
+    }
+
+    /**
+     * 驗證分頁參數.
+     */
+    private function validatePaginationParams(int $page, int $limit): void
+    {
+        if ($page < 1) {
+            throw new InvalidArgumentException('頁碼必須大於 0');
+        }
+
+        if ($limit < 1) {
+            throw new InvalidArgumentException('每頁數量必須大於 0');
+        }
+
+        if ($limit > 100) {
+            throw new InvalidArgumentException('每頁數量不得超過 100');
+        }
     }
 }
