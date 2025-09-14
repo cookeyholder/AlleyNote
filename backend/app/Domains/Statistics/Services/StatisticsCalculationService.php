@@ -118,7 +118,7 @@ final class StatisticsCalculationService
     /**
      * 計算波動性.
      *
-     * @param array $snapshots 統計快照陣列
+     * @param array<StatisticsSnapshot> $snapshots 統計快照陣列
      * @return float 波動性係數（0-1之間，值越高表示波動越大）
      * @throws StatisticsCalculationException 當快照數量不足時
      */
@@ -183,7 +183,7 @@ final class StatisticsCalculationService
     /**
      * 計算預測值
      *
-     * @param array $historicalSnapshots 歷史快照資料
+     * @param array<StatisticsSnapshot> $historicalSnapshots 歷史快照資料
      * @return array{posts: int, views: int, confidence: float} 預測結果
      * @throws StatisticsCalculationException 當歷史資料不足時
      */
@@ -219,7 +219,8 @@ final class StatisticsCalculationService
     /**
      * 計算相關性係數.
      *
-     * @param array $x X軸資料
+     * @param array<float|int> $x X軸資料
+     * @param array<float|int> $y Y軸資料
      * @return float 相關性係數（-1到1之間）
      * @throws StatisticsCalculationException 當資料長度不一致時
      */
@@ -249,8 +250,8 @@ final class StatisticsCalculationService
     /**
      * 計算季節性指數.
      *
-     * @param array $snapshots 一年內的快照資料
-     * @return array 季節性指數（按月份）
+     * @param array<StatisticsSnapshot> $snapshots 一年內的快照資料
+     * @return array<string, float> 季節性指數（按月份）
      */
     public function calculateSeasonalityIndex(array $snapshots): array
     {
@@ -302,6 +303,8 @@ final class StatisticsCalculationService
 
     /**
      * 計算趨勢分析.
+     * @param array<mixed> $data 資料陣列
+     * @return array{trend_direction: string, growth_rate: float, confidence: float}
      */
     public function calculateTrends(array $data): array
     {
@@ -403,7 +406,7 @@ final class StatisticsCalculationService
     /**
      * 計算線性成長率.
      *
-     * @param array $values 數值陣列
+     * @param array<float|int> $values 數值陣列
      */
     private function calculateLinearGrowthRate(array $values): float
     {
@@ -432,6 +435,7 @@ final class StatisticsCalculationService
 
     /**
      * 計算預測信心度.
+     * @param array<StatisticsSnapshot> $snapshots
      */
     private function calculateForecastConfidence(array $snapshots): float
     {
@@ -451,6 +455,7 @@ final class StatisticsCalculationService
 
     /**
      * 計算簡單波動性.
+     * @param array<float|int> $values
      */
     private function calculateSimpleVolatility(array $values): float
     {

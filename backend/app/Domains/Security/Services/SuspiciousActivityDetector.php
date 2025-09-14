@@ -158,6 +158,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測全域可疑活動模式.
+     * @return array<SuspiciousActivityAnalysisDTO>
      */
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array
     {
@@ -191,6 +192,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析使用者活動.
+     * @param array<mixed> $activities 活動記錄陣列
      */
     private function analyzeUserActivities(array $activities, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -285,6 +287,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析IP活動.
+     * @param array<mixed> $activities 活動記錄陣列
      */
     private function analyzeIpActivities(array $activities, string $ipAddress, int $timeWindowMinutes): SuspiciousActivityAnalysisDTO
     {
@@ -380,6 +383,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析全域模式.
+     * @param array<mixed> $statistics 統計資料
+     * @return array<SuspiciousActivityAnalysisDTO>
      */
     private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): array
     {
@@ -424,6 +429,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測失敗率異常.
+     * @param array<string, int> $activityCounts 活動數量
+     * @param array<string, int> $failureCounts 失敗數量
+     * @return array<string, mixed>
      */
     private function detectFailureRateAnomalies(array $activityCounts, array $failureCounts, int $timeWindowMinutes): array
     {
@@ -464,6 +472,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測頻率異常.
+     * @param array<string, int> $activityCounts 活動數量
+     * @return array<string, mixed>
      */
     private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
     {
@@ -497,6 +507,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測模式異常.
+     * @param array<array<string, mixed>> $activities 活動清單
+     * @return array<string, mixed>
      */
     private function detectPatternAnomalies(array $activities): array
     {
@@ -529,6 +541,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 檢測IP信譽問題.
+     * @param array<array<string, mixed>> $activities 活動清單
+     * @param string $ipAddress IP位址
+     * @return array<string, mixed>
      */
     private function detectIpReputationIssues(array $activities, string $ipAddress): array
     {
@@ -625,6 +640,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 產生建議動作.
+     * @param bool $isSuspicious 是否可疑
+     * @param ActivitySeverity $severity 嚴重程度
+     * @param array<array<string, mixed>> $rules 規則清單
+     * @return ?string
      */
     private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, array $rules): ?string
     {
@@ -719,6 +738,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         ]);
     }
 
+    /**
+     * 取得閾值配置.
+     * @return array<string, array<mixed>>
+     */
     public function getThresholdConfiguration(): array
     {
         return [

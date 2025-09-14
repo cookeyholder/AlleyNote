@@ -582,6 +582,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
      */
+    /**
+     * 取得可疑 IP 位址清單.
+     * @param int $failureThreshold 失敗闾值
+     * @param ?DateTimeInterface $timeWindow 時間範圍
+     * @return array<string, int>
+     */
     public function getSuspiciousIpAddresses(
         int $failureThreshold = 10,
         ?DateTimeInterface $timeWindow = null,
@@ -904,6 +910,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * Helper method to map database row to array.
+     */
+    /**
+     * 將資料庫行轉換為陣列.
+     * @param array<string, mixed> $data 資料庫行資料
+     * @return array<string, mixed>
      */
     private function mapToArray(array $data): array
     {
