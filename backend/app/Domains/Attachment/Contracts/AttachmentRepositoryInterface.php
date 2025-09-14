@@ -29,24 +29,27 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
     /**
      * 根據貼文 ID 取得附件列表.
      * @param int $postId 貼文 ID
+     * @return Attachment[] 附件陣列
      */
     public function getByPostId(int $postId, bool $includeDeleted = false): array;
 
     /**
      * 根據使用者 ID 取得附件列表.
      * @param int $userId 使用者 ID
+     * @return Attachment[] 附件陣列
      */
     public function getByUserId(int $userId, int $limit = 50): array;
 
     /**
      * 建立新附件.
-     * @param array $data 附件資料
+     * @param array<string, mixed> $data 附件資料
      */
     public function create(array $data): Attachment;
 
     /**
      * 更新附件資料.
      * @param int $id 附件 ID
+     * @param array<string, mixed> $data 更新資料
      */
     public function update(int $id, array $data): object;
 
@@ -71,19 +74,22 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
     /**
      * 取得附件列表（分頁）.
      * @param int $page 頁碼
-     * @param array $filters 篩選條件
+     * @param array<string, mixed> $filters 篩選條件
+     * @return array<string, mixed> 分頁結果資料
      */
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array;
 
     /**
      * 取得已軟刪除的附件列表.
      * @param int $page 頁碼
+     * @return array<string, mixed> 分頁結果資料
      */
     public function getTrashed(int $page = 1, int $perPage = 10): array;
 
     /**
      * 根據檔案類型取得附件.
      * @param string $mimeType MIME 類型
+     * @return Attachment[] 附件陣列
      */
     public function getByMimeType(string $mimeType, int $limit = 10): array;
 
@@ -91,18 +97,21 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 根據檔案大小範圍取得附件.
      * @param int $minSize 最小檔案大小（位元組）
      * @param int $limit 限制筆數
+     * @return Attachment[] 附件陣列
      */
     public function getBySizeRange(int $minSize, int $maxSize, int $limit = 10): array;
 
     /**
      * 取得孤兒附件（沒有關聯貼文的附件）.
      * @param int $olderThanDays 超過指定天數的附件
+     * @return Attachment[] 附件陣列
      */
     public function getOrphanedAttachments(int $olderThanDays = 7): array;
 
     /**
      * 統計附件資訊.
-     * @param array $conditions 統計條件
+     * @param array<string, mixed> $conditions 統計條件
+     * @return array<string, mixed> 統計資料
      */
     public function getStats(array $conditions = []): array;
 
@@ -121,7 +130,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
 
     /**
      * 批次更新附件狀態.
-     * @param array $ids 附件 ID 陣列
+     * @param array<int> $ids 附件 ID 陣列
      * @return int 更新的數量
      */
     public function batchUpdateStatus(array $ids, string $status): int;
@@ -129,7 +138,9 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
     /**
      * 搜尋附件.
      * @param string $keyword 關鍵字
+     * @param array<string> $fields 搜尋欄位
      * @param int $limit 限制筆數
+     * @return Attachment[] 附件陣列
      */
     public function search(string $keyword, array $fields = [], int $limit = 10): array;
 }

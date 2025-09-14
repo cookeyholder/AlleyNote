@@ -31,9 +31,10 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
+     * @param array<string, mixed> $data 附件資料
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
+    public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
 
@@ -203,6 +204,7 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
+     * @return array<string, string> 驗證規則陣列
      */
     public function getValidationRules(): array
     {
@@ -219,6 +221,7 @@ class CreateAttachmentDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
+     * @return array<string, mixed> 附件資料陣列
      */
     public function toArray(): array
     {

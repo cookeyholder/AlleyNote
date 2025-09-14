@@ -16,6 +16,10 @@ class AttachmentRepository
         private CacheServiceInterface $cache,
     ) {}
 
+    /**
+     * 建立附件.
+     * @param array<string, mixed> $data 附件資料
+     */
     public function create(array $data): Attachment
     {
         $uuid = Uuid::uuid4()->toString();
@@ -46,6 +50,7 @@ class AttachmentRepository
         $data['id'] = (int) $this->db->lastInsertId();
         $data['uuid'] = $uuid;
 
+        /** @var array<string, mixed> $data */
         return new Attachment($data);
     }
 
@@ -101,6 +106,11 @@ class AttachmentRepository
         return $result;
     }
 
+    /**
+     * 根據貼文 ID 取得附件列表.
+     * @param int $postId 貼文 ID
+     * @return array<Attachment> 附件陣列
+     */
     public function getByPostId(int $postId): array
     {
         /** @var array<int, Attachment> $result */

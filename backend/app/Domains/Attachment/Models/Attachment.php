@@ -28,6 +28,10 @@ class Attachment
 
     private ?string $deletedAt = null;
 
+    /**
+     * 建構子.
+     * @param array<string, mixed> $attributes 附件屬性資料
+     */
     public function __construct(array $attributes = [])
     {
         $this->id = isset($attributes['id']) ? (int) $attributes['id'] : null;
@@ -98,6 +102,10 @@ class Attachment
         return $this->deletedAt;
     }
 
+    /**
+     * 轉換為陣列格式.
+     * @return array<string, mixed> 附件資料陣列
+     */
     public function toArray(): array
     {
         return [
