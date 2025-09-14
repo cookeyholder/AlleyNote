@@ -40,6 +40,10 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
     }
 
+    /**
+     * 從陣列建立 DTO.
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         // 處理 metadata 類型安全
@@ -68,6 +72,10 @@ final class CreateActivityLogDTO implements JsonSerializable
         );
     }
 
+    /**
+     * 建立成功的活動記錄 DTO.
+     * @param array<string, mixed>|null $metadata
+     */
     public static function success(
         ActivityType $actionType,
         ?int $userId = null,
