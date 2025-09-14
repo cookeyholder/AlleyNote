@@ -95,6 +95,10 @@ final class CreateActivityLogDTO implements JsonSerializable
         );
     }
 
+    /**
+     * 建立失敗的活動記錄 DTO.
+     * @param array<string, mixed>|null $metadata
+     */
     public static function failure(
         ActivityType $actionType,
         ?int $userId = null,
@@ -116,6 +120,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 快速建立安全事件的記錄.
+     * @param array<string, mixed>|null $metadata
      */
     public static function securityEvent(
         ActivityType $actionType,
@@ -172,7 +177,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-    /**
+     * @return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
@@ -241,7 +246,8 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     /**
-     * @return array
+     * @param array<string, mixed> $metadata
+     * @return self
      */
     public function withMetadata(array $metadata): self
     {
@@ -262,6 +268,9 @@ final class CreateActivityLogDTO implements JsonSerializable
         return $new;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [
@@ -283,6 +292,9 @@ final class CreateActivityLogDTO implements JsonSerializable
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function jsonSerialize(): array
     {
         return $this->toArray();
@@ -290,6 +302,7 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * 驗證 metadata 是否可序列化.
+     * @param array<string, mixed> $metadata
      */
     private function validateMetadata(array $metadata): void
     {

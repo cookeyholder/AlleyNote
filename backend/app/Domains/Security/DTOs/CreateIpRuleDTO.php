@@ -25,9 +25,10 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
+     * @param array<string, mixed> $data
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
+    public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
 
@@ -38,9 +39,9 @@ class CreateIpRuleDTO extends BaseDTO
         $validatedData = $this->validate($data);
 
         // 設定屬性
-        $this->ipAddress = trim($validatedData['ip_address']);
-        $this->action = strtolower(trim($validatedData['action']));
-        $this->reason = isset($validatedData['reason']) ? trim($validatedData['reason']) : null;
+        $this->ipAddress = trim((string) $validatedData['ip_address']);
+        $this->action = strtolower(trim((string) $validatedData['action']));
+        $this->reason = isset($validatedData['reason']) ? trim((string) $validatedData['reason']) : null;
         $this->createdBy = (int) $validatedData['created_by'];
     }
 
@@ -147,6 +148,7 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
+     * @return array<string, string>
      */
     protected function getValidationRules(): array
     {
@@ -160,6 +162,7 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 轉換為陣列格式（供 Repository 使用）.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -263,6 +266,7 @@ class CreateIpRuleDTO extends BaseDTO
 
     /**
      * 取得 IP 規則的詳細資訊.
+     * @return array<string, mixed>
      */
     public function getDetailedInfo(): array
     {

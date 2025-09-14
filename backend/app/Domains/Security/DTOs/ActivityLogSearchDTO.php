@@ -496,6 +496,7 @@ class ActivityLogSearchDTO
 
     /**
      * 轉換為陣列格式.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -509,8 +510,8 @@ class ActivityLogSearchDTO
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
             'ip_address' => $this->ipAddress,
-            'start_date' => $this->startDate?->format('Y-m-d H => i => s'),
-            'end_date' => $this->endDate?->format('Y-m-d H => i => s'),
+            'start_date' => $this->startDate?->format('Y-m-d H:i:s'),
+            'end_date' => $this->endDate?->format('Y-m-d H:i:s'),
             'search_keyword' => $this->searchKeyword,
             'page' => $this->page,
             'per_page' => $this->perPage,

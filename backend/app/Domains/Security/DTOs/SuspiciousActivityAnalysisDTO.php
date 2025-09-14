@@ -42,21 +42,21 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立使用者分析結果.
+     * @param array<string, mixed> $activityCounts
+     * @param array<string, mixed> $failureCounts
+     * @param array<string, mixed> $anomalyScores
+     * @param array<string, mixed> $detectionRules
+     * @param array<string, mixed> $metadata
      */
     public static function forUser(
         int $userId,
         int $timeWindowMinutes,
         bool $isSuspicious,
         ActivitySeverity $severityLevel,
-        /** @var array<string, mixed> */
         array $activityCounts,
-        /** @var array<string, mixed> */
         array $failureCounts,
-        /** @var array<string, mixed> */
         array $anomalyScores,
-        /** @var array<string, mixed> */
         array $detectionRules,
-        /** @var array<string, mixed> */
         array $metadata = [],
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
@@ -81,21 +81,21 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立 IP 分析結果.
+     * @param array<string, mixed> $activityCounts
+     * @param array<string, mixed> $failureCounts
+     * @param array<string, mixed> $anomalyScores
+     * @param array<string, mixed> $detectionRules
+     * @param array<string, mixed> $metadata
      */
     public static function forIpAddress(
         string $ipAddress,
         int $timeWindowMinutes,
         bool $isSuspicious,
         ActivitySeverity $severityLevel,
-        /** @var array<string, mixed> */
         array $activityCounts,
-        /** @var array<string, mixed> */
         array $failureCounts,
-        /** @var array<string, mixed> */
         array $anomalyScores,
-        /** @var array<string, mixed> */
         array $detectionRules,
-        /** @var array<string, mixed> */
         array $metadata = [],
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
@@ -120,20 +120,20 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 工廠方法：建立全域分析結果.
+     * @param array<string, mixed> $activityCounts
+     * @param array<string, mixed> $failureCounts
+     * @param array<string, mixed> $anomalyScores
+     * @param array<string, mixed> $detectionRules
+     * @param array<string, mixed> $metadata
      */
     public static function forGlobalPattern(
         int $timeWindowMinutes,
         bool $isSuspicious,
         ActivitySeverity $severityLevel,
-        /** @var array<string, mixed> */
         array $activityCounts,
-        /** @var array<string, mixed> */
         array $failureCounts,
-        /** @var array<string, mixed> */
         array $anomalyScores,
-        /** @var array<string, mixed> */
         array $detectionRules,
-        /** @var array<string, mixed> */
         array $metadata = [],
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
@@ -192,26 +192,41 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         return $this->severityLevel;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getMetadata(): array
     {
         return $this->metadata;
@@ -265,7 +280,14 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             return 0.0;
         }
 
-        return max($this->anomalyScores);
+        $maxScore = 0.0;
+        foreach ($this->anomalyScores as $score) {
+            if (is_numeric($score) && (float) $score > $maxScore) {
+                $maxScore = (float) $score;
+            }
+        }
+
+        return $maxScore;
     }
 
     /**
@@ -313,6 +335,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * 轉換為陣列.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -320,7 +343,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             'analysis_id' => $this->analysisId,
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
-            'analysis_time' => $this->analysisTime->format('Y-m-d H => i => s'),
+            'analysis_time' => $this->analysisTime->format('Y-m-d H:i:s'),
             'time_window_minutes' => $this->timeWindowMinutes,
             'is_suspicious' => $this->isSuspicious,
             'severity_level' => $this->severityLevel->value,
@@ -343,6 +366,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
 
     /**
      * JSON 序列化.
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {

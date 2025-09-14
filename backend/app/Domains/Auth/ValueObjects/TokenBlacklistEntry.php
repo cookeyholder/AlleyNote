@@ -79,7 +79,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 從陣列建立黑名單項目.
-     * @param array $data 黑名單資料
+     * @param array<string, mixed> $data 黑名單資料
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -113,6 +113,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * @param mixed $metadata
+     * @return array<string, mixed>
      */
     private static function sanitizeMetadata($metadata): array
     {
@@ -157,6 +158,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 建立安全性問題的黑名單項目.
      * @param string $jti JWT ID
      * @param int|null $userId 使用者 ID
+     * @param array<string, mixed> $metadata
      * @throws InvalidArgumentException 當參數無效時
      */
     public static function forSecurityBreach(
@@ -264,6 +266,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得元資料.
+     * @return array<string, mixed>
      */
     public function getMetadata(): array
     {
@@ -403,9 +406,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為陣列格式.
-     */
-    /**
-    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -427,9 +428,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 轉換為資料庫儲存格式.
-     */
-    /**
-    /**
+     * @return array<string, mixed>
      */
     public function toDatabaseArray(): array
     {
@@ -446,9 +445,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * JsonSerializable 實作.
-     */
-    /**
-    /**
+     * @return array<string, mixed>
      */
     public function jsonSerialize(): array
     {
@@ -500,9 +497,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的 Token 類型.
-     */
-    /**
-    /**
+     * @return array<int, string>
      */
     public static function getValidTokenTypes(): array
     {
@@ -511,6 +506,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 取得所有有效的黑名單原因.
+     * @return array<int, string>
      */
     public static function getValidReasons(): array
     {
@@ -624,7 +620,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
 
     /**
      * 驗證元資料.
-     * @param array $metadata 元資料
+     * @param array<string, mixed> $metadata 元資料
      * @throws InvalidArgumentException 當元資料無效時
      */
     private function validateMetadata(array $metadata): void
