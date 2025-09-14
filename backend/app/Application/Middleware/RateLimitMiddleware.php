@@ -18,6 +18,9 @@ class RateLimitMiddleware implements MiddlewareInterface
     /** @var array<string, mixed> */
     private array $config = [];
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
@@ -110,6 +113,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 建立速率限制回應.
+     * @param array<string, mixed> $result
      */
     private function createRateLimitResponse(array $result, Request $request): ResponseInterface
     {
@@ -124,14 +128,15 @@ class RateLimitMiddleware implements MiddlewareInterface
         $remaining = is_int($result['remaining']) ? $result['remaining'] : 0;
 
         if ($isJsonRequest) {
-            $body = json_encode([
+            $jsonBody = json_encode([
                 'error' => 'Rate limit exceeded',
                 'message' => '請求過於頻繁，請稍後再試',
                 'limit' => $limit,
                 'remaining' => $remaining,
                 'reset' => $resetTime,
                 'retry_after' => $resetTime - time(),
-            ]) ? true : '';
+            ]);
+            $body = $jsonBody !== false ? $jsonBody : '{"error": "Internal error"}';
 
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {
@@ -148,6 +153,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 添加速率限制標頭.
+     * @param array<string, mixed> $result
      */
     private function addRateLimitHeaders(ResponseInterface $response, array $result): ResponseInterface
     {
@@ -159,6 +165,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 產生速率限制 HTML 回應.
+     * @param array<string, mixed> $result
      */
     private function generateRateLimitHtml(array $result): string
     {
@@ -228,6 +235,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 預設設定.
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -242,6 +250,7 @@ class RateLimitMiddleware implements MiddlewareInterface
 
     /**
      * 取得真實的客戶端 IP 位址.
+     * @param array<string, mixed> $serverParams
      */
     private function getRealClientIP(array $serverParams): string
     {

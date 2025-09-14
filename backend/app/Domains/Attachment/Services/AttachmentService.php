@@ -19,6 +19,7 @@ use Throwable;
 
 class AttachmentService implements AttachmentServiceInterface
 {
+    /** @var array<string> */
     private const ALLOWED_MIME_TYPES = [
         'image/jpeg',
         'image/png',
@@ -31,6 +32,7 @@ class AttachmentService implements AttachmentServiceInterface
 
     private const MAX_FILE_SIZE = 10485760; // 10MB
 
+    /** @var array<string> */
     private const FORBIDDEN_EXTENSIONS = [
         'php',
         'php3',
@@ -98,6 +100,7 @@ class AttachmentService implements AttachmentServiceInterface
 
     private function containsMaliciousContent(string $content): bool
     {
+        /** @var array<string> $maliciousPatterns */
         $maliciousPatterns = [
             '/<script/i',
             '/javascript => /i',
@@ -230,7 +233,7 @@ class AttachmentService implements AttachmentServiceInterface
     {
         // 檢查是否有 ClamAV 可用
         $clamavPath = shell_exec('which clamscan');
-        if (empty($clamavPath)) {
+        if ($clamavPath === null || $clamavPath === false || trim($clamavPath) === '') {
             // ClamAV 不可用，跳過掃描
             return true;
         }
@@ -238,10 +241,11 @@ class AttachmentService implements AttachmentServiceInterface
         // 執行病毒掃描
         $command = escapeshellcmd(trim($clamavPath)) . ' --no-summary --infected ' . escapeshellarg($filePath);
         $output = shell_exec($command . ' 2>&1');
-        $exitCode = shell_exec('echo $?');
+        $exitCodeOutput = shell_exec('echo $?');
+        $exitCode = $exitCodeOutput !== null && $exitCodeOutput !== false ? intval(trim($exitCodeOutput)) : 0;
 
         // ClamAV 回傳碼：0=乾淨, 1=感染, 2=錯誤
-        if (intval($exitCode) === 1) {
+        if ($exitCode === 1) {
             error_log("Virus detected in file: {$filePath}");
 
             return false;
@@ -252,6 +256,7 @@ class AttachmentService implements AttachmentServiceInterface
 
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
+     * @return array<string, mixed>
      */
     private function secureFileValidation(UploadedFileInterface $file): array
     {
@@ -470,6 +475,9 @@ class AttachmentService implements AttachmentServiceInterface
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
@@ -579,6 +587,9 @@ class AttachmentService implements AttachmentServiceInterface
         );
     }
 
+    /**
+     * @return array<Attachment>
+     */
     public function getByPostId(int $postId): array
     {
         /** @var array<Attachment> $attachments */
