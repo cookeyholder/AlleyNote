@@ -247,7 +247,6 @@ final class CreateActivityLogDTO implements JsonSerializable
 
     /**
      * @param array<string, mixed> $metadata
-     * @return self
      */
     public function withMetadata(array $metadata): self
     {

@@ -643,7 +643,6 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      * @param bool $isSuspicious 是否可疑
      * @param ActivitySeverity $severity 嚴重程度
      * @param array<array<string, mixed>> $rules 規則清單
-     * @return ?string
      */
     private function generateRecommendedAction(bool $isSuspicious, ActivitySeverity $severity, array $rules): ?string
     {

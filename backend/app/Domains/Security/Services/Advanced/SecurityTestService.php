@@ -16,6 +16,10 @@ use Exception;
 
 class SecurityTestService implements SecurityTestInterface
 {
+    /**
+     * 測試結果儲存.
+     * @var array<array<string, mixed>>
+     */
     private array $testResults = [];
 
     public function __construct(
@@ -28,6 +32,10 @@ class SecurityTestService implements SecurityTestInterface
         private readonly SecretsManagerInterface $secretsManager,
     ) {}
 
+    /**
+     * 執行所有安全測試.
+     * @return array<array<string, mixed>>
+     */
     public function runAllTests(): array
     {
         $this->testResults = [];
@@ -45,6 +53,10 @@ class SecurityTestService implements SecurityTestInterface
         return $this->testResults;
     }
 
+    /**
+     * 測試 Session 安全性.
+     * @return array<string, mixed>
+     */
     public function testSessionSecurity(): array
     {
         $results = [
@@ -105,6 +117,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試授權安全性.
+     * @return array<string, mixed>
+     */
     public function testAuthorization(): array
     {
         $results = [
@@ -153,6 +169,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試檔案安全性.
+     * @return array<string, mixed>
+     */
     public function testFileSecurity(): array
     {
         $results = [
@@ -201,6 +221,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試安全標頭.
+     * @return array<string, mixed>
+     */
     public function testSecurityHeaders(): array
     {
         $results = [
@@ -267,6 +291,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試錯誤處理.
+     * @return array<string, mixed>
+     */
     public function testErrorHandling(): array
     {
         $results = [
@@ -297,6 +325,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試密碼安全性.
+     * @return array<string, mixed>
+     */
     public function testPasswordSecurity(): array
     {
         $results = [
@@ -354,6 +386,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試秘密管理.
+     * @return array<string, mixed>
+     */
     public function testSecretsManagement(): array
     {
         $results = [
@@ -406,6 +442,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 測試系統安全性.
+     * @return array<string, mixed>
+     */
     public function testSystemSecurity(): array
     {
         $results = [
@@ -455,6 +495,10 @@ class SecurityTestService implements SecurityTestInterface
         return $results;
     }
 
+    /**
+     * 產生安全報告.
+     * @return array<string, mixed>
+     */
     public function generateSecurityReport(): array
     {
         $allTestResults = $this->runAllTests();
@@ -510,6 +554,11 @@ class SecurityTestService implements SecurityTestInterface
         }
     }
 
+    /**
+     * 根據關鍵問題產生建議.
+     * @param array<array<string, mixed>> $criticalIssues 關鍵問題清單
+     * @return array<string>
+     */
     private function getRecommendations(array $criticalIssues): array
     {
         $recommendations = [];

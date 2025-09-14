@@ -753,6 +753,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查時間限制是否匹配.
+     * @param array<string, mixed> $restriction 時間限制規則
      */
     private function matchesTimeRestriction(array $restriction, ?string $userRole, string $action, int $currentHour, int $currentDay): bool
     {
@@ -787,6 +788,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查 IP 限制是否匹配.
+     * @param array<string, mixed> $restriction IP 限制規則
      */
     private function matchesIpRestriction(array $restriction, ?string $userRole, string $resource, string $action): bool
     {
@@ -810,6 +812,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 檢查規則條件是否匹配.
+     * @param array<string, mixed> $conditions 條件陣列
      */
     private function matchesRuleConditions(array $conditions, string $resource, string $action, ?string $userRole): bool
     {
@@ -844,7 +847,8 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 執行自訂規則.
-     * @param array $ruleConfig 規則配置
+     * @param array<string, mixed> $ruleConfig 規則配置
+     * @param array<string, mixed> $userPermissions 使用者權限陣列
      * @return AuthorizationResult 授權結果
      */
     private function executeCustomRule(
@@ -891,6 +895,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     /**
      * 評估條件式規則.
+     * @param array<string, mixed> $ruleConfig 規則配置
      */
     private function evaluateConditionalRule(
         array $ruleConfig,
