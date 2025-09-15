@@ -58,6 +58,9 @@ class CacheManager implements CacheManagerInterface
         'strategy_cache_denials' => 0,
     ];
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(
         CacheStrategyInterface $strategy,
         ?LoggerInterface $logger = null,
@@ -107,11 +110,17 @@ class CacheManager implements CacheManagerInterface
         return $this->drivers[$name] ?? null;
     }
 
+    /**
+     * @return array<string, CacheDriverInterface>
+     */
     public function getDrivers(): array
     {
         return $this->drivers;
     }
 
+    /**
+     * @return array<string, CacheDriverInterface>
+     */
     public function getAvailableDrivers(): array
     {
         return array_filter($this->drivers, fn($driver): bool => $driver->isAvailable());
@@ -377,6 +386,10 @@ class CacheManager implements CacheManagerInterface
         return $success;
     }
 
+    /**
+     * @param array<int|string, string> $keys
+     * @return array<string, mixed>
+     */
     public function many(array $keys): array
     {
         $result = [];
@@ -390,6 +403,9 @@ class CacheManager implements CacheManagerInterface
         return $result;
     }
 
+    /**
+     * @param array<string, mixed> $values
+     */
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -500,6 +516,9 @@ class CacheManager implements CacheManagerInterface
         return $driverInstance;
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getHealthStatus(): array
     {
         $healthStatus = [];
@@ -538,6 +557,10 @@ class CacheManager implements CacheManagerInterface
         return $healthStatus;
     }
 
+    /**
+     * @param array<string, callable> $warmupCallbacks
+     * @return array<string, array<string, mixed>>
+     */
     public function warmup(array $warmupCallbacks): array
     {
         $results = [];
@@ -571,6 +594,9 @@ class CacheManager implements CacheManagerInterface
         return $results;
     }
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
     public function cleanup(): array
     {
         $results = [];
@@ -625,6 +651,9 @@ class CacheManager implements CacheManagerInterface
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getStats(): array
     {
         $totalRequests = $this->stats['total_gets'];
@@ -675,6 +704,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 根據優先級取得可用驅動.
+     * @return array<string, CacheDriverInterface>
      */
     private function getOrderedAvailableDrivers(): array
     {
@@ -722,6 +752,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 處理驅動錯誤.
+     * @param array<string, mixed> $params
      */
     private function handleDriverError(string $driverName, Exception $error, string $operation, array $params): mixed
     {
@@ -751,6 +782,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 取得預設設定.
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {
@@ -766,6 +798,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 更新設定.
+     * @param array<string, mixed> $config
      */
     public function updateConfig(array $config): void
     {
@@ -778,6 +811,7 @@ class CacheManager implements CacheManagerInterface
 
     /**
      * 取得設定.
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {
