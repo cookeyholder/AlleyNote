@@ -335,6 +335,8 @@ final class StatisticsApplicationService
      * 產生統計報告.
      *
      * 產生指定週期的完整統計報告。
+     * @param array<string, mixed> $options 報告選項
+     * @return array<string, mixed> 統計報告資料
      */
     public function generateStatisticsReport(StatisticsPeriod $period, array $options = []): array
     {
@@ -456,6 +458,10 @@ final class StatisticsApplicationService
     /**
      * 檢查統計服務健康狀態.
      */
+    /**
+     * 檢查系統健康狀態.
+     * @return array<string, mixed> 健康狀態資訊
+     */
     public function checkHealthStatus(): array
     {
         try {
@@ -504,6 +510,10 @@ final class StatisticsApplicationService
     /**
      * 取得統計概覽（代理方法）.
      */
+    /**
+     * 取得系統概覽統計.
+     * @return array<string, mixed> 概覽統計資料
+     */
     public function getOverview(string $period = 'monthly'): array
     {
         $statisticsPeriod = StatisticsPeriod::fromString($period);
@@ -513,6 +523,10 @@ final class StatisticsApplicationService
 
     /**
      * 取得貼文統計（代理方法）.
+     */
+    /**
+     * 取得貼文統計資料.
+     * @return array<string, mixed> 貼文統計資料
      */
     public function getPostStatistics(string $period = 'monthly', int $limit = 10): array
     {
@@ -524,6 +538,10 @@ final class StatisticsApplicationService
     /**
      * 取得來源統計（代理方法）.
      */
+    /**
+     * 取得來源統計資料.
+     * @return array<string, mixed> 來源統計資料
+     */
     public function getSourceStatistics(string $period = 'monthly'): array
     {
         $statisticsPeriod = StatisticsPeriod::fromString($period);
@@ -533,6 +551,10 @@ final class StatisticsApplicationService
 
     /**
      * 取得使用者活動統計（代理方法）.
+     */
+    /**
+     * 取得使用者活動統計資料.
+     * @return array<string, mixed> 使用者活動統計資料
      */
     public function getUserActivityStatistics(string $period = 'monthly'): array
     {
@@ -544,6 +566,10 @@ final class StatisticsApplicationService
     /**
      * 取得熱門內容（代理方法）.
      */
+    /**
+     * 取得熱門內容統計資料.
+     * @return array<string, mixed> 熱門內容資料
+     */
     public function getPopularContent(string $period = 'monthly', int $limit = 20): array
     {
         $statisticsPeriod = StatisticsPeriod::fromString($period);
@@ -553,6 +579,10 @@ final class StatisticsApplicationService
 
     /**
      * 取得統計快照（代理方法）.
+     */
+    /**
+     * 取得統計快照資料.
+     * @return array<string, mixed> 快照資料
      */
     public function getSnapshot(string $period = 'monthly'): array
     {
@@ -606,6 +636,10 @@ final class StatisticsApplicationService
 
     /**
      * 計算來源統計.
+     */
+    /**
+     * 計算來源統計資料.
+     * @return array<string, mixed> 來源統計結果
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {
@@ -671,6 +705,10 @@ final class StatisticsApplicationService
     /**
      * 檢查快取健康狀態.
      */
+    /**
+     * 檢查快取健康狀態.
+     * @return array<string, mixed> 快取健康資訊
+     */
     private function checkCacheHealth(): array
     {
         try {
@@ -700,6 +738,10 @@ final class StatisticsApplicationService
     /**
      * 檢查資料庫健康狀態.
      */
+    /**
+     * 檢查資料庫健康狀態.
+     * @return array<string, mixed> 資料庫健康資訊
+     */
     private function checkDatabaseHealth(): array
     {
         try {
@@ -719,6 +761,10 @@ final class StatisticsApplicationService
 
     /**
      * 檢查計算服務健康狀態.
+     */
+    /**
+     * 檢查計算健康狀態.
+     * @return array<string, mixed> 計算健康資訊
      */
     private function checkCalculationHealth(): array
     {

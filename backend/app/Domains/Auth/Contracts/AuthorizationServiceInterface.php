@@ -43,11 +43,15 @@ interface AuthorizationServiceInterface
 
     /**
      * 取得使用者的所有角色.
+     *
+     * @return array<string>
      */
     public function getUserRoles(int $userId): array;
 
     /**
      * 取得使用者的所有權限（包含角色權限和直接權限）.
+     *
+     * @return array<string>
      */
     public function getUserPermissions(int $userId): array;
 

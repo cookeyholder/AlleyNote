@@ -44,6 +44,24 @@ final class StatisticsQueryService
      * 查詢統計快照清單.
      *
      * 支援分頁和篩選條件的統計快照查詢。
+     *
+     * @return array{
+     *   data: array<array<string, mixed>>,
+     *   pagination: array{
+     *     page: int,
+     *     limit: int,
+     *     total: int,
+     *     total_pages: int,
+     *     has_next: bool,
+     *     has_previous: bool
+     *   },
+     *   filters: array{
+     *     start_date: string,
+     *     end_date: string,
+     *     period_type: string|null,
+     *     source_type: string|null
+     *   }
+     * }
      */
     public function getStatisticsList(
         ?DateTimeInterface $startDate = null,
@@ -114,6 +132,8 @@ final class StatisticsQueryService
 
     /**
      * 查詢特定統計快照.
+     *
+     * @return array{id: string, data: array<string, mixed>}|null
      */
     public function getStatisticsById(int $id): ?array
     {
@@ -151,6 +171,16 @@ final class StatisticsQueryService
 
     /**
      * 查詢文章統計資料.
+     *
+     * @return array{
+     *   data: array<array{post_id: int, views: int}>,
+     *   summary: array{total_posts: int, average_views: float},
+     *   filters: array{
+     *     post_id: int|null,
+     *     start_date: string|null,
+     *     end_date: string|null
+     *   }
+     * }
      */
     public function getPostStatistics(
         ?int $postId = null,
@@ -211,6 +241,16 @@ final class StatisticsQueryService
 
     /**
      * 查詢使用者統計資料.
+     *
+     * @return array{
+     *   data: array<array{user_id: int, posts: int, comments: int}>,
+     *   summary: array{total_users: int, average_posts: float},
+     *   filters: array{
+     *     user_id: int|null,
+     *     start_date: string|null,
+     *     end_date: string|null
+     *   }
+     * }
      */
     public function getUserStatistics(
         ?int $userId = null,
@@ -269,6 +309,16 @@ final class StatisticsQueryService
 
     /**
      * 查詢系統統計資料.
+     *
+     * @return array{
+     *   data: array<array{metric: string, value: float}>,
+     *   summary: array{count: int, average: float, min: float, max: float},
+     *   filters: array{
+     *     metric_type: string|null,
+     *     start_date: string|null,
+     *     end_date: string|null
+     *   }
+     * }
      */
     public function getSystemStatistics(
         ?string $metricType = null,
@@ -319,6 +369,22 @@ final class StatisticsQueryService
 
     /**
      * 查詢統計趨勢.
+     *
+     * @return array{
+     *   data: array<array{date: string, value: int}>,
+     *   analysis: array{
+     *     trend: string,
+     *     change: float,
+     *     percent_change: float,
+     *     first_value: float,
+     *     last_value: float
+     *   },
+     *   period: array{
+     *     start_date: string,
+     *     end_date: string,
+     *     period_type: string
+     *   }
+     * }
      */
     public function getStatisticsTrend(
         DateTimeInterface $startDate,
@@ -375,6 +441,9 @@ final class StatisticsQueryService
 
     /**
      * 生成系統統計摘要.
+     *
+     * @param array<array{metric: string, value: float}> $statistics
+     * @return array{count: int, average: float, min: float, max: float}
      */
     private function generateSystemStatisticsSummary(array $statistics): array
     {
@@ -399,11 +468,26 @@ final class StatisticsQueryService
 
     /**
      * 分析趨勢資料.
+     *
+     * @param array<array{date: string, value: int}> $trendData
+     * @return array{
+     *   trend: string,
+     *   change: float,
+     *   percent_change: float,
+     *   first_value: float,
+     *   last_value: float
+     * }
      */
     private function analyzeTrend(array $trendData): array
     {
         if (count($trendData) < 2) {
-            return ['trend' => 'insufficient_data', 'change' => 0];
+            return [
+                'trend' => 'insufficient_data',
+                'change' => 0.0,
+                'percent_change' => 0.0,
+                'first_value' => 0.0,
+                'last_value' => 0.0,
+            ];
         }
 
         $firstValue = (float) ($trendData[0]['value'] ?? 0);

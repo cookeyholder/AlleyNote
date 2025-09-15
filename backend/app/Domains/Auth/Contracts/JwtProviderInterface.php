@@ -21,7 +21,7 @@ interface JwtProviderInterface
 {
     /**
      * 生成 access token.
-     * @param array $payload Token payload
+     * @param array<string, mixed> $payload Token payload
      * @return string JWT token
      *
      * @throws TokenGenerationException 當token生成失敗時
@@ -30,7 +30,7 @@ interface JwtProviderInterface
 
     /**
      * 生成 refresh token.
-     * @param array $payload Token payload
+     * @param array<string, mixed> $payload Token payload
      * @return string JWT token
      *
      * @throws TokenGenerationException 當token生成失敗時
@@ -40,7 +40,7 @@ interface JwtProviderInterface
     /**
      * 驗證 token.
      * @param string $token JWT token
-     * @return array 解析後的payload
+     * @return array<string, mixed> 解析後的payload
      *
      * @throws TokenExpiredException 當token過期時
      * @throws InvalidTokenException 當token無效時
@@ -51,7 +51,7 @@ interface JwtProviderInterface
     /**
      * 解析 token payload（不進行驗證）.
      * @param string $token JWT token
-     * @return array 解析後的payload
+     * @return array<string, mixed> 解析後的payload
      *
      * @throws TokenParsingException 當token解析失敗時
      */
