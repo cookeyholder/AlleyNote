@@ -45,7 +45,7 @@ class CacheGroupManager
      * 建立快取分組.
      *
      * @param string $groupName 分組名稱
-     * @param array $tags 標籤陣列
+     * @param array<string> $tags 標籤陣列
      * @return TaggedCacheInterface 標籤化快取實例
      */
     public function group(string $groupName, array $tags = []): TaggedCacheInterface
@@ -83,7 +83,7 @@ class CacheGroupManager
      * 當父分組失效時，子分組也會自動失效
      *
      * @param string $parentGroup 父分組
-     * @param array|string $childGroups 子分組
+     * @param array<string>|string $childGroups 子分組
      */
     public function setDependencies(string $parentGroup, array|string $childGroups): void
     {
@@ -110,7 +110,7 @@ class CacheGroupManager
      * 當觸發條件滿足時，目標分組會自動失效
      *
      * @param string $triggerPattern 觸發模式（支援萬用字元）
-     * @param array|string $targetGroups 目標分組
+     * @param array<string>|string $targetGroups 目標分組
      */
     public function setInvalidationRule(string $triggerPattern, array|string $targetGroups): void
     {
@@ -187,7 +187,7 @@ class CacheGroupManager
     /**
      * 取得分組統計資訊.
      *
-     * @return array 統計資訊
+     * @return array<string, mixed> 統計資訊
      */
     public function getGroupStatistics(): array
     {
@@ -216,7 +216,7 @@ class CacheGroupManager
     /**
      * 取得所有分組名稱.
      *
-     * @return array 分組名稱陣列
+     * @return array<string> 分組名稱陣列
      */
     public function getAllGroups(): array
     {
@@ -273,7 +273,7 @@ class CacheGroupManager
      * 建立使用者相關的快取分組.
      *
      * @param int $userId 使用者 ID
-     * @param array $additionalTags 額外標籤
+     * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 使用者快取分組
      */
     public function userGroup(int $userId, array $additionalTags = []): TaggedCacheInterface
@@ -289,7 +289,7 @@ class CacheGroupManager
      * 建立模組相關的快取分組.
      *
      * @param string $moduleName 模組名稱
-     * @param array $additionalTags 額外標籤
+     * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 模組快取分組
      */
     public function moduleGroup(string $moduleName, array $additionalTags = []): TaggedCacheInterface
@@ -305,7 +305,7 @@ class CacheGroupManager
      * 建立時間相關的快取分組.
      *
      * @param string $period 時間週期
-     * @param array $additionalTags 額外標籤
+     * @param array<string> $additionalTags 額外標籤
      * @return TaggedCacheInterface 時間快取分組
      */
     public function temporalGroup(string $period, array $additionalTags = []): TaggedCacheInterface
@@ -320,7 +320,7 @@ class CacheGroupManager
     /**
      * 批量清空多個分組.
      *
-     * @param array $groupNames 分組名稱陣列
+     * @param array<string> $groupNames 分組名稱陣列
      * @param bool $cascade 是否級聯清空
      * @return int 總清空的項目數量
      */
@@ -359,7 +359,7 @@ class CacheGroupManager
      * 設定分組失效規則.
      *
      * @param string $groupName 分組名稱
-     * @param array $rules 失效規則
+     * @param array<string, mixed> $rules 失效規則
      */
     public function setInvalidationRules(string $groupName, array $rules): void
     {
@@ -375,7 +375,7 @@ class CacheGroupManager
      * 取得分組失效規則.
      *
      * @param string $groupName 分組名稱
-     * @return array 失效規則
+     * @return array<string, mixed> 失效規則
      */
     public function getInvalidationRules(string $groupName): array
     {
@@ -395,7 +395,7 @@ class CacheGroupManager
      * 取得分組依賴關係.
      *
      * @param string $groupName 分組名稱
-     * @return array 依賴的子分組
+     * @return array<string> 依賴的子分組
      */
     public function getDependencies(string $groupName): array
     {
@@ -454,9 +454,9 @@ class CacheGroupManager
     /**
      * 批量清空多個分組.
      *
-     * @param array $groupNames 分組名稱陣列
+     * @param array<string> $groupNames 分組名稱陣列
      * @param bool $cascade 是否級聯清空
-     * @return array 每個分組清空的項目數量
+     * @return array<string, int> 每個分組清空的項目數量
      */
     public function flushMultipleGroups(array $groupNames, bool $cascade = true): array
     {
