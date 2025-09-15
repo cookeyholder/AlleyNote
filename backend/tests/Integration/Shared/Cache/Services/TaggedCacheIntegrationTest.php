@@ -56,6 +56,9 @@ class TaggedCacheIntegrationTest extends TestCase
                 return true;
             }
 
+            /**
+             * @param array<string, CacheDriverInterface> $drivers
+             */
             public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
             {
                 return reset($drivers) ? true : null;
@@ -71,8 +74,10 @@ class TaggedCacheIntegrationTest extends TestCase
                 return $callback();
             }
 
-            /**\n      * @param array $params
-                     */
+            /**
+             * @param array<string, CacheDriverInterface> $availableDrivers
+             * @param array<string, mixed> $params
+             */
             public function handleDriverFailure(
                 CacheDriverInterface $failedDriver,
                 array $availableDrivers,
@@ -82,8 +87,9 @@ class TaggedCacheIntegrationTest extends TestCase
                 return null;
             }
 
-            /**\n      * @return array
-                     */
+            /**
+             * @return array<string, mixed>
+             */
             public function getStats(): array
             {
                 return [];
@@ -134,8 +140,9 @@ class TaggedCacheIntegrationTest extends TestCase
         $this->verifyTaggedCacheData($testData);
     }
 
-    /**\n      * @return array{key: string, value: string, tags: array}
-      */
+    /**
+     * @return array{key: string, value: string, tags: array<int, string>}
+     */
     private function createBasicTaggedCacheTestData(): array
     {
         return [
@@ -145,8 +152,9 @@ class TaggedCacheIntegrationTest extends TestCase
         ];
     }
 
-    /**\n      * @param array{key: string, value: string, tags: array} $testData
-      */
+    /**
+     * @param array{key: string, value: string, tags: array<int, string>} $testData
+     */
     private function verifyTaggedCacheData(array $testData): void
     {
         // 測試標籤是否正確建立
@@ -213,7 +221,8 @@ class TaggedCacheIntegrationTest extends TestCase
         }
     }
 
-    /**\n      * @param array $stats
+    /**
+     * @param array<string, mixed> $stats
      */
     private function verifyTagStatisticsResults(array $stats): void
     {
@@ -244,8 +253,9 @@ class TaggedCacheIntegrationTest extends TestCase
         $this->verifyComplexValueTags($testData);
     }
 
-    /**\n      * @return array{key: string, value: array, tags: array}
-      */
+    /**
+     * @return array{key: string, value: array<string, mixed>, tags: array<int, string>}
+     */
     private function createComplexValueTestData(): array
     {
         return [
@@ -259,16 +269,18 @@ class TaggedCacheIntegrationTest extends TestCase
         ];
     }
 
-    /**\n      * @param array{key: string, value: array, tags: array} $testData
-      */
+    /**
+     * @param array{key: string, value: array<string, mixed>, tags: array<int, string>} $testData
+     */
     private function verifyComplexValueCaching(array $testData): void
     {
         $retrievedValue = $this->taggedCache->get($testData['key']);
         $this->assertEquals($testData['value'], $retrievedValue);
     }
 
-    /**\n      * @param array{key: string, value: array, tags: array} $testData
-      */
+    /**
+     * @param array{key: string, value: array<string, mixed>, tags: array<int, string>} $testData
+     */
     private function verifyComplexValueTags(array $testData): void
     {
         // 驗證所有標籤都已建立
@@ -299,8 +311,9 @@ class TaggedCacheIntegrationTest extends TestCase
         $this->verifyDataExpiredAfterTtl($testData);
     }
 
-    /**\n      * @return array{key: string, value: string, tags: array, ttl: int}
-      */
+    /**
+     * @return array{key: string, value: string, tags: array<int, string>, ttl: int}
+     */
     private function createTagExpirationTestData(): array
     {
         return [
@@ -311,8 +324,9 @@ class TaggedCacheIntegrationTest extends TestCase
         ];
     }
 
-    /**\n      * @param array{key: string, value: string, tags: array, ttl: int} $testData
-      */
+    /**
+     * @param array{key: string, value: string, tags: array<int, string>, ttl: int} $testData
+     */
     private function verifyDataExistsBeforeExpiration(array $testData): void
     {
         $retrievedValue = $this->taggedCache->get($testData['key']);
@@ -320,8 +334,9 @@ class TaggedCacheIntegrationTest extends TestCase
         $this->assertTrue($this->tagRepository->tagExists($testData['tags'][0]));
     }
 
-    /**\n      * @param array{key: string, value: string, tags: array, ttl: int} $testData
-      */
+    /**
+     * @param array{key: string, value: string, tags: array<int, string>, ttl: int} $testData
+     */
     private function verifyDataExpiredAfterTtl(array $testData): void
     {
         // 等待過期
@@ -378,8 +393,9 @@ class TaggedCacheIntegrationTest extends TestCase
         $this->verifyOriginalDataIntegrity($testData);
     }
 
-    /**\n      * @return array{validKey: string, invalidKey: string, value: string, validTags: array, invalidTags: array}
-      */
+    /**
+     * @return array{validKey: string, invalidKey: string, value: string, validTags: array<int, string>, invalidTags: array<int, string>}
+     */
     private function createErrorRecoveryTestData(): array
     {
         return [
@@ -391,8 +407,9 @@ class TaggedCacheIntegrationTest extends TestCase
         ];
     }
 
-    /**\n      * @param array{validKey: string, invalidKey: string, value: string, validTags: array, invalidTags: array} $testData
-      */
+    /**
+     * @param array{validKey: string, invalidKey: string, value: string, validTags: array<int, string>, invalidTags: array<int, string>} $testData
+     */
     private function verifyInvalidTagErrorHandling(array $testData): void
     {
         // 嘗試使用無效標籤（空字串） - 應該拋出例外
@@ -405,8 +422,9 @@ class TaggedCacheIntegrationTest extends TestCase
         );
     }
 
-    /**\n      * @param array{validKey: string, invalidKey: string, value: string, validTags: array, invalidTags: array} $testData
-      */
+    /**
+     * @param array{validKey: string, invalidKey: string, value: string, validTags: array<int, string>, invalidTags: array<int, string>} $testData
+     */
     private function verifyOriginalDataIntegrity(array $testData): void
     {
         $this->assertEquals($testData['value'], $this->taggedCache->get($testData['validKey']));
@@ -468,6 +486,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 取得標籤類型測試案例.
+     * @return array<string, string>
      */
     private function getTagTypeTestCases(): array
     {
@@ -481,6 +500,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定並驗證標籤分類.
+     * @param array<string, string> $testCases
      */
     private function setupAndVerifyTagClassification(array $testCases): void
     {
@@ -495,6 +515,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證標籤統計.
+     * @param array<string, string> $testCases
      */
     private function verifyTagStatistics(array $testCases): void
     {
@@ -506,6 +527,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定標籤清空測試資料.
+     * @return array<string, array{value: string, tags: array<int, string>}>
      */
     private function setupTagFlushingTestData(): array
     {
@@ -526,6 +548,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 驗證測試資料已儲存.
+     * @param array<string, array{value: string, tags: array<int, string>}> $testData
      */
     private function verifyTestDataStored(array $testData): void
     {
@@ -536,6 +559,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 執行並驗證標籤清空.
+     * @param array<string, array{value: string, tags: array<int, string>}> $testData
      */
     private function executeAndVerifyTagFlushing(array $testData): void
     {
@@ -554,7 +578,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 設定多標籤測試資料.
-     * @return array{keys: array, tags: array>}
+     * @return array{keys: array<int, string>, tags: array<string, array<int, string>>}
      */
     private function setupMultipleTagTestData(): array
     {
@@ -576,7 +600,7 @@ class TaggedCacheIntegrationTest extends TestCase
 
     /**
      * 執行並驗證多標籤清空.
-     * @param array{keys: array, tags: array>} $multiTagData
+     * @param array{keys: array<int, string>, tags: array<string, array<int, string>>} $multiTagData
      */
     private function executeAndVerifyMultipleTagFlushing(array $multiTagData): void
     {
