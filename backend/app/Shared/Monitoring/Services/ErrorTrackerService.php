@@ -34,6 +34,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄一個錯誤。
+     *
+     * @param array<string, mixed> $context
      */
     public function recordError(Throwable $error, array $context = []): string
     {
@@ -48,6 +50,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄一個警告。
+     *
+     * @param array<string, mixed> $context
      */
     public function recordWarning(string $message, array $context = []): string
     {
@@ -56,6 +60,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄一個訊息。
+     *
+     * @param array<string, mixed> $context
      */
     public function recordInfo(string $message, array $context = []): string
     {
@@ -64,6 +70,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄關鍵錯誤（需要立即注意）。
+     *
+     * @param array<string, mixed> $context
      */
     public function recordCriticalError(Throwable $error, array $context = []): string
     {
@@ -83,6 +91,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得錯誤統計資料。
+     *
+     * @return array<string, mixed>
      */
     public function getErrorStats(int $hours = 24): array
     {
@@ -158,7 +168,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 取得最近的錯誤記錄。
      *
-     * @return list>
+     * @return array<array<string, mixed>>
      */
     public function getRecentErrors(int $limit = 50): array
     {
@@ -172,6 +182,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得錯誤趨勢分析。
+     *
+     * @return array<string, mixed>
      */
     public function getErrorTrends(int $days = 7): array
     {
@@ -271,6 +283,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 取得錯誤摘要報告。
+     *
+     * @return array<string, mixed>
      */
     public function getErrorSummary(int $hours = 24): array
     {
@@ -353,6 +367,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 記錄錯誤並分配等級。
+     *
+     * @param array<string, mixed> $context
      */
     private function recordErrorWithLevel(string $level, string $message, array $context = [], ?Throwable $exception = null): string
     {
@@ -401,6 +417,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 清理上下文資料，移除敏感資訊。
+     *
+     * @param array<string, mixed> $context
+     * @return array<string, mixed>
      */
     private function sanitizeContext(array $context): array
     {
@@ -425,6 +444,8 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 觸發通知處理器。
+     *
+     * @param array<string, mixed> $context
      */
     private function triggerNotifications(string $level, string $message, array $context, ?Throwable $exception = null): void
     {
@@ -440,6 +461,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 計算錯誤趨勢（每小時）。
+     *
+     * @param array<array<string, mixed>> $errors
+     * @return array<string, int>
      */
     private function calculateErrorTrend(array $errors, int $hours): array
     {
@@ -469,6 +493,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 填充遺漏的日期。
+     *
+     * @param array<string, mixed> $trends
+     * @return array<string, mixed>
      */
     private function fillMissingDates(array $trends, int $days): array
     {
@@ -534,6 +561,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
     /**
      * 判斷健康狀態。
+     *
+     * @param array<string, mixed> $stats
+     * @return array<string, mixed>
      */
     private function determineHealthStatus(array $stats): array
     {
