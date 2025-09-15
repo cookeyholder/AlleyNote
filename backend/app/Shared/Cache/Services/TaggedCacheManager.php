@@ -164,6 +164,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 取得當前快取管理器的所有標籤.
+     * @return array<string>
      */
     public function getTags(): array
     {
@@ -201,6 +202,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 取得標籤下的所有快取鍵.
+     * @return array<string>
      */
     public function getTaggedKeys(): array
     {
@@ -218,8 +220,9 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 使用指定標籤存放快取項目.
+     * @param array<string> $tags
      */
-    public function putWithTags(string $key, mixed $value, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool
+    public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool
     {
         // 驗證所有標籤
         foreach ($tags as $tag) {
@@ -248,6 +251,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 取得指定標籤的所有快取鍵.
+     * @return array<string>
      */
     public function getKeysByTag(string $tag): array
     {
@@ -256,6 +260,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 取得快取項目的所有標籤.
+     * @return array<string>
      */
     public function getTagsByKey(string $key): array
     {
@@ -264,6 +269,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 為現有快取項目添加標籤.
+     * @param string|array<string> $tags
      */
     public function addTagsToKey(string $key, string|array $tags): bool
     {
@@ -289,6 +295,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 從快取項目移除標籤.
+     * @param string|array<string> $tags
      */
     public function removeTagsFromKey(string $key, string|array $tags): bool
     {
@@ -313,6 +320,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 取得所有系統標籤.
+     * @return array<string>
      */
     public function getAllTags(): array
     {
@@ -335,6 +343,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 取得標籤統計資訊.
+     * @return array<string, mixed>
      */
     public function getTagStatistics(): array
     {
@@ -355,10 +364,11 @@ class TaggedCacheManager implements TaggedCacheInterface
 
     /**
      * 批量設定帶標籤的快取.
-     * @param array $items 快取項目 key => value
-     * @return array 設定結果 key => success
+     * @param array<string, mixed> $items 快取項目 key => value
+     * @param array<string> $tags
+     * @return array<string, bool> 設定結果 key => success
      */
-    public function putMany(array $items, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): array
+    public function putMany(array $items, array $tags, int $ttl = 3600): array
     {
         $results = [];
 
@@ -378,7 +388,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 按標籤批量獲取快取.
      * @param string $tag 標籤
-     * @return array 快取項目 key => value
+     * @return array<string, mixed> 快取項目 key => value
      */
     public function getManyByTag(string $tag): array
     {
@@ -408,8 +418,9 @@ class TaggedCacheManager implements TaggedCacheInterface
     /**
      * 記錄標籤化快取存取.
      * @param string $operation 操作類型
+     * @param array<string> $tags
      */
-    private function logTaggedAccess(string $operation, string $key, /** @var array<string, mixed> */ array $tags): void
+    private function logTaggedAccess(string $operation, string $key, array $tags): void
     {
         if ($this->monitor) {
             $this->monitor->recordOperation($operation, 'tagged', true, 0, [
