@@ -16,30 +16,41 @@ class ServerRequest implements ServerRequestInterface
 
     private UriInterface $uri;
 
+    /** @var array<string, array<string>> */
+    /** @var array<string, array<string>> */
     private array $headers = [];
 
+    /** @var array<string, mixed> */
     private array $serverParams = [];
 
+    /** @var array<string, string> */
     private array $cookieParams = [];
 
+    /** @var array<string, string> */
     private array $queryParams = [];
 
+    /** @var array<string, mixed> */
     private array $parsedBody = [];
 
+    /** @var array<string, mixed> */
     private array $attributes = [];
 
     private string $protocolVersion = '1.1';
 
+    /** @var mixed */
     private $body;
 
+    /**
+     * @param array<string, array<string>> $headers
+     * @param mixed $body
+     * @param array<string, mixed> $serverParams
+     */
     public function __construct(
         string $method,
         UriInterface $uri,
-        /** @var array<string, mixed> */
         array $headers = [],
         $body = null,
         string $version = '1.1',
-        /** @var array<string, mixed> */
         array $serverParams = [],
     ) {
         $this->method = $method;
@@ -89,16 +100,28 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getServerParams(): array
     {
         return $this->serverParams;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getCookieParams(): array
     {
         return $this->cookieParams;
     }
 
+    /**
+     * @param array<string, string> $cookies
+     */
+    /**
+     * @param array<string, string> $cookies
+     */
     public function withCookieParams(array $cookies): self
     {
         $new = clone $this;
@@ -107,11 +130,20 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getQueryParams(): array
     {
         return $this->queryParams;
     }
 
+    /**
+     * @param array<string, string> $query
+     */
+    /**
+     * @param array<string, string> $query
+     */
     public function withQueryParams(array $query): self
     {
         $new = clone $this;
@@ -120,11 +152,20 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function getUploadedFiles(): array
     {
         return [];
     }
 
+    /**
+     * @param array<mixed> $uploadedFiles
+     */
+    /**
+     * @param array<mixed> $uploadedFiles
+     */
     public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
@@ -133,7 +174,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array
+     * @return array<string, mixed>
      */
     public function getParsedBody()
     {
@@ -141,7 +182,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param array $data
+     * @param array<string, mixed> $data
      */
     public function withParsedBody(mixed $data): self
     {
@@ -151,6 +192,9 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getAttributes(): array
     {
         return $this->attributes;
@@ -191,6 +235,9 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array<string, array<string>>
+     */
     public function getHeaders(): array
     {
         return $this->headers;
@@ -201,6 +248,9 @@ class ServerRequest implements ServerRequestInterface
         return isset($this->headers[strtolower($name)]);
     }
 
+    /**
+     * @return array<string>
+     */
     public function getHeader(mixed $name): array
     {
         return $this->headers[strtolower($name)] ?? [];
