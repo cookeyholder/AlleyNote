@@ -35,7 +35,9 @@ class RedisTagRepository implements TagRepositoryInterface
      * 為快取鍵設定標籤.
      *
      * @param string $key 快取鍵
+     * @param array<int, string> $tags 標籤陣列
      * @param int $ttl 過期時間（秒）
+     * @return bool 設定成功返回 true
      */
     public function setTags(string $key, array $tags, int $ttl = 3600): bool
     {
@@ -83,7 +85,7 @@ class RedisTagRepository implements TagRepositoryInterface
      * 取得快取鍵的所有標籤.
      *
      * @param string $key 快取鍵
-     * @return array 標籤陣列
+     * @return array<int, string> 標籤陣列
      */
     public function getTags(string $key): array
     {
@@ -115,6 +117,8 @@ class RedisTagRepository implements TagRepositoryInterface
      * 為快取鍵添加標籤.
      *
      * @param string $key 快取鍵
+     * @param array<int, string> $tags 要添加的標籤陣列
+     * @return bool 添加成功返回 true
      */
     public function addTags(string $key, array $tags): bool
     {
@@ -163,6 +167,8 @@ class RedisTagRepository implements TagRepositoryInterface
      * 從快取鍵移除標籤.
      *
      * @param string $key 快取鍵
+     * @param array<int, string> $tags 要移除的標籤陣列
+     * @return bool 移除成功返回 true
      */
     public function removeTags(string $key, array $tags): bool
     {
@@ -218,7 +224,7 @@ class RedisTagRepository implements TagRepositoryInterface
      * 取得指定標籤的所有快取鍵.
      *
      * @param string $tag 標籤
-     * @return array 快取鍵陣列
+     * @return array<int, string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
     {
@@ -249,8 +255,8 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 按標籤刪除快取鍵記錄.
      *
-     * @param string|array<string> $tags 標籤或標籤陣列
-     * @return array 被刪除的快取鍵陣列
+     * @param string|array<int, string> $tags 標籤或標籤陣列
+     * @return array<int, string> 被刪除的快取鍵陣列
      */
     public function deleteByTags(string|array $tags): array
     {
@@ -281,7 +287,7 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 取得所有標籤.
      *
-     * @return array 標籤陣列
+     * @return array<int, string> 標籤陣列
      */
     public function getAllTags(): array
     {
@@ -331,7 +337,7 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 取得標籤統計資訊.
      *
-     * @return array 標籤統計陣列
+     * @return array<string, mixed> 標籤統計陣列
      */
     public function getTagStatistics(): array
     {
@@ -441,8 +447,8 @@ class RedisTagRepository implements TagRepositoryInterface
     /**
      * 正規化標籤陣列.
      *
-     * @param array $tags 標籤陣列
-     * @return array 正規化後的標籤陣列
+     * @param array<int, string> $tags 標籤陣列
+     * @return array<int, string> 正規化後的標籤陣列
      */
     private function normalizeTags(array $tags): array
     {
