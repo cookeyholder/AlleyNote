@@ -156,6 +156,8 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
+     * @param array<string, mixed> $result 資料庫查詢結果
+     * @return array<string, mixed> 處理後的文章資料
      */
     private function preparePostData(array $result): array
     {
@@ -178,6 +180,8 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備新文章的資料.
+     * @param array<string, mixed> $data 輸入的文章資料
+     * @return array<string, mixed> 準備好的新文章資料
      */
     private function prepareNewPostData(array $data): array
     {
@@ -323,6 +327,11 @@ class PostRepository implements PostRepositoryInterface
         });
     }
 
+    /**
+     * 檢查標籤是否存在.
+     * @param array<int, int> $tagIds 標籤 ID 陣列
+     * @return bool 所有標籤都存在返回 true
+     */
     private function tagsExist(array $tagIds): bool
     {
         if (empty($tagIds)) {
@@ -340,7 +349,10 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * 指派標籤到文章.
+     * 建立新文章.
+     * @param array<string, mixed> $data 文章資料
+     * @param array<int, int> $tagIds 標籤 ID 陣列
+     * @return int 新建文章的 ID
      * @throws PDOException 當標籤不存在時拋出異常
      */
     public function create(array $data, array $tagIds = []): int
@@ -381,9 +393,9 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
-     */
-    /**
-    /**
+     * @param int $postId 文章 ID
+     * @param array<int, int> $tagIds 標籤 ID 陣列
+     * @throws PDOException 當標籤不存在時拋出異常
      */
     private function assignTags(int $postId, array $tagIds): void
     {
@@ -400,6 +412,12 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
+    /**
+     * 更新文章.
+     * @param int $id 文章 ID
+     * @param array<string, mixed> $data 更新資料
+     * @return bool 更新成功返回 true
+     */
     public function update(int $id, array $data): bool
     {
         // 檢查文章是否存在
@@ -467,6 +485,13 @@ class PostRepository implements PostRepositoryInterface
         return $stmt->execute([$id]);
     }
 
+    /**
+     * 分頁查詢文章列表.
+     * @param int $page 頁碼
+     * @param int $perPage 每頁筆數
+     * @param array<string, mixed> $conditions 查詢條件
+     * @return array<string, mixed> 分頁結果資料
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
@@ -576,6 +601,13 @@ class PostRepository implements PostRepositoryInterface
         }, self::CACHE_TTL);
     }
 
+    /**
+     * 根據標籤查詢文章列表.
+     * @param int $tagId 標籤 ID
+     * @param int $page 頁碼
+     * @param int $perPage 每頁筆數
+     * @return array<int, Post> 文章列表
+     */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
@@ -694,6 +726,12 @@ class PostRepository implements PostRepositoryInterface
         return $result;
     }
 
+    /**
+     * 設定文章的標籤.
+     * @param int $id 文章 ID
+     * @param array<int, int> $tagIds 標籤 ID 陣列
+     * @return bool 設定成功返回 true
+     */
     public function setTags(int $id, array $tagIds): bool
     {
         $this->db->beginTransaction();
