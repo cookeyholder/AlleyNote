@@ -39,6 +39,11 @@ class CacheServiceProvider
     /** @var array<string, mixed> 設定 */
     private array $config;
 
+    /**
+     * 建構快取服務提供者.
+     * @param Container $container DI 容器
+     * @param array<string, mixed> $config 快取設定
+     */
     public function __construct(Container $container, array $config = [])
     {
         $this->container = $container;
@@ -277,6 +282,7 @@ class CacheServiceProvider
 
     /**
      * 取得 DI 容器定義。
+     * @return array<string, mixed> DI 定義陣列
      */
     public static function getDefinitions(): array
     {
@@ -468,6 +474,7 @@ class CacheServiceProvider
 
     /**
      * 取得預設設定。
+     * @return array<string, mixed> 預設快取設定
      */
     private function getDefaultConfig(): array
     {
@@ -521,6 +528,7 @@ class CacheServiceProvider
 
     /**
      * 取得設定。
+     * @return array<string, mixed> 快取設定
      */
     public function getConfig(): array
     {
@@ -529,6 +537,7 @@ class CacheServiceProvider
 
     /**
      * 更新設定。
+     * @param array<string, mixed> $config 新的設定
      */
     public function updateConfig(array $config): void
     {
@@ -559,6 +568,7 @@ class CacheConfigBuilder
 
     /**
      * 設定記憶體驅動。
+     * @param array<string, mixed> $config 記憶體驅動設定
      */
     public function memoryDriver(array $config = []): self
     {
@@ -577,6 +587,8 @@ class CacheConfigBuilder
 
     /**
      * 設定檔案驅動。
+     * @param ?string $path 快取檔案路徑
+     * @param array<string, mixed> $config 檔案驅動設定
      */
     public function fileDriver(?string $path = null, array $config = []): self
     {
@@ -600,6 +612,7 @@ class CacheConfigBuilder
 
     /**
      * 設定 Redis 驅動。
+     * @param array<string, mixed> $config Redis 驅動設定
      */
     public function redisDriver(array $config = []): self
     {
@@ -621,6 +634,7 @@ class CacheConfigBuilder
 
     /**
      * 設定快取策略。
+     * @param array<string, mixed> $config 快取策略設定
      */
     public function strategy(array $config): self
     {
@@ -636,6 +650,7 @@ class CacheConfigBuilder
 
     /**
      * 設定管理器。
+     * @param array<string, mixed> $config 管理器設定
      */
     public function manager(array $config): self
     {
@@ -651,6 +666,7 @@ class CacheConfigBuilder
 
     /**
      * 建構設定。
+     * @return array<string, mixed> 完整的快取設定
      */
     public function build(): array
     {
