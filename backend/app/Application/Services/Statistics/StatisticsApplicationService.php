@@ -235,22 +235,18 @@ final class StatisticsApplicationService
                     ],
                 ],
                 'source_statistics' => array_map(
-                    function ($stats): array {
-                        if ($stats instanceof SourceStatistics) {
-                            return [
-                                'source_type' => $stats->sourceType->value,
-                                'count' => [
-                                    'value' => $stats->count->getValue(),
-                                    'unit' => $stats->count->getUnit(),
-                                ],
-                                'percentage' => [
-                                    'value' => $stats->percentage->getValue(),
-                                    'unit' => $stats->percentage->getUnit(),
-                                ],
-                            ];
-                        }
-
-                        return [];
+                    function (SourceStatistics $stats): array {
+                        return [
+                            'source_type' => $stats->sourceType->value,
+                            'count' => [
+                                'value' => $stats->count->getValue(),
+                                'unit' => $stats->count->getUnit(),
+                            ],
+                            'percentage' => [
+                                'value' => $stats->percentage->getValue(),
+                                'unit' => $stats->percentage->getUnit(),
+                            ],
+                        ];
                     },
                     $sourceStatistics,
                 ),
@@ -640,6 +636,12 @@ final class StatisticsApplicationService
     /**
      * 計算來源統計資料.
      * @return array<string, mixed> 來源統計結果
+     */
+    /**
+     * 計算來源統計.
+     *
+     * @param StatisticsPeriod $period 統計週期
+     * @return array<int, SourceStatistics> 來源統計資料
      */
     private function calculateSourceStatistics(StatisticsPeriod $period): array
     {

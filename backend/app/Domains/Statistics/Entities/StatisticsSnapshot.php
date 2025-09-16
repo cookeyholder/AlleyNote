@@ -56,7 +56,7 @@ class StatisticsSnapshot extends AggregateRoot
         StatisticsPeriod $period,
         int $totalPosts = 0,
         int $totalViews = 0,
-        /** @var array<string, mixed> */
+        /** @var array<int, SourceStatistics> */
         array $sourceStats = [],
         /** @var array<string, mixed> */
         array $additionalMetrics = [],

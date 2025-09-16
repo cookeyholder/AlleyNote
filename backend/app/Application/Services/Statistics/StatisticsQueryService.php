@@ -34,8 +34,11 @@ final class StatisticsQueryService
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,
+        /** @phpstan-ignore property.onlyWritten */
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
+        /** @phpstan-ignore property.onlyWritten */
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
+        /** @phpstan-ignore property.onlyWritten */
         private readonly SystemStatisticsRepositoryInterface $systemStatisticsRepository,
         private readonly LoggerInterface $logger,
     ) {}
@@ -96,11 +99,26 @@ final class StatisticsQueryService
             // 查詢統計資料
             $statistics = $this->statisticsRepository->findByPeriod($period);
 
-            // 查詢總數量 (模擬實現)
-            $totalCount = is_array($statistics) ? count($statistics) : 1;
+            // 轉換為陣列格式
+            $data = [];
+            if ($statistics !== null) {
+                $data[] = [
+                    'id' => $statistics->getId()->toString(),
+                    'period' => [
+                        'start_date' => $statistics->getPeriod()->startDate->format('Y-m-d H:i:s'),
+                        'end_date' => $statistics->getPeriod()->endDate->format('Y-m-d H:i:s'),
+                        'type' => $statistics->getPeriod()->type->value,
+                    ],
+                    'total_posts' => $statistics->getTotalPosts()->getValue(),
+                    'total_views' => $statistics->getTotalViews()->getValue(),
+                    'created_at' => $statistics->getCreatedAt()->format('Y-m-d H:i:s'),
+                ];
+            }
+
+            $totalCount = count($data);
 
             return [
-                'data' => $statistics,
+                'data' => $data,
                 'pagination' => [
                     'page' => $page,
                     'limit' => $limit,
@@ -212,7 +230,7 @@ final class StatisticsQueryService
             }
 
             $viewCounts = array_column($postStatistics, 'views');
-            $avgViews = $totalViews > 0 && !empty($viewCounts) ? array_sum($viewCounts) / $totalViews : 0;
+            $avgViews = array_sum($viewCounts) / count($viewCounts);
 
             return [
                 'data' => $postStatistics,
@@ -280,7 +298,7 @@ final class StatisticsQueryService
             }
 
             $postCounts = array_column($userStatistics, 'posts');
-            $avgPosts = $totalUsers > 0 && !empty($postCounts) ? array_sum($postCounts) / $totalUsers : 0;
+            $avgPosts = array_sum($postCounts) / count($postCounts);
 
             return [
                 'data' => $userStatistics,

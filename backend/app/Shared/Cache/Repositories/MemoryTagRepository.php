@@ -27,8 +27,12 @@ class MemoryTagRepository implements TagRepositoryInterface
 
     /**
      * 為快取鍵設定標籤.
+     * @param string $key 快取鍵
+     * @param array<int, string> $tags 標籤陣列
+     * @param int $ttl 過期時間（秒）
+     * @return bool 設定成功返回 true
      */
-    public function setTags(string $key, /** @var array<string, mixed> */ array $tags, int $ttl = 3600): bool
+    public function setTags(string $key, array $tags, int $ttl = 3600): bool
     {
         // 先清除舊的標籤關聯
         $this->deleteKey($key);

@@ -20,16 +20,16 @@ use App\Domains\Auth\ValueObjects\TokenPair;
 interface JwtTokenServiceInterface
 {
     /**
-     * 為使用者產生JWT token對（access token 和 refresh token）.
+     * 產生JWT token對（Access Token + Refresh Token）.
      *
      * @param int $userId 使用者ID
      * @param DeviceInfo $deviceInfo 裝置資訊
-     * @param array $customClaims 額外的自訂聲明
+     * @param array<string, mixed> $customClaims 額外的自訂聲明
      * @return TokenPair JWT token對
      *
      * @throws TokenGenerationException 當token產生失敗時
      */
-    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, /** @var array<string, mixed> */ array $customClaims = []): TokenPair;
+    public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair;
 
     /**
      * 驗證access token的有效性.

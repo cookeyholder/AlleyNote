@@ -116,7 +116,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $authorizationResult = $this->authorize(
                 userId: $userId,
                 userRole: $userRoleString,
-                userPermissions: $validPermissions,
+                userPermissions: array_values($validPermissions),
                 resource: $resource,
                 action: $action,
                 request: $request,
@@ -526,7 +526,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function extractResource(ServerRequestInterface $request): string
     {
         $path = $request->getUri()->getPath();
-        $segments = array_filter(explode('/', is_string($path) ? $path : (string) $path), static function ($segment) {
+        $segments = array_filter(explode('/', $path), static function ($segment) {
             return $segment !== '';
         });
         $segments = array_values($segments); // 重新索引
@@ -557,7 +557,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         $method = strtoupper($request->getMethod());
         $path = trim($request->getUri()->getPath(), '/');
-        $segments = array_filter(explode('/', is_string($path) ? $path : (string) $path), static function ($segment) {
+        $segments = array_filter(explode('/', $path), static function ($segment) {
             return $segment !== '';
         });
         $segments = array_values($segments); // 重新索引
@@ -588,7 +588,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function extractResourceId(ServerRequestInterface $request, string $resource): ?int
     {
         $path = trim($request->getUri()->getPath(), '/');
-        $segments = array_filter(explode('/', is_string($path) ? $path : (string) $path), static function ($segment) {
+        $segments = array_filter(explode('/', $path), static function ($segment) {
             return $segment !== '';
         });
         $segments = array_values($segments); // 重新索引
@@ -663,46 +663,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         return false;
     }
 
-    /**
-     * 取得客戶端真實 IP 位址.
-     * @param ServerRequestInterface $request HTTP 請求物件
-     * @return string 客戶端 IP 位址
-     */
-    private function getClientFingerprint(ServerRequestInterface $request): string
-    {
-        // 檢查各種可能包含真實 IP 的標頭
-        $headers = [
-            'HTTP_CF_CONNECTING_IP',     // Cloudflare
-            'HTTP_CLIENT_IP',            // Proxy
-            'HTTP_X_FORWARDED_FOR',      // Load Balancer/Proxy
-            'HTTP_X_FORWARDED',          // Proxy
-            'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
-            'HTTP_FORWARDED_FOR',        // Proxy
-            'HTTP_FORWARDED',            // Proxy
-            'REMOTE_ADDR',               // Standard
-        ];
 
-        $serverParams = $request->getServerParams();
-
-        foreach ($headers as $header) {
-            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
-                $ip = trim(explode(',', $serverParams[$header])[0]);
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
-                }
-            }
-
-            if ($request->hasHeader($header)) {
-                $ip = trim(explode(',', $request->getHeaderLine($header))[0]);
-                if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                    return $ip;
-                }
-            }
-        }
-
-        // 預設回傳 localhost（適用於開發環境）
-        return '127.0.0.1';
-    }
 
     /**
      * 檢查 IP 是否在指定清單中.
@@ -712,7 +673,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function isIpInList(string $ip, array $ipList): bool
     {
         foreach ($ipList as $pattern) {
-            if (is_string($pattern) && $this->ipMatches($ip, $pattern)) {
+            if ($this->ipMatches($ip, $pattern)) {
                 return true;
             }
         }
@@ -740,7 +701,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
         // CIDR 匹配
         if (str_contains($pattern, '/')) {
-            [$subnet, $mask] = explode('/', is_string($pattern) ? $pattern : (string) $pattern);
+            [$subnet, $mask] = explode('/', $pattern);
             $ipLong = ip2long($ip);
             $subnetLong = ip2long($subnet);
             $maskLong = -1 < (32 - (int) $mask);
@@ -848,7 +809,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     /**
      * 執行自訂規則.
      * @param array<string, mixed> $ruleConfig 規則配置
-     * @param array<string, mixed> $userPermissions 使用者權限陣列
+     * @param array<string> $userPermissions 使用者權限陣列
      * @return AuthorizationResult 授權結果
      */
     private function executeCustomRule(
@@ -886,7 +847,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             default:
                 return new AuthorizationResult(
                     allowed: false,
-                    reason: "未知的規則類型: {$ruleType}",
+                    reason: "未知的規則類型: " . (string) $ruleType,
                     code: 'UNKNOWN_RULE_TYPE',
                     appliedRules: ['custom_rule' => $ruleName],
                 );
@@ -1129,7 +1090,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      */
     private function logAuthorizationFailure(ServerRequestInterface $request, string $reason): void
     {
-        $this->logger->warning('授權失敗', [
+        $this->logger?->warning('授權失敗', [
             'uri' => $request->getUri()->getPath(),
             'method' => $request->getMethod(),
             'reason' => $reason,
@@ -1158,7 +1119,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         ];
 
         foreach ($headers as $header) {
-            if (!empty($serverParams[$header])) {
+            if (!empty($serverParams[$header]) && is_string($serverParams[$header])) {
                 $ip = $serverParams[$header];
                 // 如果有多個 IP（通過逗號分隔），取第一個
                 if (str_contains($ip, ',')) {
@@ -1171,6 +1132,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 }
