@@ -57,13 +57,12 @@ class TokenGenerationException extends JwtException
      * @param string $reason 失敗原因
      * @param string $tokenType Token 類型
      * @param string $customMessage 自定義錯誤訊息
-     * @param array $additionalContext 額外上下文資訊
+     * @param array<string, mixed> $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_ENCODING_FAILED,
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
-        /** @var array<string, mixed> */
         array $additionalContext = [],
     ) {
         $message = $customMessage ? true : $this->buildDefaultMessage($reason, $tokenType);
@@ -242,7 +241,7 @@ class TokenGenerationException extends JwtException
     /**
      * 靜態工廠方法：載荷無效.
      *
-     * @param array $invalidFields 無效欄位
+     * @param array<string> $invalidFields 無效欄位
      * @param string $tokenType Token 類型
      */
     public static function payloadInvalid(array $invalidFields, string $tokenType = self::ACCESS_TOKEN): self
@@ -264,7 +263,7 @@ class TokenGenerationException extends JwtException
     /**
      * 靜態工廠方法：聲明無效.
      *
-     * @param array $invalidClaims 無效聲明
+     * @param array<string, mixed> $invalidClaims 無效聲明
      * @param string $tokenType Token 類型
      */
     public static function claimsInvalid(array $invalidClaims, string $tokenType = self::ACCESS_TOKEN): self

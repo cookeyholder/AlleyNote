@@ -43,13 +43,12 @@ class TokenParsingException extends JwtException
      * @param string $message 錯誤訊息
      * @param string $reason 失敗原因
      * @param Throwable|null $previous 前一個例外
-     * @param array $additionalContext 額外上下文資訊
+     * @param array<string, mixed> $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $message,
         string $reason = self::PARSING_FAILED,
         ?Throwable $previous = null,
-        /** @var array<string, mixed> */
         array $additionalContext = [],
     ) {
         $context = array_merge([

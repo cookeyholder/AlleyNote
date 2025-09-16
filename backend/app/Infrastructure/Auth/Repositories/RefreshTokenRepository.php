@@ -63,7 +63,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $now->format('Y-m-d H:i:s'),
             ]);
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法建立 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_CREATION_FAILED,
+                '無法建立 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()]
+            );
         }
     }
 
@@ -83,7 +87,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             /** @var array<string, mixed> */
             return $result;
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法查詢 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()]
+            );
         }
     }
 

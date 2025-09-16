@@ -56,21 +56,22 @@ class InvalidTokenException extends JwtException
     public const REFRESH_TOKEN = 'refresh_token';
 
     /**
-     * 建立無效 Token 例外.
+     * 建立無效權杖例外實例.
      *
-     * @param string $reason 失敗原因
-     * @param string $tokenType Token 類型
-     * @param string $customMessage 自定義錯誤訊息
-     * @param array $additionalContext 額外上下文資訊
+     * @param string $reason 無效原因
+     * @param string $tokenType 權杖類型
+     * @param string|null $jti 權杖 ID
+     * @param array<string, mixed> $additionalContext 附加上下文
+     * @param \Throwable|null $previous 前一個異常
      */
     public function __construct(
-        string $reason = self::REASON_DECODE_FAILED,
-        string $tokenType = self::ACCESS_TOKEN,
-        string $customMessage = '',
-        /** @var array<string, mixed> */
+        private readonly string $reason,
+        private readonly string $tokenType,
+        private readonly ?string $jti = null,
         array $additionalContext = [],
+        ?Throwable $previous = null
     ) {
-        $message = $customMessage ? true : $this->buildDefaultMessage($reason, $tokenType);
+        $message = $this->buildDefaultMessage($reason, $tokenType);
 
         $context = array_merge([
             'reason' => $reason,
@@ -208,9 +209,9 @@ class InvalidTokenException extends JwtException
      * 靜態工廠方法：格式錯誤.
      *
      * @param string $tokenType Token 類型
-     * @param array $context 上下文資訊
+     * @param array<string, mixed> $context 上下文資訊
      */
-    public static function malformed(string $tokenType = self::ACCESS_TOKEN, /** @var array<string, mixed> */ array $context = []): self
+    public static function malformed(string $tokenType = self::ACCESS_TOKEN, /** @param array<string, mixed> $context */ array $context = []): self
     {
         return new self(self::REASON_MALFORMED, $tokenType, '', $context);
     }
@@ -219,9 +220,9 @@ class InvalidTokenException extends JwtException
      * 靜態工廠方法：簽章無效.
      *
      * @param string $tokenType Token 類型
-     * @param array $context 上下文資訊
+     * @param array<string, mixed> $context 上下文資訊
      */
-    public static function signatureInvalid(string $tokenType = self::ACCESS_TOKEN, /** @var array<string, mixed> */ array $context = []): self
+    public static function signatureInvalid(string $tokenType = self::ACCESS_TOKEN, /** @param array<string, mixed> $context */ array $context = []): self
     {
         return new self(self::REASON_SIGNATURE_INVALID, $tokenType, '', $context);
     }
@@ -293,7 +294,7 @@ class InvalidTokenException extends JwtException
     /**
      * 靜態工廠方法：聲明無效.
      *
-     * @param array $invalidClaims 無效的聲明
+     * @param array<string, mixed> $invalidClaims 無效的聲明
      * @param string $tokenType Token 類型
      */
     public static function claimsInvalid(array $invalidClaims, string $tokenType = self::ACCESS_TOKEN): self

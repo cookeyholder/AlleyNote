@@ -35,6 +35,8 @@ class SimpleAuthServiceProvider
 {
     /**
      * 取得中介軟體和基本服務定義.
+     *
+     * @return array<string, mixed>
      */
     public static function getDefinitions(): array
     {

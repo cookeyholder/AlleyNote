@@ -27,9 +27,10 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * @param ValidatorInterface $validator 驗證器實例
+     * @param array<string, mixed> $data 註冊資料
      * @throws ValidationException 當驗證失敗時
      */
-    public function __construct(ValidatorInterface $validator, /** @var array<string, mixed> */ array $data)
+    public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
 
@@ -37,6 +38,7 @@ class RegisterUserDTO extends BaseDTO
         $this->addUserValidationRules();
 
         // 驗證資料
+        /** @var array<string, mixed> $validatedData */
         $validatedData = $this->validate($data);
 
         // 設定屬性
@@ -179,7 +181,7 @@ class RegisterUserDTO extends BaseDTO
             }
 
             // 檢查 @ 符號數量
-            $parts = explode('@', is_string($email) ? $email : (string) $email);
+            $parts = explode('@', $email);
             if (count($parts) !== 2) {
                 return false;
             }
@@ -223,6 +225,8 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得驗證規則.
+     *
+     * @return array<string, mixed>
      */
     protected function getValidationRules(): array
     {
@@ -237,13 +241,15 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
-     * @param array $data 輸入資料
+     *
+     * @param array<string, mixed> $data 輸入資料
+     * @return array<string, mixed>
      * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
     {
         // 為跨欄位驗證規則提供完整資料
-        $this->validator->addRule('password_confirmed', function ($value, /** @var array<string, mixed> */ array $parameters) use ($data) {
+        $this->validator->addRule('password_confirmed', function ($value, /** @param array<string, mixed> $parameters */ array $parameters) use ($data) {
             if (!is_string($value)) {
                 return false;
             }
@@ -253,12 +259,14 @@ class RegisterUserDTO extends BaseDTO
             return $password === $value;
         });
 
+        /** @var array<string, mixed> */
         return parent::validate($data);
     }
 
     /**
      * 轉換為陣列格式（供 Service 使用）.
-    /**
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -272,6 +280,8 @@ class RegisterUserDTO extends BaseDTO
 
     /**
      * 取得用於密碼雜湊的資料.
+     *
+     * @return array<string, mixed>
      */
     public function getPasswordData(): array
     {

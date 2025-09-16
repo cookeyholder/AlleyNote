@@ -134,7 +134,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         if ($tokenIpAddress !== null) {
             $currentIp = $this->getClientIpAddress($request);
             if ($tokenIpAddress !== $currentIp) {
-                throw new InvalidTokenException('Token 的 IP 地址不匹配');
+                throw new InvalidTokenException('IP地址不匹配', 'access_token');
             }
         }
 
@@ -143,7 +143,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         if ($tokenDeviceId !== null) {
             $currentDeviceId = $this->extractDeviceFingerprint($request);
             if ($tokenDeviceId !== $currentDeviceId) {
-                throw new InvalidTokenException('Token 的裝置指紋不匹配');
+                throw new InvalidTokenException('裝置指紋不匹配', 'access_token');
             }
         }
     }

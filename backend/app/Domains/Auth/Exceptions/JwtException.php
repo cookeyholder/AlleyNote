@@ -29,17 +29,19 @@ abstract class JwtException extends Exception
      */
     protected string $errorType = 'jwt_error';
 
-    /**
-     * 建構 JWT 例外.
+        /**
+     * 建立 JWT 例外實例.
      *
      * @param string $message 錯誤訊息
-     * @param Exception|null $previous 前一個例外
+     * @param int $code 錯誤代碼
+     * @param array<string, mixed> $context 上下文資料
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
         string $message = '',
         int $code = 0,
-        ?Exception $previous = null,
         array $context = [],
+                ?\Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
         $this->context = $context;
@@ -47,6 +49,7 @@ abstract class JwtException extends Exception
 
     /**
      * 取得錯誤上下文資訊.
+     * @return array<string, mixed>
      */
     public function getContext(): array
     {
@@ -56,7 +59,7 @@ abstract class JwtException extends Exception
     /**
      * 設定錯誤上下文資訊.
      *
-     * @param array $context 上下文資訊
+     * @param array<string, mixed> $context 上下文資訊
      */
     public function setContext(array $context): self
     {
@@ -87,6 +90,7 @@ abstract class JwtException extends Exception
 
     /**
      * 取得錯誤詳細資訊（用於 API 回應）.
+     * @return array<string, mixed>
      */
     public function getErrorDetails(): array
     {
@@ -122,6 +126,7 @@ abstract class JwtException extends Exception
 
     /**
      * 轉換為陣列格式（用於日誌記錄）.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

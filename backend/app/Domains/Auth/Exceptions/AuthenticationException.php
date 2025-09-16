@@ -55,19 +55,22 @@ class AuthenticationException extends JwtException
     public const REASON_INSUFFICIENT_PRIVILEGES = 'insufficient_privileges';
 
     /**
-     * 建立身份驗證失敗例外.
+     * 建立認證例外實例.
      *
      * @param string $reason 失敗原因
-     * @param string $customMessage 自定義錯誤訊息
-     * @param array $additionalContext 額外上下文資訊
+     * @param string $tokenType 權杖類型
+     * @param int|null $userId 使用者 ID
+     * @param array<string, mixed> $additionalContext 附加上下文
+     * @param \Throwable|null $previous 前一個異常
      */
     public function __construct(
-        string $reason = self::REASON_INVALID_CREDENTIALS,
-        string $customMessage = '',
-        /** @var array<string, mixed> */
+        private readonly string $reason,
+        private readonly string $tokenType,
+        private readonly ?int $userId = null,
         array $additionalContext = [],
+        ?Throwable $previous = null
     ) {
-        $message = $customMessage ? true : $this->buildDefaultMessage($reason);
+        $message = $this->buildDefaultMessage($reason);
 
         $context = array_merge([
             'reason' => $reason,
@@ -75,7 +78,7 @@ class AuthenticationException extends JwtException
             'attempt_id' => uniqid('auth_', true),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, null, $context);
+        parent::__construct($message, self::ERROR_CODE, $previous, $context);
     }
 
     /**
@@ -400,7 +403,7 @@ class AuthenticationException extends JwtException
     /**
      * 靜態工廠方法：憑證遺失.
      *
-     * @param array $missingFields 遺失的欄位
+     * @param array<string> $missingFields 遺失的欄位
      */
     public static function missingCredentials(array $missingFields = []): self
     {
@@ -437,12 +440,12 @@ class AuthenticationException extends JwtException
      * 靜態工廠方法：權限不足.
      *
      * @param string $requiredPrivilege 需要的權限
-     * @param array $userPrivileges 用戶擁有的權限
+     * @param array<string> $userPrivileges 用戶擁有的權限
      * @param int|null $userId 用戶 ID
      */
     public static function insufficientPrivileges(
         string $requiredPrivilege,
-        /** @var array<string, mixed> */
+        /** @param array<string> $userPrivileges */
         array $userPrivileges = [],
         ?int $userId = null,
     ): self {

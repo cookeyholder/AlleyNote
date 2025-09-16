@@ -22,6 +22,9 @@ final readonly class LoginRequestDTO
     /**
      * 從陣列建立 LoginRequestDTO.
      */
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromArray(array $data): self
     {
         $scopes = null;
@@ -40,6 +43,9 @@ final readonly class LoginRequestDTO
 
     /**
      * 轉換為陣列.
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

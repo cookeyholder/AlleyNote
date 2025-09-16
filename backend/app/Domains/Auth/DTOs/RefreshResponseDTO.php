@@ -18,11 +18,14 @@ final readonly class RefreshResponseDTO
         public int $userId,
         public int $expiresAt,
         public ?string $sessionId = null,
+        /** @var array<string, mixed>|null */
         public ?array $permissions = null,
     ) {}
 
     /**
      * 轉換為陣列.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

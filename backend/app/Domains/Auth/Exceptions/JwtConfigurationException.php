@@ -46,26 +46,36 @@ class JwtConfigurationException extends JwtException
     public const INVALID_ALGORITHM = 'invalid_algorithm';
 
     /**
-     * 建立 JWT 配置例外.
+     * 建立 JWT 配置例外實例.
      *
-     * @param string $message 錯誤訊息
-     * @param string $reason 失敗原因
-     * @param Throwable|null $previous 前一個例外
-     * @param array $additionalContext 額外上下文資訊
+     * @param string $configKey 配置鍵名
+     * @param string $expectedType 期望類型
+     * @param mixed $actualValue 實際值
+     * @param array<string, mixed> $additionalContext 附加上下文
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
-        string $message,
-        string $reason = self::MISSING_CONFIGURATION,
-        ?Throwable $previous = null,
-        /** @var array<string, mixed> */
+        private readonly string $configKey,
+        private readonly string $expectedType,
+        private readonly mixed $actualValue,
         array $additionalContext = [],
+        ?\Throwable $previous = null
     ) {
+        $message = sprintf(
+            'JWT configuration error: "%s" expects %s, got %s',
+            $configKey,
+            $expectedType,
+            get_debug_type($actualValue)
+        );
+
         $context = array_merge([
-            'reason' => $reason,
+            'config_key' => $configKey,
+            'expected_type' => $expectedType,
+            'actual_type' => get_debug_type($actualValue),
             'timestamp' => time(),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, $previous instanceof Exception ? $previous : null, $context);
+        parent::__construct($message, 0, $previous, $context);
     }
 
     /**

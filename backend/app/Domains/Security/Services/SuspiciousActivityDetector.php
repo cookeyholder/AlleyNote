@@ -12,6 +12,7 @@ use App\Domains\Security\DTOs\SuspiciousActivityAnalysisDTO;
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**

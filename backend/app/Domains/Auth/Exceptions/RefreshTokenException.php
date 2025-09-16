@@ -65,12 +65,11 @@ class RefreshTokenException extends JwtException
     /**
      * 建立 Refresh Token 操作例外.
      * @param string $reason 失敗原因
-     * @param array $additionalContext 額外上下文資訊
+     * @param array<string, mixed> $additionalContext 額外上下文資訊
      */
     public function __construct(
         string $reason = self::REASON_NOT_FOUND,
         string $customMessage = '',
-        /** @var array<string, mixed> */
         array $additionalContext = [],
     ) {
         $message = $customMessage ? true : $this->buildDefaultMessage($reason);
@@ -174,6 +173,7 @@ class RefreshTokenException extends JwtException
 
     /**
      * 取得裝置資訊（如果有）.
+     * @return array<string, mixed>|null
      */
     public function getDeviceInfo(): ?array
     {
@@ -317,8 +317,9 @@ class RefreshTokenException extends JwtException
     /**
      * 靜態工廠方法：儲存失敗.
      * @param string $error 錯誤詳情
+     * @param array<string, mixed> $tokenData token資料
      */
-    public static function storageFailed(string $error, /** @var array<string, mixed> */ array $tokenData = []): self
+    public static function storageFailed(string $error, array $tokenData = []): self
     {
         return new self(self::REASON_STORAGE_FAILED, '', [
             'storage_error' => $error,

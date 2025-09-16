@@ -20,6 +20,8 @@ final readonly class LogoutRequestDTO
 
     /**
      * 從陣列建立 LogoutRequestDTO.
+     *
+     * @param array<string, mixed> $data
      */
     public static function fromArray(array $data): self
     {
@@ -33,6 +35,8 @@ final readonly class LogoutRequestDTO
 
     /**
      * 轉換為陣列.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
