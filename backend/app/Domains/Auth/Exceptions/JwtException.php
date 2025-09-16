@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Exceptions;
 
 use Exception;
+use Throwable;
 
 /**
  * JWT 基礎例外類別.
@@ -29,7 +30,7 @@ abstract class JwtException extends Exception
      */
     protected string $errorType = 'jwt_error';
 
-        /**
+    /**
      * 建立 JWT 例外實例.
      *
      * @param string $message 錯誤訊息
@@ -41,7 +42,7 @@ abstract class JwtException extends Exception
         string $message = '',
         int $code = 0,
         array $context = [],
-                ?\Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
         $this->context = $context;

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-use Exception;
-use Throwable;
-
 /**
  * JWT 配置例外.
  *
@@ -52,20 +49,20 @@ class JwtConfigurationException extends JwtException
      * @param string $expectedType 期望類型
      * @param mixed $actualValue 實際值
      * @param array<string, mixed> $additionalContext 附加上下文
-     * @param Throwable|null $previous 前一個異常
+     * @param \Throwable|null $previous 前一個異常
      */
     public function __construct(
         private readonly string $configKey,
         private readonly string $expectedType,
         private readonly mixed $actualValue,
         array $additionalContext = [],
-        ?\Throwable $previous = null
+        ?\Throwable $previous = null,
     ) {
         $message = sprintf(
             'JWT configuration error: "%s" expects %s, got %s',
             $configKey,
             $expectedType,
-            get_debug_type($actualValue)
+            get_debug_type($actualValue),
         );
 
         $context = array_merge([
@@ -75,7 +72,7 @@ class JwtConfigurationException extends JwtException
             'timestamp' => time(),
         ], $additionalContext);
 
-        parent::__construct($message, 0, $previous, $context);
+        parent::__construct($message, 0, $context, $previous);
     }
 
     /**

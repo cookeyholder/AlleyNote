@@ -58,7 +58,7 @@ class TokenValidationException extends JwtException
             'timestamp' => time(),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, $previous instanceof Exception ? $previous : null, $context);
+        parent::__construct($message, self::ERROR_CODE, $context, $previous instanceof Exception ? $previous : null);
     }
 
     /**

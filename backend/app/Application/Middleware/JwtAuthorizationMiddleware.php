@@ -663,8 +663,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         return false;
     }
 
-
-
     /**
      * 檢查 IP 是否在指定清單中.
      * @param string $ip 要檢查的 IP 位址
@@ -847,7 +845,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             default:
                 return new AuthorizationResult(
                     allowed: false,
-                    reason: "未知的規則類型: " . (string) $ruleType,
+                    reason: '未知的規則類型: ' . (string) $ruleType,
                     code: 'UNKNOWN_RULE_TYPE',
                     appliedRules: ['custom_rule' => $ruleName],
                 );
@@ -1133,6 +1131,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? 'unknown';
+
         return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 }

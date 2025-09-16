@@ -66,7 +66,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_CREATION_FAILED,
                 '無法建立 Refresh Token: ' . $e->getMessage(),
-                ['pdo_error' => $e->getMessage()]
+                ['pdo_error' => $e->getMessage()],
             );
         }
     }
@@ -90,7 +90,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
                 '無法查詢 Refresh Token: ' . $e->getMessage(),
-                ['pdo_error' => $e->getMessage()]
+                ['pdo_error' => $e->getMessage()],
             );
         }
     }
@@ -113,7 +113,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             /** @var array<int, array<string, mixed>> */
             return $result;
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法查詢使用者的 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢使用者的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -134,7 +138,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             /** @var array<string, mixed> */
             return $result;
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法查詢使用者裝置的 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢使用者裝置的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -151,7 +159,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             /** @var array<int, array<string, mixed>> */
             return $result;
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法查詢使用者裝置的 Refresh Token 列表: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢使用者裝置的 Refresh Token 列表: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -171,7 +183,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $jti,
             ]);
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法更新 Refresh Token 最後使用時間: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_UPDATE_FAILED,
+                '無法更新 Refresh Token 最後使用時間: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -191,7 +207,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $jti,
             ]);
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法撤銷 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_REVOCATION_FAILED,
+                '無法撤銷 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -228,7 +248,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             return $stmt->rowCount();
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法撤銷使用者的所有 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_REVOCATION_FAILED,
+                '無法撤銷使用者的所有 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -252,7 +276,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             return $stmt->rowCount();
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法撤銷裝置的 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_REVOCATION_FAILED,
+                '無法撤銷裝置的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -268,7 +296,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             return $stmt->rowCount();
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法清理過期的 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_CLEANUP_FAILED,
+                '無法清理過期的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -289,7 +321,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             return $stmt->fetch() !== false;
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法驗證 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法驗證 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -309,7 +345,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             return (int) $stmt->fetchColumn();
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法查詢使用者的活躍 Refresh Token 數量: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢使用者的活躍 Refresh Token 數量: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -327,7 +367,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             /** @var array<int, array<string, mixed>> */
             return $result ?: [];
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法查詢最近使用的 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢最近使用的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 
@@ -346,7 +390,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             /** @var array<string, mixed> */
             return $result;
         } catch (PDOException $e) {
-            throw new RefreshTokenException('無法透過 token hash 查詢 Refresh Token: ' . $e->getMessage(), 0, $e);
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法透過 token hash 查詢 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
         }
     }
 }

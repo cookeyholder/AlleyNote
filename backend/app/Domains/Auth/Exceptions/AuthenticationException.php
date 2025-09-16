@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Throwable;
+
 /**
  * 身份驗證失敗例外.
  *
@@ -61,14 +63,14 @@ class AuthenticationException extends JwtException
      * @param string $tokenType 權杖類型
      * @param int|null $userId 使用者 ID
      * @param array<string, mixed> $additionalContext 附加上下文
-     * @param \Throwable|null $previous 前一個異常
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
         private readonly string $reason,
         private readonly string $tokenType,
         private readonly ?int $userId = null,
         array $additionalContext = [],
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         $message = $this->buildDefaultMessage($reason);
 
@@ -78,7 +80,7 @@ class AuthenticationException extends JwtException
             'attempt_id' => uniqid('auth_', true),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, $previous, $context);
+        parent::__construct($message, self::ERROR_CODE, $context, $previous);
     }
 
     /**

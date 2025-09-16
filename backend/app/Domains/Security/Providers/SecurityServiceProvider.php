@@ -22,6 +22,7 @@ use App\Domains\Security\Services\Error\ErrorHandlerService;
 use App\Domains\Security\Services\Headers\SecurityHeaderService;
 use App\Domains\Security\Services\IpService;
 use App\Domains\Security\Services\Secrets\SecretsManager;
+use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -50,6 +51,7 @@ class SecurityServiceProvider
             IpRepositoryInterface::class => static function (ContainerInterface $container): IpRepository {
                 return new IpRepository(
                     $container->get(PDO::class),
+                    $container->get(CacheServiceInterface::class),
                 );
             },
 
@@ -63,7 +65,7 @@ class SecurityServiceProvider
 
             CsrfProtectionServiceInterface::class => static function (ContainerInterface $container): CsrfProtectionService {
                 return new CsrfProtectionService(
-                    $container->get(LoggerInterface::class),
+                    $container->get(ActivityLoggingServiceInterface::class),
                 );
             },
 

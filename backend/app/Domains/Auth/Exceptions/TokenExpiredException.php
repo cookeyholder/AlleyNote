@@ -62,7 +62,12 @@ class TokenExpiredException extends JwtException
             $context['current_time_human'] = date('Y-m-d H:i:s', $currentTime);
         }
 
-        parent::__construct($message, self::ERROR_CODE, null, $context);
+        parent::__construct(
+            $message,
+            0,
+            $context,
+            $previous,
+        );
     }
 
     /**

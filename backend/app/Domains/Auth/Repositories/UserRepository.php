@@ -18,7 +18,7 @@ class UserRepository
     ) {}
 
     /**
-     * 建立新使用者
+     * 建立新使用者.
      * @param array<string, mixed> $data 使用者資料
      * @return array<string, mixed> 建立的使用者資料
      */
@@ -55,7 +55,7 @@ class UserRepository
     }
 
     /**
-     * 更新使用者資料
+     * 更新使用者資料.
      * @param string $id 使用者ID
      * @param array<string, mixed> $data 更新資料
      * @return array<string, mixed> 更新後的使用者資料
@@ -105,7 +105,7 @@ class UserRepository
     }
 
     /**
-     * 根據ID查找使用者
+     * 根據ID查找使用者.
      * @param int $id 使用者ID
      * @return array<string, mixed>|null 使用者資料
      */
@@ -121,7 +121,7 @@ class UserRepository
     }
 
     /**
-     * 根據UUID查找使用者
+     * 根據UUID查找使用者.
      * @param string $uuid 使用者UUID
      * @return array<string, mixed>|null 使用者資料
      */
@@ -137,7 +137,7 @@ class UserRepository
     }
 
     /**
-     * 根據使用者名查找使用者
+     * 根據使用者名查找使用者.
      * @param string $username 使用者名
      * @return array<string, mixed>|null 使用者資料
      */
@@ -153,7 +153,7 @@ class UserRepository
     }
 
     /**
-     * 根據電子郵件查找使用者
+     * 根據電子郵件查找使用者.
      * @param string $email 電子郵件
      * @return array<string, mixed>|null 使用者資料
      */

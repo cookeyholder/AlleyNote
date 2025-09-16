@@ -72,7 +72,7 @@ class RefreshTokenException extends JwtException
         string $customMessage = '',
         array $additionalContext = [],
     ) {
-        $message = $customMessage ? true : $this->buildDefaultMessage($reason);
+        $message = $customMessage ? $customMessage : $this->buildDefaultMessage($reason);
 
         $context = array_merge([
             'reason' => $reason,
@@ -80,7 +80,12 @@ class RefreshTokenException extends JwtException
             'operation_id' => uniqid('refresh_', true),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, null, $context);
+        parent::__construct(
+            $message,
+            0,
+            $context,
+            null,
+        );
     }
 
     /**

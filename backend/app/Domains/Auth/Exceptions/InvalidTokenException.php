@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Throwable;
+
 /**
  * 無效 Token 例外.
  *
@@ -62,14 +64,14 @@ class InvalidTokenException extends JwtException
      * @param string $tokenType 權杖類型
      * @param string|null $jti 權杖 ID
      * @param array<string, mixed> $additionalContext 附加上下文
-     * @param \Throwable|null $previous 前一個異常
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
         private readonly string $reason,
         private readonly string $tokenType,
         private readonly ?string $jti = null,
         array $additionalContext = [],
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ) {
         $message = $this->buildDefaultMessage($reason, $tokenType);
 
@@ -79,7 +81,7 @@ class InvalidTokenException extends JwtException
             'timestamp' => time(),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, null, $context);
+        parent::__construct($message, self::ERROR_CODE, $context, $previous);
     }
 
     /**

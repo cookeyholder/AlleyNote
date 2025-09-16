@@ -74,7 +74,12 @@ class TokenGenerationException extends JwtException
             'generation_attempt_id' => uniqid('gen_', true),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, null, $context);
+        parent::__construct(
+            $message,
+            0,
+            $context,
+            $previous,
+        );
     }
 
     /**
