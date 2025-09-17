@@ -42,10 +42,12 @@ interface PostServiceInterface
     public function findById(int $id): Post;
 
     /**
-     * 取得文章列表（含分頁）.
+     * 取得文章清單（分頁）.
      * @param int $page 頁碼
+     * @param int $perPage 每頁筆數
+     * @param array<string, mixed> $filters 篩選條件
      * @return array{
-     *     items: array,
+     *     items: array<Post>,
      *     total: int,
      *     page: int,
      *     per_page: int,

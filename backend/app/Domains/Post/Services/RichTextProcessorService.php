@@ -93,6 +93,10 @@ class RichTextProcessorService
     /**
      * 根據使用者層級處理富文本內容.
      */
+    /**
+     * 處理富文本內容，包括清理和驗證.
+     * @return array<string, mixed>
+     */
     public function processContent(string $content, string $userLevel = 'basic'): array
     {
         $result = [
@@ -134,6 +138,7 @@ class RichTextProcessorService
 
     /**
      * 驗證和清理來自 CKEditor 的內容.
+     * @return array<string, mixed>
      */
     public function processCKEditorContent(string $content, string $userLevel = 'basic'): array
     {
@@ -205,6 +210,7 @@ class RichTextProcessorService
 
     /**
      * 生成內容統計資訊.
+     * @return array<string, mixed>
      */
     private function generateStatistics(string $original, string $filtered): array
     {
@@ -241,7 +247,8 @@ class RichTextProcessorService
     }
 
     /**
-     * 檢查內容是否安全.
+     * 安全驗證富文本內容.
+     * @return array<string, mixed>
      */
     public function validateSecurity(string $content): array
     {

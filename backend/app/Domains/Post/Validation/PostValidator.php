@@ -235,7 +235,11 @@ class PostValidator extends Validator
     /**
      * 建立動態的更新驗證規則（只驗證提供的欄位）.
      */
-    public static function getDynamicUpdateRules(array $data): mixed
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    public static function getDynamicUpdateRules(array $data): array
     {
         $rules = [];
         $availableRules = self::getUpdatePostRules();
@@ -251,6 +255,7 @@ class PostValidator extends Validator
 
     /**
      * 驗證 Post 資料的特殊邏輯.
+     * @param array<string, mixed> $data
      */
     public function validatePostData(array $data, bool $isUpdate = false): ValidationResult
     {

@@ -197,7 +197,7 @@ class AuthorizationService implements AuthorizationServiceInterface
                     $roles[] = (string) $row['name'];
                 }
             }
-            
+
             return $roles;
         } catch (Throwable $e) {
             error_log('Failed to get user roles: ' . $e->getMessage());

@@ -23,7 +23,6 @@ class ContentModerationService
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
-        /** @var array<string, mixed> */
         array $config = [],
     ) {
         $this->xssProtection = $xssProtection;
@@ -33,8 +32,10 @@ class ContentModerationService
 
     /**
      * 審核內容.
+     * @param string $content 內容
+     * @param array<string, mixed> $metadata 元資料
      */
-    public function moderateContent(string $content, /** @var array<string, mixed> */ array $metadata = []): mixed
+    public function moderateContent(string $content, array $metadata = []): mixed
     {
         $result = [
             'status' => 'approved',
@@ -120,8 +121,10 @@ class ContentModerationService
 
     /**
      * 品質檢查.
+     * @param string $content 內容
+     * @param array<string, mixed> $metadata 元資料
      */
-    private function checkQuality(string $content, /** @var array<string, mixed> */ array $metadata): mixed
+    private function checkQuality(string $content, array $metadata): mixed
     {
         $issues = [];
         $textContent = strip_tags($content);
@@ -204,6 +207,8 @@ class ContentModerationService
 
     /**
      * 計算垃圾內容分數.
+     * @param string $content 內容
+     * @param array<string, mixed> $metadata 元資料
      */
     private function calculateSpamScore(string $content, array $metadata): float
     {
@@ -243,10 +248,11 @@ class ContentModerationService
 
     /**
      * 決定最終審核狀態.
+     * @param array<string, mixed> $result 審核結果（按引用傳遞）
      */
     private function determineFinalStatus(array &$result): void
     {
-        /** @var array<array<string, mixed> $issues */
+        /** @var array<array<string, mixed>> $issues */
         $issues = $result['issues'] ?? [];
 
         $criticalIssues = array_filter($issues, fn($issue) => is_array($issue) && ($issue['severity'] ?? '') === 'critical');
@@ -371,7 +377,8 @@ class ContentModerationService
     }
 
     /**
-     * 預設設定.
+     * 取得預設設定.
+     * @return array<string, mixed>
      */
     private function getDefaultConfig(): array
     {

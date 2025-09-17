@@ -92,7 +92,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($hash === false) {
             throw new ValidationException(
                 ValidationResult::failure(['password' => ['密碼雜湊失敗']]),
-                '密碼雜湊失敗'
+                '密碼雜湊失敗',
             );
         }
 

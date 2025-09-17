@@ -109,6 +109,7 @@ class PostService implements PostServiceInterface
     /**
      * 取得置頂文章列表.
      * @param int $limit 取得筆數
+     * @return array<int, mixed>
      */
     public function getPinnedPosts(int $limit = 5): array
     {

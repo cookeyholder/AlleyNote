@@ -67,6 +67,11 @@ class PostValidationException extends ValidationException
     /**
      * @param array<string, string|array<string>> $errors
      */
+    /**
+     * 建立多個驗證錯誤的例外.
+     * @param array<string, string|array<string>> $errors
+     * @return static
+     */
     public static function multipleErrors(array $errors): self
     {
         $message = '貼文資料包含多個錯誤';

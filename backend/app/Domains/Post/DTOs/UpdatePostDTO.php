@@ -200,6 +200,7 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
+     * @return array<string, string>
      */
     protected function getValidationRules(): array
     {
@@ -216,7 +217,8 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 動態驗證資料（只驗證提供的欄位）.
      *
-     * @return array 驗證通過的資料
+     * @param array<string, mixed> $data 要驗證的資料
+     * @return array<string, mixed> 驗證通過的資料
      * @throws ValidationException 當驗證失敗時
      */
     protected function validatePartialData(array $data): array
@@ -242,6 +244,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
@@ -280,6 +283,7 @@ class UpdatePostDTO extends BaseDTO
 
     /**
      * 取得更新的欄位名稱列表.
+     * @return array<string>
      */
     public function getUpdatedFields(): array
     {
