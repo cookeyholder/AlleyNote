@@ -121,26 +121,23 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function findActiveByUserAndDevice(int $userId, string $deviceId): ?array
+    public function findActiveByUserAndDevice(int $userId, string $deviceId): array
     {
         try {
             $sql = 'SELECT * FROM ' . self::TABLE_NAME . '
                     WHERE user_id = ? AND device_id = ? AND status = ?
-                    ORDER BY created_at DESC LIMIT 1';
+                    ORDER BY created_at DESC';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$userId, $deviceId, RefreshToken::STATUS_ACTIVE]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result === false) {
-                return null;
-            }
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            /** @var array<string, mixed> */
+            /** @var array<int, array<string, mixed>> */
             return $result;
         } catch (PDOException $e) {
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
-                '無法查詢使用者裝置的 Refresh Token: ' . $e->getMessage(),
+                '無法查詢使用者裝置的活躍 Refresh Token: ' . $e->getMessage(),
                 ['pdo_error' => $e->getMessage()],
             );
         }
@@ -393,6 +390,348 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
                 '無法透過 token hash 查詢 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function delete(string $jti): bool
+    {
+        try {
+            $sql = 'DELETE FROM ' . self::TABLE_NAME . ' WHERE jti = ?';
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$jti]);
+
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法刪除 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function isRevoked(string $jti): bool
+    {
+        try {
+            $sql = 'SELECT 1 FROM ' . self::TABLE_NAME . '
+                    WHERE jti = ? AND status = ?
+                    LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+
+            $stmt->execute([
+                $jti,
+                RefreshToken::STATUS_REVOKED,
+            ]);
+
+            return $stmt->fetch() !== false;
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢 Refresh Token 撤銷狀態: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function isExpired(string $jti): bool
+    {
+        try {
+            $sql = 'SELECT 1 FROM ' . self::TABLE_NAME . '
+                    WHERE jti = ? AND expires_at < ?
+                    LIMIT 1';
+            $stmt = $this->pdo->prepare($sql);
+            $now = new DateTime();
+
+            $stmt->execute([
+                $jti,
+                $now->format('Y-m-d H:i:s'),
+            ]);
+
+            return $stmt->fetch() !== false;
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢 Refresh Token 過期狀態: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function cleanupRevoked(int $days = 30): int
+    {
+        try {
+            $cutoffDate = new DateTime();
+            $cutoffDate->modify("-{$days} days");
+
+            $sql = 'DELETE FROM ' . self::TABLE_NAME . '
+                    WHERE status = ? AND updated_at < ?';
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([
+                RefreshToken::STATUS_REVOKED,
+                $cutoffDate->format('Y-m-d H:i:s'),
+            ]);
+
+            return $stmt->rowCount();
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_CLEANUP_FAILED,
+                '無法清理已撤銷的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function getUserTokenStats(int $userId): array
+    {
+        try {
+            $sql = 'SELECT
+                        COUNT(*) as total,
+                        COUNT(CASE WHEN status = ? AND expires_at > ? THEN 1 END) as active,
+                        COUNT(CASE WHEN expires_at <= ? THEN 1 END) as expired,
+                        COUNT(CASE WHEN status = ? THEN 1 END) as revoked
+                    FROM ' . self::TABLE_NAME . '
+                    WHERE user_id = ?';
+
+            $stmt = $this->pdo->prepare($sql);
+            $now = new DateTime();
+            $nowFormatted = $now->format('Y-m-d H:i:s');
+
+            $stmt->execute([
+                RefreshToken::STATUS_ACTIVE,
+                $nowFormatted,
+                $nowFormatted,
+                RefreshToken::STATUS_REVOKED,
+                $userId,
+            ]);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return [
+                'total' => (int) $result['total'],
+                'active' => (int) $result['active'],
+                'expired' => (int) $result['expired'],
+                'revoked' => (int) $result['revoked'],
+            ];
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法獲取使用者 Token 統計資訊: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function getTokenFamily(string $rootJti): array
+    {
+        try {
+            // 使用遞歸 CTE 查找 token 家族
+            $sql = 'WITH RECURSIVE token_family AS (
+                        -- 查找根 token
+                        SELECT jti, parent_token_jti, 0 as level
+                        FROM ' . self::TABLE_NAME . '
+                        WHERE jti = ?
+                        
+                        UNION ALL
+                        
+                        -- 查找子 token
+                        SELECT t.jti, t.parent_token_jti, tf.level + 1
+                        FROM ' . self::TABLE_NAME . ' t
+                        INNER JOIN token_family tf ON t.parent_token_jti = tf.jti
+                    )
+                    SELECT rt.* FROM token_family tf
+                    INNER JOIN ' . self::TABLE_NAME . ' rt ON tf.jti = rt.jti
+                    ORDER BY tf.level, rt.created_at';
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$rootJti]);
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            /** @var array<int, array<string, mixed>> */
+            return $result;
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢 Token 家族: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function revokeTokenFamily(string $rootJti, string $reason = 'family_revocation'): int
+    {
+        try {
+            // 首先查找整個 token 家族
+            $familyTokens = $this->getTokenFamily($rootJti);
+
+            if (empty($familyTokens)) {
+                return 0;
+            }
+
+            $jtis = array_column($familyTokens, 'jti');
+
+            return $this->batchRevoke($jtis, $reason);
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_REVOCATION_FAILED,
+                '無法撤銷 Token 家族: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function batchCreate(array $tokens): int
+    {
+        if (empty($tokens)) {
+            return 0;
+        }
+
+        try {
+            $this->pdo->beginTransaction();
+
+            $successCount = 0;
+            foreach ($tokens as $token) {
+                $result = $this->create(
+                    $token['jti'],
+                    $token['user_id'],
+                    $token['token_hash'],
+                    new DateTime($token['expires_at']),
+                    new DeviceInfo(
+                        $token['device_id'],
+                        $token['device_name'] ?? '',
+                        $token['device_type'] ?? '',
+                        $token['user_agent'] ?? '',
+                        $token['ip_address'] ?? '',
+                        $token['platform'] ?? '',
+                        $token['browser'] ?? '',
+                    ),
+                    $token['parent_token_jti'] ?? null,
+                );
+
+                if ($result) {
+                    $successCount++;
+                }
+            }
+
+            $this->pdo->commit();
+
+            return $successCount;
+        } catch (PDOException $e) {
+            $this->pdo->rollBack();
+
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_CREATION_FAILED,
+                '批次建立 Refresh Token 失敗: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function batchRevoke(array $jtis, string $reason = 'batch_revocation'): int
+    {
+        if (empty($jtis)) {
+            return 0;
+        }
+
+        try {
+            $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
+            $sql = 'UPDATE ' . self::TABLE_NAME . '
+                    SET status = ?, revoked_reason = ?, updated_at = ?
+                    WHERE jti IN (' . $placeholders . ') AND status = ?';
+
+            $stmt = $this->pdo->prepare($sql);
+            $params = [
+                RefreshToken::STATUS_REVOKED,
+                $reason,
+                new DateTime()->format('Y-m-d H:i:s'),
+                ...$jtis,
+                RefreshToken::STATUS_ACTIVE,
+            ];
+
+            $stmt->execute($params);
+
+            return $stmt->rowCount();
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_REVOCATION_FAILED,
+                '批次撤銷 Refresh Token 失敗: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function getTokensNearExpiry(int $thresholdHours = 24): array
+    {
+        try {
+            $thresholdDate = new DateTime();
+            $thresholdDate->modify("+{$thresholdHours} hours");
+
+            $sql = 'SELECT * FROM ' . self::TABLE_NAME . '
+                    WHERE status = ? AND expires_at > ? AND expires_at <= ?
+                    ORDER BY expires_at ASC';
+
+            $stmt = $this->pdo->prepare($sql);
+            $now = new DateTime();
+
+            $stmt->execute([
+                RefreshToken::STATUS_ACTIVE,
+                $now->format('Y-m-d H:i:s'),
+                $thresholdDate->format('Y-m-d H:i:s'),
+            ]);
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            /** @var array<int, array<string, mixed>> */
+            return $result;
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法查詢即將過期的 Refresh Token: ' . $e->getMessage(),
+                ['pdo_error' => $e->getMessage()],
+            );
+        }
+    }
+
+    public function getSystemStats(): array
+    {
+        try {
+            $sql = 'SELECT
+                        COUNT(*) as total_tokens,
+                        COUNT(CASE WHEN status = ? AND expires_at > ? THEN 1 END) as active_tokens,
+                        COUNT(CASE WHEN expires_at <= ? THEN 1 END) as expired_tokens,
+                        COUNT(CASE WHEN status = ? THEN 1 END) as revoked_tokens,
+                        COUNT(DISTINCT user_id) as unique_users,
+                        COUNT(DISTINCT device_id) as unique_devices
+                    FROM ' . self::TABLE_NAME;
+
+            $stmt = $this->pdo->prepare($sql);
+            $now = new DateTime();
+            $nowFormatted = $now->format('Y-m-d H:i:s');
+
+            $stmt->execute([
+                RefreshToken::STATUS_ACTIVE,
+                $nowFormatted,
+                $nowFormatted,
+                RefreshToken::STATUS_REVOKED,
+            ]);
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return [
+                'total_tokens' => (int) $result['total_tokens'],
+                'active_tokens' => (int) $result['active_tokens'],
+                'expired_tokens' => (int) $result['expired_tokens'],
+                'revoked_tokens' => (int) $result['revoked_tokens'],
+                'unique_users' => (int) $result['unique_users'],
+                'unique_devices' => (int) $result['unique_devices'],
+            ];
+        } catch (PDOException $e) {
+            throw new RefreshTokenException(
+                RefreshTokenException::REASON_DATABASE_ERROR,
+                '無法獲取系統統計資訊: ' . $e->getMessage(),
                 ['pdo_error' => $e->getMessage()],
             );
         }
