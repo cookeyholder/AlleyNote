@@ -6,6 +6,7 @@ namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 use Throwable;
 
 /**
@@ -123,7 +124,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         }
     }
 
-    public function calculatePasswordStrength(string $password): int
+    public function calculatePasswordStrength(string $password): array
     {
         $score = 0;
 
@@ -149,17 +150,33 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         $score += min($uniqueChars * 2, 20);
 
         // 懲罰項目
+        $penalties = [];
         if ($this->isCommonPassword($password)) {
             $score -= 30;
+            $penalties[] = 'common_password';
         }
         if ($this->hasExcessiveRepetition($password)) {
             $score -= 20;
+            $penalties[] = 'excessive_repetition';
         }
         if ($this->hasSequentialChars($password)) {
             $score -= 15;
+            $penalties[] = 'sequential_chars';
         }
 
-        return max(0, min(100, $score));
+        $finalScore = max(0, min(100, $score));
+
+        return [
+            'score' => $finalScore,
+            'level' => $this->getStrengthLevel($finalScore),
+            'penalties' => $penalties,
+            'length' => strlen($password),
+            'unique_chars' => $uniqueChars,
+            'has_lowercase' => (bool) preg_match('/[a-z]/', $password),
+            'has_uppercase' => (bool) preg_match('/[A-Z]/', $password),
+            'has_numbers' => (bool) preg_match('/[0-9]/', $password),
+            'has_special' => (bool) preg_match('/[^a-zA-Z0-9]/', $password),
+        ];
     }
 
     public function validatePassword(string $password): void
@@ -305,6 +322,27 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                 'dictionary_words' => false, // 可擴展功能
             ],
         ];
+    }
+
+    /**
+     * 根據分數獲取強度等級.
+     */
+    private function getStrengthLevel(int $score): string
+    {
+        if ($score >= 80) {
+            return 'very_strong';
+        }
+        if ($score >= 60) {
+            return 'strong';
+        }
+        if ($score >= 40) {
+            return 'medium';
+        }
+        if ($score >= 20) {
+            return 'weak';
+        }
+
+        return 'very_weak';
     }
 
     /**

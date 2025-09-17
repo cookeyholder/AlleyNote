@@ -44,7 +44,13 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try {
             $this->initializeKeys();
         } catch (Exception $e) {
-            throw new JwtConfigurationException('JWT 配置初始化失敗: ' . $e->getMessage(), 0, $e);
+            throw new JwtConfigurationException(
+                'jwt_provider',
+                'valid_configuration',
+                $e->getMessage(),
+                ['error' => $e->getMessage()],
+                $e,
+            );
         }
     }
 
@@ -112,9 +118,18 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
             return $payload;
         } catch (ExpiredException $e) {
-            throw new TokenExpiredException('Token 已過期', 0, $e);
+            throw new TokenExpiredException(
+                TokenExpiredException::ACCESS_TOKEN,
+                null,
+                $e,
+                'Token 已過期',
+            );
         } catch (Exception $e) {
-            throw new TokenValidationException('Token 驗證失敗: ' . $e->getMessage(), 0, $e);
+            throw new TokenValidationException(
+                'Token 驗證失敗: ' . $e->getMessage(),
+                TokenValidationException::VALIDATION_FAILED,
+                $e,
+            );
         }
     }
 
@@ -143,7 +158,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
             return (array) $payload;
         } catch (Exception $e) {
-            throw new TokenParsingException('Token 解析失敗: ' . $e->getMessage(), 0, $e);
+            throw new TokenParsingException(
+                'Token 解析失敗: ' . $e->getMessage(),
+                TokenParsingException::PARSING_FAILED,
+                $e,
+            );
         }
     }
 
@@ -209,8 +228,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         $privateKeyResource = openssl_pkey_get_private($this->privateKey);
         if ($privateKeyResource === false) {
             throw new JwtConfigurationException(
-                '私鑰格式無效',
-                JwtConfigurationException::INVALID_PRIVATE_KEY_FORMAT,
+                'private_key_format',
+                'valid_private_key_format',
+                'invalid',
+                ['reason' => JwtConfigurationException::INVALID_PRIVATE_KEY_FORMAT],
             );
         }
 
@@ -218,16 +239,20 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         $publicKeyResource = openssl_pkey_get_public($this->publicKey);
         if ($publicKeyResource === false) {
             throw new JwtConfigurationException(
-                '公鑰格式無效',
-                JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT,
+                'public_key_format',
+                'valid_public_key_format',
+                'invalid',
+                ['reason' => JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT],
             );
         }
 
         // 驗證金鑰匹配
         if (!$this->keysMatch($privateKeyResource, $publicKeyResource)) {
             throw new JwtConfigurationException(
-                '私鑰和公鑰不匹配',
-                JwtConfigurationException::KEY_MISMATCH,
+                'key_pair',
+                'matching_key_pair',
+                'mismatched',
+                ['reason' => JwtConfigurationException::KEY_MISMATCH],
             );
         }
     }
@@ -281,7 +306,13 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         try {
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
         } catch (Exception $e) {
-            throw new TokenGenerationException('Token 產生失敗: ' . $e->getMessage(), 0, $e);
+            throw new TokenGenerationException(
+                TokenGenerationException::REASON_ENCODING_FAILED,
+                TokenGenerationException::ACCESS_TOKEN,
+                'Token 產生失敗: ' . $e->getMessage(),
+                [],
+                $e,
+            );
         }
     }
 
