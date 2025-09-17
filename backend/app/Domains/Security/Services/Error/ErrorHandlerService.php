@@ -22,6 +22,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     /** @var array<string, mixed> */
     private array $sensitiveKeys;
 
+    /**
+     * @param array<string> $sensitiveKeys
+     */
     public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,

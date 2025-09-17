@@ -19,6 +19,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private ?string $currentNonce = null;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -164,6 +167,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     /**
      * 記錄 CSP 違規。
      */
+    /**
+     * @param array<string, mixed> $report
+     */
     private function logCSPViolation(array $report): void
     {
         $logData = [
@@ -184,6 +190,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     /**
      * 發送到監控服務。
+     */
+    /**
+     * @param array<string, mixed> $data
      */
     private function sendToMonitoring(array $data): void
     {
@@ -270,6 +279,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     /**
      * 取得預設設定。
      */
+    /**
+     * @return array<string, mixed>
+     */
     private function getDefaultConfig(): array
     {
         return [
@@ -346,6 +358,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     /**
      * 取得安全標頭統計資訊。
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {

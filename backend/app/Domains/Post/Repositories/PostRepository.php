@@ -491,6 +491,8 @@ class PostRepository implements PostRepositoryInterface
      * @param int $perPage 每頁筆數
      * @param array<string, mixed> $conditions 查詢條件
      * @return array<string, mixed> 分頁結果資料
+     *
+     * 分頁查詢貼文.
      */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
@@ -603,57 +605,40 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 根據標籤查詢文章列表.
-     * @param int $tagId 標籤 ID
-     * @param int $page 頁碼
-     * @param int $perPage 每頁筆數
+     * @param string $tag 標籤名稱
+     * @param int $limit 取得筆數
+     * @param int $offset 起始位置
      * @return array<int, Post> 文章列表
      */
-    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
+    public function getPostsByTag(string $tag, int $limit = 10, int $offset = 0): array
     {
-        $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
+        $cacheKey = PostCacheKeyService::tagPostsByName($tag, $limit, $offset);
 
         /** @var array<string, mixed> */
-        return $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
-            $offset = ($page - 1) * $perPage;
-
-            // 計算總筆數
-            $countSql = 'SELECT COUNT(*) FROM posts p '
-                . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
-                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL';
-
-            $stmt = $this->db->prepare($countSql);
-            $stmt->execute(['tag_id' => $tagId]);
-            $total = (int) $stmt->fetchColumn();
-
+        return $this->cache->remember($cacheKey, function () use ($tag, $limit, $offset) {
             // 取得分頁資料
             $sql = 'SELECT ' . str_replace('id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at', 'p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at', self::POST_SELECT_FIELDS) . ' FROM posts p '
                 . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
-                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL '
+                . 'INNER JOIN tags t ON pt.tag_id = t.id '
+                . 'WHERE t.name = :tag AND p.deleted_at IS NULL '
                 . 'ORDER BY p.is_pinned DESC, p.publish_date DESC '
                 . 'LIMIT :offset, :limit';
 
             $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':tag_id', $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(':tag', $tag, PDO::PARAM_STR);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            $items = array_map(
+
+            return array_map(
                 function ($row): Post {
                     /** @var array<string, mixed> $row */
                     return Post::fromArray($this->preparePostData($row));
                 },
                 $results,
             );
-
-            return [
-                'items' => $items,
-                'total' => $total,
-                'page' => $page,
-                'perPage' => $perPage,
-                'lastPage' => ceil($total / $perPage),
-            ];
         }, self::CACHE_TTL);
     }
 

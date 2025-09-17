@@ -64,7 +64,7 @@ class ActivityLog
         ?string $targetType = null,
         ?string $targetId = null,
         ?string $description = null,
-        /** @param array<string, mixed>|null $metadata */
+        /** @var array<string, mixed>|null */
         ?array $metadata = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
@@ -357,7 +357,7 @@ class ActivityLog
         ?string $targetType = null,
         ?string $targetId = null,
         ?string $description = null,
-        /** @param array<string, mixed>|null $metadata */
+        /** @var array<string, mixed>|null */
         ?array $metadata = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,

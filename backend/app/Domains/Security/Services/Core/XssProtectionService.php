@@ -148,6 +148,10 @@ class XssProtectionService implements XssProtectionServiceInterface
     /**
      * 遞迴清理陣列中的字串值。
      */
+    /**
+     * @param array<mixed> $data
+     * @return array<mixed>
+     */
     private function cleanArrayRecursive(array $data): array
     {
         foreach ($data as $key => $value) {
@@ -221,6 +225,9 @@ class XssProtectionService implements XssProtectionServiceInterface
 
     /**
      * 取得清理統計資訊。
+     */
+    /**
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {

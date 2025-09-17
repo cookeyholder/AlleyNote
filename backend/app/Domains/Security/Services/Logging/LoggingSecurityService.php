@@ -226,6 +226,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 應用請求資料白名單.
      */
+    /**
+     * @param array<mixed> $data
+     * @return array<mixed>
+     */
     private function applyRequestWhitelist(array $data): array
     {
         $filtered = [];
@@ -242,6 +246,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 淨化上下文資料，移除敏感資訊.
      */
+    /**
+     * @param array<mixed> $context
+     * @return array<mixed>
+     */
     private function sanitizeContext(array $context): array
     {
         return $this->recursiveSanitize($context);
@@ -249,6 +257,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
     /**
      * 遞迴淨化陣列，移除敏感資料.
+     */
+    /**
+     * @param array<mixed> $data
+     * @return array<mixed>
      */
     private function recursiveSanitize(array $data): array
     {
@@ -285,6 +297,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     /**
      * 豐富安全上下文資訊.
      */
+    /**
+     * @param array<mixed> $context
+     * @return array<mixed>
+     */
     private function enrichSecurityContext(array $context): array
     {
         $context['server_time'] = date('Y-m-d H:i:s');
@@ -303,6 +319,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
     /**
      * 豐富請求上下文資訊.
+     */
+    /**
+     * @param array<mixed> $context
+     * @return array<mixed>
      */
     private function enrichRequestContext(array $context): array
     {

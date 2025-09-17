@@ -38,6 +38,7 @@ class SecurityServiceProvider
 {
     /**
      * 取得所有 Security 服務定義.
+     * @return array<string, callable>
      */
     public static function getDefinitions(): array
     {
@@ -143,6 +144,9 @@ class SecurityServiceProvider
     /**
      * 取得 Security 領域的設定值.
      */
+    /**
+     * @return array<string, mixed>
+     */
     public static function getConfiguration(): array
     {
         return [
@@ -196,6 +200,9 @@ class SecurityServiceProvider
     /**
      * 取得需要初始化的服務清單.
      */
+    /**
+     * @return array<string>
+     */
     public static function getBootableServices(): array
     {
         return [
@@ -227,6 +234,9 @@ class SecurityServiceProvider
     /**
      * 檢查服務依賴是否滿足.
      */
+    /**
+     * @return array<string, mixed>
+     */
     public static function checkDependencies(ContainerInterface $container): array
     {
         $dependencies = [
@@ -239,6 +249,9 @@ class SecurityServiceProvider
 
     /**
      * 取得服務健康檢查資訊.
+     */
+    /**
+     * @return array<string, mixed>
      */
     public static function getHealthCheck(ContainerInterface $container): array
     {

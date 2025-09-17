@@ -1,3 +1,17 @@
+    /**
+     * 以標籤名稱、limit、offset 產生快取鍵（for getPostsByTag）
+     */
+    public static function tagPostsByName(string $tag, int $limit = 10, int $offset = 0): string
+    {
+        return self::buildKey('tag', $tag, 'posts', 'limit', $limit, 'offset', $offset);
+    }
+    /**
+     * 以標籤名稱、limit、offset 產生快取鍵（for getPostsByTag）
+     */
+    public static function tagPostsByName(string $tag, int $limit = 10, int $offset = 0): string
+    {
+        return self::buildKey('tag', $tag, 'posts', 'limit', $limit, 'offset', $offset);
+    }
 <?php
 
 declare(strict_types=1);
