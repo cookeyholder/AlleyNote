@@ -79,6 +79,9 @@ enum ActivitySeverity: int
     /**
      * 取得所有嚴重程度等級.
      */
+    /**
+     * @return array<ActivitySeverity>
+     */
     public static function getAllLevels(): array
     {
         return self::cases();
