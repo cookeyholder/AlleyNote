@@ -6,8 +6,10 @@ namespace App\Infrastructure\Cache;
 
 class CacheManager
 {
+    /** @var array<string, mixed> */
     private array $cache = [];
 
+    /** @var array<string, int> */
     private array $expiry = [];
 
     private int $defaultTtl = 3600; // 1 hour
@@ -20,7 +22,7 @@ class CacheManager
     /**
      * 取得快取值
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         if (!$this->has($key)) {
             return $default;
@@ -32,7 +34,7 @@ class CacheManager
     /**
      * 設定快取值
      */
-    public function set(string $key, $value, ?int $ttl = null): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         $ttl ??= $this->defaultTtl;
 
@@ -84,7 +86,7 @@ class CacheManager
     /**
      * 記憶化取得（如果不存在則執行回調並快取結果）.
      */
-    public function remember(string $key, callable $callback, ?int $ttl = null)
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
         if ($this->has($key)) {
             return $this->get($key);
@@ -99,7 +101,7 @@ class CacheManager
     /**
      * 永久記憶化取得（直到手動刪除）.
      */
-    public function rememberForever(string $key, callable $callback)
+    public function rememberForever(string $key, callable $callback): mixed
     {
         if ($this->has($key)) {
             return $this->get($key);
@@ -114,6 +116,8 @@ class CacheManager
 
     /**
      * 取得或設定多個快取值
+     * @param array<string> $keys
+     * @return array<string, mixed>
      */
     public function many(array $keys): array
     {
@@ -127,6 +131,7 @@ class CacheManager
 
     /**
      * 設定多個快取值
+     * @param array<string, mixed> $values
      */
     public function putMany(array $values, ?int $ttl = null): bool
     {
@@ -180,6 +185,7 @@ class CacheManager
 
     /**
      * 取得快取統計資訊.
+     * @return array<string, mixed>
      */
     public function getStats(): array
     {

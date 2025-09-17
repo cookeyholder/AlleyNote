@@ -21,18 +21,18 @@ readonly class SourceStatistics
         public SourceType $sourceType,
         public StatisticsMetric $count,
         public StatisticsMetric $percentage,
-        /** @var array<string, mixed> */
+        /** @var array<string, StatisticsMetric> */
         public array $additionalMetrics = [],
     ) {}
 
     /**
      * 建立來源統計.
+     * @param array<string, StatisticsMetric> $additionalMetrics
      */
     public static function create(
         SourceType $sourceType,
         int $count,
         float $percentage,
-        /** @var array<string, mixed> */
         array $additionalMetrics = [],
     ): self {
         if ($count < 0) {
@@ -52,6 +52,8 @@ readonly class SourceStatistics
 
         // 驗證額外指標
         foreach ($additionalMetrics as $key => $metric) {
+            // instanceof 檢查由於 @var 註解的型別保證而總是為 true，
+            // 但我們仍保留它以確保執行時的型別安全
             if (!$metric instanceof StatisticsMetric) {
                 throw new InvalidSourceStatisticsException(
                     "額外指標 '{$key}' 必須是 StatisticsMetric 實例",
@@ -156,6 +158,7 @@ readonly class SourceStatistics
 
     /**
      * 取得所有額外指標的鍵.
+     * @return array<string>
      */
     public function getAdditionalMetricKeys(): array
     {
@@ -301,6 +304,7 @@ readonly class SourceStatistics
      *               is_programmatic_access: bool,
      *               is_external_source: bool
      *               }
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {

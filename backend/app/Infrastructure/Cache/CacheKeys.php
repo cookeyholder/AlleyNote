@@ -245,6 +245,7 @@ class CacheKeys
 
     /**
      * 解析快取鍵取得各部分.
+     * @return array<string>
      */
     public static function parseKey(string $key): array
     {
@@ -254,7 +255,7 @@ class CacheKeys
 
         $withoutPrefix = substr($key, strlen(self::PREFIX . self::SEPARATOR));
 
-        return explode(self::SEPARATOR, is_string($withoutPrefix) ? $withoutPrefix : (string) $withoutPrefix);
+        return explode(self::SEPARATOR, $withoutPrefix);
     }
 
     /**

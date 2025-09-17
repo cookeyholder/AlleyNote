@@ -18,15 +18,19 @@ class Response implements ResponseInterface
 
     private string $reasonPhrase = '';
 
+    /** @var array<string, array<string>> */
     private array $headers = [];
 
+    /** @var array<string, string> */
     private array $headerNames = [];
 
     private StreamInterface $body;
 
+    /**
+     * @param array<string, mixed> $headers
+     */
     public function __construct(
         int $statusCode = 200,
-        /** @var array<string, mixed> */
         array $headers = [],
         StreamInterface|string|null $body = null,
         string $protocolVersion = '1.1',
@@ -43,7 +47,13 @@ class Response implements ResponseInterface
         }
 
         foreach ($headers as $name => $value) {
-            $this->withHeader($name, $value);
+            if (is_array($value)) {
+                // 確保陣列中的每個值都是字串
+                $stringValues = array_map(static fn(mixed $v): string => (string) $v, $value);
+                $this->withHeader($name, $stringValues);
+            } else {
+                $this->withHeader($name, (string) $value);
+            }
         }
     }
 

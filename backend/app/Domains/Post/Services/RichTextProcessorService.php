@@ -170,6 +170,7 @@ class RichTextProcessorService
 
     /**
      * 取得允許的標籤和屬性清單.
+     * @return array<string, mixed>
      */
     public function getAllowedElements(string $userLevel = 'basic'): array
     {
@@ -248,7 +249,7 @@ class RichTextProcessorService
 
     /**
      * 安全驗證富文本內容.
-     * @return array<string, mixed>
+     * @return list<array<string, mixed>>
      */
     public function validateSecurity(string $content): array
     {

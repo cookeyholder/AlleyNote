@@ -1,17 +1,3 @@
-    /**
-     * 以標籤名稱、limit、offset 產生快取鍵（for getPostsByTag）
-     */
-    public static function tagPostsByName(string $tag, int $limit = 10, int $offset = 0): string
-    {
-        return self::buildKey('tag', $tag, 'posts', 'limit', $limit, 'offset', $offset);
-    }
-    /**
-     * 以標籤名稱、limit、offset 產生快取鍵（for getPostsByTag）
-     */
-    public static function tagPostsByName(string $tag, int $limit = 10, int $offset = 0): string
-    {
-        return self::buildKey('tag', $tag, 'posts', 'limit', $limit, 'offset', $offset);
-    }
 <?php
 
 declare(strict_types=1);
@@ -93,6 +79,14 @@ class PostCacheKeyService
     public static function tagPosts(int $tagId, int $page = 1): string
     {
         return self::buildKey('tag', $tagId, 'posts', 'page', $page);
+    }
+
+    /**
+     * 以標籤名稱、limit、offset 產生快取鍵（for getPostsByTag）.
+     */
+    public static function tagPostsByName(string $tag, int $limit = 10, int $offset = 0): string
+    {
+        return self::buildKey('tag', $tag, 'posts', 'limit', $limit, 'offset', $offset);
     }
 
     // 模式匹配快取鍵
