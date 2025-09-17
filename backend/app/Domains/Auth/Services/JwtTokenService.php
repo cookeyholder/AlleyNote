@@ -104,6 +104,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 TokenGenerationException::REASON_GENERATION_FAILED,
                 TokenGenerationException::TOKEN_PAIR,
                 'Token pair generation failed: ' . $e->getMessage(),
+                ['error_details' => $e->getMessage()],
                 $e,
             );
         }

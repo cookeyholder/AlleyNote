@@ -17,6 +17,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     private const TOKEN_EXPIRY = 3600; // 1 hour
 
+    private const TOKEN_LIFETIME = self::TOKEN_EXPIRY; // 權杖存活時間
+
     private const TOKEN_POOL_SIZE = 5; // 權杖池大小
 
     private const TOKEN_POOL_KEY = 'csrf_token_pool';

@@ -215,7 +215,7 @@ class InvalidTokenException extends JwtException
      */
     public static function malformed(string $tokenType = self::ACCESS_TOKEN, /** @param array<string, mixed> $context */ array $context = []): self
     {
-        return new self(self::REASON_MALFORMED, $tokenType, '', $context);
+        return new self(self::REASON_MALFORMED, $tokenType, null, $context);
     }
 
     /**
@@ -226,7 +226,7 @@ class InvalidTokenException extends JwtException
      */
     public static function signatureInvalid(string $tokenType = self::ACCESS_TOKEN, /** @param array<string, mixed> $context */ array $context = []): self
     {
-        return new self(self::REASON_SIGNATURE_INVALID, $tokenType, '', $context);
+        return new self(self::REASON_SIGNATURE_INVALID, $tokenType, null, $context);
     }
 
     /**
@@ -241,7 +241,7 @@ class InvalidTokenException extends JwtException
         string $actualAlgorithm,
         string $tokenType = self::ACCESS_TOKEN,
     ): self {
-        return new self(self::REASON_ALGORITHM_MISMATCH, $tokenType, '', [
+        return new self(self::REASON_ALGORITHM_MISMATCH, $tokenType, null, [
             'expected_algorithm' => $expectedAlgorithm,
             'actual_algorithm' => $actualAlgorithm,
         ]);
@@ -259,7 +259,7 @@ class InvalidTokenException extends JwtException
         string $actualIssuer,
         string $tokenType = self::ACCESS_TOKEN,
     ): self {
-        return new self(self::REASON_ISSUER_INVALID, $tokenType, '', [
+        return new self(self::REASON_ISSUER_INVALID, $tokenType, null, [
             'expected_issuer' => $expectedIssuer,
             'actual_issuer' => $actualIssuer,
         ]);
@@ -277,7 +277,7 @@ class InvalidTokenException extends JwtException
         string $actualAudience,
         string $tokenType = self::ACCESS_TOKEN,
     ): self {
-        return new self(self::REASON_AUDIENCE_INVALID, $tokenType, '', [
+        return new self(self::REASON_AUDIENCE_INVALID, $tokenType, null, [
             'expected_audience' => $expectedAudience,
             'actual_audience' => $actualAudience,
         ]);
@@ -290,7 +290,7 @@ class InvalidTokenException extends JwtException
      */
     public static function subjectMissing(string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_SUBJECT_MISSING, $tokenType);
+        return new self(self::REASON_SUBJECT_MISSING, $tokenType, null);
     }
 
     /**
@@ -301,7 +301,7 @@ class InvalidTokenException extends JwtException
      */
     public static function claimsInvalid(array $invalidClaims, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_CLAIMS_INVALID, $tokenType, '', ['invalid_claims' => $invalidClaims]);
+        return new self(self::REASON_CLAIMS_INVALID, $tokenType, null, ['invalid_claims' => $invalidClaims]);
     }
 
     /**
@@ -312,7 +312,7 @@ class InvalidTokenException extends JwtException
      */
     public static function blacklisted(string $tokenId, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_BLACKLISTED, $tokenType, '', ['token_id' => $tokenId]);
+        return new self(self::REASON_BLACKLISTED, $tokenType, $tokenId, ['token_id' => $tokenId]);
     }
 
     /**
@@ -323,9 +323,9 @@ class InvalidTokenException extends JwtException
      */
     public static function notBefore(int $notBefore, string $tokenType = self::ACCESS_TOKEN): self
     {
-        return new self(self::REASON_NOT_BEFORE, $tokenType, '', [
+        return new self(self::REASON_NOT_BEFORE, $tokenType, null, [
             'not_before' => $notBefore,
-            'not_before_human' => date('Y-m-d H => i => s', $notBefore),
+            'not_before_human' => date('Y-m-d H:i:s', $notBefore),
         ]);
     }
 }

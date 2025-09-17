@@ -56,6 +56,8 @@ class AuthenticationException extends JwtException
 
     public const REASON_INSUFFICIENT_PRIVILEGES = 'insufficient_privileges';
 
+    public const REASON_SYSTEM_ERROR = 'system_error';
+
     /**
      * 建立認證例外實例.
      *
@@ -299,7 +301,7 @@ class AuthenticationException extends JwtException
             $context['ip_address'] = $ipAddress;
         }
 
-        return new self(self::REASON_INVALID_CREDENTIALS, '', $context);
+        return new self(self::REASON_INVALID_CREDENTIALS, '', null, $context);
     }
 
     /**
@@ -311,10 +313,9 @@ class AuthenticationException extends JwtException
      */
     public static function accountLocked(int $userId, int $lockoutUntil, string $reason = ''): self
     {
-        return new self(self::REASON_ACCOUNT_LOCKED, '', [
-            'user_id' => $userId,
+        return new self(self::REASON_ACCOUNT_LOCKED, '', $userId, [
             'lockout_until' => $lockoutUntil,
-            'lockout_until_human' => date('Y-m-d H => i => s', $lockoutUntil),
+            'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
             'lock_reason' => $reason,
         ]);
     }
@@ -327,8 +328,7 @@ class AuthenticationException extends JwtException
      */
     public static function accountDisabled(int $userId, string $reason = ''): self
     {
-        return new self(self::REASON_ACCOUNT_DISABLED, '', [
-            'user_id' => $userId,
+        return new self(self::REASON_ACCOUNT_DISABLED, '', $userId, [
             'disable_reason' => $reason,
         ]);
     }
@@ -341,12 +341,12 @@ class AuthenticationException extends JwtException
      */
     public static function accountNotVerified(int $userId, string $email = ''): self
     {
-        $context = ['user_id' => $userId];
+        $context = [];
         if ($email) {
             $context['email'] = $email;
         }
 
-        return new self(self::REASON_ACCOUNT_NOT_VERIFIED, '', $context);
+        return new self(self::REASON_ACCOUNT_NOT_VERIFIED, '', $userId, $context);
     }
 
     /**
@@ -367,14 +367,14 @@ class AuthenticationException extends JwtException
             'username' => $username,
             'attempt_count' => $attemptCount,
             'lockout_until' => $lockoutUntil,
-            'lockout_until_human' => date('Y-m-d H => i => s', $lockoutUntil),
+            'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
         ];
 
         if ($ipAddress) {
             $context['ip_address'] = $ipAddress;
         }
 
-        return new self(self::REASON_TOO_MANY_ATTEMPTS, '', $context);
+        return new self(self::REASON_TOO_MANY_ATTEMPTS, '', null, $context);
     }
 
     /**
@@ -384,7 +384,7 @@ class AuthenticationException extends JwtException
      */
     public static function userNotFound(string $username): self
     {
-        return new self(self::REASON_USER_NOT_FOUND, '', ['username' => $username]);
+        return new self(self::REASON_USER_NOT_FOUND, '', null, ['username' => $username]);
     }
 
     /**
@@ -395,10 +395,9 @@ class AuthenticationException extends JwtException
      */
     public static function passwordExpired(int $userId, int $expiredAt): self
     {
-        return new self(self::REASON_PASSWORD_EXPIRED, '', [
-            'user_id' => $userId,
+        return new self(self::REASON_PASSWORD_EXPIRED, '', $userId, [
             'expired_at' => $expiredAt,
-            'expired_at_human' => date('Y-m-d H => i => s', $expiredAt),
+            'expired_at_human' => date('Y-m-d H:i:s', $expiredAt),
         ]);
     }
 
@@ -409,7 +408,7 @@ class AuthenticationException extends JwtException
      */
     public static function missingCredentials(array $missingFields = []): self
     {
-        return new self(self::REASON_MISSING_CREDENTIALS, '', ['missing_fields' => $missingFields]);
+        return new self(self::REASON_MISSING_CREDENTIALS, '', null, ['missing_fields' => $missingFields]);
     }
 
     /**
@@ -420,8 +419,7 @@ class AuthenticationException extends JwtException
      */
     public static function invalidToken(string $tokenType = 'access_token', string $reason = ''): self
     {
-        return new self(self::REASON_INVALID_TOKEN, '', [
-            'token_type' => $tokenType,
+        return new self(self::REASON_INVALID_TOKEN, $tokenType, null, [
             'invalid_reason' => $reason,
         ]);
     }
@@ -435,7 +433,7 @@ class AuthenticationException extends JwtException
     {
         $context = $resource ? ['required_for_resource' => $resource] : [];
 
-        return new self(self::REASON_TOKEN_REQUIRED, '', $context);
+        return new self(self::REASON_TOKEN_REQUIRED, '', null, $context);
     }
 
     /**
@@ -456,10 +454,6 @@ class AuthenticationException extends JwtException
             'user_privileges' => $userPrivileges,
         ];
 
-        if ($userId !== null) {
-            $context['user_id'] = $userId;
-        }
-
-        return new self(self::REASON_INSUFFICIENT_PRIVILEGES, '', $context);
+        return new self(self::REASON_INSUFFICIENT_PRIVILEGES, '', $userId, $context);
     }
 }

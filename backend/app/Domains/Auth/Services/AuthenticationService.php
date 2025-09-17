@@ -97,7 +97,9 @@ final class AuthenticationService implements AuthenticationServiceInterface
         } catch (Throwable $e) {
             throw new AuthenticationException(
                 AuthenticationException::REASON_SYSTEM_ERROR,
-                'Authentication failed: ' . $e->getMessage(),
+                'access',
+                null,
+                ['error' => $e->getMessage()],
                 $e,
             );
         }
@@ -122,7 +124,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
             );
         } catch (Throwable $e) {
             throw new TokenExpiredException(
-                'Token refresh failed: ' . $e->getMessage(),
+                'Refresh token has expired',
+                null,
                 $e,
             );
         }

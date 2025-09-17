@@ -256,7 +256,7 @@ class SecurityServiceProvider
                     'class' => get_class($service),
                     'memory_usage' => memory_get_usage(true),
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $services[$serviceName] = [
                     'status' => 'error',
                     'error' => $e->getMessage(),

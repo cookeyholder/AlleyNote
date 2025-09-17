@@ -59,7 +59,7 @@ class AuthService
                         'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
                     ],
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // JWT 產生失敗時，記錄錯誤並回傳傳統格式
                 error_log('JWT token 產生失敗: ' . $e->getMessage());
             }
@@ -131,7 +131,7 @@ class AuthService
                         'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
                     ],
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // JWT 產生失敗時，記錄錯誤並回傳傳統格式
                 error_log('JWT token 產生失敗: ' . $e->getMessage());
             }
@@ -160,7 +160,7 @@ class AuthService
                     'success' => true,
                     'message' => '登出成功',
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // JWT 撤銷失敗時，記錄錯誤
                 error_log('JWT token 撤銷失敗: ' . $e->getMessage());
             }

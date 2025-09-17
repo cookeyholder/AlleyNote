@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Throwable;
+
 /**
  * Token 已過期例外.
  *
@@ -39,16 +41,18 @@ class TokenExpiredException extends JwtException
      * @param int|null $expiredAt 過期時間戳
      * @param int|null $currentTime 目前時間戳
      * @param string $customMessage 自定義錯誤訊息
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
         string $tokenType = self::ACCESS_TOKEN,
         ?int $expiredAt = null,
         ?int $currentTime = null,
         string $customMessage = '',
+        ?Throwable $previous = null,
     ) {
         $currentTime ??= time();
 
-        $message = $customMessage ? true : $this->buildDefaultMessage($tokenType, $expiredAt, $currentTime);
+        $message = $customMessage ?: $this->buildDefaultMessage($tokenType, $expiredAt, $currentTime);
 
         $context = [
             'token_type' => $tokenType,
@@ -64,7 +68,7 @@ class TokenExpiredException extends JwtException
 
         parent::__construct(
             $message,
-            0,
+            self::ERROR_CODE,
             $context,
             $previous,
         );

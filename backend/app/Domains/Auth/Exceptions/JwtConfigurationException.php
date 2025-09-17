@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Throwable;
+
 /**
  * JWT 配置例外.
  *
@@ -49,14 +51,14 @@ class JwtConfigurationException extends JwtException
      * @param string $expectedType 期望類型
      * @param mixed $actualValue 實際值
      * @param array<string, mixed> $additionalContext 附加上下文
-     * @param \Throwable|null $previous 前一個異常
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
         private readonly string $configKey,
         private readonly string $expectedType,
         private readonly mixed $actualValue,
         array $additionalContext = [],
-        ?\Throwable $previous = null,
+        ?Throwable $previous = null,
     ) {
         $message = sprintf(
             'JWT configuration error: "%s" expects %s, got %s',
@@ -111,7 +113,13 @@ class JwtConfigurationException extends JwtException
     {
         $message = 'JWT 金鑰格式無效' . ($details ? ': ' . $details : '');
 
-        return new self($message, self::INVALID_KEY_FORMAT, $previous);
+        return new self(
+            'key_format',
+            'valid_key_format',
+            $message,
+            ['reason' => self::INVALID_KEY_FORMAT, 'details' => $details],
+            $previous,
+        );
     }
 
     /**
@@ -121,7 +129,13 @@ class JwtConfigurationException extends JwtException
     {
         $message = "JWT 金鑰檔案無法讀取: {$filePath}";
 
-        return new self($message, self::KEY_FILE_NOT_READABLE, $previous, ['file_path' => $filePath]);
+        return new self(
+            'key_file_path',
+            'readable_file_path',
+            $filePath,
+            ['reason' => self::KEY_FILE_NOT_READABLE, 'file_path' => $filePath],
+            $previous,
+        );
     }
 
     /**
@@ -129,7 +143,13 @@ class JwtConfigurationException extends JwtException
      */
     public static function invalidPrivateKeyFormat(?Throwable $previous = null): self
     {
-        return new self('JWT 私鑰格式無效', self::INVALID_PRIVATE_KEY_FORMAT, $previous);
+        return new self(
+            'private_key_format',
+            'valid_private_key_format',
+            'invalid',
+            ['reason' => self::INVALID_PRIVATE_KEY_FORMAT],
+            $previous,
+        );
     }
 
     /**
@@ -137,7 +157,13 @@ class JwtConfigurationException extends JwtException
      */
     public static function invalidPublicKeyFormat(?Throwable $previous = null): self
     {
-        return new self('JWT 公鑰格式無效', self::INVALID_PUBLIC_KEY_FORMAT, $previous);
+        return new self(
+            'public_key_format',
+            'valid_public_key_format',
+            'invalid',
+            ['reason' => self::INVALID_PUBLIC_KEY_FORMAT],
+            $previous,
+        );
     }
 
     /**
@@ -145,6 +171,12 @@ class JwtConfigurationException extends JwtException
      */
     public static function keyMismatch(?Throwable $previous = null): self
     {
-        return new self('JWT 私鑰和公鑰不匹配', self::KEY_MISMATCH, $previous);
+        return new self(
+            'key_pair',
+            'matching_key_pair',
+            'mismatched',
+            ['reason' => self::KEY_MISMATCH],
+            $previous,
+        );
     }
 }

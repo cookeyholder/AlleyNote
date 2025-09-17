@@ -82,7 +82,7 @@ readonly class StatisticsCalculationCommand
                     $lockFile,
                     $skipCache,
                 );
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->logger->error('統計週期計算失敗', [
                     'period' => $periodName,
                     'error' => $e->getMessage(),
@@ -191,7 +191,7 @@ readonly class StatisticsCalculationCommand
                         'end' => $period->endDate->format('Y-m-d H:i:s'),
                     ],
                 ];
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $retryCount++;
 
                 $this->logger->warning('統計計算失敗，準備重試', [
@@ -230,7 +230,7 @@ readonly class StatisticsCalculationCommand
                 'period_type' => $period->type->value,
                 'results' => $results,
             ]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->logger->warning('快取預熱失敗', [
                 'period_type' => $period->type->value,
                 'error' => $e->getMessage(),

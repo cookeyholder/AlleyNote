@@ -71,7 +71,7 @@ class PostService implements PostServiceInterface
     {
         try {
             return $this->repository->safeDelete($id);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }
@@ -117,7 +117,7 @@ class PostService implements PostServiceInterface
     {
         try {
             return $this->repository->safeSetPinned($id, $isPinned);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw $e;
         }
     }

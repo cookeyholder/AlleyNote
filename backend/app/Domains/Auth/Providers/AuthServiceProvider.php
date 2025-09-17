@@ -182,9 +182,11 @@ class AuthServiceProvider
     }
 
     /**
-     * 取得中介軟體別名映射.
+     * 取得中介軟體別名對應。
+     *
+     * @return array<string, string>
      */
-    public static function getMiddlewareAliases(): array
+    protected function getMiddlewareAliases(): array
     {
         return [
             'jwt.auth' => JwtAuthenticationMiddleware::class,

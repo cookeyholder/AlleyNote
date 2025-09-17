@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Throwable;
+
 /**
  * Token 生成失敗例外.
  *
@@ -44,12 +46,16 @@ class TokenGenerationException extends JwtException
 
     public const REASON_RESOURCE_EXHAUSTED = 'resource_exhausted';
 
+    public const REASON_GENERATION_FAILED = 'generation_failed';
+
     /**
      * Token 類型常數.
      */
     public const ACCESS_TOKEN = 'access_token';
 
     public const REFRESH_TOKEN = 'refresh_token';
+
+    public const TOKEN_PAIR = 'token_pair';
 
     /**
      * 建立 Token 生成失敗例外.
@@ -58,14 +64,16 @@ class TokenGenerationException extends JwtException
      * @param string $tokenType Token 類型
      * @param string $customMessage 自定義錯誤訊息
      * @param array<string, mixed> $additionalContext 額外上下文資訊
+     * @param Throwable|null $previous 前一個異常
      */
     public function __construct(
         string $reason = self::REASON_ENCODING_FAILED,
         string $tokenType = self::ACCESS_TOKEN,
         string $customMessage = '',
         array $additionalContext = [],
+        ?Throwable $previous = null,
     ) {
-        $message = $customMessage ? true : $this->buildDefaultMessage($reason, $tokenType);
+        $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
 
         $context = array_merge([
             'reason' => $reason,
@@ -76,7 +84,7 @@ class TokenGenerationException extends JwtException
 
         parent::__construct(
             $message,
-            0,
+            self::ERROR_CODE,
             $context,
             $previous,
         );

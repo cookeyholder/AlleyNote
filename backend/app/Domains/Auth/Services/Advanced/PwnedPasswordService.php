@@ -12,7 +12,12 @@ use GuzzleHttp\Client;
  *
  * 整合 Have I Been Pwned API 來檢查密碼是否曾在資料外洩中出現
  */
-class PwnedPasswordService
+class PwnedP    /**
+     * 取得服務統計資料。
+     *
+     * @return array<string, mixed>
+     */
+    public function getServiceStats(): arrayordService
 {
     private const HIBP_API_URL = 'https://api.pwnedpasswords.com/range/';
 
@@ -44,7 +49,7 @@ class PwnedPasswordService
             $count = $this->getPasswordCount($password);
 
             return $count > 0;
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             error_log('密碼檢查失敗: ' . $e->getMessage());
 
             return false;
@@ -93,7 +98,7 @@ class PwnedPasswordService
                 $result['risk_level'] = $this->calculateRiskLevel($count);
                 $result['recommendations'] = $this->generateRecommendations($count);
             }
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             error_log('密碼安全檢查失敗: ' . $e->getMessage());
             $result['risk_level'] = 'unknown';
             $result['recommendations'] = ['無法檢查密碼安全性，請稍後再試'];
@@ -115,7 +120,7 @@ class PwnedPasswordService
             }
 
             return null;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log('Unexpected error during HIBP API call: ' . $e->getMessage());
 
             return null;
@@ -169,8 +174,10 @@ class PwnedPasswordService
         return 'low';
     }
 
-    /**
-     * 生成安全建議。
+        /**
+     * 根據外洩次數產生建議。
+     *
+     * @return array<string>
      */
     private function generateRecommendations(int $count): array
     {
@@ -200,7 +207,7 @@ class PwnedPasswordService
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
 
             return $response->getStatusCode() === 200;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log('服務可用性檢查失敗: ' . $e->getMessage());
 
             return false;
