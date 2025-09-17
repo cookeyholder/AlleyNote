@@ -28,7 +28,12 @@ class PostService implements PostServiceInterface
 
         // 時間戳由 Repository 層處理
 
-        return $this->repository->create($data);
+        $result = $this->repository->create($data);
+
+        // 確保返回 Post 類型
+        assert($result instanceof Post);
+
+        return $result;
     }
 
     public function updatePost(int $id, UpdatePostDTO $dto): Post
@@ -37,6 +42,9 @@ class PostService implements PostServiceInterface
         if (!$post) {
             throw new NotFoundException('找不到指定的文章');
         }
+
+        // 確保返回 Post 類型
+        assert($post instanceof Post);
 
         // 檢查是否有資料要更新
         if (!$dto->hasChanges()) {
@@ -64,7 +72,12 @@ class PostService implements PostServiceInterface
 
         // 時間戳由 Repository 層處理
 
-        return $this->repository->update($id, $data);
+        $result = $this->repository->update($id, $data);
+
+        // 確保返回 Post 類型
+        assert($result instanceof Post);
+
+        return $result;
     }
 
     public function deletePost(int $id): bool
@@ -83,6 +96,9 @@ class PostService implements PostServiceInterface
             throw new NotFoundException('找不到指定的文章');
         }
 
+        // 確保返回 Post 類型
+        assert($post instanceof Post);
+
         return $post;
     }
 
@@ -96,24 +112,35 @@ class PostService implements PostServiceInterface
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
-        // 確保回傳格式符合介面要求
+        // 確保回傳格式符合介面要求，並使用適當的類型轉換
+        $items = $result['items'] ?? [];
+        if (!is_array($items)) {
+            $items = [];
+        }
+
+        /** @var array<Post> $items */
+
         return [
-            'items' => $result['items'] ?? [],
-            'total' => $result['total'] ?? 0,
-            'page' => $result['page'] ?? $page,
-            'per_page' => $result['perPage'] ?? $perPage,
-            'last_page' => $result['lastPage'] ?? 1,
+            'items' => $items, // PHPStan 需要信任 Repository 的返回類型
+            'total' => is_int($result['total'] ?? null) ? $result['total'] : 0,
+            'page' => is_int($result['page'] ?? null) ? $result['page'] : $page,
+            'per_page' => is_int($result['perPage'] ?? null) ? $result['perPage'] : $perPage,
+            'last_page' => is_int($result['lastPage'] ?? null) ? $result['lastPage'] : 1,
         ];
     }
 
     /**
      * 取得置頂文章列表.
      * @param int $limit 取得筆數
-     * @return array<int, mixed>
+     * @return array<int, Post>
      */
     public function getPinnedPosts(int $limit = 5): array
     {
-        return $this->repository->getPinnedPosts($limit);
+        $result = $this->repository->getPinnedPosts($limit);
+
+        /** @var array<int, Post> $result */
+
+        return $result;
     }
 
     public function setPinned(int $id, bool $isPinned): bool

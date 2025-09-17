@@ -20,15 +20,20 @@ class ContentModerationService
     /** @var array<string, mixed> */
     private array $config;
 
+    /**
+     * @param array<string, mixed> $config 設定項目
+     */
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
-        /** @var array<string, mixed> $config */
         array $config = [],
     ) {
         $this->xssProtection = $xssProtection;
         $this->richTextProcessor = $richTextProcessor;
-        $this->config = array_merge($this->getDefaultConfig(), $config);
+
+        // 確保配置的型別安全
+        $defaultConfig = $this->getDefaultConfig();
+        $this->config = array_merge($defaultConfig, $config);
     }
 
     /**
@@ -50,9 +55,9 @@ class ContentModerationService
         // 1. 基本安全檢查
         $securityIssues = $this->checkSecurity($content);
         if (!empty($securityIssues)) {
-            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $securityIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
-            // // $data ? $result->status : null)) = 'rejected'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $result->confidence : null)) = 0; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+            $result['issues'] = array_merge($result['issues'], $securityIssues);
+            $result['status'] = 'rejected';
+            $result['confidence'] = 0;
 
             return $result;
         }
@@ -89,7 +94,10 @@ class ContentModerationService
     /**
      * 安全檢查.
      */
-    private function checkSecurity(string $content): mixed
+    /**
+     * @return array<array<string, mixed>>
+     */
+    private function checkSecurity(string $content): array
     {
         $issues = [];
 
@@ -256,14 +264,14 @@ class ContentModerationService
         /** @var array<array<string, mixed>> $issues */
         $issues = $result['issues'] ?? [];
 
-        $criticalIssues = array_filter($issues, fn($issue) => is_array($issue) && ($issue['severity'] ?? '') === 'critical');
-        $highIssues = array_filter($issues, fn($issue) => is_array($issue) && ($issue['severity'] ?? '') === 'high');
-        $mediumIssues = array_filter($issues, fn($issue) => is_array($issue) && ($issue['severity'] ?? '') === 'medium');
+        $criticalIssues = array_filter($issues, fn($issue) => ($issue['severity'] ?? '') === 'critical');
+        $highIssues = array_filter($issues, fn($issue) => ($issue['severity'] ?? '') === 'high');
+        $mediumIssues = array_filter($issues, fn($issue) => ($issue['severity'] ?? '') === 'medium');
 
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
             $result['confidence'] = 0;
-            if (!isset($result['auto_actions'])) {
+            if (!isset($result['auto_actions']) || !is_array($result['auto_actions'])) {
                 $result['auto_actions'] = [];
             }
             $result['auto_actions'][] = 'content_blocked';
@@ -271,8 +279,12 @@ class ContentModerationService
             $result['status'] = 'pending';
             $result['requires_human_review'] = true;
         } elseif (!empty($highIssues) || !empty($mediumIssues)) {
-            $confidence = $result['confidence'] ?? 1.0;
-            $result['confidence'] = is_numeric($confidence) ? (float) $confidence * 0.8 : 0.8;
+            $currentConfidence = $result['confidence'] ?? 100;
+            if (is_numeric($currentConfidence)) {
+                $result['confidence'] = (int) ((float) $currentConfidence * 0.8);
+            } else {
+                $result['confidence'] = 80;
+            }
         }
     }
 
@@ -379,6 +391,9 @@ class ContentModerationService
 
     /**
      * 取得預設設定.
+     * @return array<string, mixed>
+     */
+    /**
      * @return array<string, mixed>
      */
     private function getDefaultConfig(): array

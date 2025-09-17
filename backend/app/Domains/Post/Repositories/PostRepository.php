@@ -159,6 +159,10 @@ class PostRepository implements PostRepositoryInterface
      * @param array<string, mixed> $result 資料庫查詢結果
      * @return array<string, mixed> 處理後的文章資料
      */
+    /**
+     * @param array<string, mixed> $result
+     * @return array<string, mixed>
+     */
     private function preparePostData(array $result): array
     {
         return [
@@ -249,6 +253,7 @@ class PostRepository implements PostRepositoryInterface
             return null;
         }
 
+        /** @var array<string, mixed> $result */
         return Post::fromArray($this->preparePostData($result));
     }
 
@@ -279,7 +284,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if ($result === false) {
+        if ($result === false || !is_array($result)) {
             return null;
         }
 
@@ -354,6 +359,10 @@ class PostRepository implements PostRepositoryInterface
      * @param array<int, int> $tagIds 標籤 ID 陣列
      * @return int 新建文章的 ID
      * @throws PDOException 當標籤不存在時拋出異常
+     */
+    /**
+     * @param array<string, mixed> $data
+     * @param array<int, int> $tagIds
      */
     public function create(array $data, array $tagIds = []): Post
     {
@@ -494,6 +503,10 @@ class PostRepository implements PostRepositoryInterface
      *
      * 分頁查詢貼文.
      */
+    /**
+     * @param array<string, mixed> $conditions
+     * @return array{items: array<Post>, total: int, page: int, perPage: int, lastPage: int}
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         // 根據條件決定使用哪種快取鍵
@@ -509,7 +522,7 @@ class PostRepository implements PostRepositoryInterface
                 'posts:page:%d:per:%d:%s',
                 $page,
                 $perPage,
-                md5(json_encode($conditions) ? true : ''),
+                md5((string) json_encode($conditions)),
             );
         }
 
@@ -567,22 +580,25 @@ class PostRepository implements PostRepositoryInterface
                 $results,
             );
 
-            /** @var array<string, mixed> */
+            /** @var array{items: array<Post>, total: int, page: int, perPage: int, lastPage: int} */
             return [
                 'items' => $items,
                 'total' => $total,
                 'page' => $page,
                 'perPage' => $perPage,
-                'lastPage' => ceil($total / $perPage),
+                'lastPage' => (int) ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
     }
 
+    /**
+     * @return array<int, Post>
+     */
     public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
-        /** @var array<Post> */
+        /** @var array<int, Post> */
         return $this->cache->remember($cacheKey, function () use ($limit) {
             $sql = $this->buildSelectQuery('is_pinned = 1')
                 . ' ORDER BY publish_date DESC LIMIT :limit';
@@ -614,7 +630,7 @@ class PostRepository implements PostRepositoryInterface
     {
         $cacheKey = PostCacheKeyService::tagPostsByName($tag, $limit, $offset);
 
-        /** @var array<string, mixed> */
+        /** @var array<int, Post> */
         return $this->cache->remember($cacheKey, function () use ($tag, $limit, $offset) {
             // 取得分頁資料
             $sql = 'SELECT ' . str_replace('id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at', 'p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at', self::POST_SELECT_FIELDS) . ' FROM posts p '
