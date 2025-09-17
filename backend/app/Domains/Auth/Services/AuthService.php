@@ -22,6 +22,8 @@ class AuthService
 
     /**
      * 註冊新使用者.
+     *
+     * @return array<string, mixed>
      */
     public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
@@ -59,7 +61,7 @@ class AuthService
                         'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
                     ],
                 ];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // JWT 產生失敗時，記錄錯誤並回傳傳統格式
                 error_log('JWT token 產生失敗: ' . $e->getMessage());
             }
@@ -75,6 +77,9 @@ class AuthService
 
     /**
      * 使用者登入.
+     *
+     * @param array<string, mixed> $credentials
+     * @return array<string, mixed>
      */
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
@@ -131,7 +136,7 @@ class AuthService
                         'expires_at' => $tokenPair->getAccessTokenExpiresAt()->format('c'),
                     ],
                 ];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // JWT 產生失敗時，記錄錯誤並回傳傳統格式
                 error_log('JWT token 產生失敗: ' . $e->getMessage());
             }
@@ -147,6 +152,8 @@ class AuthService
 
     /**
      * 使用者登出.
+     *
+     * @return array<string, mixed>
      */
     public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {
@@ -160,7 +167,7 @@ class AuthService
                     'success' => true,
                     'message' => '登出成功',
                 ];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // JWT 撤銷失敗時，記錄錯誤
                 error_log('JWT token 撤銷失敗: ' . $e->getMessage());
             }
@@ -175,6 +182,8 @@ class AuthService
 
     /**
      * 檢查使用者是否為啟用狀態.
+     *
+     * @param array<string, mixed> $user
      */
     private function isUserActive(array $user): bool
     {

@@ -10,6 +10,7 @@ use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -116,7 +117,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to log activity', [
                 'error' => $e->getMessage(),
                 'action_type' => $dto->getActionType()->value,
@@ -296,7 +297,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             }
 
             return $this->repository->createBatch($filteredDtos);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to log activity batch', [
                 'error' => $e->getMessage(),
                 'count' => count($dtos),
@@ -354,7 +355,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             ]);
 
             return $deletedCount;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('Failed to cleanup activity logs', [
                 'error' => $e->getMessage(),
             ]);

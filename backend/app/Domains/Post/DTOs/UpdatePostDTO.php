@@ -29,13 +29,11 @@ class UpdatePostDTO extends BaseDTO
     public readonly ?string $publishDate;
 
     /**
-     * 建構函數.
+     * 建構子。
      *
-     * @param ValidatorInterface $validator 驗證器實例
-     * @param array $data 要驗證的資料
-     * @throws ValidationException 當驗證失敗時
+     * @param array<string, mixed> $data
      */
-    public function __construct(ValidatorInterface $validator, array $data)
+    public function __construct(array $data, ValidatorInterface $validator)
     {
         parent::__construct($validator);
 

@@ -302,6 +302,8 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     /**
      * 從陣列創建 JwtPayload 物件.
+     *
+     * @param array<string, mixed> $payload
      */
     private function createJwtPayloadFromArray(array $payload): JwtPayload
     {

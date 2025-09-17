@@ -71,7 +71,7 @@ final class StatisticsCalculationService
                     $currentSnapshot->getPeriod(),
                 ),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('計算成長率失敗', [
                 'error' => $e->getMessage(),
                 'previous_period' => $previousSnapshot->getPeriod()->type->value,
@@ -392,7 +392,7 @@ final class StatisticsCalculationService
             $growth = (($currentUsers - $previousUsers) / $previousUsers) * 100;
 
             return round($growth, 2);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('計算使用者成長率失敗', [
                 'error' => $e->getMessage(),
                 'previous_period' => $previousPeriod->type->value,

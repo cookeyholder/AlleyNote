@@ -117,7 +117,7 @@ final class RefreshTokenService
      * 取得使用者的 token 統計資訊.
      *
      * @param int $userId 使用者 ID
-     * @return array 統計資訊
+     * @return array<string, mixed> 統計資訊
      */
     public function getUserTokenStats(int $userId): array
     {

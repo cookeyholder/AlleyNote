@@ -7,7 +7,6 @@ namespace App\Domains\Post\DTOs;
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
-use App\Shared\Exceptions\ValidationException;
 use DateTime;
 
 /**
@@ -32,11 +31,11 @@ class CreatePostDTO extends BaseDTO
     public readonly ?string $publishDate;
 
     /**
-     * 建構函數.
-     * @param ValidatorInterface $validator 驗證器實例
-     * @throws ValidationException 當驗證失敗時
+     * 建構子。
+     *
+     * @param array<string, mixed> $data
      */
-    public function __construct(ValidatorInterface $validator, array $data)
+    public function __construct(array $data, ValidatorInterface $validator)
     {
         parent::__construct($validator);
 

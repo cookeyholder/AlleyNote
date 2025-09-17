@@ -276,6 +276,11 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         ]);
     }
 
+    /**
+     * 取得密碼政策。
+     *
+     * @return array<string, mixed>
+     */
     public function getPasswordPolicy(): array
     {
         return [

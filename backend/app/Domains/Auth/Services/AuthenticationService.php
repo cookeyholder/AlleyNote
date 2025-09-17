@@ -263,6 +263,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
     /**
      * 從 access token 取得使用者資訊.
+     *
+     * @return array<string, mixed>|null
      */
     public function getUserFromToken(string $accessToken): ?array
     {

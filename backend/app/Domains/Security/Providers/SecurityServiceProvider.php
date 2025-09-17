@@ -23,6 +23,7 @@ use App\Domains\Security\Services\Headers\SecurityHeaderService;
 use App\Domains\Security\Services\IpService;
 use App\Domains\Security\Services\Secrets\SecretsManager;
 use App\Shared\Contracts\CacheServiceInterface;
+use Exception;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -256,7 +257,7 @@ class SecurityServiceProvider
                     'class' => get_class($service),
                     'memory_usage' => memory_get_usage(true),
                 ];
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $services[$serviceName] = [
                     'status' => 'error',
                     'error' => $e->getMessage(),

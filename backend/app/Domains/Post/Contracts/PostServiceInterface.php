@@ -69,11 +69,11 @@ interface PostServiceInterface
     public function setPinned(int $id, bool $isPinned): bool;
 
     /**
-     * 設定文章標籤.
-     * @param int $id 文章 ID
-     * @throws NotFoundException
+     * 為文章設定標籤。
+     *
+     * @param array<int, int> $tagIds
      */
-    public function setTags(int $id, array $tagIds): bool;
+    public function setTags(int $postId, array $tagIds): bool;
 
     /**
      * 記錄文章觀看.

@@ -72,7 +72,7 @@ final class PostStatisticsService
                     'top_source' => $topSource,
                 ],
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('熱門內容分析失敗', [
                 'period' => $period->type->value,
                 'error' => $e->getMessage(),

@@ -36,9 +36,11 @@ interface PostRepositoryInterface extends RepositoryInterface
     public function getPinnedPosts(int $limit = 5): array;
 
     /**
-     * 依標籤 ID 取得文章列表.
+     * 根據標籤取得文章。
+     *
+     * @return array<int, Post>
      */
-    public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array;
+    public function getPostsByTag(string $tag, int $limit = 10, int $offset = 0): array;
 
     /**
      * 更新文章觀看次數.
@@ -51,7 +53,9 @@ interface PostRepositoryInterface extends RepositoryInterface
     public function setPinned(int $id, bool $isPinned): bool;
 
     /**
-     * 設定文章標籤.
+     * 為文章設定標籤。
+     *
+     * @param array<int, int> $tagIds
      */
-    public function setTags(int $id, /** @var array<string, mixed> */ array $tagIds): bool;
+    public function setTags(int $postId, array $tagIds): bool;
 }

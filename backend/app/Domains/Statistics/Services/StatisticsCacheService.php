@@ -78,7 +78,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $cached;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取讀取失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -113,7 +113,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取設定失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -136,7 +136,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取刪除失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -152,7 +152,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             $normalizedKey = $this->normalizeKey($key);
 
             return $this->cacheManager->has($normalizedKey);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取檢查失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -169,7 +169,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             $finalTtl = $ttl ?? $this->getTtlForKey($key);
 
             return $this->cacheManager->remember($normalizedKey, $callback, $finalTtl);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取記憶失敗', [
                 'key' => $key,
                 'error' => $e->getMessage(),
@@ -196,7 +196,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             ]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('按標籤清除快取失敗', [
                 'tags' => $tags,
                 'error' => $e->getMessage(),
@@ -236,7 +236,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                     'key' => $key,
                     'duration' => $itemDuration,
                 ]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $itemDuration = microtime(true) - $itemStartTime;
                 $results[$key] = [
                     'success' => false,
@@ -356,7 +356,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             $this->logger->info('清除所有統計快取', ['success' => $result]);
 
             return $result;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('清除所有統計快取失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -377,7 +377,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
                 'tag_config' => self::CACHE_TAGS,
                 'health_status' => $this->cacheManager->getHealthStatus(),
             ];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('取得快取統計資料失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -399,7 +399,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取健康狀態檢查失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -422,7 +422,7 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
 
             return ['success' => true, 'message' => 'cleanup completed'];
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->logger->error('快取清理失敗', [
                 'error' => $e->getMessage(),
             ]);

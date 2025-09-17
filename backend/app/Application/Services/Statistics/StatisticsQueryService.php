@@ -134,7 +134,7 @@ final class StatisticsQueryService
                     'source_type' => $sourceType?->value,
                 ],
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('查詢統計清單失敗', [
                 'start_date' => $startDate?->format('Y-m-d H:i:s'),
                 'end_date' => $endDate?->format('Y-m-d H:i:s'),
@@ -174,7 +174,7 @@ final class StatisticsQueryService
                 'id' => $statistics->getId()->toString(),
                 'data' => $statistics->toArray(),
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('查詢統計詳情失敗', [
                 'id' => $id,
                 'error' => $e->getMessage(),
@@ -244,7 +244,7 @@ final class StatisticsQueryService
                     'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('查詢文章統計失敗', [
                 'post_id' => $postId,
                 'error' => $e->getMessage(),
@@ -312,7 +312,7 @@ final class StatisticsQueryService
                     'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('查詢使用者統計失敗', [
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
@@ -372,7 +372,7 @@ final class StatisticsQueryService
                     'end_date' => $endDate?->format('Y-m-d H:i:s'),
                 ],
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('查詢系統統計失敗', [
                 'metric_type' => $metricType,
                 'error' => $e->getMessage(),
@@ -443,7 +443,7 @@ final class StatisticsQueryService
                     'period_type' => $periodType->value,
                 ],
             ];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('查詢統計趨勢失敗', [
                 'start_date' => $startDate->format('Y-m-d H:i:s'),
                 'end_date' => $endDate->format('Y-m-d H:i:s'),

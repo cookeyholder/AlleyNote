@@ -7,6 +7,7 @@ namespace App\Domains\Statistics\Console;
 use App\Domains\Statistics\Commands\StatisticsCalculationCommand;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * 統計計算控制台介面。
@@ -41,7 +42,7 @@ readonly class StatisticsCalculationConsole
                 'help' => $this->handleHelpCommand(),
                 default => $this->handleInvalidCommand(is_string($options['command'] ?? null) ? $options['command'] : 'unknown'),
             };
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('統計計算控制台執行失敗', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

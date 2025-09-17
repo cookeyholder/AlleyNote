@@ -96,7 +96,7 @@ final class StatisticsApplicationService
             $this->logger->info('系統統計摘要已生成', ['summary' => $summary]);
 
             return $summary;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('刷新統計資料失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -166,7 +166,7 @@ final class StatisticsApplicationService
             ]);
 
             return $snapshot;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('建立統計快照失敗', [
                 'period' => $period->getDisplayString(),
                 'error' => $e->getMessage(),
@@ -264,7 +264,7 @@ final class StatisticsApplicationService
             ]);
 
             return $overview;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('計算統計概覽失敗', [
                 'period' => $period->getDisplayString(),
                 'error' => $e->getMessage(),
@@ -314,7 +314,7 @@ final class StatisticsApplicationService
             ]);
 
             return $analysis;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('分析熱門內容失敗', [
                 'period' => $period->getDisplayString(),
                 'error' => $e->getMessage(),
@@ -405,7 +405,7 @@ final class StatisticsApplicationService
             ]);
 
             return $report;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('產生統計報告失敗', [
                 'period' => $period->getDisplayString(),
                 'error' => $e->getMessage(),
@@ -438,7 +438,7 @@ final class StatisticsApplicationService
 
                 $this->logger->info('清除所有統計快取');
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('清除統計快取失敗', [
                 'period' => $period?->getDisplayString(),
                 'error' => $e->getMessage(),
@@ -489,7 +489,7 @@ final class StatisticsApplicationService
             }
 
             return $status;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('檢查健康狀態失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -618,7 +618,7 @@ final class StatisticsApplicationService
                 'current_week' => $weekPeriod->toString(),
                 'timestamp' => date('c'),
             ]);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('刷新統計資料失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -728,7 +728,7 @@ final class StatisticsApplicationService
             }
 
             return ['status' => 'error', 'message' => 'Cache read/write test failed'];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('快取健康檢查失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -752,7 +752,7 @@ final class StatisticsApplicationService
             $this->statisticsRepository->findByPeriod($testPeriod);
 
             return ['status' => 'ok', 'message' => 'Database is accessible'];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('資料庫健康檢查失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -776,7 +776,7 @@ final class StatisticsApplicationService
             $this->calculationService->calculateTrends($testData);
 
             return ['status' => 'ok', 'message' => 'Calculation service is working'];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->error('計算服務健康檢查失敗', [
                 'error' => $e->getMessage(),
             ]);

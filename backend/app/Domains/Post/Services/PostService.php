@@ -71,7 +71,7 @@ class PostService implements PostServiceInterface
     {
         try {
             return $this->repository->safeDelete($id);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -89,6 +89,8 @@ class PostService implements PostServiceInterface
     /**
      * 取得文章列表.
      * @param int $page 頁碼
+     * @param array<string, mixed> $filters
+     * @return array{items: array, total: int, page: int, per_page: int, last_page: int}
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
@@ -117,7 +119,7 @@ class PostService implements PostServiceInterface
     {
         try {
             return $this->repository->safeSetPinned($id, $isPinned);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw $e;
         }
     }
@@ -125,6 +127,7 @@ class PostService implements PostServiceInterface
     /**
      * 設定文章標籤.
      * @param int $id 文章 ID
+     * @param array<int, int> $tagIds
      */
     public function setTags(int $id, array $tagIds): bool
     {

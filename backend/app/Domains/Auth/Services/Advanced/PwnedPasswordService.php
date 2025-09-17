@@ -6,18 +6,14 @@ namespace App\Domains\Auth\Services\Advanced;
 
 use Exception;
 use GuzzleHttp\Client;
+use Throwable;
 
 /**
  * Pwned Password 服務。
  *
  * 整合 Have I Been Pwned API 來檢查密碼是否曾在資料外洩中出現
  */
-class PwnedP    /**
-     * 取得服務統計資料。
-     *
-     * @return array<string, mixed>
-     */
-    public function getServiceStats(): arrayordService
+class PwnedPasswordService
 {
     private const HIBP_API_URL = 'https://api.pwnedpasswords.com/range/';
 
@@ -49,7 +45,7 @@ class PwnedP    /**
             $count = $this->getPasswordCount($password);
 
             return $count > 0;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             error_log('密碼檢查失敗: ' . $e->getMessage());
 
             return false;
@@ -79,6 +75,8 @@ class PwnedP    /**
 
     /**
      * 檢查密碼強度並提供建議。
+     *
+     * @return array<string, mixed>
      */
     public function checkPasswordSecurity(string $password): array
     {
@@ -98,7 +96,7 @@ class PwnedP    /**
                 $result['risk_level'] = $this->calculateRiskLevel($count);
                 $result['recommendations'] = $this->generateRecommendations($count);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             error_log('密碼安全檢查失敗: ' . $e->getMessage());
             $result['risk_level'] = 'unknown';
             $result['recommendations'] = ['無法檢查密碼安全性，請稍後再試'];
@@ -120,7 +118,7 @@ class PwnedP    /**
             }
 
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('Unexpected error during HIBP API call: ' . $e->getMessage());
 
             return null;
@@ -174,10 +172,10 @@ class PwnedP    /**
         return 'low';
     }
 
-        /**
-     * 根據外洩次數產生建議。
+    /**
+     * 生成安全建議。
      *
-     * @return array<string>
+     * @return array<int, string>
      */
     private function generateRecommendations(int $count): array
     {
@@ -207,7 +205,7 @@ class PwnedP    /**
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
 
             return $response->getStatusCode() === 200;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             error_log('服務可用性檢查失敗: ' . $e->getMessage());
 
             return false;
@@ -216,6 +214,8 @@ class PwnedP    /**
 
     /**
      * 取得服務統計資訊。
+     *
+     * @return array<string, mixed>
      */
     public function getServiceStats(): array
     {
