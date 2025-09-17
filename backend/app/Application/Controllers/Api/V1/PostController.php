@@ -172,7 +172,8 @@ class PostController extends BaseController
                 throw new RequestValidationException('Invalid request body');
             }
 
-            $dto = new CreatePostDTO($this->validator, $data);
+            /** @var array<string, mixed> $data */
+            $dto = new CreatePostDTO($data, $this->validator);
             $post = $this->postService->createPost($dto);
 
             // 記錄活動
@@ -265,7 +266,7 @@ class PostController extends BaseController
 
             /** @var array<string, mixed> $typedData */
             $typedData = $data;
-            $dto = new UpdatePostDTO($this->validator, $typedData);
+            $dto = new UpdatePostDTO($typedData, $this->validator);
             $post = $this->postService->updatePost((int) $id, $dto);
 
             // 記錄活動
