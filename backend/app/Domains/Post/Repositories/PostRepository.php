@@ -224,7 +224,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($result === false) {
+            if ($result === false || !is_array($result)) {
                 return null;
             }
 
@@ -232,7 +232,7 @@ class PostRepository implements PostRepositoryInterface
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
-        return $data ? Post::fromArray($data) : null;
+        return $data && is_array($data) ? Post::fromArray($data) : null;
     }
 
     /**
@@ -262,7 +262,7 @@ class PostRepository implements PostRepositoryInterface
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($result === false) {
+            if ($result === false || !is_array($result)) {
                 return null;
             }
 
@@ -270,7 +270,7 @@ class PostRepository implements PostRepositoryInterface
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
-        return $data ? Post::fromArray($data) : null;
+        return $data && is_array($data) ? Post::fromArray($data) : null;
     }
 
     public function findBySeqNumber(int $seqNumber): ?Post

@@ -9,15 +9,21 @@ use App\Shared\Validation\ValidationResult;
 
 class PostValidationException extends ValidationException
 {
+    /**
+     * @param array<string, string|array<string>> $errors
+     */
     public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '貼文資料驗證失敗';
         }
 
+        /** @var array<string, array<string>> $formattedErrors */
         $formattedErrors = [];
         foreach ($errors as $field => $error) {
-            $formattedErrors[$field] = is_array($error) ? $error : [$error];
+            if (is_string($field)) {
+                $formattedErrors[$field] = is_array($error) ? $error : [$error];
+            }
         }
         $validationResult = ValidationResult::failure($formattedErrors, []);
         parent::__construct($validationResult, $message);
@@ -58,6 +64,9 @@ class PostValidationException extends ValidationException
         return new self('無效的發布日期', ['publish_date' => ['發布日期格式不正確或為過去時間']]);
     }
 
+    /**
+     * @param array<string, string|array<string>> $errors
+     */
     public static function multipleErrors(array $errors): self
     {
         $message = '貼文資料包含多個錯誤';
