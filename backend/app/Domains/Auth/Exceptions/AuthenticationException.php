@@ -140,7 +140,7 @@ class AuthenticationException extends JwtException
      */
     public function getReason(): string
     {
-        return (string) ($this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS);
+        return $this->reason;
     }
 
     /**
@@ -158,9 +158,15 @@ class AuthenticationException extends JwtException
      */
     public function getUserId(): ?int
     {
-        $userId = $this->context['user_id'] ?? null;
+        return $this->userId;
+    }
 
-        return $userId !== null ? (int) $userId : null;
+    /**
+     * 取得 Token 類型.
+     */
+    public function getTokenType(): string
+    {
+        return $this->tokenType;
     }
 
     /**

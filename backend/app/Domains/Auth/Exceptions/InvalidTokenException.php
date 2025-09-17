@@ -135,7 +135,7 @@ class InvalidTokenException extends JwtException
      */
     public function getReason(): string
     {
-        return (string) ($this->context['reason'] ?? self::REASON_DECODE_FAILED);
+        return $this->reason;
     }
 
     /**
@@ -143,7 +143,15 @@ class InvalidTokenException extends JwtException
      */
     public function getTokenType(): string
     {
-        return (string) ($this->context['token_type'] ?? self::ACCESS_TOKEN);
+        return $this->tokenType;
+    }
+
+    /**
+     * 取得 Token ID（如果有）.
+     */
+    public function getJti(): ?string
+    {
+        return $this->jti;
     }
 
     /**

@@ -86,6 +86,30 @@ class JwtConfigurationException extends JwtException
     }
 
     /**
+     * 取得配置鍵名.
+     */
+    public function getConfigKey(): string
+    {
+        return $this->configKey;
+    }
+
+    /**
+     * 取得期望類型.
+     */
+    public function getExpectedType(): string
+    {
+        return $this->expectedType;
+    }
+
+    /**
+     * 取得實際值.
+     */
+    public function getActualValue(): mixed
+    {
+        return $this->actualValue;
+    }
+
+    /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string

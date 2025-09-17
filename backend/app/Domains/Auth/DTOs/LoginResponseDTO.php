@@ -19,7 +19,7 @@ final readonly class LoginResponseDTO
         public string $userEmail,
         public int $expiresAt,
         public ?string $sessionId = null,
-        /** @var array<string, mixed>|null */
+        /** @var array<string>|null */
         public ?array $permissions = null,
     ) {}
 

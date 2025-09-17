@@ -124,8 +124,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
             );
         } catch (Throwable $e) {
             throw new TokenExpiredException(
-                'Refresh token has expired',
+                'refresh_token',
                 null,
+                null,
+                'Refresh token has expired',
                 $e,
             );
         }
