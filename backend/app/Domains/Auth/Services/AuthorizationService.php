@@ -189,8 +189,16 @@ class AuthorizationService implements AuthorizationServiceInterface
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            /** @var array<string, mixed> $result */
-            return $result;
+            // 轉換為 string 陣列
+            /** @var array<string> $roles */
+            $roles = [];
+            foreach ($result as $row) {
+                if (is_array($row) && isset($row['name'])) {
+                    $roles[] = (string) $row['name'];
+                }
+            }
+            
+            return $roles;
         } catch (Throwable $e) {
             error_log('Failed to get user roles: ' . $e->getMessage());
 
@@ -225,10 +233,11 @@ class AuthorizationService implements AuthorizationServiceInterface
             // 合併並去重
             $permissions = array_unique(array_merge($rolePermissions, $directPermissions));
 
-            /** @var array<string, mixed> $result */
+            // 轉換為 string 陣列
+            /** @var array<string> $result */
             $result = [];
             foreach ($permissions as $permission) {
-                $result[(string) $permission] = $permission;
+                $result[] = (string) $permission;
             }
 
             return $result;

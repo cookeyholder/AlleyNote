@@ -355,7 +355,7 @@ class PostRepository implements PostRepositoryInterface
      * @return int 新建文章的 ID
      * @throws PDOException 當標籤不存在時拋出異常
      */
-    public function create(array $data, array $tagIds = []): int
+    public function create(array $data, array $tagIds = []): Post
     {
         return $this->executeInTransaction(function () use ($data, $tagIds) {
             // 資料已在 DTO 層級完成驗證，這裡直接處理
@@ -416,9 +416,9 @@ class PostRepository implements PostRepositoryInterface
      * 更新文章.
      * @param int $id 文章 ID
      * @param array<string, mixed> $data 更新資料
-     * @return bool 更新成功返回 true
+     * @return Post 更新後的文章物件
      */
-    public function update(int $id, array $data): bool
+    public function update(int $id, array $data): Post
     {
         // 檢查文章是否存在
         $post = $this->find($id);

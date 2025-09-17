@@ -542,6 +542,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
     /**
      * 取得活動統計資料（依類型分組）.
      */
+    /**
+     * @return array<string, mixed>
+     */
     public function getActivityStatistics(
         DateTimeInterface $startTime,
         DateTimeInterface $endTime,
@@ -554,8 +557,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ' => start_time' => $startTime->format('Y-m-d H => i => s'),
-            ' => end_time' => $endTime->format('Y-m-d H:i:s'),
+            'start_time' => $startTime->format('Y-m-d H:i:s'),
+            'end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -563,6 +566,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
     /**
      * 取得熱門活動類型.
+     * @return array<int, array<string, mixed>>
      */
     public function getPopularActivityTypes(int $limit = 10): array
     {
