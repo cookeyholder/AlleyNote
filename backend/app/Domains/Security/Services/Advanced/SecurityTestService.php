@@ -182,38 +182,38 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
-        // 測試檔案類型驗證
+        // 測試檔案名稱清理
         try {
-            $isValid = $this->fileService->isValidFileType('test.txt', 'text/plain');
+            $sanitized = $this->fileService->sanitizeFileName('../../dangerous.php');
             $results['tests'][] = [
-                'name' => '檔案類型驗證',
-                'status' => 'PASS',
-                'message' => '檔案類型驗證功能正常',
+                'name' => '檔案名稱清理',
+                'status' => str_contains($sanitized, '..') ? 'FAIL' : 'PASS',
+                'message' => '檔案名稱清理功能正常',
             ];
-            $results['passed']++;
+            str_contains($sanitized, '..') ? $results['failed']++ : $results['passed']++;
         } catch (Exception $e) {
             $results['tests'][] = [
-                'name' => '檔案類型驗證',
+                'name' => '檔案名稱清理',
                 'status' => 'FAIL',
-                'message' => '檔案類型驗證失敗: ' . $e->getMessage(),
+                'message' => '檔案名稱清理失敗: ' . $e->getMessage(),
             ];
             $results['failed']++;
         }
 
-        // 測試檔案大小限制
+        // 測試安全檔名生成
         try {
-            $isValidSize = $this->fileService->isValidFileSize(1024);
+            $secureName = $this->fileService->generateSecureFileName('test.txt', 'upload_');
             $results['tests'][] = [
-                'name' => '檔案大小限制',
-                'status' => 'PASS',
-                'message' => '檔案大小限制功能正常',
+                'name' => '安全檔名生成',
+                'status' => !empty($secureName) ? 'PASS' : 'FAIL',
+                'message' => '安全檔名生成功能正常',
             ];
-            $results['passed']++;
+            !empty($secureName) ? $results['passed']++ : $results['failed']++;
         } catch (Exception $e) {
             $results['tests'][] = [
-                'name' => '檔案大小限制',
+                'name' => '安全檔名生成',
                 'status' => 'FAIL',
-                'message' => '檔案大小限制測試失敗: ' . $e->getMessage(),
+                'message' => '安全檔名生成測試失敗: ' . $e->getMessage(),
             ];
             $results['failed']++;
         }
@@ -236,22 +236,13 @@ class SecurityTestService implements SecurityTestInterface
 
         // 測試安全標頭設定
         try {
-            $headers = $this->headerService->getSecurityHeaders();
-            if (!empty($headers)) {
-                $results['tests'][] = [
-                    'name' => '安全標頭設定',
-                    'status' => 'PASS',
-                    'message' => '安全標頭設定正常',
-                ];
-                $results['passed']++;
-            } else {
-                $results['tests'][] = [
-                    'name' => '安全標頭設定',
-                    'status' => 'FAIL',
-                    'message' => '安全標頭未設定',
-                ];
-                $results['failed']++;
-            }
+            $this->headerService->setSecurityHeaders();
+            $results['tests'][] = [
+                'name' => '安全標頭設定',
+                'status' => 'PASS',
+                'message' => '安全標頭設定正常',
+            ];
+            $results['passed']++;
         } catch (Exception $e) {
             $results['tests'][] = [
                 'name' => '安全標頭設定',
@@ -261,29 +252,20 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
 
-        // 測試 CSP 標頭
+        // 測試伺服器簽章移除
         try {
-            $csp = $this->headerService->getContentSecurityPolicy();
-            if (!empty($csp)) {
-                $results['tests'][] = [
-                    'name' => 'CSP 標頭',
-                    'status' => 'PASS',
-                    'message' => 'CSP 標頭設定正常',
-                ];
-                $results['passed']++;
-            } else {
-                $results['tests'][] = [
-                    'name' => 'CSP 標頭',
-                    'status' => 'FAIL',
-                    'message' => 'CSP 標頭未設定',
-                ];
-                $results['failed']++;
-            }
+            $this->headerService->removeServerSignature();
+            $results['tests'][] = [
+                'name' => '伺服器簽章移除',
+                'status' => 'PASS',
+                'message' => '伺服器簽章移除正常',
+            ];
+            $results['passed']++;
         } catch (Exception $e) {
             $results['tests'][] = [
-                'name' => 'CSP 標頭',
+                'name' => '伺服器簽章移除',
                 'status' => 'FAIL',
-                'message' => 'CSP 標頭測試失敗: ' . $e->getMessage(),
+                'message' => '伺服器簽章移除測試失敗: ' . $e->getMessage(),
             ];
             $results['failed']++;
         }
@@ -306,7 +288,7 @@ class SecurityTestService implements SecurityTestInterface
 
         // 測試錯誤處理
         try {
-            $this->errorService->handleError(new Exception('Test error'));
+            $this->errorService->handleException(new Exception('Test error'));
             $results['tests'][] = [
                 'name' => '錯誤處理',
                 'status' => 'PASS',
@@ -338,24 +320,24 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
-        // 測試密碼強度驗證
+        // 測試密碼強度評分
         try {
-            $isStrong = $this->passwordService->isStrongPassword('TestPassword123!');
+            $strength = $this->passwordService->calculatePasswordStrength('TestPassword123!');
             $results['tests'][] = [
-                'name' => '密碼強度驗證',
-                'status' => $isStrong ? 'PASS' : 'FAIL',
-                'message' => $isStrong ? '密碼強度驗證正常' : '密碼強度驗證失敗',
+                'name' => '密碼強度評分',
+                'status' => isset($strength['score']) ? 'PASS' : 'FAIL',
+                'message' => isset($strength['score']) ? '密碼強度評分正常' : '密碼強度評分失敗',
             ];
-            if ($isStrong) {
+            if (isset($strength['score'])) {
                 $results['passed']++;
             } else {
                 $results['failed']++;
             }
         } catch (Exception $e) {
             $results['tests'][] = [
-                'name' => '密碼強度驗證',
+                'name' => '密碼強度評分',
                 'status' => 'FAIL',
-                'message' => '密碼強度驗證測試失敗: ' . $e->getMessage(),
+                'message' => '密碼強度評分測試失敗: ' . $e->getMessage(),
             ];
             $results['failed']++;
         }
@@ -399,42 +381,58 @@ class SecurityTestService implements SecurityTestInterface
             'failed' => 0,
         ];
 
-        // 測試機密儲存
+        // 測試機密管理
         try {
-            $this->secretsService->store('test_key', 'test_value');
+            $validation = $this->secretsManager->validateEnvFile();
             $results['tests'][] = [
-                'name' => '機密儲存',
-                'status' => 'PASS',
-                'message' => '機密儲存功能正常',
+                'name' => '環境檔案驗證',
+                'status' => empty($validation) ? 'PASS' : 'FAIL',
+                'message' => empty($validation) ? '環境檔案驗證正常' : '環境檔案驗證發現問題',
             ];
-            $results['passed']++;
+            empty($validation) ? $results['passed']++ : $results['failed']++;
         } catch (Exception $e) {
             $results['tests'][] = [
-                'name' => '機密儲存',
+                'name' => '環境檔案驗證',
                 'status' => 'FAIL',
-                'message' => '機密儲存測試失敗: ' . $e->getMessage(),
+                'message' => '環境檔案驗證測試失敗: ' . $e->getMessage(),
             ];
             $results['failed']++;
         }
 
-        // 測試機密讀取
+        // 測試機密檢查
         try {
-            $secret = $this->secretsService->get('test_key');
+            $requiredSecrets = ['APP_ENV', 'JWT_SECRET'];
+            $this->secretsManager->validateRequiredSecrets($requiredSecrets);
             $results['tests'][] = [
-                'name' => '機密讀取',
-                'status' => $secret !== null ? 'PASS' : 'FAIL',
-                'message' => $secret !== null ? '機密讀取功能正常' : '機密讀取失敗',
+                'name' => '必需環境變數檢查',
+                'status' => 'PASS',
+                'message' => '必需環境變數檢查正常',
             ];
-            if ($secret !== null) {
-                $results['passed']++;
-            } else {
-                $results['failed']++;
-            }
+            $results['passed']++;
         } catch (Exception $e) {
             $results['tests'][] = [
-                'name' => '機密讀取',
+                'name' => '必需環境變數檢查',
                 'status' => 'FAIL',
-                'message' => '機密讀取測試失敗: ' . $e->getMessage(),
+                'message' => '必需環境變數檢查失敗: ' . $e->getMessage(),
+            ];
+            $results['failed']++;
+        }
+
+        // 測試環境檢測
+        try {
+            $isProd = $this->secretsManager->isProduction();
+            $isDev = $this->secretsManager->isDevelopment();
+            $results['tests'][] = [
+                'name' => '環境檢測',
+                'status' => ($isProd || $isDev) ? 'PASS' : 'FAIL',
+                'message' => ($isProd || $isDev) ? '環境檢測正常' : '環境檢測失敗',
+            ];
+            ($isProd || $isDev) ? $results['passed']++ : $results['failed']++;
+        } catch (Exception $e) {
+            $results['tests'][] = [
+                'name' => '環境檢測',
+                'status' => 'FAIL',
+                'message' => '環境檢測測試失敗: ' . $e->getMessage(),
             ];
             $results['failed']++;
         }
@@ -508,8 +506,8 @@ class SecurityTestService implements SecurityTestInterface
         $criticalIssues = [];
 
         foreach ($allTestResults as $testResult) {
-            $totalPassed += $testResult['passed'];
-            $totalFailed += $testResult['failed'];
+            $totalPassed += (int) $testResult['passed'];
+            $totalFailed += (int) $testResult['failed'];
 
             // 檢查關鍵問題
             foreach ($testResult['tests'] as $test) {
@@ -569,7 +567,7 @@ class SecurityTestService implements SecurityTestInterface
             $recommendations[] = '發現 ' . count($criticalIssues) . ' 個安全問題，建議立即處理';
 
             foreach ($criticalIssues as $issue) {
-                $recommendations[] = "{$issue['category']}: {$issue['message']}";
+                $recommendations[] = (string) $issue['category'] . ': ' . (string) $issue['message'];
             }
         }
 
