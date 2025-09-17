@@ -23,6 +23,7 @@ class ContentModerationService
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
+        /** @var array<string, mixed> $config */
         array $config = [],
     ) {
         $this->xssProtection = $xssProtection;

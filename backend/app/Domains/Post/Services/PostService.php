@@ -90,7 +90,7 @@ class PostService implements PostServiceInterface
      * 取得文章列表.
      * @param int $page 頁碼
      * @param array<string, mixed> $filters
-     * @return array{items: array, total: int, page: int, per_page: int, last_page: int}
+     * @return array{items: array<Post>, total: int, page: int, per_page: int, last_page: int}
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {

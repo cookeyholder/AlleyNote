@@ -137,6 +137,9 @@ class Post implements JsonSerializable
         return $this->updatedAt;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

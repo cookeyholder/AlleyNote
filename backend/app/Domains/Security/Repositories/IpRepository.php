@@ -75,6 +75,9 @@ class IpRepository implements IpRepositoryInterface
         return ($ip & $mask) === $subnet;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     private function createIpListFromData(array $data): IpList
     {
         // 確保資料欄位型別正確
@@ -90,6 +93,9 @@ class IpRepository implements IpRepositoryInterface
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public function create(array $data): IpList
     {
         $this->validateIpAddress($data['ip_address']);
