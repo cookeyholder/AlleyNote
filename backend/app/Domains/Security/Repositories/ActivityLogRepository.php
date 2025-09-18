@@ -142,9 +142,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                ' => uuid' => $entity->getUuid(),
-                ' => user_id' => $entity->getUserId(),
-                ' => session_id' => $entity->getSessionId(),
+                ':uuid' => $entity->getUuid(),
+                ':user_id' => $entity->getUserId(),
+                ':session_id' => $entity->getSessionId(),
                 ':action_type' => $entity->getActionType()->value,
                 ':action_category' => $entity->getActionCategory()->value,
                 ':target_type' => $entity->getTargetType(),
@@ -200,10 +200,6 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $count = 0;
 
             foreach ($dtos as $dto) {
-                if (!$dto instanceof CreateActivityLogDTO) {
-                    throw new InvalidArgumentException('All items must be CreateActivityLogDTO instances');
-                }
-
                 $entity = ActivityLog::fromDTO(
                     actionType: $dto->getActionType(),
                     userId: $dto->getUserId(),
@@ -332,8 +328,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         ?ActivityCategory $category = null,
         ?ActivityType $actionType = null,
     ): array {
-        $conditions = ['user_id =  => user_id'];
-        $params = [' => user_id' => $userId];
+        $conditions = ['user_id = :user_id'];
+        $params = [':user_id' => $userId];
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
@@ -471,7 +467,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($userId !== null) {
             $conditions[] = 'user_id = :user_id';
-            $params[' => user_id'] = $userId;
+            $params[':user_id'] = $userId;
         }
 
         if ($actionType !== null) {
@@ -531,7 +527,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ' => user_id' => $userId,
+            ':user_id' => $userId,
             ' => start_time' => $startTime->format('Y-m-d H => i => s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
@@ -686,7 +682,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($userId !== null) {
             $conditions[] = 'user_id = :user_id';
-            $params[' => user_id'] = $userId;
+            $params[':user_id'] = $userId;
         }
 
         if ($category !== null) {
@@ -762,7 +758,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($userId !== null) {
             $conditions[] = 'user_id = :user_id';
-            $params[' => user_id'] = $userId;
+            $params[':user_id'] = $userId;
         }
 
         if ($category !== null) {
