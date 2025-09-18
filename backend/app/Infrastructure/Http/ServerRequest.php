@@ -17,7 +17,6 @@ class ServerRequest implements ServerRequestInterface
     private UriInterface $uri;
 
     /** @var array<string, array<string>> */
-    /** @var array<string, array<string>> */
     private array $headers = [];
 
     /** @var array<string, mixed> */
@@ -176,7 +175,7 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @return array<string, mixed>
      */
-    public function getParsedBody()
+    public function getParsedBody(): array|object|null
     {
         return $this->parsedBody;
     }
@@ -200,7 +199,12 @@ class ServerRequest implements ServerRequestInterface
         return $this->attributes;
     }
 
-    public function getAttribute($name, mixed $default = null)
+    /**
+     * @param string $name
+     * @param mixed $default
+     * @return mixed
+     */
+    public function getAttribute($name, mixed $default = null): mixed
     {
         return $this->attributes[$name] ?? $default;
     }
@@ -289,7 +293,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getBody()
+    public function getBody(): mixed
     {
         return $this->body;
     }
