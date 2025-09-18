@@ -507,13 +507,13 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $userId,
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
             return [
-                'total' => (int) $result['total'],
-                'active' => (int) $result['active'],
-                'expired' => (int) $result['expired'],
-                'revoked' => (int) $result['revoked'],
+                'total' => (int) ($result['total'] ?? 0),
+                'active' => (int) ($result['active'] ?? 0),
+                'expired' => (int) ($result['expired'] ?? 0),
+                'revoked' => (int) ($result['revoked'] ?? 0),
             ];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
@@ -593,22 +593,39 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $this->pdo->beginTransaction();
 
             $successCount = 0;
+            /**
+             * @var array<int, array<string, mixed>> $tokens
+             */
             foreach ($tokens as $token) {
+                $jti = (string) ($token['jti'] ?? '');
+                $userId = (int) ($token['user_id'] ?? 0);
+                $tokenHash = (string) ($token['token_hash'] ?? '');
+                $expiresAtStr = (string) ($token['expires_at'] ?? '1970-01-01 00:00:00');
+
+                $deviceId = (string) ($token['device_id'] ?? '');
+                $deviceName = (string) ($token['device_name'] ?? '');
+                $deviceType = (string) ($token['device_type'] ?? '');
+                $userAgent = (string) ($token['user_agent'] ?? '');
+                $ipAddress = (string) ($token['ip_address'] ?? '');
+                $platform = isset($token['platform']) ? (string) $token['platform'] : null;
+                $browser = isset($token['browser']) ? (string) $token['browser'] : null;
+
+                $deviceInfo = new DeviceInfo(
+                    $deviceId,
+                    $deviceName,
+                    $userAgent,
+                    $ipAddress,
+                    $platform,
+                    $browser,
+                );
+
                 $result = $this->create(
-                    $token['jti'],
-                    $token['user_id'],
-                    $token['token_hash'],
-                    new DateTime($token['expires_at']),
-                    new DeviceInfo(
-                        $token['device_id'],
-                        $token['device_name'] ?? '',
-                        $token['device_type'] ?? '',
-                        $token['user_agent'] ?? '',
-                        $token['ip_address'] ?? '',
-                        $token['platform'] ?? '',
-                        $token['browser'] ?? '',
-                    ),
-                    $token['parent_token_jti'] ?? null,
+                    $jti,
+                    $userId,
+                    $tokenHash,
+                    new DateTime($expiresAtStr),
+                    $deviceInfo,
+                    isset($token['parent_token_jti']) ? (string) $token['parent_token_jti'] : null,
                 );
 
                 if ($result) {
@@ -718,15 +735,15 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 RefreshToken::STATUS_REVOKED,
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
             return [
-                'total_tokens' => (int) $result['total_tokens'],
-                'active_tokens' => (int) $result['active_tokens'],
-                'expired_tokens' => (int) $result['expired_tokens'],
-                'revoked_tokens' => (int) $result['revoked_tokens'],
-                'unique_users' => (int) $result['unique_users'],
-                'unique_devices' => (int) $result['unique_devices'],
+                'total_tokens' => (int) ($result['total_tokens'] ?? 0),
+                'active_tokens' => (int) ($result['active_tokens'] ?? 0),
+                'expired_tokens' => (int) ($result['expired_tokens'] ?? 0),
+                'revoked_tokens' => (int) ($result['revoked_tokens'] ?? 0),
+                'unique_users' => (int) ($result['unique_users'] ?? 0),
+                'unique_devices' => (int) ($result['unique_devices'] ?? 0),
             ];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
