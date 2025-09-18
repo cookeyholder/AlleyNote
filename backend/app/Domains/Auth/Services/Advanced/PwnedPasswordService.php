@@ -23,8 +23,8 @@ class PwnedPasswordService
 
     private Client $httpClient;
 
-    /** @var array<string, mixed>|null */
-    private ?array $cache = null;
+    /** @var array<string, mixed> */
+    private array $cache = [];
 
     public function __construct()
     {
