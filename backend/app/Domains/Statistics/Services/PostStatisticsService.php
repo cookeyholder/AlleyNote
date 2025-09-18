@@ -9,40 +9,27 @@ use App\Domains\Statistics\Enums\SourceType;
 use App\Domains\Statistics\Exceptions\StatisticsCalculationException;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use Exception;
+use Psr\Log\LoggerInterface;
 
-/**
- * 文章統計服務.
- *
- * 負責文章相關的統計分析業務邏輯，包含：
- * - 文章熱門度分析
- * - 來源分析
- * - 文章表現評估
- * - 內容品質評分
- *
- * 設計原則：
- * - 專注於文章統計的業務邏輯
- * - 不依賴基礎設施層
- * - 提供可測試的分析方法
- * - 遵循單一職責原則
- */
 final class PostStatisticsService
 {
     public function __construct(
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
+        private ?LoggerInterface $logger = null,
     ) {}
 
     /**
      * 分析熱門文章.
-     *
-     * @throws StatisticsCalculationException 當分析失敗時
+     * @return array{posts: list<array<mixed>>, summary: array<string, mixed>}
+     * @throws StatisticsCalculationException
      */
     public function analyzePopularPosts(StatisticsPeriod $period, int $limit = 10): array
     {
         try {
-            $popularPosts = $this->postStatisticsRepository
-                ->getPopularPostsByPeriod($period, $limit);
+            $popularPosts = $this->postStatisticsRepository->getPopularPostsByPeriod($period, $limit);
+            $popularPosts = array_values(array_map(fn($p) => (array) $p, (array) $popularPosts));
 
-            if (empty($popularPosts)) {
+            if (count($popularPosts) === 0) {
                 return [
                     'posts' => [],
                     'summary' => [
@@ -54,10 +41,10 @@ final class PostStatisticsService
                 ];
             }
 
-            $totalViews = array_sum(array_column($popularPosts, 'views'));
-            $averageViews = round($totalViews / count($popularPosts), 2);
+            $totalViews = (int) array_sum(array_column($popularPosts, 'views'));
+            $count = count($popularPosts);
+            $averageViews = round((float) $totalViews / max(1, $count), 2);
 
-            // 分析主要來源
             $sources = array_column($popularPosts, 'source');
             $sourceCounts = array_count_values($sources);
             arsort($sourceCounts);
@@ -66,29 +53,36 @@ final class PostStatisticsService
             return [
                 'posts' => $popularPosts,
                 'summary' => [
-                    'total_posts' => count($popularPosts),
+                    'total_posts' => $count,
                     'total_views' => $totalViews,
                     'average_views' => $averageViews,
                     'top_source' => $topSource,
                 ],
             ];
         } catch (Exception $e) {
-            $this->logger->error('熱門內容分析失敗', [
-                'period' => $period->type->value,
+            $this->logger?->error('熱門內容分析失敗', [
+                'period' => $period->type->value ?? null,
                 'error' => $e->getMessage(),
             ]);
 
-            return ['posts' => [], 'summary' => []];
+            return [
+                'posts' => [],
+                'summary' => [
+                    'total_posts' => 0,
+                    'total_views' => 0,
+                    'average_views' => 0.0,
+                    'top_source' => null,
+                ],
+            ];
         }
     }
 
     /**
-     * 分析文章來源分佈.
+     * @return array{distribution: array<string,int>, insights: array<string, mixed>}
      */
     public function analyzeSourceDistribution(StatisticsPeriod $period): array
     {
-        $sourceData = $this->postStatisticsRepository
-            ->getSourceDistributionByPeriod($period);
+        $sourceData = $this->postStatisticsRepository->getSourceDistributionByPeriod($period);
 
         if (empty($sourceData)) {
             return [
@@ -101,25 +95,23 @@ final class PostStatisticsService
             ];
         }
 
-        // 轉換為簡單的來源 => 數量對應關係
+        /** @var array<string,int> $distribution */
         $distribution = [];
         foreach ($sourceData as $item) {
-            $distribution[$item['source_type']] = $item['post_count'];
+            $key = isset($item['source_type']) ? (string) $item['source_type'] : 'unknown';
+            $distribution[$key] = isset($item['post_count']) ? (int) $item['post_count'] : 0;
         }
 
         $total = array_sum($distribution);
         $sourceCount = count($distribution);
 
-        // 計算多樣性評分（香農熵）
         $diversityScore = $this->calculateShannonEntropy($distribution);
 
-        // 找出主導來源
         arsort($distribution);
         $dominantSource = array_key_first($distribution);
-        $dominantPercentage = $total > 0 ? ($distribution[$dominantSource] / $total) * 100 : 0;
+        $dominantPercentage = $total > 0 ? ($distribution[$dominantSource] / $total) * 100.0 : 0.0;
 
-        // 判斷是否平衡（沒有任何來源超過50%）
-        $isBalanced = $dominantPercentage <= 50;
+        $isBalanced = $dominantPercentage <= 50.0;
 
         return [
             'distribution' => $distribution,
@@ -134,14 +126,19 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算文章品質評分.
+     * @return array{score: float, factors: array<string, float|int>, grade: string}
      */
     public function calculatePostQualityScore(int $postId, StatisticsPeriod $period): array
     {
-        $postStats = $this->postStatisticsRepository
-            ->getPostStatsByPeriod($postId, $period);
+        $postStats = $this->postStatisticsRepository->getPostStatsByPeriod($postId, $period);
 
-        if (empty($postStats)) {
+    $views = (int) $postStats['views'];
+    $comments = (int) $postStats['comments'];
+    $likes = (int) $postStats['likes'];
+    $shares = (int) $postStats['shares'];
+    $source = (string) $postStats['source'];
+
+        if ($views === 0 && $comments === 0 && $likes === 0 && $shares === 0) {
             return [
                 'score' => 0.0,
                 'factors' => [],
@@ -152,30 +149,23 @@ final class PostStatisticsService
         $factors = [];
         $totalScore = 0.0;
 
-        // 觀看次數評分 (30%)
-        $viewsScore = min(30, $postStats['views'] / 100);
+    $viewsScore = min(30.0, ((float) $views / 100.0));
         $factors['views'] = round($viewsScore, 1);
         $totalScore += $viewsScore;
 
-        // 互動率評分 (25%)
-        $engagementRate = $postStats['views'] > 0
-            ? ($postStats['comments'] + $postStats['likes']) / $postStats['views']
-            : 0;
-        $engagementScore = min(25, $engagementRate * 2500);
+        $engagementRate = $views > 0 ? (($comments + $likes) / $views) : 0.0;
+        $engagementScore = min(25.0, $engagementRate * 2500.0);
         $factors['engagement'] = round($engagementScore, 1);
         $totalScore += $engagementScore;
 
-        // 分享數評分 (20%)
-        $shareScore = min(20, $postStats['shares'] / 5);
+    $shareScore = min(20.0, ((float) $shares / 5.0));
         $factors['shares'] = round($shareScore, 1);
         $totalScore += $shareScore;
 
-        // 來源品質評分 (15%)
-        $sourceScore = $this->calculateSourceQualityScore($postStats['source']);
+        $sourceScore = $this->calculateSourceQualityScore($source);
         $factors['source_quality'] = $sourceScore;
         $totalScore += $sourceScore;
 
-        // 持續性評分 (10%)
         $consistencyScore = $this->calculateConsistencyScore($postId, $period);
         $factors['consistency'] = $consistencyScore;
         $totalScore += $consistencyScore;
@@ -191,49 +181,41 @@ final class PostStatisticsService
     }
 
     /**
-     * 分析文章趨勢.
+     * @return array{trending_up: list<array<int|string,mixed>>, trending_down: list<array<int|string,mixed>>, stable: list<array<int|string,mixed>>}
      */
     public function analyzeTrends(StatisticsPeriod $period): array
     {
-        $trendData = $this->postStatisticsRepository
-            ->getPostTrendsByPeriod($period);
+        $trendData = $this->postStatisticsRepository->getPostTrendsByPeriod($period);
+        $trendData = array_values(array_map(fn($t) => (array) $t, (array) $trendData));
 
         $trendingUp = [];
         $trendingDown = [];
         $stable = [];
 
         foreach ($trendData as $post) {
-            // 確保 post 有必要的欄位
-            if (!is_array($post)) {
-                continue;
-            }
+            $post = (array) $post;
+            $viewCount = isset($post['view_count']) && is_numeric($post['view_count']) ? (float) $post['view_count'] : 0.0;
+            $postCount = (int) ($post['post_count'] ?? 0);
 
-            // 計算成長率（這裡簡化為基於 view_count 的成長）
-            $viewCount = $post['view_count'] ?? 0;
-            $postCount = $post['post_count'] ?? 0;
-
-            // 簡單的成長率計算：如果是新文章 (post_count 為 1) 且有瀏覽量，則視為上升趨勢
             $growthRate = 0.0;
             if ($postCount > 0) {
-                $growthRate = ($viewCount / $postCount) - 100; // 假設基準是每篇文章100瀏覽
+                $growthRate = ($viewCount / $postCount) - 100.0;
             }
 
-            // 將計算的成長率添加到陣列中
             $postWithGrowth = $post;
             $postWithGrowth['growth_rate'] = $growthRate;
 
-            if ($growthRate > 10) {
+            if ($growthRate > 10.0) {
                 $trendingUp[] = $postWithGrowth;
-            } elseif ($growthRate < -10) {
+            } elseif ($growthRate < -10.0) {
                 $trendingDown[] = $postWithGrowth;
             } else {
                 $stable[] = $postWithGrowth;
             }
         }
 
-        // 按成長率排序
-        usort($trendingUp, fn($a, $b): int => $b['growth_rate'] <=> $a['growth_rate']);
-        usort($trendingDown, fn($a, $b): int => $a['growth_rate'] <=> $b['growth_rate']);
+        usort($trendingUp, fn(array $a, array $b): int => $b['growth_rate'] <=> $a['growth_rate']);
+        usort($trendingDown, fn(array $a, array $b): int => $a['growth_rate'] <=> $b['growth_rate']);
 
         return [
             'trending_up' => array_slice($trendingUp, 0, 10),
@@ -243,30 +225,19 @@ final class PostStatisticsService
     }
 
     /**
-     * 計算文章投資報酬率 (ROI).
-     *
-     * @return array{roi: float, revenue: float, cost: float, profit: float} ROI分析結果
+     * @return array{roi: float, revenue: float, cost: float, profit: float}
      */
     public function calculatePostROI(int $postId, StatisticsPeriod $period, float $contentCost): array
     {
-        $postStats = $this->postStatisticsRepository
-            ->getPostStatsByPeriod($postId, $period);
-
-        if (empty($postStats)) {
-            return [
-                'roi' => 0.0,
-                'revenue' => 0.0,
-                'cost' => $contentCost,
-                'profit' => -$contentCost,
-            ];
-        }
-
-        // 假設每次觀看產生的收益（可配置）
-        $revenuePerView = 0.01; // $0.01 per view
-        $estimatedRevenue = $postStats['views'] * $revenuePerView;
+    $postStats = $this->postStatisticsRepository->getPostStatsByPeriod($postId, $period);
+    /** @var array{views: int, comments: int, likes: int, shares: int, source: string} $postStats */
+    // 介面已宣告回傳包含預期欄位的陣列，直接使用索引存取以符合 PHPStan 的型別推論
+    $views = (int) $postStats['views'];
+        $revenuePerView = 0.01;
+        $estimatedRevenue = ((float) $views) * $revenuePerView;
 
         $profit = $estimatedRevenue - $contentCost;
-        $roi = $contentCost > 0 ? ($profit / $contentCost) * 100 : 0.0;
+        $roi = $contentCost > 0.0 ? ($profit / $contentCost) * 100.0 : 0.0;
 
         return [
             'roi' => round($roi, 2),
@@ -277,12 +248,11 @@ final class PostStatisticsService
     }
 
     /**
-     * 取得最佳發布時間建議.
+     * @return array{best_hours: array<int,float>, best_days: array<string,float>, insights: array<string, mixed>}
      */
     public function getBestPublishingTimes(StatisticsPeriod $period): array
     {
-        $timeData = $this->postStatisticsRepository
-            ->getPostsByPublishTime($period);
+        $timeData = $this->postStatisticsRepository->getPostsByPublishTime($period);
 
         if (empty($timeData)) {
             return [
@@ -296,38 +266,28 @@ final class PostStatisticsService
             ];
         }
 
-        // 分析最佳小時
         $hourlyStats = [];
         $dailyStats = [];
 
         foreach ($timeData as $post) {
-            $hour = (int) $post['publish_hour'];
-            $day = $post['publish_day'];
-            $performance = $post['avg_views'];
-
-            if (!isset($hourlyStats[$hour])) {
-                $hourlyStats[$hour] = [];
-            }
-            if (!isset($dailyStats[$day])) {
-                $dailyStats[$day] = [];
-            }
+            $hour = isset($post['publish_hour']) ? (int) $post['publish_hour'] : 0;
+            $day = isset($post['publish_day']) ? (string) $post['publish_day'] : '';
+            $performance = isset($post['avg_views']) && is_numeric($post['avg_views']) ? (float) $post['avg_views'] : 0.0;
 
             $hourlyStats[$hour][] = $performance;
             $dailyStats[$day][] = $performance;
         }
 
-        // 計算平均表現
         $hourlyAverage = [];
         foreach ($hourlyStats as $hour => $performances) {
-            $hourlyAverage[$hour] = array_sum($performances) / count($performances);
+            $hourlyAverage[$hour] = array_sum($performances) / max(1, count($performances));
         }
 
         $dailyAverage = [];
         foreach ($dailyStats as $day => $performances) {
-            $dailyAverage[$day] = array_sum($performances) / count($performances);
+            $dailyAverage[$day] = array_sum($performances) / max(1, count($performances));
         }
 
-        // 排序並取前3名
         arsort($hourlyAverage);
         arsort($dailyAverage);
 
@@ -351,17 +311,20 @@ final class PostStatisticsService
     /**
      * 分析熱門內容.
      *
+     * @return array{posts: list<array<int|string,mixed>>, summary: array<string,mixed>}
      * @throws StatisticsCalculationException 當分析失敗時
      */
     public function analyzePopularContent(StatisticsPeriod $period, int $limit = 10): array
     {
-        return $this->analyzePopularPosts($period, $limit);
+        $result = $this->analyzePopularPosts($period, $limit);
+
+        return $result;
     }
 
     /**
      * 計算香農熵（多樣性指標）.
      *
-     * @param array $distribution 分佈資料
+     * @param array<string,int> $distribution 分佈資料
      */
     private function calculateShannonEntropy(array $distribution): float
     {
@@ -412,9 +375,7 @@ final class PostStatisticsService
      */
     private function calculateConsistencyScore(int $postId, StatisticsPeriod $period): float
     {
-        // 獲取歷史表現資料
-        $historicalData = $this->postStatisticsRepository
-            ->getPostHistoricalPerformance($postId, $period);
+        $historicalData = $this->postStatisticsRepository->getPostHistoricalPerformance($postId, $period);
 
         if (count($historicalData) < 3) {
             return 5.0; // 預設中等評分
@@ -428,23 +389,26 @@ final class PostStatisticsService
         }
 
         $variance = array_sum(
-            array_map(fn($value): float => ((float) $value - $mean) ** 2, $performances),
+            array_map(fn($value): float => (is_numeric($value) ? (($value + 0.0 - $mean) ** 2) : 0.0), $performances),
         ) / count($performances);
 
         $coefficientOfVariation = sqrt($variance) / $mean;
 
-        // 變異係數越小，一致性越高
         $consistencyScore = max(0, 10 - ($coefficientOfVariation * 10));
 
         return round($consistencyScore, 1);
     }
 
     /**
-     * 取得熱門文章（代理方法）.
+     * 取得熱門文章（代理方法）。
+     *
+     * @return list<array<int|string,mixed>>
      */
     public function getPopularPostsByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {
-        return $this->analyzePopularPosts($period, $limit);
+        $result = $this->analyzePopularPosts($period, $limit);
+
+        return $result['posts'];
     }
 
     /**

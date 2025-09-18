@@ -97,9 +97,9 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     }
 
     /**
-     * 取得使用者註冊趨勢資料.
-     *
-     * @return array<int, array<string, mixed>>
+    * 取得使用者註冊趨勢資料.
+    *
+    * @return array<string,int>
      */
     public function getUserRegistrationTrends(StatisticsPeriod $period): array
     {
@@ -122,7 +122,16 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array{date: string, registration_count: int}> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $map = [];
+            foreach ($rows as $r) {
+                $date = (string) $r['date'];
+                $map[$date] = (int) $r['registration_count'];
+            }
+
+            return $map;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢使用者註冊趨勢: ' . $e->getMessage(), 0, $e);
         }
@@ -173,11 +182,13 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
+            /** @var array<int, array{activity_level: string, user_count: int}> $results */
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $distribution = [];
 
             foreach ($results as $result) {
-                $distribution[$result['activity_level']] = (int) $result['user_count'];
+                $level = (string) $result['activity_level'];
+                $distribution[$level] = (int) $result['user_count'];
             }
 
             return $distribution;
@@ -211,11 +222,13 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
+            /** @var array<int, array{activity_date: string, active_users: int}> $results */
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $dailyActive = [];
 
             foreach ($results as $result) {
-                $dailyActive[$result['activity_date']] = (int) $result['active_users'];
+                $date = (string) $result['activity_date'];
+                $dailyActive[$date] = (int) $result['active_users'];
             }
 
             return $dailyActive;
@@ -266,7 +279,22 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'limit' => $limit,
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // 對最活躍使用者回傳清單（保留數字索引以符合介面宣告）
+            $processed = [];
+            foreach ($rows as $r) {
+                $processed[] = [
+                    'id' => isset($r['id']) ? (int) $r['id'] : 0,
+                    'username' => isset($r['username']) ? (string) $r['username'] : '',
+                    'email' => isset($r['email']) ? (string) $r['email'] : '',
+                    'activity_count' => isset($r['activity_count']) ? (int) $r['activity_count'] : 0,
+                    'last_activity' => isset($r['last_activity']) ? (string) $r['last_activity'] : '',
+                ];
+            }
+
+            return $processed;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢最活躍使用者: ' . $e->getMessage(), 0, $e);
         }
@@ -297,7 +325,21 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array{hour_of_day: int, day_of_week: int, activity_count: int, unique_users: int}> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $map = [];
+            foreach ($rows as $r) {
+                $key = (string) $r['day_of_week'] . ':' . (string) $r['hour_of_day'];
+                $map[$key] = [
+                    'hour_of_day' => (int) $r['hour_of_day'],
+                    'day_of_week' => (int) $r['day_of_week'],
+                    'activity_count' => (int) $r['activity_count'],
+                    'unique_users' => (int) $r['unique_users'],
+                ];
+            }
+
+            return $map;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢使用者行為模式: ' . $e->getMessage(), 0, $e);
         }
@@ -329,10 +371,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'retention_days' => $retentionDays,
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $totalNewUsers = (int) $result['total_new_users'];
-            $retainedUsers = (int) $result['retained_users'];
-            $retentionRate = $totalNewUsers > 0 ? ($retainedUsers / $totalNewUsers) * 100 : 0.0;
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+                $totalNewUsers = (int) ($result['total_new_users'] ?? 0);
+                $retainedUsers = (int) ($result['retained_users'] ?? 0);
+                $retentionRate = $totalNewUsers > 0 ? ($retainedUsers / $totalNewUsers) * 100.0 : 0.0;
 
             return [
                 'total_new_users' => $totalNewUsers,
@@ -444,17 +486,22 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+            $totalNewUsers = isset($result['total_new_users']) ? (int) $result['total_new_users'] : 0;
+            $usersWithActivity = isset($result['users_with_activity']) ? (int) $result['users_with_activity'] : 0;
+            $activationRate = $totalNewUsers > 0 ? ($usersWithActivity / $totalNewUsers) * 100.0 : 0.0;
+            $avgHours = isset($result['avg_hours_to_first_activity']) && is_numeric($result['avg_hours_to_first_activity']) ? (float) $result['avg_hours_to_first_activity'] : null;
+            $activated24 = isset($result['activated_within_24h']) ? (int) $result['activated_within_24h'] : 0;
+            $activated7d = isset($result['activated_within_7d']) ? (int) $result['activated_within_7d'] : 0;
 
             return [
-                'total_new_users' => (int) $result['total_new_users'],
-                'users_with_activity' => (int) $result['users_with_activity'],
-                'activation_rate' => $result['total_new_users'] > 0
-                    ? round(($result['users_with_activity'] / $result['total_new_users']) * 100, 2) : 0.0,
-                'avg_hours_to_first_activity' => $result['avg_hours_to_first_activity']
-                    ? round((float) $result['avg_hours_to_first_activity'], 2) : null,
-                'activated_within_24h' => (int) $result['activated_within_24h'],
-                'activated_within_7d' => (int) $result['activated_within_7d'],
+                'total_new_users' => $totalNewUsers,
+                'users_with_activity' => $usersWithActivity,
+                'activation_rate' => round($activationRate, 2),
+                'avg_hours_to_first_activity' => $avgHours !== null ? round($avgHours, 2) : null,
+                'activated_within_24h' => $activated24,
+                'activated_within_7d' => $activated7d,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('無法分析新使用者首次活動: ' . $e->getMessage(), 0, $e);
@@ -492,12 +539,16 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+            $totalActiveUsers = isset($result['total_active_users']) ? (int) $result['total_active_users'] : 0;
+            $totalActivities = isset($result['total_activities']) ? (int) $result['total_activities'] : 0;
+            $avgActivities = is_numeric($result['avg_activities_per_user'] ?? null) ? (float) $result['avg_activities_per_user'] : 0.0;
 
             return [
-                'total_active_users' => (int) $result['total_active_users'],
-                'total_activities' => (int) $result['total_activities'],
-                'avg_activities_per_user' => round((float) $result['avg_activities_per_user'], 2),
+                'total_active_users' => $totalActiveUsers,
+                'total_activities' => $totalActivities,
+                'avg_activities_per_user' => round($avgActivities, 2),
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('無法分析使用者互動網路: ' . $e->getMessage(), 0, $e);
@@ -536,13 +587,18 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+            $totalUsers = isset($result['total_users']) ? (int) $result['total_users'] : 0;
+            $avgLifetimeActivities = is_numeric($result['avg_lifetime_activities'] ?? null) ? (float) $result['avg_lifetime_activities'] : 0.0;
+            $avgDaysActive = is_numeric($result['avg_days_active'] ?? null) ? (float) $result['avg_days_active'] : 0.0;
+            $maxLifetimeActivities = isset($result['max_lifetime_activities']) ? (int) $result['max_lifetime_activities'] : 0;
 
             return [
-                'total_users' => (int) $result['total_users'],
-                'avg_lifetime_activities' => round((float) $result['avg_lifetime_activities'], 2),
-                'avg_days_active' => round((float) $result['avg_days_active'], 2),
-                'max_lifetime_activities' => (int) $result['max_lifetime_activities'],
+                'total_users' => $totalUsers,
+                'avg_lifetime_activities' => round($avgLifetimeActivities, 2),
+                'avg_days_active' => round($avgDaysActive, 2),
+                'max_lifetime_activities' => $maxLifetimeActivities,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('無法分析使用者生命週期價值: ' . $e->getMessage(), 0, $e);
@@ -577,7 +633,19 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array{country: string, user_count: int, total_activities: int}> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $map = [];
+            foreach ($rows as $r) {
+                $country = (string) $r['country'];
+                $map[$country] = [
+                    'user_count' => (int) $r['user_count'],
+                    'total_activities' => (int) $r['total_activities'],
+                ];
+            }
+
+            return $map;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢使用者地理分布: ' . $e->getMessage(), 0, $e);
         }
@@ -614,7 +682,22 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'limit' => $limit,
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array{ id: int, username: string, activity_count: int, active_days: int, unique_active_days: int, engagement_score: float }> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $processed = [];
+            foreach ($rows as $r) {
+                $processed[] = [
+                    'id' => (int) $r['id'],
+                    'username' => (string) $r['username'],
+                    'activity_count' => (int) $r['activity_count'],
+                    'active_days' => (int) $r['active_days'],
+                    'unique_active_days' => (int) $r['unique_active_days'],
+                    'engagement_score' => (float) $r['engagement_score'],
+                ];
+            }
+
+            return $processed;
         } catch (PDOException $e) {
             throw new RuntimeException('無法計算使用者參與度評分: ' . $e->getMessage(), 0, $e);
         }
@@ -663,7 +746,20 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array{activity_date: string, total_activities: int, unique_active_users: int, avg_activities_per_user: float}> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $map = [];
+            foreach ($rows as $r) {
+                $date = (string) $r['activity_date'];
+                $map[$date] = [
+                    'total_activities' => (int) $r['total_activities'],
+                    'unique_active_users' => (int) $r['unique_active_users'],
+                    'avg_activities_per_user' => (float) $r['avg_activities_per_user'],
+                ];
+            }
+
+            return $map;
         } catch (PDOException $e) {
             throw new RuntimeException('無法分析使用者活躍度趨勢: ' . $e->getMessage(), 0, $e);
         }
@@ -694,7 +790,19 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array{device_type: string, user_count: int, activity_count: int}> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $map = [];
+            foreach ($rows as $r) {
+                $device = (string) $r['device_type'];
+                $map[$device] = [
+                    'user_count' => (int) $r['user_count'],
+                    'activity_count' => (int) $r['activity_count'],
+                ];
+            }
+
+            return $map;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢使用者裝置類型統計: ' . $e->getMessage(), 0, $e);
         }
@@ -787,13 +895,18 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+                $avgSession = is_numeric($result['average_session_duration'] ?? null) ? (float) $result['average_session_duration'] : 0.0;
+                $bounce = is_numeric($result['bounce_rate'] ?? null) ? (float) $result['bounce_rate'] : 0.0;
+                $pageViews = is_numeric($result['page_views_per_session'] ?? null) ? (float) $result['page_views_per_session'] : 0.0;
+                $conversion = is_numeric($result['conversion_rate'] ?? null) ? (float) $result['conversion_rate'] : 0.0;
 
             return [
-                'average_session_duration' => round((float) $result['average_session_duration'], 2),
-                'bounce_rate' => round((float) $result['bounce_rate'], 2),
-                'page_views_per_session' => round((float) $result['page_views_per_session'], 2),
-                'conversion_rate' => round((float) $result['conversion_rate'], 2),
+                'average_session_duration' => round($avgSession, 2),
+                'bounce_rate' => round($bounce, 2),
+                'page_views_per_session' => round($pageViews, 2),
+                'conversion_rate' => round($conversion, 2),
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('無法分析使用者行為: ' . $e->getMessage(), 0, $e);
