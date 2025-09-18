@@ -19,7 +19,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
 
     private bool $isDevelopment;
 
-    /** @var array<string, mixed> */
+    /** @var string[] */
     private array $sensitiveKeys;
 
     /**
@@ -76,6 +76,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ];
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function logSecurityEvent(string $event, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
@@ -89,6 +92,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ], $sanitizedContext));
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
@@ -99,6 +105,9 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ], $context));
     }
 
+    /**
+     * @param array<string, mixed> $context
+     */
     public function logSuspiciousActivity(string $activity, array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
@@ -109,14 +118,20 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ], $this->sanitizeLogData($context)));
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
     public function sanitizeLogData(array $data): array
     {
+        /** @var array<string, mixed> $sanitized */
         $sanitized = [];
 
         foreach ($data as $key => $value) {
             if ($this->isSensitiveKey($key)) {
                 $sanitized[$key] = '[REDACTED]';
             } elseif (is_array($value)) {
+                /** @var array<string, mixed> $value */
                 $sanitized[$key] = $this->sanitizeLogData($value);
             } elseif (is_string($value)) {
                 // 檢查是否可能是敏感資料
@@ -288,6 +303,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $key = strtolower($key);
 
         foreach ($this->sensitiveKeys as $sensitiveKey) {
+            $sensitiveKey = (string) $sensitiveKey;
             if (str_contains($key, strtolower($sensitiveKey))) {
                 return true;
             }
