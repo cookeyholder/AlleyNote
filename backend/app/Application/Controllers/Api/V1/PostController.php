@@ -9,6 +9,7 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostStatusException;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
@@ -138,7 +139,7 @@ class PostController extends BaseController
             return $this->json($response, [
                 'success' => true,
                 'data' => array_map(
-                    fn($post) => is_object($post) && method_exists($post, 'toSafeArray') ? $post->toSafeArray($this->sanitizer) : $post,
+                    fn(Post $post) => $post->toSafeArray($this->sanitizer),
                     $result['items'],
                 ),
                 'pagination' => [
