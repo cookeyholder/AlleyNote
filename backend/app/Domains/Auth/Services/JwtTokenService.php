@@ -190,14 +190,13 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 生成新的 token pair
             return $this->generateTokenPair($userId, $deviceInfo);
         } catch (Throwable $e) {
-            error_log('Error in JwtTokenService.php: ' . $e->getMessage());
+            $msg = (string) $e->getMessage();
+            error_log('Error in JwtTokenService.php: ' . $msg);
 
-            throw $e;
-        } catch (Throwable $e) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_DECODE_FAILED,
                 InvalidTokenException::REFRESH_TOKEN,
-                'Token refresh failed: ' . $e->getMessage(),
+                'Token refresh failed: ' . $msg,
             );
         }
     }
