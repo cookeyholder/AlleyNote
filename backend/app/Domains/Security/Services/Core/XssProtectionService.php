@@ -59,6 +59,11 @@ class XssProtectionService implements XssProtectionServiceInterface
         return $cleaned;
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed>|string[] $keys
+     * @return array<string, mixed>
+     */
     public function cleanArray(array $data, array $keys = []): array
     {
         if (empty($keys)) {
@@ -164,7 +169,16 @@ class XssProtectionService implements XssProtectionServiceInterface
 
         return $data;
     }
-
+        return $this->cleanArrayRecursive($data);
+    }
+    
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    public function sanitizeArray(array $data): array
+    {
+        return $this->cleanArrayRecursive($data);
     /**
      * 記錄 XSS 攻擊嘗試。
      */
