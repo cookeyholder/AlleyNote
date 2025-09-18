@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
-use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Services\IpService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
@@ -62,9 +61,7 @@ class IpController
 
             $mappedRules = [];
             foreach ($rules as $rule) {
-                if ($rule instanceof IpList) {
-                    $mappedRules[] = $rule->toSafeArray($this->sanitizer);
-                }
+                $mappedRules[] = $rule->toSafeArray($this->sanitizer);
             }
 
             return [
@@ -98,7 +95,7 @@ class IpController
             return [
                 'status' => 200,
                 'data' => [
-                    'ip' => $request['ip'],
+                    'ip' => $ip,
                     'allowed' => $isAllowed,
                 ],
             ];
