@@ -139,6 +139,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      * 解析 JWT token 但不驗證簽章.
      * @param string $token JWT token 字串
      * @return array<string, mixed> Token 載荷資料
+     */
     public function parseTokenUnsafe(string $token): array
     {
         if (empty($token)) {
@@ -258,10 +259,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
     /**
      * 檢查私鑰和公鑰是否匹配.
-     * @param mixed $privateKey 私鑰資源
+     * @param resource|\OpenSSLAsymmetricKey|string $privateKey 私鑰資源或金鑰字串
+     * @param resource|\OpenSSLAsymmetricKey|string $publicKey 公鑰資源或金鑰字串
      * @return bool true 如果匹配，false 如果不匹配
      */
-    private function keysMatch(string $privateKey, string $publicKey): bool
+    private function keysMatch($privateKey, $publicKey): bool
     {
         $testData = 'test-data-for-key-verification';
 
