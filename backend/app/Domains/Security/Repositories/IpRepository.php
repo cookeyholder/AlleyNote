@@ -42,7 +42,10 @@ class IpRepository implements IpRepositoryInterface
 
     private function getCacheKey(string $type, mixed $identifier): string
     {
-        return "ip_list:{$type}:{$identifier}";
+        /** @var string $identifierStr */
+        $identifierStr = (string) $identifier;
+
+        return "ip_list:{$type}:{$identifierStr}";
     }
 
     private function validateIpAddress(string $ipAddress): void
@@ -66,10 +69,10 @@ class IpRepository implements IpRepositoryInterface
             return $ip === $cidr;
         }
 
-        [$subnet, $bits] = explode('/', is_string($cidr) ? $cidr : (string) $cidr);
+        [$subnet, $bits] = explode('/', $cidr);
         $ip = ip2long($ip);
         $subnet = ip2long($subnet);
-        $mask = -1 < (32 - (int) $bits);
+        $mask = -1 << (32 - (int) $bits);
         $subnet &= $mask;
 
         return ($ip & $mask) === $subnet;
@@ -98,7 +101,9 @@ class IpRepository implements IpRepositoryInterface
      */
     public function create(array $data): IpList
     {
-        $this->validateIpAddress($data['ip_address']);
+        /** @var string $ipAddress */
+        $ipAddress = (string) $data['ip_address'];
+        $this->validateIpAddress($ipAddress);
 
         $now = new DateTime()->format(DateTime::RFC3339);
         $uuid = generate_uuid();
@@ -153,7 +158,8 @@ class IpRepository implements IpRepositoryInterface
     {
         $cacheKey = $this->getCacheKey('id', $id);
 
-        return $this->cache->remember($cacheKey, function () use ($id) {
+        /** @var IpList|null $result */
+        $result = $this->cache->remember($cacheKey, function () use ($id) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE id = :id');
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
@@ -163,21 +169,36 @@ class IpRepository implements IpRepositoryInterface
                 return null;
             }
 
-            return $this->createIpListFromData($result);
+            /** @var array<string, mixed> $resultArray */
+            $resultArray = $result;
+
+            return $this->createIpListFromData($resultArray);
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function findByUuid(string $uuid): ?IpList
     {
         $cacheKey = $this->getCacheKey('uuid', $uuid);
 
-        return $this->cache->remember($cacheKey, function () use ($uuid) {
+        /** @var IpList|null $result */
+        $result = $this->cache->remember($cacheKey, function () use ($uuid) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE uuid = ?');
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $this->createIpListFromData($result);
+            if (!$result) {
+                return null;
+            }
+
+            /** @var array<string, mixed> $resultArray */
+            $resultArray = $result;
+
+            return $this->createIpListFromData($resultArray);
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function findByIpAddress(string $ipAddress): ?IpList
@@ -185,19 +206,34 @@ class IpRepository implements IpRepositoryInterface
         $this->validateIpAddress($ipAddress);
         $cacheKey = $this->getCacheKey('ip', $ipAddress);
 
-        return $this->cache->remember($cacheKey, function () use ($ipAddress) {
+        /** @var IpList|null $result */
+        $result = $this->cache->remember($cacheKey, function () use ($ipAddress) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE ip_address = ?');
             $stmt->execute([$ipAddress]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $this->createIpListFromData($result);
+            if (!$result) {
+                return null;
+            }
+
+            /** @var array<string, mixed> $resultArray */
+            $resultArray = $result;
+
+            return $this->createIpListFromData($resultArray);
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
-    public function update(int $id, /** @var array<string, mixed> */ array $data): IpList
+    /**
+     * @param array<string, mixed> $data
+     */
+    public function update(int $id, array $data): IpList
     {
         if (isset($data['ip_address'])) {
-            $this->validateIpAddress($data['ip_address']);
+            /** @var string $ipAddress */
+            $ipAddress = (string) $data['ip_address'];
+            $this->validateIpAddress($ipAddress);
         }
 
         $data['updated_at'] = new DateTime()->format(DateTime::RFC3339);
@@ -213,7 +249,12 @@ class IpRepository implements IpRepositoryInterface
         }
 
         if (empty($sets)) {
-            return $this->find($id);
+            $result = $this->find($id);
+            if ($result === null) {
+                throw new Exception("IP 規則不存在，ID: {$id}");
+            }
+
+            return $result;
         }
 
         $sql = 'UPDATE ip_lists SET ' . implode(', ', $sets) . ' WHERE id = :id';
@@ -229,7 +270,12 @@ class IpRepository implements IpRepositoryInterface
             $this->cache->delete('ip_lists:type:' . $ipList->getType());
         }
 
-        return $this->find($id);
+        $result = $this->find($id);
+        if ($result === null) {
+            throw new Exception("更新後無法找到 IP 規則，ID: {$id}");
+        }
+
+        return $result;
     }
 
     public function delete(int $id): bool
@@ -252,20 +298,33 @@ class IpRepository implements IpRepositoryInterface
     {
         $cacheKey = 'ip_lists:type:' . $type;
 
+        /** @var array<array<string, mixed>> $results */
         $results = $this->cache->remember($cacheKey, function () use ($type) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE type = ? ORDER BY created_at DESC');
             $stmt->execute([$type]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<array<string, mixed>> $fetchResult */
+            $fetchResult = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $fetchResult;
         }, self::CACHE_TTL);
 
         return empty($results) ? [] : array_map(
-            fn($row): IpList => $this->createIpListFromData($row),
+            function ($row): IpList {
+                /** @var array<string, mixed> $rowArray */
+                $rowArray = $row;
+
+                return $this->createIpListFromData($rowArray);
+            },
             $results,
         );
     }
 
-    public function paginate(int $page = 1, int $perPage = 10, /** @var array<string, mixed> */ array $conditions = []): array
+    /**
+     * @param array<string, mixed> $conditions
+     * @return array<string, mixed>
+     */
+    public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;
         $where = [];
@@ -302,7 +361,13 @@ class IpRepository implements IpRepositoryInterface
         $stmt->execute($params);
 
         $items = array_map(
-            fn($row): array => $this->createIpListFromData($row),
+            function ($row): array {
+                /** @var array<string, mixed> $rowArray */
+                $rowArray = $row;
+                $ipList = $this->createIpListFromData($rowArray);
+
+                return $ipList->toArray();
+            },
             $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
 
@@ -324,7 +389,9 @@ class IpRepository implements IpRepositoryInterface
         $blacklist = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         foreach ($blacklist as $entry) {
-            if ($this->ipInRange($ipAddress, $entry)) {
+            /** @var string $entryStr */
+            $entryStr = (string) $entry;
+            if ($this->ipInRange($ipAddress, $entryStr)) {
                 return true;
             }
         }
@@ -341,7 +408,9 @@ class IpRepository implements IpRepositoryInterface
         $whitelist = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         foreach ($whitelist as $entry) {
-            if ($this->ipInRange($ipAddress, $entry)) {
+            /** @var string $entryStr */
+            $entryStr = (string) $entry;
+            if ($this->ipInRange($ipAddress, $entryStr)) {
                 return true;
             }
         }
