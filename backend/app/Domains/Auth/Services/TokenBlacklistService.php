@@ -381,7 +381,7 @@ final class TokenBlacklistService
     /**
      * 取得最近的高優先級黑名單項目.
      * @param int $limit 限制筆數
-     * @return array<int, TokenBlacklistEntry> 高優先級項目陣列
+     * @return TokenBlacklistEntry[] 高優先級項目陣列
      */
     public function getRecentHighPriorityEntries(int $limit = 50): array
     {
