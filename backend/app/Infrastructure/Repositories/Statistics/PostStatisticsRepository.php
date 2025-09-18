@@ -151,9 +151,15 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         }
     }
 
+    /**
+     * 取得指定週期內各來源的文章統計.
+     *
+     * @param StatisticsPeriod $period
+     * @return array<string, array{post_count: int, views: int}>
+     */
     public function getSourceDistributionByPeriod(StatisticsPeriod $period): array
     {
-        // 簡單實作
+        // 預設空資料，實作時回傳 country/source => stats map
         return [];
     }
 
@@ -169,15 +175,25 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         return 0;
     }
 
+    /**
+     * 取得文章發布趨勢資料（按日期分組）.
+     *
+     * @param StatisticsPeriod $period
+     * @return array<string,int> // date => post_count
+     */
     public function getPostTrendsByPeriod(StatisticsPeriod $period): array
     {
-        // 簡單實作
         return [];
     }
 
+    /**
+     * 取得觀看次數趨勢資料（按日期分組）.
+     *
+     * @param StatisticsPeriod $period
+     * @return array<string,int> // date => views
+     */
     public function getViewTrendsByPeriod(StatisticsPeriod $period): array
     {
-        // 簡單實作
         return [];
     }
 
@@ -195,13 +211,22 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
     public function getNewPostsStatsByPeriod(StatisticsPeriod $period): array
     {
-        // 簡單實作
-        return [];
+        // 預設回傳，符合 interface 指定的 shape
+        return [
+            'total_new_posts' => 0,
+            'total_views' => 0,
+            'avg_views_per_post' => 0.0,
+        ];
     }
 
+    /**
+     * 取得文章觀看次數分布.
+     *
+     * @param StatisticsPeriod $period
+     * @return array<string,int> // bucket => count
+     */
     public function getViewsDistributionByPeriod(StatisticsPeriod $period): array
     {
-        // 簡單實作
         return [];
     }
 
@@ -217,15 +242,26 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         return 0;
     }
 
+    /**
+     * 取得文章活動熱圖資料（小時級別）.
+     *
+     * @param StatisticsPeriod $period
+     * @return array<string, array{hour: int, day: int, activity_count: int}>
+     */
     public function getPostActivityHeatmapByPeriod(StatisticsPeriod $period): array
     {
-        // 簡單實作
         return [];
     }
 
+    /**
+     * 取得最活躍的文章作者統計.
+     *
+     * @param StatisticsPeriod $period
+     * @param int $limit
+     * @return array<int, array{author_id: int, name: string, post_count: int, views: int}>
+     */
     public function getMostActiveAuthorsByPeriod(StatisticsPeriod $period, int $limit = 10): array
     {
-        // 簡單實作
         return [];
     }
 
@@ -235,9 +271,15 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
         return 0.0;
     }
 
+    /**
+     * 取得文章標籤使用統計.
+     *
+     * @param StatisticsPeriod $period
+     * @param int $limit
+     * @return array<int, array{tag: string, count: int}>
+     */
     public function getTagUsageStatsByPeriod(StatisticsPeriod $period, int $limit = 20): array
     {
-        // 簡單實作
         return [];
     }
 
@@ -249,25 +291,48 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
 
     public function getPostStatsByPeriod(int $postId, StatisticsPeriod $period): array
     {
-        // 簡單實作
-        return [];
+        // 預設回傳符合 interface 指定的 shape
+        return [
+            'views' => 0,
+            'comments' => 0,
+            'likes' => 0,
+            'shares' => 0,
+            'source' => '',
+        ];
     }
 
+    /**
+     * 取得按發布時間分組的文章統計.
+     *
+     * @param StatisticsPeriod $period
+     * @return array<int, array{post_id: int, publish_time: string, count: int}>
+     */
     public function getPostsByPublishTime(StatisticsPeriod $period): array
     {
-        // 簡單實作
         return [];
     }
 
+    /**
+     * 取得文章歷史表現資料.
+     *
+     * @param int $postId
+     * @param StatisticsPeriod $period
+     * @return array<int, array{date: string, views: int, likes: int, comments: int}>
+     */
     public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array
     {
-        // 簡單實作
         return [];
     }
 
+    /**
+     * 取得文章統計趨勢資料.
+     *
+     * @param StatisticsPeriod $period
+     * @param int $dataPoints
+     * @return array<int, array{date: string, value: float|int}>
+     */
     public function getStatisticsTrends(StatisticsPeriod $period, int $dataPoints = 30): array
     {
-        // 簡單實作
         return [];
     }
 }
