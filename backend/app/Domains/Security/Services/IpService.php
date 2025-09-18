@@ -63,13 +63,16 @@ class IpService implements IpServiceInterface
         return true;
     }
 
+    /**
+     * @return array<int, IpList>
+     */
     public function getRulesByType(int $type): array
     {
         if (!in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
         }
 
-        return $this->repository->getByType($type);
+        return array_values($this->repository->getByType($type));
     }
 
     /**
