@@ -45,98 +45,137 @@ class SecurityServiceProvider
         return [
             // Repository Interfaces
             ActivityLogRepositoryInterface::class => static function (ContainerInterface $container): ActivityLogRepository {
-                return new ActivityLogRepository(
-                    $container->get(PDO::class),
-                );
+                /** @var PDO $db */
+                $db = $container->get(PDO::class);
+
+                return new ActivityLogRepository($db);
             },
 
             IpRepositoryInterface::class => static function (ContainerInterface $container): IpRepository {
-                return new IpRepository(
-                    $container->get(PDO::class),
-                    $container->get(CacheServiceInterface::class),
-                );
+                /** @var PDO $db */
+                $db = $container->get(PDO::class);
+                /** @var CacheServiceInterface $cache */
+                $cache = $container->get(CacheServiceInterface::class);
+
+                return new IpRepository($db, $cache);
             },
 
             // Service Interfaces
             ActivityLoggingServiceInterface::class => static function (ContainerInterface $container): ActivityLoggingService {
-                return new ActivityLoggingService(
-                    $container->get(ActivityLogRepositoryInterface::class),
-                    $container->get(LoggerInterface::class),
-                );
+                /** @var ActivityLogRepositoryInterface $repository */
+                $repository = $container->get(ActivityLogRepositoryInterface::class);
+                /** @var LoggerInterface $logger */
+                $logger = $container->get(LoggerInterface::class);
+
+                return new ActivityLoggingService($repository, $logger);
             },
 
             CsrfProtectionServiceInterface::class => static function (ContainerInterface $container): CsrfProtectionService {
-                return new CsrfProtectionService(
-                    $container->get(ActivityLoggingServiceInterface::class),
-                );
+                /** @var ActivityLoggingServiceInterface $activityLogger */
+                $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
+                return new CsrfProtectionService($activityLogger);
             },
 
             XssProtectionServiceInterface::class => static function (ContainerInterface $container): XssProtectionService {
-                return new XssProtectionService(
-                    $container->get(LoggerInterface::class),
-                );
+                /** @var ActivityLoggingServiceInterface $activityLogger */
+                $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
+                return new XssProtectionService($activityLogger);
             },
 
             IpServiceInterface::class => static function (ContainerInterface $container): IpService {
-                return new IpService(
-                    $container->get(IpRepositoryInterface::class),
-                    $container->get(LoggerInterface::class),
-                );
+                /** @var IpRepositoryInterface $repository */
+                $repository = $container->get(IpRepositoryInterface::class);
+                /** @var ActivityLoggingServiceInterface $activityLogger */
+                $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
+                return new IpService($repository, $activityLogger);
             },
 
             SecurityHeaderServiceInterface::class => static function (ContainerInterface $container): SecurityHeaderService {
-                return new SecurityHeaderService(
-                    $container->get(LoggerInterface::class),
-                );
+                /** @var array<string, mixed> $config */
+                $config = $container->get('config.security.headers') ?? [];
+
+                return new SecurityHeaderService($config);
             },
 
             ErrorHandlerServiceInterface::class => static function (ContainerInterface $container): ErrorHandlerService {
-                return new ErrorHandlerService(
-                    $container->get(LoggerInterface::class),
-                );
+                /** @var string $logPath */
+                $logPath = $container->get('config.logging.path') ?? '/tmp/error.log';
+
+                return new ErrorHandlerService($logPath);
             },
 
             SecretsManagerInterface::class => static function (ContainerInterface $container): SecretsManager {
-                return new SecretsManager(
-                    $container->get(LoggerInterface::class),
-                );
+                /** @var string $envPath */
+                $envPath = $container->get('config.env.path') ?? '.env';
+
+                return new SecretsManager($envPath);
             },
 
             // Concrete Implementations (optional bindings)
             ActivityLogRepository::class => static function (ContainerInterface $container): ActivityLogRepository {
-                return $container->get(ActivityLogRepositoryInterface::class);
+                /** @var ActivityLogRepository $repository */
+                $repository = $container->get(ActivityLogRepositoryInterface::class);
+
+                return $repository;
             },
 
             IpRepository::class => static function (ContainerInterface $container): IpRepository {
-                return $container->get(IpRepositoryInterface::class);
+                /** @var IpRepository $repository */
+                $repository = $container->get(IpRepositoryInterface::class);
+
+                return $repository;
             },
 
             ActivityLoggingService::class => static function (ContainerInterface $container): ActivityLoggingService {
-                return $container->get(ActivityLoggingServiceInterface::class);
+                /** @var ActivityLoggingService $service */
+                $service = $container->get(ActivityLoggingServiceInterface::class);
+
+                return $service;
             },
 
             CsrfProtectionService::class => static function (ContainerInterface $container): CsrfProtectionService {
-                return $container->get(CsrfProtectionServiceInterface::class);
+                /** @var CsrfProtectionService $service */
+                $service = $container->get(CsrfProtectionServiceInterface::class);
+
+                return $service;
             },
 
             XssProtectionService::class => static function (ContainerInterface $container): XssProtectionService {
-                return $container->get(XssProtectionServiceInterface::class);
+                /** @var XssProtectionService $service */
+                $service = $container->get(XssProtectionServiceInterface::class);
+
+                return $service;
             },
 
             IpService::class => static function (ContainerInterface $container): IpService {
-                return $container->get(IpServiceInterface::class);
+                /** @var IpService $service */
+                $service = $container->get(IpServiceInterface::class);
+
+                return $service;
             },
 
             SecurityHeaderService::class => static function (ContainerInterface $container): SecurityHeaderService {
-                return $container->get(SecurityHeaderServiceInterface::class);
+                /** @var SecurityHeaderService $service */
+                $service = $container->get(SecurityHeaderServiceInterface::class);
+
+                return $service;
             },
 
             ErrorHandlerService::class => static function (ContainerInterface $container): ErrorHandlerService {
-                return $container->get(ErrorHandlerServiceInterface::class);
+                /** @var ErrorHandlerService $service */
+                $service = $container->get(ErrorHandlerServiceInterface::class);
+
+                return $service;
             },
 
             SecretsManager::class => static function (ContainerInterface $container): SecretsManager {
-                return $container->get(SecretsManagerInterface::class);
+                /** @var SecretsManager $service */
+                $service = $container->get(SecretsManagerInterface::class);
+
+                return $service;
             },
         ];
     }
@@ -191,16 +230,19 @@ class SecurityServiceProvider
         $definitions = self::getDefinitions();
 
         foreach ($definitions as $abstract => $concrete) {
+            // 檢查容器是否支援 set 方法
             if (method_exists($container, 'set')) {
-                $container->set($abstract, $concrete);
+                // 安全地調用 set 方法
+                /** @var callable $setMethod */
+                $setMethod = [$container, 'set'];
+                call_user_func($setMethod, $abstract, $concrete);
             }
         }
     }
 
     /**
      * 取得需要初始化的服務清單.
-     */
-    /**
+     *
      * @return array<string>
      */
     public static function getBootableServices(): array
@@ -223,8 +265,8 @@ class SecurityServiceProvider
             if ($container->has($serviceClass)) {
                 $service = $container->get($serviceClass);
 
-                // 如果服務有 boot 方法，執行初始化
-                if (method_exists($service, 'boot')) {
+                // 確保 service 是物件且有 boot 方法
+                if (is_object($service) && method_exists($service, 'boot')) {
                     $service->boot();
                 }
             }
@@ -233,8 +275,7 @@ class SecurityServiceProvider
 
     /**
      * 檢查服務依賴是否滿足.
-     */
-    /**
+     *
      * @return array<string, mixed>
      */
     public static function checkDependencies(ContainerInterface $container): array
@@ -249,8 +290,7 @@ class SecurityServiceProvider
 
     /**
      * 取得服務健康檢查資訊.
-     */
-    /**
+     *
      * @return array<string, mixed>
      */
     public static function getHealthCheck(ContainerInterface $container): array
@@ -264,6 +304,7 @@ class SecurityServiceProvider
             }
 
             try {
+                /** @var object $service */
                 $service = $container->get($serviceName);
                 $services[$serviceName] = [
                     'status' => 'healthy',
