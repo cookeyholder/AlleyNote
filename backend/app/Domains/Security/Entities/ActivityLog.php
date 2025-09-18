@@ -20,7 +20,9 @@ use ReflectionObject;
  */
 class ActivityLog
 {
-    private ?int $id = null;
+    /** @phpstan-var int|null */
+    /** @phpstan-ignore-next-line */
+    private $id = null;
 
     private string $uuid;
 
@@ -56,6 +58,9 @@ class ActivityLog
 
     private DateTimeImmutable $createdAt;
 
+    /**
+     * @param array<string,mixed>|null $metadata
+     */
     public function __construct(
         ActivityType $actionType,
         ?int $userId = null,
@@ -64,7 +69,6 @@ class ActivityLog
         ?string $targetType = null,
         ?string $targetId = null,
         ?string $description = null,
-        /** @var array<string, mixed>|null */
         ?array $metadata = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
@@ -82,7 +86,12 @@ class ActivityLog
         $this->targetType = $targetType;
         $this->targetId = $targetId;
         $this->description = $description ?? $actionType->getDescription();
-        $this->metadata = $metadata ? (json_encode($metadata, JSON_UNESCAPED_UNICODE) ?? '') : null;
+        if ($metadata === null) {
+            $this->metadata = null;
+        } else {
+            $encoded = json_encode($metadata, JSON_UNESCAPED_UNICODE);
+            $this->metadata = $encoded === false ? '' : $encoded;
+        }
         $this->ipAddress = $ipAddress;
         $this->userAgent = $userAgent;
         $this->requestMethod = $requestMethod;
@@ -95,7 +104,7 @@ class ActivityLog
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id === null ? null : (int) $this->id;
     }
 
     public function getUuid(): string
@@ -157,10 +166,17 @@ class ActivityLog
             return null;
         }
 
-        $stringMetadata = is_string($this->metadata) ? $this->metadata : (string) $this->metadata;
-        $decoded = json_decode($stringMetadata, true);
+        $decoded = json_decode($this->metadata, true);
+        if (!is_array($decoded)) {
+            return null;
+        }
 
-        return is_array($decoded) ? $decoded : null;
+        $result = [];
+        foreach ($decoded as $k => $v) {
+            $result[(string) $k] = $v;
+        }
+
+        return $result;
     }
 
     public function getMetadataAsJson(): ?string
@@ -234,7 +250,7 @@ class ActivityLog
         return [
             'user_id' => $this->userId,
             'session_id' => $this->sessionId,
-            'target' => $this->targetType && $this->targetId ? [
+            'target' => $this->targetType !== null && $this->targetId !== null ? [
                 'type' => $this->targetType,
                 'id' => $this->targetId,
             ] : null,
@@ -273,8 +289,8 @@ class ActivityLog
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
             'request_path' => $this->requestPath,
-            'occurred_at' => $this->occurredAt->format('Y-m-d H => i => s'),
-            'created_at' => $this->createdAt->format('Y-m-d H => i => s'),
+            'occurred_at' => $this->occurredAt->format('Y-m-d H:i:s'),
+            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -293,7 +309,7 @@ class ActivityLog
             'severity' => $this->severity->value,
             'status' => $this->status->value,
             'user' => $this->userId,
-            'target' => $this->targetType && $this->targetId
+            'target' => $this->targetType !== null && $this->targetId !== null
                 ? "{$this->targetType} => {$this->targetId}"
                 : null,
             'ip' => $this->ipAddress,
@@ -312,20 +328,49 @@ class ActivityLog
      */
     public static function fromDatabaseRow(array $data): self
     {
+        // Normalize and validate values from DB row to concrete types
+        $actionTypeVal = isset($data['action_type']) ? (string) $data['action_type'] : '';
+        $statusVal = isset($data['status']) ? (string) $data['status'] : '';
+
+        $userId = isset($data['user_id']) ? (int) $data['user_id'] : null;
+        $sessionId = isset($data['session_id']) ? (string) $data['session_id'] : null;
+        $targetType = isset($data['target_type']) ? (string) $data['target_type'] : null;
+        $targetId = isset($data['target_id']) ? (string) $data['target_id'] : null;
+        $description = isset($data['description']) ? (string) $data['description'] : null;
+        $ipAddress = isset($data['ip_address']) ? (string) $data['ip_address'] : null;
+        $userAgent = isset($data['user_agent']) ? (string) $data['user_agent'] : null;
+        $requestMethod = isset($data['request_method']) ? (string) $data['request_method'] : null;
+        $requestPath = isset($data['request_path']) ? (string) $data['request_path'] : null;
+
+        // Normalize metadata to array|null
+        $metadataRaw = $data['metadata'] ?? null;
+        $metadataArr = null;
+        if ($metadataRaw !== null) {
+            $decoded = json_decode(is_string($metadataRaw) ? $metadataRaw : (string) $metadataRaw, true);
+            if (is_array($decoded)) {
+                $metadataArr = [];
+                foreach ($decoded as $k => $v) {
+                    $metadataArr[(string) $k] = $v;
+                }
+            }
+        }
+
+        $occurredAtStr = isset($data['occurred_at']) ? (string) $data['occurred_at'] : 'now';
+
         $entity = new self(
-            actionType: ActivityType::from($data['action_type']),
-            userId: $data['user_id'] !== null ? (int) $data['user_id'] : null,
-            sessionId: $data['session_id'],
-            status: ActivityStatus::from($data['status']),
-            targetType: $data['target_type'],
-            targetId: $data['target_id'],
-            description: $data['description'],
-            metadata: $data['metadata'] ? json_decode(is_string($data['metadata']) ? $data['metadata'] : (string) $data['metadata'], true) : null,
-            ipAddress: $data['ip_address'],
-            userAgent: $data['user_agent'],
-            requestMethod: $data['request_method'],
-            requestPath: $data['request_path'],
-            occurredAt: new DateTimeImmutable($data['occurred_at']),
+            actionType: ActivityType::from($actionTypeVal),
+            userId: $userId,
+            sessionId: $sessionId,
+            status: ActivityStatus::from($statusVal),
+            targetType: $targetType,
+            targetId: $targetId,
+            description: $description,
+            metadata: $metadataArr,
+            ipAddress: $ipAddress,
+            userAgent: $userAgent,
+            requestMethod: $requestMethod,
+            requestPath: $requestPath,
+            occurredAt: new DateTimeImmutable($occurredAtStr),
         );
 
         // 設定從資料庫來的資料
@@ -341,13 +386,15 @@ class ActivityLog
 
         $createdAtProperty = $reflection->getProperty('createdAt');
         $createdAtProperty->setAccessible(true);
-        $createdAtProperty->setValue($entity, new DateTimeImmutable($data['created_at']));
+        $createdAtProperty->setValue($entity, new DateTimeImmutable((string) $data['created_at']));
 
         return $entity;
     }
 
     /**
      * 從 DTO 建立 ActivityLog 實體.
+     *
+     * @param array<string,mixed>|null $metadata
      */
     public static function fromDTO(
         ActivityType $actionType,
@@ -357,7 +404,6 @@ class ActivityLog
         ?string $targetType = null,
         ?string $targetId = null,
         ?string $description = null,
-        /** @var array<string, mixed>|null */
         ?array $metadata = null,
         ?string $ipAddress = null,
         ?string $userAgent = null,
