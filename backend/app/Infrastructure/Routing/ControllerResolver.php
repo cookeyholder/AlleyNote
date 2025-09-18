@@ -29,6 +29,9 @@ class ControllerResolver
     /**
      * 解析並執行控制器方法.
      */
+    /**
+     * @param array<string, mixed> $parameters
+     */
     public function resolve(
         RouteInterface $route,
         ServerRequestInterface $request,
@@ -52,11 +55,15 @@ class ControllerResolver
             return $this->handleCallable($handler, $request, $parameters);
         }
 
+        // @phpstan-ignore-next-line - 所有已知的 handler 類型已被處理，保留例外以防未知類型
         throw new RuntimeException('無效的路由處理器格式');
     }
 
     /**
      * 處理閉包函式處理器.
+     */
+    /**
+     * @param array<string, mixed> $parameters
      */
     private function handleCallable(callable $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -82,7 +89,7 @@ class ControllerResolver
     private function createResponse(): ResponseInterface
     {
         return new class implements ResponseInterface {
-            /** @var array<string, array<string> */
+            /** @var array<string, array<string>> */
             private array $headers = [];
 
             private mixed $body;
@@ -148,7 +155,7 @@ class ControllerResolver
 
             public function getHeaders(): array
             {
-                /** @var array<string, array<string> $headers */
+                /** @var array<string, array<string>> $headers */
                 $headers = $this->headers;
 
                 return $headers;
@@ -219,7 +226,7 @@ class ControllerResolver
     {
         // 建立簡單的 PSR-7 回應
         $response = new class implements ResponseInterface {
-            /** @var array<string, array<string> */
+            /** @var array<string, array<string>> */
             private array $headers = ['Content-Type' => ['application/json']];
 
             private mixed $body;
@@ -285,7 +292,7 @@ class ControllerResolver
 
             public function getHeaders(): array
             {
-                /** @var array<string, array<string> $headers */
+                /** @var array<string, array<string>> $headers */
                 $headers = $this->headers;
 
                 return $headers;
@@ -349,14 +356,21 @@ class ControllerResolver
         };
 
         // 將資料編碼為 JSON
-        $json = (json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? '') ? true : '';
-        $response->getBody()->write($json ? true : '{}');
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            $json = '{}';
+        }
+
+        $response->getBody()->write($json);
 
         return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
     }
 
     /**
      * 處理字串格式處理器 "ControllerClass@method".
+     */
+    /**
+     * @param array<string, mixed> $parameters
      */
     private function handleStringHandler(string $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
@@ -366,29 +380,59 @@ class ControllerResolver
 
         [$controllerClass, $method] = explode('@', $handler, 2);
 
+        /** @var class-string $controllerClass */
+        /** @var string $method */
         return $this->handleArrayHandler([$controllerClass, $method], $request, $parameters);
     }
 
     /**
      * 處理陣列格式處理器 [ControllerClass => class, 'method'].
      */
+    /**
+     * @param array{0: class-string|object,1: string} $handler
+     * @param array<string, mixed> $parameters
+     */
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
-        [$controllerClass, $method] = $handler;
+    /** @var class-string|object $controllerClass */
+    /** @var string $method */
+    [$controllerClass, $method] = $handler;
 
-        // 解析控制器類別
-        $controller = $this->resolveController($controllerClass);
+        // 解析控制器類別或使用已提供的實例
+        if (is_object($controllerClass)) {
+            $controller = $controllerClass;
 
-        // 檢查方法是否存在
-        if (!method_exists($controller, $method)) {
-            throw new RuntimeException("控制器方法不存在: {$controllerClass}::{$method}");
+            // method 由 PHPDoc/type 已確認為字串，無需再次檢查
+
+            // 檢查方法是否存在
+            if (!method_exists($controller, $method)) {
+                $className = get_class($controller);
+                throw new RuntimeException("控制器方法不存在: {$className}::{$method}");
+            }
+        } else {
+            // controllerClass 是 class-string
+            /** @var class-string $controllerClass */
+            $controller = $this->resolveController($controllerClass);
+
+            // method 由 PHPDoc/type 已確認為字串，無需再次檢查
+
+            // 檢查方法是否存在
+            if (!method_exists($controller, $method)) {
+                throw new RuntimeException("控制器方法不存在: {$controllerClass}::{$method}");
+            }
         }
 
         // 準備方法參數
         $methodArgs = $this->resolveMethodArguments($controller, $method, $request, $parameters);
 
         // 呼叫控制器方法
-        return $controller->{$method}(...$methodArgs);
+        $result = $controller->{$method}(...$methodArgs);
+
+        if ($result instanceof ResponseInterface) {
+            return $result;
+        }
+
+        return $this->createJsonResponse($result);
     }
 
     /**
@@ -407,9 +451,11 @@ class ControllerResolver
         }
 
         // 從 DI 容器中取得控制器實例
-        if ($this->container->has($controllerClass)) {
-            return $this->container->get($controllerClass);
-        }
+            if ($this->container->has($controllerClass)) {
+                /** @var object $instance */
+                $instance = $this->container->get($controllerClass);
+                return $instance;
+            }
 
         // 如果容器中沒有，嘗試建立實例
         try {
@@ -431,6 +477,9 @@ class ControllerResolver
 
     /**
      * 解析建構子參數.
+     */
+    /**
+     * @return array<int, mixed>
      */
     private function resolveConstructorArguments(ReflectionMethod $constructor): array
     {
@@ -470,6 +519,10 @@ class ControllerResolver
 
     /**
      * 解析控制器方法參數.
+     */
+    /**
+     * @param array<string, mixed> $routeParameters
+     * @return array<int, mixed>
      */
     private function resolveMethodArguments(
         object $controller,
@@ -543,13 +596,25 @@ class ControllerResolver
     /**
      * 轉換參數類型.
      */
-    private function convertParameter(string $value, ?ReflectionType $type): mixed
+    private function convertParameter(mixed $value, ?ReflectionType $type): mixed
     {
         if ($type === null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
 
-        return match ($type->getName()) {
+        $typeName = $type->getName();
+
+        // 如果輸入不是字串，嘗試直接轉型或返回原值
+        if (!is_string($value)) {
+            return match ($typeName) {
+                'int' => is_numeric($value) ? (int) $value : $value,
+                'float' => is_numeric($value) ? (float) $value : $value,
+                'bool' => is_bool($value) ? $value : filter_var((string) $value, FILTER_VALIDATE_BOOLEAN),
+                default => $value,
+            };
+        }
+
+        return match ($typeName) {
             'int' => (int) $value,
             'float' => (float) $value,
             'bool' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
