@@ -7,6 +7,7 @@ namespace App\Infrastructure\Auth\Repositories;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
+use DateTimeImmutable;
 use Exception;
 use PDO;
 use PDOException;
@@ -32,10 +33,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     ) {}
 
     /**
-     * 將 token 加入黑名單.
+     * 將token加入黑名單.
      *
      * @param TokenBlacklistEntry $entry 黑名單項目
-     * @return bool 加入成功時回傳 true
+     * @return bool 是否成功
      */
     public function addToBlacklist(TokenBlacklistEntry $entry): bool
     {
@@ -168,7 +169,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 return null;
             }
 
-            return TokenBlacklistEntry::fromDatabaseArray($result);
+            /** @var array<string, mixed> $result */
+            return TokenBlacklistEntry::fromArray($result);
         } catch (PDOException $e) {
             throw new Exception('無法查詢黑名單項目: ' . $e->getMessage(), 0, $e);
         }
@@ -205,7 +207,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($results as $result) {
-                $entries[] = TokenBlacklistEntry::fromDatabaseArray($result);
+                /** @var array<string, mixed> $result */
+                $entries[] = TokenBlacklistEntry::fromArray($result);
             }
 
             return $entries;
@@ -245,7 +248,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($results as $result) {
-                $entries[] = TokenBlacklistEntry::fromDatabaseArray($result);
+                /** @var array<string, mixed> $result */
+                $entries[] = TokenBlacklistEntry::fromArray($result);
             }
 
             return $entries;
@@ -285,7 +289,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($results as $result) {
-                $entries[] = TokenBlacklistEntry::fromDatabaseArray($result);
+                /** @var array<string, mixed> $result */
+                $entries[] = TokenBlacklistEntry::fromArray($result);
             }
 
             return $entries;
@@ -374,6 +379,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute($params);
 
             $blacklistedJtis = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            /** @var array<int, string> $blacklistedJtis */
             $blacklistedSet = array_flip($blacklistedJtis);
 
             $result = [];
@@ -444,13 +450,14 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $currentTime = new DateTime();
 
             foreach ($tokens as $token) {
-                $entries[] = TokenBlacklistEntry::create(
-                    $token['jti'],
-                    'refresh_token',
-                    $userId,
-                    new DateTime($token['expires_at']),
-                    $reason,
-                    $token['device_id'],
+                $entries[] = new TokenBlacklistEntry(
+                    jti: (string) $token['jti'],
+                    tokenType: 'refresh_token',
+                    expiresAt: new DateTimeImmutable((string) $token['expires_at']),
+                    blacklistedAt: new DateTimeImmutable(),
+                    reason: $reason,
+                    userId: $userId,
+                    deviceId: $token['device_id'] ? (string) $token['device_id'] : null,
                 );
             }
 
@@ -483,13 +490,14 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($tokens as $token) {
-                $entries[] = TokenBlacklistEntry::create(
-                    $token['jti'],
-                    'refresh_token',
-                    (int) $token['user_id'],
-                    new DateTime($token['expires_at']),
-                    $reason,
-                    $deviceId,
+                $entries[] = new TokenBlacklistEntry(
+                    jti: (string) $token['jti'],
+                    tokenType: 'refresh_token',
+                    expiresAt: new DateTimeImmutable((string) $token['expires_at']),
+                    blacklistedAt: new DateTimeImmutable(),
+                    reason: $reason,
+                    userId: (int) $token['user_id'],
+                    deviceId: $deviceId,
                 );
             }
 
@@ -667,7 +675,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($results as $result) {
-                $entries[] = TokenBlacklistEntry::fromDatabaseArray($result);
+                /** @var array<string, mixed> $result */
+                $entries[] = TokenBlacklistEntry::fromArray($result);
             }
 
             return $entries;
@@ -687,8 +696,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT * FROM token_blacklist
-                WHERE reason LIKE "%security%" 
-                   OR reason LIKE "%breach%" 
+                WHERE reason LIKE "%security%"
+                   OR reason LIKE "%breach%"
                    OR reason LIKE "%suspicious%"
                 ORDER BY blacklisted_at DESC
                 LIMIT ?
@@ -701,7 +710,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($results as $result) {
-                $entries[] = TokenBlacklistEntry::fromDatabaseArray($result);
+                /** @var array<string, mixed> $result */
+                $entries[] = TokenBlacklistEntry::fromArray($result);
             }
 
             return $entries;
@@ -741,7 +751,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             if (isset($criteria['reason'])) {
                 $sql .= ' AND reason LIKE ?';
-                $params[] = '%' . $criteria['reason'] . '%';
+                $params[] = '%' . (string) $criteria['reason'] . '%';
             }
 
             if (isset($criteria['date_from'])) {
@@ -769,7 +779,8 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $entries = [];
 
             foreach ($results as $result) {
-                $entries[] = TokenBlacklistEntry::fromDatabaseArray($result);
+                /** @var array<string, mixed> $result */
+                $entries[] = TokenBlacklistEntry::fromArray($result);
             }
 
             return $entries;
@@ -807,7 +818,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             if (isset($criteria['reason'])) {
                 $sql .= ' AND reason LIKE ?';
-                $params[] = '%' . $criteria['reason'] . '%';
+                $params[] = '%' . (string) $criteria['reason'] . '%';
             }
 
             if (isset($criteria['date_from'])) {
