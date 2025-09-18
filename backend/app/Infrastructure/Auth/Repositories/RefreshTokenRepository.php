@@ -533,9 +533,9 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                         SELECT jti, parent_token_jti, 0 as level
                         FROM ' . self::TABLE_NAME . '
                         WHERE jti = ?
-                        
+
                         UNION ALL
-                        
+
                         -- 查找子 token
                         SELECT t.jti, t.parent_token_jti, tf.level + 1
                         FROM ' . self::TABLE_NAME . ' t

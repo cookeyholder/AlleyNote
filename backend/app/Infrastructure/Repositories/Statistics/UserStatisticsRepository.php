@@ -243,7 +243,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     u.id,
                     u.username,
                     u.email,
@@ -310,7 +310,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(DISTINCT u.id) as total_new_users,
                     COUNT(DISTINCT CASE WHEN ua.user_id IS NOT NULL THEN u.id END) as retained_users
                 FROM users u
@@ -427,7 +427,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     COUNT(ua.first_activity) as users_with_activity
                 FROM users u
                 LEFT JOIN (
-                    SELECT 
+                    SELECT
                         user_id,
                         MIN(created_at) as first_activity
                     FROM user_activities
@@ -475,7 +475,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     AVG(daily_activities.activity_count) as avg_activities_per_user
                 FROM user_activities ua
                 INNER JOIN (
-                    SELECT 
+                    SELECT
                         user_id,
                         COUNT(*) as activity_count
                     FROM user_activities
@@ -518,7 +518,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     MAX(user_metrics.activity_count) as max_lifetime_activities
                 FROM users u
                 INNER JOIN (
-                    SELECT 
+                    SELECT
                         ua.user_id,
                         COUNT(ua.id) as activity_count,
                         DATEDIFF(MAX(ua.created_at), MIN(ua.created_at)) + 1 as days_active
@@ -642,7 +642,7 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
                     AVG(daily_user_activities.activity_count) as avg_activities_per_user
                 FROM user_activities ua
                 INNER JOIN (
-                    SELECT 
+                    SELECT
                         DATE(created_at) as date,
                         user_id,
                         COUNT(*) as activity_count
