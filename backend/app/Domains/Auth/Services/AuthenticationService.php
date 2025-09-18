@@ -42,7 +42,9 @@ final class AuthenticationService implements AuthenticationServiceInterface
     {
         try {
             // 1. 驗證使用者憑證
+            /** @var array<string, mixed>|null $user */
             $user = $this->userRepository->validateCredentials($request->email, $request->password);
+
             if ($user === null) {
                 throw new AuthenticationException(
                     AuthenticationException::REASON_INVALID_CREDENTIALS,
