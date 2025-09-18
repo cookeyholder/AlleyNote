@@ -15,11 +15,25 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 class MemoryRouteCache implements RouteCacheInterface
 {
     private int $ttl = 3600; // 預設 1 小時
-
+    /**
+     * 快取內容，鍵為名稱（如 'routes'），值為對應的 RouteCollectionInterface
+     *
+    * @var array<string, mixed>
+     */
     private array $cache = [];
 
+    /**
+     * 每個快取項目的時間戳（UNIX 時間）
+     *
+     * @var array<string,int>
+     */
     private array $timestamps = [];
 
+    /**
+     * 快取統計資訊
+     *
+     * @var array{hits:int, misses:int, size:int, created_at:int, last_used:int}
+     */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -41,7 +55,7 @@ class MemoryRouteCache implements RouteCacheInterface
 
         // 檢查是否過期
         if ($this->ttl > 0 && isset($this->timestamps['routes'])) {
-            $elapsed = time() - $this->timestamps['routes'];
+            $elapsed = time() - (int) $this->timestamps['routes'];
             if ($elapsed > $this->ttl) {
                 unset($this->cache['routes']);
                 unset($this->timestamps['routes']);
@@ -56,21 +70,21 @@ class MemoryRouteCache implements RouteCacheInterface
     public function load(): ?RouteCollectionInterface
     {
         if (!$this->isValid()) {
-            $this->stats['misses']++;
+            $this->stats['misses'] = (int) $this->stats['misses'] + 1;
 
             return null;
         }
 
         $data = $this->cache['routes'];
         if (!$data instanceof RouteCollectionInterface) {
-            $this->stats['misses']++;
+            $this->stats['misses'] = (int) $this->stats['misses'] + 1;
             unset($this->cache['routes']);
             unset($this->timestamps['routes']);
 
             return null;
         }
 
-        $this->stats['hits']++;
+        $this->stats['hits'] = (int) $this->stats['hits'] + 1;
         $this->stats['last_used'] = time();
 
         return $data;
@@ -121,6 +135,11 @@ class MemoryRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
+    /**
+     * 取得統計資訊
+     *
+     * @return array{hits:int, misses:int, size:int, created_at:int, last_used:int}
+     */
     public function getStats(): array
     {
         return $this->stats;
@@ -129,6 +148,11 @@ class MemoryRouteCache implements RouteCacheInterface
     /**
      * 取得所有快取項目.
      */
+    /**
+     * 取得所有快取項目.
+     *
+     * @return array<string,mixed>
+     */
     public function getCache(): array
     {
         return $this->cache;
@@ -136,6 +160,11 @@ class MemoryRouteCache implements RouteCacheInterface
 
     /**
      * 取得所有時間戳.
+     */
+    /**
+     * 取得所有時間戳.
+     *
+     * @return array<string,int>
      */
     public function getTimestamps(): array
     {
@@ -155,9 +184,9 @@ class MemoryRouteCache implements RouteCacheInterface
             return false;
         }
 
-        $elapsed = time() - $this->timestamps[$key];
+    $elapsed = time() - (int) $this->timestamps[$key];
 
-        return $elapsed > $this->ttl;
+    return $elapsed > $this->ttl;
     }
 
     /**
@@ -171,7 +200,7 @@ class MemoryRouteCache implements RouteCacheInterface
             if ($this->isItemExpired($key)) {
                 unset($this->cache[$key]);
                 unset($this->timestamps[$key]);
-                $cleaned++;
+                $cleaned = (int) $cleaned + 1;
             }
         }
 
