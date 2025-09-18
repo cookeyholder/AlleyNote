@@ -80,8 +80,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateTokenFromPool(string $token): void
     {
-    // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
-    $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
+        // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
+        $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
 
         // 使用恆定時間比較防止時序攻擊
         $found = false;
@@ -122,7 +122,6 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateSingleToken(string $token): void
     {
-
         if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) || !is_string($_SESSION['csrf_token'])) {
             throw new CsrfTokenException('無效的 CSRF token');
         }
@@ -150,8 +149,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         }
 
         $currentTime = time();
-    // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
-    $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
+        // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
+        $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
 
         foreach ($tokenPool as $token => $timestamp) {
             $ts = is_numeric($timestamp) ? (int) $timestamp : null;
@@ -171,17 +170,17 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         }
 
         $now = time();
-            // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
-            $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
+        // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
+        $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
 
         // 如果池大小超過限制，移除最舊的權杖
         while (count($tokenPool) > self::TOKEN_POOL_SIZE) {
             $oldestToken = array_key_first($tokenPool);
-                // array_key_first should not be null here because count($tokenPool) > TOKEN_POOL_SIZE
-                $oldestTokenKey = (string) $oldestToken;
-                unset($_SESSION[self::TOKEN_POOL_KEY][$oldestTokenKey]);
-                // refresh tokenPool from session
-                $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
+            // array_key_first should not be null here because count($tokenPool) > TOKEN_POOL_SIZE
+            $oldestTokenKey = (string) $oldestToken;
+            unset($_SESSION[self::TOKEN_POOL_KEY][$oldestTokenKey]);
+            // refresh tokenPool from session
+            $tokenPool = (array) $_SESSION[self::TOKEN_POOL_KEY];
         }
     }
 
@@ -257,8 +256,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             ];
         }
 
-    // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
-    $pool = (array) $_SESSION[self::TOKEN_POOL_KEY];
+        // $_SESSION[self::TOKEN_POOL_KEY] is confirmed to exist above
+        $pool = (array) $_SESSION[self::TOKEN_POOL_KEY];
         $currentTime = time();
 
         $tokens = [];
@@ -269,9 +268,9 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
             $ts = is_numeric($timestamp) ? (int) $timestamp : null;
             $age = $ts !== null ? $currentTime - $ts : null;
-                $tokens[] = [
-                    // $token is guaranteed to be string due to the loop guard above
-                    'token' => substr($token, 0, 8) . '...', // 只顯示前8位
+            $tokens[] = [
+                // $token is guaranteed to be string due to the loop guard above
+                'token' => substr($token, 0, 8) . '...', // 只顯示前8位
                 'age' => $age,
                 'expires_in' => $ts !== null ? self::TOKEN_LIFETIME - $age : null,
                 'expired' => $ts !== null ? ($age > self::TOKEN_LIFETIME) : false,
