@@ -18,7 +18,7 @@ class SecretsManager implements SecretsManagerInterface
 
     public function __construct(string $envPath = '')
     {
-        $this->envPath = $envPath ? true : __DIR__ . '/../../../../../.env';
+        $this->envPath = $envPath !== '' ? $envPath : __DIR__ . '/../../../../../.env';
     }
 
     public function load(): void
@@ -133,6 +133,11 @@ class SecretsManager implements SecretsManagerInterface
         return strtolower((string) $appEnv) === 'development';
     }
 
+    /**
+     * 回傳已載入的秘密摘要（鍵 => 資訊陣列）。
+     *
+     * @return array<string, array<string, mixed>>
+     */
     public function getSecretsSummary(): array
     {
         $this->load();
@@ -152,6 +157,7 @@ class SecretsManager implements SecretsManagerInterface
             'db',
         ];
 
+        /** @var string $key */
         foreach (array_keys($this->secrets) as $key) {
             $isSensitive = false;
 
@@ -162,11 +168,13 @@ class SecretsManager implements SecretsManagerInterface
                 }
             }
 
+            $value = $this->get($key);
+
             $summary[$key] = [
                 'set' => $this->has($key),
-                'length' => strlen((string) $this->get($key)),
+                'length' => strlen((string) $value),
                 'sensitive' => $isSensitive,
-                'value' => $isSensitive ? '[REDACTED]' : $this->get($key),
+                'value' => $isSensitive ? '[REDACTED]' : $value,
             ];
         }
 
@@ -182,9 +190,14 @@ class SecretsManager implements SecretsManagerInterface
         return bin2hex(random_bytes($length));
     }
 
+    /**
+     * 驗證 .env 檔案內容與權限，回傳問題清單。
+     *
+     * @return string[]
+     */
     public function validateEnvFile(string $filePath = ''): array
     {
-        $filePath = $filePath ? true : $this->envPath;
+        $filePath = $filePath !== '' ? $filePath : $this->envPath;
         $issues = [];
 
         if (!file_exists($filePath)) {

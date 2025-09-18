@@ -118,9 +118,6 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param array<string, string> $cookies
      */
-    /**
-     * @param array<string, string> $cookies
-     */
     public function withCookieParams(array $cookies): self
     {
         $new = clone $this;
@@ -137,9 +134,6 @@ class ServerRequest implements ServerRequestInterface
         return $this->queryParams;
     }
 
-    /**
-     * @param array<string, string> $query
-     */
     /**
      * @param array<string, string> $query
      */
@@ -162,9 +156,6 @@ class ServerRequest implements ServerRequestInterface
     /**
      * @param array<mixed> $uploadedFiles
      */
-    /**
-     * @param array<mixed> $uploadedFiles
-     */
     public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
@@ -173,7 +164,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, mixed>|object|null
      */
     public function getParsedBody(): array|object|null
     {
@@ -181,7 +172,7 @@ class ServerRequest implements ServerRequestInterface
     }
 
     /**
-     * @param array<string, mixed> $data
+     * @param array<string, mixed>|object|null $data
      */
     public function withParsedBody(mixed $data): self
     {
@@ -201,8 +192,6 @@ class ServerRequest implements ServerRequestInterface
 
     /**
      * @param string $name
-     * @param mixed $default
-     * @return mixed
      */
     public function getAttribute($name, mixed $default = null): mixed
     {
