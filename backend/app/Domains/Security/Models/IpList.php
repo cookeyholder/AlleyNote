@@ -31,13 +31,13 @@ class IpList implements JsonSerializable
     public function __construct(array $attributes)
     {
         $this->id = isset($attributes['id']) ? (int) $attributes['id'] : 0;
-        $this->uuid = $attributes['uuid'] ?? '';
-        $this->ipAddress = $attributes['ip_address'] ?? '';
+        $this->uuid = isset($attributes['uuid']) ? (string) $attributes['uuid'] : '';
+        $this->ipAddress = isset($attributes['ip_address']) ? (string) $attributes['ip_address'] : '';
         $this->type = isset($attributes['type']) ? (int) $attributes['type'] : 0;
         $this->unitId = isset($attributes['unit_id']) ? (int) $attributes['unit_id'] : null;
-        $this->description = $attributes['description'] ?? null;
-        $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
-        $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
+        $this->description = isset($attributes['description']) ? (string) $attributes['description'] : null;
+        $this->createdAt = isset($attributes['created_at']) ? (string) $attributes['created_at'] : date('Y-m-d H:i:s');
+        $this->updatedAt = isset($attributes['updated_at']) ? (string) $attributes['updated_at'] : date('Y-m-d H:i:s');
     }
 
     /**
@@ -125,8 +125,9 @@ class IpList implements JsonSerializable
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        if ($data['description'] !== null) {
-            $data['description'] = $sanitizer->sanitizeHtml($data['description']);
+        $desc = $data['description'] ?? null;
+        if (is_string($desc)) {
+            $data['description'] = $sanitizer->sanitizeHtml($desc);
         }
 
         return $data;
