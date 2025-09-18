@@ -56,7 +56,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
     /**
      * 產生 JWT access token.
-     * @param array $payload Token 載荷資料
+     * @param array<string, mixed> $payload Token 載荷資料
      * @return string JWT token 字串
      *
      * @throws TokenGenerationException 當 token 產生失敗時
@@ -70,7 +70,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
     /**
      * 產生 JWT refresh token.
-     * @param array $payload Token 載荷資料
+     * @param array<string, mixed> $payload Token 載荷資料
      * @return string JWT token 字串
      *
      * @throws TokenGenerationException 當 token 產生失敗時
@@ -85,7 +85,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     /**
      * 驗證 JWT token.
      * @param string $token JWT token 字串
-     * @return array Token 載荷資料
+     * @return array<string, mixed> Token 載荷資料
      *
      * @throws InvalidTokenException 當 token 格式無效時
      * @throws TokenExpiredException 當 token 已過期時
@@ -103,6 +103,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         try {
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
+            /** @var array<string, mixed> $payload */
             $payload = (array) $decoded;
 
             // 驗證必要欄位
@@ -116,13 +117,14 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             // 驗證 issuer 和 audience
             $this->validateIssuerAndAudience($payload);
 
+            /** @var array<string, mixed> $payload */
             return $payload;
         } catch (ExpiredException $e) {
             throw new TokenExpiredException(
                 TokenExpiredException::ACCESS_TOKEN,
                 null,
-                $e,
-                'Token 已過期',
+                null,
+                $e->getMessage(),
             );
         } catch (Exception $e) {
             throw new TokenValidationException(
@@ -134,12 +136,9 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     }
 
     /**
-     * 解析 JWT token 但不驗證（用於除錯或取得過期 token 的資訊）.
+     * 解析 JWT token 但不驗證簽章.
      * @param string $token JWT token 字串
-     * @return array Token 載荷資料
-     *
-     * @throws TokenParsingException 當 token 無法解析時
-     */
+     * @return array<string, mixed> Token 載荷資料
     public function parseTokenUnsafe(string $token): array
     {
         if (empty($token)) {
@@ -262,7 +261,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      * @param mixed $privateKey 私鑰資源
      * @return bool true 如果匹配，false 如果不匹配
      */
-    private function keysMatch($privateKey, $publicKey): bool
+    private function keysMatch(string $privateKey, string $publicKey): bool
     {
         $testData = 'test-data-for-key-verification';
 
@@ -333,7 +332,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
     /**
      * 驗證必要欄位.
-     * @param array $payload Token 載荷
+     * @param array<string, mixed> $payload Token 載荷
      *
      * @throws InvalidTokenException 當必要欄位缺失時
      */
@@ -364,7 +363,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::ACCESS_TOKEN,
-                "Token 類型錯誤，預期: {$expectedType}，實際: " . ($payload['type'] ?? 'unknown'),
+                "Token 類型錯誤，預期: {$expectedType}，實際: " . (string) ($payload['type'] ?? 'unknown'),
             );
         }
     }
