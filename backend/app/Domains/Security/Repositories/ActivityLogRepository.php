@@ -256,14 +256,15 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . ' WHERE id = :id';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([' => id' => $id]);
+        $stmt->execute([':id' => $id]);
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$data) {
+        if (!$data || !is_array($data)) {
             return null;
         }
 
+        /** @var array<string, mixed> $data */
         $entity = ActivityLog::fromDatabaseRow($data);
 
         return $entity->toArray();
@@ -281,10 +282,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$data) {
+        if (!$data || !is_array($data)) {
             return null;
         }
 
+        /** @var array<string, mixed> $data */
         $entity = ActivityLog::fromDatabaseRow($data);
 
         return $entity->toArray();
@@ -306,9 +308,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
+            /** @var array<int, array<string, mixed>> $results */
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map(function (array $data): array {
+                /** @var array<string, mixed> $data */
                 $entity = ActivityLog::fromDatabaseRow($data);
 
                 return $entity->toArray();
@@ -333,12 +337,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[' => category'] = $category->value;
+            $params[':category'] = $category->value;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[' => action_type'] = $actionType->value;
+            $params[':action_type'] = $actionType->value;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -359,6 +363,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
@@ -384,7 +393,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[' => category'] = $category->value;
+            $params[':category'] = $category->value;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -405,6 +414,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
@@ -446,6 +460,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
@@ -472,7 +491,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[' => action_type'] = $actionType->value;
+            $params[':action_type'] = $actionType->value;
         }
 
         $sql = 'SELECT ' . self::SELECT_FIELDS . ' FROM ' . self::TABLE_NAME . '
@@ -493,6 +512,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
@@ -508,7 +532,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . ' WHERE action_category = :category';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([' => category' => $category->value]);
+        $stmt->execute([':category' => $category->value]);
 
         return (int) $stmt->fetchColumn();
     }
@@ -557,7 +581,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             'end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        /** @var array<string, mixed> $result */
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
 
     /**
@@ -576,7 +603,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        /** @var array<int, array<string, mixed>> $result */
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
 
     /**
@@ -616,7 +646,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt->bindValue(':threshold', $failureThreshold, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        /** @var array<string, int> $result */
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
 
     /**
@@ -687,12 +720,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[' => category'] = $category->value;
+            $params[':category'] = $category->value;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[' => action_type'] = $actionType->value;
+            $params[':action_type'] = $actionType->value;
         }
 
         if ($startTime !== null) {
@@ -730,6 +763,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
@@ -763,12 +801,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
-            $params[' => category'] = $category->value;
+            $params[':category'] = $category->value;
         }
 
         if ($actionType !== null) {
             $conditions[] = 'action_type = :action_type';
-            $params[' => action_type'] = $actionType->value;
+            $params[':action_type'] = $actionType->value;
         }
 
         if ($startTime !== null) {
@@ -783,7 +821,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $whereClause = empty($conditions) ? '' : 'WHERE ' . implode(' AND ', $conditions);
 
-        $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . "{$$whereClause}";
+        $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . ' ' . $whereClause;
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -811,7 +849,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt->bindValue(':min_failed_attempts', $minFailedAttempts, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        /** @var array<int, array<string, mixed>> $result */
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
     }
 
     /**
@@ -835,6 +876,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt->bindValue(':time_window', $timeWindow->format('Y-m-d H:i:s'));
         $stmt->execute();
 
+        /** @var array<int, array<string, mixed>> $results */
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         return array_map([$this, 'mapToArray'], $results);
@@ -867,6 +909,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
@@ -901,6 +948,11 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!is_array($data)) {
+                continue;
+            }
+
+            /** @var array<string, mixed> $data */
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
