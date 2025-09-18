@@ -84,18 +84,22 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
 
     public function hashPassword(string $password): string
     {
-        $hash = password_hash($password, PASSWORD_ARGON2ID, [
+        /** @var mixed $maybeHash */
+        $maybeHash = call_user_func('password_hash', $password, PASSWORD_ARGON2ID, [
             'memory_cost' => 65536,
             'time_cost' => 4,
             'threads' => 3,
         ]);
 
-        if ($hash === false) {
+        if (!is_string($maybeHash)) {
             throw new ValidationException(
                 ValidationResult::failure(['password' => ['密碼雜湊失敗']]),
                 '密碼雜湊失敗',
             );
         }
+
+        /** @var non-empty-string $hash */
+        $hash = $maybeHash;
 
         return $hash;
     }
