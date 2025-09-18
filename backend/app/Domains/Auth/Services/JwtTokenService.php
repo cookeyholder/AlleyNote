@@ -127,9 +127,11 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 使用 JWT provider 驗證和解析 token
             $payload = $this->jwtProvider->parseTokenUnsafe($token);
 
-            // 轉換為 JwtPayload 物件
-            // @phpstan-ignore-next-line
-            return $this->createJwtPayloadFromArray((array) $payload);
+            // 轉換為 JwtPayload 物件：為了讓 PHPStan 正確理解型別，先做明確的 local cast
+            /** @var array<string, mixed> $payloadArr */
+            $payloadArr = (array) $payload;
+
+            return $this->createJwtPayloadFromArray($payloadArr);
         } catch (Throwable $e) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_MALFORMED,
@@ -338,8 +340,17 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 jti: (string) $payload['jti'],
                 sub: (string) $payload['sub'],
                 iss: (string) $payload['iss'],
-                // @phpstan-ignore-next-line
-                aud: (array) (is_array($payload['aud'] ?? []) ? $payload['aud'] : [$payload['aud'] ?? '']),
+                aud: (array) (function ($aud) {
+                    if (is_array($aud)) {
+                        return $aud;
+                    }
+
+                    if ($aud === null) {
+                        return [];
+                    }
+
+                    return [$aud];
+                })($payload['aud'] ?? null),
                 iat: $iat,
                 exp: $exp,
                 nbf: $nbf,
@@ -380,8 +391,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 }
             }
 
-            // @phpstan-ignore-next-line
-            return $this->createJwtPayloadFromArray((array) $payload);
+            /** @var array<string, mixed> $payloadArr */
+            $payloadArr = (array) $payload;
+
+            return $this->createJwtPayloadFromArray($payloadArr);
         } catch (Throwable $e) {
             error_log('Error in JwtTokenService.php: ' . $e->getMessage());
 
@@ -418,8 +431,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 }
             }
 
-            // @phpstan-ignore-next-line
-            return $this->createJwtPayloadFromArray((array) $payload);
+            /** @var array<string, mixed> $payloadArr */
+            $payloadArr = (array) $payload;
+
+            return $this->createJwtPayloadFromArray($payloadArr);
         } catch (Throwable $e) {
             error_log('Error in JwtTokenService.php: ' . $e->getMessage());
 
@@ -435,8 +450,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
         try {
             $payload = $this->jwtProvider->parseTokenUnsafe($token);
 
-            // @phpstan-ignore-next-line
-            return $this->createJwtPayloadFromArray((array) $payload);
+            /** @var array<string, mixed> $payloadArr */
+            $payloadArr = (array) $payload;
+
+            return $this->createJwtPayloadFromArray($payloadArr);
         } catch (Throwable $e) {
             error_log('Error in JwtTokenService.php: ' . $e->getMessage());
 
