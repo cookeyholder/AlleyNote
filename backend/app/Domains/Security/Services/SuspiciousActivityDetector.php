@@ -244,7 +244,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 /** @var array<string, mixed> $scores */
                 $scores = $result['scores'];
                 $anomalyScores = array_merge($anomalyScores, $scores);
-                $confidence = max($confidence, (float) ($result['confidence'] ?? 0.0));
+                /** @var mixed $confidenceRaw */
+                $confidenceRaw = $result['confidence'] ?? 0.0;
+                /** @var float $confidenceValue */
+                $confidenceValue = is_numeric($confidenceRaw) ? (float) $confidenceRaw : 0.0;
+                $confidence = max($confidence, $confidenceValue);
             }
         }
 
@@ -257,7 +261,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $severityLevel = $this->escalateSeverity($severityLevel, $newSeverity);
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['frequency'] = $result['score'];
-                $confidence = max($confidence, (float) ($result['confidence'] ?? 0.0));
+                /** @var mixed $confidenceRaw */
+                $confidenceRaw = $result['confidence'] ?? 0.0;
+                /** @var float $confidenceValue */
+                $confidenceValue = is_numeric($confidenceRaw) ? (float) $confidenceRaw : 0.0;
+                $confidence = max($confidence, $confidenceValue);
             }
         }
 
@@ -270,7 +278,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $severityLevel = $this->escalateSeverity($severityLevel, $newSeverity);
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['pattern'] = $result['score'];
-                $confidence = max($confidence, (float) ($result['confidence'] ?? 0.0));
+                /** @var mixed $confidenceRaw */
+                $confidenceRaw = $result['confidence'] ?? 0.0;
+                /** @var float $confidenceValue */
+                $confidenceValue = is_numeric($confidenceRaw) ? (float) $confidenceRaw : 0.0;
+                $confidence = max($confidence, $confidenceValue);
             }
         }
 
@@ -278,9 +290,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $userId = $activities[0]['user_id'] ?? 0;
 
         // 產生建議動作
-        $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRules);
+        /** @var array<array<string, mixed>> $detectionRulesArray */
+        $detectionRulesArray = $detectionRules;
+        $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRulesArray);
 
-        // DEBUG: 確認最終參數
+        // 確保 DTO 參數的正確類型
+        /** @var array<string, mixed> $detectionRulesForDTO */
+        $detectionRulesForDTO = $detectionRules;
 
         return SuspiciousActivityAnalysisDTO::forUser(
             userId: (int) $userId,
@@ -290,7 +306,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             activityCounts: array_map('strval', $activityCounts),
             failureCounts: array_map('strval', $failureCounts),
             anomalyScores: $anomalyScores,
-            detectionRules: $detectionRules,
+            detectionRules: $detectionRulesForDTO,
             metadata: [
                 'total_activities_analyzed' => count($activities),
                 'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
@@ -355,7 +371,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 /** @var array<string, mixed> $scores */
                 $scores = $failureResult['scores'];
                 $anomalyScores = array_merge($anomalyScores, $scores);
-                $confidence = max($confidence, (float) ($failureResult['confidence'] ?? 0.0));
+                /** @var float $confidenceValue */
+                $confidenceValue = 0.0;
+                if (isset($failureResult['confidence']) && is_numeric($failureResult['confidence'])) {
+                    $confidenceValue = (float) $failureResult['confidence'];
+                }
+                $confidence = max($confidence, $confidenceValue);
             }
         }
 
@@ -368,7 +389,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 $severityLevel = $this->escalateSeverity($severityLevel, $newSeverity);
                 $detectionRules[] = $result['rule'];
                 $anomalyScores['ip_reputation'] = $result['score'];
-                $confidence = max($confidence, (float) ($result['confidence'] ?? 0.0));
+                /** @var float $confidenceValue */
+                $confidenceValue = 0.0;
+                if (isset($result['confidence']) && is_numeric($result['confidence'])) {
+                    $confidenceValue = (float) $result['confidence'];
+                }
+                $confidence = max($confidence, $confidenceValue);
             }
         }
 
@@ -388,7 +414,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
 
         // 產生建議動作
-        $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRules);
+        /** @var array<array<string, mixed>> $detectionRulesArray */
+        $detectionRulesArray = $detectionRules;
+        $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRulesArray);
+
+        /** @var array<string, mixed> $detectionRulesForDTO */
+        $detectionRulesForDTO = $detectionRules;
 
         return SuspiciousActivityAnalysisDTO::forIpAddress(
             ipAddress: $ipAddress,
@@ -398,7 +429,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             activityCounts: array_map('strval', $activityCounts),
             failureCounts: array_map('strval', $failureCounts),
             anomalyScores: $anomalyScores,
-            detectionRules: $detectionRules,
+            detectionRules: $detectionRulesForDTO,
             metadata: [
                 'unique_users_count' => $userCount,
                 'total_activities_analyzed' => count($activities),
