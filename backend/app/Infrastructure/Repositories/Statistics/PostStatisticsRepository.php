@@ -49,7 +49,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 throw new RuntimeException('查詢執行失敗');
             }
 
-            return (int) $stmt->fetchColumn();
+            $value = $stmt->fetchColumn();
+
+            return $value === false ? 0 : (int) $value;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢文章數量: ' . $e->getMessage(), 0, $e);
         }
@@ -76,7 +78,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return (int) $stmt->fetchColumn();
+            $value = $stmt->fetchColumn();
+
+            return $value === false ? 0 : (int) $value;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢觀看次數: ' . $e->getMessage(), 0, $e);
         }
@@ -101,7 +105,9 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
                 'end_date' => $period->endDate->format('Y-m-d H:i:s'),
             ]);
 
-            return (int) $stmt->fetchColumn();
+            $value = $stmt->fetchColumn();
+
+            return $value === false ? 0 : (int) $value;
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢不重複觀看者數量: ' . $e->getMessage(), 0, $e);
         }
@@ -136,7 +142,10 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
             $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $rows ?: [];
         } catch (PDOException $e) {
             throw new RuntimeException('無法查詢熱門文章: ' . $e->getMessage(), 0, $e);
         }
