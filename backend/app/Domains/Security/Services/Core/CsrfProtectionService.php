@@ -54,7 +54,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
 
     public function validateToken(?string $token): void
     {
-        if (empty($token)) {
+        if (!is_string($token) || $token === '') {
             $this->logCsrfAttack($token);
 
             throw new CsrfTokenException('缺少 CSRF token');
@@ -80,21 +80,27 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateTokenFromPool(string $token): void
     {
-        $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
+        $tokenPool = (array) ($_SESSION[self::TOKEN_POOL_KEY] ?? []);
 
         // 使用恆定時間比較防止時序攻擊
         $found = false;
         $tokenTime = null;
 
         foreach ($tokenPool as $poolToken => $timestamp) {
+            if (!is_string($poolToken)) {
+                continue;
+            }
+
+            $ts = is_numeric($timestamp) ? (int) $timestamp : null;
+
             if (hash_equals($poolToken, $token)) {
                 $found = true;
-                $tokenTime = $timestamp;
+                $tokenTime = $ts;
                 break;
             }
         }
 
-        if (!$found) {
+        if (!$found || $tokenTime === null) {
             throw new CsrfTokenException('CSRF token 驗證失敗');
         }
 
@@ -115,12 +121,13 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     private function validateSingleToken(string $token): void
     {
-        if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time'])) {
+
+        if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time']) || !is_string($_SESSION['csrf_token'])) {
             throw new CsrfTokenException('無效的 CSRF token');
         }
 
         // 使用恆定時間比較防止時序攻擊
-        if (!hash_equals($_SESSION['csrf_token'], $token)) {
+        if (!hash_equals((string) $_SESSION['csrf_token'], $token)) {
             throw new CsrfTokenException('CSRF token 驗證失敗');
         }
 
@@ -142,10 +149,11 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         }
 
         $currentTime = time();
-        $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
+        $tokenPool = (array) ($_SESSION[self::TOKEN_POOL_KEY] ?? []);
 
         foreach ($tokenPool as $token => $timestamp) {
-            if ($currentTime - $timestamp > self::TOKEN_LIFETIME) {
+            $ts = is_numeric($timestamp) ? (int) $timestamp : null;
+            if ($ts !== null && $currentTime - $ts > self::TOKEN_LIFETIME) {
                 unset($_SESSION[self::TOKEN_POOL_KEY][$token]);
             }
         }
@@ -161,13 +169,16 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         }
 
         $now = time();
-        $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
+        $tokenPool = (array) ($_SESSION[self::TOKEN_POOL_KEY] ?? []);
 
         // 如果池大小超過限制，移除最舊的權杖
         while (count($tokenPool) > self::TOKEN_POOL_SIZE) {
             $oldestToken = array_key_first($tokenPool);
+            if ($oldestToken === null) {
+                break;
+            }
             unset($_SESSION[self::TOKEN_POOL_KEY][$oldestToken]);
-            $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
+            $tokenPool = (array) ($_SESSION[self::TOKEN_POOL_KEY] ?? []);
         }
     }
 
@@ -176,24 +187,33 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
      */
     public function isTokenValid(?string $token): bool
     {
-        if (empty($token)) {
+        if (!is_string($token) || $token === '') {
             return false;
         }
 
         try {
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
-                $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
+                $tokenPool = (array) ($_SESSION[self::TOKEN_POOL_KEY] ?? []);
 
                 foreach ($tokenPool as $poolToken => $timestamp) {
+                    if (!is_string($poolToken)) {
+                        continue;
+                    }
+
+                    $ts = is_numeric($timestamp) ? (int) $timestamp : null;
+                    if ($ts === null) {
+                        continue;
+                    }
+
                     if (hash_equals($poolToken, $token)) {
-                        return (time() - $timestamp) <= self::TOKEN_EXPIRY;
+                        return (time() - $ts) <= self::TOKEN_EXPIRY;
                     }
                 }
             } else {
                 // 降級到單一權杖模式
-                if (isset($_SESSION['csrf_token']) && isset($_SESSION['csrf_token_time'])) {
-                    return hash_equals($_SESSION['csrf_token'], $token)
+                if (isset($_SESSION['csrf_token']) && is_string($_SESSION['csrf_token']) && isset($_SESSION['csrf_token_time'])) {
+                    return hash_equals((string) $_SESSION['csrf_token'], $token)
                         && (time() - (int) $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
                 }
             }
@@ -233,16 +253,22 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             ];
         }
 
-        $pool = $_SESSION[self::TOKEN_POOL_KEY];
+        $pool = (array) ($_SESSION[self::TOKEN_POOL_KEY] ?? []);
         $currentTime = time();
 
         $tokens = [];
         foreach ($pool as $token => $timestamp) {
+            if (!is_string($token)) {
+                continue;
+            }
+
+            $ts = is_numeric($timestamp) ? (int) $timestamp : null;
+            $age = $ts !== null ? $currentTime - $ts : null;
             $tokens[] = [
-                'token' => substr($token, 0, 8) . '...', // 只顯示前8位
-                'age' => $currentTime - $timestamp,
-                'expires_in' => self::TOKEN_LIFETIME - ($currentTime - $timestamp),
-                'expired' => ($currentTime - $timestamp) > self::TOKEN_LIFETIME,
+                'token' => is_string($token) ? substr($token, 0, 8) . '...' : null, // 只顯示前8位
+                'age' => $age,
+                'expires_in' => $ts !== null ? self::TOKEN_LIFETIME - $age : null,
+                'expired' => $ts !== null ? ($age > self::TOKEN_LIFETIME) : false,
             ];
         }
 
@@ -286,9 +312,9 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 userAgent: $userAgent,
                 description: 'CSRF token validation failed',
                 metadata: [
-                    'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...' : null,
-                    'referer' => $_SERVER['HTTP_REFERER'] ?? null,
-                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                    'attempted_token' => is_string($attemptedToken) ? substr($attemptedToken, 0, 8) . '...' : null,
+                    'referer' => isset($_SERVER['HTTP_REFERER']) && is_string($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null,
+                    'method' => isset($_SERVER['REQUEST_METHOD']) && is_string($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'unknown',
                 ],
             );
 
