@@ -18,11 +18,14 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統整體效能統計.
      *
      * @param StatisticsPeriod $period 統計週期
+     * @return array<string,mixed> 系統整體效能統計（鍵值化的統計指標）
      */
     public function getSystemPerformanceStats(StatisticsPeriod $period): array;
 
     /**
      * 取得資料庫使用統計.
+     *
+     * @return array<string,mixed> 資料庫使用統計（鍵值化的統計指標）
      */
     public function getDatabaseUsageStats(): array;
 
@@ -30,7 +33,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統活動熱圖資料.
      *
      * @param StatisticsPeriod $period 統計週期
-     * @return array 活動熱圖資料（日期 => 小時活動量）
+     * @return array<string, array<int,int>> 活動熱圖資料（日期 => 小時 => 活動量）
      */
     public function getSystemActivityHeatmap(StatisticsPeriod $period): array;
 
@@ -46,6 +49,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得 API 使用統計.
      *
      * @param StatisticsPeriod $period 統計週期
+     * @return array<string,mixed> API 使用統計（鍵值化指標）
      */
     public function getApiUsageStats(StatisticsPeriod $period): array;
 
@@ -53,6 +57,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得錯誤與異常統計.
      *
      * @param StatisticsPeriod $period 統計週期
+     * @return array<string,mixed> 錯誤與異常統計（鍵值化指標）
      */
     public function getErrorAndExceptionStats(StatisticsPeriod $period): array;
 
@@ -89,6 +94,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得系統健康檢查統計.
      *
      * @param StatisticsPeriod $period 統計週期
+     * @return array<string,mixed> 系統健康檢查統計（鍵值化指標或時間序列）
      */
     public function getSystemHealthCheckStats(StatisticsPeriod $period): array;
 
@@ -166,6 +172,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得錯誤統計資料.
      *
      * @param StatisticsPeriod $period 統計週期
+     * @return array<string,mixed> 錯誤統計（依類型或時間分組的錯誤數）
      */
     public function getErrorStatistics(StatisticsPeriod $period): array;
 
@@ -173,6 +180,7 @@ interface SystemStatisticsRepositoryInterface
      * 取得資源使用統計.
      *
      * @param StatisticsPeriod $period 統計週期
+     * @return array<string,mixed> 資源使用統計（CPU/記憶體/磁碟/網路等指標）
      */
     public function getResourceUsageStatistics(StatisticsPeriod $period): array;
 }

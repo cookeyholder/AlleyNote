@@ -179,11 +179,21 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
+    /**
+     * 取得標籤化快取介面。
+     *
+     * @param array<int, string> $tags 標籤清單（索引陣列）
+     */
     public function tags(array $tags): TaggedCacheInterface
     {
         return $this->cacheManager->tags($tags);
     }
 
+    /**
+     * 按標籤清除快取。
+     *
+     * @param array<int, string> $tags 標籤清單（索引陣列）
+     */
     public function invalidateByTags(array $tags): bool
     {
         try {
@@ -206,6 +216,12 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
+    /**
+     * 預熱多個快取項目。
+     *
+     * @param array<int|string, callable(): mixed> $callbacks 回調集合（鍵可為整數或字串）
+     * @return array<int|string, array{success: bool, duration: float, data?: mixed, error?: string}>
+     */
     public function warmup(array $callbacks): array
     {
         $results = [];
@@ -365,6 +381,11 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
+    /**
+     * 取得快取相關統計資訊。
+     *
+     * @return array<string, mixed>
+     */
     public function getStats(): array
     {
         try {
@@ -408,6 +429,11 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
         }
     }
 
+    /**
+     * 執行快取清理，並回傳結果。
+     *
+     * @return array<string, mixed>
+     */
     public function cleanup(): array
     {
         try {
@@ -455,6 +481,8 @@ readonly class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     /**
      * 取得快取鍵統計資訊。
+     *
+     * @return array{prefix: string, version: string, key_types: array<int, string>, total_tag_groups: int}
      */
     private function getCacheKeyStats(): array
     {
