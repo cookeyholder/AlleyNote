@@ -23,7 +23,7 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 主要執行入口。
-     * @param string[] $arguments 命令行參數
+     * @param array<int|string, string> $arguments 命令行參數
      */
     public function run(array $arguments): int
     {
@@ -40,7 +40,7 @@ readonly class StatisticsCalculationConsole
                 'status' => $this->handleStatusCommand(),
                 'cleanup' => $this->handleCleanupCommand(),
                 'help' => $this->handleHelpCommand(),
-                default => $this->handleInvalidCommand(is_string($options['command'] ?? null) ? $options['command'] : 'unknown'),
+                default => $this->handleInvalidCommand((string) ($options['command'] ?? 'unknown')),
             };
         } catch (Throwable $e) {
             $this->logger->error('統計計算控制台執行失敗', [
@@ -56,6 +56,8 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 處理計算指令。
+     *
+     * @param array<string, mixed> $options
      */
     private function handleCalculateCommand(array $options): int
     {
@@ -77,7 +79,7 @@ readonly class StatisticsCalculationConsole
         }
 
         // 確保參數類型正確
-        $periodsParam = is_array($periods) ? array_map(static function (mixed $p): string {
+        $periodsParam = is_array($periods) ? array_map(static function ($p): string {
             return is_string($p) || is_numeric($p) ? (string) $p : 'daily';
         }, $periods) : ['daily', 'weekly', 'monthly'];
         $forceParam = is_bool($force) ? $force : false;
@@ -147,6 +149,9 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 解析命令行參數。
+     *
+     * @param array<int, string> $arguments CLI 原始參數陣列
+     * @return array<string, mixed> 返回解析後的選項
      */
     private function parseArguments(array $arguments): array
     {
@@ -173,11 +178,8 @@ readonly class StatisticsCalculationConsole
                         throw new InvalidArgumentException('--periods 需要參數值');
                     }
                     $periodsValue = $arguments[$i + 1];
-                    if (is_string($periodsValue)) {
-                        $options['periods'] = explode(',', $periodsValue);
-                    } else {
-                        $options['periods'] = ['daily', 'weekly', 'monthly'];
-                    }
+                    $periodsStr = (string) $periodsValue;
+                    $options['periods'] = $periodsStr !== '' ? explode(',', $periodsStr) : ['daily', 'weekly', 'monthly'];
                     $i++; // 跳過下一個參數
                     break;
                 case '--force':
@@ -209,6 +211,8 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 輸出計算結果。
+     *
+     * @param array<string, mixed> $result
      */
     private function printCalculationResults(array $result): void
     {
@@ -270,6 +274,8 @@ readonly class StatisticsCalculationConsole
 
     /**
      * 輸出狀態結果。
+     *
+     * @param array<string, mixed> $status
      */
     private function printStatusResults(array $status): void
     {

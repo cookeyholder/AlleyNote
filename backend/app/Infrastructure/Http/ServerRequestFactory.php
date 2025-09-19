@@ -47,7 +47,7 @@ class ServerRequestFactory
     }
 
     /**
-     * 正規化 server params 為 array<string,mixed>
+     * 正規化 server params 為 array<string,mixed>.
      *
      * @param array<mixed> $server
      * @return array<string,mixed>
@@ -79,7 +79,7 @@ class ServerRequestFactory
     }
 
     /**
-     * 將參數陣列轉成 array<string,string>（若為陣列值則取第一個值並轉為字串）
+     * 將參數陣列轉成 array<string,string>（若為陣列值則取第一個值並轉為字串）.
      *
      * @param array<mixed> $params
      * @return array<string,string>
@@ -102,7 +102,7 @@ class ServerRequestFactory
     }
 
     /**
-     * 正規化 parsed body 為 array<string,mixed>
+     * 正規化 parsed body 為 array<string,mixed>.
      *
      * @param array<mixed> $data
      * @return array<string,mixed>

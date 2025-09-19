@@ -97,9 +97,9 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
     }
 
     /**
-    * 取得使用者註冊趨勢資料.
-    *
-    * @return array<string,int>
+     * 取得使用者註冊趨勢資料.
+     *
+     * @return array<string,int>
      */
     public function getUserRegistrationTrends(StatisticsPeriod $period): array
     {
@@ -372,9 +372,9 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
             ]);
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
-                $totalNewUsers = (int) ($result['total_new_users'] ?? 0);
-                $retainedUsers = (int) ($result['retained_users'] ?? 0);
-                $retentionRate = $totalNewUsers > 0 ? ($retainedUsers / $totalNewUsers) * 100.0 : 0.0;
+            $totalNewUsers = (int) ($result['total_new_users'] ?? 0);
+            $retainedUsers = (int) ($result['retained_users'] ?? 0);
+            $retentionRate = $totalNewUsers > 0 ? ($retainedUsers / $totalNewUsers) * 100.0 : 0.0;
 
             return [
                 'total_new_users' => $totalNewUsers,
@@ -897,10 +897,10 @@ final readonly class UserStatisticsRepository implements UserStatisticsRepositor
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 
-                $avgSession = is_numeric($result['average_session_duration'] ?? null) ? (float) $result['average_session_duration'] : 0.0;
-                $bounce = is_numeric($result['bounce_rate'] ?? null) ? (float) $result['bounce_rate'] : 0.0;
-                $pageViews = is_numeric($result['page_views_per_session'] ?? null) ? (float) $result['page_views_per_session'] : 0.0;
-                $conversion = is_numeric($result['conversion_rate'] ?? null) ? (float) $result['conversion_rate'] : 0.0;
+            $avgSession = is_numeric($result['average_session_duration'] ?? null) ? (float) $result['average_session_duration'] : 0.0;
+            $bounce = is_numeric($result['bounce_rate'] ?? null) ? (float) $result['bounce_rate'] : 0.0;
+            $pageViews = is_numeric($result['page_views_per_session'] ?? null) ? (float) $result['page_views_per_session'] : 0.0;
+            $conversion = is_numeric($result['conversion_rate'] ?? null) ? (float) $result['conversion_rate'] : 0.0;
 
             return [
                 'average_session_duration' => round($avgSession, 2),

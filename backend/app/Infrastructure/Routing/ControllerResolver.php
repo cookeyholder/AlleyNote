@@ -394,9 +394,9 @@ class ControllerResolver
      */
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, /** @var array<string, mixed> */ array $parameters): ResponseInterface
     {
-    /** @var class-string|object $controllerClass */
-    /** @var string $method */
-    [$controllerClass, $method] = $handler;
+        /** @var class-string|object $controllerClass */
+        /** @var string $method */
+        [$controllerClass, $method] = $handler;
 
         // 解析控制器類別或使用已提供的實例
         if (is_object($controllerClass)) {
@@ -407,6 +407,7 @@ class ControllerResolver
             // 檢查方法是否存在
             if (!method_exists($controller, $method)) {
                 $className = get_class($controller);
+
                 throw new RuntimeException("控制器方法不存在: {$className}::{$method}");
             }
         } else {
@@ -451,11 +452,12 @@ class ControllerResolver
         }
 
         // 從 DI 容器中取得控制器實例
-            if ($this->container->has($controllerClass)) {
-                /** @var object $instance */
-                $instance = $this->container->get($controllerClass);
-                return $instance;
-            }
+        if ($this->container->has($controllerClass)) {
+            /** @var object $instance */
+            $instance = $this->container->get($controllerClass);
+
+            return $instance;
+        }
 
         // 如果容器中沒有，嘗試建立實例
         try {

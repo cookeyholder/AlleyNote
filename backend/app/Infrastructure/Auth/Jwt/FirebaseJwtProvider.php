@@ -17,6 +17,7 @@ use Exception;
 use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
+use OpenSSLAsymmetricKey;
 
 /**
  * Firebase JWT 提供器.
@@ -259,8 +260,8 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
     /**
      * 檢查私鑰和公鑰是否匹配.
-     * @param resource|\OpenSSLAsymmetricKey|string $privateKey 私鑰資源或金鑰字串
-     * @param resource|\OpenSSLAsymmetricKey|string $publicKey 公鑰資源或金鑰字串
+     * @param resource|OpenSSLAsymmetricKey|string $privateKey 私鑰資源或金鑰字串
+     * @param resource|OpenSSLAsymmetricKey|string $publicKey 公鑰資源或金鑰字串
      * @return bool true 如果匹配，false 如果不匹配
      */
     private function keysMatch($privateKey, $publicKey): bool

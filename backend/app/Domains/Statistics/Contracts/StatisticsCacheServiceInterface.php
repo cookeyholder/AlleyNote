@@ -54,7 +54,9 @@ interface StatisticsCacheServiceInterface
 
     /**
      * 預熱快取。
-     * @param array $callbacks 預熱回調函式
+     *
+     * @param array<int|string, callable(): mixed> $callbacks 預熱回調函式（鍵為索引或名稱，值為可呼叫回傳預熱資料）
+     * @return array<int|string, array{success: bool, duration: float, data?: mixed, error?: string}> 預熱結果索引陣列
      */
     public function warmup(array $callbacks): array;
 
@@ -136,13 +138,8 @@ interface StatisticsCacheServiceInterface
 
     /**
      * 取得快取統計資訊。
-     * @return array
-     *               manager_stats: array,
-     *               cache_keys: array,
-     *               ttl_config: array,
-     *               tag_config: array,
-     *               health_status: array
-     *               }
+     *
+     * @return array<string, mixed> 回傳包含管理端統計、快取鍵統計、TTL 與標籤設定以及健康狀態的關聯陣列
      */
     public function getStats(): array;
 
@@ -153,7 +150,8 @@ interface StatisticsCacheServiceInterface
 
     /**
      * 清理過期的快取項目。
-     * @return array 清理結果
+     *
+     * @return array<string, mixed> 清理結果陣列（包含 success / error 等欄位）
      */
     public function cleanup(): array;
 }

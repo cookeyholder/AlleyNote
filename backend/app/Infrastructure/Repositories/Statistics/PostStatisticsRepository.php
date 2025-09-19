@@ -154,7 +154,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得指定週期內各來源的文章統計.
      *
-     * @param StatisticsPeriod $period
      * @return array<string, array{post_count: int, views: int}>
      */
     public function getSourceDistributionByPeriod(StatisticsPeriod $period): array
@@ -178,7 +177,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得文章發布趨勢資料（按日期分組）.
      *
-     * @param StatisticsPeriod $period
      * @return array<string,int> // date => post_count
      */
     public function getPostTrendsByPeriod(StatisticsPeriod $period): array
@@ -189,7 +187,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得觀看次數趨勢資料（按日期分組）.
      *
-     * @param StatisticsPeriod $period
      * @return array<string,int> // date => views
      */
     public function getViewTrendsByPeriod(StatisticsPeriod $period): array
@@ -222,7 +219,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得文章觀看次數分布.
      *
-     * @param StatisticsPeriod $period
      * @return array<string,int> // bucket => count
      */
     public function getViewsDistributionByPeriod(StatisticsPeriod $period): array
@@ -245,7 +241,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得文章活動熱圖資料（小時級別）.
      *
-     * @param StatisticsPeriod $period
      * @return array<string, array{hour: int, day: int, activity_count: int}>
      */
     public function getPostActivityHeatmapByPeriod(StatisticsPeriod $period): array
@@ -256,8 +251,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得最活躍的文章作者統計.
      *
-     * @param StatisticsPeriod $period
-     * @param int $limit
      * @return array<int, array{author_id: int, name: string, post_count: int, views: int}>
      */
     public function getMostActiveAuthorsByPeriod(StatisticsPeriod $period, int $limit = 10): array
@@ -274,8 +267,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得文章標籤使用統計.
      *
-     * @param StatisticsPeriod $period
-     * @param int $limit
      * @return array<int, array{tag: string, count: int}>
      */
     public function getTagUsageStatsByPeriod(StatisticsPeriod $period, int $limit = 20): array
@@ -304,7 +295,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得按發布時間分組的文章統計.
      *
-     * @param StatisticsPeriod $period
      * @return array<int, array{post_id: int, publish_time: string, count: int}>
      */
     public function getPostsByPublishTime(StatisticsPeriod $period): array
@@ -315,8 +305,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得文章歷史表現資料.
      *
-     * @param int $postId
-     * @param StatisticsPeriod $period
      * @return array<int, array{date: string, views: int, likes: int, comments: int}>
      */
     public function getPostHistoricalPerformance(int $postId, StatisticsPeriod $period): array
@@ -327,8 +315,6 @@ final readonly class PostStatisticsRepository implements PostStatisticsRepositor
     /**
      * 取得文章統計趨勢資料.
      *
-     * @param StatisticsPeriod $period
-     * @param int $dataPoints
      * @return array<int, array{date: string, value: float|int}>
      */
     public function getStatisticsTrends(StatisticsPeriod $period, int $dataPoints = 30): array

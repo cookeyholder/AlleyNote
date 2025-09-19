@@ -132,11 +132,11 @@ final class PostStatisticsService
     {
         $postStats = $this->postStatisticsRepository->getPostStatsByPeriod($postId, $period);
 
-    $views = (int) $postStats['views'];
-    $comments = (int) $postStats['comments'];
-    $likes = (int) $postStats['likes'];
-    $shares = (int) $postStats['shares'];
-    $source = (string) $postStats['source'];
+        $views = (int) $postStats['views'];
+        $comments = (int) $postStats['comments'];
+        $likes = (int) $postStats['likes'];
+        $shares = (int) $postStats['shares'];
+        $source = (string) $postStats['source'];
 
         if ($views === 0 && $comments === 0 && $likes === 0 && $shares === 0) {
             return [
@@ -149,7 +149,7 @@ final class PostStatisticsService
         $factors = [];
         $totalScore = 0.0;
 
-    $viewsScore = min(30.0, ((float) $views / 100.0));
+        $viewsScore = min(30.0, ((float) $views / 100.0));
         $factors['views'] = round($viewsScore, 1);
         $totalScore += $viewsScore;
 
@@ -158,7 +158,7 @@ final class PostStatisticsService
         $factors['engagement'] = round($engagementScore, 1);
         $totalScore += $engagementScore;
 
-    $shareScore = min(20.0, ((float) $shares / 5.0));
+        $shareScore = min(20.0, ((float) $shares / 5.0));
         $factors['shares'] = round($shareScore, 1);
         $totalScore += $shareScore;
 
@@ -229,10 +229,10 @@ final class PostStatisticsService
      */
     public function calculatePostROI(int $postId, StatisticsPeriod $period, float $contentCost): array
     {
-    $postStats = $this->postStatisticsRepository->getPostStatsByPeriod($postId, $period);
-    /** @var array{views: int, comments: int, likes: int, shares: int, source: string} $postStats */
-    // 介面已宣告回傳包含預期欄位的陣列，直接使用索引存取以符合 PHPStan 的型別推論
-    $views = (int) $postStats['views'];
+        $postStats = $this->postStatisticsRepository->getPostStatsByPeriod($postId, $period);
+        /** @var array{views: int, comments: int, likes: int, shares: int, source: string} $postStats */
+        // 介面已宣告回傳包含預期欄位的陣列，直接使用索引存取以符合 PHPStan 的型別推論
+        $views = (int) $postStats['views'];
         $revenuePerView = 0.01;
         $estimatedRevenue = ((float) $views) * $revenuePerView;
 

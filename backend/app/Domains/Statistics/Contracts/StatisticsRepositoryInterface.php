@@ -43,7 +43,7 @@ interface StatisticsRepositoryInterface
      * 查找指定時間範圍內的所有統計快照.
      * @param DateTimeInterface $startDate 開始時間
      * @param int $limit 限制回傳數量，預設為 100
-     * @return array 統計快照陣列
+     * @return array<int, StatisticsSnapshot> 統計快照陣列（索引陣列，值為 StatisticsSnapshot）
      */
     public function findByDateRange(
         DateTimeInterface $startDate,
@@ -64,14 +64,14 @@ interface StatisticsRepositoryInterface
     /**
      * 查找最新的統計快照.
      * @param int $limit 限制回傳數量，預設為 10
-     * @return array 最新的統計快照陣列
+     * @return array<int, StatisticsSnapshot> 最新的統計快照陣列（索引陣列，值為 StatisticsSnapshot）
      */
     public function findLatest(int $limit = 10): array;
 
     /**
      * 查找過期的統計快照.
      * @param DateTimeInterface $cutoffDate 截止日期，早於此日期的快照被視為過期
-     * @return array 過期的統計快照陣列
+     * @return array<int, StatisticsSnapshot> 過期的統計快照陣列（索引陣列，值為 StatisticsSnapshot）
      */
     public function findExpiredSnapshots(DateTimeInterface $cutoffDate): array;
 

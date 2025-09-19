@@ -15,22 +15,23 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 class MemoryRouteCache implements RouteCacheInterface
 {
     private int $ttl = 3600; // 預設 1 小時
+
     /**
-     * 快取內容，鍵為名稱（如 'routes'），值為對應的 RouteCollectionInterface
+     * 快取內容，鍵為名稱（如 'routes'），值為對應的 RouteCollectionInterface.
      *
-    * @var array<string, mixed>
+     * @var array<string, mixed>
      */
     private array $cache = [];
 
     /**
-     * 每個快取項目的時間戳（UNIX 時間）
+     * 每個快取項目的時間戳（UNIX 時間）.
      *
      * @var array<string,int>
      */
     private array $timestamps = [];
 
     /**
-     * 快取統計資訊
+     * 快取統計資訊.
      *
      * @var array{hits:int, misses:int, size:int, created_at:int, last_used:int}
      */
@@ -136,7 +137,7 @@ class MemoryRouteCache implements RouteCacheInterface
     }
 
     /**
-     * 取得統計資訊
+     * 取得統計資訊.
      *
      * @return array{hits:int, misses:int, size:int, created_at:int, last_used:int}
      */
@@ -184,9 +185,9 @@ class MemoryRouteCache implements RouteCacheInterface
             return false;
         }
 
-    $elapsed = time() - (int) $this->timestamps[$key];
+        $elapsed = time() - (int) $this->timestamps[$key];
 
-    return $elapsed > $this->ttl;
+        return $elapsed > $this->ttl;
     }
 
     /**
