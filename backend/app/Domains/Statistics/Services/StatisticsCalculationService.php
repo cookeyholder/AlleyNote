@@ -129,7 +129,7 @@ final class StatisticsCalculationService
         }
 
         $values = array_map(
-            fn(StatisticsSnapshot $snapshot): int => $snapshot->getTotalViews()->value,
+            fn(StatisticsSnapshot $snapshot): int => (int) $snapshot->getTotalViews()->value,
             $snapshots,
         );
 
@@ -194,8 +194,8 @@ final class StatisticsCalculationService
         }
 
         // 使用簡單線性回歸進行預測
-        $posts = array_map(fn($s): int => $s->getTotalPosts()->value, $historicalSnapshots);
-        $views = array_map(fn($s): int => $s->getTotalViews()->value, $historicalSnapshots);
+        $posts = array_map(fn($s): int => (int) $s->getTotalPosts()->value, $historicalSnapshots);
+        $views = array_map(fn($s): int => (int) $s->getTotalViews()->value, $historicalSnapshots);
 
         $postsGrowthRate = $this->calculateLinearGrowthRate($posts);
         $viewsGrowthRate = $this->calculateLinearGrowthRate($views);
@@ -262,7 +262,7 @@ final class StatisticsCalculationService
         $monthlyData = [];
 
         foreach ($snapshots as $snapshot) {
-            $month = $snapshot->getPeriod()->startDate->format('m');
+            $month = (string) $snapshot->getPeriod()->startDate->format('m');
             $views = $snapshot->getTotalViews()->value;
 
             if (!isset($monthlyData[$month])) {
@@ -272,33 +272,48 @@ final class StatisticsCalculationService
             $monthlyData[$month][] = $views;
         }
 
+        /** @var array<string,float> $monthlyAverages */
         $monthlyAverages = [];
-        $overallAverage = 0;
-        $totalMonths = 0;
+        $overallAverage = 0.0;
+        $totalMonths = 0.0;
 
         foreach ($monthlyData as $month => $values) {
-            if (count($values) > 0) {
-                $monthKey = (string) $month;
-                $monthlyAverages[$monthKey] = array_sum($values) / count($values);
-                $overallAverage += $monthlyAverages[$monthKey];
-                $totalMonths++;
-            }
+            $monthKey = (string) $month;
+            $monthlyAverages[$monthKey] = (float) (array_sum($values) / count($values));
+            $overallAverage += $monthlyAverages[$monthKey];
+            $totalMonths = (float) $totalMonths + 1.0;
         }
 
         if ($totalMonths == 0) {
             return [];
         }
 
+        $totalMonths = (float) count($monthlyAverages);
+
+        if ($totalMonths <= 0.0) {
+            return [];
+        }
+
         $overallAverage /= $totalMonths;
+        /** @var array<string,float> $seasonalityIndex */
         $seasonalityIndex = [];
 
         foreach ($monthlyAverages as $monthKey => $average) {
-            $seasonalityIndex[$monthKey] = $overallAverage > 0
-                ? round($average / $overallAverage, 3)
-                : 1.0;
+            $key = (string) $monthKey;
+            if ($overallAverage > 0.0) {
+                $seasonalityIndex[$key] = (float) round($average / $overallAverage, 3);
+            } else {
+                $seasonalityIndex[$key] = 1.0;
+            }
         }
 
-        return $seasonalityIndex;
+        // 確保回傳的鍵皆為 string（逐筆重建以避免 array_combine 的 false-positive 報告）
+        $normalized = [];
+        foreach ($seasonalityIndex as $k => $v) {
+            $normalized[(string) $k] = (float) $v;
+        }
+
+        return $normalized;
     }
 
     /**
