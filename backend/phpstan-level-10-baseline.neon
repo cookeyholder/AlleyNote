@@ -3225,6 +3225,36 @@ parameters:
 			path: app/Domains/Security/Services/SuspiciousActivityDetector.php
 
 		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 3
+			path: app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 7
+			path: app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+		-
+			message: '#^Property App\\Domains\\Statistics\\Models\\StatisticsSnapshot\:\:\$statisticsData \(array\<string, mixed\>\) does not accept array\<mixed, mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+		-
+			message: '#^Property App\\Domains\\Statistics\\Models\\StatisticsSnapshot\:\:\$statisticsData \(array\<string, mixed\>\) does not accept array\<mixed\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+		-
 			message: '#^Binary operation "\." between non\-falsy\-string and mixed results in an error\.$#'
 			identifier: binaryOp.invalid
 			count: 1
