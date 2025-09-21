@@ -35,21 +35,27 @@ class Post implements JsonSerializable
 
     private string $updatedAt;
 
+    private ?string $creationSource;
+
+    private ?string $creationSourceDetail;
+
     public function __construct(array $data)
     {
         $this->id = (int) ($data['id'] ?? 0);
-        $this->uuid = $data['uuid'] ?? generate_uuid();
+        $this->uuid = (string) ($data['uuid'] ?? generate_uuid());
         $this->seqNumber = isset($data['seq_number']) ? (string) $data['seq_number'] : null;
-        $this->title = $data['title'] ?? '';
-        $this->content = $data['content'] ?? '';
+        $this->title = (string) ($data['title'] ?? '');
+        $this->content = (string) ($data['content'] ?? '');
         $this->userId = (int) ($data['user_id'] ?? 0);
-        $this->userIp = $data['user_ip'] ?? null;
+        $this->userIp = isset($data['user_ip']) ? (string) $data['user_ip'] : null;
         $this->isPinned = filter_var($data['is_pinned'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->status = $data['status'] ?? 'draft';
-        $this->publishDate = $data['publish_date'] ?? null;
+        $this->status = (string) ($data['status'] ?? 'draft');
+        $this->publishDate = isset($data['publish_date']) ? (string) $data['publish_date'] : null;
         $this->views = (int) ($data['views'] ?? 0);
-        $this->createdAt = $data['created_at'] ?? format_datetime();
-        $this->updatedAt = $data['updated_at'] ?? format_datetime();
+        $this->createdAt = (string) ($data['created_at'] ?? format_datetime());
+        $this->updatedAt = (string) ($data['updated_at'] ?? format_datetime());
+        $this->creationSource = isset($data['creation_source']) && $data['creation_source'] !== null ? (string) $data['creation_source'] : null;
+        $this->creationSourceDetail = isset($data['creation_source_detail']) && $data['creation_source_detail'] !== null ? (string) $data['creation_source_detail'] : null;
     }
 
     public function getId(): int
@@ -134,6 +140,16 @@ class Post implements JsonSerializable
         return $this->updatedAt;
     }
 
+    public function getCreationSource(): ?string
+    {
+        return $this->creationSource;
+    }
+
+    public function getCreationSourceDetail(): ?string
+    {
+        return $this->creationSourceDetail;
+    }
+
     /**
      * @return array<mixed>
      */
@@ -153,6 +169,8 @@ class Post implements JsonSerializable
             'views' => $this->views,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
+            'creation_source' => $this->creationSource,
+            'creation_source_detail' => $this->creationSourceDetail,
         ];
     }
 
@@ -167,8 +185,8 @@ class Post implements JsonSerializable
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        // // $data ? $data->title : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->title : null)))) ? $data ? $data->title : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
-        // // $data ? $data->content : null)) = $sanitizer->sanitizeHtml((is_array($data) && isset($data ? $data->content : null)))) ? $data ? $data->content : null)) : null); // 語法錯誤已註解 // isset 語法錯誤已註解
+        $data['title'] = $sanitizer->sanitizeHtml((string) $data['title']);
+        $data['content'] = $sanitizer->sanitizeHtml((string) $data['content']);
 
         return $data;
     }

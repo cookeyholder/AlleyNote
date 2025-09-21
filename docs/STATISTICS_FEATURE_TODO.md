@@ -257,17 +257,18 @@
 #### ✅ T3.3 - 建立統計 DTO 類別
 **描述**：建立統計資料傳輸物件
 **預估時間**：3 小時
+**狀態**：✅ 已完成
 **依賴**：T3.2
 **驗收標準**：
-- [ ] `StatisticsOverviewDTO` 類別
-- [ ] `PostStatisticsDTO` 類別
-- [ ] `SourceDistributionDTO` 類別
-- [ ] `UserActivityDTO` 類別
-- [ ] `ContentInsightsDTO` 類別 (用於標籤、分類等)
-- [ ] 所有 DTO 包含驗證邏輯
-- [ ] 支援 JSON 序列化
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsOverviewDTO` 類別
+- [x] `PostStatisticsDTO` 類別
+- [x] `SourceDistributionDTO` 類別
+- [x] `UserStatisticsDTO` 類別（替代 UserActivityDTO）
+- [x] `ContentInsightsDTO` 類別 (用於標籤、分類等)
+- [x] 所有 DTO 包含驗證邏輯
+- [x] 支援 JSON 序列化
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 ---
 
@@ -618,7 +619,7 @@
 ### 完成狀態
 - [x] 階段 1：領域層設計 (5/5) ✅ 完成
 - [ ] 階段 2：資料庫結構調整 (0/4)
-- [ ] 階段 3：應用層服務 (0/3)
+- [ ] 階段 3：應用層服務 (1/3)
 - [ ] 階段 4：基礎設施層實作 (0/8)
 - [ ] 階段 5：介面層實作 (0/4)
 - [ ] 階段 6：測試實作 (0/6)
@@ -626,9 +627,10 @@
 - [ ] 階段 8：品質保證與最佳化 (0/3)
 
 ### 總體進度
-**5/37 項任務完成 (13.5%)**
+**6/37 項任務完成 (16.2%)**
 
 **🎉 第一階段（領域層設計）已完成！**
+**🚀 第三階段（應用層服務）部分完成 - DTO 層建置完成！**
 
 ### 預估工作量
 - **總預估時間**：120 小時
