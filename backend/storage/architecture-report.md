@@ -1,24 +1,24 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-21 13:27:15
+**生成時間**: 2025-09-21 13:59:43
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 227 | - |
-| 介面與類別比例 | 23.79% | ✅ 良好 |
+| 總類別數 | 228 | - |
+| 介面與類別比例 | 23.68% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 61.23% | ✅ 良好 |
-| PSR-4 合規率 | 74.21% | ❌ 需修正 |
+| 現代 PHP 採用率 | 61.40% | ✅ 良好 |
+| PSR-4 合規率 | 74.29% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 241 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 107 | ✅ 提升資料不變性 |
+| Match 表達式 (PHP 8.0+) | 243 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 110 | ✅ 提升資料不變性 |
 | 空安全運算子 (PHP 8.0+) | 72 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
@@ -53,6 +53,9 @@
 - `app/Domains/Statistics/Enums`
 - `app/Domains/Statistics/Enums/.`
 - `app/Domains/Statistics/Enums/..`
+- `app/Domains/Statistics/Services`
+- `app/Domains/Statistics/Services/.`
+- `app/Domains/Statistics/Services/..`
 - `app/Domains/Statistics/Entities`
 - `app/Domains/Statistics/Entities/.`
 - `app/Domains/Statistics/Entities/..`
@@ -366,6 +369,9 @@
 - app/Domains/Statistics/Contracts/StatisticsRepositoryInterface.php
 - app/Domains/Statistics/Contracts/PostStatisticsRepositoryInterface.php
 - app/Domains/Statistics/Contracts/UserStatisticsRepositoryInterface.php
+
+### `App\Domains\Statistics\Services`
+- app/Domains/Statistics/Services/StatisticsAggregationService.php
 
 ### `App\Domains\Statistics\Entities`
 - app/Domains/Statistics/Entities/StatisticsSnapshot.php
@@ -795,12 +801,14 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 227
+- **類別總數**: 228
 - **介面總數**: 54
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
 
+- **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
+  - 實作: 
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
   - 實作: PostRepositoryInterface
 - **PostService**: `app/Domains/Post/Services/PostService.php`
@@ -952,6 +960,7 @@
 - UserActivityLogsSeeder (`database/seeds/UserActivityLogsSeeder.php`)
 - Application (`app/Application.php`)
 - implements (`scripts/remaining-error-fixer.php`)
+- StatisticsAggregationService (`app/Domains/Statistics/Services/StatisticsAggregationService.php`)
 - PostStatusException (`app/Domains/Post/Exceptions/PostStatusException.php`)
 - PostValidationException (`app/Domains/Post/Exceptions/PostValidationException.php`)
 - PostNotFoundException (`app/Domains/Post/Exceptions/PostNotFoundException.php`)
@@ -1283,15 +1292,21 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 227 個
+- **缺少測試的類別**: 228 個
 
 ### 缺少測試的重要類別
+- **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
 
 
 ## 💉 依賴注入分析
 
 ### 依賴較多的類別 (≥3個依賴)
+- **StatisticsAggregationService** (3 個依賴)
+  - `StatisticsRepositoryInterface` $statisticsRepository
+  - `PostStatisticsRepositoryInterface` $postStatisticsRepository
+  - `UserStatisticsRepositoryInterface` $userStatisticsRepository
+
 - **StatisticsPeriod** (3 個依賴)
   - `PeriodType` $type
   - `DateTimeImmutable` $startTime
