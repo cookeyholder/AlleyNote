@@ -8,3 +8,6 @@ parameters:
         - tests/Unit/Shared/Config/EnvironmentConfigTest.php
         - tests/Unit/Shared/Config/EnvironmentConfigSimpleTest.php
         - tests/Unit/Domains/Statistics/Entities/StatisticsSnapshotTest.php
+        - tests/Unit/Domains/Statistics/Contracts/StatisticsRepositoryInterfaceTest.php
+        - tests/Unit/Domains/Statistics/Contracts/PostStatisticsRepositoryInterfaceTest.php
+        - tests/Unit/Domains/Statistics/Contracts/UserStatisticsRepositoryInterfaceTest.php
