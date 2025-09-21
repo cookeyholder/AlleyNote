@@ -7,3 +7,4 @@ parameters:
         - tests/Unit/Shared/Monitoring/CacheMonitorTest.php
         - tests/Unit/Shared/Config/EnvironmentConfigTest.php
         - tests/Unit/Shared/Config/EnvironmentConfigSimpleTest.php
+        - tests/Unit/Domains/Statistics/Entities/StatisticsSnapshotTest.php
