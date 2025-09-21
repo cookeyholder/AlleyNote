@@ -11,3 +11,4 @@ parameters:
         - tests/Unit/Domains/Statistics/Contracts/StatisticsRepositoryInterfaceTest.php
         - tests/Unit/Domains/Statistics/Contracts/PostStatisticsRepositoryInterfaceTest.php
         - tests/Unit/Domains/Statistics/Contracts/UserStatisticsRepositoryInterfaceTest.php
+        - tests/Unit/Domains/Statistics/Services/StatisticsAggregationServiceTest.php

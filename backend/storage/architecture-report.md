@@ -1,29 +1,29 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-03 01:00:16
+**生成時間**: 2025-09-21 13:27:15
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 222 | - |
-| 介面與類別比例 | 22.97% | ✅ 良好 |
+| 總類別數 | 227 | - |
+| 介面與類別比例 | 23.79% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 59.91% | ✅ 良好 |
-| PSR-4 合規率 | 73.46% | ❌ 需修正 |
+| 現代 PHP 採用率 | 61.23% | ✅ 良好 |
+| PSR-4 合規率 | 74.21% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 234 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 103 | ✅ 提升資料不變性 |
-| 空安全運算子 (PHP 8.0+) | 70 | ✅ 防止 null 指標異常 |
+| Match 表達式 (PHP 8.0+) | 241 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 107 | ✅ 提升資料不變性 |
+| 空安全運算子 (PHP 8.0+) | 72 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 聯合型別 (PHP 8.0+) | 17 | ✅ 更靈活的型別定義 |
-| 列舉型別 (PHP 8.1+) | 5 | ✅ 型別安全的常數 |
+| 聯合型別 (PHP 8.0+) | 20 | ✅ 更靈活的型別定義 |
+| 列舉型別 (PHP 8.1+) | 6 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
 
@@ -44,6 +44,21 @@
 - `app/Domains`
 - `app/Domains/.`
 - `app/Domains/..`
+- `app/Domains/Statistics`
+- `app/Domains/Statistics/.`
+- `app/Domains/Statistics/..`
+- `app/Domains/Statistics/Contracts`
+- `app/Domains/Statistics/Contracts/.`
+- `app/Domains/Statistics/Contracts/..`
+- `app/Domains/Statistics/Enums`
+- `app/Domains/Statistics/Enums/.`
+- `app/Domains/Statistics/Enums/..`
+- `app/Domains/Statistics/Entities`
+- `app/Domains/Statistics/Entities/.`
+- `app/Domains/Statistics/Entities/..`
+- `app/Domains/Statistics/ValueObjects`
+- `app/Domains/Statistics/ValueObjects/.`
+- `app/Domains/Statistics/ValueObjects/..`
 - `app/Domains/Post`
 - `app/Domains/Post/.`
 - `app/Domains/Post/..`
@@ -347,6 +362,20 @@
 ### `App`
 - app/Application.php
 
+### `App\Domains\Statistics\Contracts`
+- app/Domains/Statistics/Contracts/StatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/PostStatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/UserStatisticsRepositoryInterface.php
+
+### `App\Domains\Statistics\Entities`
+- app/Domains/Statistics/Entities/StatisticsSnapshot.php
+
+### `App\Domains\Statistics\ValueObjects`
+- app/Domains/Statistics/ValueObjects/StatisticsMetric.php
+- app/Domains/Statistics/ValueObjects/PeriodType.php
+- app/Domains/Statistics/ValueObjects/StatisticsPeriod.php
+- app/Domains/Statistics/ValueObjects/SourceType.php
+
 ### `App\Domains\Post\Contracts`
 - app/Domains/Post/Contracts/PostRepositoryInterface.php
 - app/Domains/Post/Contracts/PostServiceInterface.php
@@ -460,6 +489,7 @@
 - app/Domains/Auth/Providers/SimpleAuthServiceProvider.php
 
 ### `App\Domains\Auth\Repositories`
+- app/Domains/Auth/Repositories/UserRepositoryAdapter.php
 - app/Domains/Auth/Repositories/UserRepository.php
 
 ### `App\Domains\Auth\Models`
@@ -765,8 +795,8 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 222
-- **介面總數**: 51
+- **類別總數**: 227
+- **介面總數**: 54
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
@@ -813,6 +843,8 @@
   - 實作: 
 - **SimpleAuthServiceProvider**: `app/Domains/Auth/Providers/SimpleAuthServiceProvider.php`
   - 實作: 
+- **UserRepositoryAdapter**: `app/Domains/Auth/Repositories/UserRepositoryAdapter.php`
+  - 實作: UserRepositoryInterface
 - **UserRepository**: `app/Domains/Auth/Repositories/UserRepository.php`
   - 實作: 
 - **PwnedPasswordService**: `app/Domains/Auth/Services/Advanced/PwnedPasswordService.php`
@@ -1062,10 +1094,11 @@
 - PropertyGenericSyntaxFixer (`scripts/fix-property-generic-syntax.php`)
 - EnhancedPhpstanFixer (`scripts/enhanced-phpstan-fixer.php`)
 
-### `PostRepositoryInterface`
-- PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
-
 ### `JsonSerializable`
+- StatisticsSnapshot (`app/Domains/Statistics/Entities/StatisticsSnapshot.php`)
+- StatisticsMetric (`app/Domains/Statistics/ValueObjects/StatisticsMetric.php`)
+- StatisticsPeriod (`app/Domains/Statistics/ValueObjects/StatisticsPeriod.php`)
+- SourceType (`app/Domains/Statistics/ValueObjects/SourceType.php`)
 - Post (`app/Domains/Post/Models/Post.php`)
 - IpList (`app/Domains/Security/Models/IpList.php`)
 - SuspiciousActivityAnalysisDTO (`app/Domains/Security/DTOs/SuspiciousActivityAnalysisDTO.php`)
@@ -1078,6 +1111,9 @@
 - BaseDTO (`app/Shared/DTOs/BaseDTO.php`)
 - ValidationResult (`app/Shared/Validation/ValidationResult.php`)
 - AuthorizationResult (`app/Application/Middleware/AuthorizationResult.php`)
+
+### `PostRepositoryInterface`
+- PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
 
 ### `PostServiceInterface`
 - PostService (`app/Domains/Post/Services/PostService.php`)
@@ -1117,6 +1153,9 @@
 
 ### `LoggingSecurityServiceInterface`
 - LoggingSecurityService (`app/Domains/Security/Services/Logging/LoggingSecurityService.php`)
+
+### `UserRepositoryInterface`
+- UserRepositoryAdapter (`app/Domains/Auth/Repositories/UserRepositoryAdapter.php`)
 
 ### `SessionSecurityServiceInterface`
 - SessionSecurityService (`app/Domains/Auth/Services/SessionSecurityService.php`)
@@ -1244,19 +1283,20 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 222 個
+- **缺少測試的類別**: 227 個
 
 ### 缺少測試的重要類別
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
-- **PostService**: `app/Domains/Post/Services/PostService.php`
-- **ContentModerationService**: `app/Domains/Post/Services/ContentModerationService.php`
-- **RichTextProcessorService**: `app/Domains/Post/Services/RichTextProcessorService.php`
-- **PostCacheKeyService**: `app/Domains/Post/Services/PostCacheKeyService.php`
 
 
 ## 💉 依賴注入分析
 
 ### 依賴較多的類別 (≥3個依賴)
+- **StatisticsPeriod** (3 個依賴)
+  - `PeriodType` $type
+  - `DateTimeImmutable` $startTime
+  - `DateTimeImmutable` $endTime
+
 - **PostRepository** (3 個依賴)
   - `PDO` $db
   - `CacheServiceInterface` $cache

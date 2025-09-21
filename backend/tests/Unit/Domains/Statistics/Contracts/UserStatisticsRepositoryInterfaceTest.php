@@ -146,16 +146,16 @@ class UserStatisticsRepositoryInterfaceTest extends TestCase
         foreach ($methods as $method) {
             $docComment = $method->getDocComment();
             $this->assertNotFalse($docComment, "Method {$method->getName()} should have a DocBlock");
-            
+
             // 檢查參數數量大於 0 的方法應該有 @param 標籤
             if ($method->getNumberOfParameters() > 0) {
                 $this->assertStringContainsString('@param', $docComment, "Method {$method->getName()} should document its parameters");
             }
-            
+
             // 檢查使用者統計相關的方法文件
             $this->assertTrue(
                 str_contains($docComment, '使用者') || str_contains($docComment, 'User') || str_contains($docComment, '活躍') || str_contains($docComment, '註冊') || str_contains($docComment, '檢查'),
-                "Method {$method->getName()} should have appropriate documentation"
+                "Method {$method->getName()} should have appropriate documentation",
             );
         }
     }

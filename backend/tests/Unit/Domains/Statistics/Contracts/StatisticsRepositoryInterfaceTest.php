@@ -168,18 +168,18 @@ class StatisticsRepositoryInterfaceTest extends TestCase
         foreach ($methods as $method) {
             $docComment = $method->getDocComment();
             $this->assertNotFalse($docComment, "Method {$method->getName()} should have a DocBlock");
-            
+
             // 檢查參數數量大於 0 的方法應該有 @param 標籤
             if ($method->getNumberOfParameters() > 0) {
                 $this->assertStringContainsString('@param', $docComment, "Method {$method->getName()} should document its parameters");
             }
-            
+
             // 對於複雜回傳類型或有例外的方法，檢查是否有適當的文件
             $this->assertTrue(
-                str_contains($docComment, '查找') || str_contains($docComment, '統計') || str_contains($docComment, '儲存') || 
-                str_contains($docComment, '刪除') || str_contains($docComment, '檢查') || str_contains($docComment, '計算') ||
-                str_contains($docComment, '更新') || str_contains($docComment, '批量') || str_contains($docComment, '分頁'),
-                "Method {$method->getName()} should have appropriate documentation"
+                str_contains($docComment, '查找') || str_contains($docComment, '統計') || str_contains($docComment, '儲存')
+                || str_contains($docComment, '刪除') || str_contains($docComment, '檢查') || str_contains($docComment, '計算')
+                || str_contains($docComment, '更新') || str_contains($docComment, '批量') || str_contains($docComment, '分頁'),
+                "Method {$method->getName()} should have appropriate documentation",
             );
         }
     }

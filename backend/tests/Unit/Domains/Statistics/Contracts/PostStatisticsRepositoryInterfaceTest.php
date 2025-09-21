@@ -136,16 +136,16 @@ class PostStatisticsRepositoryInterfaceTest extends TestCase
         foreach ($methods as $method) {
             $docComment = $method->getDocComment();
             $this->assertNotFalse($docComment, "Method {$method->getName()} should have a DocBlock");
-            
+
             // 檢查參數數量大於 0 的方法應該有 @param 標籤
             if ($method->getNumberOfParameters() > 0) {
                 $this->assertStringContainsString('@param', $docComment, "Method {$method->getName()} should document its parameters");
             }
-            
+
             // 檢查文章統計相關的方法文件
             $this->assertTrue(
                 str_contains($docComment, '文章') || str_contains($docComment, 'Post') || str_contains($docComment, '熱門') || str_contains($docComment, '置頂') || str_contains($docComment, '檢查'),
-                "Method {$method->getName()} should have appropriate documentation"
+                "Method {$method->getName()} should have appropriate documentation",
             );
         }
     }
