@@ -9,9 +9,92 @@
 ## 🎯 開發順序與依賴關係
 
 根據 DDD 架構原則，按照以下順序開發：
-**Domain → Application → Infrastructure → Interface**
+**Domain → Application → Infrastructure → Int#### ✅ T4.2 - 實作統計快取服務
+**描述**：實作統計資料的快取機制
+**預估時間**：4 小時
+**依賴**：T4.1
+**驗收標準**：
+- [ ] `StatisticsCacheService` 類別
+- [ ] 支援多層次快取策略
+- [ ] 快取鍵命名規範統一
+- [ ] 支援快取標籤管理
+- [ ] 實作快取預熱機制
+- [ ] 包含快取失效邏輯
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [ ] 通過 PHPStan Level 10 檢查
 
----
+#### ✅ T4.3 - 建立統計計算定時任務
+**描述**：建立定期計算統計快照的背景任務
+**預估時間**：3 小時
+**依賴**：T4.2
+**驗收標準**：
+- [ ] `StatisticsCalculationCommand` 類別
+- [ ] 支援不同統計週期（daily, weekly, monthly）
+- [ ] 包含錯誤重試機制
+- [ ] 記錄執行日誌
+- [ ] 可手動觸發執行
+- [ ] 支援並行安全執行
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+
+#### ✅ T4.4 - 建立索引最佳化與查詢調整
+**描述**：統計相關表的索引最佳化與SQL查詢調整
+**預估時間**：4 小時
+**依賴**：T4.3
+**驗收標準**：
+- [ ] 建立 posts 表統計查詢複合索引
+- [ ] 測試索引效能改善效果
+- [ ] 最佳化大量資料統計查詢
+- [ ] 建立慢查詢監控
+- [ ] 檢查查詢執行計劃
+- [ ] 效能測試報告
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+
+#### ✅ T4.5 - 建立統計監控與日誌系統
+**描述**：建立統計功能的監控、日誌記錄與健康檢查
+**預估時間**：5 小時
+**依賴**：T4.4
+**驗收標準**：
+- [ ] `StatisticsMonitoringService` 類別
+- [ ] 統計計算時間監控
+- [ ] 快取命中率監控
+- [ ] API 回應時間監控
+- [ ] 錯誤率記錄與警告
+- [ ] 統計健康檢查端點
+- [ ] 日誌輪轉與保存策略
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+
+#### 🔲 T4.6 - 建立統計資料回填指令
+**描述**：建立一個指令，用於對歷史資料重新計算並生成統計快照
+**預估時間**：3 小時
+**依賴**：T4.3
+**驗收標準**：
+- [ ] `StatisticsRecalculationCommand` 類別
+- [ ] 支援按統計類型和日期範圍進行回填
+- [ ] 提供 `--force` 選項覆蓋現有快照
+- [ ] 包含進度顯示和日誌記錄
+- [ ] 指令可安全地重複執行
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+
+#### 🔲 T4.7 - 整合領域事件分派器
+**描述**：將統計領域事件整合到專案的事件分派機制中
+**預估時間**：3 小時
+**依賴**：T1.5
+**驗收標準**：
+- [ ] 建立 `PostViewed` 事件的監聽器，觸發非同步計數更新
+- [ ] 建立 `StatisticsSnapshotCreated` 事件的監聽器，觸發快取失效或預熱
+- [ ] 若專案尚無事件機制，則引入一個輕量級的事件分派器
+- [ ] 事件處理邏輯有完整的測試
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+
+#### 🔲 T4.8 - 建立統計功能設定檔
+**描述**：建立並設定統計功能的獨立設定檔
+**預估時間**：1 小時
+**依賴**：T4.2
+**驗收標準**：
+- [ ] 在 `config/` 目錄下建立 `statistics.php`
+- [ ] 將快取 TTL、排程時間、資料保存期限等配置移入此檔案
+- [ ] 應用程式能正確讀取此設定檔
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤-
 
 ## 📋 詳細待辦事項
 
@@ -26,19 +109,22 @@
 - [x] 定義統計聚合根 (Aggregate Root)
 - [x] 設計統計值物件 (Value Objects)
 - [x] 確定統計領域事件 (Domain Events)
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 領域專家審核通過設計
 
 #### ✅ T1.2 - 建立統計值物件 (Value Objects)
 **描述**：建立統計相關的值物件
 **預估時間**：3 小時
 **依賴**：T1.1
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] `StatisticsPeriod` 值物件（時間範圍）
-- [ ] `StatisticsMetric` 值物件（統計指標）
-- [ ] `SourceType` 值物件（來源類型）
-- [ ] 所有值物件都是 immutable
-- [ ] 包含完整的驗證邏輯
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsPeriod` 值物件（時間範圍）
+- [x] `StatisticsMetric` 值物件（統計指標）
+- [x] `SourceType` 值物件（來源類型）
+- [x] 所有值物件都是 immutable
+- [x] 包含完整的驗證邏輯
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T1.3 - 建立統計實體 (Entities)
 **描述**：建立統計快照實體
@@ -51,33 +137,36 @@
 - [x] 實作領域邏輯方法
 - [x] 正確使用值物件
 - [x] 包含領域不變條件 (Invariants)
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [x] 通過 PHPStan Level 10 檢查
 
-#### 🔄 T1.4 - 定義統計 Repository 介面
+#### ✅ T1.4 - 定義統計 Repository 介面
 **描述**：定義統計資料存取的領域介面
 **預估時間**：2 小時
-**狀態**：🔄 進行中
+**狀態**：✅ 已完成
 **依賴**：T1.3
 **驗收標準**：
-- [ ] `StatisticsRepositoryInterface` 介面定義完整
-- [ ] `PostStatisticsRepositoryInterface` 介面定義完整
-- [ ] `UserStatisticsRepositoryInterface` 介面定義完整
-- [ ] 方法簽名遵循領域語言
-- [ ] 包含完整的 DocBlock 註解
-- [ ] 介面設計符合 ISP 原則
+- [x] `StatisticsRepositoryInterface` 介面定義完整
+- [x] `PostStatisticsRepositoryInterface` 介面定義完整
+- [x] `UserStatisticsRepositoryInterface` 介面定義完整
+- [x] 方法簽名遵循領域語言
+- [x] 包含完整的 DocBlock 註解
+- [x] 介面設計符合 ISP 原則
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T1.5 - 建立統計領域服務
 **描述**：建立統計計算的核心領域服務
 **預估時間**：6 小時
+**狀態**：✅ 已完成
 **依賴**：T1.4
 **驗收標準**：
-- [ ] `StatisticsCalculatorService` 領域服務
-- [ ] `PostStatisticsService` 領域服務
-- [ ] 支援文章、來源、使用者、內容（標籤/分類）、互動（留言）等多維度計算
-- [ ] 所有業務邏輯封裝在領域層
-- [ ] 不依賴基礎設施層
-- [ ] 包含完整的領域邏輯測試
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsAggregationService` 領域服務
+- [x] 支援文章、來源、使用者、內容（標籤/分類）、互動（留言）等多維度計算
+- [x] 所有業務邏輯封裝在領域層
+- [x] 不依賴基礎設施層
+- [x] 包含完整的領域邏輯測試
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 ---
 
@@ -94,6 +183,7 @@
 - [ ] 包含向下相容的預設值
 - [ ] Migration 可正確回滾
 - [ ] 通過本地測試環境驗證
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T2.1.1 - 修改 Post 模型支援來源追蹤
 **描述**：修改現有 Post 模型類別及 Repository 以支援來源追蹤
@@ -105,6 +195,7 @@
 - [ ] PostRepository 新增按來源查詢的方法
 - [ ] 維持向下相容性
 - [ ] 通過所有現有測試
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 #### ✅ T2.2 - 建立統計快照表 Migration
@@ -119,6 +210,7 @@
 - [ ] 外鍵约束正確設定
 - [ ] Migration 可正確回滾
 - [ ] 通過本地測試環境驗證
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T2.3 - 更新現有資料的來源資訊
 **描述**：為現有文章資料設定預設來源
@@ -130,6 +222,7 @@
 - [ ] 包含資料驗證邏輯
 - [ ] 備份機制確保資料安全
 - [ ] 執行日誌記錄操作結果
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 ---
 
@@ -145,6 +238,7 @@
 - [ ] 處理應用層的事務邏輯
 - [ ] 包含完整的錯誤處理
 - [ ] 實作快取策略
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 #### ✅ T3.2 - 建立統計查詢服務
@@ -157,6 +251,7 @@
 - [ ] 實作查詢最佳化
 - [ ] 包含分頁支援
 - [ ] 查詢參數驗證
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 #### ✅ T3.3 - 建立統計 DTO 類別
@@ -171,6 +266,7 @@
 - [ ] `ContentInsightsDTO` 類別 (用於標籤、分類等)
 - [ ] 所有 DTO 包含驗證邏輯
 - [ ] 支援 JSON 序列化
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 ---
@@ -189,6 +285,7 @@
 - [ ] 使用原生 SQL 最佳化效能
 - [ ] 包含完整的錯誤處理
 - [ ] 支援複雜的統計查詢
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 #### ✅ T4.2 - 實作統計快取服務
@@ -290,6 +387,7 @@
 - [ ] 標準化的回應格式
 - [ ] 完整的錯誤處理
 - [ ] 整合 `statistics:read` 權限驗證
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 #### ✅ T5.2 - 建立統計管理 API 控制器
@@ -303,6 +401,7 @@
 - [ ] GET `/api/admin/statistics/health` 端點（包含詳細檢查）
 - [ ] 管理員權限驗證
 - [ ] 操作活動日誌記錄
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [ ] 通過 PHPStan Level 10 檢查
 
 #### ✅ T5.3 - 更新 API 路由配置
@@ -315,6 +414,7 @@
 - [ ] 路由群組和中介軟體正確設定
 - [ ] API 版本控制正確實作
 - [ ] 路由測試通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### 🔲 T5.4 - 建立文章瀏覽數追蹤端點
 **描述**：建立用於記錄文章瀏覽行為的 API 端點
@@ -326,6 +426,7 @@
 - [ ] 呼叫此端點會發布 `PostViewed` 領域事件
 - [ ] 包含速率限制防止濫用
 - [ ] 回應時間極短（< 100ms）
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 ---
 
@@ -343,6 +444,7 @@
 - [ ] 使用 Mock 物件隔離依賴
 - [ ] 測試案例名稱清楚表達意圖
 - [ ] 所有測試都能通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T6.2 - 建立統計 Repository 單元測試
 **描述**：為統計 Repository 撰寫單元測試
@@ -356,6 +458,7 @@
 - [ ] 使用測試資料庫
 - [ ] 測試資料清理機制
 - [ ] 所有測試都能通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T6.3 - 建立統計 API 整合測試
 **描述**：為統計 API 撰寫整合測試
@@ -369,6 +472,7 @@
 - [ ] 測試回應格式和狀態碼
 - [ ] 包含錯誤情況測試
 - [ ] 所有測試都能通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T6.4 - 建立統計快取功能測試
 **描述**：為統計快取機制撰寫功能測試
@@ -381,6 +485,7 @@
 - [ ] 測試快取標籤功能
 - [ ] 包含並行存取測試
 - [ ] 所有測試都能通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T6.5 - 建立統計效能測試
 **描述**：為統計功能建立效能基準測試
@@ -394,6 +499,7 @@
 - [ ] 測試記憶體使用量
 - [ ] 效能基準驗證
 - [ ] 生成效能測試報告
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### 🔲 T6.6 - 建立指令與事件功能測試
 **描述**：為新增的指令和事件監聽器撰寫測試
@@ -405,6 +511,7 @@
 - [ ] `PostViewControllerTest` 類別
 - [ ] 測試覆蓋率 ≥ 95%
 - [ ] 所有測試都能通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 ---
 
@@ -422,6 +529,7 @@
 - [ ] 錯誤回應格式說明
 - [ ] 認證要求說明
 - [ ] 文件可正確產生和顯示
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T7.2 - 撰寫統計功能使用指南
 **描述**：建立統計功能的使用和維護文件
@@ -434,6 +542,7 @@
 - [ ] 故障排除手冊
 - [ ] 維護和監控建議
 - [ ] 文件格式清晰易讀
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T7.3 - 建立資料庫遷移指南
 **描述**：建立統計功能資料庫遷移的操作指南
@@ -445,6 +554,7 @@
 - [ ] 回滾程序說明
 - [ ] 效能影響評估
 - [ ] 生產環境部署檢查清單
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T7.4 - 建立統計功能操作手冊
 **描述**：建立統計功能的日常維護和故障處理手冊
@@ -457,6 +567,7 @@
 - [ ] 統計資料异常處理程序
 - [ ] 性能調整建議
 - [ ] 緊急情況應對流程
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 ---
 
@@ -472,6 +583,7 @@
 - [ ] 程式碼覆蓋率 ≥ 90%
 - [ ] 沒有程式碼異味（Code Smells）
 - [ ] 符合 PSR 標準
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T8.2 - 效能測試與最佳化
 **描述**：進行統計功能的效能測試和最佳化
@@ -484,6 +596,7 @@
 - [ ] 資料庫查詢最佳化
 - [ ] 快取命中率 ≥ 80%
 - [ ] 效能測試報告完整
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T8.3 - 安全性審查
 **描述**：對統計功能進行安全性審查
@@ -496,13 +609,14 @@
 - [ ] 敏感資料保護
 - [ ] 審計日誌完整
 - [ ] 安全測試通過
+- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 ---
 
 ## 📊 進度追蹤
 
 ### 完成狀態
-- [-] 階段 1：領域層設計 (3/5)
+- [x] 階段 1：領域層設計 (5/5) ✅ 完成
 - [ ] 階段 2：資料庫結構調整 (0/4)
 - [ ] 階段 3：應用層服務 (0/3)
 - [ ] 階段 4：基礎設施層實作 (0/8)
@@ -512,7 +626,9 @@
 - [ ] 階段 8：品質保證與最佳化 (0/3)
 
 ### 總體進度
-**3/37 項任務完成 (8.1%)**
+**5/37 項任務完成 (13.5%)**
+
+**🎉 第一階段（領域層設計）已完成！**
 
 ### 預估工作量
 - **總預估時間**：120 小時
