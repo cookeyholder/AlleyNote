@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Services;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
@@ -20,7 +21,7 @@ use RuntimeException;
  * 此服務封裝複雜的統計業務邏輯，確保統計資料的一致性與準確性。
  * 遵循 DDD 領域服務原則，專注於跨多個聚合根的業務邏輯協調。
  */
-class StatisticsAggregationService
+class StatisticsAggregationService implements StatisticsAggregationServiceInterface
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $statisticsRepository,

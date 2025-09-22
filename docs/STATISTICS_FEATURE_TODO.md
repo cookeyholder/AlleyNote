@@ -251,14 +251,15 @@
 **描述**：建立統計功能的應用層服務
 **預估時間**：5 小時
 **依賴**：T1.5, T2.2
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] `StatisticsApplicationService` 類別
-- [ ] 協調多個領域服務
-- [ ] 處理應用層的事務邏輯
-- [ ] 包含完整的錯誤處理
-- [ ] 實作快取策略
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsApplicationService` 類別
+- [x] 協調多個領域服務
+- [x] 處理應用層的事務邏輯
+- [x] 包含完整的錯誤處理
+- [x] 實作快取策略
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T3.2 - 建立統計查詢服務
 **描述**：專門處理統計查詢的應用服務
