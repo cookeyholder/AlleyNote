@@ -1,24 +1,24 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-22 23:40:55
+**生成時間**: 2025-09-22 23:55:16
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 242 | - |
-| 介面與類別比例 | 23.55% | ✅ 良好 |
+| 總類別數 | 244 | - |
+| 介面與類別比例 | 23.36% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 61.98% | ✅ 良好 |
-| PSR-4 合規率 | 74.26% | ❌ 需修正 |
+| 現代 PHP 採用率 | 62.30% | ✅ 良好 |
+| PSR-4 合規率 | 74.41% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 251 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 176 | ✅ 提升資料不變性 |
+| Match 表達式 (PHP 8.0+) | 257 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 178 | ✅ 提升資料不變性 |
 | 空安全運算子 (PHP 8.0+) | 81 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
@@ -728,6 +728,8 @@
 
 ### `App\Infrastructure\Statistics\Repositories`
 - app/Infrastructure/Statistics/Repositories/StatisticsRepository.php
+- app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+- app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
 
 ### `App\Infrastructure\Database`
 - app/Infrastructure/Database/DatabaseConnection.php
@@ -846,7 +848,7 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 242
+- **類別總數**: 244
 - **介面總數**: 57
 - **Trait 總數**: 0
 
@@ -986,6 +988,10 @@
   - 實作: 
 - **StatisticsRepository**: `app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`
   - 實作: StatisticsRepositoryInterface
+- **PostStatisticsRepository**: `app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php`
+  - 實作: PostStatisticsRepositoryInterface
+- **UserStatisticsRepository**: `app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php`
+  - 實作: UserStatisticsRepositoryInterface
 - **RefreshTokenRepository**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
   - 實作: RefreshTokenRepositoryInterface
 - **TokenBlacklistRepository**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
@@ -1302,6 +1308,12 @@
 ### `StatisticsRepositoryInterface`
 - StatisticsRepository (`app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`)
 
+### `PostStatisticsRepositoryInterface`
+- PostStatisticsRepository (`app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php`)
+
+### `UserStatisticsRepositoryInterface`
+- UserStatisticsRepository (`app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php`)
+
 ### `JwtProviderInterface`
 - FirebaseJwtProvider (`app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php`)
 
@@ -1365,7 +1377,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 242 個
+- **缺少測試的類別**: 244 個
 
 ### 缺少測試的重要類別
 - **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
@@ -1580,4 +1592,4 @@
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921143617_update_existing_posts_source_info.php 中使用)
-- ... 還有 179 個
+- ... 還有 181 個
