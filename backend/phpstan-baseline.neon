@@ -1,31 +1,181 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByEmail\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
-			identifier: return.type
+			message: '#^Cannot access offset ''metric_value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByUsername\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
-			identifier: return.type
+			message: '#^Cannot access offset ''post_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByUuid\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
-			identifier: return.type
+			message: '#^Cannot access offset ''posts_count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:validateCredentials\(\) should return array\<string, mixed\>\|null but returns array\<mixed, mixed\>\.$#'
-			identifier: return.type
+			message: '#^Cannot access offset ''time_period'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''total_views'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 20
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''active_users'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''engagement_score'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''frequency_range'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''hour'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''location'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''metric_value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''percentage'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''rank'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''registration_source'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''role'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''time_period'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''users_count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 13
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Unit/Infrastructure/Statistics/Repositories/UserStatisticsRepositoryTest.php

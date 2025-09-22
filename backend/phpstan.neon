@@ -4,6 +4,7 @@ includes:
 	- phpstan-mockery-ignore.neon
 	- phpstan-test-exclusions.neon
 	- phpstan-level-10-baseline.neon
+	- phpstan-baseline.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false

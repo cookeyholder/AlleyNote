@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-22 18:26:20
+**生成時間**: 2025-09-22 23:40:55
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 236 | - |
-| 介面與類別比例 | 23.31% | ✅ 良好 |
+| 總類別數 | 242 | - |
+| 介面與類別比例 | 23.55% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 61.44% | ✅ 良好 |
-| PSR-4 合規率 | 73.94% | ❌ 需修正 |
+| 現代 PHP 採用率 | 61.98% | ✅ 良好 |
+| PSR-4 合規率 | 74.26% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
@@ -18,8 +18,8 @@
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
 | Match 表達式 (PHP 8.0+) | 251 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 160 | ✅ 提升資料不變性 |
-| 空安全運算子 (PHP 8.0+) | 72 | ✅ 防止 null 指標異常 |
+| 唯讀屬性 (PHP 8.1+) | 176 | ✅ 提升資料不變性 |
+| 空安全運算子 (PHP 8.0+) | 81 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
 | 聯合型別 (PHP 8.0+) | 20 | ✅ 更靈活的型別定義 |
@@ -296,9 +296,24 @@
 - `app/Application/Controllers/Api/V1`
 - `app/Application/Controllers/Api/V1/.`
 - `app/Application/Controllers/Api/V1/..`
+- `app/Application/Services`
+- `app/Application/Services/.`
+- `app/Application/Services/..`
+- `app/Application/Services/Statistics`
+- `app/Application/Services/Statistics/.`
+- `app/Application/Services/Statistics/..`
+- `app/Application/Services/Statistics/DTOs`
+- `app/Application/Services/Statistics/DTOs/.`
+- `app/Application/Services/Statistics/DTOs/..`
 - `app/Infrastructure`
 - `app/Infrastructure/.`
 - `app/Infrastructure/..`
+- `app/Infrastructure/Statistics`
+- `app/Infrastructure/Statistics/.`
+- `app/Infrastructure/Statistics/..`
+- `app/Infrastructure/Statistics/Repositories`
+- `app/Infrastructure/Statistics/Repositories/.`
+- `app/Infrastructure/Statistics/Repositories/..`
 - `app/Infrastructure/Database`
 - `app/Infrastructure/Database/.`
 - `app/Infrastructure/Database/..`
@@ -373,7 +388,9 @@
 
 ### `App\Domains\Statistics\Contracts`
 - app/Domains/Statistics/Contracts/StatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/StatisticsAggregationServiceInterface.php
 - app/Domains/Statistics/Contracts/PostStatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/StatisticsCacheServiceInterface.php
 - app/Domains/Statistics/Contracts/StatisticsSnapshotRepositoryInterface.php
 - app/Domains/Statistics/Contracts/UserStatisticsRepositoryInterface.php
 
@@ -701,6 +718,17 @@
 - app/Application/Controllers/Api/V1/PostController.php
 - app/Application/Controllers/Api/V1/AttachmentController.php
 
+### `App\Application\Services\Statistics`
+- app/Application/Services/Statistics/StatisticsQueryService.php
+- app/Application/Services/Statistics/StatisticsApplicationService.php
+
+### `App\Application\Services\Statistics\DTOs`
+- app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php
+- app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php
+
+### `App\Infrastructure\Statistics\Repositories`
+- app/Infrastructure/Statistics/Repositories/StatisticsRepository.php
+
 ### `App\Infrastructure\Database`
 - app/Infrastructure/Database/DatabaseConnection.php
 
@@ -818,14 +846,14 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 236
-- **介面總數**: 55
+- **類別總數**: 242
+- **介面總數**: 57
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
 
 - **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
-  - 實作: 
+  - 實作: StatisticsAggregationServiceInterface
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
   - 實作: PostRepositoryInterface
 - **PostService**: `app/Domains/Post/Services/PostService.php`
@@ -948,6 +976,16 @@
   - 實作: 
 - **BaseController**: `app/Application/Controllers/BaseController.php`
   - 實作: 
+- **StatisticsQueryService**: `app/Application/Services/Statistics/StatisticsQueryService.php`
+  - 實作: 
+- **PaginatedStatisticsDTO**: `app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php`
+  - 實作: 
+- **StatisticsQueryDTO**: `app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php`
+  - 實作: 
+- **StatisticsApplicationService**: `app/Application/Services/Statistics/StatisticsApplicationService.php`
+  - 實作: 
+- **StatisticsRepository**: `app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`
+  - 實作: StatisticsRepositoryInterface
 - **RefreshTokenRepository**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
   - 實作: RefreshTokenRepositoryInterface
 - **TokenBlacklistRepository**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
@@ -968,6 +1006,7 @@
 ## 🔌 介面實作分析
 
 ### ``
+- UpdateStatisticsSnapshotsTableForEntityCompatibility (`database/migrations/20250922000002_update_statistics_snapshots_table_for_entity_compatibility.php`)
 - AddCompositeIndexesToUserActivityLogs (`database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php`)
 - AddSourceTrackingToPosts (`database/migrations/20250921130458_add_source_tracking_to_posts.php`)
 - CreateUserActivityLogsTable (`database/migrations/20250829000000_create_user_activity_logs_table.php`)
@@ -980,7 +1019,6 @@
 - UserActivityLogsSeeder (`database/seeds/UserActivityLogsSeeder.php`)
 - Application (`app/Application.php`)
 - implements (`scripts/remaining-error-fixer.php`)
-- StatisticsAggregationService (`app/Domains/Statistics/Services/StatisticsAggregationService.php`)
 - PostStatusException (`app/Domains/Post/Exceptions/PostStatusException.php`)
 - PostValidationException (`app/Domains/Post/Exceptions/PostValidationException.php`)
 - PostNotFoundException (`app/Domains/Post/Exceptions/PostNotFoundException.php`)
@@ -1057,6 +1095,10 @@
 - AuthController (`app/Application/Controllers/Api/V1/AuthController.php`)
 - AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
 - BaseController (`app/Application/Controllers/BaseController.php`)
+- StatisticsQueryService (`app/Application/Services/Statistics/StatisticsQueryService.php`)
+- PaginatedStatisticsDTO (`app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php`)
+- StatisticsQueryDTO (`app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php`)
+- StatisticsApplicationService (`app/Application/Services/Statistics/StatisticsApplicationService.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
 - CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
 - ContainerFactory (`app/Infrastructure/Config/ContainerFactory.php`)
@@ -1145,6 +1187,9 @@
 - BaseDTO (`app/Shared/DTOs/BaseDTO.php`)
 - ValidationResult (`app/Shared/Validation/ValidationResult.php`)
 - AuthorizationResult (`app/Application/Middleware/AuthorizationResult.php`)
+
+### `StatisticsAggregationServiceInterface`
+- StatisticsAggregationService (`app/Domains/Statistics/Services/StatisticsAggregationService.php`)
 
 ### `PostRepositoryInterface`
 - PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
@@ -1254,6 +1299,9 @@
 - RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
 - AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
 
+### `StatisticsRepositoryInterface`
+- StatisticsRepository (`app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`)
+
 ### `JwtProviderInterface`
 - FirebaseJwtProvider (`app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php`)
 
@@ -1317,7 +1365,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 236 個
+- **缺少測試的類別**: 242 個
 
 ### 缺少測試的重要類別
 - **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
@@ -1453,6 +1501,11 @@
   - `ValidatorInterface` $validator
   - `ActivityLoggingServiceInterface` $activityLoggingService
 
+- **StatisticsQueryService** (3 個依賴)
+  - `StatisticsRepositoryInterface` $statisticsRepository
+  - `StatisticsCacheServiceInterface` $cacheService
+  - `LoggerInterface` $logger
+
 - **RouteDispatcher** (4 個依賴)
   - `RouterInterface` $router
   - `ControllerResolver` $controllerResolver
@@ -1517,6 +1570,7 @@
 
 ## ❓ 可能的問題引用
 
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000002_update_statistics_snapshots_table_for_entity_compatibility.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921130458_add_source_tracking_to_posts.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250829000000_create_user_activity_logs_table.php 中使用)
@@ -1526,5 +1580,4 @@
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921143617_update_existing_posts_source_info.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Seed\AbstractSeed (在 database/seeds/UserActivityLogsSeeder.php 中使用)
-- ... 還有 178 個
+- ... 還有 179 個
