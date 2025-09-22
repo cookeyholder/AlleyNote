@@ -313,19 +313,22 @@
 - [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [x] 通過 PHPStan Level 10 檢查
 
-#### 🔲 T4.2 - 實作統計快取服務
+#### ✅ T4.2 - 實作統計快取服務
 **描述**：實作統計資料的快取機制
 **預估時間**：4 小時
 **依賴**：T4.1
+**狀態**：✅ 完成
 **驗收標準**：
-- [ ] `StatisticsCacheService` 類別
-- [ ] 支援多層次快取策略
-- [ ] 快取鍵命名規範統一
-- [ ] 支援快取標籤管理
-- [ ] 實作快取預熱機制
-- [ ] 包含快取失效邏輯
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsCacheService` 類別
+- [x] 支援多層次快取策略
+- [x] 快取鍵命名規範統一
+- [x] 支援快取標籤管理（statistics, overview, posts, users, popular, trends, sources, prewarmed）
+- [x] 實作快取預熱機制（warmup 方法）
+- [x] 包含快取失效邏輯（flushByTags, cleanup 方法）
+- [x] 完整的統計資訊追蹤（getStats 方法）
+- [x] 註冊到 DI 容器並自動注入
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T4.3 - 建立統計計算定時任務
 **描述**：建立定期計算統計快照的背景任務
