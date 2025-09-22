@@ -1911,6 +1911,18 @@ parameters:
 			path: app/Domains/Post/Repositories/PostRepository.php
 
 		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
+			message: '#^Cannot access offset ''creation_source'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
 			message: '#^Cannot access offset ''next_seq'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -1919,7 +1931,7 @@ parameters:
 		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
-			count: 4
+			count: 5
 			path: app/Domains/Post/Repositories/PostRepository.php
 
 		-
@@ -1931,6 +1943,24 @@ parameters:
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Repositories\\PostRepository\:\:countByCreationSource\(\) should return int but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Repositories\\PostRepository\:\:findByCreationSource\(\) should return array\<App\\Domains\\Post\\Models\\Post\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Repositories\\PostRepository\:\:findByCreationSourceAndDetail\(\) should return array\<App\\Domains\\Post\\Models\\Post\> but returns mixed\.$#'
+			identifier: return.type
 			count: 1
 			path: app/Domains/Post/Repositories/PostRepository.php
 
@@ -1947,7 +1977,19 @@ parameters:
 			path: app/Domains/Post/Repositories/PostRepository.php
 
 		-
+			message: '#^Method App\\Domains\\Post\\Repositories\\PostRepository\:\:getSourceDistribution\(\) should return array\<string, int\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
 			message: '#^Method App\\Domains\\Post\\Repositories\\PostRepository\:\:paginate\(\) should return array but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Repositories/PostRepository.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Repositories\\PostRepository\:\:paginateByCreationSource\(\) should return array\{items\: array\<App\\Domains\\Post\\Models\\Post\>, total\: int, page\: int, perPage\: int, lastPage\: int\} but returns mixed\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Domains/Post/Repositories/PostRepository.php
@@ -1961,7 +2003,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$data of static method App\\Domains\\Post\\Models\\Post\:\:fromArray\(\) expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 10
+			count: 13
 			path: app/Domains/Post/Repositories/PostRepository.php
 
 		-
@@ -1973,7 +2015,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$result of method App\\Domains\\Post\\Repositories\\PostRepository\:\:preparePostData\(\) expects array, mixed given\.$#'
 			identifier: argument.type
-			count: 10
+			count: 13
 			path: app/Domains/Post/Repositories/PostRepository.php
 
 		-
@@ -6823,6 +6865,12 @@ parameters:
 			identifier: deadCode.unreachable
 			count: 2
 			path: tests/Unit/Repository/PostRepositoryPerformanceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Repository/PostRepositoryTest.php
 
 		-
 			message: '#^Cannot call method fetchAll\(\) on PDOStatement\|false\.$#'

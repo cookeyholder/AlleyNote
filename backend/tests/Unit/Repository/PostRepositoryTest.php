@@ -71,6 +71,8 @@ class PostRepositoryTest extends TestCase
                 is_pinned BOOLEAN DEFAULT 0,
                 status VARCHAR(20) DEFAULT "draft",
                 publish_date DATETIME,
+                creation_source VARCHAR(20) DEFAULT "web" NOT NULL,
+                creation_source_detail TEXT,
                 created_at DATETIME,
                 updated_at DATETIME,
                 deleted_at DATETIME DEFAULT NULL
@@ -299,5 +301,135 @@ class PostRepositoryTest extends TestCase
         $this->assertTrue($result);
         $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
         $this->assertCount(1, $tags);
+    }
+
+    public function testFindByCreationSource(): void
+    {
+        // 建立不同來源的文章
+        $webPost = $this->repository->create(array_merge(PostFactory::make(), [
+            'title' => 'Web Post',
+        ]));
+
+        $apiPost = $this->repository->create(array_merge(PostFactory::make(), [
+            'title' => 'API Post',
+        ]));
+
+        // 手動更新來源資訊（因為觸發器會設定為 'web'）
+        $this->db->exec("UPDATE posts SET creation_source = 'web' WHERE id = {$webPost->getId()}");
+        $this->db->exec("UPDATE posts SET creation_source = 'api' WHERE id = {$apiPost->getId()}");
+
+        // 測試按來源查詢
+        $webPosts = $this->repository->findByCreationSource('web');
+        $this->assertCount(1, $webPosts);
+        $this->assertEquals('Web Post', $webPosts[0]->getTitle());
+
+        $apiPosts = $this->repository->findByCreationSource('api');
+        $this->assertCount(1, $apiPosts);
+        $this->assertEquals('API Post', $apiPosts[0]->getTitle());
+
+        // 測試不存在的來源
+        $unknownPosts = $this->repository->findByCreationSource('unknown');
+        $this->assertEmpty($unknownPosts);
+    }
+
+    public function testGetSourceDistribution(): void
+    {
+        // 建立不同來源的文章
+        $post1 = $this->repository->create(PostFactory::make());
+        $post2 = $this->repository->create(PostFactory::make());
+        $post3 = $this->repository->create(PostFactory::make());
+
+        // 手動更新來源資訊
+        $this->db->exec("UPDATE posts SET creation_source = 'web' WHERE id IN ({$post1->getId()}, {$post2->getId()})");
+        $this->db->exec("UPDATE posts SET creation_source = 'api' WHERE id = {$post3->getId()}");
+
+        $distribution = $this->repository->getSourceDistribution();
+
+        $this->assertIsArray($distribution);
+        $this->assertEquals(2, $distribution['web'] ?? 0);
+        $this->assertEquals(1, $distribution['api'] ?? 0);
+    }
+
+    public function testFindByCreationSourceAndDetail(): void
+    {
+        // 建立帶詳細資訊的文章
+        $post1 = $this->repository->create(PostFactory::make());
+        $post2 = $this->repository->create(PostFactory::make());
+        $post3 = $this->repository->create(PostFactory::make());
+
+        // 手動更新來源和詳細資訊
+        $this->db->exec("UPDATE posts SET creation_source = 'api', creation_source_detail = 'mobile_app' WHERE id = {$post1->getId()}");
+        $this->db->exec("UPDATE posts SET creation_source = 'api', creation_source_detail = 'web_app' WHERE id = {$post2->getId()}");
+        $this->db->exec("UPDATE posts SET creation_source = 'api', creation_source_detail = NULL WHERE id = {$post3->getId()}");
+
+        // 測試按來源和詳細資訊查詢
+        $mobileAppPosts = $this->repository->findByCreationSourceAndDetail('api', 'mobile_app');
+        $this->assertCount(1, $mobileAppPosts);
+        $this->assertEquals($post1->getId(), $mobileAppPosts[0]->getId());
+
+        $webAppPosts = $this->repository->findByCreationSourceAndDetail('api', 'web_app');
+        $this->assertCount(1, $webAppPosts);
+        $this->assertEquals($post2->getId(), $webAppPosts[0]->getId());
+
+        // 測試 NULL 詳細資訊
+        $nullDetailPosts = $this->repository->findByCreationSourceAndDetail('api', null);
+        $this->assertCount(1, $nullDetailPosts);
+        $this->assertEquals($post3->getId(), $nullDetailPosts[0]->getId());
+    }
+
+    public function testCountByCreationSource(): void
+    {
+        // 建立不同來源的文章
+        $post1 = $this->repository->create(PostFactory::make());
+        $post2 = $this->repository->create(PostFactory::make());
+        $post3 = $this->repository->create(PostFactory::make());
+
+        // 手動更新來源資訊
+        $this->db->exec("UPDATE posts SET creation_source = 'web' WHERE id IN ({$post1->getId()}, {$post2->getId()})");
+        $this->db->exec("UPDATE posts SET creation_source = 'api' WHERE id = {$post3->getId()}");
+
+        $webCount = $this->repository->countByCreationSource('web');
+        $this->assertEquals(2, $webCount);
+
+        $apiCount = $this->repository->countByCreationSource('api');
+        $this->assertEquals(1, $apiCount);
+
+        $unknownCount = $this->repository->countByCreationSource('unknown');
+        $this->assertEquals(0, $unknownCount);
+    }
+
+    public function testPaginateByCreationSource(): void
+    {
+        // 建立多個相同來源的文章
+        $posts = [];
+        for ($i = 0; $i < 5; $i++) {
+            $posts[] = $this->repository->create(array_merge(PostFactory::make(), [
+                'title' => "Test Post {$i}",
+            ]));
+        }
+
+        // 手動更新來源資訊
+        $postIds = implode(',', array_map(fn($p) => $p->getId(), $posts));
+        $this->db->exec("UPDATE posts SET creation_source = 'web' WHERE id IN ({$postIds})");
+
+        // 測試分頁
+        $result = $this->repository->paginateByCreationSource('web', 1, 3);
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('items', $result);
+        $this->assertArrayHasKey('total', $result);
+        $this->assertArrayHasKey('page', $result);
+        $this->assertArrayHasKey('perPage', $result);
+        $this->assertArrayHasKey('lastPage', $result);
+
+        $this->assertCount(3, $result['items']);
+        $this->assertEquals(5, $result['total']);
+        $this->assertEquals(1, $result['page']);
+        $this->assertEquals(3, $result['perPage']);
+        $this->assertEquals(2, $result['lastPage']);
+
+        // 測試第二頁
+        $result2 = $this->repository->paginateByCreationSource('web', 2, 3);
+        $this->assertCount(2, $result2['items']);
     }
 }
