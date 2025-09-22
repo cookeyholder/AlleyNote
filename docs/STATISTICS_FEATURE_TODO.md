@@ -295,19 +295,21 @@
 
 ### 階段 4：基礎設施層實作 (Infrastructure Layer)
 
-#### 🔲 T4.1 - 實作統計 Repository
+#### ✅ T4.1 - 實作統計 Repository
 **描述**：實作統計資料存取的具體類別
 **預估時間**：6 小時
 **依賴**：T1.4, T2.2
-**狀態**：🔲 進行中
+**狀態**：✅ 完成
 **驗收標準**：
 - [x] `StatisticsRepository` 類別實作
-- [ ] `PostStatisticsRepository` 類別實作
-- [ ] `UserStatisticsRepository` 類別實作
+- [x] `PostStatisticsRepository` 類別實作
+- [x] `UserStatisticsRepository` 類別實作
 - [x] 在寫入時處理資料的 JSON 序列化，讀取時處理反序列化
 - [x] 使用原生 SQL 最佳化效能
 - [x] 包含完整的錯誤處理
 - [x] 支援複雜的統計查詢
+- [x] 實作統計 Repository 資料庫適配器（Cache、Transaction、Logging）
+- [x] 建立 StatisticsDatabaseAdapterFactory 適配器工廠
 - [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [x] 通過 PHPStan Level 10 檢查
 
