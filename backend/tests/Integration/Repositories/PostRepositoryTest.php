@@ -105,7 +105,9 @@ class PostRepositoryTest extends TestCase
                 views INTEGER DEFAULT 0,
                 created_at DATETIME NOT NULL,
                 updated_at DATETIME,
-                deleted_at DATETIME
+                deleted_at DATETIME,
+                creation_source VARCHAR(20) DEFAULT "unknown",
+                creation_source_detail TEXT
             )
         ');
 

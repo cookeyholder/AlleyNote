@@ -312,7 +312,8 @@ class StatisticsSnapshotTest extends TestCase
     public function testSetExpiresAtWithPastDate(): void
     {
         $snapshot = new StatisticsSnapshot($this->validData);
-        $pastDate = new DateTime('-1 day');
+        // 使用早於測試資料中 created_at (2025-09-21 10:30:00) 的時間
+        $pastDate = new DateTime('2025-09-21 10:00:00'); // 比 created_at 早 30 分鐘
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('過期時間必須晚於建立時間');

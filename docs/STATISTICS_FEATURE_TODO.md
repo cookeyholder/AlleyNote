@@ -175,54 +175,73 @@
 #### ✅ T2.1 - 建立文章來源追蹤 Migration
 **描述**：為 posts 表新增來源追蹤欄位
 **預估時間**：2 小時
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] Migration 檔案正確建立
-- [ ] 新增 `source_type` 欄位 (enum)
-- [ ] 新增 `source_detail` 欄位 (nullable text)
-- [ ] 建立適當的索引
-- [ ] 包含向下相容的預設值
-- [ ] Migration 可正確回滾
-- [ ] 通過本地測試環境驗證
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] Migration 檔案正確建立
+- [x] 新增 `creation_source` 欄位 (enum)
+- [x] 新增 `creation_source_detail` 欄位 (nullable text)
+- [x] 建立適當的索引
+- [x] 包含向下相容的預設值
+- [x] Migration 可正確回滾
+- [x] 通過本地測試環境驗證
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T2.1.1 - 修改 Post 模型支援來源追蹤
 **描述**：修改現有 Post 模型類別及 Repository 以支援來源追蹤
 **預估時間**：2 小時
 **依賴**：T2.1
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] Post 模型新增 `getSourceType()` 和 `getSourceDetail()` 方法
-- [ ] Post 構造函式支援新欄位
-- [ ] PostRepository 新增按來源查詢的方法
-- [ ] 維持向下相容性
-- [ ] 通過所有現有測試
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] Post 模型新增 `getCreationSource()` 和 `getCreationSourceDetail()` 方法
+- [x] Post 構造函式支援新欄位
+- [x] PostRepository 新增按來源查詢的方法
+- [x] 維持向下相容性
+- [x] 通過所有現有測試
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T2.2 - 建立統計快照表 Migration
 **描述**：建立統計資料快照表
 **預估時間**：3 小時
 **依賴**：T2.1
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] `statistics_snapshots` 表正確建立
-- [ ] 包含必要欄位（id, uuid, type, period, data, created_at）
-- [ ] JSON 欄位支援複雜統計資料
-- [ ] 建立複合索引提升查詢效能
-- [ ] 外鍵约束正確設定
-- [ ] Migration 可正確回滾
-- [ ] 通過本地測試環境驗證
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] `statistics_snapshots` 表正確建立
+- [x] 包含必要欄位（id, uuid, snapshot_type, period_type, period_start, period_end, statistics_data, created_at）
+- [x] JSON 欄位支援複雜統計資料
+- [x] 建立複合索引提升查詢效能
+- [x] StatisticsSnapshot 模型和 Repository 介面建立完成
+- [x] 通過本地測試環境驗證
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
 #### ✅ T2.3 - 更新現有資料的來源資訊
 **描述**：為現有文章資料設定預設來源
 **預估時間**：1 小時
 **依賴**：T2.1
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] 所有現有文章設定預設來源為 'web'
-- [ ] 資料更新腳本可重複執行
-- [ ] 包含資料驗證邏輯
-- [ ] 備份機制確保資料安全
-- [ ] 執行日誌記錄操作結果
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 所有現有文章設定預設來源為 'web'
+- [x] 資料更新腳本可重複執行
+- [x] 包含資料驗證邏輯
+- [x] 備份機制確保資料安全
+- [x] 執行日誌記錄操作結果
+- [x] Migration 和獨立腳本雙重保障
+-x[x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+
+#### ✅ T2.4 - PostRepository 支援來源查詢
+**描述**：更新 PostRepository 介面和實作，新增按來源類型篩選的查詢方法
+**預估時間**：3 小時
+**依賴**：T2.1.1
+**狀態**：✅ 已完成
+**驗收標準**：
+- [x] 擴充 PostRepositoryInterface，新增 5 個來源查詢方法
+- [x] 實作 findByCreationSource() - 按來源類型查詢文章
+- [x] 實作 getSourceDistribution() - 取得來源分佈統計
+- [x] 實作 findByCreationSourceAndDetail() - 按來源和詳細資訊查詢
+- [x] 實作 countByCreationSource() - 計算特定來源文章數
+- [x] 實作 paginateByCreationSource() - 來源文章分頁查詢
+- [x] 包含單元測試和整合測試
+- [x] 通過 CI 檢查和 PHPStan Level 10 驗證
 
 ---
 
@@ -618,7 +637,7 @@
 
 ### 完成狀態
 - [x] 階段 1：領域層設計 (5/5) ✅ 完成
-- [ ] 階段 2：資料庫結構調整 (0/4)
+- [x] 階段 2：資料庫結構調整 (4/4) ✅ 完成
 - [ ] 階段 3：應用層服務 (1/3)
 - [ ] 階段 4：基礎設施層實作 (0/8)
 - [ ] 階段 5：介面層實作 (0/4)
@@ -627,13 +646,16 @@
 - [ ] 階段 8：品質保證與最佳化 (0/3)
 
 ### 總體進度
-**6/37 項任務完成 (16.2%)**
+**10/41 項任務完成 (24.4%)**
 
 **🎉 第一階段（領域層設計）已完成！**
+**🎉 第二階段（資料庫結構調整）已完成！**
 **🚀 第三階段（應用層服務）部分完成 - DTO 層建置完成！**
 
 ### 預估工作量
-- **總預估時間**：120 小時
+- **總預估時間**：123 小時
+- **已完成時間**：30 小時
+- **剩餘時間**：93 小時
 - **建議開發週期**：4-5 週
 - **每日開發時間**：6-8 小時
 

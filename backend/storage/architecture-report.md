@@ -1,24 +1,24 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-21 13:59:43
+**生成時間**: 2025-09-22 17:32:46
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 228 | - |
-| 介面與類別比例 | 23.68% | ✅ 良好 |
+| 總類別數 | 236 | - |
+| 介面與類別比例 | 23.31% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 61.40% | ✅ 良好 |
-| PSR-4 合規率 | 74.29% | ❌ 需修正 |
+| 現代 PHP 採用率 | 61.44% | ✅ 良好 |
+| PSR-4 合規率 | 73.94% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 243 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 110 | ✅ 提升資料不變性 |
+| Match 表達式 (PHP 8.0+) | 251 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 160 | ✅ 提升資料不變性 |
 | 空安全運算子 (PHP 8.0+) | 72 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
@@ -53,6 +53,12 @@
 - `app/Domains/Statistics/Enums`
 - `app/Domains/Statistics/Enums/.`
 - `app/Domains/Statistics/Enums/..`
+- `app/Domains/Statistics/Models`
+- `app/Domains/Statistics/Models/.`
+- `app/Domains/Statistics/Models/..`
+- `app/Domains/Statistics/DTOs`
+- `app/Domains/Statistics/DTOs/.`
+- `app/Domains/Statistics/DTOs/..`
 - `app/Domains/Statistics/Services`
 - `app/Domains/Statistics/Services/.`
 - `app/Domains/Statistics/Services/..`
@@ -368,7 +374,18 @@
 ### `App\Domains\Statistics\Contracts`
 - app/Domains/Statistics/Contracts/StatisticsRepositoryInterface.php
 - app/Domains/Statistics/Contracts/PostStatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/StatisticsSnapshotRepositoryInterface.php
 - app/Domains/Statistics/Contracts/UserStatisticsRepositoryInterface.php
+
+### `App\Domains\Statistics\Models`
+- app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+### `App\Domains\Statistics\DTOs`
+- app/Domains/Statistics/DTOs/StatisticsOverviewDTO.php
+- app/Domains/Statistics/DTOs/ContentInsightsDTO.php
+- app/Domains/Statistics/DTOs/SourceDistributionDTO.php
+- app/Domains/Statistics/DTOs/PostStatisticsDTO.php
+- app/Domains/Statistics/DTOs/UserStatisticsDTO.php
 
 ### `App\Domains\Statistics\Services`
 - app/Domains/Statistics/Services/StatisticsAggregationService.php
@@ -801,8 +818,8 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 228
-- **介面總數**: 54
+- **類別總數**: 236
+- **介面總數**: 55
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
@@ -951,12 +968,15 @@
 ## 🔌 介面實作分析
 
 ### ``
+- AddCompositeIndexesToUserActivityLogs (`database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php`)
+- AddSourceTrackingToPosts (`database/migrations/20250921130458_add_source_tracking_to_posts.php`)
 - CreateUserActivityLogsTable (`database/migrations/20250829000000_create_user_activity_logs_table.php`)
 - CreateTokenBlacklistTable (`database/migrations/20250825165750_create_token_blacklist_table.php`)
-- AddCompositeIndexesToUserActivityLogs (`database/migrations/20241227000002_add_composite_indexes_to_user_activity_logs.php`)
 - CreateRefreshTokensTable (`database/migrations/20250825165731_create_refresh_tokens_table.php`)
+- CreateStatisticsSnapshotsTable (`database/migrations/20250922000001_create_statistics_snapshots_table.php`)
 - InitialSchema (`database/migrations/20250823051608_initial_schema.php`)
 - AddTokenHashToRefreshTokensTable (`database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php`)
+- UpdateExistingPostsSourceInfo (`database/migrations/20250921143617_update_existing_posts_source_info.php`)
 - UserActivityLogsSeeder (`database/seeds/UserActivityLogsSeeder.php`)
 - Application (`app/Application.php`)
 - implements (`scripts/remaining-error-fixer.php`)
@@ -1105,6 +1125,11 @@
 
 ### `JsonSerializable`
 - StatisticsSnapshot (`app/Domains/Statistics/Entities/StatisticsSnapshot.php`)
+- StatisticsOverviewDTO (`app/Domains/Statistics/DTOs/StatisticsOverviewDTO.php`)
+- ContentInsightsDTO (`app/Domains/Statistics/DTOs/ContentInsightsDTO.php`)
+- SourceDistributionDTO (`app/Domains/Statistics/DTOs/SourceDistributionDTO.php`)
+- PostStatisticsDTO (`app/Domains/Statistics/DTOs/PostStatisticsDTO.php`)
+- UserStatisticsDTO (`app/Domains/Statistics/DTOs/UserStatisticsDTO.php`)
 - StatisticsMetric (`app/Domains/Statistics/ValueObjects/StatisticsMetric.php`)
 - StatisticsPeriod (`app/Domains/Statistics/ValueObjects/StatisticsPeriod.php`)
 - SourceType (`app/Domains/Statistics/ValueObjects/SourceType.php`)
@@ -1292,11 +1317,10 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 228 個
+- **缺少測試的類別**: 236 個
 
 ### 缺少測試的重要類別
 - **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
-- **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
 
 
 ## 💉 依賴注入分析
@@ -1493,22 +1517,14 @@
 
 ## ❓ 可能的問題引用
 
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921130458_add_source_tracking_to_posts.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250829000000_create_user_activity_logs_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165750_create_token_blacklist_table.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20241227000002_add_composite_indexes_to_user_activity_logs.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165731_create_refresh_tokens_table.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000001_create_statistics_snapshots_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921143617_update_existing_posts_source_info.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Seed\AbstractSeed (在 database/seeds/UserActivityLogsSeeder.php 中使用)
-- ❓ 找不到類別/介面: 語句
-        'ordered_imports' => [                   // Import 語句排序（已存在，確保配置）
-            'sort_algorithm' => 'alpha',
-            'imports_order' => ['class', 'function', 'const'],
-        ],
-    ])
-    ->setRiskyAllowed(true)
-    ->setUsingCache(true)
-    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache') (在 .php-cs-fixer.dist.php 中使用)
-- ❓ 找不到類別/介面: DI\ContainerBuilder (在 app/Application.php 中使用)
-- ❓ 找不到類別/介面: App\Domains\Post\Enums\PostStatus (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 171 個
+- ... 還有 178 個

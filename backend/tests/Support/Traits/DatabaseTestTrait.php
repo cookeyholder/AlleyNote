@@ -92,7 +92,10 @@ trait DatabaseTestTrait
                 status INTEGER NOT NULL DEFAULT 1,
                 publish_date TEXT NOT NULL,
                 created_at TEXT NOT NULL,
-                updated_at TEXT NOT NULL
+                updated_at TEXT NOT NULL,
+                deleted_at TEXT,
+                creation_source TEXT DEFAULT "unknown",
+                creation_source_detail TEXT
             )
         ');
     }
@@ -301,13 +304,15 @@ trait DatabaseTestTrait
             'publish_date' => date('Y-m-d H:i:s'),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
+            'creation_source' => 'unknown',
+            'creation_source_detail' => null,
         ];
 
         $postData = array_merge($defaultData, $data);
 
         $stmt = $this->db->prepare('
-            INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at)
-            VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :views, :is_pinned, :status, :publish_date, :created_at, :updated_at)
+            INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at, creation_source, creation_source_detail)
+            VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :views, :is_pinned, :status, :publish_date, :created_at, :updated_at, :creation_source, :creation_source_detail)
         ');
 
         $stmt->execute($postData);

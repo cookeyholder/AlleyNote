@@ -70,7 +70,9 @@ class PostRepositoryPerformanceTest extends TestCase
                 publish_date DATETIME,
                 created_at DATETIME,
                 updated_at DATETIME,
-                deleted_at DATETIME NULL
+                deleted_at DATETIME NULL,
+                creation_source VARCHAR(20) DEFAULT "unknown",
+                creation_source_detail TEXT NULL
             )
         ');
 
