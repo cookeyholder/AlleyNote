@@ -334,15 +334,21 @@
 **描述**：建立定期計算統計快照的背景任務
 **預估時間**：3 小時
 **依賴**：T4.2
+**狀態**：✅ 完成
 **驗收標準**：
-- [ ] `StatisticsCalculationCommand` 類別
-- [ ] 支援不同統計週期（daily, weekly, monthly）
-- [ ] 包含錯誤重試機制
-- [ ] 記錄執行日誌
-- [ ] 可手動觸發執行
-- [ ] 支援並行安全執行
+- [x] `StatisticsCalculationCommand` 類別
+- [x] 支援不同統計週期（daily, weekly, monthly）
+- [x] 包含錯誤重試機制
+- [x] 記錄執行日誌
+- [x] 可手動觸發執行
+- [x] 支援並行安全執行
+- [x] 建立完整的單元測試，涵蓋各種執行情境
+- [x] 提供 CLI 執行腳本 `scripts/statistics-calculation.php`
+- [x] 註冊到 DI 容器並自動注入
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
-#### ✅ T4.4 - 建立索引最佳化與查詢調整
+#### ⚠️ T4.4 - 建立索引最佳化與查詢調整
 **描述**：統計相關表的索引最佳化與SQL查詢調整
 **預估時間**：4 小時
 **依賴**：T4.3
