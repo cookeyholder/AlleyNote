@@ -44,6 +44,7 @@ use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Infrastructure\Database\DatabaseConnection;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
+use App\Infrastructure\Statistics\Commands\StatisticsCalculationCommand;
 use App\Infrastructure\Statistics\Services\StatisticsCacheService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
@@ -72,6 +73,9 @@ return [
     StatisticsCacheServiceInterface::class => DI\autowire(StatisticsCacheService::class)
         ->constructorParameter('cache', DI\get(CacheServiceInterface::class))
         ->constructorParameter('logger', DI\get(LoggerInterface::class)),
+
+    // Statistics Commands
+    StatisticsCalculationCommand::class => DI\autowire(),
 
     // Repositories
     PostRepositoryInterface::class => DI\autowire(PostRepository::class)
