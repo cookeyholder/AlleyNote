@@ -78,6 +78,7 @@ final class StatisticsQueryDTO
         }
 
         $diff = $this->startDate->diff($this->endDate);
+
         return $diff->days !== false ? $diff->days : null;
     }
 
