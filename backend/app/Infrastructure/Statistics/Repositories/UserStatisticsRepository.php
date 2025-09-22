@@ -33,13 +33,13 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
 
         try {
             $sql = match ($activityType) {
-                'login' => 'SELECT COUNT(DISTINCT user_id) FROM user_activity_logs 
+                'login' => 'SELECT COUNT(DISTINCT user_id) FROM user_activity_logs
                            WHERE action = "login" AND created_at >= :start_date AND created_at <= :end_date',
-                'post' => 'SELECT COUNT(DISTINCT user_id) FROM posts 
+                'post' => 'SELECT COUNT(DISTINCT user_id) FROM posts
                           WHERE created_at >= :start_date AND created_at <= :end_date',
-                'view' => 'SELECT COUNT(DISTINCT user_id) FROM user_activity_logs 
+                'view' => 'SELECT COUNT(DISTINCT user_id) FROM user_activity_logs
                           WHERE action = "view" AND created_at >= :start_date AND created_at <= :end_date',
-                'comment' => 'SELECT COUNT(DISTINCT user_id) FROM comments 
+                'comment' => 'SELECT COUNT(DISTINCT user_id) FROM comments
                              WHERE created_at >= :start_date AND created_at <= :end_date',
             };
 
@@ -57,7 +57,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     public function getNewUsersCount(StatisticsPeriod $period): int
     {
         try {
-            $sql = 'SELECT COUNT(*) FROM users 
+            $sql = 'SELECT COUNT(*) FROM users
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
@@ -115,59 +115,59 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
 
         try {
             $sql = match ($metric) {
-                'posts' => 'SELECT u.id as user_id, u.username, COUNT(p.id) as metric_value, 
+                'posts' => 'SELECT u.id as user_id, u.username, COUNT(p.id) as metric_value,
                                   ROW_NUMBER() OVER (ORDER BY COUNT(p.id) DESC) as rank
-                           FROM users u 
-                           LEFT JOIN posts p ON u.id = p.user_id 
-                                              AND p.created_at >= :start_date 
+                           FROM users u
+                           LEFT JOIN posts p ON u.id = p.user_id
+                                              AND p.created_at >= :start_date
                                               AND p.created_at <= :end_date
                            WHERE u.created_at <= :end_date
-                           GROUP BY u.id, u.username 
-                           ORDER BY metric_value DESC 
+                           GROUP BY u.id, u.username
+                           ORDER BY metric_value DESC
                            LIMIT :limit',
                 'logins' => 'SELECT u.id as user_id, u.username, COUNT(al.id) as metric_value,
                                    ROW_NUMBER() OVER (ORDER BY COUNT(al.id) DESC) as rank
-                            FROM users u 
-                            LEFT JOIN user_activity_logs al ON u.id = al.user_id 
+                            FROM users u
+                            LEFT JOIN user_activity_logs al ON u.id = al.user_id
                                                              AND al.action = "login"
-                                                             AND al.created_at >= :start_date 
+                                                             AND al.created_at >= :start_date
                                                              AND al.created_at <= :end_date
                             WHERE u.created_at <= :end_date
-                            GROUP BY u.id, u.username 
-                            ORDER BY metric_value DESC 
+                            GROUP BY u.id, u.username
+                            ORDER BY metric_value DESC
                             LIMIT :limit',
                 'views' => 'SELECT u.id as user_id, u.username, COUNT(al.id) as metric_value,
                                   ROW_NUMBER() OVER (ORDER BY COUNT(al.id) DESC) as rank
-                           FROM users u 
-                           LEFT JOIN user_activity_logs al ON u.id = al.user_id 
+                           FROM users u
+                           LEFT JOIN user_activity_logs al ON u.id = al.user_id
                                                             AND al.action = "view"
-                                                            AND al.created_at >= :start_date 
+                                                            AND al.created_at >= :start_date
                                                             AND al.created_at <= :end_date
                            WHERE u.created_at <= :end_date
-                           GROUP BY u.id, u.username 
-                           ORDER BY metric_value DESC 
+                           GROUP BY u.id, u.username
+                           ORDER BY metric_value DESC
                            LIMIT :limit',
-                'activity_score' => 'SELECT u.id as user_id, u.username, 
-                                           (COUNT(DISTINCT p.id) * 3 + 
-                                            COUNT(DISTINCT c.id) * 2 + 
+                'activity_score' => 'SELECT u.id as user_id, u.username,
+                                           (COUNT(DISTINCT p.id) * 3 +
+                                            COUNT(DISTINCT c.id) * 2 +
                                             COUNT(DISTINCT al.id)) as metric_value,
-                                           ROW_NUMBER() OVER (ORDER BY (COUNT(DISTINCT p.id) * 3 + 
-                                                                       COUNT(DISTINCT c.id) * 2 + 
+                                           ROW_NUMBER() OVER (ORDER BY (COUNT(DISTINCT p.id) * 3 +
+                                                                       COUNT(DISTINCT c.id) * 2 +
                                                                        COUNT(DISTINCT al.id)) DESC) as rank
-                                    FROM users u 
-                                    LEFT JOIN posts p ON u.id = p.user_id 
-                                                       AND p.created_at >= :start_date 
+                                    FROM users u
+                                    LEFT JOIN posts p ON u.id = p.user_id
+                                                       AND p.created_at >= :start_date
                                                        AND p.created_at <= :end_date
-                                    LEFT JOIN comments c ON u.id = c.user_id 
-                                                          AND c.created_at >= :start_date 
+                                    LEFT JOIN comments c ON u.id = c.user_id
+                                                          AND c.created_at >= :start_date
                                                           AND c.created_at <= :end_date
-                                    LEFT JOIN user_activity_logs al ON u.id = al.user_id 
+                                    LEFT JOIN user_activity_logs al ON u.id = al.user_id
                                                                      AND al.action = "login"
-                                                                     AND al.created_at >= :start_date 
+                                                                     AND al.created_at >= :start_date
                                                                      AND al.created_at <= :end_date
                                     WHERE u.created_at <= :end_date
-                                    GROUP BY u.id, u.username 
-                                    ORDER BY metric_value DESC 
+                                    GROUP BY u.id, u.username
+                                    ORDER BY metric_value DESC
                                     LIMIT :limit',
             };
 
@@ -197,12 +197,12 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     {
         try {
             // 基本登入統計
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         COUNT(*) as total_logins,
                         COUNT(DISTINCT user_id) as unique_users,
                         ROUND(COUNT(*) / NULLIF(COUNT(DISTINCT user_id), 0), 2) as avg_logins_per_user
-                    FROM user_activity_logs 
-                    WHERE action = "login" 
+                    FROM user_activity_logs
+                    WHERE action = "login"
                     AND created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
@@ -223,8 +223,8 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
 
             // 取得登入高峰時間
             $sql = 'SELECT HOUR(created_at) as hour, COUNT(*) as count
-                    FROM user_activity_logs 
-                    WHERE action = "login" 
+                    FROM user_activity_logs
+                    WHERE action = "login"
                     AND created_at >= :start_date AND created_at <= :end_date
                     GROUP BY HOUR(created_at)
                     ORDER BY count DESC
@@ -239,8 +239,8 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $peakHour = is_array($peakHourData) ? (int) $peakHourData['hour'] : 0;
 
             // 取得登入頻率分布
-            $sql = 'SELECT 
-                        CASE 
+            $sql = 'SELECT
+                        CASE
                             WHEN login_count = 1 THEN "1次"
                             WHEN login_count BETWEEN 2 AND 5 THEN "2-5次"
                             WHEN login_count BETWEEN 6 AND 10 THEN "6-10次"
@@ -249,8 +249,8 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                         COUNT(*) as users_count
                     FROM (
                         SELECT user_id, COUNT(*) as login_count
-                        FROM user_activity_logs 
-                        WHERE action = "login" 
+                        FROM user_activity_logs
+                        WHERE action = "login"
                         AND created_at >= :start_date AND created_at <= :end_date
                         GROUP BY user_id
                     ) as user_logins
@@ -313,8 +313,8 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             };
 
             $sql = "SELECT {$groupByClause} as time_period, COUNT(DISTINCT user_id) as active_users
-                    FROM user_activity_logs 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+                    FROM user_activity_logs
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY {$groupByClause}
                     ORDER BY time_period";
 
@@ -343,7 +343,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         try {
             // 取得世代使用者數
             $sql = 'SELECT COUNT(*) as cohort_size
-                    FROM users 
+                    FROM users
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
@@ -397,8 +397,8 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     public function getUsersCountByRole(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT role, COUNT(*) as count 
-                    FROM users 
+            $sql = 'SELECT role, COUNT(*) as count
+                    FROM users
                     WHERE created_at <= :end_date
                     GROUP BY role
                     ORDER BY count DESC';
@@ -422,21 +422,21 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     {
         try {
             // 計算使用者參與度評分（基於文章數、留言數、登入次數）
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         u.id,
-                        (COUNT(DISTINCT p.id) * 3 + 
-                         COUNT(DISTINCT c.id) * 2 + 
+                        (COUNT(DISTINCT p.id) * 3 +
+                         COUNT(DISTINCT c.id) * 2 +
                          COUNT(DISTINCT al.id)) as engagement_score
                     FROM users u
-                    LEFT JOIN posts p ON u.id = p.user_id 
-                                       AND p.created_at >= :start_date 
+                    LEFT JOIN posts p ON u.id = p.user_id
+                                       AND p.created_at >= :start_date
                                        AND p.created_at <= :end_date
-                    LEFT JOIN comments c ON u.id = c.user_id 
-                                          AND c.created_at >= :start_date 
+                    LEFT JOIN comments c ON u.id = c.user_id
+                                          AND c.created_at >= :start_date
                                           AND c.created_at <= :end_date
-                    LEFT JOIN user_activity_logs al ON u.id = al.user_id 
+                    LEFT JOIN user_activity_logs al ON u.id = al.user_id
                                                      AND al.action = "login"
-                                                     AND al.created_at >= :start_date 
+                                                     AND al.created_at >= :start_date
                                                      AND al.created_at <= :end_date
                     WHERE u.created_at <= :end_date
                     GROUP BY u.id';
@@ -500,8 +500,8 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     public function getUserRegistrationSources(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT registration_source, COUNT(*) as count 
-                    FROM users 
+            $sql = 'SELECT registration_source, COUNT(*) as count
+                    FROM users
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY registration_source
                     ORDER BY count DESC';
@@ -530,11 +530,11 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         }
 
         try {
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         COALESCE(location, "未知") as location,
                         COUNT(*) as users_count,
                         ROUND((COUNT(*) * 100.0) / (SELECT COUNT(*) FROM users WHERE created_at <= :total_end_date), 2) as percentage
-                    FROM users 
+                    FROM users
                     WHERE created_at <= :end_date
                     GROUP BY location
                     ORDER BY users_count DESC
@@ -603,7 +603,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
 
             // 取得最活躍時段
             $sql = 'SELECT HOUR(created_at) as hour, COUNT(DISTINCT user_id) as active_users
-                    FROM user_activity_logs 
+                    FROM user_activity_logs
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY HOUR(created_at)
                     ORDER BY active_users DESC

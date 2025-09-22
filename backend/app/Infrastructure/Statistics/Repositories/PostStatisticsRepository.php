@@ -53,9 +53,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     public function getPostsCountByStatus(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT status, COUNT(*) as count 
-                    FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+            $sql = 'SELECT status, COUNT(*) as count
+                    FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY status
                     ORDER BY count DESC';
 
@@ -79,9 +79,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     public function getPostsCountBySource(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT creation_source, COUNT(*) as count 
-                    FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+            $sql = 'SELECT creation_source, COUNT(*) as count
+                    FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY creation_source
                     ORDER BY count DESC';
 
@@ -109,8 +109,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         ?string $status = null,
     ): int {
         try {
-            $sql = 'SELECT COUNT(*) FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+            $sql = 'SELECT COUNT(*) FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     AND creation_source = :source';
             $params = [
                 'start_date' => $period->startTime->format('Y-m-d H:i:s'),
@@ -136,12 +136,12 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     public function getPostViewsStatistics(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         COALESCE(SUM(views_count), 0) as total_views,
                         COUNT(DISTINCT CASE WHEN views_count > 0 THEN id END) as posts_with_views,
                         COUNT(*) as total_posts,
                         ROUND(AVG(COALESCE(views_count, 0)), 2) as avg_views_per_post
-                    FROM posts 
+                    FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
@@ -185,8 +185,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             };
 
             $sql = "SELECT id as post_id, title, {$orderField} as metric_value
-                    FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+                    FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     AND status = 'published'
                     ORDER BY {$orderField} DESC, created_at DESC
                     LIMIT :limit";
@@ -220,12 +220,12 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         }
 
         try {
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         user_id,
                         COUNT(*) as posts_count,
                         COALESCE(SUM(views_count), 0) as total_views
-                    FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+                    FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY user_id
                     ORDER BY posts_count DESC, total_views DESC
                     LIMIT :limit';
@@ -268,8 +268,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             };
 
             $sql = "SELECT {$groupByClause} as time_period, COUNT(*) as count
-                    FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+                    FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY {$groupByClause}
                     ORDER BY time_period";
 
@@ -312,13 +312,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     public function getPostsLengthStatistics(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         ROUND(AVG(CHAR_LENGTH(content)), 2) as avg_length,
                         MIN(CHAR_LENGTH(content)) as min_length,
                         MAX(CHAR_LENGTH(content)) as max_length,
                         SUM(CHAR_LENGTH(content)) as total_chars
-                    FROM posts 
-                    WHERE created_at >= :start_date AND created_at <= :end_date 
+                    FROM posts
+                    WHERE created_at >= :start_date AND created_at <= :end_date
                     AND content IS NOT NULL';
 
             $stmt = $this->db->prepare($sql);
@@ -355,9 +355,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     throw new InvalidArgumentException("字數範圍 '{$rangeName}' 必須包含 min 和 max 值");
                 }
 
-                $sql = 'SELECT COUNT(*) FROM posts 
-                        WHERE created_at >= :start_date AND created_at <= :end_date 
-                        AND CHAR_LENGTH(content) >= :min_length 
+                $sql = 'SELECT COUNT(*) FROM posts
+                        WHERE created_at >= :start_date AND created_at <= :end_date
+                        AND CHAR_LENGTH(content) >= :min_length
                         AND CHAR_LENGTH(content) <= :max_length';
 
                 $stmt = $this->db->prepare($sql);
@@ -379,11 +379,11 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     public function getPinnedPostsStatistics(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         SUM(CASE WHEN is_pinned = 1 THEN 1 ELSE 0 END) as pinned_count,
                         SUM(CASE WHEN is_pinned = 0 OR is_pinned IS NULL THEN 1 ELSE 0 END) as unpinned_count,
                         SUM(CASE WHEN is_pinned = 1 THEN COALESCE(views_count, 0) ELSE 0 END) as pinned_views
-                    FROM posts 
+                    FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
@@ -425,13 +425,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     public function getPostActivitySummary(StatisticsPeriod $period): array
     {
         try {
-            $sql = 'SELECT 
+            $sql = 'SELECT
                         COUNT(*) as total_posts,
                         SUM(CASE WHEN status = "published" THEN 1 ELSE 0 END) as published_posts,
                         SUM(CASE WHEN status = "draft" THEN 1 ELSE 0 END) as draft_posts,
                         SUM(COALESCE(views_count, 0)) as total_views,
                         COUNT(DISTINCT user_id) as active_authors
-                    FROM posts 
+                    FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
