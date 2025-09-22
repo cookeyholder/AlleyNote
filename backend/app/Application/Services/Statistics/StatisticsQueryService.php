@@ -27,6 +27,7 @@ final class StatisticsQueryService
     private const MAX_QUERY_DAYS = 365; // 最大查詢範圍：1 年
 
     public function __construct(
+        /** @phpstan-ignore-next-line property.onlyWritten */
         private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly StatisticsCacheServiceInterface $cacheService,
         private readonly LoggerInterface $logger,

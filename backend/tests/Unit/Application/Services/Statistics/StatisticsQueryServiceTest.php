@@ -182,7 +182,7 @@ final class StatisticsQueryServiceTest extends TestCase
         $this->assertInstanceOf(PaginatedStatisticsDTO::class, $result);
         $this->assertSame(2, $result->getCurrentPage());
         $this->assertSame(10, $result->getPerPage());
-        $this->assertIsArray($result->getData());
+        $this->assertNotEmpty($result->getData());
     }
 
     public function testGetSourceDistribution(): void
@@ -204,8 +204,8 @@ final class StatisticsQueryServiceTest extends TestCase
         $result = $this->service->getSourceDistribution($query);
 
         // Then
-        $this->assertIsArray($result);
         $this->assertCount(3, $result); // 模擬資料有 3 個來源
+        $this->assertIsArray($result[0]);
         $this->assertSame('web', $result[0]['source']);
         $this->assertSame(80.0, $result[0]['percentage']);
     }
@@ -257,7 +257,6 @@ final class StatisticsQueryServiceTest extends TestCase
         $result = $this->service->getPopularContent($query);
 
         // Then
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('most_viewed_posts', $result);
         $this->assertArrayHasKey('trending_categories', $result);
         $this->assertArrayHasKey('active_users', $result);
@@ -454,6 +453,7 @@ final class StatisticsQueryServiceTest extends TestCase
         $this->assertSame($metadata, $array['metadata']);
 
         $pagination = $array['pagination'];
+        $this->assertIsArray($pagination);
         $this->assertArrayHasKey('current_page', $pagination);
         $this->assertArrayHasKey('per_page', $pagination);
         $this->assertArrayHasKey('total_count', $pagination);
