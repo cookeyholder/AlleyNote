@@ -137,10 +137,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     {
         try {
             $sql = 'SELECT
-                        COALESCE(SUM(views_count), 0) as total_views,
-                        COUNT(DISTINCT CASE WHEN views_count > 0 THEN id END) as posts_with_views,
+                        COALESCE(SUM(views), 0) as total_views,
+                        COUNT(DISTINCT CASE WHEN views > 0 THEN id END) as posts_with_views,
                         COUNT(*) as total_posts,
-                        ROUND(AVG(COALESCE(views_count, 0)), 2) as avg_views_per_post
+                        ROUND(AVG(COALESCE(views, 0)), 2) as avg_views_per_post
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
@@ -179,7 +179,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         try {
             // 根據指標選擇排序欄位
             $orderField = match ($metric) {
-                'views' => 'views_count',
+                'views' => 'views',
                 'comments' => 'COALESCE(comments_count, 0)',
                 'likes' => 'COALESCE(likes_count, 0)',
             };
@@ -223,7 +223,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $sql = 'SELECT
                         user_id,
                         COUNT(*) as posts_count,
-                        COALESCE(SUM(views_count), 0) as total_views
+                        COALESCE(SUM(views), 0) as total_views
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY user_id
@@ -261,10 +261,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
 
         try {
             $groupByClause = match ($groupBy) {
-                'hour' => 'HOUR(created_at)',
-                'day' => 'DATE(created_at)',
-                'week' => 'YEARWEEK(created_at)',
-                'month' => 'DATE_FORMAT(created_at, "%Y-%m")',
+                'hour' => "strftime('%H', created_at)",
+                'day' => 'date(created_at)',
+                'week' => "strftime('%Y-%W', created_at)",
+                'month' => "strftime('%Y-%m', created_at)",
             };
 
             $sql = "SELECT {$groupByClause} as time_period, COUNT(*) as count
@@ -382,7 +382,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $sql = 'SELECT
                         SUM(CASE WHEN is_pinned = 1 THEN 1 ELSE 0 END) as pinned_count,
                         SUM(CASE WHEN is_pinned = 0 OR is_pinned IS NULL THEN 1 ELSE 0 END) as unpinned_count,
-                        SUM(CASE WHEN is_pinned = 1 THEN COALESCE(views_count, 0) ELSE 0 END) as pinned_views
+                        SUM(CASE WHEN is_pinned = 1 THEN COALESCE(views, 0) ELSE 0 END) as pinned_views
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
 
@@ -429,7 +429,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                         COUNT(*) as total_posts,
                         SUM(CASE WHEN status = "published" THEN 1 ELSE 0 END) as published_posts,
                         SUM(CASE WHEN status = "draft" THEN 1 ELSE 0 END) as draft_posts,
-                        SUM(COALESCE(views_count, 0)) as total_views,
+                        SUM(COALESCE(views, 0)) as total_views,
                         COUNT(DISTINCT user_id) as active_authors
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
