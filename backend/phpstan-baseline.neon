@@ -1,6 +1,84 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#1 \$rows of method App\\Infrastructure\\Statistics\\Formatters\\CSVStatisticsFormatter\:\:normalizeRows\(\) expects array\<array\<string, mixed\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$fields of function fputcsv expects array\<int\|string, bool\|float\|int\|string\|null\>, list\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$to_encoding of function mb_convert_encoding expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#3 \$separator of function fputcsv expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/JSONStatisticsFormatter.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#1 \$summaryData of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateSummary\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#1 \$tableData of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateTable\(\) expects array\<array\<string, mixed\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$title of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateHtmlContent\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$title of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateMockPdf\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#3 \$author of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateMockPdf\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Part \$sectionData \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
 			message: '#^Cannot access offset ''count'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
@@ -193,6 +271,42 @@ parameters:
 			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
 
 		-
+			message: '#^Cannot call method format\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getOverview\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, include_details\?\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getPopularContent\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, limit\?\: int\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getPostStatistics\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, limit\?\: int, offset\?\: int\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getSourceDistribution\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, group_by_detail\?\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getUserStatistics\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, include_inactive\?\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
 			message: '#^Cannot cast mixed to float\.$#'
 			identifier: cast.double
 			count: 2
@@ -295,10 +409,70 @@ parameters:
 			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
 
 		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsBool\(\) with bool will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Cannot access offset ''data'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Cannot access offset ''format'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Cannot access offset ''metadata'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 3
 			path: tests/Unit/Infrastructure/Statistics/Repositories/UserStatisticsRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Method App\\Domains\\Statistics\\Contracts\\StatisticsFormatterInterface@anonymous/tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest\.php\:320\:\:format\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_values expects array\<T\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
