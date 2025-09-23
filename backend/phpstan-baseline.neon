@@ -175,6 +175,42 @@ parameters:
 			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
 
 		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Statistics\\Services\\SlowQueryMonitoringService\:\:getSlowQueryDetails\(\) should return array\<array\{id\: int, query_type\: string, query\: string, execution_time\: float, parameters\: array, created_at\: string\}\> but returns array\<array\>\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+
+		-
+			message: '#^Parameter \#4 \$params of method App\\Infrastructure\\Statistics\\Services\\SlowQueryMonitoringService\:\:recordSlowQueryInternal\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Statistics\\Services\\StatisticsMonitoringService\:\:getCalculationTimeMetrics\(\) should return array\{avg_calculation_time\: float, max_calculation_time\: float, total_calculations\: int, failed_calculations\: int\} but returns array\.$#'
+			identifier: return.type
+			count: 3
+			path: app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+
+		-
 			message: '#^Cannot access offset ''avg_execution_time'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -231,5 +267,53 @@ parameters:
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
+			count: 9
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Cannot call method fetch\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
 			count: 3
 			path: tests/Unit/Infrastructure/Statistics/Repositories/UserStatisticsRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 8
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsMonitoringServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsInt\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsMonitoringServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsMonitoringServiceTest.php

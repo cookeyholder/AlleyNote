@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
+use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
+use Exception;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -13,17 +15,34 @@ use RuntimeException;
  *
  * 監控統計查詢的執行效能，記錄慢查詢並提供效能分析。
  */
-final class SlowQueryMonitoringService
+final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInterface
 {
     /** 慢查詢閾值（秒） */
     private const SLOW_QUERY_THRESHOLD = 1.0;
 
-    /** 記錄保存天數 */
-    private const LOG_RETENTION_DAYS = 30;
-
     public function __construct(
         private readonly PDO $db,
     ) {}
+
+    /**
+     * 記錄慢查詢（實作介面方法）.
+     */
+    public function recordSlowQuery(
+        string $queryType,
+        string $query,
+        float $executionTime,
+        array $parameters = [],
+    ): bool {
+        try {
+            $queryHash = $this->generateQueryHash($query);
+            $this->recordSlowQueryInternal($query, $queryType, $executionTime, $parameters, $queryHash);
+
+            return true;
+        } catch (Exception $e) {
+            // 記錄錯誤但不中斷主要流程
+            return false;
+        }
+    }
 
     /**
      * 執行查詢並監控效能.
@@ -57,7 +76,7 @@ final class SlowQueryMonitoringService
 
             // 如果是慢查詢，額外記錄詳細資訊
             if ($executionTime > self::SLOW_QUERY_THRESHOLD) {
-                $this->recordSlowQuery($query, $queryType, $executionTime, $params, $queryHash);
+                $this->recordSlowQueryInternal($query, $queryType, $executionTime, $params, $queryHash);
             }
 
             return $result;
@@ -234,12 +253,63 @@ final class SlowQueryMonitoringService
     }
 
     /**
-     * 清理舊的監控記錄.
+     * 取得慢查詢詳細資料.
+     *
+     * @return array<array{
+     *     id: int,
+     *     query_type: string,
+     *     query: string,
+     *     execution_time: float,
+     *     parameters: array,
+     *     created_at: string
+     * }>
      */
-    public function cleanupOldRecords(): int
+    public function getSlowQueryDetails(int $limit = 50): array
     {
         try {
-            $cutoffDate = date('Y-m-d H:i:s', strtotime('-' . self::LOG_RETENTION_DAYS . ' days'));
+            $stmt = $this->db->prepare('
+                SELECT 
+                    id,
+                    query_type,
+                    query_sql as query,
+                    execution_time,
+                    query_params as parameters,
+                    created_at
+                FROM statistics_slow_queries
+                ORDER BY created_at DESC
+                LIMIT :limit
+            ');
+
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // 處理 JSON 參數
+            return array_map(function ($row): array {
+                if (!is_array($row)) {
+                    return [];
+                }
+                $row['parameters'] = json_decode((string) ($row['parameters'] ?? '{}'), true) ?? [];
+
+                return $row;
+            }, $results);
+        } catch (PDOException $e) {
+            throw new RuntimeException('無法取得慢查詢詳細資料: ' . $e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * 清理舊的監控記錄.
+     */
+    public function cleanupOldRecords(int $days = 30): int
+    {
+        try {
+            $cutoffTimestamp = strtotime('-' . $days . ' days');
+            if ($cutoffTimestamp === false) {
+                return 0;
+            }
+            $cutoffDate = date('Y-m-d H:i:s', $cutoffTimestamp);
 
             // 清理效能記錄
             $performanceSql = 'DELETE FROM statistics_query_performance WHERE created_at < :cutoff_date';
@@ -291,11 +361,11 @@ final class SlowQueryMonitoringService
     }
 
     /**
-     * 記錄慢查詢.
+     * 記錄慢查詢（內部方法）.
      *
      * @param array<string, mixed> $params
      */
-    private function recordSlowQuery(
+    private function recordSlowQueryInternal(
         string $query,
         string $queryType,
         float $executionTime,
