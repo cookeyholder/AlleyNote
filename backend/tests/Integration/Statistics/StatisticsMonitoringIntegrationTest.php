@@ -169,8 +169,8 @@ final class StatisticsMonitoringIntegrationTest extends TestCase
 
         // 檢查資料庫中是否有記錄
         $stmt = $this->db->prepare("
-            SELECT COUNT(*) as count 
-            FROM statistics_query_monitoring 
+            SELECT COUNT(*) as count
+            FROM statistics_query_monitoring
             WHERE query_type = 'test_calculation'
               AND status = 'event'
         ");
@@ -186,16 +186,16 @@ final class StatisticsMonitoringIntegrationTest extends TestCase
         $oldDate = new DateTime()->modify('-35 days')->format('Y-m-d H:i:s');
 
         $stmt = $this->db->prepare("
-            INSERT INTO statistics_query_monitoring 
-            (query_type, execution_time, status, created_at) 
+            INSERT INTO statistics_query_monitoring
+            (query_type, execution_time, status, created_at)
             VALUES ('old_record', 1.0, 'completed', ?)
         ");
         $stmt->execute([$oldDate]);
 
         // 插入一些新資料
         $stmt = $this->db->prepare("
-            INSERT INTO statistics_query_monitoring 
-            (query_type, execution_time, status, created_at) 
+            INSERT INTO statistics_query_monitoring
+            (query_type, execution_time, status, created_at)
             VALUES ('new_record', 1.0, 'completed', datetime('now'))
         ");
         $stmt->execute();
@@ -208,8 +208,8 @@ final class StatisticsMonitoringIntegrationTest extends TestCase
 
         // 檢查舊資料已被刪除，新資料仍存在
         $stmt = $this->db->query("
-            SELECT COUNT(*) as count 
-            FROM statistics_query_monitoring 
+            SELECT COUNT(*) as count
+            FROM statistics_query_monitoring
             WHERE query_type IN ('old_record', 'new_record')
         ");
         $remainingCount = $stmt->fetch(PDO::FETCH_ASSOC)['count'];

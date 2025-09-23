@@ -53,12 +53,12 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             }
 
             $stmt = $this->pdo->prepare("
-                SELECT 
+                SELECT
                     AVG(execution_time) as avg_calculation_time,
                     MAX(execution_time) as max_calculation_time,
                     COUNT(*) as total_calculations,
                     SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_calculations
-                FROM statistics_query_monitoring 
+                FROM statistics_query_monitoring
                 WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
                   AND query_type IN ('daily', 'monthly', 'calculation')
             ");
@@ -236,8 +236,8 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             // 如果有資料庫連線，也可以儲存到監控表
             if ($this->pdo !== null) {
                 $stmt = $this->pdo->prepare("
-                    INSERT INTO statistics_query_monitoring 
-                    (query_type, execution_time, status, metadata, created_at) 
+                    INSERT INTO statistics_query_monitoring
+                    (query_type, execution_time, status, metadata, created_at)
                     VALUES (?, 0, 'event', ?, datetime('now'))
                 ");
                 $stmt->execute([$eventType, json_encode($context)]);
@@ -308,7 +308,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
 
         try {
             $stmt = $this->pdo->prepare("
-                DELETE FROM statistics_query_monitoring 
+                DELETE FROM statistics_query_monitoring
                 WHERE created_at < datetime('now', '-' || ? || ' days')
             ");
             $stmt->execute([self::MONITORING_DATA_RETENTION_DAYS]);

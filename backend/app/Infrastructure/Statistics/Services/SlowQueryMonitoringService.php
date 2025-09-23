@@ -268,7 +268,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
     {
         try {
             $stmt = $this->db->prepare('
-                SELECT 
+                SELECT
                     id,
                     query_type,
                     query_sql as query,
