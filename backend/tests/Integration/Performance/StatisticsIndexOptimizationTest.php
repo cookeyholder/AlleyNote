@@ -88,10 +88,7 @@ final class StatisticsIndexOptimizationTest extends TestCase
         // 記錄最佳化後效能
         echo "\n最佳化索引效能 - 來源統計查詢時間: " . ($executionTime * 1000) . " ms\n";
 
-        $this->assertIsArray($result);
-        $this->assertGreaterThan(0, count($result));
-
-        // 最佳化後的效能應該顯著提升（<5ms）
+        $this->assertGreaterThan(0, count($result));        // 最佳化後的效能應該顯著提升（<5ms）
         $this->assertLessThan(0.005, $executionTime, '最佳化後查詢時間應該 < 5ms');
     }
 
@@ -222,15 +219,16 @@ final class StatisticsIndexOptimizationTest extends TestCase
             try {
                 $stmt = $this->connection->prepare($explainSql);
                 $stmt->execute();
+                /** @var array<array<string, mixed>> $plan */
                 $plan = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                 echo "\n=== {$queryName} 執行計劃 ===\n";
                 foreach ($plan as $step) {
                     echo sprintf(
                         "ID: %s, Parent: %s, Detail: %s\n",
-                        $step['id'],
-                        $step['parent'],
-                        $step['detail'],
+                        $step['id'] ?? 'unknown',
+                        $step['parent'] ?? 'unknown',
+                        $step['detail'] ?? 'unknown',
                     );
                 }
 

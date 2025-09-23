@@ -97,7 +97,10 @@ final class SlowQueryMonitoringService
             $stmt->bindValue(':since_date', date('Y-m-d H:i:s', $timestamp));
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<string, mixed> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('獲取慢查詢統計失敗: ' . $e->getMessage(), 0, $e);
         }
@@ -128,10 +131,17 @@ final class SlowQueryMonitoringService
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':query_type', $queryType);
             $stmt->bindValue(':threshold', self::SLOW_QUERY_THRESHOLD);
-            $stmt->bindValue(':since_date', date('Y-m-d H:i:s', strtotime("-{$days} days")));
+            $timestamp = strtotime("-{$days} days");
+            if ($timestamp === false) {
+                throw new RuntimeException('無效的日期格式');
+            }
+            $stmt->bindValue(':since_date', date('Y-m-d H:i:s', $timestamp));
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<string, mixed> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('獲取效能趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
@@ -160,11 +170,18 @@ final class SlowQueryMonitoringService
                     LIMIT :limit';
 
             $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':since_date', date('Y-m-d H:i:s', strtotime("-{$days} days")));
+            $timestamp = strtotime("-{$days} days");
+            if ($timestamp === false) {
+                throw new RuntimeException('無效的日期格式');
+            }
+            $stmt->bindValue(':since_date', date('Y-m-d H:i:s', $timestamp));
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<string, mixed> $result */
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('獲取最慢查詢失敗: ' . $e->getMessage(), 0, $e);
         }
@@ -189,6 +206,7 @@ final class SlowQueryMonitoringService
             $historyStmt = $this->db->prepare($historySql);
             $historyStmt->bindValue(':query_hash', $queryHash);
             $historyStmt->execute();
+            /** @var array<array<string, mixed>> $history */
             $history = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
 
             if (empty($history)) {
@@ -203,11 +221,11 @@ final class SlowQueryMonitoringService
                 'query_hash' => $queryHash,
                 'total_executions' => count($history),
                 'avg_execution_time' => round(array_sum($executionTimes) / count($executionTimes), 4),
-                'min_execution_time' => min($executionTimes),
-                'max_execution_time' => max($executionTimes),
+                'min_execution_time' => count($executionTimes) > 0 ? min($executionTimes) : 0,
+                'max_execution_time' => count($executionTimes) > 0 ? max($executionTimes) : 0,
                 'avg_result_count' => round(array_sum($resultCounts) / count($resultCounts), 2),
                 'slow_query_rate' => round(count(array_filter($executionTimes, fn($time) => $time > self::SLOW_QUERY_THRESHOLD)) / count($executionTimes) * 100, 2),
-                'last_execution' => $history[0]['created_at'],
+                'last_execution' => $history[0]['created_at'] ?? '',
                 'performance_trend' => $this->calculatePerformanceTrend($history),
             ];
         } catch (PDOException $e) {

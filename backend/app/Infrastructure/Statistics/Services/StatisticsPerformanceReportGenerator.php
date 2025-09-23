@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
+use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -158,8 +159,8 @@ final class StatisticsPerformanceReportGenerator
             'status' => 'success',
             'iterations' => $iterations,
             'avg_execution_time' => round(array_sum($executionTimes) / count($executionTimes), 4),
-            'min_execution_time' => round(min($executionTimes), 4),
-            'max_execution_time' => round(max($executionTimes), 4),
+            'min_execution_time' => count($executionTimes) > 0 ? round(min($executionTimes), 4) : 0.0,
+            'max_execution_time' => count($executionTimes) > 0 ? round(max($executionTimes), 4) : 0.0,
             'avg_result_count' => round(array_sum($resultCounts) / count($resultCounts), 2),
             'performance_grade' => $this->calculatePerformanceGrade(array_sum($executionTimes) / count($executionTimes)),
         ];
@@ -177,15 +178,18 @@ final class StatisticsPerformanceReportGenerator
             $indexInfoSql = "SELECT name, tbl_name, sql FROM sqlite_master WHERE type = 'index' AND tbl_name = 'posts' AND name LIKE 'idx_posts_%'";
             $stmt = $this->db->prepare($indexInfoSql);
             $stmt->execute();
+            /** @var array<array<string, mixed>> $indexes */
             $indexes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $indexAnalysis = [];
             foreach ($indexes as $index) {
+                /** @var string $indexName */
+                $indexName = $index['name'] ?? 'unknown';
                 $indexAnalysis[] = [
-                    'name' => $index['name'],
-                    'table' => $index['tbl_name'],
-                    'definition' => $index['sql'],
-                    'usage_analysis' => $this->analyzeIndexUsage($index['name']),
+                    'name' => $indexName,
+                    'table' => $index['tbl_name'] ?? 'unknown',
+                    'definition' => $index['sql'] ?? '',
+                    'usage_analysis' => $this->analyzeIndexUsage($indexName),
                 ];
             }
 
@@ -292,13 +296,14 @@ final class StatisticsPerformanceReportGenerator
     {
         $totalTests = 0;
         $totalTime = 0.0;
+        /** @var string[] $grades */
         $grades = [];
 
         foreach ($testResults as $result) {
-            if ($result['status'] === 'success') {
+            if (($result['status'] ?? '') === 'success') {
                 $totalTests++;
-                $totalTime += $result['avg_execution_time'];
-                $grades[] = $result['performance_grade'];
+                $totalTime += (float) ($result['avg_execution_time'] ?? 0);
+                $grades[] = (string) ($result['performance_grade'] ?? 'F');
             }
         }
 
@@ -414,7 +419,13 @@ final class StatisticsPerformanceReportGenerator
     {
         try {
             $stmt = $this->db->query('SELECT sqlite_version()');
+            if ($stmt === false) {
+                return 'Unknown';
+            }
             $version = $stmt->fetchColumn();
+            if ($version === false) {
+                return 'Unknown';
+            }
 
             return "SQLite {$version}";
         } catch (PDOException) {
@@ -450,7 +461,7 @@ final class StatisticsPerformanceReportGenerator
             file_put_contents($filename, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
             echo "效能測試報告已保存到: {$filename}\n";
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo '保存報告失敗: ' . $e->getMessage() . "\n";
         }
     }
