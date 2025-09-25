@@ -1,0 +1,94 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * 統計功能路由配置
+ *
+ * 包含統計查詢和統計管理的 API 路由定義
+ */
+
+use App\Application\Controllers\Api\V1\StatisticsController;
+use App\Application\Controllers\Api\V1\StatisticsAdminController;
+
+return [
+    // =========================================
+    // 統計查詢 API 路由 (需要認證)
+    // =========================================
+
+    // 取得統計概覽
+    'statistics.overview' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/overview',
+        'handler' => [StatisticsController::class, 'getOverview'],
+        'name' => 'statistics.overview',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得文章統計
+    'statistics.posts' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/posts',
+        'handler' => [StatisticsController::class, 'getPosts'],
+        'name' => 'statistics.posts',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得來源統計
+    'statistics.sources' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/sources',
+        'handler' => [StatisticsController::class, 'getSources'],
+        'name' => 'statistics.sources',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得使用者統計
+    'statistics.users' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/users',
+        'handler' => [StatisticsController::class, 'getUsers'],
+        'name' => 'statistics.users',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得熱門內容統計
+    'statistics.popular' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/popular',
+        'handler' => [StatisticsController::class, 'getPopular'],
+        'name' => 'statistics.popular',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // =========================================
+    // 統計管理 API 路由 (需要管理員權限)
+    // =========================================
+
+    // 手動刷新統計資料
+    'statistics.admin.refresh' => [
+        'methods' => ['POST'],
+        'path' => '/api/admin/statistics/refresh',
+        'handler' => [StatisticsAdminController::class, 'refresh'],
+        'name' => 'statistics.admin.refresh',
+        'middleware' => ['jwt.auth', 'jwt.authorize']
+    ],
+
+    // 清除統計快取
+    'statistics.admin.cache.clear' => [
+        'methods' => ['DELETE'],
+        'path' => '/api/admin/statistics/cache',
+        'handler' => [StatisticsAdminController::class, 'clearCache'],
+        'name' => 'statistics.admin.cache.clear',
+        'middleware' => ['jwt.auth', 'jwt.authorize']
+    ],
+
+    // 統計系統健康檢查
+    'statistics.admin.health' => [
+        'methods' => ['GET'],
+        'path' => '/api/admin/statistics/health',
+        'handler' => [StatisticsAdminController::class, 'health'],
+        'name' => 'statistics.admin.health',
+        'middleware' => ['jwt.auth', 'jwt.authorize']
+    ]
+];
