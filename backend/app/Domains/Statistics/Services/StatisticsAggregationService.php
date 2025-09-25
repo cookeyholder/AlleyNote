@@ -9,10 +9,13 @@ use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Events\StatisticsSnapshotCreated;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Shared\Events\Contracts\EventDispatcherInterface;
 use DateTimeInterface;
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 
 /**
  * 統計聚合服務 - 領域服務.
@@ -27,6 +30,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly PostStatisticsRepositoryInterface $postStatisticsRepository,
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
+        private readonly ?EventDispatcherInterface $eventDispatcher = null,
     ) {}
 
     /**
@@ -66,7 +70,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         );
 
         // 儲存快照
-        return $this->statisticsRepository->save($snapshot);
+        $savedSnapshot = $this->statisticsRepository->save($snapshot);
+
+        // 發布統計快照已建立事件
+        $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
+        return $savedSnapshot;
     }
 
     /**
@@ -103,7 +112,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             $expiresAt,
         );
 
-        return $this->statisticsRepository->save($snapshot);
+        $savedSnapshot = $this->statisticsRepository->save($snapshot);
+
+        // 發布統計快照已建立事件
+        $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
+        return $savedSnapshot;
     }
 
     /**
@@ -140,7 +154,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             $expiresAt,
         );
 
-        return $this->statisticsRepository->save($snapshot);
+        $savedSnapshot = $this->statisticsRepository->save($snapshot);
+
+        // 發布統計快照已建立事件
+        $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
+        return $savedSnapshot;
     }
 
     /**
@@ -171,7 +190,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             $expiresAt,
         );
 
-        return $this->statisticsRepository->save($snapshot);
+        $savedSnapshot = $this->statisticsRepository->save($snapshot);
+
+        // 發布統計快照已建立事件
+        $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
+        return $savedSnapshot;
     }
 
     /**
@@ -545,5 +569,24 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         }
 
         return 'stable';
+    }
+
+    /**
+     * 發布統計快照已建立事件.
+     */
+    private function dispatchSnapshotCreatedEvent(StatisticsSnapshot $snapshot): void
+    {
+        if ($this->eventDispatcher === null) {
+            return;
+        }
+
+        try {
+            $event = StatisticsSnapshotCreated::forNewSnapshot($snapshot);
+            $this->eventDispatcher->dispatch($event);
+        } catch (Throwable $e) {
+            // 事件分派失敗不應該影響統計功能的主流程
+            // 只記錄錯誤但不重新拋出異常
+            error_log('Failed to dispatch StatisticsSnapshotCreated event: ' . $e->getMessage());
+        }
     }
 }

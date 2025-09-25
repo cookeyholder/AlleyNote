@@ -76,4 +76,13 @@ interface StatisticsCacheServiceInterface
      * @return array<string, mixed> 包含命中率、快取數量等統計資訊
      */
     public function getStats(): array;
+
+    /**
+     * 預熱快取 - 根據標籤預熱相關的快取資料.
+     *
+     * @param array<string, callable> $warmupCallbacks 預熱回調函式陣列
+     * @param int $warmupTtl 預熱快取存活時間（秒）
+     * @return array<string, array{success: bool, duration?: float, error?: string}> 預熱結果
+     */
+    public function warmup(array $warmupCallbacks, int $warmupTtl = 7200): array;
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
 use App\Domains\Security\Providers\SecurityServiceProvider;
+use App\Domains\Statistics\Providers\StatisticsServiceProvider;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\ServerRequestFactory;
@@ -68,6 +69,9 @@ return array_merge(
 
     // 快取系統服務
     CacheServiceProvider::getDefinitions(),
+
+    // 統計系統服務
+    StatisticsServiceProvider::getDefinitions(),
 
     // 基本應用程式服務
     [
