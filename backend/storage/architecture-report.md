@@ -1,25 +1,25 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-23 04:29:01
+**生成時間**: 2025-09-23 19:08:36
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 250 | - |
-| 介面與類別比例 | 22.80% | ✅ 良好 |
+| 總類別數 | 261 | - |
+| 介面與類別比例 | 23.75% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 63.20% | ✅ 良好 |
-| PSR-4 合規率 | 74.64% | ❌ 需修正 |
+| 現代 PHP 採用率 | 62.84% | ✅ 良好 |
+| PSR-4 合規率 | 75.21% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 260 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 192 | ✅ 提升資料不變性 |
-| 空安全運算子 (PHP 8.0+) | 81 | ✅ 防止 null 指標異常 |
+| Match 表達式 (PHP 8.0+) | 263 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 200 | ✅ 提升資料不變性 |
+| 空安全運算子 (PHP 8.0+) | 87 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
 | 聯合型別 (PHP 8.0+) | 20 | ✅ 更靈活的型別定義 |
@@ -311,6 +311,9 @@
 - `app/Infrastructure/Statistics`
 - `app/Infrastructure/Statistics/.`
 - `app/Infrastructure/Statistics/..`
+- `app/Infrastructure/Statistics/Formatters`
+- `app/Infrastructure/Statistics/Formatters/.`
+- `app/Infrastructure/Statistics/Formatters/..`
 - `app/Infrastructure/Statistics/Repositories`
 - `app/Infrastructure/Statistics/Repositories/.`
 - `app/Infrastructure/Statistics/Repositories/..`
@@ -396,11 +399,18 @@
 - app/Application.php
 
 ### `App\Domains\Statistics\Contracts`
+- app/Domains/Statistics/Contracts/StatisticsFormatterInterface.php
+- app/Domains/Statistics/Contracts/StatisticsMonitoringServiceInterface.php
+- app/Domains/Statistics/Contracts/BatchExportResult.php
+- app/Domains/Statistics/Contracts/StatisticsQueryServiceInterface.php
+- app/Domains/Statistics/Contracts/StatisticsExportServiceInterface.php
 - app/Domains/Statistics/Contracts/StatisticsRepositoryInterface.php
 - app/Domains/Statistics/Contracts/StatisticsAggregationServiceInterface.php
 - app/Domains/Statistics/Contracts/PostStatisticsRepositoryInterface.php
 - app/Domains/Statistics/Contracts/StatisticsCacheServiceInterface.php
+- app/Domains/Statistics/Contracts/SlowQueryMonitoringServiceInterface.php
 - app/Domains/Statistics/Contracts/StatisticsSnapshotRepositoryInterface.php
+- app/Domains/Statistics/Contracts/ExportResult.php
 - app/Domains/Statistics/Contracts/UserStatisticsRepositoryInterface.php
 
 ### `App\Domains\Statistics\Models`
@@ -735,6 +745,11 @@
 - app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php
 - app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php
 
+### `App\Infrastructure\Statistics\Formatters`
+- app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+- app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+- app/Infrastructure/Statistics/Formatters/JSONStatisticsFormatter.php
+
 ### `App\Infrastructure\Statistics\Repositories`
 - app/Infrastructure/Statistics/Repositories/StatisticsRepository.php
 - app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
@@ -750,7 +765,11 @@
 - app/Infrastructure/Statistics/Commands/StatisticsCalculationCommand.php
 
 ### `App\Infrastructure\Statistics\Services`
+- app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
 - app/Infrastructure/Statistics/Services/StatisticsCacheService.php
+- app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+- app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+- app/Infrastructure/Statistics/Services/StatisticsExportService.php
 
 ### `App\Infrastructure\Database`
 - app/Infrastructure/Database/DatabaseConnection.php
@@ -869,8 +888,8 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 250
-- **介面總數**: 57
+- **類別總數**: 261
+- **介面總數**: 62
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
@@ -1019,8 +1038,16 @@
   - 實作: StatisticsRepositoryInterface
 - **StatisticsRepositoryTransactionAdapter**: `app/Infrastructure/Statistics/Adapters/StatisticsRepositoryTransactionAdapter.php`
   - 實作: StatisticsRepositoryInterface
+- **StatisticsPerformanceReportGenerator**: `app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php`
+  - 實作: 
 - **StatisticsCacheService**: `app/Infrastructure/Statistics/Services/StatisticsCacheService.php`
   - 實作: StatisticsCacheServiceInterface
+- **StatisticsMonitoringService**: `app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php`
+  - 實作: StatisticsMonitoringServiceInterface
+- **SlowQueryMonitoringService**: `app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php`
+  - 實作: SlowQueryMonitoringServiceInterface
+- **StatisticsExportService**: `app/Infrastructure/Statistics/Services/StatisticsExportService.php`
+  - 實作: StatisticsExportServiceInterface
 - **RefreshTokenRepository**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
   - 實作: RefreshTokenRepositoryInterface
 - **TokenBlacklistRepository**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
@@ -1044,6 +1071,8 @@
 - UpdateStatisticsSnapshotsTableForEntityCompatibility (`database/migrations/20250922000002_update_statistics_snapshots_table_for_entity_compatibility.php`)
 - AddCompositeIndexesToUserActivityLogs (`database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php`)
 - AddSourceTrackingToPosts (`database/migrations/20250921130458_add_source_tracking_to_posts.php`)
+- CreateStatisticsQueryMonitoringTables (`database/migrations/20250923043000_create_statistics_query_monitoring_tables.php`)
+- CreateStatisticsOptimizationIndexes (`database/migrations/20250923042900_create_statistics_optimization_indexes.php`)
 - CreateUserActivityLogsTable (`database/migrations/20250829000000_create_user_activity_logs_table.php`)
 - CreateTokenBlacklistTable (`database/migrations/20250825165750_create_token_blacklist_table.php`)
 - CreateRefreshTokensTable (`database/migrations/20250825165731_create_refresh_tokens_table.php`)
@@ -1054,6 +1083,8 @@
 - UserActivityLogsSeeder (`database/seeds/UserActivityLogsSeeder.php`)
 - Application (`app/Application.php`)
 - implements (`scripts/remaining-error-fixer.php`)
+- BatchExportResult (`app/Domains/Statistics/Contracts/BatchExportResult.php`)
+- ExportResult (`app/Domains/Statistics/Contracts/ExportResult.php`)
 - PostStatusException (`app/Domains/Post/Exceptions/PostStatusException.php`)
 - PostValidationException (`app/Domains/Post/Exceptions/PostValidationException.php`)
 - PostNotFoundException (`app/Domains/Post/Exceptions/PostNotFoundException.php`)
@@ -1136,6 +1167,7 @@
 - StatisticsApplicationService (`app/Application/Services/Statistics/StatisticsApplicationService.php`)
 - StatisticsDatabaseAdapterFactory (`app/Infrastructure/Statistics/Adapters/StatisticsDatabaseAdapterFactory.php`)
 - StatisticsCalculationCommand (`app/Infrastructure/Statistics/Commands/StatisticsCalculationCommand.php`)
+- StatisticsPerformanceReportGenerator (`app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
 - CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
 - ContainerFactory (`app/Infrastructure/Config/ContainerFactory.php`)
@@ -1336,6 +1368,11 @@
 - RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
 - AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
 
+### `StatisticsFormatterInterface`
+- CSVStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php`)
+- PDFStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php`)
+- JSONStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/JSONStatisticsFormatter.php`)
+
 ### `StatisticsRepositoryInterface`
 - StatisticsRepository (`app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`)
 - StatisticsRepositoryLoggingAdapter (`app/Infrastructure/Statistics/Adapters/StatisticsRepositoryLoggingAdapter.php`)
@@ -1350,6 +1387,15 @@
 
 ### `StatisticsCacheServiceInterface`
 - StatisticsCacheService (`app/Infrastructure/Statistics/Services/StatisticsCacheService.php`)
+
+### `StatisticsMonitoringServiceInterface`
+- StatisticsMonitoringService (`app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php`)
+
+### `SlowQueryMonitoringServiceInterface`
+- SlowQueryMonitoringService (`app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php`)
+
+### `StatisticsExportServiceInterface`
+- StatisticsExportService (`app/Infrastructure/Statistics/Services/StatisticsExportService.php`)
 
 ### `JwtProviderInterface`
 - FirebaseJwtProvider (`app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php`)
@@ -1414,10 +1460,9 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 250 個
+- **缺少測試的類別**: 261 個
 
 ### 缺少測試的重要類別
-- **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
 
 
 ## 💉 依賴注入分析
@@ -1567,6 +1612,11 @@
   - `StatisticsCacheServiceInterface` $cacheService
   - `LoggerInterface` $logger
 
+- **StatisticsMonitoringService** (3 個依賴)
+  - `SlowQueryMonitoringServiceInterface` $slowQueryService
+  - `PDO` $pdo
+  - `LoggerInterface` $logger
+
 - **RouteDispatcher** (4 個依賴)
   - `RouterInterface` $router
   - `ControllerResolver` $controllerResolver
@@ -1634,11 +1684,11 @@
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000002_update_statistics_snapshots_table_for_entity_compatibility.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921130458_add_source_tracking_to_posts.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250923043000_create_statistics_query_monitoring_tables.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250923042900_create_statistics_optimization_indexes.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250829000000_create_user_activity_logs_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165750_create_token_blacklist_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165731_create_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000001_create_statistics_snapshots_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921143617_update_existing_posts_source_info.php 中使用)
-- ... 還有 195 個
+- ... 還有 198 個

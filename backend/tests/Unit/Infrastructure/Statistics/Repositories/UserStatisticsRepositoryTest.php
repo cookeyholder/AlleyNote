@@ -12,14 +12,12 @@ use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
-/**
- * @covers \App\Infrastructure\Statistics\Repositories\UserStatisticsRepository
- * @phpstan-ignore-next-line
- */
+#[CoversClass(UserStatisticsRepository::class)]
 class UserStatisticsRepositoryTest extends TestCase
 {
     private PDO&MockObject $mockDb;

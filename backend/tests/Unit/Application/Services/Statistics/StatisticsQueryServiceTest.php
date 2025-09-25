@@ -14,12 +14,11 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-/**
- * @covers \App\Application\Services\Statistics\StatisticsQueryService
- */
+#[CoversClass(StatisticsQueryService::class)]
 final class StatisticsQueryServiceTest extends TestCase
 {
     private StatisticsQueryService $service;

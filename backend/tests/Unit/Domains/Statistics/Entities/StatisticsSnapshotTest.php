@@ -11,11 +11,11 @@ use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTime;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \App\Domains\Statistics\Entities\StatisticsSnapshot
- */
+#[CoversClass(StatisticsSnapshot::class)]
 class StatisticsSnapshotTest extends TestCase
 {
     private array $validData;
@@ -115,9 +115,7 @@ class StatisticsSnapshotTest extends TestCase
         $this->assertSame('test-uuid-12345', $snapshot->getUuid());
     }
 
-    /**
-     * @dataProvider invalidSnapshotTypeProvider
-     */
+    #[DataProvider('invalidSnapshotTypeProvider')]
     public function testConstructorThrowsExceptionWithInvalidSnapshotType(string $invalidType): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -330,9 +328,7 @@ class StatisticsSnapshotTest extends TestCase
         $this->assertNull($snapshot->getExpiresAt());
     }
 
-    /**
-     * @dataProvider dataIntegrityProvider
-     */
+    #[DataProvider('dataIntegrityProvider')]
     public function testValidateDataIntegrity(string $snapshotType, array $statisticsData, bool $expected): void
     {
         $data = $this->validData;

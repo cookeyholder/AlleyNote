@@ -12,14 +12,13 @@ use App\Infrastructure\Statistics\Adapters\StatisticsRepositoryTransactionAdapte
 use App\Shared\Contracts\CacheServiceInterface;
 use InvalidArgumentException;
 use PDO;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-/**
- * @covers \App\Infrastructure\Statistics\Adapters\StatisticsDatabaseAdapterFactory
- */
-class StatisticsDatabaseAdapterFactoryTest extends TestCase
+#[CoversClass(StatisticsDatabaseAdapterFactory::class)]
+final class StatisticsDatabaseAdapterFactoryTest extends TestCase
 {
     private StatisticsRepositoryInterface&MockObject $mockRepository;
 

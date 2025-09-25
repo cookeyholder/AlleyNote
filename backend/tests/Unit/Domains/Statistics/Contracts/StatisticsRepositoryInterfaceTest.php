@@ -7,12 +7,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-/**
- * @covers \App\Domains\Statistics\Contracts\StatisticsRepositoryInterface
- */
+#[CoversClass(StatisticsRepositoryInterface::class)]
 class StatisticsRepositoryInterfaceTest extends TestCase
 {
     public function testInterfaceExists(): void

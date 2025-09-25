@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Models;
 
 use App\Domains\Statistics\Models\StatisticsSnapshot;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -54,9 +55,9 @@ class StatisticsSnapshotTest extends TestCase
     /**
      * 測試模型建構函式.
      *
-     * @dataProvider validDataProvider
      * @param array<string, mixed> $data
      */
+    #[DataProvider('validDataProvider')]
     public function testConstruct(array $data): void
     {
         $snapshot = new StatisticsSnapshot($data);

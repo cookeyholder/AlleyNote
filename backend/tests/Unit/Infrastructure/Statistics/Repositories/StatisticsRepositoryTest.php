@@ -13,17 +13,17 @@ use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
  * StatisticsRepository 單元測試.
- *
- * @group statistics
- * @group repository
- * @group unit
  */
+#[Group('statistics')]
+#[Group('repository')]
+#[Group('unit')]
 final class StatisticsRepositoryTest extends TestCase
 {
     private PDO&MockObject $mockPdo;
