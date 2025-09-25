@@ -409,23 +409,24 @@
 
 ### 階段 5：介面層實作 (Interface Layer)
 
-#### 🔲 T5.1 - 建立統計查詢 API 控制器
-**描述**：建立統計資料查詢的 REST API
-**預估時間**：5 小時
-**依賴**：T3.3, T4.2
+#### ✅ T5.1 - 建立統計查詢 API 控制器
+**描述**：建立統計查詢的 RESTful API 端點
+**預估時間**：4 小時
+**依賴**：T4.7
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] `StatisticsController` 類別
-- [ ] GET `/api/statistics/overview` 端點
-- [ ] GET `/api/statistics/posts` 端點
-- [ ] GET `/api/statistics/sources` 端點
-- [ ] GET `/api/statistics/users` 端點
-- [ ] GET `/api/statistics/popular` 端點
-- [ ] 完整的參數驗證（包含最大查詢範圍限制）
-- [ ] 標準化的回應格式
-- [ ] 完整的錯誤處理
-- [ ] 整合 `statistics:read` 權限驗證
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsController` 類別
+- [x] GET `/api/statistics/overview` 端點
+- [x] GET `/api/statistics/posts` 端點
+- [x] GET `/api/statistics/sources` 端點
+- [x] GET `/api/statistics/users` 端點
+- [x] GET `/api/statistics/popular` 端點
+- [x] 完整的參數驗證（包含最大查詢範圍限制）
+- [x] 標準化的回應格式
+- [x] 完整的錯誤處理
+- [x] 整合 `statistics:read` 權限驗證
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 #### 🔲 T5.2 - 建立統計管理 API 控制器
 **描述**：建立管理員專用的統計管理功能
