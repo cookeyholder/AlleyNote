@@ -428,19 +428,20 @@
 - [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 - [x] 通過 PHPStan Level 10 檢查
 
-#### 🔲 T5.2 - 建立統計管理 API 控制器
+#### ✅ T5.2 - 建立統計管理 API 控制器
 **描述**：建立管理員專用的統計管理功能
 **預估時間**：3 小時
 **依賴**：T5.1
+**狀態**：✅ 已完成
 **驗收標準**：
-- [ ] `StatisticsAdminController` 類別
-- [ ] POST `/api/admin/statistics/refresh` 端點
-- [ ] DELETE `/api/admin/statistics/cache` 端點
-- [ ] GET `/api/admin/statistics/health` 端點（包含詳細檢查）
-- [ ] 管理員權限驗證
-- [ ] 操作活動日誌記錄
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
+- [x] `StatisticsAdminController` 類別
+- [x] POST `/api/admin/statistics/refresh` 端點
+- [x] DELETE `/api/admin/statistics/cache` 端點
+- [x] GET `/api/admin/statistics/health` 端點（包含詳細檢查）
+- [x] 管理員權限驗證
+- [x] 操作活動日誌記錄
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+- [x] 通過 PHPStan Level 10 檢查
 
 #### ✅ T5.3 - 更新 API 路由配置
 **描述**：在路由配置中註冊統計相關端點
@@ -657,24 +658,25 @@
 - [x] 階段 1：領域層設計 (5/5) ✅ 完成
 - [x] 階段 2：資料庫結構調整 (4/4) ✅ 完成
 - [x] 階段 3：應用層服務 (3/3) ✅ 完成
-- [ ] 階段 4：基礎設施層實作 (4/8) � 進行中
-- [ ] 階段 5：介面層實作 (0/4)
+- [ ] 階段 4：基礎設施層實作 (5/8) 🚧 進行中
+- [ ] 階段 5：介面層實作 (2/4) 🚧 進行中
 - [ ] 階段 6：測試實作 (0/6)
 - [ ] 階段 7：文件與部署 (0/4)
 - [ ] 階段 8：品質保證與最佳化 (0/3)
 
 ### 總體進度
-**15/41 項任務完成 (36.6%)**
+**17/41 項任務完成 (41.5%)**
 
 **🎉 第一階段（領域層設計）已完成！**
 **🎉 第二階段（資料庫結構調整）已完成！**
 **🎉 第三階段（應用層服務）已完成！**
-**🚀 第四階段（基礎設施層實作）進行中：已完成 T4.1-T4.4**
+**🚀 第四階段（基礎設施層實作）進行中：已完成 T4.1-T4.5**
+**🚀 第五階段（介面層實作）進行中：已完成 T5.1-T5.2**
 
 ### 預估工作量
 - **總預估時間**：123 小時
-- **已完成時間**：35 小時
-- **剩餘時間**：88 小時
+- **已完成時間**：42 小時
+- **剩餘時間**：81 小時
 - **建議開發週期**：4-5 週
 - **每日開發時間**：6-8 小時
 
@@ -704,7 +706,29 @@
 
 ---
 
-## 📝 決策記錄
+## 📈 最新進展記錄
+
+### 2025年9月25日 - T5.2 統計管理 API 控制器完成
+- ✅ 成功實作 StatisticsAdminController 類別，包含 3 個管理端點
+- ✅ 實作 POST /api/admin/statistics/refresh 手動刷新統計資料端點
+- ✅ 實作 DELETE /api/admin/statistics/cache 清除統計快取端點
+- ✅ 實作 GET /api/admin/statistics/health 系統健康檢查端點
+- ✅ 整合管理員權限驗證（admin.*, statistics.*, statistics.admin）
+- ✅ 添加完整的活動日誌記錄功能（使用者、IP、操作詳情）
+- ✅ 添加完整的 OpenAPI 3.0 文件註解和 API 說明
+- ✅ 通過 PHPStan Level 10、PHP CS Fixer、PHPUnit 全部品質檢查
+- 🎯 總體進度提升至 41.5%（17/41 項任務完成）
+
+### 2025年9月25日 - T5.1 統計查詢 API 控制器完成
+- ✅ 成功實作 StatisticsController 類別，包含 5 個統計查詢端點
+- ✅ 實作完整的參數驗證機制（日期格式、範圍檢查、枚舉值驗證）
+- ✅ 整合 statistics.read 權限驗證和標準化錯誤處理
+- ✅ 添加完整的 OpenAPI 3.0 文件註解
+- ✅ 通過 PHPStan Level 10、PHP CS Fixer、PHPUnit 全部品質檢查
+
+---
+
+## �📝 決策記錄
 
 ### 設計決策
 1. **選擇快照機制**：採用統計快照而非即時計算，以提升效能
