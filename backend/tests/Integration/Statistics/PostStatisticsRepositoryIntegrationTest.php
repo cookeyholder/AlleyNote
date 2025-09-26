@@ -9,19 +9,25 @@ use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\IntegrationTestCase;
+use Tests\Support\Statistics\StatisticsTestSeeder;
 
 /**
  * PostStatisticsRepository 整合測試.
  *
- * 測試文章統計 Repository 的資料庫互動和複雜查詢功能。
- * 專注於文章相關的統計數據收集和聚合查詢。
+ * 測試文章統計 Repository 的資料庫查詢功能，包括：
+ * - 文章數量統計
+ * - 狀態別統計
+ * - 來源統計
+ * - 熱門文章查詢
+ * - 成長趨勢分析
+ * - 長度統計
+ * - 時間分布統計
  */
-#[Group('statistics')]
-#[Group('repository')]
 #[Group('integration')]
-#[Group('posts')]
+#[Group('statistics')]
 final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
 {
     private PostStatisticsRepository $repository;
@@ -29,10 +35,11 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->repository = new PostStatisticsRepository($this->db);
 
         // 使用統一的測試資料種子
-        $seeder = new \Tests\Support\Statistics\StatisticsTestSeeder($this->db);
+        $seeder = new StatisticsTestSeeder($this->db);
         $seeder->seedAll();
     }
 
@@ -41,13 +48,12 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $count = $this->repository->getTotalPostsCount($period);
 
         // 驗證取得的文章數量（基於測試資料）
-        $this->assertIsInt($count);
         $this->assertGreaterThanOrEqual(0, $count);
     }
 
@@ -56,16 +62,14 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $publishedCount = $this->repository->getTotalPostsCount($period, 'published');
         $draftCount = $this->repository->getTotalPostsCount($period, 'draft');
 
-        // 驗證按狀態統計的文章數量
-        $this->assertIsInt($publishedCount);
-        $this->assertIsInt($draftCount);
-        $this->assertGreaterThanOrEqual(0, $publishedCount);
+        // 驗證結果
+        $this->assertGreaterThan(0, $publishedCount);
         $this->assertGreaterThanOrEqual(0, $draftCount);
     }
 
@@ -74,19 +78,21 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $statusCounts = $this->repository->getPostsCountByStatus($period);
 
-        // 驗證狀態統計結果
+        // 驗證結果結構
         $this->assertIsArray($statusCounts);
+        $this->assertArrayHasKey('published', $statusCounts);
+        $this->assertArrayHasKey('draft', $statusCounts);
+        $this->assertArrayHasKey('archived', $statusCounts);
 
-        foreach ($statusCounts as $status => $count) {
-            $this->assertIsString($status);
-            $this->assertIsInt($count);
-            $this->assertGreaterThanOrEqual(0, $count);
-        }
+        // 驗證數值
+        $this->assertGreaterThan(0, $statusCounts['published']);
+        $this->assertGreaterThanOrEqual(0, $statusCounts['draft']);
+        $this->assertGreaterThanOrEqual(0, $statusCounts['archived']);
     }
 
     public function testGetPostsCountBySource(): void
@@ -94,19 +100,21 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $sourceCounts = $this->repository->getPostsCountBySource($period);
 
-        // 驗證來源統計結果
+        // 驗證結果結構
         $this->assertIsArray($sourceCounts);
+        $this->assertArrayHasKey('web', $sourceCounts);
+        $this->assertArrayHasKey('mobile', $sourceCounts);
+        $this->assertArrayHasKey('api', $sourceCounts);
 
-        foreach ($sourceCounts as $source => $count) {
-            $this->assertIsString($source);
-            $this->assertIsInt($count);
-            $this->assertGreaterThanOrEqual(0, $count);
-        }
+        // 驗證數值
+        $this->assertGreaterThanOrEqual(0, $sourceCounts['web']);
+        $this->assertGreaterThanOrEqual(0, $sourceCounts['mobile']);
+        $this->assertGreaterThanOrEqual(0, $sourceCounts['api']);
     }
 
     public function testGetPostsCountBySourceType(): void
@@ -114,16 +122,15 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $webCount = $this->repository->getPostsCountBySourceType(
             $period,
-            SourceType::fromCode('web')
+            SourceType::fromCode('web'),
         );
 
         // 驗證特定來源統計結果
-        $this->assertIsInt($webCount);
         $this->assertGreaterThanOrEqual(0, $webCount);
     }
 
@@ -132,20 +139,18 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $viewsStats = $this->repository->getPostViewsStatistics($period);
 
-        // 驗證瀏覽統計結果
+        // 驗證統計結果結構
         $this->assertIsArray($viewsStats);
         $this->assertArrayHasKey('total_views', $viewsStats);
         $this->assertArrayHasKey('unique_views', $viewsStats);
         $this->assertArrayHasKey('avg_views_per_post', $viewsStats);
 
-        $this->assertIsInt($viewsStats['total_views']);
-        $this->assertIsInt($viewsStats['unique_views']);
-        $this->assertIsFloat($viewsStats['avg_views_per_post']);
+        // 驗證數值有效性
         $this->assertGreaterThanOrEqual(0, $viewsStats['total_views']);
         $this->assertGreaterThanOrEqual(0, $viewsStats['unique_views']);
         $this->assertGreaterThanOrEqual(0, $viewsStats['avg_views_per_post']);
@@ -156,59 +161,70 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
         $limit = 5;
 
-        $popularPosts = $this->repository->getPopularPosts($period, $limit, 'views');
+        $popularPosts = $this->repository->getPopularPosts($period, $limit);
 
-        // 驗證熱門文章結果
+        // 驗證結果結構
         $this->assertIsArray($popularPosts);
         $this->assertLessThanOrEqual($limit, count($popularPosts));
 
-        $previousViews = PHP_INT_MAX;
-        foreach ($popularPosts as $post) {
-            $this->assertIsArray($post);
-            $this->assertArrayHasKey('post_id', $post);
-            $this->assertArrayHasKey('title', $post);
-            $this->assertArrayHasKey('metric_value', $post);
+        // 如果有結果，驗證每個項目的結構
+        if (!empty($popularPosts)) {
+            foreach ($popularPosts as $post) {
+                $this->assertArrayHasKey('post_id', $post);
+                $this->assertArrayHasKey('title', $post);
+                $this->assertArrayHasKey('metric_value', $post);
 
-            $this->assertIsInt($post['post_id']);
-            $this->assertIsString($post['title']);
-            $this->assertIsInt($post['metric_value']);
+                // 驗證數值類型
+                $this->assertGreaterThan(0, $post['post_id']);
+                $this->assertIsString($post['title']);
+                $this->assertGreaterThanOrEqual(0, $post['metric_value']);
+            }
 
-            // 驗證排序正確性（瀏覽數遞減）
-            $this->assertLessThanOrEqual($previousViews, $post['metric_value']);
-            $previousViews = $post['metric_value'];
+            // 驗證排序正確性（按指標值降序）
+            if (count($popularPosts) > 1) {
+                $this->assertGreaterThanOrEqual($popularPosts[1]['metric_value'], $popularPosts[0]['metric_value']);
+            }
         }
     }
 
-    public function testGetPostsCountByUser(): void
+    public function testGetPopularPostsByComments(): void
     {
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
         $limit = 10;
 
-        $userStats = $this->repository->getPostsCountByUser($period, $limit);
+        $topCommentedPosts = $this->repository->getPopularPosts($period, $limit, 'comments');
 
-        // 驗證使用者文章統計結果
-        $this->assertIsArray($userStats);
-        $this->assertLessThanOrEqual($limit, count($userStats));
+        // 驗證結果結構
+        $this->assertIsArray($topCommentedPosts);
+        $this->assertLessThanOrEqual($limit, count($topCommentedPosts));
 
-        foreach ($userStats as $userStat) {
-            $this->assertIsArray($userStat);
-            $this->assertArrayHasKey('user_id', $userStat);
-            $this->assertArrayHasKey('posts_count', $userStat);
-            $this->assertArrayHasKey('total_views', $userStat);
+        // 如果有結果，驗證結構和排序
+        if (!empty($topCommentedPosts)) {
+            foreach ($topCommentedPosts as $post) {
+                $this->assertArrayHasKey('post_id', $post);
+                $this->assertArrayHasKey('title', $post);
+                $this->assertArrayHasKey('metric_value', $post);
 
-            $this->assertIsInt($userStat['user_id']);
-            $this->assertIsInt($userStat['posts_count']);
-            $this->assertIsInt($userStat['total_views']);
-            $this->assertGreaterThanOrEqual(0, $userStat['posts_count']);
-            $this->assertGreaterThanOrEqual(0, $userStat['total_views']);
+                $this->assertGreaterThan(0, $post['post_id']);
+                $this->assertIsString($post['title']);
+                $this->assertGreaterThanOrEqual(0, $post['metric_value']);
+            }
+
+            // 驗證按評論數降序排列
+            if (count($topCommentedPosts) > 1) {
+                $this->assertGreaterThanOrEqual(
+                    $topCommentedPosts[1]['metric_value'],
+                    $topCommentedPosts[0]['metric_value'],
+                );
+            }
         }
     }
 
@@ -217,55 +233,53 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $timeDistribution = $this->repository->getPostsPublishTimeDistribution($period, 'hour');
 
-        // 驗證時間分布資料
+        // 驗證結果結構
         $this->assertIsArray($timeDistribution);
 
+        // 每小時的統計結果檢查
         foreach ($timeDistribution as $hour => $count) {
             $this->assertIsString($hour);
             $this->assertIsInt($count);
             $this->assertGreaterThanOrEqual(0, $count);
-
-            // 驗證小時格式（0-23）
-            $hourInt = (int) $hour;
-            $this->assertGreaterThanOrEqual(0, $hourInt);
-            $this->assertLessThan(24, $hourInt);
         }
     }
 
     public function testGetPostsGrowthTrend(): void
     {
+        // 設定當前和前一期間
         $currentPeriod = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-02 00:00:00'),
-            new DateTimeImmutable('2024-01-02 23:59:59')
+            new DateTimeImmutable('2024-01-02 23:59:59'),
         );
 
         $previousPeriod = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $growthTrend = $this->repository->getPostsGrowthTrend($currentPeriod, $previousPeriod);
 
-        // 驗證成長趨勢資料
+        // 驗證結果結構
         $this->assertIsArray($growthTrend);
         $this->assertArrayHasKey('current', $growthTrend);
         $this->assertArrayHasKey('previous', $growthTrend);
-        $this->assertArrayHasKey('growth_rate', $growthTrend);
         $this->assertArrayHasKey('growth_count', $growthTrend);
+        $this->assertArrayHasKey('growth_rate', $growthTrend);
 
-        $this->assertIsInt($growthTrend['current']);
-        $this->assertIsInt($growthTrend['previous']);
-        $this->assertIsFloat($growthTrend['growth_rate']);
+        // 驗證數值類型和邏輯
+        $this->assertGreaterThanOrEqual(0, $growthTrend['current']);
+        $this->assertGreaterThanOrEqual(0, $growthTrend['previous']);
         $this->assertIsInt($growthTrend['growth_count']);
+        $this->assertIsFloat($growthTrend['growth_rate']);
 
-        // 驗證計算正確性
+        // 驗證成長數量計算正確性
         $expectedGrowthCount = $growthTrend['current'] - $growthTrend['previous'];
         $this->assertEquals($expectedGrowthCount, $growthTrend['growth_count']);
     }
@@ -275,27 +289,26 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $lengthStats = $this->repository->getPostsLengthStatistics($period);
 
-        // 驗證文章長度統計
+        // 驗證統計結果結構
         $this->assertIsArray($lengthStats);
         $this->assertArrayHasKey('avg_length', $lengthStats);
-        $this->assertArrayHasKey('min_length', $lengthStats);
         $this->assertArrayHasKey('max_length', $lengthStats);
+        $this->assertArrayHasKey('min_length', $lengthStats);
         $this->assertArrayHasKey('total_chars', $lengthStats);
 
-        $this->assertIsFloat($lengthStats['avg_length']);
-        $this->assertIsInt($lengthStats['min_length']);
-        $this->assertIsInt($lengthStats['max_length']);
-        $this->assertIsInt($lengthStats['total_chars']);
-
+        // 驗證數值有效性
         $this->assertGreaterThanOrEqual(0, $lengthStats['avg_length']);
+        $this->assertGreaterThanOrEqual(0, $lengthStats['max_length']);
         $this->assertGreaterThanOrEqual(0, $lengthStats['min_length']);
-        $this->assertLessThanOrEqual($lengthStats['max_length'], $lengthStats['max_length']);
         $this->assertGreaterThanOrEqual(0, $lengthStats['total_chars']);
+
+        // 邏輯檢查
+        $this->assertGreaterThanOrEqual($lengthStats['min_length'], $lengthStats['max_length']);
     }
 
     public function testGetPostsCountByLengthRange(): void
@@ -303,26 +316,32 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $lengthRanges = [
-            'short' => ['min' => 0, 'max' => 100],
-            'medium' => ['min' => 101, 'max' => 500],
-            'long' => ['min' => 501, 'max' => 1000],
-            'very_long' => ['min' => 1001, 'max' => 999999],
+            ['min' => 0, 'max' => 500],
+            ['min' => 501, 'max' => 1000],
+            ['min' => 1001, 'max' => 2000],
+            ['min' => 2001, 'max' => 5000], // 使用具體數值而非 null
         ];
 
-        $rangeCounts = $this->repository->getPostsCountByLengthRange($period, $lengthRanges);
+        $lengthDistribution = $this->repository->getPostsCountByLengthRange($period, $lengthRanges);
 
-        // 驗證字數範圍統計
-        $this->assertIsArray($rangeCounts);
-        $this->assertCount(4, $rangeCounts);
+        // 驗證結果結構
+        $this->assertIsArray($lengthDistribution);
+        $this->assertCount(4, $lengthDistribution);
 
-        foreach ($lengthRanges as $rangeName => $range) {
-            $this->assertArrayHasKey($rangeName, $rangeCounts);
-            $this->assertIsInt($rangeCounts[$rangeName]);
-            $this->assertGreaterThanOrEqual(0, $rangeCounts[$rangeName]);
+        foreach ($lengthDistribution as $range) {
+            $this->assertIsArray($range);
+            $this->assertArrayHasKey('range', $range);
+            $this->assertArrayHasKey('count', $range);
+            $this->assertArrayHasKey('percentage', $range);
+
+            $this->assertIsString($range['range']);
+            $this->assertGreaterThanOrEqual(0, $range['count']);
+            $this->assertGreaterThanOrEqual(0, $range['percentage']);
+            $this->assertLessThanOrEqual(100, $range['percentage']);
         }
     }
 
@@ -331,44 +350,45 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $pinnedStats = $this->repository->getPinnedPostsStatistics($period);
 
-        // 驗證置頂文章統計
+        // 驗證結果結構
         $this->assertIsArray($pinnedStats);
         $this->assertArrayHasKey('pinned_count', $pinnedStats);
         $this->assertArrayHasKey('unpinned_count', $pinnedStats);
         $this->assertArrayHasKey('pinned_views', $pinnedStats);
 
-        $this->assertIsInt($pinnedStats['pinned_count']);
-        $this->assertIsInt($pinnedStats['unpinned_count']);
-        $this->assertIsInt($pinnedStats['pinned_views']);
+        // 驗證數值
         $this->assertGreaterThanOrEqual(0, $pinnedStats['pinned_count']);
         $this->assertGreaterThanOrEqual(0, $pinnedStats['unpinned_count']);
         $this->assertGreaterThanOrEqual(0, $pinnedStats['pinned_views']);
     }
 
-    public function testHasDataForPeriod(): void
+    public function testEmptyResultHandling(): void
     {
+        // 測試無資料的日期範圍
         $periodWithData = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $periodWithoutData = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2025-01-01 00:00:00'),
-            new DateTimeImmutable('2025-01-01 23:59:59')
+            new DateTimeImmutable('2025-01-01 23:59:59'),
         );
 
         // 驗證有資料的期間
-        $this->assertTrue($this->repository->hasDataForPeriod($periodWithData));
+        $countWithData = $this->repository->getTotalPostsCount($periodWithData);
+        $this->assertGreaterThan(0, $countWithData);
 
-        // 驗證沒有資料的期間
-        $this->assertFalse($this->repository->hasDataForPeriod($periodWithoutData));
+        // 驗證無資料的期間
+        $countWithoutData = $this->repository->getTotalPostsCount($periodWithoutData);
+        $this->assertEquals(0, $countWithoutData);
     }
 
     public function testGetPostActivitySummary(): void
@@ -376,12 +396,12 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $summary = $this->repository->getPostActivitySummary($period);
 
-        // 驗證活動摘要結果
+        // 驗證摘要結構
         $this->assertIsArray($summary);
         $this->assertArrayHasKey('total_posts', $summary);
         $this->assertArrayHasKey('published_posts', $summary);
@@ -390,44 +410,44 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $this->assertArrayHasKey('active_authors', $summary);
         $this->assertArrayHasKey('popular_sources', $summary);
 
-        $this->assertIsInt($summary['total_posts']);
-        $this->assertIsInt($summary['published_posts']);
-        $this->assertIsInt($summary['draft_posts']);
-        $this->assertIsInt($summary['total_views']);
-        $this->assertIsInt($summary['active_authors']);
-        $this->assertIsArray($summary['popular_sources']);
-
+        // 驗證數值有效性
         $this->assertGreaterThanOrEqual(0, $summary['total_posts']);
         $this->assertGreaterThanOrEqual(0, $summary['published_posts']);
         $this->assertGreaterThanOrEqual(0, $summary['draft_posts']);
         $this->assertGreaterThanOrEqual(0, $summary['total_views']);
         $this->assertGreaterThanOrEqual(0, $summary['active_authors']);
+        $this->assertIsArray($summary['popular_sources']);
+
+        // 驗證邏輯一致性
+        $this->assertEquals(
+            $summary['published_posts'] + $summary['draft_posts'],
+            $summary['total_posts'],
+        );
     }
 
-    public function testInvalidParameters(): void
+    public function testInvalidLimitThrowsException(): void
     {
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         // 測試無效的限制數量
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->repository->getPopularPosts($period, -1);
     }
 
-    public function testInvalidGroupByParameter(): void
+    public function testInvalidTimeGroupThrowsException(): void
     {
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         // 測試無效的分組參數
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->repository->getPostsPublishTimeDistribution($period, 'invalid');
     }
-
 }

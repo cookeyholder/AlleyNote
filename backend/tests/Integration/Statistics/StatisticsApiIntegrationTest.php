@@ -61,7 +61,7 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
         array $headers = [],
     ): array {
         // 準備 $_SERVER 環境變數
-        $_SERVER = array_merge($_SERVER ?? [], [
+        $_SERVER = array_merge($_SERVER, [
             'REQUEST_METHOD' => $method,
             'REQUEST_URI' => $path,
             'HTTP_HOST' => 'localhost',
@@ -344,12 +344,12 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
         }
 
         // 驗證 Content-Type 標頭
-        $headers = $response['headers'];
-        if (isset($headers['Content-Type'])) {
+        $headers = $response['headers'] ?? [];
+        if (is_array($headers) && isset($headers['Content-Type'])) {
             $contentType = is_array($headers['Content-Type'])
                 ? $headers['Content-Type'][0]
-                : $headers['Content-Type'];
-            $this->assertStringContains('application/json', $contentType);
+                : (string) $headers['Content-Type'];
+            $this->assertStringContainsString('application/json', $contentType);
         }
     }
 
@@ -394,7 +394,7 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         // 此測試主要用於觀察行為，不強制要求有速率限制
         if ($rateLimited) {
-            $this->assertTrue($rateLimited, '速率限制正在運作');
+            $this->addToAssertionCount(1); // 速率限制正在運作
         } else {
             $this->addToAssertionCount(1); // 標記測試已執行
         }

@@ -60,7 +60,7 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         ?array $body = null,
         array $headers = [],
     ): array {
-        $_SERVER = array_merge($_SERVER ?? [], [
+        $_SERVER = array_merge($_SERVER, [
             'REQUEST_METHOD' => $method,
             'REQUEST_URI' => $path,
             'HTTP_HOST' => 'localhost',
@@ -251,7 +251,7 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         // 速率限制可能未配置，所以不強制要求
         if ($rateLimited) {
-            $this->assertTrue($rateLimited, '匿名使用者速率限制正在運作');
+            $this->addToAssertionCount(1); // 速率限制正常運作
         } else {
             // 檢查大部分請求都成功處理
             $successfulRequests = array_filter($responses, fn($r) => $r['status'] === 200);
@@ -399,12 +399,12 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         }
 
         // 驗證 Content-Type 標頭
-        $headers = $response['headers'];
-        if (isset($headers['Content-Type'])) {
+        $headers = $response['headers'] ?? [];
+        if (is_array($headers) && isset($headers['Content-Type'])) {
             $contentType = is_array($headers['Content-Type'])
                 ? $headers['Content-Type'][0]
-                : $headers['Content-Type'];
-            $this->assertStringContains('application/json', $contentType);
+                : (string) $headers['Content-Type'];
+            $this->assertStringContainsString('application/json', $contentType);
         }
     }
 

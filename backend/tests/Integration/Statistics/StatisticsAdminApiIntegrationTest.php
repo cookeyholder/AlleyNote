@@ -64,7 +64,7 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
         ?array $body = null,
         array $headers = [],
     ): array {
-        $_SERVER = array_merge($_SERVER ?? [], [
+        $_SERVER = array_merge($_SERVER, [
             'REQUEST_METHOD' => $method,
             'REQUEST_URI' => $path,
             'HTTP_HOST' => 'localhost',
