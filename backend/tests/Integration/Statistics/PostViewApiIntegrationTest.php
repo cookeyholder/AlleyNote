@@ -127,17 +127,15 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 匿名使用者應該能夠記錄瀏覽
         if ($response['status'] === 200) {
             $this->assertIsArray($response['body']);
             $this->assertArrayHasKey('message', $response['body']);
+        } else {
+            $this->assertContains($response['status'], [404, 500]);
         }
-
-        $this->assertContains($response['status'], [200, 404, 500]);
     }
 
     public function testRecordPostViewAuthenticated(): void
@@ -147,17 +145,15 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 認證使用者應該能夠記錄瀏覽
         if ($response['status'] === 200) {
             $this->assertIsArray($response['body']);
             $this->assertArrayHasKey('message', $response['body']);
+        } else {
+            $this->assertContains($response['status'], [404, 500]);
         }
-
-        $this->assertContains($response['status'], [200, 404, 500]);
     }
 
     public function testRecordPostViewNonExistentPost(): void
@@ -165,16 +161,14 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         $nonExistentPostId = 99999;
         $response = $this->makeRequest('POST', "/api/posts/{$nonExistentPostId}/view");
 
-        if ($response['status'] === 404 && !isset($response['body']['error'])) {
+        if ($response['status'] === 404 && (!is_array($response['body']) || !isset($response['body']['error']))) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 不存在的文章應該回傳 404
         if ($response['status'] === 404) {
             $this->assertIsArray($response['body']);
-            if (isset($response['body']['error'])) {
+            if (is_array($response['body']) && isset($response['body']['error'])) {
                 $this->assertArrayHasKey('error', $response['body']);
             }
         }
@@ -187,10 +181,8 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         $invalidPostId = 'invalid';
         $response = $this->makeRequest('POST', "/api/posts/{$invalidPostId}/view");
 
-        if ($response['status'] === 404 && !isset($response['body']['error'])) {
+        if ($response['status'] === 404 && (!is_array($response['body']) || !isset($response['body']['error']))) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 無效的文章 ID 應該回傳錯誤
@@ -210,8 +202,6 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 如果成功執行，驗證回應時間
@@ -235,8 +225,6 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
             // 如果路由未配置，跳過測試
             if ($response['status'] === 404) {
                 $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-                return;
             }
         }
 
@@ -271,8 +259,6 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
             if ($response['status'] === 404) {
                 $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-                return;
             }
         }
 
@@ -307,8 +293,6 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
             if ($response['status'] === 404) {
                 $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-                return;
             }
 
             if ($response['status'] === 200) {
@@ -332,8 +316,6 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 應該能夠處理代理標頭
@@ -371,8 +353,6 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -394,17 +374,23 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-            return;
         }
 
         // 驗證 Content-Type 標頭
         $headers = $response['headers'] ?? [];
         if (is_array($headers) && isset($headers['Content-Type'])) {
-            $contentType = is_array($headers['Content-Type'])
-                ? $headers['Content-Type'][0]
-                : (string) $headers['Content-Type'];
-            $this->assertStringContainsString('application/json', $contentType);
+            $contentType = $headers['Content-Type'];
+            $contentTypeString = '';
+
+            if (is_array($contentType) && isset($contentType[0]) && is_string($contentType[0])) {
+                $contentTypeString = $contentType[0];
+            } elseif (is_string($contentType)) {
+                $contentTypeString = $contentType;
+            } else {
+                // 跳過非字串類型的 Content-Type
+            }
+
+            $this->assertStringContainsString('application/json', $contentTypeString);
         }
     }
 
@@ -438,10 +424,8 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         foreach ($postIds as $postId) {
             $response = $this->makeRequest('POST', "/api/posts/{$postId}/view");
 
-            if ($response['status'] === 404 && !isset($response['body']['error'])) {
+            if ($response['status'] === 404 && (!is_array($response['body']) || !isset($response['body']['error']))) {
                 $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
-
-                return;
             }
 
             // 每篇文章的瀏覽都應該被正確處理

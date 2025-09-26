@@ -84,7 +84,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $statusCounts = $this->repository->getPostsCountByStatus($period);
 
         // 驗證結果結構
-        $this->assertIsArray($statusCounts);
         $this->assertArrayHasKey('published', $statusCounts);
         $this->assertArrayHasKey('draft', $statusCounts);
         $this->assertArrayHasKey('archived', $statusCounts);
@@ -106,7 +105,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $sourceCounts = $this->repository->getPostsCountBySource($period);
 
         // 驗證結果結構
-        $this->assertIsArray($sourceCounts);
         $this->assertArrayHasKey('web', $sourceCounts);
         $this->assertArrayHasKey('mobile', $sourceCounts);
         $this->assertArrayHasKey('api', $sourceCounts);
@@ -145,7 +143,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $viewsStats = $this->repository->getPostViewsStatistics($period);
 
         // 驗證統計結果結構
-        $this->assertIsArray($viewsStats);
         $this->assertArrayHasKey('total_views', $viewsStats);
         $this->assertArrayHasKey('unique_views', $viewsStats);
         $this->assertArrayHasKey('avg_views_per_post', $viewsStats);
@@ -168,7 +165,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $popularPosts = $this->repository->getPopularPosts($period, $limit);
 
         // 驗證結果結構
-        $this->assertIsArray($popularPosts);
         $this->assertLessThanOrEqual($limit, count($popularPosts));
 
         // 如果有結果，驗證每個項目的結構
@@ -203,7 +199,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $topCommentedPosts = $this->repository->getPopularPosts($period, $limit, 'comments');
 
         // 驗證結果結構
-        $this->assertIsArray($topCommentedPosts);
         $this->assertLessThanOrEqual($limit, count($topCommentedPosts));
 
         // 如果有結果，驗證結構和排序
@@ -239,7 +234,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $timeDistribution = $this->repository->getPostsPublishTimeDistribution($period, 'hour');
 
         // 驗證結果結構
-        $this->assertIsArray($timeDistribution);
 
         // 每小時的統計結果檢查
         foreach ($timeDistribution as $hour => $count) {
@@ -267,7 +261,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $growthTrend = $this->repository->getPostsGrowthTrend($currentPeriod, $previousPeriod);
 
         // 驗證結果結構
-        $this->assertIsArray($growthTrend);
         $this->assertArrayHasKey('current', $growthTrend);
         $this->assertArrayHasKey('previous', $growthTrend);
         $this->assertArrayHasKey('growth_count', $growthTrend);
@@ -295,7 +288,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $lengthStats = $this->repository->getPostsLengthStatistics($period);
 
         // 驗證統計結果結構
-        $this->assertIsArray($lengthStats);
         $this->assertArrayHasKey('avg_length', $lengthStats);
         $this->assertArrayHasKey('max_length', $lengthStats);
         $this->assertArrayHasKey('min_length', $lengthStats);
@@ -320,28 +312,27 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         );
 
         $lengthRanges = [
-            ['min' => 0, 'max' => 500],
-            ['min' => 501, 'max' => 1000],
-            ['min' => 1001, 'max' => 2000],
-            ['min' => 2001, 'max' => 5000], // 使用具體數值而非 null
+            'short' => ['min' => 0, 'max' => 500],
+            'medium' => ['min' => 501, 'max' => 1000],
+            'long' => ['min' => 1001, 'max' => 2000],
+            'extra_long' => ['min' => 2001, 'max' => 5000], // 使用具體數值而非 null
         ];
 
         $lengthDistribution = $this->repository->getPostsCountByLengthRange($period, $lengthRanges);
 
         // 驗證結果結構
-        $this->assertIsArray($lengthDistribution);
         $this->assertCount(4, $lengthDistribution);
 
-        foreach ($lengthDistribution as $range) {
-            $this->assertIsArray($range);
-            $this->assertArrayHasKey('range', $range);
-            $this->assertArrayHasKey('count', $range);
-            $this->assertArrayHasKey('percentage', $range);
+        foreach ($lengthDistribution as $rangeData) {
+            $this->assertIsArray($rangeData);
+            $this->assertArrayHasKey('range', $rangeData);
+            $this->assertArrayHasKey('count', $rangeData);
+            $this->assertArrayHasKey('percentage', $rangeData);
 
-            $this->assertIsString($range['range']);
-            $this->assertGreaterThanOrEqual(0, $range['count']);
-            $this->assertGreaterThanOrEqual(0, $range['percentage']);
-            $this->assertLessThanOrEqual(100, $range['percentage']);
+            $this->assertIsString($rangeData['range']);
+            $this->assertGreaterThanOrEqual(0, $rangeData['count']);
+            $this->assertGreaterThanOrEqual(0, $rangeData['percentage']);
+            $this->assertLessThanOrEqual(100, $rangeData['percentage']);
         }
     }
 
@@ -356,7 +347,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $pinnedStats = $this->repository->getPinnedPostsStatistics($period);
 
         // 驗證結果結構
-        $this->assertIsArray($pinnedStats);
         $this->assertArrayHasKey('pinned_count', $pinnedStats);
         $this->assertArrayHasKey('unpinned_count', $pinnedStats);
         $this->assertArrayHasKey('pinned_views', $pinnedStats);
@@ -402,7 +392,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $summary = $this->repository->getPostActivitySummary($period);
 
         // 驗證摘要結構
-        $this->assertIsArray($summary);
         $this->assertArrayHasKey('total_posts', $summary);
         $this->assertArrayHasKey('published_posts', $summary);
         $this->assertArrayHasKey('draft_posts', $summary);
@@ -416,7 +405,6 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $this->assertGreaterThanOrEqual(0, $summary['draft_posts']);
         $this->assertGreaterThanOrEqual(0, $summary['total_views']);
         $this->assertGreaterThanOrEqual(0, $summary['active_authors']);
-        $this->assertIsArray($summary['popular_sources']);
 
         // 驗證邏輯一致性
         $this->assertEquals(

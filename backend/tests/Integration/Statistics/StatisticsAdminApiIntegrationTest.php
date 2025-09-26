@@ -145,20 +145,14 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('統計刷新 API 路由未配置');
-
-            return;
         }
 
         if ($response['status'] === 401) {
             $this->markTestSkipped('JWT 認證未正確配置');
-
-            return;
         }
 
         if ($response['status'] === 403) {
             $this->markTestSkipped('管理員授權檢查未正確配置');
-
-            return;
         }
 
         // 驗證成功回應
@@ -177,8 +171,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('API 路由或認證/授權未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -194,8 +186,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('清除快取 API 路由或認證/授權未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -213,8 +203,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('API 路由或認證/授權未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -230,8 +218,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('健康檢查 API 路由或認證/授權未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -311,8 +297,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('統計刷新 API 路由未配置');
-
-            return;
         }
 
         $this->assertEquals(401, $response['status']);
@@ -326,8 +310,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('API 路由或認證/授權未配置');
-
-            return;
         }
 
         // 應該回傳參數驗證錯誤
@@ -342,8 +324,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('API 路由或認證/授權未配置');
-
-            return;
         }
 
         // 應該回傳參數驗證錯誤
@@ -386,8 +366,6 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401, 403], true)) {
             $this->markTestSkipped('API 路由或認證/授權未配置');
-
-            return;
         }
 
         // 此測試主要確認端點可以執行，實際的活動日誌記錄

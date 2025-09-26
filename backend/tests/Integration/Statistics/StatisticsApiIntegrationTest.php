@@ -131,14 +131,10 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
         // 檢查狀態碼（404表示路由未配置，401表示認證問題）
         if ($response['status'] === 404) {
             $this->markTestSkipped('統計概覽 API 路由未配置');
-
-            return;
         }
 
         if ($response['status'] === 401) {
             $this->markTestSkipped('JWT 認證未正確配置');
-
-            return;
         }
 
         // 如果成功，驗證回應結構
@@ -158,8 +154,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('API 路由或認證未配置');
-
-            return;
         }
 
         // 驗證參數處理
@@ -176,14 +170,10 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('文章統計 API 路由未配置');
-
-            return;
         }
 
         if ($response['status'] === 401) {
             $this->markTestSkipped('JWT 認證未正確配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -200,8 +190,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('來源統計 API 路由或認證未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -217,8 +205,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('使用者統計 API 路由或認證未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -234,8 +220,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('熱門內容統計 API 路由或認證未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -252,8 +236,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('統計 API 路由未配置');
-
-            return;
         }
 
         // 應該回傳 401 Unauthorized
@@ -267,8 +249,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('統計 API 路由未配置');
-
-            return;
         }
 
         // 應該回傳 401 Unauthorized
@@ -282,8 +262,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('API 路由或認證未配置');
-
-            return;
         }
 
         // 應該回傳 400 Bad Request（參數驗證錯誤）
@@ -297,8 +275,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('API 路由或認證未配置');
-
-            return;
         }
 
         // 測試日期範圍過大的情況
@@ -316,8 +292,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('API 路由或認證未配置');
-
-            return;
         }
 
         if ($response['status'] === 200) {
@@ -339,17 +313,23 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
 
         if (in_array($response['status'], [404, 401], true)) {
             $this->markTestSkipped('API 路由或認證未配置');
-
-            return;
         }
 
         // 驗證 Content-Type 標頭
         $headers = $response['headers'] ?? [];
         if (is_array($headers) && isset($headers['Content-Type'])) {
-            $contentType = is_array($headers['Content-Type'])
-                ? $headers['Content-Type'][0]
-                : (string) $headers['Content-Type'];
-            $this->assertStringContainsString('application/json', $contentType);
+            $contentType = '';
+            if (is_array($headers['Content-Type']) && isset($headers['Content-Type'][0])) {
+                $contentType = is_string($headers['Content-Type'][0])
+                    ? $headers['Content-Type'][0]
+                    : '';
+            } elseif (is_string($headers['Content-Type'])) {
+                $contentType = $headers['Content-Type'];
+            }
+
+            if (!empty($contentType)) {
+                $this->assertStringContainsString('application/json', $contentType);
+            }
         }
     }
 
@@ -365,8 +345,6 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
         foreach ($responses as $response) {
             if (in_array($response['status'], [404, 401], true)) {
                 $this->markTestSkipped('API 路由或認證未配置');
-
-                return;
             }
 
             // 所有請求都應該回傳一致的結果

@@ -1,16 +1,16 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-25 22:26:24
+**生成時間**: 2025-09-27 06:31:49
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 280 | - |
-| 介面與類別比例 | 23.57% | ✅ 良好 |
+| 總類別數 | 284 | - |
+| 介面與類別比例 | 23.24% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 64.64% | ✅ 良好 |
-| PSR-4 合規率 | 76.55% | ❌ 需修正 |
+| 現代 PHP 採用率 | 64.79% | ✅ 良好 |
+| PSR-4 合規率 | 76.59% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
@@ -18,11 +18,11 @@
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
 | Match 表達式 (PHP 8.0+) | 279 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 219 | ✅ 提升資料不變性 |
+| 唯讀屬性 (PHP 8.1+) | 224 | ✅ 提升資料不變性 |
 | 空安全運算子 (PHP 8.0+) | 114 | ✅ 防止 null 指標異常 |
-| 屬性標籤 (PHP 8.0+) | 78 | ✅ 現代化 metadata |
+| 屬性標籤 (PHP 8.0+) | 80 | ✅ 現代化 metadata |
+| 聯合型別 (PHP 8.0+) | 23 | ✅ 更靈活的型別定義 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 聯合型別 (PHP 8.0+) | 20 | ✅ 更靈活的型別定義 |
 | 列舉型別 (PHP 8.1+) | 7 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
@@ -454,6 +454,7 @@
 - app/Domains/Statistics/Listeners/PostViewedListener.php
 
 ### `App\Domains\Statistics\Services`
+- app/Domains/Statistics/Services/StatisticsConfigService.php
 - app/Domains/Statistics/Services/StatisticsAggregationService.php
 
 ### `App\Domains\Statistics\Entities`
@@ -752,6 +753,7 @@
 ### `App\Application\Middleware`
 - app/Application/Middleware/JwtAuthenticationMiddleware.php
 - app/Application/Middleware/AuthorizationMiddleware.php
+- app/Application/Middleware/PostViewRateLimitMiddleware.php
 - app/Application/Middleware/AuthorizationResult.php
 - app/Application/Middleware/JwtAuthorizationMiddleware.php
 - app/Application/Middleware/RateLimitMiddleware.php
@@ -781,6 +783,7 @@
 - app/Application/Controllers/Api/V1/PostController.php
 - app/Application/Controllers/Api/V1/StatisticsAdminController.php
 - app/Application/Controllers/Api/V1/AttachmentController.php
+- app/Application/Controllers/Api/V1/PostViewController.php
 - app/Application/Controllers/Api/V1/StatisticsChartController.php
 - app/Application/Controllers/Api/V1/StatisticsController.php
 
@@ -815,6 +818,7 @@
 - app/Infrastructure/Statistics/Processors/TrendAnalysisProcessor.php
 
 ### `App\Infrastructure\Statistics\Commands`
+- app/Infrastructure/Statistics/Commands/StatisticsRecalculationCommand.php
 - app/Infrastructure/Statistics/Commands/StatisticsCalculationCommand.php
 
 ### `App\Infrastructure\Statistics\Services`
@@ -942,13 +946,15 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 280
+- **類別總數**: 284
 - **介面總數**: 66
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
 
 - **StatisticsServiceProvider**: `app/Domains/Statistics/Providers/StatisticsServiceProvider.php`
+  - 實作: 
+- **StatisticsConfigService**: `app/Domains/Statistics/Services/StatisticsConfigService.php`
   - 實作: 
 - **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
   - 實作: StatisticsAggregationServiceInterface
@@ -1075,6 +1081,9 @@
   - 實作: 
 - **AttachmentController**: `app/Application/Controllers/Api/V1/AttachmentController.php`
   - 實作: 
+- **PostViewController**: `app/Application/Controllers/Api/V1/PostViewController.php`
+  - 繼承: BaseController
+  - 實作: 
 - **StatisticsChartController**: `app/Application/Controllers/Api/V1/StatisticsChartController.php`
   - 繼承: BaseController
   - 實作: 
@@ -1155,6 +1164,7 @@
 - StatisticsServiceProvider (`app/Domains/Statistics/Providers/StatisticsServiceProvider.php`)
 - PostViewed (`app/Domains/Statistics/Events/PostViewed.php`)
 - StatisticsSnapshotCreated (`app/Domains/Statistics/Events/StatisticsSnapshotCreated.php`)
+- StatisticsConfigService (`app/Domains/Statistics/Services/StatisticsConfigService.php`)
 - PostStatusException (`app/Domains/Post/Exceptions/PostStatusException.php`)
 - PostValidationException (`app/Domains/Post/Exceptions/PostValidationException.php`)
 - PostNotFoundException (`app/Domains/Post/Exceptions/PostNotFoundException.php`)
@@ -1231,6 +1241,7 @@
 - AuthController (`app/Application/Controllers/Api/V1/AuthController.php`)
 - StatisticsAdminController (`app/Application/Controllers/Api/V1/StatisticsAdminController.php`)
 - AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
+- PostViewController (`app/Application/Controllers/Api/V1/PostViewController.php`)
 - StatisticsChartController (`app/Application/Controllers/Api/V1/StatisticsChartController.php`)
 - StatisticsController (`app/Application/Controllers/Api/V1/StatisticsController.php`)
 - BaseController (`app/Application/Controllers/BaseController.php`)
@@ -1243,6 +1254,7 @@
 - CategoryProcessor (`app/Infrastructure/Statistics/Processors/CategoryProcessor.php`)
 - TimeSeriesProcessor (`app/Infrastructure/Statistics/Processors/TimeSeriesProcessor.php`)
 - TrendAnalysisProcessor (`app/Infrastructure/Statistics/Processors/TrendAnalysisProcessor.php`)
+- StatisticsRecalculationCommand (`app/Infrastructure/Statistics/Commands/StatisticsRecalculationCommand.php`)
 - StatisticsCalculationCommand (`app/Infrastructure/Statistics/Commands/StatisticsCalculationCommand.php`)
 - StatisticsPerformanceReportGenerator (`app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
@@ -1455,6 +1467,7 @@
 
 ### `MiddlewareInterface`
 - JwtAuthenticationMiddleware (`app/Application/Middleware/JwtAuthenticationMiddleware.php`)
+- PostViewRateLimitMiddleware (`app/Application/Middleware/PostViewRateLimitMiddleware.php`)
 - JwtAuthorizationMiddleware (`app/Application/Middleware/JwtAuthorizationMiddleware.php`)
 - RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
 - AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
@@ -1554,7 +1567,7 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 280 個
+- **缺少測試的類別**: 284 個
 
 ### 缺少測試的重要類別
 - **StatisticsServiceProvider**: `app/Domains/Statistics/Providers/StatisticsServiceProvider.php`
@@ -1803,4 +1816,4 @@
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165731_create_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000001_create_statistics_snapshots_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
-- ... 還有 219 個
+- ... 還有 227 個
