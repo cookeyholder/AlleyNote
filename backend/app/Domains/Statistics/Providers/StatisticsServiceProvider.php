@@ -12,6 +12,7 @@ use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
+use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use App\Infrastructure\Statistics\Repositories\StatisticsRepository;
@@ -130,6 +131,11 @@ class StatisticsServiceProvider
                 $logger = $container->get(LoggerInterface::class);
 
                 return new StatisticsQueryService($statisticsRepository, $cacheService, $logger);
+            }),
+
+            // 配置服務
+            StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
+                return new StatisticsConfigService();
             }),
         ];
     }
