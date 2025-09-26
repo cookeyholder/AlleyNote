@@ -50,18 +50,18 @@ final class StatisticsTestSeeder
     public function seedUsers(): void
     {
         $users = [
-            ['user1', 'user1@example.com', 25, '台北', 'web', 'desktop', 'user', '2024-01-01 09:00:00'],
-            ['user2', 'user2@example.com', 30, '台中', 'mobile', 'mobile', 'admin', '2024-01-01 10:00:00'],
-            ['user3', 'user3@example.com', 22, '高雄', 'social', 'tablet', 'user', '2024-01-01 11:00:00'],
-            ['user4', 'user4@example.com', 28, '台南', 'web', 'desktop', 'moderator', '2024-01-02 09:00:00'],
-            ['user5', 'user5@example.com', 35, '桃園', 'api', 'mobile', 'user', '2024-01-02 10:00:00'],
+            ['user1', 'user1@example.com', '2024-01-01 09:00:00'],
+            ['user2', 'user2@example.com', '2024-01-01 10:00:00'],
+            ['user3', 'user3@example.com', '2024-01-01 11:00:00'],
+            ['user4', 'user4@example.com', '2024-01-02 09:00:00'],
+            ['user5', 'user5@example.com', '2024-01-02 10:00:00'],
         ];
 
         foreach ($users as $i => $user) {
-            $this->db->exec("
+            $this->db->exec('
                 INSERT INTO users
-                (id, username, email, age, location, registration_source, device_type, role, created_at)
-                VALUES (" . ($i + 1) . ", '{$user[0]}', '{$user[1]}', {$user[2]}, '{$user[3]}', '{$user[4]}', '{$user[5]}', '{$user[6]}', '{$user[7]}')
+                (id, username, email, password, status, created_at, updated_at)
+                VALUES (' . ($i + 1) . ", '{$user[0]}', '{$user[1]}', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, '{$user[2]}', '{$user[2]}')
             ");
         }
     }
@@ -82,10 +82,19 @@ final class StatisticsTestSeeder
         ];
 
         foreach ($posts as $i => $post) {
-            $this->db->exec("
+            $uuid = sprintf(
+                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0x0fff) | 0x4000,
+                mt_rand(0, 0x3fff) | 0x8000,
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            );
+            
+            $this->db->exec('
                 INSERT INTO posts
-                (id, title, content, user_id, status, creation_source, views, comments_count, likes_count, is_pinned, created_at)
-                VALUES (" . ($i + 1) . ", '{$post[0]}', '{$post[1]}', {$post[2]}, '{$post[3]}', '{$post[4]}', {$post[5]}, {$post[6]}, {$post[7]}, {$post[8]}, '{$post[9]}')
+                (id, uuid, seq_number, title, content, user_id, user_ip, status, views, is_pinned, publish_date, created_at, updated_at, creation_source, creation_source_detail)
+                VALUES (' . ($i + 1) . ", '{$uuid}', " . ($i + 1) . ", '{$post[0]}', '{$post[1]}', {$post[2]}, '192.168.1.1', '{$post[3]}', {$post[5]}, {$post[8]}, '{$post[9]}', '{$post[9]}', '{$post[9]}', '{$post[4]}', null)
             ");
         }
     }
@@ -122,10 +131,19 @@ final class StatisticsTestSeeder
         ];
 
         foreach ($activities as $i => $activity) {
-            $this->db->exec("
+            $uuid = sprintf(
+                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0x0fff) | 0x4000,
+                mt_rand(0, 0x3fff) | 0x8000,
+                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            );
+            
+            $this->db->exec('
                 INSERT INTO user_activity_logs
-                (id, user_id, action, session_duration, created_at)
-                VALUES (" . ($i + 1) . ", {$activity[0]}, '{$activity[1]}', {$activity[2]}, '{$activity[3]}')
+                (id, uuid, user_id, action_type, action_category, status, created_at, occurred_at)
+                VALUES (' . ($i + 1) . ", '{$uuid}', {$activity[0]}, '{$activity[1]}', 'user', 'success', '{$activity[3]}', '{$activity[3]}')
             ");
         }
     }
@@ -155,10 +173,10 @@ final class StatisticsTestSeeder
         ];
 
         foreach ($comments as $i => $comment) {
-            $this->db->exec("
+            $this->db->exec('
                 INSERT INTO comments
                 (id, post_id, user_id, content, created_at)
-                VALUES (" . ($i + 1) . ", {$comment[0]}, {$comment[1]}, '{$comment[2]}', '{$comment[3]}')
+                VALUES (' . ($i + 1) . ", {$comment[0]}, {$comment[1]}, '{$comment[2]}', '{$comment[3]}')
             ");
         }
     }
@@ -197,10 +215,10 @@ final class StatisticsTestSeeder
 
         foreach ($viewRecords as $i => $view) {
             $userIdValue = $view[1] !== null ? $view[1] : 'NULL';
-            $this->db->exec("
+            $this->db->exec('
                 INSERT INTO post_views
                 (id, post_id, user_id, ip_address, viewed_at)
-                VALUES (" . ($i + 1) . ", {$view[0]}, {$userIdValue}, '{$view[2]}', '{$view[3]}')
+                VALUES (' . ($i + 1) . ", {$view[0]}, {$userIdValue}, '{$view[2]}', '{$view[3]}')
             ");
         }
     }
@@ -213,13 +231,10 @@ final class StatisticsTestSeeder
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY,
-                username VARCHAR(255) NOT NULL,
+                username VARCHAR(255) NOT NULL UNIQUE,
                 email VARCHAR(255) NOT NULL UNIQUE,
-                age INTEGER,
-                location VARCHAR(255),
-                registration_source VARCHAR(50) DEFAULT "web",
-                device_type VARCHAR(50) DEFAULT "desktop",
-                role VARCHAR(50) DEFAULT "user",
+                password VARCHAR(255) NOT NULL DEFAULT "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi", -- default: password
+                status INTEGER DEFAULT 1,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -234,17 +249,21 @@ final class StatisticsTestSeeder
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS posts (
                 id INTEGER PRIMARY KEY,
+                uuid VARCHAR(36) NOT NULL UNIQUE,
+                seq_number INTEGER NOT NULL UNIQUE,
                 title VARCHAR(255) NOT NULL,
-                content TEXT,
+                content TEXT NOT NULL,
                 user_id INTEGER NOT NULL,
+                user_ip VARCHAR(45) NULL,
                 status VARCHAR(20) DEFAULT "published",
-                creation_source VARCHAR(50) DEFAULT "web",
                 views INTEGER DEFAULT 0,
-                comments_count INTEGER DEFAULT 0,
-                likes_count INTEGER DEFAULT 0,
-                is_pinned INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                is_pinned BOOLEAN DEFAULT 0,
+                publish_date DATETIME NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NULL,
+                deleted_at DATETIME NULL,
+                creation_source VARCHAR(50) DEFAULT "web",
+                creation_source_detail VARCHAR(255) NULL,
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
         ');
@@ -257,11 +276,23 @@ final class StatisticsTestSeeder
     {
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS user_activity_logs (
-                id INTEGER PRIMARY KEY,
-                user_id INTEGER NOT NULL,
-                action VARCHAR(50) NOT NULL,
-                session_duration INTEGER DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                user_id INTEGER,
+                session_id TEXT,
+                action_type TEXT NOT NULL,
+                action_category TEXT NOT NULL,
+                target_type TEXT,
+                target_id TEXT,
+                status TEXT NOT NULL DEFAULT "success",
+                description TEXT,
+                metadata TEXT,
+                ip_address TEXT,
+                user_agent TEXT,
+                request_method TEXT,
+                request_path TEXT,
+                created_at TEXT NOT NULL,
+                occurred_at TEXT NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users (id)
             )
         ');
