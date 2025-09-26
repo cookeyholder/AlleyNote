@@ -10,8 +10,22 @@ declare(strict_types=1);
 
 use App\Application\Controllers\Api\V1\StatisticsController;
 use App\Application\Controllers\Api\V1\StatisticsAdminController;
+use App\Application\Controllers\Api\V1\PostViewController;
 
 return [
+    // =========================================
+    // 文章瀏覽追蹤 API 路由 (允許匿名存取)
+    // =========================================
+
+    // 記錄文章瀏覽
+    'posts.view.record' => [
+        'methods' => ['POST'],
+        'path' => '/api/posts/{id}/view',
+        'handler' => [PostViewController::class, 'recordView'],
+        'name' => 'posts.view.record',
+        'middleware' => ['post_view_rate_limit'] // 專用的速率限制中介軟體
+    ],
+
     // =========================================
     // 統計查詢 API 路由 (需要認證)
     // =========================================

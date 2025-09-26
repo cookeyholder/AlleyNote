@@ -73,6 +73,16 @@ return array_merge(
     // 統計系統服務
     StatisticsServiceProvider::getDefinitions(),
 
+    // 自訂中介軟體
+    [
+        // PostView 速率限制中介軟體
+        \App\Application\Middleware\PostViewRateLimitMiddleware::class => \DI\autowire(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
+        'post_view_rate_limit' => \DI\get(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
+
+        // 其他控制器
+        \App\Application\Controllers\Api\V1\PostViewController::class => \DI\autowire(\App\Application\Controllers\Api\V1\PostViewController::class),
+    ],
+
     // 基本應用程式服務
     [
         // 環境配置

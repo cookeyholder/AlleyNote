@@ -1,37 +1,38 @@
-=== 專案架構快速摘要 (2025-09-23 19:08:36) ===
+=== 專案架構快速摘要 (2025-09-25 22:26:24) ===
 
 📊 品質指標:
-- 總類別數: 261
-- 介面比例: 23.75%
-- 現代 PHP 採用率: 62.84%
-- PSR-4 合規率: 75.21%
+- 總類別數: 280
+- 介面比例: 23.57%
+- 現代 PHP 採用率: 64.64%
+- PSR-4 合規率: 76.55%
 
 🚀 現代 PHP 特性: 7 種正在使用
-- 最常用: Match 表達式 (PHP 8.0+) (263 次)
+- 最常用: Match 表達式 (PHP 8.0+) (279 次)
 
 📊 統計資訊:
-- 類別: 261 個
-- 介面: 62 個
-- 命名空間: 101 個
+- 類別: 280 個
+- 介面: 66 個
+- 命名空間: 107 個
 
 🏗️ DDD 架構:
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 261 個類別
+- 缺少測試: 280 個類別
 
 🔌 介面實作:
-- : 165 個實作
-- JsonSerializable: 21 個實作
+- : 175 個實作
+- JsonSerializable: 25 個實作
+- EventListenerInterface: 2 個實作
 - StatisticsAggregationServiceInterface: 1 個實作
 - PostRepositoryInterface: 1 個實作
-- PostServiceInterface: 1 個實作
 
-💉 重依賴類別 (≥3個依賴): 38 個
+💉 重依賴類別 (≥3個依賴): 41 個
 
-❓ 可能問題引用: 208 個
+❓ 可能問題引用: 229 個
 
 🔑 重點服務/控制器:
+- StatisticsServiceProvider (app/Domains/Statistics/Providers/StatisticsServiceProvider.php)
 - StatisticsAggregationService (app/Domains/Statistics/Services/StatisticsAggregationService.php)
 - PostRepository (app/Domains/Post/Repositories/PostRepository.php)
 - PostService (app/Domains/Post/Services/PostService.php)
@@ -46,4 +47,3 @@
 - SuspiciousActivityDetector (app/Domains/Security/Services/SuspiciousActivityDetector.php)
 - SecretsManager (app/Domains/Security/Services/Secrets/SecretsManager.php)
 - XssProtectionExtensionService (app/Domains/Security/Services/Content/XssProtectionExtensionService.php)
-- IpService (app/Domains/Security/Services/IpService.php)
