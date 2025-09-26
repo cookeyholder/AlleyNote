@@ -206,6 +206,7 @@ final class StatisticsConfigServiceTest extends TestCase
         $this->assertTrue($config['enabled']);
         $this->assertSame(3, $config['cache_check_timeout']);
 
+        /** @var array<string, mixed> $warningThresholds */
         $warningThresholds = $config['warning_thresholds'] ?? [];
         $this->assertSame(75, $warningThresholds['cache_hit_rate'] ?? 0);
         $this->assertSame(1000, $warningThresholds['response_time'] ?? 0);
@@ -254,8 +255,10 @@ final class StatisticsConfigServiceTest extends TestCase
     public function testEnvironmentOverrides(): void
     {
         // 使用測試環境
+        /** @var array<string, mixed> $allConfig */
+        $allConfig = $this->configService->getAllConfig();
         $configService = new StatisticsConfigService(
-            $this->configService->getAllConfig(),
+            $allConfig,
             'testing',
         );
 
