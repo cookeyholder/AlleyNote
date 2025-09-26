@@ -313,10 +313,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     {
         try {
             $sql = 'SELECT
-                        ROUND(AVG(CHAR_LENGTH(content)), 2) as avg_length,
-                        MIN(CHAR_LENGTH(content)) as min_length,
-                        MAX(CHAR_LENGTH(content)) as max_length,
-                        SUM(CHAR_LENGTH(content)) as total_chars
+                        ROUND(AVG(LENGTH(content)), 2) as avg_length,
+                        MIN(LENGTH(content)) as min_length,
+                        MAX(LENGTH(content)) as max_length,
+                        SUM(LENGTH(content)) as total_chars
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     AND content IS NOT NULL';
@@ -357,8 +357,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
 
                 $sql = 'SELECT COUNT(*) FROM posts
                         WHERE created_at >= :start_date AND created_at <= :end_date
-                        AND CHAR_LENGTH(content) >= :min_length
-                        AND CHAR_LENGTH(content) <= :max_length';
+                        AND LENGTH(content) >= :min_length
+                        AND LENGTH(content) <= :max_length';
 
                 $stmt = $this->db->prepare($sql);
                 $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);

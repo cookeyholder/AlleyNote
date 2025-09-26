@@ -88,6 +88,8 @@ trait DatabaseTestTrait
                 user_id INTEGER NOT NULL,
                 user_ip TEXT,
                 views INTEGER NOT NULL DEFAULT 0,
+                comments_count INTEGER DEFAULT 0,
+                likes_count INTEGER DEFAULT 0,
                 is_pinned INTEGER NOT NULL DEFAULT 0,
                 status INTEGER NOT NULL DEFAULT 1,
                 publish_date TEXT NOT NULL,

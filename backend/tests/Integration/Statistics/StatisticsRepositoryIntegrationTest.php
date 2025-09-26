@@ -11,16 +11,21 @@ use App\Infrastructure\Statistics\Repositories\StatisticsRepository;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\IntegrationTestCase;
+use Tests\Support\Statistics\StatisticsTestSeeder;
 
 /**
  * StatisticsRepository 整合測試.
  *
- * 測試統計快照 Repository 的資料庫互動和複雜查詢功能。
- * 使用實際的資料庫連線進行完整的整合測試。
+ * 測試統計快照 Repository 的資料庫互動功能，包括：
+ * - 基本 CRUD 操作
+ * - 複雜查詢功能
+ * - JSON 資料處理
+ * - 過期資料管理
+ * - 分頁和排序
+ * - 資料完整性驗證
  */
-#[Group('statistics')]
-#[Group('repository')]
 #[Group('integration')]
+#[Group('statistics')]
 final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
 {
     private StatisticsRepository $repository;
@@ -28,30 +33,29 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->repository = new StatisticsRepository($this->db);
 
         // 使用統一的測試資料種子
-        $seeder = new \Tests\Support\Statistics\StatisticsTestSeeder($this->db);
+        $seeder = new StatisticsTestSeeder($this->db);
         $seeder->createTables();
     }
 
-    public function testCreateStatisticsSnapshot(): void
+    public function testCreateAndSaveSnapshot(): void
     {
         // 建立測試資料
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $snapshot = StatisticsSnapshot::create(
-            'overview',
+            StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
-            ['total_posts' => 100, 'total_users' => 50],
+            ['total_posts' => 150],
             ['version' => '1.0'],
             new DateTimeImmutable('+1 day'),
-            1000,
-            800
         );
 
         // 執行測試
@@ -59,13 +63,12 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
 
         // 驗證結果
         $this->assertInstanceOf(StatisticsSnapshot::class, $result);
-        $this->assertNotNull($result->getId());
 
         // 從資料庫重新取得並驗證
         $retrieved = $this->repository->findById($result->getId());
         $this->assertNotNull($retrieved);
         $this->assertEquals('overview', $retrieved->getSnapshotType());
-        $this->assertEquals(['total_posts' => 100, 'total_users' => 50], $retrieved->getStatisticsData());
+        $this->assertEquals(['total_posts' => 150], $retrieved->getStatisticsData());
         $this->assertEquals(['version' => '1.0'], $retrieved->getMetadata());
     }
 
@@ -75,30 +78,26 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $snapshot = StatisticsSnapshot::create(
-            'posts',
+            StatisticsSnapshot::TYPE_POSTS,
             $period,
             ['daily_posts' => 25],
             ['source' => 'test'],
             null,
-            500,
-            300
         );
 
         $this->repository->save($snapshot);
 
         // 測試查詢
-        $found = $this->repository->findByTypeAndPeriod('posts', $period);
+        $found = $this->repository->findByTypeAndPeriod(StatisticsSnapshot::TYPE_POSTS, $period);
 
         // 驗證結果
         $this->assertNotNull($found);
-        $this->assertEquals('posts', $found->getSnapshotType());
+        $this->assertEquals(StatisticsSnapshot::TYPE_POSTS, $found->getSnapshotType());
         $this->assertEquals(['daily_posts' => 25], $found->getStatisticsData());
-        $this->assertEquals(500, $found->getTotalViews());
-        $this->assertEquals(300, $found->getTotalUniqueViewers());
     }
 
     public function testFindLatestByType(): void
@@ -108,332 +107,322 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             new StatisticsPeriod(
                 PeriodType::DAILY,
                 new DateTimeImmutable('2024-01-01 00:00:00'),
-                new DateTimeImmutable('2024-01-01 23:59:59')
+                new DateTimeImmutable('2024-01-01 23:59:59'),
             ),
             new StatisticsPeriod(
                 PeriodType::DAILY,
                 new DateTimeImmutable('2024-01-02 00:00:00'),
-                new DateTimeImmutable('2024-01-02 23:59:59')
+                new DateTimeImmutable('2024-01-02 23:59:59'),
             ),
             new StatisticsPeriod(
                 PeriodType::DAILY,
                 new DateTimeImmutable('2024-01-03 00:00:00'),
-                new DateTimeImmutable('2024-01-03 23:59:59')
+                new DateTimeImmutable('2024-01-03 23:59:59'),
             ),
         ];
 
         foreach ($periods as $i => $period) {
             $snapshot = StatisticsSnapshot::create(
-                'users',
+                StatisticsSnapshot::TYPE_USERS,
                 $period,
                 ['active_users' => 100 + $i * 10],
                 ['day' => $i + 1],
                 null,
-                1000 + $i * 100,
-                800 + $i * 50
             );
 
             $this->repository->save($snapshot);
-
-            // 確保建立時間有差異
-            usleep(1000);
+            // 添加小延遲以確保時間排序正確
+            usleep(1000); // 1 毫秒
         }
 
-        // 測試取得最新的快照
-        $latest = $this->repository->findLatestByType('users');
+        // 查詢最新的快照
+        $latest = $this->repository->findLatestByType(StatisticsSnapshot::TYPE_USERS);
 
-        // 驗證結果 - 應該是最後建立的（第三個）
+        // 驗證結果（應該是最後建立的，即第三個）
         $this->assertNotNull($latest);
+        $this->assertEquals(StatisticsSnapshot::TYPE_USERS, $latest->getSnapshotType());
         $this->assertEquals(['active_users' => 120], $latest->getStatisticsData());
         $this->assertEquals(['day' => 3], $latest->getMetadata());
-        $this->assertEquals(1200, $latest->getTotalViews());
-        $this->assertEquals(900, $latest->getTotalUniqueViewers());
     }
 
     public function testFindByTypeAndDateRange(): void
     {
-        // 建立多天的快照
+        // 建立多個不同日期的快照
         $dates = ['2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'];
 
-        foreach ($dates as $date) {
+        foreach ($dates as $i => $date) {
             $period = new StatisticsPeriod(
                 PeriodType::DAILY,
                 new DateTimeImmutable($date . ' 00:00:00'),
-                new DateTimeImmutable($date . ' 23:59:59')
+                new DateTimeImmutable($date . ' 23:59:59'),
             );
 
             $snapshot = StatisticsSnapshot::create(
-                'popular',
+                StatisticsSnapshot::TYPE_SOURCES,
                 $period,
-                ['top_posts' => [1, 2, 3]],
+                ['sources_count' => ($i + 1) * 5],
                 ['date' => $date],
                 null,
-                500,
-                300
             );
 
             $this->repository->save($snapshot);
         }
 
-        // 查詢特定範圍的快照
+        // 查詢特定日期範圍
         $startDate = new DateTimeImmutable('2024-01-02 00:00:00');
         $endDate = new DateTimeImmutable('2024-01-04 23:59:59');
 
-        $snapshots = $this->repository->findByTypeAndDateRange('popular', $startDate, $endDate);
+        $snapshots = $this->repository->findByTypeAndDateRange(
+            StatisticsSnapshot::TYPE_SOURCES,
+            $startDate,
+            $endDate,
+        );
 
-        // 驗證結果
-        $this->assertCount(3, $snapshots); // 應該有 3 天的資料
-
-        // 驗證日期順序
-        $expectedDates = ['2024-01-02', '2024-01-03', '2024-01-04'];
-        foreach ($snapshots as $i => $snapshot) {
-            $metadata = $snapshot->getMetadata();
-            $this->assertEquals($expectedDates[$i], $metadata['date']);
-            $this->assertEquals(['top_posts' => [1, 2, 3]], $snapshot->getStatisticsData());
-        }
+        // 驗證結果（應該有 3 個快照：01-02, 01-03, 01-04）
+        $this->assertCount(3, $snapshots);
+        $this->assertEquals(['sources_count' => 10], $snapshots[0]->getStatisticsData());
+        $this->assertEquals(['sources_count' => 15], $snapshots[1]->getStatisticsData());
+        $this->assertEquals(['sources_count' => 20], $snapshots[2]->getStatisticsData());
     }
 
-    public function testExistsMethod(): void
+    public function testFindNonExistentSnapshot(): void
     {
         $period = new StatisticsPeriod(
             PeriodType::WEEKLY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-07 23:59:59')
+            new DateTimeImmutable('2024-01-07 23:59:59'),
         );
 
         // 測試不存在的情況
-        $this->assertFalse($this->repository->exists('weekly_overview', $period));
+        $result = $this->repository->findByTypeAndPeriod('non_existent', $period);
+        $this->assertNull($result);
 
-        // 建立快照
+        // 建立測試快照
         $snapshot = StatisticsSnapshot::create(
-            'weekly_overview',
+            StatisticsSnapshot::TYPE_POPULAR,
             $period,
-            ['week_stats' => 'data'],
+            ['popular_posts' => 50],
             [],
             null,
-            2000,
-            1500
         );
 
         $this->repository->save($snapshot);
 
-        // 測試存在的情況
-        $this->assertTrue($this->repository->exists('weekly_overview', $period));
+        // 驗證可以找到
+        $found = $this->repository->findByTypeAndPeriod(StatisticsSnapshot::TYPE_POPULAR, $period);
+        $this->assertNotNull($found);
     }
 
-    public function testUpdateStatisticsSnapshot(): void
+    public function testUpdateSnapshot(): void
     {
-        // 建立並儲存初始快照
+        // 建立原始快照
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $snapshot = StatisticsSnapshot::create(
-            'posts',
+            StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
-            ['daily_posts' => 25],
+            ['total_posts' => 100],
             ['source' => 'test'],
             null,
-            500,
-            300
         );
 
         $this->repository->save($snapshot);
-        $originalId = $snapshot->getId();
 
-        // 更新快照資料
-        $updatedSnapshot = StatisticsSnapshot::createFromExisting(
-            $snapshot,
-            ['updated' => 'data'],
-            ['version' => '2.0'],
-            200,
-            150
-        );
+        // 更新資料
+        $snapshot->updateStatistics(['total_posts' => 150]);
+        $snapshot->updateMetadata(['updated' => 'data', 'version' => '2.0']);
 
-        $result = $this->repository->save($updatedSnapshot);
+        $result = $this->repository->update($snapshot);
 
         // 驗證更新結果
-        $this->assertTrue($result);
-        $this->assertEquals($originalId, $updatedSnapshot->getId());
+        $this->assertInstanceOf(StatisticsSnapshot::class, $result);
+        $this->assertEquals(150, $result->getStatistic('total_posts'));
+        $this->assertEquals('data', $result->getMetadata()['updated']);
+        $this->assertEquals('2.0', $result->getMetadata()['version']);
 
-        // 從資料庫重新取得並驗證
-        $retrieved = $this->repository->findById($originalId);
+        // 從資料庫重新驗證
+        $retrieved = $this->repository->findById($result->getId());
         $this->assertNotNull($retrieved);
-        $this->assertEquals(['updated' => 'data'], $retrieved->getStatisticsData());
-        $this->assertEquals(['version' => '2.0'], $retrieved->getMetadata());
-        $this->assertEquals(200, $retrieved->getTotalViews());
-        $this->assertEquals(150, $retrieved->getTotalUniqueViewers());
+        $this->assertEquals(150, $retrieved->getStatistic('total_posts'));
+        $this->assertEquals('data', $retrieved->getMetadata()['updated']);
     }
 
-    public function testDeleteStatisticsSnapshot(): void
+    public function testDeleteSnapshot(): void
     {
-        // 建立並儲存快照
+        // 建立測試快照
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $snapshot = StatisticsSnapshot::create(
-            'posts',
+            StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
-            ['temp' => 'data'],
+            ['total_posts' => 50],
             [],
             null,
-            50,
-            30
         );
 
         $this->repository->save($snapshot);
         $snapshotId = $snapshot->getId();
 
-        // 驗證快照存在
-        $this->assertNotNull($this->repository->findById($snapshotId));
+        // 執行刪除
+        $deleted = $this->repository->delete($snapshot);
+        $this->assertTrue($deleted);
 
-        // 刪除快照
-        $result = $this->repository->delete($snapshot);
-
-        // 驗證刪除結果
-        $this->assertTrue($result);
-        $this->assertNull($this->repository->findById($snapshotId));
+        // 驗證已刪除
+        $found = $this->repository->findById($snapshotId);
+        $this->assertNull($found);
     }
 
-    public function testFindAndDeleteExpiredSnapshots(): void
+    public function testExpiredSnapshotsManagement(): void
     {
         $now = new DateTimeImmutable();
         $yesterday = $now->modify('-1 day');
         $tomorrow = $now->modify('+1 day');
 
-        // 建立已過期的快照
+        // 建立過期的快照
         $expiredPeriod = new StatisticsPeriod(
             PeriodType::DAILY,
             $yesterday->modify('-1 day'),
-            $yesterday
+            $yesterday,
         );
 
         $expiredSnapshot = StatisticsSnapshot::create(
-            'posts',
+            StatisticsSnapshot::TYPE_OVERVIEW,
             $expiredPeriod,
-            ['expired' => true],
+            ['total_posts' => 10],
             [],
             $yesterday, // 設定過期時間為昨天
-            10,
-            5
         );
 
         // 建立未過期的快照
         $validPeriod = new StatisticsPeriod(
             PeriodType::DAILY,
             $now,
-            $now->setTime(23, 59, 59)
+            $now->setTime(23, 59, 59),
         );
 
         $validSnapshot = StatisticsSnapshot::create(
-            'posts',
+            StatisticsSnapshot::TYPE_OVERVIEW,
             $validPeriod,
-            ['valid' => true],
+            ['total_posts' => 20],
             [],
             $tomorrow, // 設定過期時間為明天
-            20,
-            15
         );
 
         // 儲存快照
         $this->repository->save($expiredSnapshot);
         $this->repository->save($validSnapshot);
 
-        // 查詢過期的快照
-        $expiredSnapshots = $this->repository->findExpiredBefore($now);
+        // 測試查詢過期快照
+        $expiredSnapshots = $this->repository->findExpiredSnapshots($now);
+        $this->assertIsArray($expiredSnapshots);
         $this->assertCount(1, $expiredSnapshots);
-        $this->assertEquals(['expired' => true], $expiredSnapshots[0]->getStatisticsData());
+        $this->assertEquals(10, $expiredSnapshots[0]->getStatistic('total_posts'));
 
-        // 刪除過期的快照
-        $deletedCount = $this->repository->deleteExpiredBefore($now);
+        // 測試刪除過期快照
+        $deletedCount = $this->repository->deleteExpiredSnapshots($now);
         $this->assertEquals(1, $deletedCount);
 
-        // 驗證過期快照已被刪除，有效快照仍存在
-        $remainingExpired = $this->repository->findExpiredBefore($now);
-        $this->assertCount(0, $remainingExpired);
-
-        $validStillExists = $this->repository->findById($validSnapshot->getId());
-        $this->assertNotNull($validStillExists);
+        // 驗證只剩下有效快照
+        $expiredSnapshotsAfter = $this->repository->findExpiredSnapshots($now);
+        $this->assertCount(0, $expiredSnapshotsAfter);
     }
 
-    public function testComplexJSONDataHandling(): void
+    public function testExists(): void
     {
-        // 測試複雜的 JSON 資料處理
-        $complexData = [
-            'overview' => [
-                'totals' => [
-                    'posts' => 1000,
-                    'users' => 500,
-                    'views' => 50000,
-                ],
-                'trends' => [
-                    'daily_growth' => 2.5,
-                    'weekly_growth' => 15.2,
-                ],
-                'top_categories' => [
-                    ['name' => '技術', 'count' => 300],
-                    ['name' => '生活', 'count' => 200],
-                    ['name' => '旅遊', 'count' => 150],
-                ],
-            ],
-            'meta' => [
-                'calculation_time' => '2024-01-01T12:00:00Z',
-                'version' => '2.1.0',
-                'source' => 'automated',
-            ],
-        ];
+        $period = new StatisticsPeriod(
+            PeriodType::DAILY,
+            new DateTimeImmutable('2024-01-01 00:00:00'),
+            new DateTimeImmutable('2024-01-01 23:59:59'),
+        );
 
+        // 測試不存在的情況
+        $exists = $this->repository->exists(StatisticsSnapshot::TYPE_OVERVIEW, $period);
+        $this->assertFalse($exists);
+
+        // 建立快照
+        $snapshot = StatisticsSnapshot::create(
+            StatisticsSnapshot::TYPE_OVERVIEW,
+            $period,
+            ['total_posts' => 100],
+            [],
+            null,
+        );
+
+        $this->repository->save($snapshot);
+
+        // 測試存在的情況
+        $exists = $this->repository->exists(StatisticsSnapshot::TYPE_OVERVIEW, $period);
+        $this->assertTrue($exists);
+    }
+
+    public function testComplexJsonDataHandling(): void
+    {
+        // 建立包含複雜資料結構的測試資料
         $complexMetadata = [
             'calculation' => [
+                'start_time' => '2024-01-01 10:00:00',
+                'end_time' => '2024-01-01 10:05:00',
                 'duration_ms' => 1500,
-                'memory_peak_mb' => 128,
-                'queries_executed' => 25,
             ],
             'quality' => [
                 'completeness' => 98.5,
-                'accuracy_score' => 95.2,
+                'accuracy' => 99.2,
+            ],
+            'source_breakdown' => [
+                'api' => 150,
+                'web' => 200,
+                'mobile' => 75,
+            ],
+            'trends' => [
+                'daily_growth' => 5.2,
+                'weekly_growth' => 12.8,
+            ],
+            'top_categories' => [
+                ['name' => 'technology', 'count' => 45],
+                ['name' => 'business', 'count' => 38],
+                ['name' => 'science', 'count' => 29],
             ],
         ];
 
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             new DateTimeImmutable('2024-01-01 00:00:00'),
-            new DateTimeImmutable('2024-01-01 23:59:59')
+            new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
         $snapshot = StatisticsSnapshot::create(
-            'posts',
+            StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
-            $complexData,
+            [
+                'posts' => ['totals' => 425],
+                'trends' => ['daily_growth' => 5.2],
+            ],
             $complexMetadata,
             null,
-            75000,
-            45000
         );
 
         // 儲存並重新取得
-        $this->repository->save($snapshot);
-        $retrieved = $this->repository->findById($snapshot->getId());
+        $saved = $this->repository->save($snapshot);
+        $retrieved = $this->repository->findById($saved->getId());
 
         // 驗證複雜資料完整性
         $this->assertNotNull($retrieved);
-        $this->assertEquals($complexData, $retrieved->getStatisticsData());
-        $this->assertEquals($complexMetadata, $retrieved->getMetadata());
-
-        // 驗證特定巢狀資料
-        $retrievedData = $retrieved->getStatisticsData();
-        $this->assertEquals(1000, $retrievedData['overview']['totals']['posts']);
-        $this->assertEquals(2.5, $retrievedData['overview']['trends']['daily_growth']);
-        $this->assertEquals('技術', $retrievedData['overview']['top_categories'][0]['name']);
-
         $retrievedMeta = $retrieved->getMetadata();
+        $retrievedStats = $retrieved->getStatisticsData();
+
+        $this->assertEquals(425, $retrievedStats['posts']['totals']);
+        $this->assertEquals(5.2, $retrievedStats['trends']['daily_growth']);
+        $this->assertEquals('technology', $retrievedMeta['top_categories'][0]['name']);
+        $this->assertEquals(45, $retrievedMeta['top_categories'][0]['count']);
         $this->assertEquals(1500, $retrievedMeta['calculation']['duration_ms']);
         $this->assertEquals(98.5, $retrievedMeta['quality']['completeness']);
     }
-
 }

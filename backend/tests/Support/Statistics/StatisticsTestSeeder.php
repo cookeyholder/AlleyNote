@@ -84,17 +84,20 @@ final class StatisticsTestSeeder
         foreach ($posts as $i => $post) {
             $uuid = sprintf(
                 '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
                 mt_rand(0, 0xffff),
                 mt_rand(0, 0x0fff) | 0x4000,
                 mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
             );
-            
+
             $this->db->exec('
                 INSERT INTO posts
-                (id, uuid, seq_number, title, content, user_id, user_ip, status, views, is_pinned, publish_date, created_at, updated_at, creation_source, creation_source_detail)
-                VALUES (' . ($i + 1) . ", '{$uuid}', " . ($i + 1) . ", '{$post[0]}', '{$post[1]}', {$post[2]}, '192.168.1.1', '{$post[3]}', {$post[5]}, {$post[8]}, '{$post[9]}', '{$post[9]}', '{$post[9]}', '{$post[4]}', null)
+                (id, uuid, seq_number, title, content, user_id, user_ip, status, views, comments_count, likes_count, is_pinned, publish_date, created_at, updated_at, creation_source, creation_source_detail)
+                VALUES (' . ($i + 1) . ", '{$uuid}', " . ($i + 1) . ", '{$post[0]}', '{$post[1]}', {$post[2]}, '192.168.1.1', '{$post[3]}', {$post[5]}, {$post[6]}, {$post[7]}, {$post[8]}, '{$post[9]}', '{$post[9]}', '{$post[9]}', '{$post[4]}', null)
             ");
         }
     }
@@ -133,13 +136,16 @@ final class StatisticsTestSeeder
         foreach ($activities as $i => $activity) {
             $uuid = sprintf(
                 '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
                 mt_rand(0, 0xffff),
                 mt_rand(0, 0x0fff) | 0x4000,
                 mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
             );
-            
+
             $this->db->exec('
                 INSERT INTO user_activity_logs
                 (id, uuid, user_id, action_type, action_category, status, created_at, occurred_at)
@@ -257,6 +263,8 @@ final class StatisticsTestSeeder
                 user_ip VARCHAR(45) NULL,
                 status VARCHAR(20) DEFAULT "published",
                 views INTEGER DEFAULT 0,
+                comments_count INTEGER DEFAULT 0,
+                likes_count INTEGER DEFAULT 0,
                 is_pinned BOOLEAN DEFAULT 0,
                 publish_date DATETIME NULL,
                 created_at DATETIME NOT NULL,

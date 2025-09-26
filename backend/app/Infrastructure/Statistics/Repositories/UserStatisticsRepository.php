@@ -34,11 +34,11 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         try {
             $sql = match ($activityType) {
                 'login' => 'SELECT COUNT(DISTINCT user_id) FROM user_activity_logs
-                           WHERE action = "login" AND created_at >= :start_date AND created_at <= :end_date',
+                           WHERE action_type = "login" AND created_at >= :start_date AND created_at <= :end_date',
                 'post' => 'SELECT COUNT(DISTINCT user_id) FROM posts
                           WHERE created_at >= :start_date AND created_at <= :end_date',
                 'view' => 'SELECT COUNT(DISTINCT user_id) FROM user_activity_logs
-                          WHERE action = "view" AND created_at >= :start_date AND created_at <= :end_date',
+                          WHERE action_type = "view" AND created_at >= :start_date AND created_at <= :end_date',
                 'comment' => 'SELECT COUNT(DISTINCT user_id) FROM comments
                              WHERE created_at >= :start_date AND created_at <= :end_date',
             };
@@ -202,7 +202,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                         COUNT(DISTINCT user_id) as unique_users,
                         ROUND(COUNT(*) / NULLIF(COUNT(DISTINCT user_id), 0), 2) as avg_logins_per_user
                     FROM user_activity_logs
-                    WHERE action = "login"
+                    WHERE action_type = "login"
                     AND created_at >= :start_date AND created_at <= :end_date';
 
             $stmt = $this->db->prepare($sql);
@@ -222,11 +222,11 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             }
 
             // 取得登入高峰時間
-            $sql = 'SELECT HOUR(created_at) as hour, COUNT(*) as count
+            $sql = 'SELECT CAST(strftime("%H", created_at) AS INTEGER) as hour, COUNT(*) as count
                     FROM user_activity_logs
-                    WHERE action = "login"
+                    WHERE action_type = "login"
                     AND created_at >= :start_date AND created_at <= :end_date
-                    GROUP BY HOUR(created_at)
+                    GROUP BY CAST(strftime("%H", created_at) AS INTEGER)
                     ORDER BY count DESC
                     LIMIT 1';
 
@@ -250,7 +250,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     FROM (
                         SELECT user_id, COUNT(*) as login_count
                         FROM user_activity_logs
-                        WHERE action = "login"
+                        WHERE action_type = "login"
                         AND created_at >= :start_date AND created_at <= :end_date
                         GROUP BY user_id
                     ) as user_logins
