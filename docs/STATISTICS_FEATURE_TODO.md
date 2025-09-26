@@ -9,100 +9,49 @@
 ## 🎯 開發順序與依賴關係
 
 根據 DDD 架構原則，按照以下順序開發：
-**Domain → Application → Infrastructure → Int#### ✅ T4.2 - 實作統計快取服務
-**描述**：實作統計資料的快取機制
-**預估時間**：4 小時
-**依賴**：T4.1
-**驗收標準**：
-- [ ] `StatisticsCacheService` 類別
-- [ ] 支援多層次快取策略
-- [ ] 快取鍵命名規範統一
-- [ ] 支援快取標籤管理
-- [ ] 實作快取預熱機制
-- [ ] 包含快取失效邏輯
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-- [ ] 通過 PHPStan Level 10 檢查
 
-#### ✅ T4.3 - 建立統計計算定時任務
-**描述**：建立定期計算統計快照的背景任務
-**預估時間**：3 小時
-**依賴**：T4.2
-**驗收標準**：
-- [ ] `StatisticsCalculationCommand` 類別
-- [ ] 支援不同統計週期（daily, weekly, monthly）
-- [ ] 包含錯誤重試機制
-- [ ] 記錄執行日誌
-- [ ] 可手動觸發執行
-- [ ] 支援並行安全執行
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+**Domain → Application → Infrastructure → Interface**
 
-#### ✅ T4.4 - 建立索引最佳化與查詢調整
-**描述**：統計相關表的索引最佳化與SQL查詢調整
-**預估時間**：4 小時
-**依賴**：T4.3
-**驗收標準**：
-- [ ] 建立 posts 表統計查詢複合索引
-- [ ] 測試索引效能改善效果
-- [ ] 最佳化大量資料統計查詢
-- [ ] 建立慢查詢監控
-- [ ] 檢查查詢執行計劃
-- [ ] 效能測試報告
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+### 開發階段概覽
 
-#### ✅ T4.5 - 建立統計監控與日誌系統
-**描述**：建立統計功能的監控、日誌記錄與健康檢查
-**預估時間**：5 小時
-**依賴**：T4.4
-**驗收標準**：
-- [ ] `StatisticsMonitoringService` 類別
-- [ ] 統計計算時間監控
-- [ ] 快取命中率監控
-- [ ] API 回應時間監控
-- [ ] 錯誤率記錄與警告
-- [ ] 統計健康檢查端點
-- [ ] 日誌輪轉與保存策略
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+1. **階段 1：領域層設計 (Domain Layer)**
+   - 建立核心業務概念和領域模型
+   - 定義統計相關的實體、值物件和領域服務
+   - 設計領域事件和Repository介面
 
-#### 🔲 T4.6 - 建立統計資料回填指令
-**描述**：建立一個指令，用於對歷史資料重新計算並生成統計快照
-**預估時間**：3 小時
-**依賴**：T4.3
-**驗收標準**：
-- [ ] `StatisticsRecalculationCommand` 類別
-- [ ] 支援按統計類型和日期範圍進行回填
-- [ ] 提供 `--force` 選項覆蓋現有快照
-- [ ] 包含進度顯示和日誌記錄
-- [ ] 指令可安全地重複執行
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+2. **階段 2：資料庫結構調整 (Infrastructure - Database)**
+   - 建立統計資料相關的資料庫結構
+   - 新增文章來源追蹤功能
+   - 建立統計快照表
 
-#### ✅ T4.7 - 整合領域事件分派器
-**描述**：將統計領域事件整合到專案的事件分派機制中
-**預估時間**：3 小時
-**依賴**：T1.5
-**驗收標準**：
-- [x] 建立 `PostViewed` 事件的監聽器，觸發非同步計數更新
-- [x] 建立 `StatisticsSnapshotCreated` 事件的監聽器，觸發快取失效或預熱
-- [x] 若專案尚無事件機制，則引入一個輕量級的事件分派器
-- [x] 事件處理邏輯有完整的測試
-- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-**完成日期**：2025-09-26
-**實作內容**：
-- 實作了 SimpleEventDispatcher 作為輕量級事件分派器
-- 建立了 PostViewed 領域事件與對應的 PostViewedListener
-- 建立了 StatisticsSnapshotCreated 領域事件與對應的 StatisticsSnapshotCreatedListener
-- 在 StatisticsAggregationService 中整合事件分派機制
-- 完成了完整的單元測試覆蓋，包括事件、監聽器和分派器
-- 通過所有 CI 檢查，包括 PHP CS Fixer, PHPStan Level 10, 和 PHPUnit
+3. **階段 3：應用層服務 (Application Layer)**
+   - 實作統計應用服務和查詢服務
+   - 建立資料傳輸物件 (DTO)
+   - 協調領域服務和基礎設施層
 
-#### 🔲 T4.8 - 建立統計功能設定檔
-**描述**：建立並設定統計功能的獨立設定檔
-**預估時間**：1 小時
-**依賴**：T4.2
-**驗收標準**：
-- [ ] 在 `config/` 目錄下建立 `statistics.php`
-- [ ] 將快取 TTL、排程時間、資料保存期限等配置移入此檔案
-- [ ] 應用程式能正確讀取此設定檔
-- [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤-
+4. **階段 4：基礎設施層實作 (Infrastructure Layer)**
+   - 實作Repository具體類別
+   - 建立快取、監控、定時任務等基礎設施
+   - 整合事件分派機制
+
+5. **階段 5：介面層實作 (Interface Layer)**
+   - 建立RESTful API端點
+   - 實作控制器和路由配置
+   - 整合權限驗證
+
+6. **階段 6：測試實作 (Testing)**
+   - 撰寫單元測試和整合測試
+   - 效能測試和功能測試
+
+7. **階段 7：文件與部署 (Documentation & Deployment)**
+   - 更新API文件和使用指南
+   - 建立維護和故障排除手冊
+
+8. **階段 8：品質保證與最佳化 (Quality Assurance)**
+   - 程式碼品質檢查和效能最佳化
+   - 安全性審查
+
+---
 
 ## 📋 詳細待辦事項
 
@@ -397,6 +346,26 @@
 - [ ] 指令可安全地重複執行
 - [ ] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
 
+#### ✅ T4.7 - 整合領域事件分派器
+**描述**：將統計領域事件整合到專案的事件分派機制中
+**預估時間**：3 小時
+**依賴**：T1.5
+**狀態**：✅ 已完成
+**驗收標準**：
+- [x] 建立 `PostViewed` 事件的監聽器，觸發非同步計數更新
+- [x] 建立 `StatisticsSnapshotCreated` 事件的監聽器，觸發快取失效或預熱
+- [x] 若專案尚無事件機制，則引入一個輕量級的事件分派器
+- [x] 事件處理邏輯有完整的測試
+- [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
+**完成日期**：2025-09-26
+**實作內容**：
+- 實作了 SimpleEventDispatcher 作為輕量級事件分派器
+- 建立了 PostViewed 領域事件與對應的 PostViewedListener
+- 建立了 StatisticsSnapshotCreated 領域事件與對應的 StatisticsSnapshotCreatedListener
+- 在 StatisticsAggregationService 中整合事件分派機制
+- 完成了完整的單元測試覆蓋，包括事件、監聽器和分派器
+- 通過所有 CI 檢查，包括 PHP CS Fixer, PHPStan Level 10, 和 PHPUnit
+
 #### 🔲 T4.8 - 建立統計功能設定檔
 **描述**：建立並設定統計功能的獨立設定檔
 **預估時間**：1 小時
@@ -468,7 +437,7 @@
 - [x] 包含速率限制防止濫用
 - [x] 回應時間極短（< 100ms）
 - [x] 執行 CI 檢查（PHP CS Fixer + PHPStan + PHPUnit）確認無錯誤
-**完成日期**：2025-01-20
+**完成日期**：2025-09-26
 **實作內容**：
 - 實作了高效能的 PostViewController，支援認證和匿名使用者
 - 建立了專用的 PostViewRateLimitMiddleware，認證使用者每分鐘 300 次，匿名使用者每分鐘 120 次
@@ -718,14 +687,6 @@
 ---
 
 ## 📈 最新進展記錄
-
-### 2025年1月20日 - 全面通過 CI 檢查並完成 T5.4 後續優化
-- ✅ 修復 PostViewControllerTest 中的 import 問題
-- ✅ 通過完整 CI 檢查管道：PHP CS Fixer (0 errors) + PHPStan Level 10 (No errors) + PHPUnit (1888 tests)
-- ✅ 確認所有品質標準符合專案要求
-- ✅ 清理 TODO 文件中的重複條目和錯誤資訊
-- ✅ 更新專案預計完成時間至 2025-02-28
-- 🎯 專案品質指標：所有 CI 檢查 100% 通過，程式碼品質達到生產準備狀態
 
 ### 2025年9月26日 - T5.4 建立文章瀏覽數追蹤端點完成
 - ✅ 實作高效能的 PostViewController 控制器
