@@ -139,6 +139,18 @@ final class SourceTypeTest extends TestCase
     }
 
     #[Test]
+    public function it_can_create_mobile_source_type(): void
+    {
+        // Act
+        $sourceType = SourceType::createMobile();
+
+        // Assert
+        $this->assertSame('mobile', $sourceType->code);
+        $this->assertSame('行動裝置', $sourceType->name);
+        $this->assertStringContainsString('行動', $sourceType->description);
+    }
+
+    #[Test]
     public function it_can_create_import_source_type(): void
     {
         // Act
@@ -168,11 +180,13 @@ final class SourceTypeTest extends TestCase
         // Act
         $webType = SourceType::fromCode('web');
         $apiType = SourceType::fromCode('API'); // 測試大寫
+        $mobileType = SourceType::fromCode('Mobile');
         $importType = SourceType::fromCode('Import'); // 測試混合大小寫
 
         // Assert
         $this->assertSame('web', $webType->code);
         $this->assertSame('api', $apiType->code);
+        $this->assertSame('mobile', $mobileType->code);
         $this->assertSame('import', $importType->code);
     }
 
@@ -194,16 +208,19 @@ final class SourceTypeTest extends TestCase
         $webType = SourceType::createWeb();
         $apiType = SourceType::createApi();
         $importType = SourceType::createImport();
+        $mobileType = SourceType::createMobile();
         $migrationType = SourceType::createMigration();
 
         // Act & Assert
         $this->assertTrue($webType->isWeb());
         $this->assertFalse($webType->isApi());
+        $this->assertFalse($webType->isMobile());
         $this->assertFalse($webType->isImport());
         $this->assertFalse($webType->isMigration());
 
         $this->assertFalse($apiType->isWeb());
         $this->assertTrue($apiType->isApi());
+        $this->assertFalse($apiType->isMobile());
         $this->assertFalse($apiType->isImport());
         $this->assertFalse($apiType->isMigration());
 
@@ -211,6 +228,12 @@ final class SourceTypeTest extends TestCase
         $this->assertFalse($importType->isApi());
         $this->assertTrue($importType->isImport());
         $this->assertFalse($importType->isMigration());
+
+        $this->assertFalse($mobileType->isWeb());
+        $this->assertFalse($mobileType->isApi());
+        $this->assertTrue($mobileType->isMobile());
+        $this->assertFalse($mobileType->isImport());
+        $this->assertFalse($mobileType->isMigration());
 
         $this->assertFalse($migrationType->isWeb());
         $this->assertFalse($migrationType->isApi());
@@ -224,14 +247,16 @@ final class SourceTypeTest extends TestCase
         // Arrange
         $webType = SourceType::createWeb();
         $apiType = SourceType::createApi();
+        $mobileType = SourceType::createMobile();
         $importType = SourceType::createImport();
         $migrationType = SourceType::createMigration();
 
         // Act & Assert
         $this->assertSame(1, $webType->getPriority());
         $this->assertSame(2, $apiType->getPriority());
-        $this->assertSame(3, $importType->getPriority());
-        $this->assertSame(4, $migrationType->getPriority());
+        $this->assertSame(3, $mobileType->getPriority());
+        $this->assertSame(4, $importType->getPriority());
+        $this->assertSame(5, $migrationType->getPriority());
     }
 
     #[Test]
@@ -316,9 +341,10 @@ final class SourceTypeTest extends TestCase
         $this->assertIsArray($validCodes);
         $this->assertContains('web', $validCodes);
         $this->assertContains('api', $validCodes);
+        $this->assertContains('mobile', $validCodes);
         $this->assertContains('import', $validCodes);
         $this->assertContains('migration', $validCodes);
-        $this->assertCount(4, $validCodes);
+        $this->assertCount(5, $validCodes);
     }
 
     #[Test]
@@ -331,12 +357,13 @@ final class SourceTypeTest extends TestCase
         /** @phpstan-ignore-next-line method.alreadyNarrowedType */
         /** @phpstan-ignore-next-line method.alreadyNarrowedType */
         $this->assertIsArray($allTypes);
-        $this->assertCount(4, $allTypes);
+        $this->assertCount(5, $allTypes);
         $this->assertContainsOnlyInstancesOf(SourceType::class, $allTypes);
 
         $codes = array_map(fn(SourceType $type) => $type->code, $allTypes);
         $this->assertContains('web', $codes);
         $this->assertContains('api', $codes);
+        $this->assertContains('mobile', $codes);
         $this->assertContains('import', $codes);
         $this->assertContains('migration', $codes);
     }

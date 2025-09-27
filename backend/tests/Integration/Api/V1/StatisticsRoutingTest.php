@@ -8,8 +8,10 @@ use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
 use Exception;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\SkippedTest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 /**
  * 統計功能 API 路由整合測試.
@@ -87,20 +89,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsOverviewRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('GET', '/api/statistics/overview');
-            $statusCode = $response->getStatusCode();
-
-            // 路由應該存在（不是 404），但可能因為權限問題回傳 401 或其他狀態
-            $this->assertNotEquals(404, $statusCode, '統計概覽路由應該已經註冊');
-
-            // 由於沒有認證，預期是 401 未授權
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計概覽路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'GET',
+            '/api/statistics/overview',
+            '統計概覽路由應該已經註冊',
+            '統計概覽路由測試失敗: ',
+        );
     }
 
     /**
@@ -108,18 +102,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsPostsRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('GET', '/api/statistics/posts');
-            $statusCode = $response->getStatusCode();
-
-            $this->assertNotEquals(404, $statusCode, '統計文章路由應該已經註冊');
-
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計文章路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'GET',
+            '/api/statistics/posts',
+            '統計文章路由應該已經註冊',
+            '統計文章路由測試失敗: ',
+        );
     }
 
     /**
@@ -127,18 +115,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsSourcesRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('GET', '/api/statistics/sources');
-            $statusCode = $response->getStatusCode();
-
-            $this->assertNotEquals(404, $statusCode, '統計來源路由應該已經註冊');
-
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計來源路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'GET',
+            '/api/statistics/sources',
+            '統計來源路由應該已經註冊',
+            '統計來源路由測試失敗: ',
+        );
     }
 
     /**
@@ -146,18 +128,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsUsersRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('GET', '/api/statistics/users');
-            $statusCode = $response->getStatusCode();
-
-            $this->assertNotEquals(404, $statusCode, '統計使用者路由應該已經註冊');
-
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計使用者路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'GET',
+            '/api/statistics/users',
+            '統計使用者路由應該已經註冊',
+            '統計使用者路由測試失敗: ',
+        );
     }
 
     /**
@@ -165,18 +141,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsPopularRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('GET', '/api/statistics/popular');
-            $statusCode = $response->getStatusCode();
-
-            $this->assertNotEquals(404, $statusCode, '統計熱門內容路由應該已經註冊');
-
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計熱門內容路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'GET',
+            '/api/statistics/popular',
+            '統計熱門內容路由應該已經註冊',
+            '統計熱門內容路由測試失敗: ',
+        );
     }
 
     /**
@@ -184,18 +154,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsAdminRefreshRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('POST', '/api/admin/statistics/refresh');
-            $statusCode = $response->getStatusCode();
-
-            $this->assertNotEquals(404, $statusCode, '統計管理刷新路由應該已經註冊');
-
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計管理刷新路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'POST',
+            '/api/admin/statistics/refresh',
+            '統計管理刷新路由應該已經註冊',
+            '統計管理刷新路由測試失敗: ',
+        );
     }
 
     /**
@@ -203,18 +167,12 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsAdminCacheClearRouteIsRegistered(): void
     {
-        try {
-            $response = $this->createRequest('DELETE', '/api/admin/statistics/cache');
-            $statusCode = $response->getStatusCode();
-
-            $this->assertNotEquals(404, $statusCode, '統計管理快取清除路由應該已經註冊');
-
-            if ($statusCode === 401) {
-                $this->markTestSkipped('路由存在但需要認證，測試跳過');
-            }
-        } catch (Exception $e) {
-            $this->fail('統計管理快取清除路由測試失敗: ' . $e->getMessage());
-        }
+        $this->assertRouteRegistered(
+            'DELETE',
+            '/api/admin/statistics/cache',
+            '統計管理快取清除路由應該已經註冊',
+            '統計管理快取清除路由測試失敗: ',
+        );
     }
 
     /**
@@ -222,17 +180,35 @@ class StatisticsRoutingTest extends TestCase
      */
     public function testStatisticsAdminHealthRouteIsRegistered(): void
     {
+        $this->assertRouteRegistered(
+            'GET',
+            '/api/admin/statistics/health',
+            '統計管理健康檢查路由應該已經註冊',
+            '統計管理健康檢查路由測試失敗: ',
+        );
+    }
+
+    private function assertRouteRegistered(
+        string $method,
+        string $path,
+        string $assertMessage,
+        string $failurePrefix,
+    ): void {
         try {
-            $response = $this->createRequest('GET', '/api/admin/statistics/health');
+            $response = $this->createRequest($method, $path);
             $statusCode = $response->getStatusCode();
 
-            $this->assertNotEquals(404, $statusCode, '統計管理健康檢查路由應該已經註冊');
+            $this->assertNotEquals(404, $statusCode, $assertMessage);
 
             if ($statusCode === 401) {
                 $this->markTestSkipped('路由存在但需要認證，測試跳過');
             }
-        } catch (Exception $e) {
-            $this->fail('統計管理健康檢查路由測試失敗: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            if ($e instanceof SkippedTest) {
+                throw $e;
+            }
+
+            $this->fail($failurePrefix . $e->getMessage());
         }
     }
 

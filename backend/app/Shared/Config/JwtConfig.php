@@ -97,10 +97,17 @@ final class JwtConfig
      */
     private function loadPrivateKey(): string
     {
-        $privateKey = $_ENV['JWT_PRIVATE_KEY'] ?? '';
+        $privateKeyEnv = $_ENV['JWT_PRIVATE_KEY'] ?? getenv('JWT_PRIVATE_KEY');
+        $privateKey = is_string($privateKeyEnv) ? $privateKeyEnv : '';
 
-        if (empty($privateKey)) {
-            throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
+        if ($privateKey === '') {
+            $privateKeyFromPath = $this->loadKeyFromPath('JWT_PRIVATE_KEY_PATH');
+
+            if ($privateKeyFromPath === null || $privateKeyFromPath === '') {
+                throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
+            }
+
+            $privateKey = $privateKeyFromPath;
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -119,10 +126,17 @@ final class JwtConfig
      */
     private function loadPublicKey(): string
     {
-        $publicKey = $_ENV['JWT_PUBLIC_KEY'] ?? '';
+        $publicKeyEnv = $_ENV['JWT_PUBLIC_KEY'] ?? getenv('JWT_PUBLIC_KEY');
+        $publicKey = is_string($publicKeyEnv) ? $publicKeyEnv : '';
 
-        if (empty($publicKey)) {
-            throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
+        if ($publicKey === '') {
+            $publicKeyFromPath = $this->loadKeyFromPath('JWT_PUBLIC_KEY_PATH');
+
+            if ($publicKeyFromPath === null || $publicKeyFromPath === '') {
+                throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
+            }
+
+            $publicKey = $publicKeyFromPath;
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -299,5 +313,40 @@ final class JwtConfig
             'private_key_configured' => !empty($this->privateKey),
             'public_key_configured' => !empty($this->publicKey),
         ];
+    }
+
+    private function loadKeyFromPath(string $pathEnvKey): ?string
+    {
+        $pathEnv = $_ENV[$pathEnvKey] ?? getenv($pathEnvKey);
+
+        if (!is_string($pathEnv) || $pathEnv === '') {
+            return null;
+        }
+
+        $candidatePaths = [$pathEnv];
+        $basePath = dirname(__DIR__, 3);
+        $resolvedRelative = $basePath . DIRECTORY_SEPARATOR . ltrim($pathEnv, DIRECTORY_SEPARATOR);
+
+        if ($resolvedRelative !== $pathEnv) {
+            $candidatePaths[] = $resolvedRelative;
+        }
+
+        foreach ($candidatePaths as $candidatePath) {
+            if (is_file($candidatePath) && is_readable($candidatePath)) {
+                $contents = file_get_contents($candidatePath);
+
+                if ($contents === false) {
+                    throw new InvalidArgumentException(
+                        sprintf('%s 指定的金鑰檔案無法讀取: %s', $pathEnvKey, $candidatePath),
+                    );
+                }
+
+                return trim($contents);
+            }
+        }
+
+        throw new InvalidArgumentException(
+            sprintf('%s 指定的金鑰檔案不存在或不可讀: %s', $pathEnvKey, $pathEnv),
+        );
     }
 }

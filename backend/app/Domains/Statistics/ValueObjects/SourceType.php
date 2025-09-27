@@ -17,7 +17,7 @@ use JsonSerializable;
  */
 final readonly class SourceType implements JsonSerializable
 {
-    private const VALID_CODES = ['web', 'api', 'import', 'migration'];
+    private const VALID_CODES = ['web', 'api', 'mobile', 'import', 'migration'];
 
     /**
      * @param string $code 類型代碼
@@ -68,6 +68,14 @@ final readonly class SourceType implements JsonSerializable
     }
 
     /**
+     * 建立 Mobile App 來源類型.
+     */
+    public static function createMobile(): self
+    {
+        return new self('mobile', '行動裝置', '透過行動應用程式建立的文章');
+    }
+
+    /**
      * 建立匯入來源類型.
      */
     public static function createImport(): self
@@ -93,6 +101,7 @@ final readonly class SourceType implements JsonSerializable
         return match (strtolower($code)) {
             'web' => self::createWeb(),
             'api' => self::createApi(),
+            'mobile' => self::createMobile(),
             'import' => self::createImport(),
             'migration' => self::createMigration(),
             default => throw new InvalidArgumentException("Invalid source code: {$code}"),
@@ -124,6 +133,14 @@ final readonly class SourceType implements JsonSerializable
     }
 
     /**
+     * 檢查是否為行動裝置來源.
+     */
+    public function isMobile(): bool
+    {
+        return $this->code === 'mobile';
+    }
+
+    /**
      * 檢查是否為遷移來源.
      */
     public function isMigration(): bool
@@ -139,8 +156,9 @@ final readonly class SourceType implements JsonSerializable
         return match ($this->code) {
             'web' => 1,
             'api' => 2,
-            'import' => 3,
-            'migration' => 4,
+            'mobile' => 3,
+            'import' => 4,
+            'migration' => 5,
             default => 999,
         };
     }
@@ -207,6 +225,7 @@ final readonly class SourceType implements JsonSerializable
         return [
             self::createWeb(),
             self::createApi(),
+            self::createMobile(),
             self::createImport(),
             self::createMigration(),
         ];

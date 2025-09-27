@@ -112,7 +112,7 @@ interface PostStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, array{min: int, max: int}> $lengthRanges 字數範圍定義
-     * @return array<string, int> 範圍名稱為鍵，文章數為值的陣列
+     * @return array<string, array{range: string, count: int, percentage: float}> 範圍名稱為鍵的文章比例統計
      */
     public function getPostsCountByLengthRange(StatisticsPeriod $period, array $lengthRanges): array;
 

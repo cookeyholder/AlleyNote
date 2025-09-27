@@ -89,7 +89,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             null,
         );
 
-        $this->repository->save($snapshot);
+        $snapshot = $this->repository->save($snapshot);
 
         // 測試查詢
         $found = $this->repository->findByTypeAndPeriod(StatisticsSnapshot::TYPE_POSTS, $period);
@@ -206,7 +206,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             null,
         );
 
-        $this->repository->save($snapshot);
+        $snapshot = $this->repository->save($snapshot);
 
         // 驗證可以找到
         $found = $this->repository->findByTypeAndPeriod(StatisticsSnapshot::TYPE_POPULAR, $period);
@@ -230,7 +230,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             null,
         );
 
-        $this->repository->save($snapshot);
+        $snapshot = $this->repository->save($snapshot);
 
         // 更新資料
         $snapshot->updateStatistics(['total_posts' => 150]);
@@ -268,7 +268,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             null,
         );
 
-        $this->repository->save($snapshot);
+        $snapshot = $this->repository->save($snapshot);
         $snapshotId = $snapshot->getId();
 
         // 執行刪除

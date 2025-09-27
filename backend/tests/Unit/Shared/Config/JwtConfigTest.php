@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
 
 class JwtConfigTest extends TestCase
 {
+    /**
+     * @var array<string, string|null>
+     */
     private array $originalEnv = [];
 
     protected function setUp(): void
@@ -17,15 +20,24 @@ class JwtConfigTest extends TestCase
         parent::setUp();
 
         // 備份原始環境變數
-        $this->originalEnv = [
-            'JWT_ALGORITHM' => $_ENV['JWT_ALGORITHM'] ?? null,
-            'JWT_PRIVATE_KEY' => $_ENV['JWT_PRIVATE_KEY'] ?? null,
-            'JWT_PUBLIC_KEY' => $_ENV['JWT_PUBLIC_KEY'] ?? null,
-            'JWT_ISSUER' => $_ENV['JWT_ISSUER'] ?? null,
-            'JWT_AUDIENCE' => $_ENV['JWT_AUDIENCE'] ?? null,
-            'JWT_ACCESS_TOKEN_TTL' => $_ENV['JWT_ACCESS_TOKEN_TTL'] ?? null,
-            'JWT_REFRESH_TOKEN_TTL' => $_ENV['JWT_REFRESH_TOKEN_TTL'] ?? null,
+        $keys = [
+            'JWT_ALGORITHM',
+            'JWT_PRIVATE_KEY',
+            'JWT_PUBLIC_KEY',
+            'JWT_PRIVATE_KEY_PATH',
+            'JWT_PUBLIC_KEY_PATH',
+            'JWT_ISSUER',
+            'JWT_AUDIENCE',
+            'JWT_ACCESS_TOKEN_TTL',
+            'JWT_REFRESH_TOKEN_TTL',
         ];
+
+        $this->originalEnv = [];
+
+        foreach ($keys as $key) {
+            $value = getenv($key);
+            $this->originalEnv[$key] = $value !== false ? $value : null;
+        }
     }
 
     protected function tearDown(): void
@@ -34,8 +46,10 @@ class JwtConfigTest extends TestCase
         foreach ($this->originalEnv as $key => $value) {
             if ($value === null) {
                 unset($_ENV[$key]);
+                putenv($key);
             } else {
                 $_ENV[$key] = $value;
+                putenv($key . '=' . (string) $value);
             }
         }
 
@@ -59,7 +73,8 @@ class JwtConfigTest extends TestCase
     public function testPrivateKeyMissing(): void
     {
         $this->setValidEnvironmentVariables();
-        unset($_ENV['JWT_PRIVATE_KEY']);
+        $this->unsetEnv('JWT_PRIVATE_KEY');
+        $this->unsetEnv('JWT_PRIVATE_KEY_PATH');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PRIVATE_KEY 環境變數未設定');
@@ -70,7 +85,8 @@ class JwtConfigTest extends TestCase
     public function testPublicKeyMissing(): void
     {
         $this->setValidEnvironmentVariables();
-        unset($_ENV['JWT_PUBLIC_KEY']);
+        $this->unsetEnv('JWT_PUBLIC_KEY');
+        $this->unsetEnv('JWT_PUBLIC_KEY_PATH');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PUBLIC_KEY 環境變數未設定');
@@ -81,7 +97,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidPrivateKeyFormat(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_PRIVATE_KEY'] = 'invalid-key-format';
+        $this->setEnv('JWT_PRIVATE_KEY', 'invalid-key-format');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PRIVATE_KEY 格式無效，必須是 PEM 格式的私鑰');
@@ -92,7 +108,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidPublicKeyFormat(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_PUBLIC_KEY'] = 'invalid-key-format';
+        $this->setEnv('JWT_PUBLIC_KEY', 'invalid-key-format');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_PUBLIC_KEY 格式無效，必須是 PEM 格式的公鑰');
@@ -103,7 +119,7 @@ class JwtConfigTest extends TestCase
     public function testUnsupportedAlgorithm(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_ALGORITHM'] = 'INVALID_ALGO';
+        $this->setEnv('JWT_ALGORITHM', 'INVALID_ALGO');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('不支援的演算法: INVALID_ALGO');
@@ -114,7 +130,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidAccessTokenTtl(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '0';
+        $this->setEnv('JWT_ACCESS_TOKEN_TTL', '0');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_ACCESS_TOKEN_TTL 必須大於 0');
@@ -125,7 +141,7 @@ class JwtConfigTest extends TestCase
     public function testInvalidRefreshTokenTtl(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '0';
+        $this->setEnv('JWT_REFRESH_TOKEN_TTL', '0');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('JWT_REFRESH_TOKEN_TTL 必須大於 0');
@@ -136,8 +152,8 @@ class JwtConfigTest extends TestCase
     public function testRefreshTokenTtlLessThanAccessToken(): void
     {
         $this->setValidEnvironmentVariables();
-        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '7200';
-        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '3600';
+        $this->setEnv('JWT_ACCESS_TOKEN_TTL', '7200');
+        $this->setEnv('JWT_REFRESH_TOKEN_TTL', '3600');
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Refresh token 有效期必須大於 access token 有效期');
@@ -150,11 +166,11 @@ class JwtConfigTest extends TestCase
         $this->setValidEnvironmentVariables();
 
         // 移除可選的環境變數來測試預設值
-        unset($_ENV['JWT_ALGORITHM']);
-        unset($_ENV['JWT_ISSUER']);
-        unset($_ENV['JWT_AUDIENCE']);
-        unset($_ENV['JWT_ACCESS_TOKEN_TTL']);
-        unset($_ENV['JWT_REFRESH_TOKEN_TTL']);
+        $this->unsetEnv('JWT_ALGORITHM');
+        $this->unsetEnv('JWT_ISSUER');
+        $this->unsetEnv('JWT_AUDIENCE');
+        $this->unsetEnv('JWT_ACCESS_TOKEN_TTL');
+        $this->unsetEnv('JWT_REFRESH_TOKEN_TTL');
 
         $config = new JwtConfig();
 
@@ -235,12 +251,26 @@ class JwtConfigTest extends TestCase
         $publicKeyDetails = openssl_pkey_get_details($keyResource);
         $publicKey = $publicKeyDetails['key'];
 
-        $_ENV['JWT_ALGORITHM'] = 'RS256';
-        $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $privateKey);
-        $_ENV['JWT_PUBLIC_KEY'] = str_replace("\n", '\\n', $publicKey);
-        $_ENV['JWT_ISSUER'] = 'test-issuer';
-        $_ENV['JWT_AUDIENCE'] = 'test-audience';
-        $_ENV['JWT_ACCESS_TOKEN_TTL'] = '7200';
-        $_ENV['JWT_REFRESH_TOKEN_TTL'] = '604800';
+        $this->setEnv('JWT_ALGORITHM', 'RS256');
+        $this->setEnv('JWT_PRIVATE_KEY', str_replace("\n", '\\n', $privateKey));
+        $this->setEnv('JWT_PUBLIC_KEY', str_replace("\n", '\\n', $publicKey));
+        $this->setEnv('JWT_ISSUER', 'test-issuer');
+        $this->setEnv('JWT_AUDIENCE', 'test-audience');
+        $this->setEnv('JWT_ACCESS_TOKEN_TTL', '7200');
+        $this->setEnv('JWT_REFRESH_TOKEN_TTL', '604800');
+        $this->unsetEnv('JWT_PRIVATE_KEY_PATH');
+        $this->unsetEnv('JWT_PUBLIC_KEY_PATH');
+    }
+
+    private function setEnv(string $key, string $value): void
+    {
+        $_ENV[$key] = $value;
+        putenv($key . '=' . $value);
+    }
+
+    private function unsetEnv(string $key): void
+    {
+        unset($_ENV[$key]);
+        putenv($key);
     }
 }

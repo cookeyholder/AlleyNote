@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
 
+use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
@@ -64,10 +65,23 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
 
-            $result = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                /** @phpstan-ignore offsetAccess.nonOffsetAccessible, cast.string, cast.int */
-                $result[(string) $row['status']] = (int) $row['count'];
+            $defaultStatuses = array_map(static fn(PostStatus $status) => $status->value, PostStatus::cases());
+            $result = array_fill_keys($defaultStatuses, 0);
+
+            while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
+                /** @var array<string, mixed> $row */
+
+                $statusValue = isset($row['status']) && is_string($row['status'])
+                    ? $row['status']
+                    : 'unknown';
+
+                if (!array_key_exists($statusValue, $result)) {
+                    $result[$statusValue] = 0;
+                }
+
+                $result[$statusValue] = isset($row['count']) && is_numeric($row['count'])
+                    ? (int) $row['count']
+                    : 0;
             }
 
             return $result;
@@ -90,11 +104,23 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
 
-            $result = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                /** @phpstan-ignore offsetAccess.nonOffsetAccessible, cast.string, cast.int */
-                $source = $row['creation_source'] ?? 'unknown';
-                $result[(string) $source] = (int) $row['count'];
+            $defaultSources = array_unique([...SourceType::getValidCodes(), 'unknown']);
+            $result = array_fill_keys($defaultSources, 0);
+
+            while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
+                /** @var array<string, mixed> $row */
+
+                $sourceValue = isset($row['creation_source']) && is_string($row['creation_source'])
+                    ? $row['creation_source']
+                    : 'unknown';
+
+                if (!array_key_exists($sourceValue, $result)) {
+                    $result[$sourceValue] = 0;
+                }
+
+                $result[$sourceValue] = isset($row['count']) && is_numeric($row['count'])
+                    ? (int) $row['count']
+                    : 0;
             }
 
             return $result;
@@ -261,7 +287,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
 
         try {
             $groupByClause = match ($groupBy) {
-                'hour' => "strftime('%H', created_at)",
+                'hour' => "strftime('%H:00', created_at)",
                 'day' => 'date(created_at)',
                 'week' => "strftime('%Y-%W', created_at)",
                 'month' => "strftime('%Y-%m', created_at)",
@@ -331,17 +357,28 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 return ['avg_length' => 0.0, 'min_length' => 0, 'max_length' => 0, 'total_chars' => 0];
             }
 
+            /** @var array<string, mixed> $row */
+
+            $avgLength = isset($row['avg_length']) ? (float) $row['avg_length'] : 0.0;
+            $minLength = isset($row['min_length']) ? (int) $row['min_length'] : 0;
+            $maxLength = isset($row['max_length']) ? (int) $row['max_length'] : 0;
+            $totalChars = isset($row['total_chars']) ? (int) $row['total_chars'] : 0;
+
             return [
-                'avg_length' => (float) ($row['avg_length'] ?? 0.0),
-                'min_length' => (int) ($row['min_length'] ?? 0),
-                'max_length' => (int) ($row['max_length'] ?? 0),
-                'total_chars' => (int) ($row['total_chars'] ?? 0),
+                'avg_length' => $avgLength,
+                'min_length' => $minLength,
+                'max_length' => $maxLength,
+                'total_chars' => $totalChars,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章長度統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
 
+    /**
+     * @param array<string, array{min: int, max: int}> $lengthRanges
+     * @return array<string, array{range: string, count: int, percentage: float}>
+     */
     public function getPostsCountByLengthRange(StatisticsPeriod $period, array $lengthRanges): array
     {
         if (empty($lengthRanges)) {
@@ -349,8 +386,12 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         }
 
         try {
-            $result = [];
+            $counts = [];
             foreach ($lengthRanges as $rangeName => $range) {
+                if (!is_string($rangeName)) {
+                    throw new InvalidArgumentException('字數範圍鍵必須為字串');
+                }
+
                 if (!isset($range['min'], $range['max'])) {
                     throw new InvalidArgumentException("字數範圍 '{$rangeName}' 必須包含 min 和 max 值");
                 }
@@ -367,7 +408,22 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 $stmt->bindValue(':max_length', (int) $range['max'], PDO::PARAM_INT);
                 $stmt->execute();
 
-                $result[(string) $rangeName] = (int) $stmt->fetchColumn();
+                $rawCount = $stmt->fetchColumn();
+                $counts[$rangeName] = is_numeric($rawCount) ? (int) $rawCount : 0;
+            }
+
+            $total = array_sum($counts);
+            $result = [];
+
+            foreach ($lengthRanges as $rangeName => $_) {
+                $count = $counts[$rangeName] ?? 0;
+                $percentage = $total > 0 ? round(($count / $total) * 100, 2) : 0.0;
+
+                $result[$rangeName] = [
+                    'range' => (string) $rangeName,
+                    'count' => $count,
+                    'percentage' => $percentage,
+                ];
             }
 
             return $result;
@@ -396,10 +452,16 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 return ['pinned_count' => 0, 'unpinned_count' => 0, 'pinned_views' => 0];
             }
 
+            /** @var array<string, mixed> $row */
+
+            $pinnedCount = isset($row['pinned_count']) ? (int) $row['pinned_count'] : 0;
+            $unpinnedCount = isset($row['unpinned_count']) ? (int) $row['unpinned_count'] : 0;
+            $pinnedViews = isset($row['pinned_views']) ? (int) $row['pinned_views'] : 0;
+
             return [
-                'pinned_count' => (int) ($row['pinned_count'] ?? 0),
-                'unpinned_count' => (int) ($row['unpinned_count'] ?? 0),
-                'pinned_views' => (int) ($row['pinned_views'] ?? 0),
+                'pinned_count' => $pinnedCount,
+                'unpinned_count' => $unpinnedCount,
+                'pinned_views' => $pinnedViews,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('取得置頂文章統計失敗: ' . $e->getMessage(), 0, $e);
@@ -449,12 +511,14 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     'active_authors' => 0,
                 ];
             } else {
+                /** @var array<string, mixed> $row */
+
                 $basicStats = [
-                    'total_posts' => (int) $row['total_posts'],
-                    'published_posts' => (int) $row['published_posts'],
-                    'draft_posts' => (int) $row['draft_posts'],
-                    'total_views' => (int) $row['total_views'],
-                    'active_authors' => (int) $row['active_authors'],
+                    'total_posts' => isset($row['total_posts']) ? (int) $row['total_posts'] : 0,
+                    'published_posts' => isset($row['published_posts']) ? (int) $row['published_posts'] : 0,
+                    'draft_posts' => isset($row['draft_posts']) ? (int) $row['draft_posts'] : 0,
+                    'total_views' => isset($row['total_views']) ? (int) $row['total_views'] : 0,
+                    'active_authors' => isset($row['active_authors']) ? (int) $row['active_authors'] : 0,
                 ];
             }
 

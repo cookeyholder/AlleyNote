@@ -33,7 +33,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
 
     private const SQL_FIND_BY_TYPE_AND_PERIOD = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type AND period_type = :period_type AND period_start = :period_start AND period_end = :period_end LIMIT 1';
 
-    private const SQL_FIND_LATEST_BY_TYPE = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type ORDER BY created_at DESC LIMIT 1';
+    private const SQL_FIND_LATEST_BY_TYPE = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type ORDER BY created_at DESC, id DESC LIMIT 1';
 
     private const SQL_FIND_BY_TYPE_AND_DATE_RANGE = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type AND period_start >= :start_date AND period_end <= :end_date ORDER BY period_start ASC';
 
@@ -201,7 +201,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $this->db->beginTransaction();
 
             $stmt = $this->db->prepare(self::SQL_INSERT);
-            $this->bindSnapshotParams($stmt, $snapshot);
+            $this->bindInsertParams($stmt, $snapshot);
             $stmt->execute();
 
             $id = (int) $this->db->lastInsertId();
@@ -227,7 +227,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $this->db->beginTransaction();
 
             $stmt = $this->db->prepare(self::SQL_UPDATE);
-            $this->bindSnapshotParams($stmt, $snapshot);
+            $this->bindUpdateParams($stmt, $snapshot);
             $stmt->bindValue(':id', $snapshot->getId(), PDO::PARAM_INT);
 
             $affectedRows = $stmt->execute();
@@ -432,10 +432,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
         }
     }
 
-    /**
-     * 綁定統計快照參數到 PDO statement.
-     */
-    private function bindSnapshotParams(PDOStatement $stmt, StatisticsSnapshot $snapshot): void
+    private function bindInsertParams(PDOStatement $stmt, StatisticsSnapshot $snapshot): void
     {
         $now = new DateTimeImmutable();
         $snapshotArray = $snapshot->toArray();
@@ -448,9 +445,26 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
         $stmt->bindValue(':statistics_data', $snapshotArray['statistics_data'], PDO::PARAM_STR);
         $stmt->bindValue(':metadata', $snapshotArray['metadata'], PDO::PARAM_STR);
         $stmt->bindValue(':expires_at', $snapshot->getExpiresAt()?->format('Y-m-d H:i:s'), PDO::PARAM_STR);
-        $stmt->bindValue(':total_views', 0, PDO::PARAM_INT); // 預設值，實體中沒有此欄位
-        $stmt->bindValue(':total_unique_viewers', 0, PDO::PARAM_INT); // 預設值，實體中沒有此欄位
+        $stmt->bindValue(':total_views', 0, PDO::PARAM_INT);
+        $stmt->bindValue(':total_unique_viewers', 0, PDO::PARAM_INT);
         $stmt->bindValue(':created_at', $snapshot->getCreatedAt()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':updated_at', $now->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+    }
+
+    private function bindUpdateParams(PDOStatement $stmt, StatisticsSnapshot $snapshot): void
+    {
+        $now = new DateTimeImmutable();
+        $snapshotArray = $snapshot->toArray();
+
+        $stmt->bindValue(':snapshot_type', $snapshot->getSnapshotType(), PDO::PARAM_STR);
+        $stmt->bindValue(':period_type', $snapshot->getPeriod()->type->value, PDO::PARAM_STR);
+        $stmt->bindValue(':period_start', $snapshot->getPeriod()->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':period_end', $snapshot->getPeriod()->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':statistics_data', $snapshotArray['statistics_data'], PDO::PARAM_STR);
+        $stmt->bindValue(':metadata', $snapshotArray['metadata'], PDO::PARAM_STR);
+        $stmt->bindValue(':expires_at', $snapshot->getExpiresAt()?->format('Y-m-d H:i:s'), PDO::PARAM_STR);
+        $stmt->bindValue(':total_views', 0, PDO::PARAM_INT);
+        $stmt->bindValue(':total_unique_viewers', 0, PDO::PARAM_INT);
         $stmt->bindValue(':updated_at', $now->format('Y-m-d H:i:s'), PDO::PARAM_STR);
     }
 }

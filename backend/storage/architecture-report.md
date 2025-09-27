@@ -1,6 +1,6 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-27 06:47:17
+**生成時間**: 2025-09-27 08:05:48
 
 ## 📊 程式碼品質指標
 
@@ -1467,10 +1467,12 @@
 
 ### `MiddlewareInterface`
 - JwtAuthenticationMiddleware (`app/Application/Middleware/JwtAuthenticationMiddleware.php`)
-- PostViewRateLimitMiddleware (`app/Application/Middleware/PostViewRateLimitMiddleware.php`)
 - JwtAuthorizationMiddleware (`app/Application/Middleware/JwtAuthorizationMiddleware.php`)
 - RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
 - AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
+
+### `RoutingMiddlewareInterface`
+- PostViewRateLimitMiddleware (`app/Application/Middleware/PostViewRateLimitMiddleware.php`)
 
 ### `StatisticsFormatterInterface`
 - CSVStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php`)
@@ -1816,4 +1818,4 @@
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165731_create_refresh_tokens_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000001_create_statistics_snapshots_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
-- ... 還有 227 個
+- ... 還有 229 個

@@ -131,13 +131,16 @@ class PostViewController extends BaseController
         ],
         security: [], // 允許匿名訪問
     )]
-    public function recordView(ServerRequestInterface $request, ResponseInterface $response, array $args): ResponseInterface
-    {
+    public function recordView(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+        int|string|array|null $id = null,
+    ): ResponseInterface {
         try {
             $startTime = microtime(true);
 
             // 1. 驗證文章 ID
-            $postId = $this->validatePostId($args['id'] ?? null);
+            $postId = $this->validatePostId($id);
 
             // 2. 收集瀏覽資訊
             $viewData = $this->extractViewData($request);
@@ -214,6 +217,10 @@ class PostViewController extends BaseController
      */
     private function validatePostId(mixed $id): int
     {
+        if (is_array($id)) {
+            $id = $id['id'] ?? null;
+        }
+
         if ($id === null || $id === '') {
             throw new Exception('文章 ID 不能為空');
         }

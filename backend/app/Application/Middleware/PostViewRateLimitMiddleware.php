@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Application\Middleware;
 
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface as RoutingMiddlewareInterface;
+use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Services\RateLimitService;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * 文章瀏覽速率限制中介軟體.
  *
  * 專為文章瀏覽端點設計的輕量級速率限制，防止濫用同時保持高效能
  */
-class PostViewRateLimitMiddleware implements MiddlewareInterface
+class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
 {
     /** @var int 每個 IP 每分鐘最大請求數 */
     private const MAX_REQUESTS_PER_MINUTE = 120;
@@ -31,8 +31,40 @@ class PostViewRateLimitMiddleware implements MiddlewareInterface
         private readonly RateLimitService $rateLimitService,
     ) {}
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function getPriority(): int
     {
+        return 50;
+    }
+
+    public function getName(): string
+    {
+        return 'post_view_rate_limit';
+    }
+
+    public function shouldProcess(ServerRequestInterface $request): bool
+    {
+        $routeName = $request->getAttribute('route_name');
+        if (is_string($routeName)) {
+            return str_contains($routeName, 'post_view') || str_contains($routeName, 'posts.view');
+        }
+
+        $route = $request->getAttribute('route');
+        if (is_object($route) && method_exists($route, 'getName')) {
+            $resolvedName = $route->getName();
+            if (is_string($resolvedName)) {
+                return str_contains($resolvedName, 'post_view') || str_contains($resolvedName, 'posts.view');
+            }
+        }
+
+        $path = $request->getUri()->getPath();
+
+        return str_contains($path, '/post-view') || str_contains($path, '/posts');
+    }
+
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $handler,
+    ): ResponseInterface {
         $startTime = microtime(true);
 
         // 取得識別資訊
