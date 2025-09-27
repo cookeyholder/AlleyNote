@@ -186,3 +186,20 @@ return function (RouterInterface $router): void {
     // 加載標籤管理路由
     $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
     $tagManagementRoutes($app);
+
+    // 加載統計功能路由
+    $statisticsRoutes = require __DIR__ . '/routes/statistics.php';
+    foreach ($statisticsRoutes as $routeConfig) {
+        $route = $router->map(
+            $routeConfig['methods'],
+            $routeConfig['path'],
+            $routeConfig['handler']
+        );
+        $route->setName($routeConfig['name']);
+
+        if (isset($routeConfig['middleware'])) {
+            foreach ($routeConfig['middleware'] as $middleware) {
+                $route->add($middleware);
+            }
+        }
+    }

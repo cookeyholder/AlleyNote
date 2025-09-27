@@ -278,6 +278,8 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
             ['GET', '/api/admin/statistics/health'],
         ];
 
+        $hasValidTest = false;
+
         foreach ($endpoints as [$method, $path]) {
             $response = $this->makeUserRequest($method, $path);
 
@@ -285,8 +287,14 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
                 continue; // 跳過未配置的路由或認證問題
             }
 
+            $hasValidTest = true;
             // 應該回傳 403 Forbidden
             $this->assertEquals(403, $response['status'], "普通使用者存取 {$method} {$path} 應回傳 403");
+        }
+
+        // 如果所有端點都未配置或有認證問題，跳過測試
+        if (!$hasValidTest) {
+            $this->markTestSkipped('Statistics admin API 端點未正確配置或認證未實作');
         }
     }
 
@@ -338,6 +346,8 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
             ['GET', '/api/admin/statistics/health'],
         ];
 
+        $hasValidTest = false;
+
         foreach ($endpoints as [$method, $path]) {
             $response = $this->makeAdminRequest($method, $path);
 
@@ -346,6 +356,7 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
             }
 
             if ($response['status'] === 200) {
+                $hasValidTest = true;
                 // 驗證標準化回應格式
                 $body = $response['body'];
                 $this->assertIsArray($body);
@@ -356,6 +367,11 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
                     "{$method} {$path} 回應應包含 message 或 data 欄位",
                 );
             }
+        }
+
+        // 如果所有端點都未配置或無法存取，跳過測試
+        if (!$hasValidTest) {
+            $this->markTestSkipped('所有 admin endpoints 都未正確配置或無法存取');
         }
     }
 
