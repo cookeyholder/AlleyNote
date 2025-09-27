@@ -27,10 +27,10 @@
 ### 常用操作
 ```bash
 # 檢查快取統計
-php scripts/statistics-recalculation.php --type=overview --dry-run
+php backend/scripts/statistics-recalculation.php --type=overview --dry-run
 
 # 預熱指定統計類型
-php scripts/statistics-recalculation.php --type=posts --start-date="-7 days" --end-date="now" --force
+php backend/scripts/statistics-recalculation.php --type=posts --start-date="-7 days" --end-date="now" --force
 
 # 清除特定標籤快取（需在應用程式內呼叫）
 php artisan statistics:cache:flush --tags=statistics:posts
@@ -56,7 +56,7 @@ php artisan statistics:cache:flush --tags=statistics:posts
 3. **檢視快照與原始資料**：比較 `statistics_snapshots` 與來源表（`posts`、`users` 等）差異。
 4. **執行回填或修正**：
    ```bash
-   php scripts/statistics-recalculation.php --type=overview --start-date="2025-09-01" --end-date="2025-09-15" --force
+   php backend/scripts/statistics-recalculation.php --type=overview --start-date="2025-09-01" --end-date="2025-09-15" --force
    ```
 5. **驗證結果**：透過 API Smoke Test 或直接查詢快照表確認數值。
 6. **紀錄與追蹤**：於 `/docs/decision-log/` 登記事件來源、處理方式與預防措施。

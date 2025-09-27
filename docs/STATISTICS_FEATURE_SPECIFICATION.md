@@ -17,73 +17,7 @@
 **需求描述**：為文章新增來源追蹤機制，記錄文章的建立管道和來源類型。
 
 **驗收標準**：
-- ✅ Post 模型新增 `source_type` 欄位（enum: 'web', 'api- ✅ 快取失效策略正確實作
-
-#### 5.1.1 快取鍵命名規範
-**快取鍵結構**：
-```php
-// 基本格式: {prefix}:{type}:{period}:{date_hash}
-const CACHE_KEYS = [
-    'overview' => 'alley:stats:overview:{period}:{date_hash}',
-    'posts' => 'alley:stats:posts:{type}:{period}:{date_hash}',
-    'sources' => 'alley:stats:sources:{period}:{date_hash}',
-    'users' => 'alley:stats:users:{period}:{date_hash}',
-    'popular' => 'alley:stats:popular:{limit}:{period}:{date_hash}',
-];
-
-// 範例
-const EXAMPLE_KEYS = [
-    'alley:stats:overview:monthly:2025-09',
-    'alley:stats:posts:by_status:daily:2025-09-21',
-    'alley:stats:sources:weekly:2025-W38',
-    'alley:stats:users:activity:monthly:2025-09',
-    'alley:stats:popular:10:daily:2025-09-21'
-];
-```
-
-**快取標籤系統**：
-```php
-// 主標籤
-const PRIMARY_TAG = 'statistics';
-
-// 子標籤
-const SUB_TAGS = [
-    'statistics:overview',
-    'statistics:posts',
-    'statistics:sources',
-    'statistics:users',
-    'statistics:popular'
-];
-
-// 時間標籤
-const TIME_TAGS = [
-    'statistics:daily',
-    'statistics:weekly',
-    'statistics:monthly',
-    'statistics:yearly'
-];
-```
-
-#### 5.1.2 監控與效能指標
-**快取效能目標**：
-- 快取命中率 ≥ 80%
-- 快取回應時間 < 50ms
-- 快取失效重建時間 < 2 秒
-
-**監控指標**：
-```php
-// 需要監控的指標
-const MONITORING_METRICS = [
-    'cache_hit_rate',           // 快取命中率
-    'cache_miss_rate',          // 快取未命中率
-    'cache_response_time',      // 快取回應時間
-    'cache_rebuild_time',       // 快取重建時間
-    'statistics_calculation_time', // 統計計算時間
-    'api_response_time',        // API 回應時間
-    'error_rate',               // 錯誤率
-    'request_volume'            // 請求量
-];
-```import', 'migration'）
+- ✅ Post 模型新增 `source_type` 欄位（enum: 'web', 'api', 'import', 'migration'）
 - ✅ Post 模型新增 `source_detail` 欄位（記錄具體來源資訊）
 - ✅ 資料庫 migration 正確建立並可逆轉
 - ✅ 現有資料向下相容，預設來源為 'web'
@@ -109,10 +43,6 @@ CREATE INDEX idx_posts_stats_composite ON posts(created_at, status, source_type,
 ```
 
 **欄位約束與驗證**：
-- `source_type` 使用 CHECK 約束限制可選值
-- `source_detail` 長度不超過 1000 字元
-- 歷史資料的缺失值處理
-
 ```sql
 -- 欄位約束
 ALTER TABLE posts ADD CONSTRAINT chk_source_type
@@ -133,7 +63,6 @@ CHECK (LENGTH(source_detail) <= 1000);
 - ✅ 建立適當的索引和外鍵約束
 
 #### 1.2.1 統計快照表結構詳細
-**statistics_snapshots 表定義**：
 ```sql
 CREATE TABLE statistics_snapshots (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -143,24 +72,23 @@ CREATE TABLE statistics_snapshots (
     period_start DATETIME NOT NULL COMMENT '統計週期開始時間',
     period_end DATETIME NOT NULL COMMENT '統計週期結束時間',
     statistics_data TEXT NOT NULL COMMENT '儲存序列化後的統計資料 JSON 字串',
-    metadata TEXT NULL COMMENT '儲存序列化後的元資料 JSON 字串：計算參數、版本等',
+    metadata TEXT NULL COMMENT '儲存序列化後的元資料 JSON 字串',
     expires_at DATETIME NULL COMMENT '快照過期時間',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     -- 索引和約束
     UNIQUE(snapshot_type, period_type, period_start, period_end),
-    INDEX idx_snapshot_type_period (snapshot_type, period_type),
-    INDEX idx_period_range (period_start, period_end),
-    INDEX idx_expires_at (expires_at),
-    INDEX idx_created_at (created_at),
-
-    -- 檢查約束
     CONSTRAINT chk_snapshot_type CHECK (snapshot_type IN ('overview', 'posts', 'sources', 'users', 'popular')),
     CONSTRAINT chk_period_type CHECK (period_type IN ('daily', 'weekly', 'monthly', 'yearly')),
-    CONSTRAINT chk_period_range CHECK (period_start < period_end),
-    CONSTRAINT chk_expires_at CHECK (expires_at IS NULL OR expires_at > created_at)
+    CONSTRAINT chk_period_range CHECK (period_start < period_end)
 );
+
+-- 建立索引
+CREATE INDEX idx_snapshot_type_period ON statistics_snapshots(snapshot_type, period_type);
+CREATE INDEX idx_period_range ON statistics_snapshots(period_start, period_end);
+CREATE INDEX idx_expires_at ON statistics_snapshots(expires_at);
+CREATE INDEX idx_created_at ON statistics_snapshots(created_at);
 ```
 
 **統計資料 JSON 格式範例**：
@@ -223,9 +151,25 @@ CREATE TABLE statistics_snapshots (
 - ✅ 支援複雜的統計查詢（聚合、分組、篩選）
 - ✅ 查詢效能最佳化（使用適當索引）
 - ✅ 支援分頁查詢避免記憶體問題
-- ✅ - 包含完整的查詢參數驗證
+- ✅ 包含完整的查詢參數驗證
 
-### 3.1 API 回應格式標準
+### 4. API 設計
+
+#### 4.1 統計查詢 API
+**需求描述**：提供 RESTful API 供前端查詢各種統計資料。
+
+**驗收標準**：
+- ✅ GET `/api/statistics/overview` - 總覽統計
+- ✅ GET `/api/statistics/posts` - 文章統計（支援時間範圍篩選）
+- ✅ GET `/api/statistics/sources` - 來源分布統計
+- ✅ GET `/api/statistics/users` - 使用者活躍度統計
+- ✅ GET `/api/statistics/popular` - 熱門內容統計
+- ✅ 所有 API 支援 JWT 認證
+- ✅ 回傳資料格式標準化（包含 metadata）
+- ✅ 完整的錯誤處理和 HTTP 狀態碼
+- ✅ API 文件自動生成（Swagger）
+
+#### 4.1.1 API 回應格式標準
 **成功回應格式**：
 ```json
 {
@@ -268,8 +212,7 @@ CREATE TABLE statistics_snapshots (
 }
 ```
 
-### 3.2 錯誤碼定義
-**統計功能錯誤碼規範**：
+#### 4.1.2 錯誤碼定義
 ```php
 class StatisticsErrorCodes {
     // 參數驗證錯誤
@@ -293,45 +236,19 @@ class StatisticsErrorCodes {
 }
 ```
 
-**HTTP 狀態碼對照**：
-- 200: 成功回應
-- 400: 參數錯誤或驗證失敗
-- 401: 未授權或 Token 無效
-- 403: 權限不足
-- 404: 統計資料不存在
-- 429: 請求頻率過高
-- 500: 伺服器內部錯誤
-- 503: 統計服務不可用
-
-### 4. API 設計
-
-#### 4.1 統計查詢 API
-**需求描述**：提供 RESTful API 供前端查詢各種統計資料。
-
-**驗收標準**：
-- ✅ GET `/api/statistics/overview` - 總覽統計
-- ✅ GET `/api/statistics/posts` - 文章統計（支援時間範圍篩選）
-- ✅ GET `/api/statistics/sources` - 來源分布統計
-- ✅ GET `/api/statistics/users` - 使用者活躍度統計
-- ✅ GET `/api/statistics/popular` - 熱門內容統計
-- ✅ 所有 API 支援 JWT 認證
-- ✅ 回傳資料格式標準化（包含 metadata）
-- ✅ 完整的錯誤處理和 HTTP 狀態碼
-- ✅ API 文件自動生成（Swagger）
-
 #### 4.2 統計管理 API
 **需求描述**：提供管理員專用的統計管理功能。
 
 **驗收標準**：
 - ✅ POST `/api/admin/statistics/refresh` - 手動重新計算統計
 - ✅ DELETE `/api/admin/statistics/cache` - 清除統計快取
-- ✅ GET `/api/admin/statistics/health` - 統計系統健康檢查，應至少包含：資料庫連線、快取服務連線、最新快照時間戳。
+- ✅ GET `/api/admin/statistics/health` - 統計系統健康檢查
 - ✅ 需要管理員權限驗證
 - ✅ 操作記錄到活動日誌
 
-### 5. 快取策略
+### 5. 快取與效能最佳化
 
-#### 5.1 統計資料快取
+#### 5.1 快取策略實作
 **需求描述**：實作多層次快取策略，提升統計查詢效能。
 
 **驗收標準**：
@@ -340,7 +257,7 @@ class StatisticsErrorCodes {
 - ✅ 支援快取標籤分組管理
 - ✅ 快取過期時間合理設定
 - ✅ 支援快取預熱機制
-- ✅ - 快取失效策略正確實作
+- ✅ 快取失效策略正確實作
 
 #### 5.1.1 快取鍵命名規範
 **快取鍵結構**：
@@ -395,124 +312,156 @@ const TIME_TAGS = [
 
 **監控指標**：
 ```php
-// 需要監控的指標
 const MONITORING_METRICS = [
-    'cache_hit_rate',           // 快取命中率
-    'cache_miss_rate',          // 快取未命中率
-    'cache_response_time',      // 快取回應時間
-    'cache_rebuild_time',       // 快取重建時間
+    'cache_hit_rate',              // 快取命中率
+    'cache_miss_rate',             // 快取未命中率
+    'cache_response_time',         // 快取回應時間
+    'cache_rebuild_time',          // 快取重建時間
     'statistics_calculation_time', // 統計計算時間
-    'api_response_time',        // API 回應時間
-    'error_rate',               // 錯誤率
-    'request_volume'            // 請求量
+    'api_response_time',           // API 回應時間
+    'error_rate',                  // 錯誤率
+    'request_volume'               // 請求量
 ];
 ```
 
-### 6. 前端整合（可選）
+### 6. 測試需求
 
-#### 6.1 統計 Dashboard
-**需求描述**：在管理介面中新增統計 Dashboard 頁面。
-
+#### 6.1 單元測試
 **驗收標準**：
-- ✅ 總覽卡片展示關鍵指標
-- ✅ 圖表展示趨勢資料（折線圖、圓餅圖）
-- ✅ 支援時間範圍選擇
-- ✅ 響應式設計支援行動裝置
-- ✅ 資料即時更新機制
-- ✅ 載入狀態和錯誤處理
+- ✅ 所有 Service 類別測試覆蓋率 ≥ 90%
+- ✅ 所有 Repository 類別測試覆蓋率 ≥ 90%
+- ✅ 統計計算邏輯測試涵蓋邊界條件
+- ✅ 快取機制測試涵蓋失效情境
+- ✅ 錯誤處理測試涵蓋所有例外情況
 
-## 非功能需求
+#### 6.2 整合測試
+**驗收標準**：
+- ✅ 統計 API 端點完整測試
+- ✅ 資料庫查詢效能測試
+- ✅ 快取整合測試
+- ✅ 認證授權測試
+- ✅ 並發存取測試
 
-### 效能需求
-- 統計 API 回應時間 < 2 秒
-- 支援併發查詢數 ≥ 100
-- 快取命中率 ≥ 80%
+### 7. 效能要求
 
-### 安全需求
-- 所有 API 需要適當的權限驗證
-- 敏感統計資料需要管理員權限
-- 防止統計資料洩露用戶隱私
+#### 7.1 回應時間要求
+- 快取命中時：統計查詢 < 100ms
+- 快取未命中時：統計查詢 < 2s
+- 快照生成：< 10s
+- 批量資料處理：< 30s
 
-### 維護需求
-- 完整的單元測試覆蓋率 ≥ 90%
-- 詳細的 API 文件
-- 操作手冊和故障排除指南
+#### 7.2 併發處理能力
+- 同時支援 100+ 統計查詢請求
+- 快照生成不阻塞查詢操作
+- 快取更新採用非阻塞機制
 
-### 資料保存需求
-- 統計快照資料保存期限：日統計 30 天，週統計 90 天，月統計 1 年，年統計永久保存
-- 原始日誌資料保存 180 天
-- 定期清理過期快照資料
+### 8. 部署與監控
 
-### 隱私保護需求
-- 統計資料不包含個人識別資訊
-- IP 位址進行部分遾蔽處理
-- 敏感統計資料加密儲存
-- 符合 GDPR 等隱私保護法規
+#### 8.1 部署需求
+**驗收標準**：
+- ✅ Docker 容器化部署
+- ✅ 資料庫 migration 自動執行
+- ✅ 快取服務依賴檢查
+- ✅ 環境變數配置完整
+- ✅ 健康檢查端點正常運作
 
-## 技術約束
+#### 8.2 監控告警
+**需要監控的指標**：
+- 統計 API 回應時間
+- 快取命中率
+- 錯誤率
+- 系統資源使用率
+- 資料庫查詢效能
 
-### 架構約束
-- 遵循 DDD 架構原則
-- 符合專案的程式碼品質標準
-- 使用現有的快取和資料庫基礎設施
+**告警閾值**：
+- API 回應時間 > 5s
+- 快取命中率 < 70%
+- 錯誤率 > 5%
+- CPU 使用率 > 80%
+- 記憶體使用率 > 80%
 
-### 相容性約束
-- PHP 8.4+ 相容
-- 不破壞現有 API 向下相容性
-- 支援現有的認證機制
+---
 
-## 參考資料
+## 技術架構圖
 
-- 專案 DDD 架構指南
-- API 設計規範
-- 資料庫設計最佳實踐
-- 快取策略指南
-�程時間等。
+```
+Frontend (Vite + TypeScript)
+    ↓ HTTP/REST API
+Statistics Controller
+    ↓ Service Layer
+Statistics Calculator Service ← Statistics Snapshot Service
+    ↓ Repository Layer
+Statistics Repository
+    ↓ Data Layer
+SQLite Database ← Redis Cache
+```
 
-## 參考資料
+## 開發階段規劃
 
-- 專案 DDD 架構指南
-- API 設計規範
-- 資料庫設計最佳實踐
-- 快取策略指南
-構指南
-- API 設計規範
-- 資料庫設計最佳實踐
-- 快取策略指南
-��
+### Phase 1: 基礎設施建立 (Week 1)
+- 資料庫 Schema 設計與 Migration
+- 基本 Domain Models 建立
+- Repository 介面定義
 
-### 資料保存需求
-- 統計快照資料保存期限：日統計 30 天，週統計 90 天，月統計 1 年，年統計永久保存
-- 原始日誌資料保存 180 天
-- 定期清理過期快照資料
+### Phase 2: 核心服務開發 (Week 2-3)
+- 統計計算服務實作
+- 快照管理服務實作
+- 快取策略實作
 
-### 隱私保護需求
-- 統計資料不包含個人識別資訊
-- IP 位址進行部分遾蔽處理
-- 敏感統計資料加密儲存
-- 符合 GDPR 等隱私保護法規
+### Phase 3: API 開發 (Week 4)
+- RESTful API 端點實作
+- 認證授權整合
+- API 文件生成
 
-## 技術約束
+### Phase 4: 測試與最佳化 (Week 5)
+- 單元測試與整合測試
+- 效能調校與最佳化
+- 監控告警設定
 
-### 架構約束
-- 遵循 DDD 架構原則
-- 符合專案的程式碼品質標準
-- 使用現有的快取和資料庫基礎設施
+### Phase 5: 前端整合 (Week 6)
+- 前端統計頁面開發
+- 圖表與視覺化實作
+- 使用者體驗最佳化
 
-### 相容性約束
-- PHP 8.4+ 相容
-- 不破壞現有 API 向下相容性
-- 支援現有的認證機制
+---
 
-## 參考資料
+## 附錄
 
-- 專案 DDD 架構指南
-- API 設計規範
-- 資料庫設計最佳實踐
-- 快取策略指南
+### A. 資料庫索引建議
+```sql
+-- 統計查詢最佳化索引
+CREATE INDEX idx_posts_created_status ON posts(created_at, status);
+CREATE INDEX idx_posts_user_created ON posts(user_id, created_at);
+CREATE INDEX idx_posts_source_created ON posts(source_type, created_at);
 
+-- 複合索引用於複雜統計查詢
+CREATE INDEX idx_posts_stats_full ON posts(created_at, status, source_type, user_id);
+CREATE INDEX idx_posts_popular ON posts(view_count DESC, created_at DESC);
+```
 
-- 專案 DDD 架構指南
-- API 設計規範
-- 資料庫設計最佳實踐
-- 快取策略指南
+### B. 快取失效規則
+```php
+// 快取失效觸發條件
+const CACHE_INVALIDATION_TRIGGERS = [
+    'post_created' => ['statistics:posts', 'statistics:overview'],
+    'post_updated' => ['statistics:posts', 'statistics:overview'],
+    'post_deleted' => ['statistics:posts', 'statistics:overview'],
+    'user_activity' => ['statistics:users'],
+    'view_count_updated' => ['statistics:popular'],
+    'manual_refresh' => ['statistics:*'],
+];
+```
+
+### C. 監控查詢範例
+```sql
+-- 快取命中率監控
+SELECT 
+    DATE(created_at) as date,
+    COUNT(*) as total_requests,
+    SUM(CASE WHEN cache_hit = 1 THEN 1 ELSE 0 END) as cache_hits,
+    ROUND(SUM(CASE WHEN cache_hit = 1 THEN 1 ELSE 0 END) * 100.0 / COUNT(*), 2) as hit_rate
+FROM statistics_requests_log 
+WHERE created_at >= DATE('now', '-7 days')
+GROUP BY DATE(created_at)
+ORDER BY date;
+```

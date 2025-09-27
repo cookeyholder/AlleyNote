@@ -42,7 +42,7 @@ cat .env | grep -E "^(DB_|REDIS_|LOG_)"
 
 ### 基本語法
 ```bash
-php scripts/statistics-recalculation.php [type] [start_date] [end_date] [options]
+php backend/scripts/statistics-recalculation.php [type] [start_date] [end_date] [options]
 ```
 
 ### 參數說明
@@ -63,32 +63,32 @@ php scripts/statistics-recalculation.php [type] [start_date] [end_date] [options
 ### 1. 基本回填操作
 ```bash
 # 回填一個月的總覽統計
-php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31
+php backend/scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31
 
 # 回填一週的文章統計
-php scripts/statistics-recalculation.php posts 2024-01-01 2024-01-07
+php backend/scripts/statistics-recalculation.php posts 2024-01-01 2024-01-07
 ```
 
 ### 2. 進階回填操作
 ```bash
 # 強制覆蓋已存在的資料
-php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --force
+php backend/scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --force
 
 # 自訂批次大小（每批處理 7 天）
-php scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=7
+php backend/scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=7
 
 # 試執行模式（不實際執行，只顯示計劃）
-php scripts/statistics-recalculation.php users 2024-01-01 2024-01-31 --dry-run
+php backend/scripts/statistics-recalculation.php users 2024-01-01 2024-01-31 --dry-run
 ```
 
 ### 3. 大量資料回填
 ```bash
 # 回填整年資料（使用較小的批次大小）
-php scripts/statistics-recalculation.php overview 2023-01-01 2023-12-31 --batch-size=14 --force
+php backend/scripts/statistics-recalculation.php overview 2023-01-01 2023-12-31 --batch-size=14 --force
 
 # 回填多個統計類型
 for type in overview posts users popular; do
-  php scripts/statistics-recalculation.php $type 2024-01-01 2024-01-31 --force
+  php backend/scripts/statistics-recalculation.php $type 2024-01-01 2024-01-31 --force
 done
 ```
 
@@ -104,7 +104,7 @@ df -h
 mysqldump -u user -p database > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # 3. 先使用試執行模式確認操作
-php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --dry-run
+php backend/scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --dry-run
 ```
 
 ### 2. 效能最佳化
@@ -115,9 +115,9 @@ php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --dry-ru
 # 大批次（60-90天）：最高效能，需要充足記憶體
 
 # 範例：針對不同情境的批次大小選擇
-php scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=7   # 資源受限
-php scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=30  # 一般情況
-php scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=90  # 高效能需求
+php backend/scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=7   # 資源受限
+php backend/scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=30  # 一般情況
+php backend/scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-size=90  # 高效能需求
 ```
 
 ### 3. 錯誤處理
@@ -126,7 +126,7 @@ php scripts/statistics-recalculation.php posts 2024-01-01 2024-01-31 --batch-siz
 tail -f storage/logs/statistics.log &
 
 # 執行指令並記錄輸出
-php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 2>&1 | tee recalc_$(date +%Y%m%d_%H%M%S).log
+php backend/scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 2>&1 | tee recalc_$(date +%Y%m%d_%H%M%S).log
 ```
 
 ## 監控與除錯
@@ -151,7 +151,7 @@ tail -f storage/logs/laravel.log
 php -d memory_limit=1024M scripts/statistics-recalculation.php [參數]
 
 # 或減少批次大小
-php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --batch-size=7
+php backend/scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --batch-size=7
 ```
 
 #### 資料庫連線逾時
@@ -184,7 +184,7 @@ echo "開始統計資料回填: $LAST_WEEK_START 至 $LAST_WEEK_END"
 
 for TYPE in overview posts users popular; do
     echo "處理 $TYPE 統計..."
-    php scripts/statistics-recalculation.php "$TYPE" "$LAST_WEEK_START" "$LAST_WEEK_END" \
+    php backend/scripts/statistics-recalculation.php "$TYPE" "$LAST_WEEK_START" "$LAST_WEEK_END" \
         --force --batch-size=7 >> "$LOG_DIR/backfill_$DATE.log" 2>&1
 done
 
@@ -215,7 +215,7 @@ chown www-data:www-data scripts/statistics-recalculation.php
 mysqldump statistics_snapshots > backup_before_recalc.sql
 
 # 使用試執行模式驗證
-php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --dry-run
+php backend/scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --dry-run
 ```
 
 ## 效能基準

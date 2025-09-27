@@ -700,7 +700,7 @@
 **實作內容**：
 - 建立 `docs/STATISTICS_DATABASE_MIGRATION_GUIDE.md`，涵蓋遷移前檢查、備份策略、回滾流程與效能評估。
 - 製作生產部署檢查清單，確保 Cron 排程、監控告警與設定版本同步。
-- 透過 `docker compose exec -T web php scripts/scan-project-architecture.php` 更新最新架構報告，確認文件描述與實際結構一致。
+- 透過 `docker compose exec -T web php backend/scripts/scan-project-architecture.php` 更新最新架構報告，確認文件描述與實際結構一致。
 
 #### ✅ T7.4 - 建立統計功能操作手冊
 **描述**：建立統計功能的日常維護和故障處理手冊
@@ -719,7 +719,7 @@
 **實作內容**：
 - 建立 `docs/STATISTICS_OPERATIONS_MANUAL.md`，涵蓋監控、快取、常見問題、異常處理、效能調整與緊急應變。
 - 提供實用命令與表格指引，協助維運人員快速定位並處理統計相關問題。
-- 執行 `docker compose exec -T web php scripts/scan-project-architecture.php` 與 `docker compose exec -T web ./vendor/bin/phpunit --testsuite=Unit`，確保文件調整未對程式碼造成副作用。
+- 執行 `docker compose exec -T web php backend/scripts/scan-project-architecture.php` 與 `docker compose exec -T web ./vendor/bin/phpunit --testsuite=Unit`，確保文件調整未對程式碼造成副作用。
 
 ---
 

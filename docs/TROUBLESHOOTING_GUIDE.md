@@ -36,7 +36,7 @@ ping your-server-ip
 ssh user@your-server-ip
 
 # 3. 檢查前後端容器狀態
-docker-compose ps
+docker compose ps
 
 # 4. 檢查系統資源
 top
@@ -53,19 +53,19 @@ curl -I http://localhost:8080/api/health
 #### 緊急恢復程序
 ```bash
 # 1. 強制重啟所有容器 (前後端分離)
-docker-compose -f docker-compose.production.yml down --remove-orphans
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker compose.production.yml down --remove-orphans
+docker compose -f docker compose.production.yml up -d
 
 # 2. 如果容器無法啟動，檢查日誌
-docker-compose logs --tail=100 web          # 後端日誌
-docker-compose logs --tail=100 frontend     # 前端日誌
-docker-compose logs --tail=100 db           # 資料庫日誌
+docker compose logs --tail=100 web          # 後端日誌
+docker compose logs --tail=100 frontend     # 前端日誌
+docker compose logs --tail=100 db           # 資料庫日誌
 
 # 3. 檢查系統日誌
 sudo journalctl -u docker.service --since "1 hour ago"
 
 # 4. 緊急模式啟動（僅後端服務）
-docker-compose up -d web
+docker compose up -d web
 
 # 5. 檢查前端建構狀態
 cd frontend && npm run build
@@ -95,29 +95,29 @@ sqlite3 /var/www/html/database/alleynote.sqlite3 "PRAGMA integrity_check;"
 #### PostgreSQL 故障排除 (大型部署)
 ```bash
 # 1. 停止所有服務
-docker-compose -f docker-compose.production.yml down
+docker compose -f docker compose.production.yml down
 
 # 2. 檢查資料庫容器狀態
-docker-compose ps db
+docker compose ps db
 
 # 3. 備份當前資料庫
-docker-compose exec db pg_dump -U ${DB_USERNAME} -d ${DB_DATABASE} \
+docker compose exec db pg_dump -U ${DB_USERNAME} -d ${DB_DATABASE} \
   --clean --if-exists > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # 4. 檢查資料庫日誌
-docker-compose logs db
+docker compose logs db
 
 # 5. 重新啟動資料庫服務
-docker-compose up -d db
+docker compose up -d db
 
 # 6. 等待資料庫啟動完成
 sleep 30
 
 # 7. 測試連線
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT 1;"
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT 1;"
 
 # 8. 如果仍有問題，檢查資料庫完整性
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT version();"
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT version();"
 ```
 
 ### SSL 憑證過期
@@ -128,10 +128,10 @@ docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT versi
 openssl x509 -in ssl-data/live/yourdomain.com/fullchain.pem -text -noout | grep "Not After"
 
 # 2. 強制更新憑證
-docker-compose exec certbot certbot renew --force-renewal
+docker compose exec certbot certbot renew --force-renewal
 
 # 3. 重新載入 Nginx
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 
 # 4. 如果更新失敗，重新申請憑證
 ./scripts/ssl-setup.sh yourdomain.com admin@yourdomain.com
@@ -187,10 +187,10 @@ time_total: %{time_total}\n"
 sudo sync && sudo sysctl vm.drop_caches=3
 
 # 重啟緩慢的容器
-docker-compose restart web frontend
+docker compose restart web frontend
 
 # 清理 PHP OPcache (PHP 8.4.12)
-docker-compose exec web php -r "opcache_reset();"
+docker compose exec web php -r "opcache_reset();"
 
 # 重建前端資產
 cd frontend
@@ -201,8 +201,8 @@ npm run build
 sqlite3 /var/www/html/database/alleynote.sqlite3 "VACUUM; ANALYZE;"
 
 # PostgreSQL (大型部署時)
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "VACUUM ANALYZE;"
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "REINDEX DATABASE ${DB_DATABASE};"
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "VACUUM ANALYZE;"
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "REINDEX DATABASE ${DB_DATABASE};"
 ```
 
 ### 404 錯誤頻發
@@ -210,17 +210,17 @@ docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "REINDEX DATA
 #### 檢查項目
 ```bash
 # 1. 檢查 Nginx 配置
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # 2. 檢查 Nginx 錯誤日誌
-docker-compose logs nginx | grep "404"
+docker compose logs nginx | grep "404"
 
 # 3. 檢查檔案權限
 ls -la public/
 ls -la storage/
 
 # 4. 檢查路由配置
-docker-compose exec web php -r "
+docker compose exec web php -r "
 include 'vendor/autoload.php';
 // 檢查路由設定
 "
@@ -229,16 +229,16 @@ include 'vendor/autoload.php';
 #### 修復步驟
 ```bash
 # 1. 修復檔案權限
-docker-compose exec web chown -R www-data:www-data /var/www/html
-docker-compose exec web chmod -R 755 public/
-docker-compose exec web chmod -R 775 storage/
+docker compose exec web chown -R www-data:www-data /var/www/html
+docker compose exec web chmod -R 755 public/
+docker compose exec web chmod -R 775 storage/
 
 # 2. 清理並重建快取
-docker-compose exec web php artisan cache:clear
-docker-compose exec web php artisan route:clear
+docker compose exec web php artisan cache:clear
+docker compose exec web php artisan route:clear
 
 # 3. 重新載入 Nginx 配置
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 ```
 
 ### 500 內部伺服器錯誤
@@ -246,13 +246,13 @@ docker-compose exec nginx nginx -s reload
 #### 日誌檢查
 ```bash
 # 1. 檢查 PHP 錯誤日誌
-docker-compose logs web | tail -50
+docker compose logs web | tail -50
 
 # 2. 檢查應用程式日誌
 tail -50 logs/app.log
 
 # 3. 檢查 Nginx 錯誤日誌
-docker-compose exec nginx tail -50 /var/log/nginx/error.log
+docker compose exec nginx tail -50 /var/log/nginx/error.log
 
 # 4. 檢查系統日誌
 sudo journalctl -u docker.service --since "1 hour ago"
@@ -265,15 +265,15 @@ sudo journalctl -u docker.service --since "1 hour ago"
 memory_limit = 512M
 
 # 檔案權限問題
-docker-compose exec web chown -R www-data:www-data /var/www/html
-docker-compose exec web chmod -R 755 /var/www/html
+docker compose exec web chown -R www-data:www-data /var/www/html
+docker compose exec web chmod -R 755 /var/www/html
 
 # PHP 擴展缺失
-docker-compose exec web php -m | grep -i needed_extension
+docker compose exec web php -m | grep -i needed_extension
 
 # 重建容器
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 ```
 
 ### 資料庫連線失敗
@@ -284,10 +284,10 @@ docker-compose up -d --build
 ls -la database/alleynote.db
 
 # 2. 檢查檔案權限
-docker-compose exec web ls -la database/alleynote.db
+docker compose exec web ls -la database/alleynote.db
 
 # 3. 測試資料庫連線
-docker-compose exec web sqlite3 database/alleynote.db "SELECT 1;"
+docker compose exec web sqlite3 database/alleynote.db "SELECT 1;"
 
 # 4. 檢查資料庫鎖定
 lsof database/alleynote.db
@@ -296,14 +296,14 @@ lsof database/alleynote.db
 #### 修復方法
 ```bash
 # 1. 修復檔案權限
-docker-compose exec web chown www-data:www-data database/alleynote.db
-docker-compose exec web chmod 664 database/alleynote.db
+docker compose exec web chown www-data:www-data database/alleynote.db
+docker compose exec web chmod 664 database/alleynote.db
 
 # 2. 檢查並修復資料庫
-docker-compose exec web sqlite3 database/alleynote.db "PRAGMA integrity_check;"
+docker compose exec web sqlite3 database/alleynote.db "PRAGMA integrity_check;"
 
 # 3. 重建資料庫索引
-docker-compose exec web sqlite3 database/alleynote.db "REINDEX;"
+docker compose exec web sqlite3 database/alleynote.db "REINDEX;"
 
 # 4. 如果資料庫損壞，恢復備份
 ./scripts/restore_sqlite.sh database/backups/latest_backup.db
@@ -346,7 +346,7 @@ check_website() {
 
 # 檢查容器狀態
 check_containers() {
-    local failed_containers=$(docker-compose ps | grep -v "Up" | grep -v "Name" | wc -l)
+    local failed_containers=$(docker compose ps | grep -v "Up" | grep -v "Name" | wc -l)
     if [ $failed_containers -gt 0 ]; then
         send_alert "發現 $failed_containers 個容器狀態異常"
         return 1
@@ -376,7 +376,7 @@ check_memory() {
 
 # 檢查資料庫
 check_database() {
-    if ! docker-compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
+    if ! docker compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
         send_alert "資料庫連線失敗"
         return 1
     fi
@@ -505,8 +505,8 @@ docker volume prune -f
 
 # 3. 優化資料庫
 echo "3. 優化資料庫..."
-docker-compose exec web sqlite3 database/alleynote.db "VACUUM;"
-docker-compose exec web sqlite3 database/alleynote.db "ANALYZE;"
+docker compose exec web sqlite3 database/alleynote.db "VACUUM;"
+docker compose exec web sqlite3 database/alleynote.db "ANALYZE;"
 
 # 4. 備份驗證
 echo "4. 驗證備份完整性..."
@@ -521,7 +521,7 @@ grep -i "failed\|error\|attack" logs/security.log | tail -10
 
 # 6. 效能分析
 echo "6. 效能分析..."
-docker-compose exec web php scripts/db-performance.php
+docker compose exec web php scripts/db-performance.php
 
 echo "=== 每週維護完成 ==="
 ```
@@ -540,9 +540,9 @@ sudo apt update && sudo apt upgrade -y
 
 # 2. 重新整理容器映像
 echo "2. 更新容器映像..."
-docker-compose pull
-docker-compose down
-docker-compose up -d --build
+docker compose pull
+docker compose down
+docker compose up -d --build
 
 # 3. 清理舊備份
 echo "3. 清理舊備份..."
@@ -551,7 +551,7 @@ find database/backups/ -name "*.tar.gz" -mtime +90 -delete
 
 # 4. 檢查 SSL 憑證續簽
 echo "4. 檢查 SSL 憑證..."
-docker-compose exec certbot certbot certificates
+docker compose exec certbot certbot certificates
 
 # 5. 安全掃描
 echo "5. 執行安全掃描..."
@@ -588,10 +588,10 @@ cat > curl-format.txt << 'EOF'
 EOF
 
 # 2. 分析慢查詢
-docker-compose exec web php scripts/slow-query-analyzer.php
+docker compose exec web php scripts/slow-query-analyzer.php
 
 # 3. 檢查快取命中率
-docker-compose exec redis redis-cli info stats | grep hit
+docker compose exec redis redis-cli info stats | grep hit
 ```
 
 #### 優化策略
@@ -616,7 +616,7 @@ gzip_types text/plain text/css application/json application/javascript;
 client_max_body_size 10M;
 
 # 4. 資料庫索引優化
-docker-compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.db "
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
@@ -634,19 +634,19 @@ while true; do
 done >> memory_usage.log
 
 # 2. 分析記憶體使用模式
-docker-compose exec web php -r "
+docker compose exec web php -r "
 echo 'Memory usage: ' . memory_get_usage(true) / 1024 / 1024 . ' MB' . PHP_EOL;
 echo 'Peak usage: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB' . PHP_EOL;
 "
 
 # 3. 檢查 PHP 記憶體限制
-docker-compose exec web php -i | grep memory_limit
+docker compose exec web php -i | grep memory_limit
 ```
 
 #### 解決方案
 ```bash
 # 1. 重啟容器釋放記憶體
-docker-compose restart web
+docker compose restart web
 
 # 2. 調整 PHP 記憶體限制
 # 編輯 docker/php/php.ini
@@ -667,7 +667,7 @@ gc_collect_cycles();
 #### 監控指標
 ```bash
 # 1. 檢查失敗登入
-docker-compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.db "
 SELECT ip_address, COUNT(*) as attempts, MAX(created_at) as last_attempt
 FROM failed_login_attempts
 WHERE created_at > datetime('now', '-24 hours')
@@ -680,7 +680,7 @@ ORDER BY attempts DESC;
 tail -1000 logs/access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head -20
 
 # 3. 檢查大量檔案上傳
-docker-compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.db "
 SELECT user_id, COUNT(*) as uploads, SUM(file_size) as total_size
 FROM attachments
 WHERE created_at > datetime('now', '-24 hours')
@@ -708,7 +708,7 @@ awk '{print $1}' logs/access.log | sort | uniq -c | sort -nr | while read count 
             echo "$(date): 封鎖 IP $ip (請求數: $count)" >> $LOG_FILE
 
             # 記錄到資料庫
-            docker-compose exec web sqlite3 database/alleynote.db "
+            docker compose exec web sqlite3 database/alleynote.db "
             INSERT INTO ip_lists (ip_address, type, description, created_by, created_at)
             VALUES ('$ip', 'blacklist', '自動封鎖 - 請求數過多 ($count)', 0, datetime('now'));
             "
@@ -768,7 +768,7 @@ echo "=== 開始資料恢復程序 ==="
 
 # 1. 停止服務
 echo "停止服務..."
-docker-compose down
+docker compose down
 
 # 2. 備份當前資料庫
 echo "備份當前資料庫..."
@@ -789,7 +789,7 @@ chmod 664 database/alleynote.db
 
 # 6. 重啟服務
 echo "重啟服務..."
-docker-compose up -d
+docker compose up -d
 
 # 7. 驗證恢復
 echo "驗證恢復..."
@@ -897,7 +897,7 @@ echo
 
 # 容器狀態
 echo "🐳 容器狀態："
-docker-compose ps --format "table {{.Name}}\t{{.State}}\t{{.Status}}"
+docker compose ps --format "table {{.Name}}\t{{.State}}\t{{.Status}}"
 echo
 
 # 網站狀態
@@ -911,7 +911,7 @@ echo
 
 # 資料庫狀態
 echo "💾 資料庫狀態："
-if docker-compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
+if docker compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
     echo "✅ 資料庫正常"
     echo "大小: $(ls -lh database/alleynote.db | awk '{print $5}')"
 else

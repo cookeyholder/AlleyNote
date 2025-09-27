@@ -1,0 +1,49 @@
+=== 專案架構快速摘要 (2025-09-27 18:12:31) ===
+
+📊 品質指標:
+- 總類別數: 284
+- 介面比例: 23.24%
+- 現代 PHP 採用率: 64.79%
+- PSR-4 合規率: 76.59%
+
+🚀 現代 PHP 特性: 7 種正在使用
+- 最常用: Match 表達式 (PHP 8.0+) (279 次)
+
+📊 統計資訊:
+- 類別: 284 個
+- 介面: 66 個
+- 命名空間: 107 個
+
+🏗️ DDD 架構:
+
+🧪 測試覆蓋:
+- 有測試: 0 個類別
+- 缺少測試: 284 個類別
+
+🔌 介面實作:
+- : 178 個實作
+- JsonSerializable: 25 個實作
+- EventListenerInterface: 2 個實作
+- StatisticsAggregationServiceInterface: 1 個實作
+- PostRepositoryInterface: 1 個實作
+
+💉 重依賴類別 (≥3個依賴): 41 個
+
+❓ 可能問題引用: 239 個
+
+🔑 重點服務/控制器:
+- StatisticsServiceProvider (app/Domains/Statistics/Providers/StatisticsServiceProvider.php)
+- StatisticsConfigService (app/Domains/Statistics/Services/StatisticsConfigService.php)
+- StatisticsAggregationService (app/Domains/Statistics/Services/StatisticsAggregationService.php)
+- PostRepository (app/Domains/Post/Repositories/PostRepository.php)
+- PostService (app/Domains/Post/Services/PostService.php)
+- ContentModerationService (app/Domains/Post/Services/ContentModerationService.php)
+- RichTextProcessorService (app/Domains/Post/Services/RichTextProcessorService.php)
+- PostCacheKeyService (app/Domains/Post/Services/PostCacheKeyService.php)
+- SecurityServiceProvider (app/Domains/Security/Providers/SecurityServiceProvider.php)
+- IpRepository (app/Domains/Security/Repositories/IpRepository.php)
+- ActivityLogRepository (app/Domains/Security/Repositories/ActivityLogRepository.php)
+- XssProtectionService (app/Domains/Security/Services/Core/XssProtectionService.php)
+- CsrfProtectionService (app/Domains/Security/Services/Core/CsrfProtectionService.php)
+- SuspiciousActivityDetector (app/Domains/Security/Services/SuspiciousActivityDetector.php)
+- SecretsManager (app/Domains/Security/Services/Secrets/SecretsManager.php)

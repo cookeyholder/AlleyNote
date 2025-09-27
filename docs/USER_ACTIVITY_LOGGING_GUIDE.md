@@ -38,7 +38,7 @@ if (!$success) {
 }
 ```
 
-### 前端活動記錄 (Vue.js 3 Composition API)
+### 前端活動記錄 (TypeScript Composition API)
 
 ```javascript
 // composables/useActivityLogger.js

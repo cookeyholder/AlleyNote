@@ -51,13 +51,13 @@ docker compose exec -T web ./vendor/bin/phinx migrate -e production
    - 回填既有文章的來源欄位：
 
 ```bash
-docker compose exec -T web php scripts/statistics-recalculation.php --type=posts --start-date="-30 days" --end-date="now" --batch-size=7
+docker compose exec -T web php backend/scripts/statistics-recalculation.php --type=posts --start-date="-30 days" --end-date="now" --batch-size=7
 ```
 
    - 預熱快取：
 
 ```bash
-docker compose exec -T web php scripts/statistics-recalculation.php --type=overview --dry-run=false --force
+docker compose exec -T web php backend/scripts/statistics-recalculation.php --type=overview --dry-run=false --force
 ```
 
 4. **稽核與驗證**
@@ -92,7 +92,7 @@ mysql -h $DB_HOST -u $DB_USERNAME -p$DB_PASSWORD $DB_DATABASE < backup.sql
 4. 清除統計快取與暫存檔：
 
 ```bash
-docker compose exec -T web php scripts/statistics-recalculation.php --type=overview --force --dry-run
+docker compose exec -T web php backend/scripts/statistics-recalculation.php --type=overview --force --dry-run
 rm -rf backend/storage/statistics/*
 ```
 

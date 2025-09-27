@@ -242,7 +242,7 @@ LOG_LEVEL=info
 #### Docker Compose 配置
 
 ```yaml
-# docker-compose.cache.yml
+# docker compose.cache.yml
 version: '3.8'
 
 services:
