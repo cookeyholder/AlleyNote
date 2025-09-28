@@ -24,7 +24,16 @@
         </include>
         <exclude>
             <directory>./app/Infrastructure/OpenApi</directory>
-            <directory suffix=".php">./app/Domains/Statistics/Contracts</directory>
+            <directory>./app/Domains/Attachment/Contracts</directory>
+            <directory>./app/Domains/Auth/Contracts</directory>
+            <directory>./app/Domains/Post/Contracts</directory>
+            <directory>./app/Domains/Security/Contracts</directory>
+            <directory>./app/Domains/Statistics/Contracts</directory>
+            <directory>./app/Infrastructure/Routing/Contracts</directory>
+            <directory>./app/Shared/Cache/Contracts</directory>
+            <directory>./app/Shared/Contracts</directory>
+            <directory>./app/Shared/Events/Contracts</directory>
+            <directory>./app/Shared/Monitoring/Contracts</directory>
         </exclude>
     </source>
     <php>
