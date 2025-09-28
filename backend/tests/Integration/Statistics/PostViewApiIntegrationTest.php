@@ -6,6 +6,7 @@ namespace Tests\Integration\Statistics;
 
 use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
+use PDO;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\IntegrationTestCase;
 use Tests\Support\Statistics\StatisticsTestSeeder;
@@ -28,7 +29,7 @@ use Throwable;
 #[Group('post-view')]
 final class PostViewApiIntegrationTest extends IntegrationTestCase
 {
-    private Application $app;
+    private ?Application $app = null;
 
     private string $userJwtToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImVtYWlsIjoidGVzdEB0ZXN0LmNvbSIsInVzZXJfaWQiOjEsImV4cCI6OTk5OTk5OTk5OX0.test';
 
@@ -40,15 +41,27 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         $_ENV['DB_CONNECTION'] = 'sqlite';
         $_ENV['DB_DATABASE'] = ':memory:';
 
-        try {
-            $this->app = new Application();
-        } catch (Throwable $e) {
-            $this->markTestSkipped('應用程式初始化失敗: ' . $e->getMessage());
-        }
-
         // 建立測試資料
         $seeder = new StatisticsTestSeeder($this->db);
         $seeder->seedAll();
+    }
+
+    private function getApp(): Application
+    {
+        if ($this->app === null) {
+            try {
+                $this->app = new Application();
+                // 注入已建立的資料庫連線
+                $container = $this->app->getContainer();
+                if (method_exists($container, 'set')) {
+                    $container->set(PDO::class, $this->db);
+                }
+            } catch (Throwable $e) {
+                $this->markTestSkipped('應用程式初始化失敗: ' . $e->getMessage());
+            }
+        }
+
+        return $this->app;
     }
 
     /**
@@ -84,7 +97,7 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
                 $request = $request->withParsedBody($body);
             }
 
-            $response = $this->app->run($request);
+            $response = $this->getApp()->run($request);
             $responseBody = (string) $response->getBody();
             $data = json_decode($responseBody, true) ?? [];
 
