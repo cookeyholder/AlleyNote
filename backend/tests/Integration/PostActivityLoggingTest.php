@@ -46,7 +46,7 @@ class PostActivityLoggingTest extends TestCase
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
 
         $this->sanitizer->shouldReceive('sanitizeHtml')
-            ->andReturnUsing(fn ($input) => $input)
+            ->andReturnUsing(fn($input) => $input)
             ->byDefault();
 
         // 初始化 request 和 response mocks
@@ -77,7 +77,9 @@ class PostActivityLoggingTest extends TestCase
         $stream->shouldReceive('write')->andReturnSelf()->byDefault();
         $stream->shouldReceive('__toString')->andReturn('{"success": true}')->byDefault();
         $this->response->shouldReceive('getBody')->andReturn($stream)->byDefault();
-    }    #[Test]
+    }
+
+    #[Test]
     public function it_logs_successful_post_creation(): void
     {
         // Arrange

@@ -62,7 +62,7 @@ class AuthControllerTest extends TestCase
         $this->validator->shouldReceive('addMessage')->byDefault()->andReturn(null);
         $this->validator->shouldReceive('stopOnFirstFailure')->byDefault()->andReturnSelf();
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
-        $this->sanitizer->shouldReceive('sanitize')->byDefault()->andReturnUsing(fn ($data) => $data);
+        $this->sanitizer->shouldReceive('sanitize')->byDefault()->andReturnUsing(fn($data) => $data);
 
         // 初始化 request 和 response mocks
         $this->request = Mockery::mock(ServerRequestInterface::class);
@@ -78,6 +78,7 @@ class AuthControllerTest extends TestCase
         $this->response->shouldReceive('withStatus')
             ->andReturnUsing(function ($status) {
                 $this->statusCode = $status;
+
                 return $this->response;
             });
         $this->response->shouldReceive('getStatusCode')
@@ -92,6 +93,7 @@ class AuthControllerTest extends TestCase
         $stream->shouldReceive('write')
             ->andReturnUsing(function ($content) use (&$responseContent) {
                 $responseContent = $content;
+
                 return $this;
             });
         $stream->shouldReceive('__toString')
