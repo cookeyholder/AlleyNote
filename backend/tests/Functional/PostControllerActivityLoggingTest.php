@@ -6,6 +6,7 @@ namespace Tests\Functional;
 
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Repositories\ActivityLogRepository;
+use App\Shared\Enums\DatabaseAction;
 use DateTime;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
@@ -66,7 +67,7 @@ class PostControllerActivityLoggingTest extends TestCase
             json_encode([
                 'post_id' => $postId,
                 'title' => 'Test Post Title',
-                'operation' => 'create',
+                'operation' => DatabaseAction::CREATE->value,
             ]),
             date('Y-m-d H:i:s'),
             date('Y-m-d H:i:s'),
@@ -113,7 +114,7 @@ class PostControllerActivityLoggingTest extends TestCase
             json_encode([
                 'post_id' => $postId,
                 'title' => 'Another Test Post',
-                'operation' => 'view',
+                'operation' => DatabaseAction::VIEW->value,
             ]),
             date('Y-m-d H:i:s'),
             date('Y-m-d H:i:s'),
@@ -131,7 +132,7 @@ class PostControllerActivityLoggingTest extends TestCase
 
         $metadata = json_decode($logs[0]['metadata'], true);
         $this->assertSame($postId, $metadata['post_id']);
-        $this->assertSame('view', $metadata['operation']);
+        $this->assertSame(DatabaseAction::VIEW->value, $metadata['operation']);
     }
 
     #[Test]
@@ -157,7 +158,7 @@ class PostControllerActivityLoggingTest extends TestCase
             json_encode([
                 'post_id' => $postId,
                 'title' => 'Updated Post Title',
-                'operation' => 'update',
+                'operation' => DatabaseAction::UPDATE->value,
                 'changes' => ['title', 'content'],
             ]),
             date('Y-m-d H:i:s'),
@@ -173,7 +174,7 @@ class PostControllerActivityLoggingTest extends TestCase
         $this->assertSame(ActivityType::POST_UPDATED->value, $logs[0]['action_type']);
 
         $metadata = json_decode($logs[0]['metadata'], true);
-        $this->assertSame('update', $metadata['operation']);
+        $this->assertSame(DatabaseAction::UPDATE->value, $metadata['operation']);
         $this->assertContains('title', $metadata['changes']);
         $this->assertContains('content', $metadata['changes']);
     }
