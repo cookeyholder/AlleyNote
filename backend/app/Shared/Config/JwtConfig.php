@@ -338,6 +338,7 @@ final class JwtConfig
                 $contents = file_get_contents($candidatePath);
 
                 if ($contents === false) {
+                    // If file exists but cannot be read, it's a hard error.
                     throw new InvalidArgumentException(
                         sprintf('%s 指定的金鑰檔案無法讀取: %s', $pathEnvKey, $candidatePath),
                     );
@@ -347,6 +348,7 @@ final class JwtConfig
             }
         }
 
+        // Only throw if the path was specified but no file was found/readable.
         throw new InvalidArgumentException(
             sprintf('%s 指定的金鑰檔案不存在或不可讀: %s', $pathEnvKey, $pathEnv),
         );
