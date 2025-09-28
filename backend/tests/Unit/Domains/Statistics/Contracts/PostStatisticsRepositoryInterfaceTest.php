@@ -7,11 +7,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-#[CoversClass(PostStatisticsRepositoryInterface::class)]
 class PostStatisticsRepositoryInterfaceTest extends TestCase
 {
     public function testInterfaceExists(): void
