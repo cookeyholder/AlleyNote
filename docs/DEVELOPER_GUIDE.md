@@ -1,39 +1,31 @@
 # AlleyNote 開發者指南
 
-**版本**: v4.0
-**日期**: 2025-01-20
-**適用範圍**: AlleyNote 專案新手與進階開發者
-**更新**: 符合最新專案現況與語法標準
+> 📚 **完整開發指南**：環境設置、開發流程、測試策略與統計模組開發
+
+**版本**: v5.2
+**最後更新**: 2025-09-27
+**適用版本**: PHP 8.4.12 + Docker 28.3.3 + Docker Compose v2.39.2
 
 ---
 
-## 📋 目錄
+## 📑 目錄
 
-1. [快速開始](#快速開始)
-2. [環境資訊](#環境資訊)
-3. [開發環境設定](#開發環境設定)
-4. [專案架構概覽](#專案架構概覽)
-5. [編碼規範](#編碼規範)
-6. [新功能開發流程](#新功能開發流程)
-7. [測試指南](#測試指南)
-8. [除錯與故障排除](#除錯與故障排除)
-9. [部署與維運](#部署與維運)
-10. [進階主題](#進階主題)
-11. [FAQ 常見問題](#faq-常見問題)
+- [快速開始](#快速開始)
+- [開發環境設置](#開發環境設置)
+- [技術架構](#技術架構)
+- [開發工作流程](#開發工作流程)
+- [統計模組開發](#統計模組開發)
+- [測試策略](#測試策略)
+- [程式碼品質](#程式碼品質)
+- [故障排除](#故障排除)
 
 ---
 
-## 快速開始
+## 🚀 快速開始
 
-### 1. 環境準備
+### 1. 專案克隆與基本設置
 
 ```bash
-# 系統需求
-- PHP 8.4.12 (已安裝 Xdebug 3.4.5、Zend OPcache v8.4.12)
-- Docker 28.3.3 & Docker Compose v2.39.2
-- Git
-- Composer
-
 # 複製專案
 git clone https://github.com/your-org/alleynote.git
 cd alleynote
@@ -47,32 +39,32 @@ cp .env.example .env
 
 ```bash
 # 啟動 Docker 容器
-docker-compose up -d
+docker compose up -d
 
-# 安裝依賴套件
-docker-compose exec web composer install
+# 安裝相依套件
+docker compose exec web composer install
 
 # 初始化資料庫
-docker-compose exec web php vendor/bin/phinx migrate
+docker compose exec web php backend/scripts/init-sqlite.sh
 
-# 執行完整測試套件 (1,372 個通過測試)
-docker-compose exec web ./vendor/bin/phpunit
+# 執行完整測試套件（第一次執行時間較長）
+docker compose exec -T web ./vendor/bin/phpunit
 ```
 
 ### 3. 環境資訊
 
 #### 測試環境狀態
-- **測試框架**: PHPUnit 11.5.34
-- **測試檔案數量**: 138 個測試檔案
-- **測試案例**: 1,372 個通過測試
-- **涵蓋率**: 高品質測試覆蓋
+- **測試框架**: PHPUnit 11.x（版本依 `composer.lock` 為準）
+- **執行建議**: `docker compose exec -T web ./vendor/bin/phpunit`
+- **測試統計**: 1,300+ 測試案例，以 CI 報告為準，提交前請執行 `composer ci`
+- **架構掃描**: 建議每次功能開發前執行 `php backend/scripts/scan-project-architecture.php`
 
 #### 技術堆疊
-- **後端**: PHP 8.4.12 DDD 架構
-- **前端**: Vue.js 3 Composition API
+- **後端**: PHP 8.4.12（DDD 分層架構 + 統計模組）
+- **前端**: Vite 5 + TypeScript + Axios + Tailwind CSS
 - **容器化**: Docker 28.3.3 & Docker Compose v2.39.2
-- **資料庫**: SQLite3 (推薦) / PostgreSQL 16 (大型部署)
-- **快取**: Redis (透過 Docker)
+- **資料庫**: SQLite3（預設） / PostgreSQL 16（大型部署）
+- **快取**: Redis（快取標籤系統 + 統計快照）
 
 ### 4. 第一次開發提交
 
@@ -81,47 +73,93 @@ docker-compose exec web ./vendor/bin/phpunit
 git checkout -b feature/my-first-feature
 
 # 開發過程中進行測試與檢查
-docker-compose exec -T web ./vendor/bin/phpunit           # 執行測試
-docker-compose exec -T web ./vendor/bin/php-cs-fixer fix # 修正程式碼風格
+docker compose exec -T web ./vendor/bin/phpunit           # 執行測試
+docker compose exec -T web ./vendor/bin/php-cs-fixer fix # 修正程式碼風格
+docker compose exec -T web ./vendor/bin/phpstan analyse  # 靜態分析
 
 # 提交前的完整檢查
-docker-compose exec -T web composer ci                   # 完整 CI 檢查
+docker compose exec -T web composer ci
 
-# 提交變更 (遵循 Conventional Commit 規範)
+# 提交變更
 git add .
-git commit -m "feat: 新增我的第一個功能"
-git push origin feature/my-first-feature
+git commit -m "feat: 新增功能描述"
 ```
-
-### 5. 專案狀態概覽
-
-當前專案統計資訊 (最新更新)：
-- **測試套件**: 1,213 tests, 5,714 assertions (100% 通過率)
-- **程式碼覆蓋率**: 87.5%
-- **靜態分析**: 0 errors (PHPStan Level 8)
-- **類別架構**: 161 classes, 37 interfaces
-- **統一腳本**: 9 core classes (取代 58+ legacy scripts)
 
 ---
 
-## 統一腳本管理系統
+## 🛠️ 開發環境設置
 
-### 系統概述
+### 系統需求
+- **Docker**: 28.3.3+
+- **Docker Compose**: v2.39.2+
+- **Git**: 2.0+
+- **Node.js**: 18.0+ (前端開發)
 
-AlleyNote 採用現代化的統一腳本管理系統，將原本分散的 58+ 個腳本整合為單一入口點，實現：
+### 環境配置檔案
 
-- **85% 程式碼精簡**: 從 58+ 個獨立腳本精簡為 9 個核心類別
+#### `.env` 主要配置
+```env
+# 應用程式設定
+APP_ENV=development
+APP_DEBUG=true
+
+# 資料庫設定
+DB_CONNECTION=sqlite
+DB_DATABASE=/var/www/html/database/alleynote.sqlite3
+
+# Redis 快取設定
+CACHE_DRIVER=redis
+REDIS_HOST=redis
+REDIS_PORT=6379
+
+# 統計模組設定
+STATISTICS_CACHE_TTL=3600
+STATISTICS_BATCH_SIZE=100
+```
+
+```bash
+---
+
+## 🏗️ 技術架構
+
+### DDD 分層架構
+AlleyNote 採用領域驅動設計（Domain-Driven Design），分為四個核心層次：
+
+#### 🎯 領域層 (Domain)
+- **Business Logic**: 核心業務邏輯
+- **Entities**: 業務實體（Post、User、Attachment、Statistics）
+- **Value Objects**: 值物件
+- **Domain Services**: 領域服務
+
+#### 🚀 應用層 (Application)
+- **Application Services**: 應用服務
+- **Controllers**: API 控制器
+- **DTOs**: 資料傳輸物件
+- **Middleware**: 中介軟體
+
+#### 🔧 基礎設施層 (Infrastructure)
+- **Repositories**: 資料存取層
+- **External Services**: 外部服務整合
+- **Caching**: 多層快取系統
+- **File Storage**: 檔案儲存
+
+#### 🛠️ 共用層 (Shared)
+- **Validators**: 29 種驗證規則
+- **Exceptions**: 例外處理
+- **Utilities**: 工具函式
+
+### 統一腳本管理系統
+
+AlleyNote 採用現代化的統一腳本管理系統，將原本分散的 80+ 個腳本整合為單一入口點：
+
+#### 核心特色
+- **85% 程式碼精簡**: 從 80+ 個獨立腳本精簡為 9 個核心類別
 - **統一介面**: 所有開發工具透過單一指令執行
 - **自動發現**: 動態載入和註冊指令，無需手動維護
-- **類型安全**: 完整 PHP 8.4 類型宣告與 PHPStan Level 8 合規
+- **類型安全**: 完整 PHP 8.4 類型宣告與 PHPStan Level 10 合規
 - **擴展性**: 模組化設計，容易新增自訂指令
 
-### 核心架構
-
-```
-scripts/
-├── unified-scripts.php          # 主要入口點
-├── lib/
+#### 使用方式
 │   ├── UnifiedScriptManager.php     # 核心管理器
 │   ├── Command/
 │   │   ├── AbstractCommand.php         # 抽象基礎指令類別
@@ -140,96 +178,372 @@ scripts/
 
 ```bash
 # 顯示所有可用指令
-docker compose exec web php scripts/unified-scripts.php --help
+```bash
+# 查看所有可用指令
+docker compose exec web php backend/scripts/unified-scripts.php --help
 
 # 執行特定指令類別的說明
-docker compose exec web php scripts/unified-scripts.php test --help
-docker compose exec web php scripts/unified-scripts.php quality --help
+docker compose exec web php backend/scripts/unified-scripts.php test --help
+docker compose exec web php backend/scripts/unified-scripts.php quality --help
 ```
 
-### 測試相關指令
+---
+
+## 🔄 開發工作流程
+
+### Git 工作流程
+```bash
+# 1. 建立功能分支
+git checkout -b feature/statistics-enhancement
+
+# 2. 開發過程
+# 編寫程式碼...
+# 編寫測試...
+
+# 3. 提交前檢查
+docker compose exec web composer ci
+
+# 4. 提交變更
+git add .
+git commit -m "feat(statistics): 新增趨勢分析功能"
+
+# 5. 推送並建立 Pull Request
+git push origin feature/statistics-enhancement
+```
+
+### 程式碼審查標準
+- **功能完整性**: 新功能必須包含對應的測試案例
+- **程式碼品質**: 通過 PHPStan Level 10 檢查
+- **文件更新**: 重要功能需更新相關文件
+- **效能考量**: 大型功能需提供效能測試報告
+
+---
+
+## 📊 統計模組開發
+
+### 模組架構
+統計模組遵循 DDD 架構，包含：
+
+```
+app/Domains/Statistics/
+├── Entities/              # 統計實體
+│   ├── StatisticsSnapshot.php
+│   └── TrendAnalysis.php
+├── ValueObjects/          # 統計值物件
+│   ├── StatisticsType.php
+│   └── PeriodRange.php
+├── Services/              # 統計服務
+│   ├── StatisticsAggregationService.php
+│   └── SnapshotGenerationService.php
+├── Repositories/          # 統計倉庫
+│   └── StatisticsRepository.php
+└── Contracts/             # 統計介面
+    └── StatisticsServiceInterface.php
+```
+
+### 開發新統計指標
+
+#### 1. 建立統計實體
+```php
+<?php
+namespace App\Domains\Statistics\Entities;
+
+class CustomStatistics extends AbstractStatistics
+{
+    public function __construct(
+        private readonly StatisticsId $id,
+        private readonly StatisticsType $type,
+        private readonly array $data,
+        private readonly DateTime $createdAt
+    ) {}
+
+    public function calculate(): array
+    {
+        // 實作統計計算邏輯
+        return $this->processData();
+    }
+}
+```
+
+#### 2. 建立統計服務
+```php
+<?php
+namespace App\Domains\Statistics\Services;
+
+class CustomStatisticsService
+{
+    public function generateStatistics(PeriodRange $period): CustomStatistics
+    {
+        $rawData = $this->repository->findByPeriod($period);
+        return new CustomStatistics(
+            StatisticsId::generate(),
+            StatisticsType::CUSTOM,
+            $rawData,
+            new DateTime()
+        );
+    }
+}
+```
+
+#### 3. 撰寫測試
+```php
+<?php
+namespace Tests\Unit\Domains\Statistics\Services;
+
+class CustomStatisticsServiceTest extends TestCase
+{
+    public function test_generates_custom_statistics(): void
+    {
+        $service = new CustomStatisticsService($this->mockRepository);
+        $period = new PeriodRange(new Date('2025-09-01'), new Date('2025-09-30'));
+
+        $statistics = $service->generateStatistics($period);
+
+        $this->assertInstanceOf(CustomStatistics::class, $statistics);
+        $this->assertEquals(StatisticsType::CUSTOM, $statistics->getType());
+    }
+}
+```
+
+### 統計快取策略
+```php
+# 統計模組使用多層快取
+$cacheKey = "statistics.{$type}.{$period}";
+$ttl = 3600; // 1 小時
+
+# 快取標籤系統
+$tags = ['statistics', $type, 'period:' . $period];
+$cache->tags($tags)->put($cacheKey, $data, $ttl);
+```
+
+---
+
+## 🧪 測試策略
+
+### 測試執行
 
 ```bash
-# 執行所有測試 (1,213 tests)
-docker compose exec web php scripts/unified-scripts.php test:run
+# 執行所有測試 (1,300+ tests)
+docker compose exec -T web ./vendor/bin/phpunit
 
 # 執行單元測試
-docker compose exec web php scripts/unified-scripts.php test:unit
+docker compose exec -T web ./vendor/bin/phpunit tests/Unit/
 
 # 執行整合測試
-docker compose exec web php scripts/unified-scripts.php test:integration
+docker compose exec -T web ./vendor/bin/phpunit tests/Integration/
 
-# 產生測試覆蓋率報告 (87.5% coverage)
-docker compose exec web php scripts/unified-scripts.php test:coverage
+# 執行特定測試檔案
+docker compose exec -T web ./vendor/bin/phpunit tests/Unit/Domains/Statistics/
 
-# 執行安全性測試
-docker compose exec web php scripts/unified-scripts.php test:security
+# 執行特定測試方法
+docker compose exec -T web ./vendor/bin/phpunit --filter testStatisticsGeneration
+
+# 產生測試覆蓋率報告
+docker compose exec -T web ./vendor/bin/phpunit --coverage-html coverage-reports/
+
+# 平行執行測試 (提升速度)
+docker compose exec -T web ./vendor/bin/paratest
+
+# 詳細輸出
+docker compose exec -T web ./vendor/bin/phpunit --verbose
 ```
 
-### 程式碼品質指令
+### 測試分類
+- **單元測試**: 測試單一類別或方法的功能
+- **整合測試**: 測試多個元件的整合
+- **功能測試**: 測試完整的 API 端點
+- **效能測試**: 測試系統效能與負載能力
 
+### 統計模組測試
 ```bash
-# 執行完整程式碼品質檢查
-docker compose exec web php scripts/unified-scripts.php quality:check
-
-# 自動修正程式碼風格問題
-docker compose exec web php scripts/unified-scripts.php quality:fix
-
-# 執行 PHPStan 靜態分析 (Level 8)
-docker compose exec web php scripts/unified-scripts.php quality:analyse
-
-# CI 環境的完整檢查
-docker compose exec web php scripts/unified-scripts.php ci:check
+# 執行統計模組專用測試
+docker compose exec -T web ./vendor/bin/phpunit tests/Unit/Domains/Statistics/
+docker compose exec -T web ./vendor/bin/phpunit tests/Integration/Statistics/
+docker compose exec -T web ./vendor/bin/phpunit tests/Performance/Statistics/
 ```
 
-### 資料庫管理指令
+---
 
+## 🔍 程式碼品質
+
+### 靜態分析
 ```bash
-# 初始化資料庫
-docker compose exec web php scripts/unified-scripts.php db:init
+# PHPStan Level 10 分析
+docker compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
 
-# 執行資料庫遷移
-docker compose exec web php scripts/unified-scripts.php db:migrate
+# 程式碼風格檢查
+docker compose exec -T web ./vendor/bin/php-cs-fixer check --diff
+
+# 自動修復程式碼風格問題
+docker compose exec -T web ./vendor/bin/php-cs-fixer fix
+
+# 完整 CI 檢查
+docker compose exec -T web composer ci
+```
+
+### 程式碼規範
+- **PSR-12**: 程式碼風格標準
+- **PHPStan Level 10**: 最嚴格的靜態分析
+- **Type Declaration**: 所有參數與回傳值必須宣告型別
+- **Strict Types**: 檔案必須包含 `declare(strict_types=1);`
+
+### 架構規則
+- **單一職責原則**: 每個類別只負責一個職責
+- **依賴反轉**: 依賴抽象而非具體實作
+- **介面隔離**: 介面應該小而專一
+- **開放封閉**: 對擴展開放，對修改封閉
+
+---
+
+## 🐛 故障排除
+
+### 常見開發問題
+
+#### 容器啟動失敗
+```bash
+# 檢查容器狀態
+docker compose ps
+
+# 查看日誌
+docker compose logs web
+
+# 重新建構容器
+docker compose down
+docker compose up -d --build
+```
+
+#### 測試執行失敗
+```bash
+# 清理測試環境
+docker compose exec web rm -rf storage/testing.db
+docker compose exec web php backend/scripts/init-sqlite.sh
+
+# 重新執行測試
+docker compose exec -T web ./vendor/bin/phpunit --stop-on-failure
+```
+
+#### PHPStan 錯誤
+```bash
+# 清除 PHPStan 快取
+docker compose exec web rm -rf storage/phpstan/
+
+# 重新執行分析
+docker compose exec -T web ./vendor/bin/phpstan analyse --no-cache
+```
+
+#### 統計模組問題
+```bash
+# 檢查統計資料表
+docker compose exec web sqlite3 database/alleynote.sqlite3 "SELECT * FROM statistics_snapshots LIMIT 5;"
+
+# 重新生成統計快照
+docker compose exec web php backend/scripts/statistics-calculation.php --force
+
+# 清理統計快取
+docker compose exec web rm -rf storage/cache/statistics/
+```
+
+### 效能問題診斷
+```bash
+# 檢查記憶體使用
+docker stats --no-stream
+
+# 分析慢查詢
+docker compose exec web php backend/scripts/db-performance.php
+
+# 監控快取命中率
+docker compose exec redis redis-cli info stats | grep hits
+```
+
+---
+
+## 📚 進階主題
+
+### 自訂驗證器
+```php
+<?php
+namespace App\Shared\Validators\Custom;
+
+class StatisticsRangeValidator extends AbstractValidator
+{
+    public function validate($value, array $parameters = []): ValidationResult
+    {
+        if (!$this->isValidDateRange($value)) {
+            return ValidationResult::fail('統計日期範圍無效');
+        }
+
+        return ValidationResult::success();
+    }
+}
+```
+
+### 效能優化技巧
+- **資料庫索引**: 為常用查詢建立適當索引
+- **查詢優化**: 使用 `EXPLAIN` 分析查詢執行計畫
+- **快取策略**: 實作多層快取減少資料庫負載
+- **批量處理**: 大量資料操作使用批量處理
+
+### 部署前檢查清單
+- [ ] 所有測試通過
+- [ ] PHPStan Level 10 無錯誤
+- [ ] 程式碼風格符合 PSR-12
+- [ ] 效能測試通過
+- [ ] 安全性檢查通過
+- [ ] 文件已更新
+
+---
+
+**🔗 相關資源**
+- [API 文件](API_DOCUMENTATION.md) - RESTful API 規格
+- [統計功能規格書](STATISTICS_FEATURE_SPECIFICATION.md) - 統計模組詳細規格
+- [架構審計報告](ARCHITECTURE_AUDIT.md) - DDD 架構分析
+- [管理員手冊](ADMIN_MANUAL.md) - 系統運維指南
+
+**📧 技術支援**
+- GitHub Issues: [提交問題](https://github.com/your-org/alleynote/issues/new)
+- 開發討論: [GitHub Discussions](https://github.com/your-org/alleynote/discussions)
+
+**🎯 開發狀態**: ✅ 生產就緒 | 🧪 持續改進 | 📈 功能豐富
 
 # 資料庫回滾
-docker compose exec web php scripts/unified-scripts.php db:rollback
+docker compose exec web php backend/scripts/unified-scripts.php db:rollback
 
 # 檢查資料庫效能
-docker compose exec web php scripts/unified-scripts.php db:performance
+docker compose exec web php backend/scripts/unified-scripts.php db:performance
 ```
 
 ### 開發工具指令
 
 ```bash
 # 產生 Swagger API 文件
-docker compose exec web php scripts/unified-scripts.php swagger:generate
+docker compose exec web php backend/scripts/unified-scripts.php swagger:generate
 
 # 測試 Swagger 設定
-docker compose exec web php scripts/unified-scripts.php swagger:test
+docker compose exec web php backend/scripts/unified-scripts.php swagger:test
 
 # 快取管理
-docker compose exec web php scripts/unified-scripts.php cache:clear
-docker compose exec web php scripts/unified-scripts.php cache:warm
+docker compose exec web php backend/scripts/unified-scripts.php cache:clear
+docker compose exec web php backend/scripts/unified-scripts.php cache:warm
 
 # 專案狀態檢查
-docker compose exec web php scripts/unified-scripts.php project:status
+docker compose exec web php backend/scripts/unified-scripts.php project:status
 ```
 
 ### 備份與維運指令
 
 ```bash
 # 資料庫備份
-docker compose exec web php scripts/unified-scripts.php backup:db
+docker compose exec web php backend/scripts/unified-scripts.php backup:db
 
 # 檔案備份
-docker compose exec web php scripts/unified-scripts.php backup:files
+docker compose exec web php backend/scripts/unified-scripts.php backup:files
 
 # 安全性掃描
-docker compose exec web php scripts/unified-scripts.php security:scan
+docker compose exec web php backend/scripts/unified-scripts.php security:scan
 
 # SSL 憑證管理 (生產環境)
-docker compose exec web php scripts/unified-scripts.php ssl:setup
-docker compose exec web php scripts/unified-scripts.php ssl:renew
+docker compose exec web php backend/scripts/unified-scripts.php ssl:setup
+docker compose exec web php backend/scripts/unified-scripts.php ssl:renew
 ```
 
 ### 自訂指令開發
@@ -380,15 +694,15 @@ AlleyNote/                          # 根目錄
 │   ├── public/                   # 公開存取檔案
 │   ├── scripts/                  # 維護腳本
 │   └── vendor/                   # Composer 依賴套件
-├── frontend/                      # 前端 Vue.js 3 應用
-│   ├── src/                      # Vue.js 3 Composition API 程式碼
+├── frontend/                      # 前端 Vite + TypeScript 應用
+│   ├── src/                      # Vite + TypeScript Composition API 程式碼
 │   ├── public/                   # 靜態檔案
 │   └── package.json              # Node.js 依賴套件
 ├── docker/                       # Docker 容器設定
 │   ├── php/                      # PHP 8.4.12 設定
 │   └── nginx/                    # Nginx 設定
 ├── docs/                         # 專案文件 (36 個文件)
-└── docker-compose.yml            # Docker Compose v2.39.2 設定
+└── docker compose.yml            # Docker Compose v2.39.2 設定
 ```
 
 ### DDD 分層架構
@@ -832,35 +1146,35 @@ git push origin feature/user-comments
 
 ```bash
 # 執行所有測試套件 (推薦)
-docker compose exec web php scripts/unified-scripts.php test:run
+docker compose exec web php backend/scripts/unified-scripts.php test:run
 
 # 執行特定類型測試
-docker compose exec web php scripts/unified-scripts.php test:unit         # 單元測試
-docker compose exec web php scripts/unified-scripts.php test:integration  # 整合測試
-docker compose exec web php scripts/unified-scripts.php test:security     # 安全性測試
-docker compose exec web php scripts/unified-scripts.php test:ui           # UI 測試
+docker compose exec web php backend/scripts/unified-scripts.php test:unit         # 單元測試
+docker compose exec web php backend/scripts/unified-scripts.php test:integration  # 整合測試
+docker compose exec web php backend/scripts/unified-scripts.php test:security     # 安全性測試
+docker compose exec web php backend/scripts/unified-scripts.php test:ui           # UI 測試
 
 # 測試覆蓋率報告
-docker compose exec web php scripts/unified-scripts.php test:coverage
+docker compose exec web php backend/scripts/unified-scripts.php test:coverage
 
 # 並行執行測試 (加速執行)
-docker compose exec web php scripts/unified-scripts.php test:parallel
+docker compose exec web php backend/scripts/unified-scripts.php test:parallel
 
 # CI 環境測試 (包含所有檢查)
-docker compose exec web php scripts/unified-scripts.php ci:check
+docker compose exec web php backend/scripts/unified-scripts.php ci:check
 ```
 
 ### 測試環境管理
 
 ```bash
 # 測試資料庫初始化
-docker compose exec web php scripts/unified-scripts.php db:test-setup
+docker compose exec web php backend/scripts/unified-scripts.php db:test-setup
 
 # 清理測試資料
-docker compose exec web php scripts/unified-scripts.php test:cleanup
+docker compose exec web php backend/scripts/unified-scripts.php test:cleanup
 
 # 重設測試環境
-docker compose exec web php scripts/unified-scripts.php test:reset
+docker compose exec web php backend/scripts/unified-scripts.php test:reset
 ```
 
 ### 單元測試
@@ -1074,28 +1388,28 @@ class PostFactory
 ### 測試執行
 
 ```bash
-# 執行所有測試 (1,372 個通過測試)
-docker-compose exec -T web ./vendor/bin/phpunit
+# 執行所有測試（建議與 CI 保持一致）
+docker compose exec -T web ./vendor/bin/phpunit
 
 # 按群組執行測試
-docker-compose exec -T web ./vendor/bin/phpunit --group unit
-docker-compose exec -T web ./vendor/bin/phpunit --group integration
-docker-compose exec -T web ./vendor/bin/phpunit --group performance
+docker compose exec -T web ./vendor/bin/phpunit --group unit
+docker compose exec -T web ./vendor/bin/phpunit --group integration
+docker compose exec -T web ./vendor/bin/phpunit --group performance
 
 # 執行單一測試檔案
-docker-compose exec -T web ./vendor/bin/phpunit tests/Unit/Service/PostServiceTest.php
+docker compose exec -T web ./vendor/bin/phpunit tests/Unit/Service/PostServiceTest.php
 
 # 執行特定測試方法
-docker-compose exec -T web ./vendor/bin/phpunit --filter testCreatePost
+docker compose exec -T web ./vendor/bin/phpunit --filter testCreatePost
 
 # 產生程式碼覆蓋率報告
-docker-compose exec -T web ./vendor/bin/phpunit --coverage-html coverage-reports
+docker compose exec -T web ./vendor/bin/phpunit --coverage-html coverage-reports
 
 # 平行執行測試 (提升速度)
-docker-compose exec -T web ./vendor/bin/paratest
+docker compose exec -T web ./vendor/bin/paratest
 
 # 詳細輸出
-docker-compose exec -T web ./vendor/bin/phpunit --testdox --verbose
+docker compose exec -T web ./vendor/bin/phpunit --testdox --verbose
 ```
 
 ### 測試設定檔
@@ -1150,39 +1464,39 @@ docker-compose exec -T web ./vendor/bin/phpunit --testdox --verbose
 
 ```bash
 # 檢查容器狀態
-docker-compose ps
+docker compose ps
 
 # 查看容器日誌
-docker-compose logs web
-docker-compose logs -f web  # 即時追蹤
+docker compose logs web
+docker compose logs -f web  # 即時追蹤
 
 # 進入容器
-docker-compose exec web bash
+docker compose exec web bash
 
 # 檢查 PHP 設定
-docker-compose exec web php --ini
-docker-compose exec web php -m  # 查看已載入模組
+docker compose exec web php --ini
+docker compose exec web php -m  # 查看已載入模組
 
 # 檢查 Xdebug 狀態
-docker-compose exec web php -v  # 應顯示 Xdebug 3.4.5
+docker compose exec web php -v  # 應顯示 Xdebug 3.4.5
 ```
 
 ### 常見問題快速修復
 
 ```bash
 # 清除所有快取
-docker-compose exec web php -r "opcache_reset();"
+docker compose exec web php -r "opcache_reset();"
 
 # 重新產生 Composer autoload
-docker-compose exec web composer dump-autoload
+docker compose exec web composer dump-autoload
 
 # 修正檔案權限
 sudo chown -R $USER:$USER storage/
 sudo chown -R $USER:$USER database/
 
 # 重新建立資料庫
-docker-compose exec web ./vendor/bin/phinx rollback -t 0
-docker-compose exec web ./vendor/bin/phinx migrate
+docker compose exec web ./vendor/bin/phinx rollback -t 0
+docker compose exec web ./vendor/bin/phinx migrate
 
 # 清除失敗的測試
 rm -rf storage/framework/testing/
@@ -1223,23 +1537,23 @@ class SomeService
 
 ```bash
 # 查看容器日誌
-docker-compose logs -f web
+docker compose logs -f web
 
 # 查看應用程式日誌
 tail -f backend/storage/logs/app.log
 
 # 使用 Xdebug 3.4.5（開發環境）
 export XDEBUG_MODE=debug
-docker-compose -f docker-compose.dev.yml up -d
+docker compose -f docker compose.dev.yml up -d
 
 # 執行單一測試進行除錯
-docker-compose exec web ./vendor/bin/phpunit --filter testSpecificMethod tests/Unit/SomeTest.php
+docker compose exec web ./vendor/bin/phpunit --filter testSpecificMethod tests/Unit/SomeTest.php
 
 # 監控 PHP 記憶體使用
-docker-compose exec web php -d memory_limit=256M your-script.php
+docker compose exec web php -d memory_limit=256M your-script.php
 
 # 檢查 OPcache 狀態
-docker-compose exec web php -r "var_dump(opcache_get_status());"
+docker compose exec web php -r "var_dump(opcache_get_status());"
 ```
 
 ### 常見問題排除
@@ -1248,9 +1562,9 @@ docker-compose exec web php -r "var_dump(opcache_get_status());"
 
 ```bash
 # 重建容器（清除快取）
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 
 # 檢查容器資源使用
 docker stats
@@ -1263,25 +1577,25 @@ docker system prune -f
 
 ```bash
 # 檢查 Composer 依賴
-docker-compose exec web composer validate
-docker-compose exec web composer install --optimize-autoloader
+docker compose exec web composer validate
+docker compose exec web composer install --optimize-autoloader
 
 # 清理 autoload 快取
-docker-compose exec web composer dump-autoload
+docker compose exec web composer dump-autoload
 ```
 
 #### 資料庫問題
 
 ```bash
 # 檢查資料庫連接
-docker-compose exec web php -r "new PDO('sqlite:database/alleynote.sqlite3');"
+docker compose exec web php -r "new PDO('sqlite:database/alleynote.sqlite3');"
 
 # 重新建立資料庫
-docker-compose exec web ./vendor/bin/phinx rollback -t 0
-docker-compose exec web ./vendor/bin/phinx migrate
+docker compose exec web ./vendor/bin/phinx rollback -t 0
+docker compose exec web ./vendor/bin/phinx migrate
 
 # 檢查資料庫檔案權限
-docker-compose exec web ls -la database/
+docker compose exec web ls -la database/
 ```
 
 #### 前後端通訊問題
@@ -1323,7 +1637,7 @@ export LOG_LEVEL=error
 ### Docker Compose 生產設定
 
 ```yaml
-# docker-compose.production.yml
+# docker compose.production.yml
 version: '3.8'
 services:
   web:
@@ -1547,26 +1861,26 @@ class EventPublisher
 ```bash
 # 檢查 Docker 版本 (需要 Docker 28.3.3+)
 docker --version
-docker-compose --version  # 需要 v2.39.2+
+docker compose --version  # 需要 v2.39.2+
 
 # 檢查端口占用
 sudo netstat -tulpn | grep :8080
 
 # 重新建立容器
-docker-compose down
-docker-compose up -d --build
+docker compose down
+docker compose up -d --build
 ```
 
 **Q: Composer 安裝依賴失敗？**
 ```bash
 # 檢查 PHP 版本 (需要 PHP 8.4.12+)
-docker-compose exec web php --version
+docker compose exec web php --version
 
 # 清理 Composer 快取
-docker-compose exec web composer clear-cache
+docker compose exec web composer clear-cache
 
 # 增加記憶體限制
-docker-compose exec web php -d memory_limit=2G composer install
+docker compose exec web php -d memory_limit=2G composer install
 ```
 
 ### 程式碼問題
@@ -1574,19 +1888,19 @@ docker-compose exec web php -d memory_limit=2G composer install
 **Q: PHPStan 靜態分析錯誤？**
 ```bash
 # 執行 PHPStan Level 10 分析
-docker-compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
+docker compose exec -T web ./vendor/bin/phpstan analyse --memory-limit=1G
 
 # 生成基準線文件
-docker-compose exec -T web ./vendor/bin/phpstan analyse --generate-baseline
+docker compose exec -T web ./vendor/bin/phpstan analyse --generate-baseline
 
 # 檢查特定檔案
-docker-compose exec web ./vendor/bin/phpstan analyse app/Services/PostService.php
+docker compose exec web ./vendor/bin/phpstan analyse app/Services/PostService.php
 ```
 
 **Q: 自動載入找不到類別？**
 ```bash
 # 重新生成自動載入檔案
-docker-compose exec web composer dump-autoload
+docker compose exec web composer dump-autoload
 
 # 檢查命名空間是否正確
 grep -r "namespace" backend/app/
@@ -1597,25 +1911,25 @@ grep -r "namespace" backend/app/
 **Q: 測試失敗或超時？**
 ```bash
 # 檢查測試環境
-docker-compose exec web ./vendor/bin/phpunit --version  # 需要 PHPUnit 11.5.34
+docker compose exec web ./vendor/bin/phpunit --version  # 需要 PHPUnit 11.5.34
 
 # 執行特定測試群組
-docker-compose exec web ./vendor/bin/phpunit --group unit
+docker compose exec web ./vendor/bin/phpunit --group unit
 
 # 增加測試記憶體限制
-docker-compose exec web php -d memory_limit=512M ./vendor/bin/phpunit
+docker compose exec web php -d memory_limit=512M ./vendor/bin/phpunit
 
 # 查看失敗測試詳情
-docker-compose exec web ./vendor/bin/phpunit --stop-on-failure --verbose
+docker compose exec web ./vendor/bin/phpunit --stop-on-failure --verbose
 ```
 
 **Q: 測試覆蓋率問題？**
 ```bash
 # 確保 Xdebug 已啟用 (需要 Xdebug 3.4.5)
-docker-compose exec web php -m | grep xdebug
+docker compose exec web php -m | grep xdebug
 
 # 產生覆蓋率報告
-docker-compose exec web ./vendor/bin/phpunit --coverage-html coverage-reports/
+docker compose exec web ./vendor/bin/phpunit --coverage-html coverage-reports/
 
 # 檢查覆蓋率數據
 open coverage-reports/index.html
@@ -1635,7 +1949,7 @@ cd frontend && npm run dev
 curl -i -H "Origin: http://localhost:3000" http://localhost:8080/api/posts
 ```
 
-**Q: Vue.js 3 Composition API 問題？**
+**Q: Vite + TypeScript Composition API 問題？**
 ```bash
 # 檢查 Vue.js 版本
 cd frontend && npm list vue
@@ -1652,25 +1966,25 @@ npm run lint
 **Q: 生產環境部署失敗？**
 ```bash
 # 使用生產配置
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker compose.production.yml up -d
 
 # 檢查容器狀態
-docker-compose ps
+docker compose ps
 
 # 查看部署日誌
-docker-compose logs web
+docker compose logs web
 ```
 
 **Q: 效能問題？**
 ```bash
 # 啟用 OPcache (PHP 8.4.12 內建 Zend OPcache v8.4.12)
-docker-compose exec web php -d opcache.enable=1 -v
+docker compose exec web php -d opcache.enable=1 -v
 
 # 檢查快取狀態
-docker-compose exec web php -r "var_dump(opcache_get_status());"
+docker compose exec web php -r "var_dump(opcache_get_status());"
 
 # 優化 Composer autoloader
-docker-compose exec web composer install --optimize-autoloader --no-dev
+docker compose exec web composer install --optimize-autoloader --no-dev
 ```
 
 ---
@@ -1681,7 +1995,8 @@ docker-compose exec web composer install --optimize-autoloader --no-dev
 - [PHP 8.4 新特性](https://www.php.net/releases/8.4/en.php)
 - [PHPUnit 11.5 文件](https://phpunit.de/documentation.html)
 - [Docker Compose v2.39 文件](https://docs.docker.com/compose/)
-- [Vue.js 3 Composition API](https://vuejs.org/guide/composition-api-introduction.html)
+- [TypeScript 官方文件](https://www.typescriptlang.org/)
+- [Vite 官方文件](https://vitejs.dev/)
 
 ### 專案文件
 - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - 架構審查報告
@@ -1693,7 +2008,7 @@ docker-compose exec web composer install --optimize-autoloader --no-dev
 - **後端測試**: `./vendor/bin/phpunit` (1,372 個通過測試)
 - **程式碼風格**: `./vendor/bin/php-cs-fixer` (PSR-12 標準)
 - **靜態分析**: `./vendor/bin/phpstan` (Level 10)
-- **前端開發**: `npm run dev` (Vite + Vue.js 3)
+- **前端開發**: `npm run dev` (Vite + TypeScript)
 
 ### 社群資源
 - [PHP 官方網站](https://www.php.net/)
@@ -1718,7 +2033,7 @@ docker-compose exec web composer install --optimize-autoloader --no-dev
 - **PHP**: 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
 - **測試**: 138 檔案, 1,372 個通過測試
 - **Docker**: 28.3.3 & Docker Compose v2.39.2
-- **前端**: Vue.js 3 Composition API
+- **前端**: Vite + TypeScript Composition API
 - **架構**: 前後端分離 + DDD 設計模式
 
 ---

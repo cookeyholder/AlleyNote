@@ -1,8 +1,10 @@
 # AlleyNote 系統需求和環境說明
 
 > 📋 **用途**：為系統管理員提供完整的硬體、軟體需求和環境準備指南
-> **版本**: v4.0 (前後端分離架構)
-> **更新日期**: 2025-01-20
+
+**版本**: v4.2
+**更新日期**: 2025-09-27
+**適用版本**: PHP 8.4.12 + Docker 28.3.3 + Vite 5
 
 ---
 
@@ -35,7 +37,8 @@
 ### 🐳 容器化環境 (推薦)
 - **Docker**: 28.3.3 或更新版本
 - **Docker Compose**: v2.39.2 或更新版本
-- **前後端分離**: Vue.js 3 + PHP 8.4.12 DDD 後端
+- **前端技術**: Vite 5 + TypeScript + Axios + Tailwind CSS
+- **後端架構**: PHP 8.4.12 DDD 分層架構
 
 ### 🗄️ 資料庫系統
 #### 支援的資料庫（優先順序）
@@ -75,8 +78,9 @@ Docker Compose v2.39.2 或更新版本
 Git 2.40.0 或更新版本
 
 # Node.js (前端開發)
-Node.js 20.x LTS 或更新版本
-npm 10.x 或更新版本
+Node.js 18.0+ LTS (建議 18.19+)
+npm 9.0+ 或更新版本
+pnpm 8.0+ (可選，更快的套件管理)
 
 # 系統工具
 curl, wget, unzip, tar, jq
@@ -85,7 +89,7 @@ curl, wget, unzip, tar, jq
 ### 檢查系統需求腳本
 ```bash
 #!/bin/bash
-echo "=== AlleyNote v4.0 系統需求檢查 ==="
+echo "=== AlleyNote v4.2 系統需求檢查 ==="
 
 # 檢查作業系統
 echo "1. 作業系統："
@@ -101,6 +105,46 @@ free -h
 
 # 檢查硬碟空間
 echo "4. 硬碟空間："
+df -h
+
+# 檢查 Docker
+echo "5. Docker 版本："
+docker --version 2>/dev/null || echo "Docker 未安裝"
+
+# 檢查 Docker Compose
+echo "6. Docker Compose 版本："
+docker compose version 2>/dev/null || echo "Docker Compose 未安裝"
+
+# 檢查 Git
+echo "7. Git 版本："
+git --version 2>/dev/null || echo "Git 未安裝"
+
+# 檢查 Node.js（開發環境）
+echo "8. Node.js 版本："
+node --version 2>/dev/null || echo "Node.js 未安裝（前端開發需要）"
+
+# 檢查 npm
+echo "9. npm 版本："
+npm --version 2>/dev/null || echo "npm 未安裝（前端開發需要）"
+
+# 檢查網路連線
+echo "10. 網路連線："
+curl -s --max-time 5 https://github.com > /dev/null && echo "網路連線正常" || echo "網路連線異常"
+
+echo "=== 檢查完成 ==="
+```
+
+### 快速環境驗證
+```bash
+# 下載並執行檢查腳本
+curl -sSL https://raw.githubusercontent.com/your-org/alleynote/main/scripts/check-requirements.sh | bash
+
+# 或手動檢查關鍵需求
+docker --version && docker compose version && echo "✅ Docker 環境就緒"
+```
+
+# 檢查硬碟空間
+echo "4. 硬碟空間："
 df -h /
 
 # 檢查 Docker
@@ -109,7 +153,7 @@ docker --version 2>/dev/null || echo "❌ Docker 未安裝"
 
 # 檢查 Docker Compose
 echo "6. Docker Compose 版本："
-docker-compose --version 2>/dev/null || echo "❌ Docker Compose 未安裝"
+docker compose --version 2>/dev/null || echo "❌ Docker Compose 未安裝"
 
 # 檢查 Git
 echo "7. Git 版本："
@@ -227,8 +271,8 @@ sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io
 
 # 安裝 Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker compose
+sudo chmod +x /usr/local/bin/docker compose
 
 # 將使用者加入 docker 群組
 sudo usermod -aG docker $USER
@@ -246,8 +290,8 @@ sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/dock
 sudo yum install -y docker-ce docker-ce-cli containerd.io
 
 # 安裝 Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker compose
+sudo chmod +x /usr/local/bin/docker compose
 
 # 將使用者加入 docker 群組
 sudo usermod -aG docker $USER
@@ -266,7 +310,7 @@ newgrp docker
 docker run hello-world
 
 # 測試 Docker Compose
-docker-compose --version
+docker compose --version
 
 # 檢查 Docker 服務狀態
 systemctl status docker

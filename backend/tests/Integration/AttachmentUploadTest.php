@@ -82,7 +82,7 @@ class AttachmentUploadTest extends TestCase
         $now = date('Y-m-d H:i:s');
         $uuid = 'test-uuid-1';
         $seq = 1;
-        $this->db->exec("INSERT INTO posts (id, uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at) VALUES (
+        $this->db->exec("INSERT INTO posts (id, uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at, creation_source, creation_source_detail) VALUES (
             1,
             '$uuid',
             $seq,
@@ -95,7 +95,9 @@ class AttachmentUploadTest extends TestCase
             'published',
             '$now',
             '$now',
-            '$now'
+            '$now',
+            'web',
+            NULL
         )");
     }
 
@@ -293,7 +295,9 @@ class AttachmentUploadTest extends TestCase
                 publish_date DATETIME NOT NULL,
                 created_at DATETIME NOT NULL,
                 updated_at DATETIME NOT NULL,
-                deleted_at DATETIME NULL
+                deleted_at DATETIME NULL,
+                creation_source VARCHAR(20) DEFAULT "unknown",
+                creation_source_detail TEXT
             )
         ');
 

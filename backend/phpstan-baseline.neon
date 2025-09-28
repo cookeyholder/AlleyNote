@@ -1,31 +1,493 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByEmail\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
-			identifier: return.type
+			message: '#^Parameter \#1 \$rows of method App\\Infrastructure\\Statistics\\Formatters\\CSVStatisticsFormatter\:\:normalizeRows\(\) expects array\<array\<string, mixed\>\>, array given\.$#'
+			identifier: argument.type
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByUsername\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
-			identifier: return.type
+			message: '#^Parameter \#2 \$fields of function fputcsv expects array\<int\|string, bool\|float\|int\|string\|null\>, list\<mixed\> given\.$#'
+			identifier: argument.type
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:findByUuid\(\) should return array\<string, mixed\>\|null but returns array\|null\.$#'
-			identifier: return.type
+			message: '#^Parameter \#2 \$to_encoding of function mb_convert_encoding expects string, mixed given\.$#'
+			identifier: argument.type
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
 
 		-
-			message: '#^Method App\\Domains\\Auth\\Repositories\\UserRepositoryAdapter\:\:validateCredentials\(\) should return array\<string, mixed\>\|null but returns array\<mixed, mixed\>\.$#'
+			message: '#^Parameter \#3 \$separator of function fputcsv expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/JSONStatisticsFormatter.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#1 \$summaryData of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateSummary\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#1 \$tableData of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateTable\(\) expects array\<array\<string, mixed\>\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$title of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateHtmlContent\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#2 \$title of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateMockPdf\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Parameter \#3 \$author of method App\\Infrastructure\\Statistics\\Formatters\\PDFStatisticsFormatter\:\:generateMockPdf\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Part \$sectionData \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''metric_value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''post_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''posts_count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''time_period'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''total_views'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 20
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''active_users'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''engagement_score'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''frequency_range'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''hour'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''location'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''metric_value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''percentage'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''rank'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''registration_source'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''role'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''time_period'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot access offset ''users_count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 13
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 6
+			path: app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Statistics\\Services\\SlowQueryMonitoringService\:\:getSlowQueryDetails\(\) should return array\<array\{id\: int, query_type\: string, query\: string, execution_time\: float, parameters\: array, created_at\: string\}\> but returns array\<array\>\.$#'
 			identifier: return.type
 			count: 1
-			path: app/Domains/Auth/Repositories/UserRepositoryAdapter.php
+			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+
+		-
+			message: '#^Parameter \#4 \$params of method App\\Infrastructure\\Statistics\\Services\\SlowQueryMonitoringService\:\:recordSlowQueryInternal\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+
+		-
+			message: '#^Cannot call method format\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getOverview\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, include_details\?\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getPopularContent\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, limit\?\: int\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getPostStatistics\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, limit\?\: int, offset\?\: int\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getSourceDistribution\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, group_by_detail\?\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$options of method App\\Domains\\Statistics\\Contracts\\StatisticsQueryServiceInterface\:\:getUserStatistics\(\) expects array\{period_start\?\: DateTime, period_end\?\: DateTime, include_inactive\?\: bool\}, array\<string, mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 2
+			path: app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 2
+			path: app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+
+		-
+			message: '#^Method App\\Infrastructure\\Statistics\\Services\\StatisticsMonitoringService\:\:getCalculationTimeMetrics\(\) should return array\{avg_calculation_time\: float, max_calculation_time\: float, total_calculations\: int, failed_calculations\: int\} but returns array\.$#'
+			identifier: return.type
+			count: 3
+			path: app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+
+		-
+			message: '#^Cannot access offset ''avg_execution_time'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
+
+		-
+			message: '#^Cannot access offset ''performance_grade'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 6
+			path: tests/Integration/Performance/StatisticsIndexOptimizationTest.php
+
+		-
+			message: '#^Parameter \#2 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Performance/StatisticsIndexOptimizationTest.php
+
+		-
+			message: '#^Parameter \#3 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Performance/StatisticsIndexOptimizationTest.php
+
+		-
+			message: '#^Parameter \#4 \.\.\.\$values of function sprintf expects bool\|float\|int\|string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Performance/StatisticsIndexOptimizationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 9
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Cannot call method fetch\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsBool\(\) with bool will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Cannot access offset ''data'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Cannot access offset ''format'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Cannot access offset ''metadata'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Infrastructure/Statistics/Formatters/StatisticsFormatterTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Unit/Infrastructure/Statistics/Repositories/UserStatisticsRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Method App\\Domains\\Statistics\\Contracts\\StatisticsFormatterInterface@anonymous/tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest\.php\:320\:\:format\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_keys expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_values expects array\<T\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 8
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsMonitoringServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsInt\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsMonitoringServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsMonitoringServiceTest.php

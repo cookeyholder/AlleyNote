@@ -7,6 +7,7 @@
 
 import "./style.css";
 import { ApiClient } from "./api/ApiClient.js";
+import { StatisticsDashboard } from "./views/StatisticsDashboard.js";
 
 /**
  * 應用程式主類別
@@ -22,7 +23,7 @@ class App {
      */
     init() {
         this.setupEventListeners();
-        this.loadInitialData();
+        this.initializeStatisticsDashboard();
     }
 
     /**
@@ -37,12 +38,14 @@ class App {
     /**
      * 載入初始資料
      */
-    async loadInitialData() {
+    initializeStatisticsDashboard() {
         try {
-            // 這裡可以載入初始資料
-            console.log("載入初始資料...");
+            this.statisticsDashboard = new StatisticsDashboard({
+                apiClient: this.apiClient,
+            });
+            this.statisticsDashboard.init();
         } catch (error) {
-            console.error("載入初始資料失敗:", error);
+            console.error("初始化統計儀表板失敗:", error);
         }
     }
 }

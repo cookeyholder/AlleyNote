@@ -36,7 +36,7 @@
 ├── docker/                    # Docker 配置（保留）
 ├── scripts/                   # 腳本工具（保留）
 ├── docs/                      # 文件（保留）
-└── docker-compose.*.yml       # Docker Compose 配置（調整）
+└── docker compose.*.yml       # Docker Compose 配置（調整）
 ```
 
 ---
@@ -93,9 +93,9 @@
 - ✅ 基本設定檔案已建立
 
 ### 步驟 5：更新 Docker 配置
-- [x] 5.1 更新 `docker-compose.yml` 路徑參考 ✅ **已完成**
-- [x] 5.2 更新 `docker-compose.production.yml` 路徑參考 ✅ **已完成**
-- [x] 5.3 更新 `docker-compose.test.yml` 路徑參考 ✅ **已完成**
+- [x] 5.1 更新 `docker compose.yml` 路徑參考 ✅ **已完成**
+- [x] 5.2 更新 `docker compose.production.yml` 路徑參考 ✅ **已完成**
+- [x] 5.3 更新 `docker compose.test.yml` 路徑參考 ✅ **已完成**
 - [x] 5.4 更新 `docker/nginx/` 配置檔案 ✅ **已完成**
 - [x] 5.5 更新 `docker/php/` Dockerfile ✅ **已完成**
 

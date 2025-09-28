@@ -7,3 +7,11 @@ parameters:
         - tests/Unit/Shared/Monitoring/CacheMonitorTest.php
         - tests/Unit/Shared/Config/EnvironmentConfigTest.php
         - tests/Unit/Shared/Config/EnvironmentConfigSimpleTest.php
+        - tests/Unit/Domains/Statistics/Entities/StatisticsSnapshotTest.php
+        - tests/Unit/Domains/Statistics/Contracts/StatisticsRepositoryInterfaceTest.php
+        - tests/Unit/Domains/Statistics/Contracts/PostStatisticsRepositoryInterfaceTest.php
+        - tests/Unit/Domains/Statistics/Contracts/UserStatisticsRepositoryInterfaceTest.php
+        - tests/Unit/Domains/Statistics/Services/StatisticsAggregationServiceTest.php
+        - tests/Unit/Domains/Statistics/Events/PostViewedTest.php
+        - tests/Unit/Domains/Statistics/Listeners/PostViewedListenerTest.php
+        - tests/Unit/Shared/Events/SimpleEventDispatcherTest.php

@@ -9,18 +9,31 @@ declare(strict_types=1);
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Post\Contracts\PostRepositoryInterface;
+use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Services\PostService;
+use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Providers\SecurityServiceProvider;
+use App\Domains\Security\Services\Logging\LoggingSecurityService;
+use App\Domains\Statistics\Providers\StatisticsServiceProvider;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
+use App\Infrastructure\Services\CacheService;
+use App\Infrastructure\Services\RateLimitService;
 use App\Shared\Cache\Providers\CacheServiceProvider;
 use App\Shared\Config\EnvironmentConfig;
-use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
-use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
-use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
+use App\Shared\Contracts\CacheServiceInterface;
+use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
+use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
+use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
+use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
+use App\Shared\Validation\Factory\ValidatorFactory;
+use App\Shared\Validation\Validator;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
@@ -68,6 +81,19 @@ return array_merge(
 
     // 快取系統服務
     CacheServiceProvider::getDefinitions(),
+
+    // 統計系統服務
+    StatisticsServiceProvider::getDefinitions(),
+
+    // 自訂中介軟體
+    [
+        // PostView 速率限制中介軟體
+        \App\Application\Middleware\PostViewRateLimitMiddleware::class => \DI\autowire(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
+        'post_view_rate_limit' => \DI\get(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
+
+        // 其他控制器
+        \App\Application\Controllers\Api\V1\PostViewController::class => \DI\autowire(\App\Application\Controllers\Api\V1\PostViewController::class),
+    ],
 
     // 基本應用程式服務
     [
@@ -197,6 +223,29 @@ return array_merge(
 
     // 快取服務
     CacheServiceProvider::getDefinitions(),
+
+    // 核心領域與共用服務
+    [
+        CacheService::class => \DI\autowire(CacheService::class),
+        CacheServiceInterface::class => \DI\get(CacheService::class),
+
+        LoggingSecurityServiceInterface::class => \DI\autowire(LoggingSecurityService::class),
+
+        PostRepositoryInterface::class => \DI\autowire(PostRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class))
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class))
+            ->constructorParameter('logger', \DI\get(LoggingSecurityServiceInterface::class)),
+
+        PostServiceInterface::class => \DI\autowire(PostService::class)
+            ->constructorParameter('repository', \DI\get(PostRepositoryInterface::class)),
+
+        RateLimitService::class => \DI\autowire(RateLimitService::class)
+            ->constructorParameter('cache', \DI\get(CacheService::class)),
+
+        ValidatorFactory::class => \DI\autowire(ValidatorFactory::class),
+        ValidatorInterface::class => \DI\factory(static fn (ValidatorFactory $factory) => $factory->createForDTO()),
+        Validator::class => \DI\autowire(Validator::class),
+    ],
 
     // 監控服務
     MonitoringServiceProvider::getDefinitions()

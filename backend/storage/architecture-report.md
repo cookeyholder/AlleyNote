@@ -1,29 +1,29 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-03 01:00:16
+**生成時間**: 2025-09-28 09:54:04
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 222 | - |
-| 介面與類別比例 | 22.97% | ✅ 良好 |
+| 總類別數 | 284 | - |
+| 介面與類別比例 | 23.24% | ✅ 良好 |
 | 平均依賴數/類別 | 0.00 | ✅ 良好 |
-| 現代 PHP 採用率 | 59.91% | ✅ 良好 |
-| PSR-4 合規率 | 73.46% | ❌ 需修正 |
+| 現代 PHP 採用率 | 64.79% | ✅ 良好 |
+| PSR-4 合規率 | 76.59% | ❌ 需修正 |
 | DDD 結構完整性 | 0.00% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 234 | ✅ 更安全的條件分支 |
-| 唯讀屬性 (PHP 8.1+) | 103 | ✅ 提升資料不變性 |
-| 空安全運算子 (PHP 8.0+) | 70 | ✅ 防止 null 指標異常 |
-| 屬性標籤 (PHP 8.0+) | 68 | ✅ 現代化 metadata |
+| Match 表達式 (PHP 8.0+) | 279 | ✅ 更安全的條件分支 |
+| 唯讀屬性 (PHP 8.1+) | 224 | ✅ 提升資料不變性 |
+| 空安全運算子 (PHP 8.0+) | 115 | ✅ 防止 null 指標異常 |
+| 屬性標籤 (PHP 8.0+) | 80 | ✅ 現代化 metadata |
+| 聯合型別 (PHP 8.0+) | 23 | ✅ 更靈活的型別定義 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 聯合型別 (PHP 8.0+) | 17 | ✅ 更靈活的型別定義 |
-| 列舉型別 (PHP 8.1+) | 5 | ✅ 型別安全的常數 |
+| 列舉型別 (PHP 8.1+) | 7 | ✅ 型別安全的常數 |
 
 ## 📁 目錄結構
 
@@ -44,6 +44,39 @@
 - `app/Domains`
 - `app/Domains/.`
 - `app/Domains/..`
+- `app/Domains/Statistics`
+- `app/Domains/Statistics/.`
+- `app/Domains/Statistics/..`
+- `app/Domains/Statistics/Contracts`
+- `app/Domains/Statistics/Contracts/.`
+- `app/Domains/Statistics/Contracts/..`
+- `app/Domains/Statistics/Providers`
+- `app/Domains/Statistics/Providers/.`
+- `app/Domains/Statistics/Providers/..`
+- `app/Domains/Statistics/Enums`
+- `app/Domains/Statistics/Enums/.`
+- `app/Domains/Statistics/Enums/..`
+- `app/Domains/Statistics/Models`
+- `app/Domains/Statistics/Models/.`
+- `app/Domains/Statistics/Models/..`
+- `app/Domains/Statistics/DTOs`
+- `app/Domains/Statistics/DTOs/.`
+- `app/Domains/Statistics/DTOs/..`
+- `app/Domains/Statistics/Events`
+- `app/Domains/Statistics/Events/.`
+- `app/Domains/Statistics/Events/..`
+- `app/Domains/Statistics/Listeners`
+- `app/Domains/Statistics/Listeners/.`
+- `app/Domains/Statistics/Listeners/..`
+- `app/Domains/Statistics/Services`
+- `app/Domains/Statistics/Services/.`
+- `app/Domains/Statistics/Services/..`
+- `app/Domains/Statistics/Entities`
+- `app/Domains/Statistics/Entities/.`
+- `app/Domains/Statistics/Entities/..`
+- `app/Domains/Statistics/ValueObjects`
+- `app/Domains/Statistics/ValueObjects/.`
+- `app/Domains/Statistics/ValueObjects/..`
 - `app/Domains/Post`
 - `app/Domains/Post/.`
 - `app/Domains/Post/..`
@@ -236,6 +269,12 @@
 - `app/Shared/Monitoring/Services`
 - `app/Shared/Monitoring/Services/.`
 - `app/Shared/Monitoring/Services/..`
+- `app/Shared/Events`
+- `app/Shared/Events/.`
+- `app/Shared/Events/..`
+- `app/Shared/Events/Contracts`
+- `app/Shared/Events/Contracts/.`
+- `app/Shared/Events/Contracts/..`
 - `app/Shared/Helpers`
 - `app/Shared/Helpers/.`
 - `app/Shared/Helpers/..`
@@ -272,9 +311,39 @@
 - `app/Application/Controllers/Api/V1`
 - `app/Application/Controllers/Api/V1/.`
 - `app/Application/Controllers/Api/V1/..`
+- `app/Application/Services`
+- `app/Application/Services/.`
+- `app/Application/Services/..`
+- `app/Application/Services/Statistics`
+- `app/Application/Services/Statistics/.`
+- `app/Application/Services/Statistics/..`
+- `app/Application/Services/Statistics/DTOs`
+- `app/Application/Services/Statistics/DTOs/.`
+- `app/Application/Services/Statistics/DTOs/..`
 - `app/Infrastructure`
 - `app/Infrastructure/.`
 - `app/Infrastructure/..`
+- `app/Infrastructure/Statistics`
+- `app/Infrastructure/Statistics/.`
+- `app/Infrastructure/Statistics/..`
+- `app/Infrastructure/Statistics/Formatters`
+- `app/Infrastructure/Statistics/Formatters/.`
+- `app/Infrastructure/Statistics/Formatters/..`
+- `app/Infrastructure/Statistics/Repositories`
+- `app/Infrastructure/Statistics/Repositories/.`
+- `app/Infrastructure/Statistics/Repositories/..`
+- `app/Infrastructure/Statistics/Adapters`
+- `app/Infrastructure/Statistics/Adapters/.`
+- `app/Infrastructure/Statistics/Adapters/..`
+- `app/Infrastructure/Statistics/Processors`
+- `app/Infrastructure/Statistics/Processors/.`
+- `app/Infrastructure/Statistics/Processors/..`
+- `app/Infrastructure/Statistics/Commands`
+- `app/Infrastructure/Statistics/Commands/.`
+- `app/Infrastructure/Statistics/Commands/..`
+- `app/Infrastructure/Statistics/Services`
+- `app/Infrastructure/Statistics/Services/.`
+- `app/Infrastructure/Statistics/Services/..`
 - `app/Infrastructure/Database`
 - `app/Infrastructure/Database/.`
 - `app/Infrastructure/Database/..`
@@ -346,6 +415,61 @@
 
 ### `App`
 - app/Application.php
+
+### `App\Domains\Statistics\Contracts`
+- app/Domains/Statistics/Contracts/StatisticsFormatterInterface.php
+- app/Domains/Statistics/Contracts/StatisticsVisualizationServiceInterface.php
+- app/Domains/Statistics/Contracts/StatisticsMonitoringServiceInterface.php
+- app/Domains/Statistics/Contracts/BatchExportResult.php
+- app/Domains/Statistics/Contracts/StatisticsQueryServiceInterface.php
+- app/Domains/Statistics/Contracts/StatisticsExportServiceInterface.php
+- app/Domains/Statistics/Contracts/StatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/StatisticsAggregationServiceInterface.php
+- app/Domains/Statistics/Contracts/PostStatisticsRepositoryInterface.php
+- app/Domains/Statistics/Contracts/StatisticsCacheServiceInterface.php
+- app/Domains/Statistics/Contracts/SlowQueryMonitoringServiceInterface.php
+- app/Domains/Statistics/Contracts/StatisticsSnapshotRepositoryInterface.php
+- app/Domains/Statistics/Contracts/ExportResult.php
+- app/Domains/Statistics/Contracts/UserStatisticsRepositoryInterface.php
+
+### `App\Domains\Statistics\Providers`
+- app/Domains/Statistics/Providers/StatisticsServiceProvider.php
+
+### `App\Domains\Statistics\Models`
+- app/Domains/Statistics/Models/StatisticsSnapshot.php
+
+### `App\Domains\Statistics\DTOs`
+- app/Domains/Statistics/DTOs/StatisticsOverviewDTO.php
+- app/Domains/Statistics/DTOs/ContentInsightsDTO.php
+- app/Domains/Statistics/DTOs/SourceDistributionDTO.php
+- app/Domains/Statistics/DTOs/PostStatisticsDTO.php
+- app/Domains/Statistics/DTOs/UserStatisticsDTO.php
+
+### `App\Domains\Statistics\Events`
+- app/Domains/Statistics/Events/PostViewed.php
+- app/Domains/Statistics/Events/StatisticsSnapshotCreated.php
+
+### `App\Domains\Statistics\Listeners`
+- app/Domains/Statistics/Listeners/StatisticsSnapshotCreatedListener.php
+- app/Domains/Statistics/Listeners/PostViewedListener.php
+
+### `App\Domains\Statistics\Services`
+- app/Domains/Statistics/Services/StatisticsConfigService.php
+- app/Domains/Statistics/Services/StatisticsAggregationService.php
+
+### `App\Domains\Statistics\Entities`
+- app/Domains/Statistics/Entities/StatisticsSnapshot.php
+
+### `App\Domains\Statistics\ValueObjects`
+- app/Domains/Statistics/ValueObjects/CategoryDataPoint.php
+- app/Domains/Statistics/ValueObjects/ChartData.php
+- app/Domains/Statistics/ValueObjects/TimeSeriesDataPoint.php
+- app/Domains/Statistics/ValueObjects/ChartDataset.php
+- app/Domains/Statistics/ValueObjects/StatisticsMetric.php
+- app/Domains/Statistics/ValueObjects/PeriodType.php
+- app/Domains/Statistics/ValueObjects/ChartType.php
+- app/Domains/Statistics/ValueObjects/StatisticsPeriod.php
+- app/Domains/Statistics/ValueObjects/SourceType.php
 
 ### `App\Domains\Post\Contracts`
 - app/Domains/Post/Contracts/PostRepositoryInterface.php
@@ -460,6 +584,7 @@
 - app/Domains/Auth/Providers/SimpleAuthServiceProvider.php
 
 ### `App\Domains\Auth\Repositories`
+- app/Domains/Auth/Repositories/UserRepositoryAdapter.php
 - app/Domains/Auth/Repositories/UserRepository.php
 
 ### `App\Domains\Auth\Models`
@@ -609,6 +734,15 @@
 - app/Shared/Monitoring/Services/PerformanceMonitorService.php
 - app/Shared/Monitoring/Services/ErrorTrackerService.php
 
+### `App\Shared\Events`
+- app/Shared/Events/SimpleEventDispatcher.php
+- app/Shared/Events/AbstractDomainEvent.php
+
+### `App\Shared\Events\Contracts`
+- app/Shared/Events/Contracts/EventDispatcherInterface.php
+- app/Shared/Events/Contracts/DomainEventInterface.php
+- app/Shared/Events/Contracts/EventListenerInterface.php
+
 ### `App\Shared\Validation`
 - app/Shared/Validation/Validator.php
 - app/Shared/Validation/ValidationResult.php
@@ -619,6 +753,7 @@
 ### `App\Application\Middleware`
 - app/Application/Middleware/JwtAuthenticationMiddleware.php
 - app/Application/Middleware/AuthorizationMiddleware.php
+- app/Application/Middleware/PostViewRateLimitMiddleware.php
 - app/Application/Middleware/AuthorizationResult.php
 - app/Application/Middleware/JwtAuthorizationMiddleware.php
 - app/Application/Middleware/RateLimitMiddleware.php
@@ -646,7 +781,53 @@
 - app/Application/Controllers/Api/V1/ActivityLogController.php
 - app/Application/Controllers/Api/V1/AuthController.php
 - app/Application/Controllers/Api/V1/PostController.php
+- app/Application/Controllers/Api/V1/StatisticsAdminController.php
 - app/Application/Controllers/Api/V1/AttachmentController.php
+- app/Application/Controllers/Api/V1/PostViewController.php
+- app/Application/Controllers/Api/V1/StatisticsChartController.php
+- app/Application/Controllers/Api/V1/StatisticsController.php
+
+### `App\Application\Services\Statistics`
+- app/Application/Services/Statistics/StatisticsQueryService.php
+- app/Application/Services/Statistics/StatisticsApplicationService.php
+
+### `App\Application\Services\Statistics\DTOs`
+- app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php
+- app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php
+
+### `App\Infrastructure\Statistics\Formatters`
+- app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
+- app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php
+- app/Infrastructure/Statistics/Formatters/JSONStatisticsFormatter.php
+
+### `App\Infrastructure\Statistics\Repositories`
+- app/Infrastructure/Statistics/Repositories/StatisticsRepository.php
+- app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php
+- app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php
+
+### `App\Infrastructure\Statistics\Adapters`
+- app/Infrastructure/Statistics/Adapters/StatisticsDatabaseAdapterFactory.php
+- app/Infrastructure/Statistics/Adapters/StatisticsRepositoryLoggingAdapter.php
+- app/Infrastructure/Statistics/Adapters/StatisticsRepositoryCacheAdapter.php
+- app/Infrastructure/Statistics/Adapters/StatisticsRepositoryTransactionAdapter.php
+- app/Infrastructure/Statistics/Adapters/StatisticsQueryAdapter.php
+
+### `App\Infrastructure\Statistics\Processors`
+- app/Infrastructure/Statistics/Processors/CategoryProcessor.php
+- app/Infrastructure/Statistics/Processors/TimeSeriesProcessor.php
+- app/Infrastructure/Statistics/Processors/TrendAnalysisProcessor.php
+
+### `App\Infrastructure\Statistics\Commands`
+- app/Infrastructure/Statistics/Commands/StatisticsRecalculationCommand.php
+- app/Infrastructure/Statistics/Commands/StatisticsCalculationCommand.php
+
+### `App\Infrastructure\Statistics\Services`
+- app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
+- app/Infrastructure/Statistics/Services/StatisticsCacheService.php
+- app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php
+- app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php
+- app/Infrastructure/Statistics/Services/StatisticsVisualizationService.php
+- app/Infrastructure/Statistics/Services/StatisticsExportService.php
 
 ### `App\Infrastructure\Database`
 - app/Infrastructure/Database/DatabaseConnection.php
@@ -765,12 +946,18 @@
 
 ## 📊 類別統計
 
-- **類別總數**: 222
-- **介面總數**: 51
+- **類別總數**: 284
+- **介面總數**: 66
 - **Trait 總數**: 0
 
 ## 🔑 重要類別清單
 
+- **StatisticsServiceProvider**: `app/Domains/Statistics/Providers/StatisticsServiceProvider.php`
+  - 實作: 
+- **StatisticsConfigService**: `app/Domains/Statistics/Services/StatisticsConfigService.php`
+  - 實作: 
+- **StatisticsAggregationService**: `app/Domains/Statistics/Services/StatisticsAggregationService.php`
+  - 實作: StatisticsAggregationServiceInterface
 - **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
   - 實作: PostRepositoryInterface
 - **PostService**: `app/Domains/Post/Services/PostService.php`
@@ -813,6 +1000,8 @@
   - 實作: 
 - **SimpleAuthServiceProvider**: `app/Domains/Auth/Providers/SimpleAuthServiceProvider.php`
   - 實作: 
+- **UserRepositoryAdapter**: `app/Domains/Auth/Repositories/UserRepositoryAdapter.php`
+  - 實作: UserRepositoryInterface
 - **UserRepository**: `app/Domains/Auth/Repositories/UserRepository.php`
   - 實作: 
 - **PwnedPasswordService**: `app/Domains/Auth/Services/Advanced/PwnedPasswordService.php`
@@ -887,10 +1076,54 @@
 - **AuthController**: `app/Application/Controllers/Api/V1/AuthController.php`
   - 繼承: BaseController
   - 實作: 
+- **StatisticsAdminController**: `app/Application/Controllers/Api/V1/StatisticsAdminController.php`
+  - 繼承: BaseController
+  - 實作: 
 - **AttachmentController**: `app/Application/Controllers/Api/V1/AttachmentController.php`
+  - 實作: 
+- **PostViewController**: `app/Application/Controllers/Api/V1/PostViewController.php`
+  - 繼承: BaseController
+  - 實作: 
+- **StatisticsChartController**: `app/Application/Controllers/Api/V1/StatisticsChartController.php`
+  - 繼承: BaseController
+  - 實作: 
+- **StatisticsController**: `app/Application/Controllers/Api/V1/StatisticsController.php`
+  - 繼承: BaseController
   - 實作: 
 - **BaseController**: `app/Application/Controllers/BaseController.php`
   - 實作: 
+- **StatisticsQueryService**: `app/Application/Services/Statistics/StatisticsQueryService.php`
+  - 實作: 
+- **PaginatedStatisticsDTO**: `app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php`
+  - 實作: 
+- **StatisticsQueryDTO**: `app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php`
+  - 實作: 
+- **StatisticsApplicationService**: `app/Application/Services/Statistics/StatisticsApplicationService.php`
+  - 實作: 
+- **StatisticsRepository**: `app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`
+  - 實作: StatisticsRepositoryInterface
+- **PostStatisticsRepository**: `app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php`
+  - 實作: PostStatisticsRepositoryInterface
+- **UserStatisticsRepository**: `app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php`
+  - 實作: UserStatisticsRepositoryInterface
+- **StatisticsRepositoryLoggingAdapter**: `app/Infrastructure/Statistics/Adapters/StatisticsRepositoryLoggingAdapter.php`
+  - 實作: StatisticsRepositoryInterface
+- **StatisticsRepositoryCacheAdapter**: `app/Infrastructure/Statistics/Adapters/StatisticsRepositoryCacheAdapter.php`
+  - 實作: StatisticsRepositoryInterface
+- **StatisticsRepositoryTransactionAdapter**: `app/Infrastructure/Statistics/Adapters/StatisticsRepositoryTransactionAdapter.php`
+  - 實作: StatisticsRepositoryInterface
+- **StatisticsPerformanceReportGenerator**: `app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php`
+  - 實作: 
+- **StatisticsCacheService**: `app/Infrastructure/Statistics/Services/StatisticsCacheService.php`
+  - 實作: StatisticsCacheServiceInterface
+- **StatisticsMonitoringService**: `app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php`
+  - 實作: StatisticsMonitoringServiceInterface
+- **SlowQueryMonitoringService**: `app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php`
+  - 實作: SlowQueryMonitoringServiceInterface
+- **StatisticsVisualizationService**: `app/Infrastructure/Statistics/Services/StatisticsVisualizationService.php`
+  - 實作: StatisticsVisualizationServiceInterface
+- **StatisticsExportService**: `app/Infrastructure/Statistics/Services/StatisticsExportService.php`
+  - 實作: StatisticsExportServiceInterface
 - **RefreshTokenRepository**: `app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php`
   - 實作: RefreshTokenRepositoryInterface
 - **TokenBlacklistRepository**: `app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php`
@@ -911,15 +1144,27 @@
 ## 🔌 介面實作分析
 
 ### ``
+- UpdateStatisticsSnapshotsTableForEntityCompatibility (`database/migrations/20250922000002_update_statistics_snapshots_table_for_entity_compatibility.php`)
+- AddCompositeIndexesToUserActivityLogs (`database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php`)
+- AddSourceTrackingToPosts (`database/migrations/20250921130458_add_source_tracking_to_posts.php`)
+- CreateStatisticsQueryMonitoringTables (`database/migrations/20250923043000_create_statistics_query_monitoring_tables.php`)
+- CreateStatisticsOptimizationIndexes (`database/migrations/20250923042900_create_statistics_optimization_indexes.php`)
 - CreateUserActivityLogsTable (`database/migrations/20250829000000_create_user_activity_logs_table.php`)
 - CreateTokenBlacklistTable (`database/migrations/20250825165750_create_token_blacklist_table.php`)
-- AddCompositeIndexesToUserActivityLogs (`database/migrations/20241227000002_add_composite_indexes_to_user_activity_logs.php`)
 - CreateRefreshTokensTable (`database/migrations/20250825165731_create_refresh_tokens_table.php`)
+- CreateStatisticsSnapshotsTable (`database/migrations/20250922000001_create_statistics_snapshots_table.php`)
 - InitialSchema (`database/migrations/20250823051608_initial_schema.php`)
 - AddTokenHashToRefreshTokensTable (`database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php`)
+- UpdateExistingPostsSourceInfo (`database/migrations/20250921143617_update_existing_posts_source_info.php`)
 - UserActivityLogsSeeder (`database/seeds/UserActivityLogsSeeder.php`)
 - Application (`app/Application.php`)
 - implements (`scripts/remaining-error-fixer.php`)
+- BatchExportResult (`app/Domains/Statistics/Contracts/BatchExportResult.php`)
+- ExportResult (`app/Domains/Statistics/Contracts/ExportResult.php`)
+- StatisticsServiceProvider (`app/Domains/Statistics/Providers/StatisticsServiceProvider.php`)
+- PostViewed (`app/Domains/Statistics/Events/PostViewed.php`)
+- StatisticsSnapshotCreated (`app/Domains/Statistics/Events/StatisticsSnapshotCreated.php`)
+- StatisticsConfigService (`app/Domains/Statistics/Services/StatisticsConfigService.php`)
 - PostStatusException (`app/Domains/Post/Exceptions/PostStatusException.php`)
 - PostValidationException (`app/Domains/Post/Exceptions/PostValidationException.php`)
 - PostNotFoundException (`app/Domains/Post/Exceptions/PostNotFoundException.php`)
@@ -994,8 +1239,24 @@
 - IpController (`app/Application/Controllers/Api/V1/IpController.php`)
 - ActivityLogController (`scripts/rebuild-activity-controller.php`)
 - AuthController (`app/Application/Controllers/Api/V1/AuthController.php`)
+- StatisticsAdminController (`app/Application/Controllers/Api/V1/StatisticsAdminController.php`)
 - AttachmentController (`app/Application/Controllers/Api/V1/AttachmentController.php`)
+- PostViewController (`app/Application/Controllers/Api/V1/PostViewController.php`)
+- StatisticsChartController (`app/Application/Controllers/Api/V1/StatisticsChartController.php`)
+- StatisticsController (`app/Application/Controllers/Api/V1/StatisticsController.php`)
 - BaseController (`app/Application/Controllers/BaseController.php`)
+- StatisticsQueryService (`app/Application/Services/Statistics/StatisticsQueryService.php`)
+- PaginatedStatisticsDTO (`app/Application/Services/Statistics/DTOs/PaginatedStatisticsDTO.php`)
+- StatisticsQueryDTO (`app/Application/Services/Statistics/DTOs/StatisticsQueryDTO.php`)
+- StatisticsApplicationService (`app/Application/Services/Statistics/StatisticsApplicationService.php`)
+- StatisticsDatabaseAdapterFactory (`app/Infrastructure/Statistics/Adapters/StatisticsDatabaseAdapterFactory.php`)
+- StatisticsQueryAdapter (`app/Infrastructure/Statistics/Adapters/StatisticsQueryAdapter.php`)
+- CategoryProcessor (`app/Infrastructure/Statistics/Processors/CategoryProcessor.php`)
+- TimeSeriesProcessor (`app/Infrastructure/Statistics/Processors/TimeSeriesProcessor.php`)
+- TrendAnalysisProcessor (`app/Infrastructure/Statistics/Processors/TrendAnalysisProcessor.php`)
+- StatisticsRecalculationCommand (`app/Infrastructure/Statistics/Commands/StatisticsRecalculationCommand.php`)
+- StatisticsCalculationCommand (`app/Infrastructure/Statistics/Commands/StatisticsCalculationCommand.php`)
+- StatisticsPerformanceReportGenerator (`app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php`)
 - DatabaseConnection (`app/Infrastructure/Database/DatabaseConnection.php`)
 - CacheKeys (`app/Infrastructure/Cache/CacheKeys.php`)
 - ContainerFactory (`app/Infrastructure/Config/ContainerFactory.php`)
@@ -1062,10 +1323,20 @@
 - PropertyGenericSyntaxFixer (`scripts/fix-property-generic-syntax.php`)
 - EnhancedPhpstanFixer (`scripts/enhanced-phpstan-fixer.php`)
 
-### `PostRepositoryInterface`
-- PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
-
 ### `JsonSerializable`
+- StatisticsSnapshot (`app/Domains/Statistics/Entities/StatisticsSnapshot.php`)
+- StatisticsOverviewDTO (`app/Domains/Statistics/DTOs/StatisticsOverviewDTO.php`)
+- ContentInsightsDTO (`app/Domains/Statistics/DTOs/ContentInsightsDTO.php`)
+- SourceDistributionDTO (`app/Domains/Statistics/DTOs/SourceDistributionDTO.php`)
+- PostStatisticsDTO (`app/Domains/Statistics/DTOs/PostStatisticsDTO.php`)
+- UserStatisticsDTO (`app/Domains/Statistics/DTOs/UserStatisticsDTO.php`)
+- CategoryDataPoint (`app/Domains/Statistics/ValueObjects/CategoryDataPoint.php`)
+- ChartData (`app/Domains/Statistics/ValueObjects/ChartData.php`)
+- TimeSeriesDataPoint (`app/Domains/Statistics/ValueObjects/TimeSeriesDataPoint.php`)
+- ChartDataset (`app/Domains/Statistics/ValueObjects/ChartDataset.php`)
+- StatisticsMetric (`app/Domains/Statistics/ValueObjects/StatisticsMetric.php`)
+- StatisticsPeriod (`app/Domains/Statistics/ValueObjects/StatisticsPeriod.php`)
+- SourceType (`app/Domains/Statistics/ValueObjects/SourceType.php`)
 - Post (`app/Domains/Post/Models/Post.php`)
 - IpList (`app/Domains/Security/Models/IpList.php`)
 - SuspiciousActivityAnalysisDTO (`app/Domains/Security/DTOs/SuspiciousActivityAnalysisDTO.php`)
@@ -1078,6 +1349,16 @@
 - BaseDTO (`app/Shared/DTOs/BaseDTO.php`)
 - ValidationResult (`app/Shared/Validation/ValidationResult.php`)
 - AuthorizationResult (`app/Application/Middleware/AuthorizationResult.php`)
+
+### `EventListenerInterface`
+- StatisticsSnapshotCreatedListener (`app/Domains/Statistics/Listeners/StatisticsSnapshotCreatedListener.php`)
+- PostViewedListener (`app/Domains/Statistics/Listeners/PostViewedListener.php`)
+
+### `StatisticsAggregationServiceInterface`
+- StatisticsAggregationService (`app/Domains/Statistics/Services/StatisticsAggregationService.php`)
+
+### `PostRepositoryInterface`
+- PostRepository (`app/Domains/Post/Repositories/PostRepository.php`)
 
 ### `PostServiceInterface`
 - PostService (`app/Domains/Post/Services/PostService.php`)
@@ -1117,6 +1398,9 @@
 
 ### `LoggingSecurityServiceInterface`
 - LoggingSecurityService (`app/Domains/Security/Services/Logging/LoggingSecurityService.php`)
+
+### `UserRepositoryInterface`
+- UserRepositoryAdapter (`app/Domains/Auth/Repositories/UserRepositoryAdapter.php`)
 
 ### `SessionSecurityServiceInterface`
 - SessionSecurityService (`app/Domains/Auth/Services/SessionSecurityService.php`)
@@ -1172,6 +1456,12 @@
 ### `ErrorTrackerInterface`
 - ErrorTrackerService (`app/Shared/Monitoring/Services/ErrorTrackerService.php`)
 
+### `EventDispatcherInterface`
+- SimpleEventDispatcher (`app/Shared/Events/SimpleEventDispatcher.php`)
+
+### `DomainEventInterface`
+- AbstractDomainEvent (`app/Shared/Events/AbstractDomainEvent.php`)
+
 ### `ValidatorInterface`
 - Validator (`app/Shared/Validation/Validator.php`)
 
@@ -1180,6 +1470,41 @@
 - JwtAuthorizationMiddleware (`app/Application/Middleware/JwtAuthorizationMiddleware.php`)
 - RateLimitMiddleware (`app/Application/Middleware/RateLimitMiddleware.php`)
 - AbstractMiddleware (`app/Infrastructure/Routing/Middleware/AbstractMiddleware.php`)
+
+### `RoutingMiddlewareInterface`
+- PostViewRateLimitMiddleware (`app/Application/Middleware/PostViewRateLimitMiddleware.php`)
+
+### `StatisticsFormatterInterface`
+- CSVStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php`)
+- PDFStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/PDFStatisticsFormatter.php`)
+- JSONStatisticsFormatter (`app/Infrastructure/Statistics/Formatters/JSONStatisticsFormatter.php`)
+
+### `StatisticsRepositoryInterface`
+- StatisticsRepository (`app/Infrastructure/Statistics/Repositories/StatisticsRepository.php`)
+- StatisticsRepositoryLoggingAdapter (`app/Infrastructure/Statistics/Adapters/StatisticsRepositoryLoggingAdapter.php`)
+- StatisticsRepositoryCacheAdapter (`app/Infrastructure/Statistics/Adapters/StatisticsRepositoryCacheAdapter.php`)
+- StatisticsRepositoryTransactionAdapter (`app/Infrastructure/Statistics/Adapters/StatisticsRepositoryTransactionAdapter.php`)
+
+### `PostStatisticsRepositoryInterface`
+- PostStatisticsRepository (`app/Infrastructure/Statistics/Repositories/PostStatisticsRepository.php`)
+
+### `UserStatisticsRepositoryInterface`
+- UserStatisticsRepository (`app/Infrastructure/Statistics/Repositories/UserStatisticsRepository.php`)
+
+### `StatisticsCacheServiceInterface`
+- StatisticsCacheService (`app/Infrastructure/Statistics/Services/StatisticsCacheService.php`)
+
+### `StatisticsMonitoringServiceInterface`
+- StatisticsMonitoringService (`app/Infrastructure/Statistics/Services/StatisticsMonitoringService.php`)
+
+### `SlowQueryMonitoringServiceInterface`
+- SlowQueryMonitoringService (`app/Infrastructure/Statistics/Services/SlowQueryMonitoringService.php`)
+
+### `StatisticsVisualizationServiceInterface`
+- StatisticsVisualizationService (`app/Infrastructure/Statistics/Services/StatisticsVisualizationService.php`)
+
+### `StatisticsExportServiceInterface`
+- StatisticsExportService (`app/Infrastructure/Statistics/Services/StatisticsExportService.php`)
 
 ### `JwtProviderInterface`
 - FirebaseJwtProvider (`app/Infrastructure/Auth/Jwt/FirebaseJwtProvider.php`)
@@ -1244,19 +1569,31 @@
 ## 🧪 測試覆蓋分析
 
 - **有測試的類別**: 0 個
-- **缺少測試的類別**: 222 個
+- **缺少測試的類別**: 284 個
 
 ### 缺少測試的重要類別
-- **PostRepository**: `app/Domains/Post/Repositories/PostRepository.php`
-- **PostService**: `app/Domains/Post/Services/PostService.php`
-- **ContentModerationService**: `app/Domains/Post/Services/ContentModerationService.php`
-- **RichTextProcessorService**: `app/Domains/Post/Services/RichTextProcessorService.php`
-- **PostCacheKeyService**: `app/Domains/Post/Services/PostCacheKeyService.php`
+- **StatisticsServiceProvider**: `app/Domains/Statistics/Providers/StatisticsServiceProvider.php`
 
 
 ## 💉 依賴注入分析
 
 ### 依賴較多的類別 (≥3個依賴)
+- **StatisticsSnapshotCreatedListener** (3 個依賴)
+  - `StatisticsCacheServiceInterface` $cacheService
+  - `StatisticsMonitoringService` $monitoringService
+  - `LoggerInterface` $logger
+
+- **StatisticsAggregationService** (4 個依賴)
+  - `StatisticsRepositoryInterface` $statisticsRepository
+  - `PostStatisticsRepositoryInterface` $postStatisticsRepository
+  - `UserStatisticsRepositoryInterface` $userStatisticsRepository
+  - `EventDispatcherInterface` $eventDispatcher
+
+- **StatisticsPeriod** (3 個依賴)
+  - `PeriodType` $type
+  - `DateTimeImmutable` $startTime
+  - `DateTimeImmutable` $endTime
+
 - **PostRepository** (3 個依賴)
   - `PDO` $db
   - `CacheServiceInterface` $cache
@@ -1374,6 +1711,39 @@
   - `ValidatorInterface` $validator
   - `ActivityLoggingServiceInterface` $activityLoggingService
 
+- **StatisticsAdminController** (3 個依賴)
+  - `StatisticsApplicationService` $statisticsApplicationService
+  - `StatisticsQueryService` $statisticsQueryService
+  - `StatisticsCacheServiceInterface` $cacheService
+
+- **StatisticsQueryService** (3 個依賴)
+  - `StatisticsRepositoryInterface` $statisticsRepository
+  - `StatisticsCacheServiceInterface` $cacheService
+  - `LoggerInterface` $logger
+
+- **StatisticsDatabaseAdapterFactory** (4 個依賴)
+  - `StatisticsRepositoryInterface` $baseRepository
+  - `CacheServiceInterface` $cache
+  - `LoggerInterface` $logger
+  - `PDO` $db
+
+- **StatisticsCalculationCommand** (4 個依賴)
+  - `StatisticsAggregationServiceInterface` $aggregationService
+  - `StatisticsRepositoryInterface` $statisticsRepository
+  - `StatisticsCacheServiceInterface` $cacheService
+  - `LoggerInterface` $logger
+
+- **StatisticsMonitoringService** (3 個依賴)
+  - `SlowQueryMonitoringServiceInterface` $slowQueryService
+  - `PDO` $pdo
+  - `LoggerInterface` $logger
+
+- **StatisticsVisualizationService** (4 個依賴)
+  - `StatisticsQueryAdapter` $queryAdapter
+  - `CategoryProcessor` $categoryProcessor
+  - `TimeSeriesProcessor` $timeSeriesProcessor
+  - `StatisticsCacheServiceInterface` $cacheService
+
 - **RouteDispatcher** (4 個依賴)
   - `RouterInterface` $router
   - `ControllerResolver` $controllerResolver
@@ -1438,22 +1808,14 @@
 
 ## ❓ 可能的問題引用
 
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000002_update_statistics_snapshots_table_for_entity_compatibility.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000000_add_composite_indexes_to_user_activity_logs.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250921130458_add_source_tracking_to_posts.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250923043000_create_statistics_query_monitoring_tables.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250923042900_create_statistics_optimization_indexes.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250829000000_create_user_activity_logs_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165750_create_token_blacklist_table.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20241227000002_add_composite_indexes_to_user_activity_logs.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250825165731_create_refresh_tokens_table.php 中使用)
+- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250922000001_create_statistics_snapshots_table.php 中使用)
 - ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250823051608_initial_schema.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Migration\AbstractMigration (在 database/migrations/20250826023305_add_token_hash_to_refresh_tokens_table.php 中使用)
-- ❓ 找不到類別/介面: Phinx\Seed\AbstractSeed (在 database/seeds/UserActivityLogsSeeder.php 中使用)
-- ❓ 找不到類別/介面: 語句
-        'ordered_imports' => [                   // Import 語句排序（已存在，確保配置）
-            'sort_algorithm' => 'alpha',
-            'imports_order' => ['class', 'function', 'const'],
-        ],
-    ])
-    ->setRiskyAllowed(true)
-    ->setUsingCache(true)
-    ->setCacheFile(__DIR__ . '/.php-cs-fixer.cache') (在 .php-cs-fixer.dist.php 中使用)
-- ❓ 找不到類別/介面: DI\ContainerBuilder (在 app/Application.php 中使用)
-- ❓ 找不到類別/介面: App\Domains\Post\Enums\PostStatus (在 app/Domains/Post/Repositories/PostRepository.php 中使用)
-- ... 還有 171 個
+- ... 還有 229 個

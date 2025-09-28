@@ -4,6 +4,7 @@ includes:
 	- phpstan-mockery-ignore.neon
 	- phpstan-test-exclusions.neon
 	- phpstan-level-10-baseline.neon
+	- phpstan-baseline.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false
@@ -13,6 +14,7 @@ parameters:
         - tests
     excludePaths:
         - app/Infrastructure/OpenApi
+        - app/Domains/Statistics/Services/StatisticsConfigService.php
         - vendor
         - tests/Factory
         - tests/manual

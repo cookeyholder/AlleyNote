@@ -132,6 +132,12 @@ return function (RouterInterface $router): void {
     $activityLogMe->middleware('jwt.auth');
 
     // =========================================
+    // 貼文瀏覽記錄 API 路由
+    // =========================================
+    $postViewRecord = $router->post('/api/posts/{id}/view', [\App\Application\Controllers\Api\V1\PostViewController::class, 'recordView']);
+    $postViewRecord->setName('posts.view.record');
+
+    // =========================================
     // 管理員路由 (需要管理員權限)
     // =========================================
 
@@ -186,3 +192,20 @@ return function (RouterInterface $router): void {
     // 加載標籤管理路由
     $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
     $tagManagementRoutes($app);
+
+    // 加載統計功能路由
+    $statisticsRoutes = require __DIR__ . '/routes/statistics.php';
+    foreach ($statisticsRoutes as $routeConfig) {
+        $route = $router->map(
+            $routeConfig['methods'],
+            $routeConfig['path'],
+            $routeConfig['handler']
+        );
+        $route->setName($routeConfig['name']);
+
+        if (isset($routeConfig['middleware'])) {
+            foreach ($routeConfig['middleware'] as $middleware) {
+                $route->add($middleware);
+            }
+        }
+    }

@@ -12,6 +12,7 @@ use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
@@ -39,6 +40,8 @@ class AuthControllerTest extends TestCase
 
     private ActivityLoggingServiceInterface|MockInterface $activityLoggingService;
 
+    private OutputSanitizerInterface|MockInterface $sanitizer;
+
     private ServerRequestInterface|MockInterface $request;
 
     private ResponseInterface|MockInterface $response;
@@ -51,59 +54,52 @@ class AuthControllerTest extends TestCase
         $this->authService = Mockery::mock(AuthService::class);
         $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
         $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
-        $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->activityLoggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLoggingService->shouldReceive('log')->byDefault()->andReturn(true);
+        $this->validator = Mockery::mock(ValidatorInterface::class);
+        $this->validator->shouldReceive('validateOrFail')->byDefault();
+        $this->validator->shouldReceive('addRule')->byDefault()->andReturn(null);
+        $this->validator->shouldReceive('addMessage')->byDefault()->andReturn(null);
+        $this->validator->shouldReceive('stopOnFirstFailure')->byDefault()->andReturnSelf();
+        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
+        $this->sanitizer->shouldReceive('sanitize')->byDefault()->andReturnUsing(fn($data) => $data);
 
-        // 設置 Request Mock
+        // 初始化 request 和 response mocks
         $this->request = Mockery::mock(ServerRequestInterface::class);
-
-        // 設置 Response Mock - 使用動態狀態碼追蹤
         $this->response = Mockery::mock(ResponseInterface::class);
-        $this->statusCode = 200;
 
-        $this->response->shouldReceive('withStatus')->andReturnUsing(function ($code) {
-            $this->statusCode = $code;
+        // 設定 request 的預設行為
+        $this->request->shouldReceive('hasHeader')->byDefault()->andReturn(false);
+        $this->request->shouldReceive('getHeaderLine')->byDefault()->andReturn('');
+        $this->request->shouldReceive('getServerParams')->byDefault()->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
+        $this->request->shouldReceive('getAttribute')->byDefault()->andReturn(null);
 
-            return $this->response;
-        });
+        // 設定基本的 response mock 行為
+        $this->response->shouldReceive('withStatus')
+            ->andReturnUsing(function ($status) {
+                $this->statusCode = $status;
 
-        // 設定預設的 user_id 屬性
-        $this->request->shouldReceive('getAttribute')
-            ->with('user_id')
-            ->andReturn(1);
-
-        // 設定 IP 地址相關的 header 方法
-        $this->request->shouldReceive('hasHeader')
-            ->andReturn(false);
-
-        $this->request->shouldReceive('getHeaderLine')
-            ->andReturn('');
-
-        $this->request->shouldReceive('getServerParams')
-            ->andReturn([]);
-
-        // 設定 ActivityLoggingService 的行為
-        $this->activityLoggingService->shouldReceive('log')
-            ->andReturn(true);
-
-        // 注意：每個測試方法需要自行設定 validator 的 mock 行為
-
-        $this->response->shouldReceive('getStatusCode')->andReturnUsing(function () {
-            return $this->statusCode;
-        });
-
-        $this->response->shouldReceive('withHeader')->andReturnSelf();
+                return $this->response;
+            });
+        $this->response->shouldReceive('getStatusCode')
+            ->andReturnUsing(function () {
+                return $this->statusCode;
+            });
+        $this->response->shouldReceive('withHeader')
+            ->andReturnSelf();
 
         $stream = Mockery::mock(StreamInterface::class);
-        $writtenContent = '';
-        $stream->shouldReceive('write')->andReturnUsing(function ($content) use (&$writtenContent) {
-            $writtenContent .= $content;
+        $responseContent = '';
+        $stream->shouldReceive('write')
+            ->andReturnUsing(function ($content) use (&$responseContent) {
+                $responseContent = $content;
 
-            return strlen($content);
-        });
-        $stream->shouldReceive('__toString')->andReturnUsing(function () use (&$writtenContent) {
-            return $writtenContent;
-        });
+                return $this;
+            });
+        $stream->shouldReceive('__toString')
+            ->andReturnUsing(function () use (&$responseContent) {
+                return $responseContent;
+            });
         $this->response->shouldReceive('getBody')->andReturn($stream);
     }
 

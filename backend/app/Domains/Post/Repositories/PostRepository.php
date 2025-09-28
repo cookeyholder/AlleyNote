@@ -27,7 +27,7 @@ class PostRepository implements PostRepositoryInterface
     private const CACHE_TTL = 3600;
 
     // SQL 查詢常數
-    private const POST_SELECT_FIELDS = 'id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at';
+    private const POST_SELECT_FIELDS = 'id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at, creation_source, creation_source_detail';
 
     private const SQL_INSERT_POST = 'INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, created_at, updated_at) VALUES (:uuid, :seq_number, :title, :content, :user_id, :user_ip, :is_pinned, :status, :publish_date, :created_at, :updated_at)';
 
@@ -53,6 +53,8 @@ class PostRepository implements PostRepositoryInterface
         'is_pinned',
         'status',
         'publish_date',
+        'creation_source',
+        'creation_source_detail',
         'created_at',
         'updated_at',
     ];
@@ -171,6 +173,8 @@ class PostRepository implements PostRepositoryInterface
             'is_pinned' => (bool) ($result['is_pinned'] ?? false),
             'status' => $result['status'] ?? 'draft',
             'publish_date' => $result['publish_date'] ?? null,
+            'creation_source' => $result['creation_source'] ?? null,
+            'creation_source_detail' => $result['creation_source_detail'] ?? null,
             'created_at' => $result['created_at'] ?? null,
             'updated_at' => $result['updated_at'] ?? null,
         ];
@@ -748,5 +752,167 @@ class PostRepository implements PostRepositoryInterface
             fn($row) => Post::fromArray($this->preparePostData($row)),
             $stmt->fetchAll(PDO::FETCH_ASSOC),
         );
+    }
+
+    /**
+     * 依來源類型取得文章列表.
+     *
+     * @return Post[]
+     */
+    public function findByCreationSource(string $creationSource, int $limit = 10, int $offset = 0): array
+    {
+        $cacheKey = sprintf('posts:source:%s:limit:%d:offset:%d', $creationSource, $limit, $offset);
+
+        return $this->cache->remember($cacheKey, function () use ($creationSource, $limit, $offset) {
+            $sql = $this->buildSelectQuery('creation_source = :creation_source')
+                . ' ORDER BY created_at DESC LIMIT :limit OFFSET :offset';
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return array_map(
+                fn($row) => Post::fromArray($this->preparePostData($row)),
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
+            );
+        }, self::CACHE_TTL);
+    }
+
+    /**
+     * 取得來源分佈統計.
+     *
+     * @return array<string, int> 來源類型 => 文章數量的陣列
+     */
+    public function getSourceDistribution(): array
+    {
+        $cacheKey = 'posts:source_distribution';
+
+        return $this->cache->remember($cacheKey, function () {
+            $sql = 'SELECT creation_source, COUNT(*) as count FROM posts WHERE deleted_at IS NULL GROUP BY creation_source ORDER BY count DESC';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+
+            $result = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $source = $row['creation_source'] ?? 'unknown';
+                $result[$source] = (int) $row['count'];
+            }
+
+            return $result;
+        }, self::CACHE_TTL);
+    }
+
+    /**
+     * 依來源類型和詳細資訊取得文章列表.
+     *
+     * @return Post[]
+     */
+    public function findByCreationSourceAndDetail(
+        string $creationSource,
+        ?string $creationSourceDetail = null,
+        int $limit = 10,
+        int $offset = 0,
+    ): array {
+        $cacheKey = sprintf(
+            'posts:source:%s:detail:%s:limit:%d:offset:%d',
+            $creationSource,
+            $creationSourceDetail ?? 'null',
+            $limit,
+            $offset,
+        );
+
+        return $this->cache->remember($cacheKey, function () use ($creationSource, $creationSourceDetail, $limit, $offset) {
+            if ($creationSourceDetail === null) {
+                $sql = $this->buildSelectQuery('creation_source = :creation_source AND creation_source_detail IS NULL')
+                    . ' ORDER BY created_at DESC LIMIT :limit OFFSET :offset';
+                $params = [
+                    'creation_source' => $creationSource,
+                ];
+            } else {
+                $sql = $this->buildSelectQuery('creation_source = :creation_source AND creation_source_detail = :creation_source_detail')
+                    . ' ORDER BY created_at DESC LIMIT :limit OFFSET :offset';
+                $params = [
+                    'creation_source' => $creationSource,
+                    'creation_source_detail' => $creationSourceDetail,
+                ];
+            }
+
+            $stmt = $this->db->prepare($sql);
+
+            foreach ($params as $key => $value) {
+                $stmt->bindValue(":{$key}", $value, PDO::PARAM_STR);
+            }
+
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return array_map(
+                fn($row) => Post::fromArray($this->preparePostData($row)),
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
+            );
+        }, self::CACHE_TTL);
+    }
+
+    /**
+     * 計算特定來源的文章總數.
+     */
+    public function countByCreationSource(string $creationSource): int
+    {
+        $cacheKey = sprintf('posts:count:source:%s', $creationSource);
+
+        return $this->cache->remember($cacheKey, function () use ($creationSource) {
+            $sql = 'SELECT COUNT(*) FROM posts WHERE creation_source = :creation_source AND deleted_at IS NULL';
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
+            $stmt->execute();
+
+            return (int) $stmt->fetchColumn();
+        }, self::CACHE_TTL);
+    }
+
+    /**
+     * 依來源類型取得分頁文章列表.
+     *
+     * @return array{items: Post[], total: int, page: int, perPage: int, lastPage: int}
+     */
+    public function paginateByCreationSource(
+        string $creationSource,
+        int $page = 1,
+        int $perPage = 10,
+    ): array {
+        $cacheKey = sprintf('posts:paginate:source:%s:page:%d:per:%d', $creationSource, $page, $perPage);
+
+        return $this->cache->remember($cacheKey, function () use ($creationSource, $page, $perPage) {
+            $offset = ($page - 1) * $perPage;
+
+            // 計算總筆數
+            $total = $this->countByCreationSource($creationSource);
+
+            // 取得分頁資料
+            $sql = $this->buildSelectQuery('creation_source = :creation_source')
+                . ' ORDER BY is_pinned DESC, created_at DESC LIMIT :limit OFFSET :offset';
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $items = array_map(
+                fn($row) => Post::fromArray($this->preparePostData($row)),
+                $stmt->fetchAll(PDO::FETCH_ASSOC),
+            );
+
+            return [
+                'items' => $items,
+                'total' => $total,
+                'page' => $page,
+                'perPage' => $perPage,
+                'lastPage' => ceil($total / $perPage),
+            ];
+        }, self::CACHE_TTL);
     }
 }

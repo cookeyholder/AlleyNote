@@ -40,14 +40,18 @@ use App\Domains\Security\Services\Headers\SecurityHeaderService;
 // Validation Services
 use App\Domains\Security\Services\IpService;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
+use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Infrastructure\Database\DatabaseConnection;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
+use App\Infrastructure\Statistics\Commands\StatisticsCalculationCommand;
+use App\Infrastructure\Statistics\Services\StatisticsCacheService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Factory\ValidatorFactory;
 use App\Shared\Validation\Validator;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 
 return [
     // Database
@@ -64,6 +68,14 @@ return [
 
     // 直接註冊 CacheService 以向後相容
     CacheService::class => DI\autowire(CacheService::class),
+
+    // Statistics Cache Service
+    StatisticsCacheServiceInterface::class => DI\autowire(StatisticsCacheService::class)
+        ->constructorParameter('cache', DI\get(CacheServiceInterface::class))
+        ->constructorParameter('logger', DI\get(LoggerInterface::class)),
+
+    // Statistics Commands
+    StatisticsCalculationCommand::class => DI\autowire(),
 
     // Repositories
     PostRepositoryInterface::class => DI\autowire(PostRepository::class)
