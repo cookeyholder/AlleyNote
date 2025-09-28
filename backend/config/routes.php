@@ -132,6 +132,12 @@ return function (RouterInterface $router): void {
     $activityLogMe->middleware('jwt.auth');
 
     // =========================================
+    // 貼文瀏覽記錄 API 路由
+    // =========================================
+    $postViewRecord = $router->post('/api/posts/{id}/view', [\App\Application\Controllers\Api\V1\PostViewController::class, 'recordView']);
+    $postViewRecord->setName('posts.view.record');
+
+    // =========================================
     // 管理員路由 (需要管理員權限)
     // =========================================
 

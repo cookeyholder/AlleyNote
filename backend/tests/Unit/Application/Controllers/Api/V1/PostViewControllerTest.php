@@ -83,7 +83,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -102,7 +102,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -114,7 +114,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => 'invalid']);
+        $result = $this->controller->recordView($this->request, $this->response, 'invalid');
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -126,7 +126,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, []);
+        $result = $this->controller->recordView($this->request, $this->response, '');
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -138,7 +138,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => '0']);
+        $result = $this->controller->recordView($this->request, $this->response, '0');
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -150,7 +150,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => '-1']);
+        $result = $this->controller->recordView($this->request, $this->response, '-1');
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -170,7 +170,7 @@ class PostViewControllerTest extends TestCase
             ->andThrow(new PostNotFoundException($postId));
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -190,7 +190,7 @@ class PostViewControllerTest extends TestCase
             ->andThrow(new Exception('Database error'));
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -209,7 +209,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -227,7 +227,7 @@ class PostViewControllerTest extends TestCase
         $this->setupResponse();
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);
@@ -247,7 +247,7 @@ class PostViewControllerTest extends TestCase
             ->andThrow(new Exception('Event dispatcher error'));
 
         // Act
-        $result = $this->controller->recordView($this->request, $this->response, ['id' => (string) $postId]);
+        $result = $this->controller->recordView($this->request, $this->response, (string) $postId);
 
         // Assert
         $this->assertInstanceOf(ResponseInterface::class, $result);

@@ -134,7 +134,7 @@ class PostViewController extends BaseController
     public function recordView(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        int|string|array|null $id = null,
+        string $id,
     ): ResponseInterface {
         try {
             $startTime = microtime(true);

@@ -70,6 +70,9 @@ trait DatabaseTestTrait
         $this->createRefreshTokensTable();
         $this->createTokenBlacklistTable();
         $this->createUserActivityLogsTable();
+        $this->createCommentsTable();
+        $this->createPostViewsTable();
+        $this->createStatisticsSnapshotsTable();
         $this->createIndices();
     }
 
@@ -244,6 +247,66 @@ trait DatabaseTestTrait
     }
 
     /**
+     * 建立評論資料表.
+     */
+    protected function createCommentsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                user_id INTEGER NOT NULL,
+                content TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ');
+    }
+
+    /**
+     * 建立文章瀏覽記錄資料表.
+     */
+    protected function createPostViewsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS post_views (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                post_id INTEGER NOT NULL,
+                user_id INTEGER,
+                ip_address TEXT,
+                viewed_at TEXT NOT NULL,
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ');
+    }
+
+    /**
+     * 建立統計快照資料表.
+     */
+    protected function createStatisticsSnapshotsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS statistics_snapshots (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                snapshot_type TEXT NOT NULL,
+                period_type TEXT NOT NULL,
+                period_start TEXT NOT NULL,
+                period_end TEXT NOT NULL,
+                statistics_data TEXT NOT NULL,
+                metadata TEXT,
+                expires_at TEXT,
+                total_views INTEGER DEFAULT 0,
+                total_unique_viewers INTEGER DEFAULT 0,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL
+            )
+        ');
+    }
+
+    /**
      * 建立資料表索引.
      */
     protected function createIndices(): void
@@ -269,6 +332,24 @@ trait DatabaseTestTrait
             CREATE INDEX IF NOT EXISTS idx_attachments_uuid ON attachments(uuid);
             CREATE INDEX IF NOT EXISTS idx_attachments_post_id ON attachments(post_id);
             CREATE INDEX IF NOT EXISTS idx_attachments_created_at ON attachments(created_at)
+        ');
+
+        // Comments 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_comments_post_id ON comments(post_id);
+            CREATE INDEX IF NOT EXISTS idx_comments_user_id ON comments(user_id);
+        ');
+
+        // Post Views 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_post_views_post_id ON post_views(post_id);
+            CREATE INDEX IF NOT EXISTS idx_post_views_user_id ON post_views(user_id);
+        ');
+
+        // Statistics Snapshots 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_snapshots_uuid ON statistics_snapshots(uuid);
+            CREATE INDEX IF NOT EXISTS idx_snapshots_type_period ON statistics_snapshots(snapshot_type, period_start, period_end);
         ');
 
         // User Activity Logs 索引

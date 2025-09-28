@@ -241,9 +241,9 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         if ($rateLimited) {
             $this->addToAssertionCount(1); // 速率限制正常運作
         } else {
-            // 檢查大部分請求都成功處理
+            // 檢查所有請求都成功處理
             $successfulRequests = array_filter($responses, fn($r) => $r['status'] === 200);
-            $this->assertGreaterThan(0, count($successfulRequests), '至少有一些請求應該成功');
+            $this->assertCount(10, $successfulRequests, '在沒有速率限制的情況下，所有請求都應該成功');
         }
     }
 
@@ -295,9 +295,8 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
                 $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
             }
 
-            if ($response['status'] === 200) {
-                $this->assertIsArray($response['body']);
-            }
+            $this->assertEquals(200, $response['status'], "IP {$ip} 的請求應該成功");
+            $this->assertIsArray($response['body']);
         }
     }
 
@@ -362,16 +361,16 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
             $this->markTestSkipped('文章瀏覽追蹤 API 路由未配置');
         }
 
-        if ($response['status'] === 200) {
-            // 驗證回應格式
-            $body = $response['body'];
-            $this->assertIsArray($body);
-            $this->assertArrayHasKey('message', $body);
+        $this->assertEquals(200, $response['status']);
 
-            // 檢查訊息內容
-            $this->assertIsString($body['message']);
-            $this->assertNotEmpty($body['message']);
-        }
+        // 驗證回應格式
+        $body = $response['body'];
+        $this->assertIsArray($body);
+        $this->assertArrayHasKey('message', $body);
+
+        // 檢查訊息內容
+        $this->assertIsString($body['message']);
+        $this->assertNotEmpty($body['message']);
     }
 
     public function testContentTypeHeaders(): void
@@ -436,9 +435,8 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
             }
 
             // 每篇文章的瀏覽都應該被正確處理
-            if ($response['status'] === 200) {
-                $this->assertIsArray($response['body']);
-            }
+            $this->assertEquals(200, $response['status'], "Post ID {$postId} 的瀏覽請求應該成功");
+            $this->assertIsArray($response['body']);
         }
     }
 }

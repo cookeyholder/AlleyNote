@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
 
-use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
@@ -65,26 +64,29 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
 
-            $defaultStatuses = array_map(static fn(PostStatus $status) => $status->value, PostStatus::cases());
+            $statusMap = [
+                '1' => 'published',
+                '0' => 'draft',
+            ];
+
+            $defaultStatuses = ['published', 'draft', 'archived'];
             $result = array_fill_keys($defaultStatuses, 0);
 
             while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
                 /** @var array<string, mixed> $row */
 
-                $statusValue = isset($row['status']) && is_string($row['status'])
-                    ? $row['status']
-                    : 'unknown';
+                $statusFromDb = (string) ($row['status'] ?? '');
+                $statusValue = $statusMap[$statusFromDb] ?? null;
 
-                if (!array_key_exists($statusValue, $result)) {
-                    $result[$statusValue] = 0;
+                if ($statusValue && array_key_exists($statusValue, $result)) {
+                    $count = isset($row['count']) && is_numeric($row['count'])
+                        ? (int) $row['count']
+                        : 0;
+                    $result[$statusValue] = $count;
                 }
-
-                $result[$statusValue] = isset($row['count']) && is_numeric($row['count'])
-                    ? (int) $row['count']
-                    : 0;
             }
 
-            return $result;
+return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章狀態統計失敗: ' . $e->getMessage(), 0, $e);
         }
@@ -489,8 +491,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         try {
             $sql = 'SELECT
                         COUNT(*) as total_posts,
-                        SUM(CASE WHEN status = "published" THEN 1 ELSE 0 END) as published_posts,
-                        SUM(CASE WHEN status = "draft" THEN 1 ELSE 0 END) as draft_posts,
+                        SUM(CASE WHEN status = "1" THEN 1 ELSE 0 END) as published_posts,
+                        SUM(CASE WHEN status = "0" THEN 1 ELSE 0 END) as draft_posts,
                         SUM(COALESCE(views, 0)) as total_views,
                         COUNT(DISTINCT user_id) as active_authors
                     FROM posts

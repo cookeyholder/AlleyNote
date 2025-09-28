@@ -65,12 +65,12 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
             new DateTimeImmutable('2024-01-01 23:59:59'),
         );
 
-        $publishedCount = $this->repository->getTotalPostsCount($period, 'published');
-        $draftCount = $this->repository->getTotalPostsCount($period, 'draft');
+        $publishedCount = $this->repository->getTotalPostsCount($period, '1');
+        $draftCount = $this->repository->getTotalPostsCount($period, '0');
 
         // 驗證結果
-        $this->assertGreaterThan(0, $publishedCount);
-        $this->assertGreaterThanOrEqual(0, $draftCount);
+        $this->assertEquals(3, $publishedCount);
+        $this->assertEquals(1, $draftCount);
     }
 
     public function testGetPostsCountByStatus(): void
@@ -89,9 +89,9 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         $this->assertArrayHasKey('archived', $statusCounts);
 
         // 驗證數值
-        $this->assertGreaterThan(0, $statusCounts['published']);
-        $this->assertGreaterThanOrEqual(0, $statusCounts['draft']);
-        $this->assertGreaterThanOrEqual(0, $statusCounts['archived']);
+        $this->assertEquals(3, $statusCounts['published'] ?? 0);
+        $this->assertEquals(1, $statusCounts['draft'] ?? 0);
+        $this->assertEquals(0, $statusCounts['archived'] ?? 0);
     }
 
     public function testGetPostsCountBySource(): void
@@ -411,6 +411,7 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
             $summary['published_posts'] + $summary['draft_posts'],
             $summary['total_posts'],
         );
+        $this->assertEquals(3, $summary['active_authors']);
     }
 
     public function testInvalidLimitThrowsException(): void
