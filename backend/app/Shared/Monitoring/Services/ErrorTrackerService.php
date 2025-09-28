@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Services;
 
+use App\Shared\Enums\LogLevel;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use Exception;
 use Psr\Log\LoggerInterface;
@@ -38,7 +39,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function recordError(Throwable $error, array $context = []): string
     {
-        return $this->recordErrorWithLevel('error', $error->getMessage(), array_merge($context, [
+        return $this->recordErrorWithLevel(LogLevel::ERROR, $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
             'file' => $error->getFile(),
             'line' => $error->getLine(),
@@ -52,7 +53,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function recordWarning(string $message, array $context = []): string
     {
-        return $this->recordErrorWithLevel('warning', $message, $context);
+        return $this->recordErrorWithLevel(LogLevel::WARNING, $message, $context);
     }
 
     /**
@@ -60,7 +61,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function recordInfo(string $message, array $context = []): string
     {
-        return $this->recordErrorWithLevel('info', $message, $context);
+        return $this->recordErrorWithLevel(LogLevel::INFO, $message, $context);
     }
 
     /**
@@ -68,7 +69,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
      */
     public function recordCriticalError(Throwable $error, array $context = []): string
     {
-        $errorId = $this->recordErrorWithLevel('critical', $error->getMessage(), array_merge($context, [
+        $errorId = $this->recordErrorWithLevel(LogLevel::CRITICAL, $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
             'file' => $error->getFile(),
             'line' => $error->getLine(),
@@ -77,7 +78,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         ]), $error);
 
         // 觸發所有通知處理器
-        $this->triggerNotifications('critical', $error->getMessage(), $context, $error);
+        $this->triggerNotifications(LogLevel::CRITICAL, $error->getMessage(), $context, $error);
 
         return $errorId;
     }
@@ -105,7 +106,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 按等級分組
         foreach ($recentErrors as $record) {
-            $level = $record['level'];
+            $level = $record['level']->value;
             if (!isset($stats['levels'][$level])) {
                 $stats['levels'][$level] = 0;
             }
@@ -210,7 +211,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
             $timestampValue = $record['timestamp'] ?? 0;
             $timestamp = is_int($timestampValue) || is_numeric($timestampValue) ? (int) $timestampValue : time();
             $date = date('Y-m-d', $timestamp);
-            $level = is_string($record['level'] ?? '') ? $record['level'] : 'unknown';
+            $level = $record['level']->value;
 
             if (!isset($trends['level_trends'][$level])) {
                 $trends['level_trends'][$level] = [];
@@ -258,7 +259,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
         $cutoffTime = microtime(true) - ($minutes * 60);
 
         foreach ($this->errorRecords as $record) {
-            if ($record['timestamp'] > $cutoffTime && $record['level'] === 'critical') {
+            if ($record['timestamp'] > $cutoffTime && $record['level'] === LogLevel::CRITICAL) {
                 return true;
             }
         }
@@ -282,9 +283,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
                 continue;
             }
 
-            if ($record['level'] === 'critical') {
+            if ($record['level'] === LogLevel::CRITICAL) {
                 $recentCritical[] = $record;
-            } elseif ($record['level'] === 'warning') {
+            } elseif ($record['level'] === LogLevel::WARNING) {
                 $recentWarnings[] = $record;
             }
         }
@@ -351,7 +352,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 記錄錯誤並分配等級。
      */
-    private function recordErrorWithLevel(string $level, string $message, array $context = [], ?Throwable $exception = null): string
+    private function recordErrorWithLevel(LogLevel $level, string $message, array $context = [], ?Throwable $exception = null): string
     {
         // 應用過濾器
         foreach ($this->errorFilters as $filter) {
@@ -386,10 +387,10 @@ class ErrorTrackerService implements ErrorTrackerInterface
 
         // 記錄到日誌
         match ($level) {
-            'critical' => $this->logger->critical($message, $context),
-            'error' => $this->logger->error($message, $context),
-            'warning' => $this->logger->warning($message, $context),
-            'info' => $this->logger->info($message, $context),
+            LogLevel::CRITICAL => $this->logger->critical($message, $context),
+            LogLevel::ERROR => $this->logger->error($message, $context),
+            LogLevel::WARNING => $this->logger->warning($message, $context),
+            LogLevel::INFO => $this->logger->info($message, $context),
             default => $this->logger->debug($message, $context),
         };
 
@@ -423,7 +424,7 @@ class ErrorTrackerService implements ErrorTrackerInterface
     /**
      * 觸發通知處理器。
      */
-    private function triggerNotifications(string $level, string $message, array $context, ?Throwable $exception = null): void
+    private function triggerNotifications(LogLevel $level, string $message, array $context, ?Throwable $exception = null): void
     {
         foreach ($this->notificationHandlers as $handler) {
             try {
@@ -539,9 +540,9 @@ class ErrorTrackerService implements ErrorTrackerInterface
     {
         $levels = is_array($stats['levels'] ?? null) ? $stats['levels'] : [];
 
-        $criticalValue = $levels['critical'] ?? 0;
-        $errorValue = $levels['error'] ?? 0;
-        $warningValue = $levels['warning'] ?? 0;
+        $criticalValue = $levels[LogLevel::CRITICAL->value] ?? 0;
+        $errorValue = $levels[LogLevel::ERROR->value] ?? 0;
+        $warningValue = $levels[LogLevel::WARNING->value] ?? 0;
         $totalValue = $stats['total_errors'] ?? 0;
 
         $criticalCount = is_numeric($criticalValue) ? (int) $criticalValue : 0;

@@ -4,30 +4,25 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
+use App\Application\Enums\JsonFlag;
+use App\Shared\Enums\HttpStatusCode;
 use App\Shared\Http\ApiResponse;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 
-enum JsonFlag: int
-{
-    case DEFAULT = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
-    case COMPACT = JSON_UNESCAPED_UNICODE;
-    case DEBUG = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR;
-}
-
 abstract class BaseController
 {
     private const EXCEPTION_HTTP_CODES = [
-        'App\Exceptions\Post\PostNotFoundException' => 404,
-        'App\Exceptions\Post\PostStatusException' => 400,
-        'App\Exceptions\Post\PostValidationException' => 422,
-        'App\Exceptions\NotFoundException' => 404,
-        'App\Exceptions\StateTransitionException' => 409,
-        'App\Exceptions\ValidationException' => 422,
-        'App\Exceptions\Validation\RequestValidationException' => 422,
-        'App\Exceptions\Auth\UnauthorizedException' => 401,
-        'App\Exceptions\Auth\ForbiddenException' => 403,
-        'App\Exceptions\CsrfTokenException' => 403,
+        'App\Exceptions\Post\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
+        'App\Exceptions\Post\PostStatusException' => HttpStatusCode::BAD_REQUEST,
+        'App\Exceptions\Post\PostValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
+        'App\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
+        'App\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
+        'App\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
+        'App\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
+        'App\Exceptions\Auth\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
+        'App\Exceptions\Auth\ForbiddenException' => HttpStatusCode::FORBIDDEN,
+        'App\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
     ];
 
     /**
@@ -36,7 +31,7 @@ abstract class BaseController
     protected function json(
         ResponseInterface $response,
         array $data,
-        int $status = 200,
+        HttpStatusCode $status = HttpStatusCode::OK,
         JsonFlag $jsonFlag = JsonFlag::DEFAULT,
     ): ResponseInterface {
         $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
@@ -45,12 +40,12 @@ abstract class BaseController
 
         return $response
             ->withHeader('Content-Type', 'application/json')
-            ->withStatus($status);
+            ->withStatus($status->value);
     }
 
-    protected function jsonResponse(array $data, int $httpCode = 200): string
+    protected function jsonResponse(array $data, HttpStatusCode $httpCode = HttpStatusCode::OK): string
     {
-        http_response_code($httpCode);
+        http_response_code($httpCode->value);
         header('Content-Type: application/json; charset=utf-8');
 
         return json_encode($data, JsonFlag::COMPACT->value) ?: '{}';
@@ -65,11 +60,11 @@ abstract class BaseController
 
     protected function errorResponse(
         string $message,
-        int $httpCode = 400,
+        HttpStatusCode $httpCode = HttpStatusCode::BAD_REQUEST,
         mixed $errors = null,
     ): string {
         return $this->jsonResponse(
-            ApiResponse::error($message, $httpCode, $errors),
+            ApiResponse::error($message, $httpCode->value, $errors),
             $httpCode,
         );
     }
@@ -97,16 +92,14 @@ abstract class BaseController
 
         $httpCode = $this->getHttpCodeFromException($e);
 
-        return $this->errorResponse($e->getMessage(), $httpCode);
+        return this->errorResponse($e->getMessage(), $httpCode);
     }
 
-    private function getHttpCodeFromException(Exception $e): int
+    private function getHttpCodeFromException(Exception $e): HttpStatusCode
     {
         $className = get_class($e);
 
-        return array_key_exists($className, self::EXCEPTION_HTTP_CODES)
-            ? self::EXCEPTION_HTTP_CODES[$className]
-            : 500;
+        return self::EXCEPTION_HTTP_CODES[$className] ?? HttpStatusCode::INTERNAL_SERVER_ERROR;
     }
 
     private function getFallbackJson(): string

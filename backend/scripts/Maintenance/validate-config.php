@@ -21,6 +21,7 @@ namespace AlleyNote\Scripts\Maintenance;
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use App\Shared\Config\EnvironmentConfig;
+use App\Shared\Enums\LogLevel;
 
 /**
  * 命令列選項解析
@@ -273,7 +274,7 @@ function checkProductionRecommendations(EnvironmentConfig $config): void
         success("活動記錄效能監控已啟用");
     }
 
-    if ($config->get('LOG_LEVEL') === 'debug') {
+    if ($config->get('LOG_LEVEL') === LogLevel::DEBUG->value) {
         warning("生產環境不建議使用 debug 日誌等級");
     } else {
         success("日誌等級設定適合生產環境");
@@ -309,7 +310,7 @@ function checkDevelopmentRecommendations(EnvironmentConfig $config): void
         success("偵錯模式已啟用");
     }
 
-    if ($config->get('ACTIVITY_LOG_LEVEL') !== 'debug') {
+    if ($config->get('ACTIVITY_LOG_LEVEL') !== LogLevel::DEBUG->value) {
         info("開發環境建議使用 debug 活動記錄等級", true);
     } else {
         success("活動記錄等級適合開發環境");

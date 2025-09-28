@@ -1,24 +1,18 @@
 # 程式碼品質分析報告
 
-**生成時間**: 2025-09-28 21:41:41
+**生成時間**: 2025-09-28 21:57:12
 
 ## 📊 PSR-4 合規性
 
-- **總檔案數**: 317
-- **合規檔案數**: 312
-- **合規率**: 98.42%
+- **總檔案數**: 319
+- **合規檔案數**: 315
+- **合規率**: 98.75%
 
 ### PSR-4 問題清單
 
 - **app/Application.php**: 命名空間 App 與檔案路徑不符
-- **app/Shared/OpenApi/OpenApiConfig.php**: 缺少命名空間宣告
 - **app/Shared/Helpers/functions.php**: 缺少命名空間宣告
-- **app/Application/Controllers/TestController.php**: 類別名稱 HealthController 與檔案名稱 TestController 不一致
-- **app/Application/Controllers/BaseController.php**: 類別名稱 JsonFlag 與檔案名稱 BaseController 不一致
 - **app/Infrastructure/Config/container.php**: 缺少命名空間宣告
-- **app/Infrastructure/Services/OutputSanitizer.php**: 類別名稱 SanitizerMode 與檔案名稱 OutputSanitizer 不一致
-- **scripts/Quality/phpstan-fixer.php**: 類別名稱 PhpstanFixer 與檔案名稱 phpstan-fixer 不一致
-- **scripts/Quality/unified-syntax-fixer.php**: 類別名稱 UnifiedSyntaxFixer 與檔案名稱 unified-syntax-fixer 不一致
 - **scripts/ScriptBootstrap.php**: 命名空間 AlleyNote\Scripts 與檔案路徑不符
 
 ## 🚀 現代 PHP 特性使用情況
