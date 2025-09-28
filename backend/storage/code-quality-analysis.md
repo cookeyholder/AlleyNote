@@ -1,6 +1,6 @@
 # 程式碼品質分析報告
 
-**生成時間**: 2025-09-28 21:18:17
+**生成時間**: 2025-09-28 21:41:41
 
 ## 📊 PSR-4 合規性
 
@@ -17,17 +17,16 @@
 - **app/Application/Controllers/BaseController.php**: 類別名稱 JsonFlag 與檔案名稱 BaseController 不一致
 - **app/Infrastructure/Config/container.php**: 缺少命名空間宣告
 - **app/Infrastructure/Services/OutputSanitizer.php**: 類別名稱 SanitizerMode 與檔案名稱 OutputSanitizer 不一致
-- **scripts/Analysis/scan-project-architecture.php**: 類別名稱 ProjectArchitectureScanner 與檔案名稱 scan-project-architecture 不一致
 - **scripts/Quality/phpstan-fixer.php**: 類別名稱 PhpstanFixer 與檔案名稱 phpstan-fixer 不一致
 - **scripts/Quality/unified-syntax-fixer.php**: 類別名稱 UnifiedSyntaxFixer 與檔案名稱 unified-syntax-fixer 不一致
-- ... 還有 1 個問題
+- **scripts/ScriptBootstrap.php**: 命名空間 AlleyNote\Scripts 與檔案路徑不符
 
 ## 🚀 現代 PHP 特性使用情況
 
 - **枚舉型別**: 9 次使用
 - **唯讀屬性**: 92 次使用
-- **Match 表達式**: 71 次使用
-- **聯合型別**: 89 次使用
+- **Match 表達式**: 70 次使用
+- **聯合型別**: 88 次使用
 - **建構子屬性提升**: 0 次使用
 - **屬性標籤**: 0 次使用
 - **空安全運算子**: 0 次使用
