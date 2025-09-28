@@ -238,20 +238,18 @@ final class StatisticsApiIntegrationTest extends IntegrationTestCase
             $this->markTestSkipped('統計 API 路由未配置');
         }
 
-        // 應該回傳 401 Unauthorized
         $this->assertEquals(401, $response['status']);
     }
 
     public function testInvalidJwtToken(): void
     {
-        $headers = ['Authorization' => 'Bearer invalid-jwt-token'];
+        $headers = ['Authorization' => 'Bearer invalid-token'];
         $response = $this->makeRequest('GET', '/api/statistics/overview', null, $headers);
 
         if ($response['status'] === 404) {
             $this->markTestSkipped('統計 API 路由未配置');
         }
 
-        // 應該回傳 401 Unauthorized
         $this->assertEquals(401, $response['status']);
     }
 

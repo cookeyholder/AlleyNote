@@ -77,7 +77,7 @@ class JwtConfigTest extends TestCase
         $this->unsetEnv('JWT_PRIVATE_KEY_PATH');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('JWT_PRIVATE_KEY 環境變數未設定');
+        $this->expectExceptionMessage('JWT_PRIVATE_KEY 或 JWT_PRIVATE_KEY_PATH 環境變數至少需要設定一個');
 
         new JwtConfig();
     }
@@ -89,7 +89,7 @@ class JwtConfigTest extends TestCase
         $this->unsetEnv('JWT_PUBLIC_KEY_PATH');
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('JWT_PUBLIC_KEY 環境變數未設定');
+        $this->expectExceptionMessage('JWT_PUBLIC_KEY 或 JWT_PUBLIC_KEY_PATH 環境變數至少需要設定一個');
 
         new JwtConfig();
     }

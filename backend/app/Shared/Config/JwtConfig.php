@@ -97,17 +97,18 @@ final class JwtConfig
      */
     private function loadPrivateKey(): string
     {
+        // 優先從路徑載入
+        $privateKeyFromPath = $this->loadKeyFromPath('JWT_PRIVATE_KEY_PATH');
+        if ($privateKeyFromPath !== null && $privateKeyFromPath !== '') {
+            return $privateKeyFromPath;
+        }
+
+        // 若路徑未設定，則從環境變數讀取
         $privateKeyEnv = $_ENV['JWT_PRIVATE_KEY'] ?? getenv('JWT_PRIVATE_KEY');
         $privateKey = is_string($privateKeyEnv) ? $privateKeyEnv : '';
 
         if ($privateKey === '') {
-            $privateKeyFromPath = $this->loadKeyFromPath('JWT_PRIVATE_KEY_PATH');
-
-            if ($privateKeyFromPath === null || $privateKeyFromPath === '') {
-                throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
-            }
-
-            $privateKey = $privateKeyFromPath;
+            throw new InvalidArgumentException('JWT_PRIVATE_KEY 或 JWT_PRIVATE_KEY_PATH 環境變數至少需要設定一個');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -126,17 +127,18 @@ final class JwtConfig
      */
     private function loadPublicKey(): string
     {
+        // 優先從路徑載入
+        $publicKeyFromPath = $this->loadKeyFromPath('JWT_PUBLIC_KEY_PATH');
+        if ($publicKeyFromPath !== null && $publicKeyFromPath !== '') {
+            return $publicKeyFromPath;
+        }
+
+        // 若路徑未設定，則從環境變數讀取
         $publicKeyEnv = $_ENV['JWT_PUBLIC_KEY'] ?? getenv('JWT_PUBLIC_KEY');
         $publicKey = is_string($publicKeyEnv) ? $publicKeyEnv : '';
 
         if ($publicKey === '') {
-            $publicKeyFromPath = $this->loadKeyFromPath('JWT_PUBLIC_KEY_PATH');
-
-            if ($publicKeyFromPath === null || $publicKeyFromPath === '') {
-                throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
-            }
-
-            $publicKey = $publicKeyFromPath;
+            throw new InvalidArgumentException('JWT_PUBLIC_KEY 或 JWT_PUBLIC_KEY_PATH 環境變數至少需要設定一個');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符

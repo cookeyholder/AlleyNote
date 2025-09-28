@@ -265,7 +265,7 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
                 continue; // 跳過未配置的路由
             }
 
-            $this->assertEquals(401, $response['status'], "未認證請求 {$endpoint} 應回傳 401");
+            $this->assertEquals(401, $response['status']);
         }
     }
 
