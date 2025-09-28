@@ -87,12 +87,9 @@ class PostControllerTest extends TestCase
             ->byDefault();
 
         // 設置 ActivityLoggingService mock 期望 - 預設允許所有呼叫
-        $this->activityLogger->shouldReceive('log')
-            ->byDefault();
-        $this->activityLogger->shouldReceive('logSuccess')
-            ->byDefault();
-        $this->activityLogger->shouldReceive('logFailure')
-            ->byDefault();
+        $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('logSuccess')->byDefault()->andReturn(true);
+        $this->activityLogger->shouldReceive('logFailure')->byDefault()->andReturn(true);
 
         // 設定 validator 預設行為
         $this->validator->shouldReceive('validateOrFail')

@@ -39,27 +39,45 @@ class PostActivityLoggingTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Mock services
         $this->postService = Mockery::mock(PostServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
-        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
 
-        // Mock HTTP objects
+        $this->sanitizer->shouldReceive('sanitizeHtml')
+            ->andReturnUsing(fn ($input) => $input)
+            ->byDefault();
+
+        // 初始化 request 和 response mocks
         $this->request = Mockery::mock(ServerRequestInterface::class);
         $this->response = Mockery::mock(ResponseInterface::class);
 
-        // Default request mocks
+        // 設定基本的 request mock 行為
+        $this->request->shouldReceive('getHeaderLine')
+            ->byDefault()
+            ->andReturn('');
+        $this->request->shouldReceive('getServerParams')
+            ->byDefault()
+            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
         $this->request->shouldReceive('getAttribute')
             ->with('user_id')
+            ->byDefault()
             ->andReturn(1);
 
-        $this->request->shouldReceive('getServerParams')
-            ->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
-    }
+        // 設定基本的 response mock 行為
+        $this->response->shouldReceive('withStatus')
+            ->andReturnSelf()
+            ->byDefault();
+        $this->response->shouldReceive('withHeader')
+            ->andReturnSelf()
+            ->byDefault();
 
-    #[Test]
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('write')->andReturnSelf()->byDefault();
+        $stream->shouldReceive('__toString')->andReturn('{"success": true}')->byDefault();
+        $this->response->shouldReceive('getBody')->andReturn($stream)->byDefault();
+    }    #[Test]
     public function it_logs_successful_post_creation(): void
     {
         // Arrange

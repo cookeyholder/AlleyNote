@@ -24,6 +24,7 @@
         </include>
         <exclude>
             <directory>./app/Infrastructure/OpenApi</directory>
+            <directory suffix=".php">./app/Domains/Statistics/Contracts</directory>
         </exclude>
     </source>
     <php>
@@ -38,7 +39,42 @@
         <env name="JWT_REFRESH_TOKEN_TTL" value="2592000"/>
         <env name="JWT_PRIVATE_KEY_PATH" value="test_private_key.pem"/>
         <env name="JWT_PUBLIC_KEY_PATH" value="test_public_key.pem"/>
-        <env name="JWT_PRIVATE_KEY" value=""/>
-        <env name="JWT_PUBLIC_KEY" value=""/>
+        <env name="JWT_PRIVATE_KEY" value="-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7bjwmxz3eqbfh
+x2FiapDublS2Qx78RwQJCquPopfQKj1BxoGH7VQl65FU1Dytu+Q4E8o6FpjobU1i
+0+Ij7rAEe3mvLAqLmWZGFAQdF8mBhXEZLFVk3Fb7plwbBJMHWDrL9T19KJbp0TxL
+3XIao0YGfM5JqzlJ1dLVf9gBHhTGZpJiwLoA5prM5ABPS2QXMIBsNhzCQ0YR5dWj
+94fBTLYHPPj+9HeDtqq72iz6aTt+bgonm/5uqdH9Hcw0Vjiu6akvhPxE2HT4XXsE
+q7Z6LZDNRLUwKcQ+z9PHj8ZWM4PfF5OXGok90Vmj7NBVLpl7LZjaGY9wUC6mKgLa
+h+8WEmMlAgMBAAECggEACzhd5vdh84im7p/sK0NUYkWeEhwiCHmq2uy12P8jhe1l
+ZeDfg7bYJP39YP3klQTstFOw9TnBlRZn/czP2pVRGa+XmP4ysmkwN20+0swH/tYx
+b0+ZXBSZq25p0J89OwET4f5QHEQ4Bo7FRIhg6onQKRbDFaNnpk0j1i6VTHnTxg2n
+I2nGb84Yfi1dUIDb6QkCwEe3xKMqGfEbNmBq6Rl2flW/bfhUJ6TbI5eyFgqaPCA8
+O0n2HOGckxVSHtJ+c4xBimalEXVDiWgyhkPRW++JWudb5OiP6EW1iO7vhyOXdNJJ
+meGudIlAy9LQdETRzRyWlnSy+Y2kIgbAEjbMdZKnAQKBgQDipVL/cn0GoVGOXC6W
+xM5Kp+KuW+UW12940EWQRLEERfVD4FISaHJwGa802QFR2/7oe2uRbfiuLXuJc472
+skC+XStG5o3vN4j7UkalT5Ypofyyq1ku/ULUedw3zVrAw1cFNuJo+Pcans/feQYm
+RnJQp/sQvw/R4qYv5Tgi/U5rAQKBgQDTtLDEx4F9k0AhVuNJu1Bk08a+pyrlqoTn
+W6wClBdCYgucBBveqBA4lNWoKjw5hU0QHkUNRZ22x04B0WTS09CZ3cYT6WtcY3zz
+jeWGHTSLJKTs865J7vNPCD4W37B6ptZWzX95NabKId2cqcP9bjnPGfk1N+yM4Ex3
+uNC1JxjsJQKBgQCqiBhmCh/WgETcJ7IKUTSi6aVe6df6ksjWD2d4AKdsfrLnin5W
+SW5puHmi+vDKRgyLommyeBtX+vLr3h4gssiSM4ofg9QhvRh9eU+cjMCAvNhlGxY0
+i+zf8HzpI8N4LMJqMvyyXTmYNwxTqj0dSX4z/+ChnhDqLG48tWzCrvN1AQKBgGVB
+/XKBQgxAC+JmXpv7fb5cFKlH55ql7p+CF0m8b0uO/aKHzJS4qdmGRpMCcH/KpEtb
+TwfEDmVH+qWf86trKFEP5BfOA03TQAZ2DhwRh/otcrzq6KfwJGves2PZZd2kQsyN
+ybS91qLDg+3UvStQN1I5SBsOPpQ7DBgPS7P5mVAJAoGBAIC2SKgUbPxDM/IfeJF8
+I8qOp8rWxhTL5WTJN2zQ+pQnxAGuFwvr3SlAWvs2PcFzpitfJsT6qH+7/WtEdIte
+pRcYEQK1OWubudCUg6c6Ou1QS+vEJwTx7wrK3vOTOOq1JfAw6A9+sIP9T0oejPzY
+k0i7JrI2Y0POAZZXyi/bxcF/
+-----END PRIVATE KEY-----"/>
+        <env name="JWT_PUBLIC_KEY" value="-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu248Jsc93qm34cdhYmqQ
+7m5UtkMe/EcECQqrj6KX0Co9QcaBh+1UJeuRVNQ8rbvkOBPKOhaY6G1NYtPiI+6w
+BHt5rywKi5lmRhQEHRfJgYVxGSxVZNxW+6ZcGwSTB1g6y/U9fSiW6dE8S91yGqNG
+BnzOSas5SdXS1X/YAR4UxmaSYsC6AOaazOQAT0tkFzCAbDYcwkNGEeXVo/eHwUy2
+Bzz4/vR3g7aqu9os+mk7fm4KJ5v+bqnR/R3MNFY4rumpL4T8RNh0+F17BKu2ei2Q
+zUS1MCnEPs/Tx4/GVjOD3xeTlxqJPdFZo+zQVS6Zey2Y2hmPcFAupioC2ofvFhJj
+JQIDAQAB
+-----END PUBLIC KEY-----"/>
     </php>
 </phpunit>
