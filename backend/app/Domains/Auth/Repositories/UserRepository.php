@@ -66,7 +66,7 @@ class UserRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
-        return $this->findById($id);
+        return $this->findById((int) $id);
     }
 
     public function delete(string $id): bool

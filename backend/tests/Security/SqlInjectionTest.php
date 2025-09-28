@@ -69,16 +69,18 @@ class SqlInjectionTest extends TestCase
                 publish_date DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                deleted_at DATETIME DEFAULT NULL
+                deleted_at DATETIME DEFAULT NULL,
+                creation_source VARCHAR(20) DEFAULT "unknown",
+                creation_source_detail TEXT
             )
         ');
 
         // 插入一些測試資料
         $this->db->exec("
-            INSERT INTO posts (uuid, title, content, user_id, user_ip, status, views) VALUES
-            ('uuid-1', 'Normal Post', 'Normal content', 1, '8.8.8.8', 'published', 0),
-            ('uuid-2', 'Secret Post', 'Secret content', 2, '8.8.8.8', 'published', 0),
-            ('uuid-3', 'Draft Post', 'Draft content', 1, '8.8.8.8', 'draft', 0)
+            INSERT INTO posts (uuid, title, content, user_id, user_ip, status, views, creation_source) VALUES
+            ('uuid-1', 'Normal Post', 'Normal content', 1, '8.8.8.8', 'published', 0, 'web'),
+            ('uuid-2', 'Secret Post', 'Secret content', 2, '8.8.8.8', 'published', 0, 'web'),
+            ('uuid-3', 'Draft Post', 'Draft content', 1, '8.8.8.8', 'draft', 0, 'web')
         ");
     }
 

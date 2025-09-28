@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
 
+use App\Application\Middleware\PostViewRateLimitMiddleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -24,6 +25,7 @@ class MiddlewareResolver
         'jwt.auth' => 'jwt.auth',
         'authorize' => 'jwt.authorize',
         'jwt.authorize' => 'jwt.authorize',
+        'post_view_rate_limit' => PostViewRateLimitMiddleware::class,
     ];
 
     public function __construct(

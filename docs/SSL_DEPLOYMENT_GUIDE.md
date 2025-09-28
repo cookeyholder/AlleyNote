@@ -96,19 +96,19 @@ mkdir -p /var/www/html/database
 chmod 755 /var/www/html/database
 
 # 執行資料庫遷移
-docker-compose exec web ./vendor/bin/phinx migrate
+docker compose exec web ./vendor/bin/phinx migrate
 ```
 
 #### PostgreSQL (大型部署時使用)
 ```bash
 # 啟動資料庫服務
-docker-compose -f docker-compose.production.yml up -d postgres
+docker compose -f docker compose.production.yml up -d postgres
 
 # 等待資料庫啟動
 sleep 30
 
 # 執行資料庫遷移
-docker-compose exec web ./vendor/bin/phinx migrate
+docker compose exec web ./vendor/bin/phinx migrate
 ```
 
 ### 4. 切換到正式環境
@@ -137,16 +137,16 @@ mkdir -p ssl-data certbot-data logs/nginx logs/certbot
 ### 2. 啟動基本服務
 ```bash
 # 啟動服務（不含資料庫，因為使用 SQLite）
-docker-compose up -d web nginx redis
+docker compose up -d web nginx redis
 
 # 初始化 SQLite 資料庫
-docker-compose exec web ./scripts/init-sqlite.sh
+docker compose exec web ./scripts/init-sqlite.sh
 ```
 
 ### 3. 申請 SSL 憑證
 ```bash
 # 測試環境憑證
-docker-compose run --rm certbot certonly \
+docker compose run --rm certbot certonly \
   --webroot \
   --webroot-path=/var/www/certbot \
   --email admin@your-domain.com \
@@ -156,7 +156,7 @@ docker-compose run --rm certbot certonly \
   -d your-domain.com
 
 # 正式環境憑證（移除 --staging）
-docker-compose run --rm certbot certonly \
+docker compose run --rm certbot certonly \
   --webroot \
   --webroot-path=/var/www/certbot \
   --email admin@your-domain.com \
@@ -167,8 +167,8 @@ docker-compose run --rm certbot certonly \
 
 ### 4. 重啟服務
 ```bash
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 ## 正式環境部署
@@ -177,10 +177,10 @@ docker-compose up -d
 
 ```bash
 # 使用正式環境設定啟動
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker compose.production.yml up -d
 
 # 檢查服務狀態
-docker-compose -f docker-compose.production.yml ps
+docker compose -f docker compose.production.yml ps
 ```
 
 ## 憑證管理
@@ -191,8 +191,8 @@ docker-compose -f docker-compose.production.yml ps
 ./scripts/ssl-renew.sh
 
 # 或直接使用 Docker
-docker-compose run --rm certbot renew
-docker-compose restart nginx
+docker compose run --rm certbot renew
+docker compose restart nginx
 ```
 
 ### 設定自動續簽
@@ -209,10 +209,10 @@ crontab -e
 ### 檢查憑證狀態
 ```bash
 # 檢查憑證有效期
-docker-compose exec certbot openssl x509 -in /etc/letsencrypt/live/your-domain.com/fullchain.pem -noout -enddate
+docker compose exec certbot openssl x509 -in /etc/letsencrypt/live/your-domain.com/fullchain.pem -noout -enddate
 
 # 測試續簽
-docker-compose run --rm certbot renew --dry-run
+docker compose run --rm certbot renew --dry-run
 
 # 檢查 SSL 設定
 curl -I https://your-domain.com
@@ -241,23 +241,23 @@ curl -I https://your-domain.com
 
 ```bash
 # 檢視服務狀態
-docker-compose ps
+docker compose ps
 
 # 檢視 Nginx 日誌
-docker-compose logs nginx
+docker compose logs nginx
 
 # 檢視 Certbot 日誌
-docker-compose logs certbot
+docker compose logs certbot
 
 # 進入容器除錯
-docker-compose exec nginx sh
-docker-compose exec certbot sh
+docker compose exec nginx sh
+docker compose exec certbot sh
 
 # 測試 Nginx 設定
-docker-compose exec nginx nginx -t
+docker compose exec nginx nginx -t
 
 # 重新載入 Nginx 設定
-docker-compose exec nginx nginx -s reload
+docker compose exec nginx nginx -s reload
 ```
 
 ### 日誌檔案位置

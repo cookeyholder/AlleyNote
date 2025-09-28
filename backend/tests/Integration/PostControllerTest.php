@@ -65,6 +65,7 @@ class PostControllerTest extends TestCase
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
 
         // 設定預設行為
         $this->xssProtection->shouldReceive('cleanArray')

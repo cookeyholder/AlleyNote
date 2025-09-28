@@ -21,7 +21,16 @@ class UserRepositoryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->markTestSkipped('暫時跳過此測試類以解決依賴問題');
+
+        // 建立 SQLite 記憶體資料庫連接
+        $this->db = new PDO('sqlite::memory:');
+        $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // 設置測試資料庫結構
+        $this->setupTestDatabase();
+
+        // 初始化 UserRepository
+        $this->repository = new UserRepository($this->db);
     }
 
     private function setupTestDatabase(): void
@@ -75,7 +84,9 @@ class UserRepositoryTest extends TestCase
             'status' => 0,
         ];
 
-        $updated = $this->repository->update($user['id'], $updateData);
+        $userId = $user['id'];
+        $this->assertIsInt($userId);
+        $updated = $this->repository->update((string) $userId, $updateData);
 
         $this->assertEquals($updateData['email'], $updated['email']);
         $this->assertEquals($updateData['status'], $updated['status']);
@@ -91,7 +102,9 @@ class UserRepositoryTest extends TestCase
             'password' => 'password123',
         ]);
 
-        $result = $this->repository->delete($user['id']);
+        $userId = $user['id'];
+        $this->assertIsInt($userId);
+        $result = $this->repository->delete((string) $userId);
         $this->assertTrue($result);
 
         $found = $this->repository->findById($user['id']);
@@ -201,7 +214,7 @@ class UserRepositoryTest extends TestCase
     #[Test]
     public function returnNullWhenUserNotFound(): void
     {
-        $result = $this->repository->findById('999');
+        $result = $this->repository->findById(999);
         $this->assertNull($result);
     }
 
@@ -217,7 +230,9 @@ class UserRepositoryTest extends TestCase
         $before = new DateTime();
         sleep(1); // 等待 1 秒確保時間差
 
-        $this->repository->updateLastLogin($user['id']);
+        $userId = $user['id'];
+        $this->assertIsInt($userId);
+        $this->repository->updateLastLogin((string) $userId);
 
         $updated = $this->repository->findById($user['id']);
         $lastLogin = new DateTime($updated['last_login']);

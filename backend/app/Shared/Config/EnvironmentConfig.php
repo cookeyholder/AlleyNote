@@ -28,8 +28,6 @@ final class EnvironmentConfig
         'APP_NAME',
         'APP_ENV',
         'DB_CONNECTION',
-        'JWT_PRIVATE_KEY',
-        'JWT_PUBLIC_KEY',
     ];
 
     public function __construct(?string $environment = null, ?string $configPath = null)
@@ -298,6 +296,18 @@ final class EnvironmentConfig
             // 最後檢查配置檔案
             if (!$hasValue && isset($this->config[$key]) && $this->config[$key] !== '') {
                 $hasValue = true;
+            }
+
+            // 針對 JWT 金鑰，額外檢查路徑變數
+            if (in_array($key, ['JWT_PRIVATE_KEY', 'JWT_PUBLIC_KEY'])) {
+                $pathKey = $key . '_PATH';
+                $pathValue = getenv($pathKey);
+                if ($pathValue !== false && $pathValue !== '') {
+                    $hasValue = true;
+                }
+                if (!$hasValue && isset($_ENV[$pathKey]) && $_ENV[$pathKey] !== '') {
+                    $hasValue = true;
+                }
             }
 
             if (!$hasValue) {

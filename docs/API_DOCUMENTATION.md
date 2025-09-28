@@ -3,7 +3,7 @@
 **版本**: v4.0
 **基礎 URL**: `https://your-domain.com/api`
 **API 版本**: RESTful API v4.0
-**更新日期**: 2025-01-20
+**更新日期**: 2025-09-27
 **前後端分離**: Vue.js 3 + PHP 8.4.12 DDD 後端
 
 ---
@@ -19,9 +19,11 @@
 7. [附件 API](#附件-api)
 8. [IP 規則 API](#ip-規則-api)
 9. [使用者活動記錄 API](#使用者活動記錄-api)
-10. [API 文件產生](#api-文件產生)
-11. [錯誤代碼](#錯誤代碼)
-12. [速率限制](#速率限制)
+10. [統計 API](#統計-api)
+11. [統計管理 API](#統計管理-api)
+12. [API 文件產生](#api-文件產生)
+13. [錯誤代碼](#錯誤代碼)
+14. [速率限制](#速率限制)
 
 ---
 
@@ -31,9 +33,10 @@ AlleyNote API v4.0 提供完整的前後端分離公布欄網站功能，基於 
 
 ### 版本 4.0 特色
 
-- ✅ **前後端分離**: Vue.js 3 Composition API + PHP 8.4.12 DDD 後端
+- ✅ **前後端分離**: TypeScript Composition API + PHP 8.4.12 DDD 後端
 - ✅ **DDD 架構**: 領域驅動設計，採用最新 PHP 8.4 語法特性
-- ✅ **完整測試覆蓋**: 138 個測試檔案，1,372 個通過測試
+- ✅ **完整測試覆蓋**: 148 個測試檔案，1,393 個通過測試
+- ✅ **統計模組**: 新增 5 個查詢端點、3 個管理端點與瀏覽追蹤 API
 - ✅ **現代化容器**: Docker 28.3.3 & Docker Compose v2.39.2
 - ✅ **強型別驗證**: PHP 8.4 型別系統，繁體中文錯誤訊息
 - ✅ **統一錯誤格式**: 標準化的 API 錯誤回應
@@ -44,7 +47,7 @@ AlleyNote API v4.0 提供完整的前後端分離公布欄網站功能，基於 
 ### 技術堆疊
 
 - **後端**: PHP 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
-- **前端**: Vue.js 3 Composition API
+- **前端**: TypeScript Composition API
 - **測試**: PHPUnit 11.5.34
 - **容器**: Docker 28.3.3 & Docker Compose v2.39.2
 - **資料庫**: SQLite3 (預設推薦) / PostgreSQL 16 (大型部署)
@@ -789,6 +792,192 @@ GET /api/v1/activity-logs?user_id=123&limit=50&page=1&action_category=authentica
         "pagination": {
             "current_page": 1,
             "per_page": 20,
+
+        ## 統計 API
+
+        統計 API 提供多維度統計查詢，包括概覽、文章、來源、使用者與熱門內容等資料。所有端點都會回傳標準化的 JSON 結構，並在 `meta` 欄位提供查詢期間與快取資訊。
+
+        ### 🔐 基礎資訊
+
+        - **基礎路徑**: `/api/v1/statistics`
+        - **認證要求**: JWT + `statistics.read` 權限（或 `statistics.*` / 全域權限）
+        - **支援格式**: JSON
+        - **版本**: v1.0
+
+        ### 📈 可用端點
+
+        | Method | Path | 說明 | 權限 |
+        |--------|------|------|------|
+        | GET | `/api/v1/statistics/overview` | 取得統計概覽（文章、使用者、互動指標） | `statistics.read` |
+        | GET | `/api/v1/statistics/posts` | 取得文章統計（狀態、來源、長度、熱門作者等） | `statistics.read` |
+        | GET | `/api/v1/statistics/sources` | 取得文章來源分布 | `statistics.read` |
+        | GET | `/api/v1/statistics/users` | 取得使用者活躍度統計 | `statistics.read` |
+        | GET | `/api/v1/statistics/popular` | 取得熱門內容排行榜（文章、使用者） | `statistics.read` |
+
+        ### 🔍 查詢參數
+
+        | 參數 | 類型 | 適用端點 | 說明 | 預設值 |
+        |------|------|-----------|------|--------|
+        | `start_date` | string (date) | all | 查詢起始日期 (YYYY-MM-DD) | 依服務自動計算 |
+        | `end_date` | string (date) | all | 查詢結束日期 (YYYY-MM-DD) | 依服務自動計算 |
+        | `page` | integer (≥1) | posts, users | 分頁頁碼 | 1 |
+        | `limit` | integer (1-100) | posts, users, popular | 每頁筆數／列表數量 | 20 (posts/users)、10 (popular) |
+
+        > ⚠️ 日期範圍超過 `config/statistics.php` 中 `performance.api_limits.max_date_range`（預設 90 天）會觸發 400 錯誤。
+
+        ### 📊 範例：取得統計概覽
+
+        ```http
+        GET /api/v1/statistics/overview?start_date=2025-09-01&end_date=2025-09-27
+        Authorization: Bearer <JWT>
+        ```
+
+        **回應範例：**
+
+        ```json
+        {
+            "success": true,
+            "data": {
+                "total_posts": 1250,
+                "active_users": 328,
+                "new_users": 42,
+                "post_activity": {
+                    "published": 1100,
+                    "draft": 120,
+                    "archived": 30
+                },
+                "user_activity": {
+                    "logins": 1640,
+                    "views": 15620
+                },
+                "engagement_metrics": {
+                    "posts_per_active_user": 3.81,
+                    "user_growth_rate": 12.5,
+                    "content_velocity": 42.6
+                },
+                "period_summary": {
+                    "type": "custom",
+                    "start": "2025-09-01T00:00:00+00:00",
+                    "end": "2025-09-27T23:59:59+00:00"
+                }
+            },
+            "meta": {
+                "start_date": "2025-09-01",
+                "end_date": "2025-09-27",
+                "cache_hit": true
+            }
+        }
+        ```
+
+        ### 📰 範例：取得文章統計
+
+        ```http
+        GET /api/v1/statistics/posts?page=1&limit=20&start_date=2025-09-20&end_date=2025-09-27
+        Authorization: Bearer <JWT>
+        ```
+
+        **回應欄位重點：**
+
+        - `data.by_status`：文章狀態分布（published、draft、archived...）
+        - `data.by_source`：文章來源統計（web、api、import、migration）
+        - `data.top_authors`：依發文量排序的前五名作者
+        - `data.time_distribution`：每日／每小時發佈趨勢
+        - `pagination`：包含 `current_page`、`per_page`、`total_count`、`total_pages`
+
+        ### 🔥 範例：取得熱門內容
+
+        ```http
+        GET /api/v1/statistics/popular?limit=10&start_date=2025-09-21&end_date=2025-09-27
+        Authorization: Bearer <JWT>
+        ```
+
+        **回應欄位重點：**
+
+        - `data.top_posts.by_views`：依瀏覽數排名的文章
+        - `data.top_posts.by_comments`：依留言數排名的文章
+        - `data.top_users.by_activity`：依活躍度排名的使用者
+        - `data.trending_sources`：文章來源趨勢
+        - `meta.cache_hit`：標記是否命中統計快照
+
+        > 💡 所有統計查詢功能都支援快取標籤（`statistics:*`），成功生成快照會自動預熱快取。
+
+        ---
+
+        ## 統計管理 API
+
+        統計管理 API 為管理員專用，用於手動刷新統計資料、清除快取與檢查系統健康狀態，建議僅在後台或維運腳本中使用。
+
+        ### 🔐 基礎資訊
+
+        - **基礎路徑**: `/api/admin/statistics`
+        - **認證要求**: JWT + `statistics.admin` / `admin.*` 權限
+        - **支援格式**: JSON
+        - **版本**: v1.0
+
+        ### 🛠️ 可用端點
+
+        | Method | Path | 說明 | 權限 |
+        |--------|------|------|------|
+        | POST | `/api/admin/statistics/refresh` | 強制重新計算統計並預熱快取 | `statistics.admin` |
+        | DELETE | `/api/admin/statistics/cache` | 清除統計相關快取標籤 | `statistics.admin` |
+        | GET | `/api/admin/statistics/health` | 檢查快取、資料庫、快照狀態 | `statistics.admin` |
+
+        ### 🚀 手動刷新統計
+
+        ```http
+        POST /api/admin/statistics/refresh
+        Authorization: Bearer <ADMIN_JWT>
+        Content-Type: application/json
+
+        {
+            "types": ["overview", "posts", "users"],
+            "force_recalculate": true
+        }
+        ```
+
+        **回應範例：**
+
+        ```json
+        {
+            "success": true,
+            "message": "統計資料刷新成功",
+            "data": {
+                "refreshed_types": ["overview", "posts", "users"],
+                "snapshots_created": 3,
+                "cache_cleared": true,
+                "execution_time": 1.82,
+                "timestamp": "2025-09-27T09:15:04+00:00"
+            }
+        }
+        ```
+
+        ### 🧹 清除統計快取
+
+        ```http
+        DELETE /api/admin/statistics/cache?tags=statistics,overview,posts
+        Authorization: Bearer <ADMIN_JWT>
+        ```
+
+        - 預設會清除 `statistics`, `statistics:*` 標籤。
+        - 可透過 `tags` query 參數指定其他標籤（逗號分隔）。
+
+        ### ❤️ 健康檢查
+
+        ```http
+        GET /api/admin/statistics/health
+        Authorization: Bearer <ADMIN_JWT>
+        ```
+
+        **回應欄位重點：**
+
+        - `cache.status` / `cache.hit_rate`：快取狀態與命中率
+        - `database.status` / `database.slow_query_count`：資料庫連線與慢查詢指標
+        - `snapshots.latest`：各統計快照最新時間戳
+        - `warnings`：若超出告警閾值會列出對應訊息
+
+        > 📌 建議將此端點接入監控系統（如 Prometheus、Grafana）以自動化追蹤統計模組健康度。
+
+        ---
             "total": 1,
             "total_pages": 1,
             "has_more": false

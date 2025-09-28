@@ -24,60 +24,71 @@
         </include>
         <exclude>
             <directory>./app/Infrastructure/OpenApi</directory>
+            <directory>./app/Domains/Attachment/Contracts</directory>
+            <directory>./app/Domains/Auth/Contracts</directory>
+            <directory>./app/Domains/Post/Contracts</directory>
+            <directory>./app/Domains/Security/Contracts</directory>
+            <directory>./app/Domains/Statistics/Contracts</directory>
+            <directory>./app/Infrastructure/Routing/Contracts</directory>
+            <directory>./app/Shared/Cache/Contracts</directory>
+            <directory>./app/Shared/Contracts</directory>
+            <directory>./app/Shared/Events/Contracts</directory>
+            <directory>./app/Shared/Monitoring/Contracts</directory>
         </exclude>
     </source>
+    <coverage>
+        <report>
+            <clover outputFile="coverage-reports/clover.xml"/>
+        </report>
+    </coverage>
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_CONNECTION" value="sqlite"/>
-        <env name="DB_DATABASE" value="database/test.sqlite3"/>
+         <env name="DB_DATABASE" value=":memory:"/>
         <!-- JWT Configuration for testing -->
         <env name="JWT_ALGORITHM" value="RS256"/>
         <env name="JWT_ISSUER" value="alleynote-api-test"/>
         <env name="JWT_AUDIENCE" value="alleynote-client-test"/>
         <env name="JWT_ACCESS_TOKEN_TTL" value="3600"/>
         <env name="JWT_REFRESH_TOKEN_TTL" value="2592000"/>
+        <env name="JWT_PRIVATE_KEY_PATH" value="test_private_key.pem"/>
+        <env name="JWT_PUBLIC_KEY_PATH" value="test_public_key.pem"/>
         <env name="JWT_PRIVATE_KEY" value="-----BEGIN PRIVATE KEY-----
-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
+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
+k0i7JrI2Y0POAZZXyi/bxcF/
 -----END PRIVATE KEY-----"/>
         <env name="JWT_PUBLIC_KEY" value="-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw28razD1
-efHFXtb2mF2qE07Ihx8N+Pjs0ZDYGSEcxeJcnvCGM+X5NUFkiks
-w0LM8oRjU6EPnLSLjtkOs5iJim54tW45swbjCzd/adWm2d4pAYh
-oyRNn/7kaVmL3vtEHW9nRt3gEPXWojdaB6YxG2hDEUSPOjYn5U
-FA8Nury8XVDifxEHli2uw3qrMg/Ds8UttDd5xvC6vuiEjdFF0cZ
-PTl2I+raIqHPGjmjXAb3YevMPyz0mvsfjxsb2zu9ccq1joUGdaA
-TkH8tiiWViLV+O7TBuRJ4aeZHvHlIUMknB/n1WggeW2BMQb4o9
-FiWBLGl9NVcEjWhmA1xncV/KIkxYTwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu248Jsc93qm34cdhYmqQ
+7m5UtkMe/EcECQqrj6KX0Co9QcaBh+1UJeuRVNQ8rbvkOBPKOhaY6G1NYtPiI+6w
+BHt5rywKi5lmRhQEHRfJgYVxGSxVZNxW+6ZcGwSTB1g6y/U9fSiW6dE8S91yGqNG
+BnzOSas5SdXS1X/YAR4UxmaSYsC6AOaazOQAT0tkFzCAbDYcwkNGEeXVo/eHwUy2
+Bzz4/vR3g7aqu9os+mk7fm4KJ5v+bqnR/R3MNFY4rumpL4T8RNh0+F17BKu2ei2Q
+zUS1MCnEPs/Tx4/GVjOD3xeTlxqJPdFZo+zQVS6Zey2Y2hmPcFAupioC2ofvFhJj
+JQIDAQAB
 -----END PUBLIC KEY-----"/>
     </php>
 </phpunit>

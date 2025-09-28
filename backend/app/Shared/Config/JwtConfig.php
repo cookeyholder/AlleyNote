@@ -97,10 +97,18 @@ final class JwtConfig
      */
     private function loadPrivateKey(): string
     {
-        $privateKey = $_ENV['JWT_PRIVATE_KEY'] ?? '';
+        // 優先從路徑載入
+        $privateKeyFromPath = $this->loadKeyFromPath('JWT_PRIVATE_KEY_PATH');
+        if ($privateKeyFromPath !== null && $privateKeyFromPath !== '') {
+            return $privateKeyFromPath;
+        }
 
-        if (empty($privateKey)) {
-            throw new InvalidArgumentException('JWT_PRIVATE_KEY 環境變數未設定');
+        // 若路徑未設定，則從環境變數讀取
+        $privateKeyEnv = $_ENV['JWT_PRIVATE_KEY'] ?? getenv('JWT_PRIVATE_KEY');
+        $privateKey = is_string($privateKeyEnv) ? $privateKeyEnv : '';
+
+        if ($privateKey === '') {
+            throw new InvalidArgumentException('JWT_PRIVATE_KEY 或 JWT_PRIVATE_KEY_PATH 環境變數至少需要設定一個');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -119,10 +127,18 @@ final class JwtConfig
      */
     private function loadPublicKey(): string
     {
-        $publicKey = $_ENV['JWT_PUBLIC_KEY'] ?? '';
+        // 優先從路徑載入
+        $publicKeyFromPath = $this->loadKeyFromPath('JWT_PUBLIC_KEY_PATH');
+        if ($publicKeyFromPath !== null && $publicKeyFromPath !== '') {
+            return $publicKeyFromPath;
+        }
 
-        if (empty($publicKey)) {
-            throw new InvalidArgumentException('JWT_PUBLIC_KEY 環境變數未設定');
+        // 若路徑未設定，則從環境變數讀取
+        $publicKeyEnv = $_ENV['JWT_PUBLIC_KEY'] ?? getenv('JWT_PUBLIC_KEY');
+        $publicKey = is_string($publicKeyEnv) ? $publicKeyEnv : '';
+
+        if ($publicKey === '') {
+            throw new InvalidArgumentException('JWT_PUBLIC_KEY 或 JWT_PUBLIC_KEY_PATH 環境變數至少需要設定一個');
         }
 
         // 將環境變數中的 \n 轉換為實際的換行符
@@ -299,5 +315,42 @@ final class JwtConfig
             'private_key_configured' => !empty($this->privateKey),
             'public_key_configured' => !empty($this->publicKey),
         ];
+    }
+
+    private function loadKeyFromPath(string $pathEnvKey): ?string
+    {
+        $pathEnv = $_ENV[$pathEnvKey] ?? getenv($pathEnvKey);
+
+        if (!is_string($pathEnv) || $pathEnv === '') {
+            return null;
+        }
+
+        $candidatePaths = [$pathEnv];
+        $basePath = dirname(__DIR__, 3);
+        $resolvedRelative = $basePath . DIRECTORY_SEPARATOR . ltrim($pathEnv, DIRECTORY_SEPARATOR);
+
+        if ($resolvedRelative !== $pathEnv) {
+            $candidatePaths[] = $resolvedRelative;
+        }
+
+        foreach ($candidatePaths as $candidatePath) {
+            if (is_file($candidatePath) && is_readable($candidatePath)) {
+                $contents = file_get_contents($candidatePath);
+
+                if ($contents === false) {
+                    // If file exists but cannot be read, it's a hard error.
+                    throw new InvalidArgumentException(
+                        sprintf('%s 指定的金鑰檔案無法讀取: %s', $pathEnvKey, $candidatePath),
+                    );
+                }
+
+                return trim($contents);
+            }
+        }
+
+        // Only throw if the path was specified but no file was found/readable.
+        throw new InvalidArgumentException(
+            sprintf('%s 指定的金鑰檔案不存在或不可讀: %s', $pathEnvKey, $pathEnv),
+        );
     }
 }

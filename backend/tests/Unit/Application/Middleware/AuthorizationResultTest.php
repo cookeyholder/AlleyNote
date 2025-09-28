@@ -177,6 +177,11 @@ class AuthorizationResultTest extends TestCase
         $jsonString = json_encode($result);
         $decodedData = json_decode($jsonString, true);
 
+        $this->assertIsArray($decodedData);
+        $this->assertArrayHasKey('allowed', $decodedData);
+        $this->assertArrayHasKey('reason', $decodedData);
+        $this->assertArrayHasKey('code', $decodedData);
+        $this->assertArrayHasKey('applied_rules', $decodedData);
         $this->assertSame(false, $decodedData['allowed']);
         $this->assertSame('測試 JSON', $decodedData['reason']);
         $this->assertSame('TEST_JSON', $decodedData['code']);

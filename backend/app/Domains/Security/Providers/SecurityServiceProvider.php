@@ -33,7 +33,7 @@ class SecurityServiceProvider
     {
         return [
             // Activity Log Repository Interface
-            ActivityLogRepositoryInterface::class => \DI\create(ActivityLogRepository::class),
+            ActivityLogRepositoryInterface::class => \DI\autowire(ActivityLogRepository::class),
 
             // Activity Logging Service
             ActivityLoggingServiceInterface::class => \DI\factory([self::class, 'createActivityLoggingService']),

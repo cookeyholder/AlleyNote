@@ -5,7 +5,7 @@
 **架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD)
 **系統版本**: Docker 28.3.3, Docker Compose v2.39.2
 
-> 本文件定義了 AlleyNote 前後端分離專案的程式碼命名規範，遵循 PSR 標準、現代 PHP 8.4.12 開發最佳實踐，以及 Vue.js 3 Composition API 規範。
+> 本文件定義了 AlleyNote 前後端分離專案的程式碼命名規範，遵循 PSR 標準、現代 PHP 8.4.12 開發最佳實踐，以及 TypeScript Composition API 規範。
 
 ## 📋 後端基本命名規則 (PHP 8.4.12)
 

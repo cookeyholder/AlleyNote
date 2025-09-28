@@ -107,6 +107,7 @@ class RoutingServiceProvider
             'web' => __DIR__ . '/../../../../config/routes/web.php',
             'auth' => __DIR__ . '/../../../../config/routes/auth.php',
             'admin' => __DIR__ . '/../../../../config/routes/admin.php',
+            'statistics' => __DIR__ . '/../../../../config/routes/statistics.php',
         ];
     }
 

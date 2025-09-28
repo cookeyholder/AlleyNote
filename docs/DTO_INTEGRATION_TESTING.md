@@ -83,16 +83,16 @@ $validData = [
 
 ### 執行所有 DTO 整合測試
 ```bash
-docker-compose exec web vendor/bin/phpunit tests/Integration/DTOs/
+docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/
 ```
 
 ### 執行特定測試檔案
 ```bash
 # DTO 驗證整合測試
-docker-compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOValidationIntegrationTest.php
+docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOValidationIntegrationTest.php
 
 # DTO Controller 整合測試
-docker-compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOControllerIntegrationTest.php
+docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOControllerIntegrationTest.php
 ```
 
 ## 驗證規則

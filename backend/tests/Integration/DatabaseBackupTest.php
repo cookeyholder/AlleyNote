@@ -51,7 +51,9 @@ class DatabaseBackupTest extends TestCase
                 publish_date DATETIME NULL,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME NULL,
-                deleted_at DATETIME NULL
+                deleted_at DATETIME NULL,
+                creation_source VARCHAR(20) DEFAULT "unknown",
+                creation_source_detail TEXT
             )
         ');
 

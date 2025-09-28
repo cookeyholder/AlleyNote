@@ -3,7 +3,7 @@
 **版本**: v4.0
 **更新日期**: 2025-01-20
 **適用環境**: 生產環境、預備環境
-**架構**: 前後端分離 (Vue.js 3 + PHP 8.4.12 DDD 後端)
+**架構**: 前後端分離 (Vite + TypeScript + PHP 8.4.12 DDD 後端)
 
 ## 1. 系統需求
 
@@ -16,7 +16,7 @@
 ### 1.2 軟體需求
 - **作業系統**: Debian 12 (強烈推薦) / Ubuntu 24.04 LTS
 - **後端**: PHP 8.4.12+ (Docker 容器內自動提供)
-- **前端**: Vue.js 3 + Node.js 20.x LTS
+- **前端**: Vite + TypeScript + Node.js 20.x LTS
 - **資料庫**: SQLite3 (預設推薦) / PostgreSQL 16+ (大型部署)
 - **Web Server**: NGINX (Docker 容器內自動提供)
 - **容器平台**: Docker 28.3.3+ & Docker Compose v2.39.2+
@@ -44,12 +44,12 @@ apt install -y curl git unzip jq
 curl -fsSL https://get.docker.com | sh
 
 # 安裝 Docker Compose v2.39.2+
-curl -L "https://github.com/docker/compose/releases/download/v2.39.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/v2.39.2/docker compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker compose
+chmod +x /usr/local/bin/docker compose
 
 # 驗證版本
 docker --version  # 應顯示 28.3.3+
-docker-compose --version  # 應顯示 v2.39.2+
+docker compose --version  # 應顯示 v2.39.2+
 ```
 
 ### 2.2 🚀 專案部署 (前後端分離)
@@ -78,13 +78,13 @@ cp frontend/.env.example frontend/.env
 # - VITE_APP_ENV=production
 
 # 啟動 Docker 容器
-docker-compose up -d
+docker compose up -d
 
 # 後端初始化
 cd backend
-docker-compose exec web composer install --optimize-autoloader --no-dev
-docker-compose exec web ./vendor/bin/phinx migrate
-docker-compose exec web php -r "opcache_reset();"
+docker compose exec web composer install --optimize-autoloader --no-dev
+docker compose exec web ./vendor/bin/phinx migrate
+docker compose exec web php -r "opcache_reset();"
 
 # 前端建構和部署
 cd ../frontend
@@ -96,13 +96,13 @@ npm run build
 
 ```bash
 # 檢查容器狀態
-docker-compose ps
+docker compose ps
 
 # 驗證後端 API
 curl -i http://localhost:8080/api/health
 
 # 執行後端測試 (1,372 個測試)
-docker-compose exec web ./vendor/bin/phpunit
+docker compose exec web ./vendor/bin/phpunit
 
 # 檢查前端建構
 ls -la frontend/dist/
@@ -128,7 +128,7 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | crontab -
 
 ### 3.1 NGINX 設定 (前後端分離)
 ```nginx
-# 前端 (Vue.js 3)
+# 前端 (Vite + TypeScript)
 server {
     listen 80;
     server_name your-domain.com;
@@ -199,7 +199,7 @@ realpath_cache_ttl=600
 
 ### 3.3 Docker Compose v2.39.2 設定
 ```yaml
-# docker-compose.production.yml
+# docker compose.production.yml
 version: '3.8'
 
 services:
@@ -269,7 +269,7 @@ echo "🚀 開始部署 AlleyNote v4.0 (前後端分離架構)"
 
 # 停止現有服務
 echo "停止現有服務..."
-docker-compose down
+docker compose down
 
 # 備份資料
 echo "備份資料..."
@@ -283,12 +283,12 @@ git pull origin main
 # 後端部署
 echo "部署後端 (PHP 8.4.12 DDD)..."
 cd backend
-docker-compose run --rm web composer install --no-dev --optimize-autoloader
-docker-compose run --rm web ./vendor/bin/phinx migrate
-docker-compose run --rm web php -r "opcache_reset();"
+docker compose run --rm web composer install --no-dev --optimize-autoloader
+docker compose run --rm web ./vendor/bin/phinx migrate
+docker compose run --rm web php -r "opcache_reset();"
 
 # 前端部署
-echo "部署前端 (Vue.js 3)..."
+echo "部署前端 (Vite + TypeScript)..."
 cd ../frontend
 npm ci --production
 npm run build
@@ -297,7 +297,7 @@ npm run test:unit  # 執行前端測試
 # 啟動服務
 echo "啟動服務..."
 cd ..
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker compose.production.yml up -d
 
 # 健康檢查
 echo "執行健康檢查..."
@@ -307,7 +307,7 @@ curl -f http://localhost:3000 || exit 1
 
 # 執行後端測試 (1,372 個測試)
 echo "執行後端測試..."
-docker-compose exec web ./vendor/bin/phpunit
+docker compose exec web ./vendor/bin/phpunit
 
 echo "✅ 部署完成！"
 echo "後端 API: http://localhost:8080"
@@ -325,13 +325,13 @@ echo "🔄 開始回滾 AlleyNote 到上一個版本"
 
 # 停止現有服務
 echo "停止服務..."
-docker-compose -f docker-compose.production.yml down
+docker compose -f docker compose.production.yml down
 
 # 後端回滾
 echo "回滾後端..."
 cd backend
 git checkout HEAD^
-docker-compose run --rm web composer install --no-dev --optimize-autoloader
+docker compose run --rm web composer install --no-dev --optimize-autoloader
 
 # 前端回滾
 echo "回滾前端..."
@@ -347,7 +347,7 @@ echo "還原資料庫..."
 # 重新啟動服務
 echo "重新啟動服務..."
 cd ..
-docker-compose -f docker-compose.production.yml up -d
+docker compose -f docker compose.production.yml up -d
 
 # 驗證回滾
 echo "驗證回滾..."
@@ -363,13 +363,13 @@ echo "✅ 回滾完成！"
 #!/bin/bash
 # blue-green-deploy.sh - 零停機部署
 
-CURRENT_ENV=$(docker-compose ps --filter "status=running" | grep -q "blue" && echo "blue" || echo "green")
+CURRENT_ENV=$(docker compose ps --filter "status=running" | grep -q "blue" && echo "blue" || echo "green")
 TARGET_ENV=$([ "$CURRENT_ENV" = "blue" ] && echo "green" || echo "blue")
 
 echo "🔄 藍綠部署: $CURRENT_ENV → $TARGET_ENV"
 
 # 準備目標環境
-docker-compose -f docker-compose.$TARGET_ENV.yml up -d --build
+docker compose -f docker compose.$TARGET_ENV.yml up -d --build
 
 # 等待服務啟動
 sleep 30
@@ -382,12 +382,12 @@ if curl -f http://localhost:8080/api/health && curl -f http://localhost:3000; th
     ./scripts/switch-traffic.sh $TARGET_ENV
 
     # 停止舊環境
-    docker-compose -f docker-compose.$CURRENT_ENV.yml down
+    docker compose -f docker compose.$CURRENT_ENV.yml down
 
     echo "✅ 部署完成，流量已切換到 $TARGET_ENV"
 else
     echo "❌ 健康檢查失敗，回滾到 $CURRENT_ENV"
-    docker-compose -f docker-compose.$TARGET_ENV.yml down
+    docker compose -f docker compose.$TARGET_ENV.yml down
     exit 1
 fi
 ```
@@ -406,7 +406,7 @@ echo "📅 執行每日維護作業..."
 ./scripts/backup_database.sh
 
 # 2. 日誌輪轉
-docker-compose exec web php -c "opcache_reset();"
+docker compose exec web php -c "opcache_reset();"
 find /var/log/alleynote -name "*.log" -mtime +7 -delete
 
 # 3. 清理暫存檔案
@@ -428,7 +428,7 @@ echo "✅ 每日維護完成"
 
 # Docker 容器狀態
 echo "=== 容器狀態 ==="
-docker-compose ps
+docker compose ps
 
 # 系統資源使用率
 echo "=== 系統資源 ==="
@@ -444,11 +444,11 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
 
 # 測試執行狀態
 echo "=== 測試覆蓋率 ==="
-docker-compose exec web ./vendor/bin/phpunit --coverage-text | tail -10
+docker compose exec web ./vendor/bin/phpunit --coverage-text | tail -10
 
 # 資料庫狀態
 echo "=== 資料庫狀態 ==="
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT * FROM pg_stat_activity;"
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT * FROM pg_stat_activity;"
 ```
 
 ### 5.3 效能優化 (PHP 8.4.12)
@@ -459,7 +459,7 @@ docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT * FRO
 echo "🚀 執行效能優化..."
 
 # 1. PHP OPcache 預熱
-docker-compose exec web php -r "
+docker compose exec web php -r "
 \$iterator = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator('/var/www/html')
 );
@@ -472,7 +472,7 @@ echo 'OPcache 預熱完成\\n';
 "
 
 # 2. 資料庫查詢優化
-docker-compose exec web php -r "
+docker compose exec web php -r "
 require '/var/www/html/vendor/autoload.php';
 \$pdo = new PDO('sqlite:/var/www/html/storage/database.sqlite');
 \$pdo->exec('VACUUM;');
@@ -503,9 +503,9 @@ docker version --format '{{.Server.Version}}'
 
 # 檢查容器狀態
 echo "=== 容器運行狀態 ==="
-docker-compose ps
-docker-compose logs --tail=50 web
-docker-compose logs --tail=50 frontend
+docker compose ps
+docker compose logs --tail=50 web
+docker compose logs --tail=50 frontend
 
 # 檢查網路連線
 echo "=== 網路連線測試 ==="
@@ -520,12 +520,12 @@ top -bn1 | head -10
 
 # 檢查 PHP 配置
 echo "=== PHP 8.4.12 狀態 ==="
-docker-compose exec web php -v
-docker-compose exec web php -m | grep -E "(opcache|xdebug)"
+docker compose exec web php -v
+docker compose exec web php -m | grep -E "(opcache|xdebug)"
 
 # 檢查測試狀態
 echo "=== 測試執行狀態 ==="
-docker-compose exec web ./vendor/bin/phpunit --testdox | head -20
+docker compose exec web ./vendor/bin/phpunit --testdox | head -20
 
 echo "✅ 診斷完成"
 ```
@@ -538,7 +538,7 @@ echo "✅ 診斷完成"
 echo "🚀 效能問題排查..."
 
 # PHP 效能分析
-docker-compose exec web php -r "
+docker compose exec web php -r "
 echo 'OPcache 狀態:' . PHP_EOL;
 print_r(opcache_get_status());
 
@@ -548,7 +548,7 @@ echo 'Current: ' . memory_get_usage(true) / 1024 / 1024 . ' MB' . PHP_EOL;
 "
 
 # 資料庫效能
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "
 SELECT * FROM pg_stat_activity;
 SELECT * FROM pg_stat_database;
 SELECT schemaname,tablename,attname,n_distinct,correlation FROM pg_stats;
@@ -575,7 +575,7 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 
 # 檢查 PHP 套件漏洞
 echo "=== PHP 套件安全掃描 ==="
-docker-compose exec web composer audit
+docker compose exec web composer audit
 
 # 檢查前端套件漏洞
 echo "=== 前端套件安全掃描 ==="
@@ -616,7 +616,7 @@ ufw status verbose
 
 ### 6.1 水平擴展 (Load Balancing)
 ```yaml
-# docker-compose.scale.yml
+# docker compose.scale.yml
 version: '3.8'
 
 services:
@@ -636,19 +636,19 @@ services:
   # 後端 API 服務 (多實例)
   web-1:
     extends:
-      file: docker-compose.production.yml
+      file: docker compose.production.yml
       service: web
     container_name: alleynote_backend_1
 
   web-2:
     extends:
-      file: docker-compose.production.yml
+      file: docker compose.production.yml
       service: web
     container_name: alleynote_backend_2
 
   web-3:
     extends:
-      file: docker-compose.production.yml
+      file: docker compose.production.yml
       service: web
     container_name: alleynote_backend_3
 
@@ -678,9 +678,9 @@ curl -fsSL https://get.docker.com | sh
 
 # 3. 更新 Docker Compose
 COMPOSE_VERSION="v2.39.2"
-curl -L "https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker-compose-$(uname -s)-$(uname -m)" \
-  -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/$COMPOSE_VERSION/docker compose-$(uname -s)-$(uname -m)" \
+  -o /usr/local/bin/docker compose
+chmod +x /usr/local/bin/docker compose
 
 # 4. 升級 PHP 版本 (如需要)
 # 重新建構 Docker 映像檔包含 PHP 8.4.12
@@ -692,10 +692,10 @@ npm audit fix
 
 # 6. 升級後端依賴
 cd ../backend
-docker-compose exec web composer update
+docker compose exec web composer update
 
 # 7. 執行測試確保相容性
-docker-compose exec web ./vendor/bin/phpunit
+docker compose exec web ./vendor/bin/phpunit
 
 echo "✅ 升級完成"
 ```
@@ -718,7 +718,7 @@ mkdir -p $BACKUP_DIR
 git bundle create $BACKUP_DIR/code.bundle --all
 
 # 2. 資料庫備份
-docker-compose exec db pg_dump -U ${DB_USERNAME} -d ${DB_DATABASE} \
+docker compose exec db pg_dump -U ${DB_USERNAME} -d ${DB_DATABASE} \
   --clean --if-exists --no-owner --no-privileges > $BACKUP_DIR/database.sql
 
 # 3. 上傳檔案備份
@@ -735,8 +735,8 @@ cp -r /etc/letsencrypt/ $BACKUP_DIR/ssl/
 
 # 6. 建立檢查檔
 echo "Backup created at: $(date)" > $BACKUP_DIR/backup.info
-echo "PHP Version: $(docker-compose exec web php -v | head -1)" >> $BACKUP_DIR/backup.info
-echo "Test Status: $(docker-compose exec web ./vendor/bin/phpunit --testdox | grep -c 'Test')" >> $BACKUP_DIR/backup.info
+echo "PHP Version: $(docker compose exec web php -v | head -1)" >> $BACKUP_DIR/backup.info
+echo "Test Status: $(docker compose exec web ./vendor/bin/phpunit --testdox | grep -c 'Test')" >> $BACKUP_DIR/backup.info
 
 echo "✅ 備份完成: $BACKUP_DIR"
 ```
@@ -755,7 +755,7 @@ fi
 echo "🔄 從 $BACKUP_DIR 還原系統"
 
 # 1. 停止服務
-docker-compose down
+docker compose down
 
 # 2. 還原程式碼
 git clone $BACKUP_DIR/code.bundle .
@@ -767,9 +767,9 @@ cp $BACKUP_DIR/backend.env backend/.env
 cp $BACKUP_DIR/frontend.env frontend/.env
 
 # 4. 還原資料庫
-docker-compose up -d db
+docker compose up -d db
 sleep 15
-docker-compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} < $BACKUP_DIR/database.sql
+docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} < $BACKUP_DIR/database.sql
 
 # 5. 還原上傳檔案
 tar -xzf $BACKUP_DIR/uploads.tar.gz -C backend/storage/
@@ -778,7 +778,7 @@ tar -xzf $BACKUP_DIR/uploads.tar.gz -C backend/storage/
 cp -r $BACKUP_DIR/ssl/* /etc/letsencrypt/
 
 # 7. 重新啟動服務
-docker-compose up -d
+docker compose up -d
 
 echo "✅ 還原完成"
 ```

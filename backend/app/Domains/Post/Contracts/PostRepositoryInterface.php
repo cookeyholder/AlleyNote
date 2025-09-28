@@ -54,4 +54,46 @@ interface PostRepositoryInterface extends RepositoryInterface
      * 設定文章標籤.
      */
     public function setTags(int $id, array $tagIds): bool;
+
+    /**
+     * 依來源類型取得文章列表.
+     *
+     * @return Post[]
+     */
+    public function findByCreationSource(string $creationSource, int $limit = 10, int $offset = 0): array;
+
+    /**
+     * 取得來源分佈統計.
+     *
+     * @return array<string, int> 來源類型 => 文章數量的陣列
+     */
+    public function getSourceDistribution(): array;
+
+    /**
+     * 依來源類型和詳細資訊取得文章列表.
+     *
+     * @return Post[]
+     */
+    public function findByCreationSourceAndDetail(
+        string $creationSource,
+        ?string $creationSourceDetail = null,
+        int $limit = 10,
+        int $offset = 0,
+    ): array;
+
+    /**
+     * 計算特定來源的文章總數.
+     */
+    public function countByCreationSource(string $creationSource): int;
+
+    /**
+     * 依來源類型取得分頁文章列表.
+     *
+     * @return array{items: Post[], total: int, page: int, perPage: int, lastPage: int}
+     */
+    public function paginateByCreationSource(
+        string $creationSource,
+        int $page = 1,
+        int $perPage = 10,
+    ): array;
 }

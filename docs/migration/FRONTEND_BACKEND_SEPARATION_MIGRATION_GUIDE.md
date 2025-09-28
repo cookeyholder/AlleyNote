@@ -130,7 +130,7 @@ docker compose ps
 ### 生產環境
 ```bash
 # 使用生產設定
-docker compose -f docker-compose.production.yml up -d
+docker compose -f docker compose.production.yml up -d
 
 # 建構前端
 npm run build

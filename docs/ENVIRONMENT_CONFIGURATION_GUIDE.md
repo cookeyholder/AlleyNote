@@ -259,10 +259,10 @@ if (!empty($errors)) {
 ### 命令列驗證
 ```bash
 # 驗證當前環境配置
-docker-compose exec web php scripts/validate-config.php
+docker compose exec web php scripts/validate-config.php
 
 # 驗證特定環境配置
-docker-compose exec web php scripts/validate-config.php --env=production
+docker compose exec web php scripts/validate-config.php --env=production
 ```
 
 ## 🔄 環境切換
@@ -273,8 +273,8 @@ docker-compose exec web php scripts/validate-config.php --env=production
 cp .env.production .env
 
 # 重新載入配置
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 ### 自動化部署
@@ -292,14 +292,14 @@ A: 確認以下幾點：
 ### Q: 如何檢查目前載入的環境變數？
 A: 使用以下命令：
 ```bash
-docker-compose exec web env | grep APP_
-docker-compose exec web php -r "echo getenv('APP_ENV');"
+docker compose exec web env | grep APP_
+docker compose exec web php -r "echo getenv('APP_ENV');"
 ```
 
 ### Q: JWT 金鑰設定錯誤怎麼辦？
 A: 使用 JWT 設定腳本重新生成：
 ```bash
-docker-compose exec web php scripts/jwt-setup.php setup
+docker compose exec web php scripts/jwt-setup.php setup
 ```
 
 ## 📚 相關文件
