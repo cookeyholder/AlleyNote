@@ -1,25 +1,25 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-09-28 21:45:48
+**生成時間**: 2025-09-28 22:18:20
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 294 | - |
-| PSR-4 合規率 | 98.64% | ✅ 優秀 |
-| 現代 PHP 採用率 | 74.72% | ⚠️ 可改善 |
+| 總類別數 | 293 | - |
+| PSR-4 合規率 | 101.37% | ✅ 優秀 |
+| 現代 PHP 採用率 | 75.54% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
 | 特性 | 使用次數 | 描述 |
 |------|----------|------|
-| Match 表達式 (PHP 8.0+) | 92 | ✅ 更安全的條件分支 |
+| Match 表達式 (PHP 8.0+) | 93 | ✅ 更安全的條件分支 |
 | 空安全運算子 (PHP 8.0+) | 114 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 72 | ✅ 現代化 metadata |
 | 聯合型別 (PHP 8.0+) | 351 | ✅ 更靈活的型別定義 |
 | 建構子屬性提升 (PHP 8.0+) | 21 | ✅ 減少樣板程式碼 |
-| 列舉型別 (PHP 8.1+) | 9 | ✅ 型別安全的常數 |
+| 列舉型別 (PHP 8.1+) | 13 | ✅ 型別安全的常數 |
 
 ## 🏷️ 命名空間分析
 
@@ -302,6 +302,11 @@
 - app/Shared/Contracts/OutputSanitizerInterface.php
 - app/Shared/Contracts/ValidatorInterface.php
 
+### `App\Shared\Enums`
+
+### `App\Shared\OpenApi`
+- app/Shared/OpenApi/OpenApiConfig.php
+
 ### `App\Shared\Exceptions`
 - app/Shared/Exceptions/NotFoundException.php
 - app/Shared/Exceptions/StateTransitionException.php
@@ -361,6 +366,8 @@
 - app/Application/Middleware/JwtAuthorizationMiddleware.php
 - app/Application/Middleware/RateLimitMiddleware.php
 
+### `App\Application\Enums`
+
 ### `App\Application\Controllers\Security`
 - app/Application/Controllers/Security/CSPReportController.php
 
@@ -376,8 +383,8 @@
 
 ### `App\Application\Controllers`
 - app/Application/Controllers/PostController.php
-- app/Application/Controllers/TestController.php
 - app/Application/Controllers/BaseController.php
+- app/Application/Controllers/HealthController.php
 
 ### `App\Application\Controllers\Api\V1`
 - app/Application/Controllers/Api/V1/IpController.php
@@ -449,6 +456,8 @@
 - app/Infrastructure/Auth/Repositories/RefreshTokenRepository.php
 - app/Infrastructure/Auth/Repositories/TokenBlacklistRepository.php
 
+### `App\Infrastructure\Enums`
+
 ### `App\Infrastructure\OpenApi`
 - app/Infrastructure/OpenApi/OpenApiSpec.php
 
@@ -504,6 +513,6 @@
 
 ### `App\Infrastructure\Services`
 - app/Infrastructure/Services/RateLimitService.php
+- app/Infrastructure/Services/OutputSanitizerService.php
 - app/Infrastructure/Services/CacheService.php
-- app/Infrastructure/Services/OutputSanitizer.php
 

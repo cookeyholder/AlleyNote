@@ -8,13 +8,14 @@ namespace App\Domains\Security\Enums;
  * 活動嚴重程度枚舉
  * 定義使用者行為的重要性和嚴重程度等級.
  */
-enum ActivitySeverity: int
+enum ActivitySeverity: string
 {
-    case LOW = 1;        // 一般操作，如瀏覽
-    case NORMAL = 2;     // 標準操作，如編輯內容
-    case MEDIUM = 3;     // 中等重要，如帳號設定變更
-    case HIGH = 4;       // 高重要性，如權限變更
-    case CRITICAL = 5;   // 關鍵操作，如系統設定變更
+    case LOW = 'low';
+    case NORMAL = 'normal';
+    case MEDIUM = 'medium';
+    case HIGH = 'high';
+    case URGENT = 'urgent';
+    case CRITICAL = 'critical';
 
     /**
      * 取得嚴重程度顯示名稱.
@@ -26,6 +27,7 @@ enum ActivitySeverity: int
             self::NORMAL => '正常',
             self::MEDIUM => '中等',
             self::HIGH => '高',
+            self::URGENT => '緊急',
             self::CRITICAL => '關鍵',
         };
     }
@@ -40,6 +42,7 @@ enum ActivitySeverity: int
             self::NORMAL => '標準操作，對系統有正常影響',
             self::MEDIUM => '中等重要操作，需要留意',
             self::HIGH => '高重要性操作，需要特別關注',
+            self::URGENT => '緊急操作，需要立即處理',
             self::CRITICAL => '關鍵操作，對系統安全有重大影響',
         };
     }
@@ -49,7 +52,7 @@ enum ActivitySeverity: int
      */
     public function isAtLeast(self $level): bool
     {
-        return $this->value >= $level->value;
+        return $this->getSeverityValue() >= $level->getSeverityValue();
     }
 
     /**
@@ -57,7 +60,7 @@ enum ActivitySeverity: int
      */
     public function isAtMost(self $level): bool
     {
-        return $this->value <= $level->value;
+        return $this->getSeverityValue() <= $level->getSeverityValue();
     }
 
     /**
@@ -89,7 +92,7 @@ enum ActivitySeverity: int
     /**
      * 根據數值取得對應的嚴重程度.
      */
-    public static function fromValue(int $value): ?self
+    public static function fromValue(string $value): ?self
     {
         foreach (self::cases() as $case) {
             if ($case->value === $value) {
@@ -98,5 +101,17 @@ enum ActivitySeverity: int
         }
 
         return null;
+    }
+
+    private function getSeverityValue(): int
+    {
+        return match ($this) {
+            self::LOW => 1,
+            self::NORMAL => 2,
+            self::MEDIUM => 3,
+            self::HIGH => 4,
+            self::URGENT => 5,
+            self::CRITICAL => 6,
+        };
     }
 }

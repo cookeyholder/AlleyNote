@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
 
+use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
 
 /**
@@ -70,7 +71,7 @@ class ContentModerationService
         if ($spamScore > $this->config['spam_threshold']) {
             // $data ? $result->issues : null))[] = [ // 複雜賦值語法錯誤已註解
             //     'type' => 'spam_detected',
-            //     'severity' => 'high',
+            //     'severity' => ActivitySeverity::HIGH,
             //     'message' => '內容可能為垃圾訊息',
             //     'score' => $spamScore,
             // ];
@@ -94,7 +95,7 @@ class ContentModerationService
         if ($hasXss) {
             $issues[] = [
                 'type' => 'security_xss',
-                'severity' => 'critical',
+                'severity' => ActivitySeverity::CRITICAL,
                 'message' => '偵測到潛在 XSS 攻擊模式',
                 'details' => 'Content contains potentially dangerous XSS patterns',
             ];
@@ -103,10 +104,10 @@ class ContentModerationService
         // 富文本安全檢查
         $richTextIssues = $this->richTextProcessor->validateSecurity($content);
         foreach ($richTextIssues as $issue) {
-            // if ($data ? $issue->severity : null)) === 'high') { // 複雜賦值語法錯誤已註解
+            // if ($data ? $issue->severity : null)) === ActivitySeverity::HIGH) { // 複雜賦值語法錯誤已註解
             $issues[] = [
                 'type' => 'security_richtext',
-                'severity' => 'high',
+                'severity' => ActivitySeverity::HIGH,
                 // 'message' => (is_array($issue) && isset($data ? $issue->message : null)))) ? $data ? $issue->message : null)) : null, // isset 語法錯誤已註解
                 // 'details' => (is_array($issue) && isset($data ? $issue->details : null)))) ? $data ? $issue->details : null)) : null, // isset 語法錯誤已註解
             ];
@@ -128,7 +129,7 @@ class ContentModerationService
         if (strlen($textContent) < $this->config['min_content_length']) {
             $issues[] = [
                 'type' => 'quality_too_short',
-                'severity' => 'medium',
+                'severity' => ActivitySeverity::MEDIUM,
                 'message' => '內容過短',
                 'current_length' => strlen($textContent),
                 'min_required' => $this->config['min_content_length'],
@@ -138,7 +139,7 @@ class ContentModerationService
         if (strlen($textContent) > $this->config['max_content_length']) {
             $issues[] = [
                 'type' => 'quality_too_long',
-                'severity' => 'medium',
+                'severity' => ActivitySeverity::MEDIUM,
                 'message' => '內容過長',
                 'current_length' => strlen($textContent),
                 'max_allowed' => $this->config['max_content_length'],
@@ -149,7 +150,7 @@ class ContentModerationService
         if ($this->isRepetitiveContent($textContent)) {
             $issues[] = [
                 'type' => 'quality_repetitive',
-                'severity' => 'medium',
+                'severity' => ActivitySeverity::MEDIUM,
                 'message' => '內容過度重複',
             ];
         }
@@ -158,7 +159,7 @@ class ContentModerationService
         if ($this->isAllCaps($textContent)) {
             $issues[] = [
                 'type' => 'quality_all_caps',
-                'severity' => 'low',
+                'severity' => ActivitySeverity::LOW,
                 'message' => '內容全為大寫字母',
             ];
         }
@@ -235,9 +236,9 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        // $criticalIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'critical'); // isset 語法錯誤已註解
-        // $highIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'high'); // isset 語法錯誤已註解
-        // $mediumIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === 'medium'); // isset 語法錯誤已註解
+        // $criticalIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === ActivitySeverity::CRITICAL); // isset 語法錯誤已註解
+        // $highIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === ActivitySeverity::HIGH); // isset 語法錯誤已註解
+        // $mediumIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === ActivitySeverity::MEDIUM); // isset 語法錯誤已註解
         $criticalIssues = [];
         $highIssues = [];
         $mediumIssues = [];
@@ -259,7 +260,7 @@ class ContentModerationService
 
         // 根據問題數量調整信心度
         // $totalIssues = count((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null); // isset 語法錯誤已註解
-        // if ($totalIssues > 0 && $data ? $result->status : null)) === 'approved') { // 複雜賦值語法錯誤已註解
+        // if ($totalIssues > 0 && $data ? $result->status : null)) === 'approved') {
         //     // $data ? $result->confidence : null)) = max(50, 100 - ($totalIssues * 10)); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
         // }
     }
@@ -344,19 +345,19 @@ class ContentModerationService
     /**
      * 取得敏感詞嚴重程度.
      */
-    private function getSensitiveWordSeverity(string $category): string
+    private function getSensitiveWordSeverity(string $category): ActivitySeverity
     {
         $severityMap = [
-            'profanity' => 'high',
-            'violence' => 'high',
-            'hate_speech' => 'critical',
-            'adult_content' => 'high',
-            'illegal' => 'critical',
-            'spam' => 'medium',
-            'political' => 'medium',
+            'profanity' => ActivitySeverity::HIGH,
+            'violence' => ActivitySeverity::HIGH,
+            'hate_speech' => ActivitySeverity::CRITICAL,
+            'adult_content' => ActivitySeverity::HIGH,
+            'illegal' => ActivitySeverity::CRITICAL,
+            'spam' => ActivitySeverity::MEDIUM,
+            'political' => ActivitySeverity::MEDIUM,
         ];
 
-        return $severityMap[$category] ?? 'medium';
+        return $severityMap[$category] ?? ActivitySeverity::MEDIUM;
     }
 
     /**

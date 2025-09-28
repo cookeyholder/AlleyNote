@@ -53,7 +53,7 @@
 - [x] 新增 `CacheType` 枚舉
 - [x] 新增 `LogLevel` 枚舉
 - [x] 新增 `DatabaseAction` 枚舉
-- [ ] 新增 `SecurityLevel` 枚舉
+- [x] 新增 `SecurityLevel` 枚舉
 - [ ] 新增 `ValidationRule` 枚舉
 - [ ] 新增 `EventType` 枚舉
 - [ ] 重構現有的 PostStatus 枚舉使用範圍
