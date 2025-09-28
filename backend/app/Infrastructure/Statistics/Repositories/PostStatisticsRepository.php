@@ -86,7 +86,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 }
             }
 
-return $result;
+            return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章狀態統計失敗: ' . $e->getMessage(), 0, $e);
         }
