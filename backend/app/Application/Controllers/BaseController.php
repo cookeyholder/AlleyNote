@@ -8,64 +8,93 @@ use App\Shared\Http\ApiResponse;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 
+enum JsonFlag: int
+{
+    case DEFAULT = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+    case COMPACT = JSON_UNESCAPED_UNICODE;
+    case DEBUG = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR;
+}
+
 abstract class BaseController
 {
+    private const EXCEPTION_HTTP_CODES = [
+        'App\Exceptions\Post\PostNotFoundException' => 404,
+        'App\Exceptions\Post\PostStatusException' => 400,
+        'App\Exceptions\Post\PostValidationException' => 422,
+        'App\Exceptions\NotFoundException' => 404,
+        'App\Exceptions\StateTransitionException' => 409,
+        'App\Exceptions\ValidationException' => 422,
+        'App\Exceptions\Validation\RequestValidationException' => 422,
+        'App\Exceptions\Auth\UnauthorizedException' => 401,
+        'App\Exceptions\Auth\ForbiddenException' => 403,
+        'App\Exceptions\CsrfTokenException' => 403,
+    ];
+
     /**
      * 建立JSON回應.
-     *
-     * @param array<string, mixed> $data
      */
-    protected function json(ResponseInterface $response, array $data, int $status = 200): ResponseInterface
-    {
-        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        if ($json === false) {
-            // JSON 編碼失敗時的回退處理
-            $json = '{"success":false,"error":{"message":"JSON encoding failed"}}';
-        }
+    protected function json(
+        ResponseInterface $response,
+        array $data,
+        int $status = 200,
+        JsonFlag $jsonFlag = JsonFlag::DEFAULT,
+    ): ResponseInterface {
+        $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
 
         $response->getBody()->write($json);
 
-        return $response->withHeader('Content-Type', 'application/json')->withStatus($status);
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($status);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
     protected function jsonResponse(array $data, int $httpCode = 200): string
     {
         http_response_code($httpCode);
         header('Content-Type: application/json; charset=utf-8');
 
-        return (json_encode($data, JSON_UNESCAPED_UNICODE) ?? '') ?: '{}';
+        return json_encode($data, JsonFlag::COMPACT->value) ?: '{}';
     }
 
-    protected function successResponse(mixed $data = null, string $message = 'Success'): string
-    {
+    protected function successResponse(
+        mixed $data = null,
+        string $message = 'Success',
+    ): string {
         return $this->jsonResponse(ApiResponse::success($data, $message));
     }
 
-    protected function errorResponse(string $message, int $httpCode = 400, mixed $errors = null): string
-    {
+    protected function errorResponse(
+        string $message,
+        int $httpCode = 400,
+        mixed $errors = null,
+    ): string {
         return $this->jsonResponse(
             ApiResponse::error($message, $httpCode, $errors),
             $httpCode,
         );
     }
 
-    /**
-     * @param array<string, mixed> $data
-     */
-    protected function paginatedResponse(array $data, int $total, int $page, int $perPage): string
-    {
-        return $this->jsonResponse(ApiResponse::paginated($data, $total, $page, $perPage));
+    protected function paginatedResponse(
+        array $data,
+        int $total,
+        int $page,
+        int $perPage,
+    ): string {
+        return $this->jsonResponse(
+            ApiResponse::paginated($data, $total, $page, $perPage),
+        );
     }
 
     protected function handleException(Exception $e): string
     {
         // 記錄錯誤日誌
-        error_log('API Error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+        error_log(sprintf(
+            'API Error: %s in %s:%d',
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+        ));
 
-        // 根據例外類型回傳適當的 HTTP 狀態碼
         $httpCode = $this->getHttpCodeFromException($e);
 
         return $this->errorResponse($e->getMessage(), $httpCode);
@@ -73,36 +102,15 @@ abstract class BaseController
 
     private function getHttpCodeFromException(Exception $e): int
     {
-        // 根據例外類型映射 HTTP 狀態碼
         $className = get_class($e);
 
-        switch ($className) {
-            // Post 相關例外
-            case 'App\Exceptions\Post\PostNotFoundException':
-                return 404;
-            case 'App\Exceptions\Post\PostStatusException':
-                return 400;
-            case 'App\Exceptions\Post\PostValidationException':
-                return 422;
-                // 通用例外
-            case 'App\Exceptions\NotFoundException':
-                return 404;
-            case 'App\Exceptions\StateTransitionException':
-                return 400;
-            case 'App\Exceptions\ValidationException':
-                return 422;
-                // 驗證相關例外
-            case 'App\Exceptions\Validation\RequestValidationException':
-                return 422;
-                // 認證授權相關例外
-            case 'App\Exceptions\Auth\UnauthorizedException':
-                return 401;
-            case 'App\Exceptions\Auth\ForbiddenException':
-                return 403;
-            case 'App\Exceptions\CsrfTokenException':
-                return 403;
-            default:
-                return 500;
-        }
+        return array_key_exists($className, self::EXCEPTION_HTTP_CODES)
+            ? self::EXCEPTION_HTTP_CODES[$className]
+            : 500;
+    }
+
+    private function getFallbackJson(): string
+    {
+        return '{"success":false,"error":{"message":"JSON encoding failed"}}';
     }
 }

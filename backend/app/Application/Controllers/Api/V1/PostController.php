@@ -119,7 +119,7 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             $responseData = $this->paginatedResponse(
-                $result['items'],
+                (array) $result['items'],
                 $result['total'],
                 $result['page'],
                 $result['per_page'],
