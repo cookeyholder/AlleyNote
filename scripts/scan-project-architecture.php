@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace AlleyNote\Scripts;
+
 use Symfony\Component\Finder\Finder;
 
 /**
