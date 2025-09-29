@@ -8,13 +8,13 @@ namespace App\Domains\Security\Enums;
  * 活動嚴重程度枚舉
  * 定義使用者行為的重要性和嚴重程度等級.
  */
-enum ActivitySeverity: string
+enum ActivitySeverity: int
 {
-    case LOW = 'low';
-    case NORMAL = 'normal';
-    case MEDIUM = 'medium';
-    case HIGH = 'high';
-    case CRITICAL = 'critical';
+    case LOW = 1;
+    case NORMAL = 2;
+    case MEDIUM = 3;
+    case HIGH = 4;
+    case CRITICAL = 5;
 
     /**
      * 取得嚴重程度顯示名稱.
@@ -92,9 +92,9 @@ enum ActivitySeverity: string
      */
     public static function fromValue(string|int $value): ?self
     {
-        $valueStr = (string) $value;
+        $intVal = (int) $value;
         foreach (self::cases() as $case) {
-            if ($case->value === $valueStr) {
+            if ($case->value === $intVal) {
                 return $case;
             }
         }
