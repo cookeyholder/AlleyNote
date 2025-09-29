@@ -48,6 +48,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     {
         $id = $this->recordErrorWithLevel(LogLevel::CRITICAL->value, $error->getMessage(), $context, $error);
         $this->triggerNotifications(LogLevel::CRITICAL->value, $error->getMessage(), $context, $error);
+
         return $id;
     }
 
@@ -60,6 +61,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
             $lvl = $r['level'] ?? 'unknown';
             $levels[$lvl] = ($levels[$lvl] ?? 0) + 1;
         }
+
         return ['total_errors' => count($recent), 'levels' => $levels];
     }
 
@@ -67,6 +69,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     {
         $errors = $this->errorRecords;
         usort($errors, fn($a, $b) => ($b['timestamp']) <=> ($a['timestamp']));
+
         return array_slice($errors, 0, $limit);
     }
 
@@ -79,14 +82,18 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     {
         $cutoff = microtime(true) - ($minutes * 60);
         foreach ($this->errorRecords as $r) {
-            if (($r['timestamp']) > $cutoff && ($r['level'] ?? '') === LogLevel::CRITICAL->value) return true;
+            if (($r['timestamp']) > $cutoff && ($r['level'] ?? '') === LogLevel::CRITICAL->value) {
+                return true;
+            }
         }
+
         return false;
     }
 
     public function getErrorSummary(int $hours = 24): array
     {
         $stats = $this->getErrorStats($hours);
+
         return ['summary' => $stats];
     }
 
@@ -95,6 +102,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
         $cutoff = microtime(true) - ($daysToKeep * 24 * 3600);
         $original = count($this->errorRecords);
         $this->errorRecords = array_values(array_filter($this->errorRecords, fn($r) => ($r['timestamp']) > $cutoff));
+
         return $original - count($this->errorRecords);
     }
 
@@ -112,7 +120,9 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     {
         foreach ($this->errorFilters as $filter) {
             try {
-                if (!$filter($level, $message, $context, $exception)) return '';
+                if (!$filter($level, $message, $context, $exception)) {
+                    return '';
+                }
             } catch (Exception $e) {
                 $this->logger->error('Error filter threw exception', ['e' => $e->getMessage()]);
             }
@@ -137,7 +147,9 @@ final class ErrorTrackerService implements ErrorTrackerInterface
             default => $this->logger->debug($message, $context),
         };
 
-        if (count($this->errorRecords) > $this->maxRecords) array_shift($this->errorRecords);
+        if (count($this->errorRecords) > $this->maxRecords) {
+            array_shift($this->errorRecords);
+        }
 
         return $id;
     }
@@ -153,6 +165,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
                 }
             }
         }
+
         return $context;
     }
 

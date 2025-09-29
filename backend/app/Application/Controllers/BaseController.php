@@ -52,7 +52,7 @@ abstract class BaseController
         http_response_code($code);
         header('Content-Type: application/json; charset=utf-8');
 
-    return json_encode($data, JsonFlag::DEFAULT->value) ?: '{}';
+        return json_encode($data, JsonFlag::DEFAULT->value) ?: '{}';
     }
 
     protected function successResponse(

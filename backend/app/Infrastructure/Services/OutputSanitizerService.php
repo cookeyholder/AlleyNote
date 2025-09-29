@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
 
-use App\Shared\Enums\SanitizerMode;
 use App\Shared\Contracts\OutputSanitizerInterface;
+use App\Shared\Enums\SanitizerMode;
 
 /**
  * 實作 DDD 合規的輸出清理服務.
