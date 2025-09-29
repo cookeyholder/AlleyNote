@@ -14,7 +14,6 @@ enum ActivitySeverity: string
     case NORMAL = 'normal';
     case MEDIUM = 'medium';
     case HIGH = 'high';
-    case URGENT = 'urgent';
     case CRITICAL = 'critical';
 
     /**
@@ -27,7 +26,6 @@ enum ActivitySeverity: string
             self::NORMAL => '正常',
             self::MEDIUM => '中等',
             self::HIGH => '高',
-            self::URGENT => '緊急',
             self::CRITICAL => '關鍵',
         };
     }
@@ -42,7 +40,6 @@ enum ActivitySeverity: string
             self::NORMAL => '標準操作，對系統有正常影響',
             self::MEDIUM => '中等重要操作，需要留意',
             self::HIGH => '高重要性操作，需要特別關注',
-            self::URGENT => '緊急操作，需要立即處理',
             self::CRITICAL => '關鍵操作，對系統安全有重大影響',
         };
     }
@@ -90,12 +87,14 @@ enum ActivitySeverity: string
     }
 
     /**
-     * 根據數值取得對應的嚴重程度.
+     * 根據數值取得對應的嚴重程度。
+     * 接受 string 或 int，並轉為字串後嘗試匹配。
      */
-    public static function fromValue(string $value): ?self
+    public static function fromValue(string|int $value): ?self
     {
+        $valueStr = (string) $value;
         foreach (self::cases() as $case) {
-            if ($case->value === $value) {
+            if ($case->value === $valueStr) {
                 return $case;
             }
         }
@@ -110,8 +109,7 @@ enum ActivitySeverity: string
             self::NORMAL => 2,
             self::MEDIUM => 3,
             self::HIGH => 4,
-            self::URGENT => 5,
-            self::CRITICAL => 6,
+            self::CRITICAL => 5,
         };
     }
 }

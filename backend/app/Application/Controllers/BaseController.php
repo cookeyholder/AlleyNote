@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
-use App\Application\Enums\JsonFlag;
 use App\Shared\Enums\HttpStatusCode;
+use App\Shared\Enums\JsonFlag;
 use App\Shared\Http\ApiResponse;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 
 abstract class BaseController
 {
+    /** @var array<string, HttpStatusCode> */
     private const EXCEPTION_HTTP_CODES = [
         'App\Exceptions\Post\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
         'App\Exceptions\Post\PostStatusException' => HttpStatusCode::BAD_REQUEST,
@@ -31,24 +32,27 @@ abstract class BaseController
     protected function json(
         ResponseInterface $response,
         array $data,
-        HttpStatusCode $status = HttpStatusCode::OK,
+        HttpStatusCode|int $status = HttpStatusCode::OK,
         JsonFlag $jsonFlag = JsonFlag::DEFAULT,
     ): ResponseInterface {
         $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
 
         $response->getBody()->write($json);
 
+        $statusCode = $status instanceof HttpStatusCode ? $status->value : (int) $status;
+
         return $response
             ->withHeader('Content-Type', 'application/json')
-            ->withStatus($status->value);
+            ->withStatus($statusCode);
     }
 
-    protected function jsonResponse(array $data, HttpStatusCode $httpCode = HttpStatusCode::OK): string
+    protected function jsonResponse(array $data, HttpStatusCode|int $httpCode = HttpStatusCode::OK): string
     {
-        http_response_code($httpCode->value);
+        $code = $httpCode instanceof HttpStatusCode ? $httpCode->value : (int) $httpCode;
+        http_response_code($code);
         header('Content-Type: application/json; charset=utf-8');
 
-        return json_encode($data, JsonFlag::COMPACT->value) ?: '{}';
+    return json_encode($data, JsonFlag::DEFAULT->value) ?: '{}';
     }
 
     protected function successResponse(
@@ -60,11 +64,13 @@ abstract class BaseController
 
     protected function errorResponse(
         string $message,
-        HttpStatusCode $httpCode = HttpStatusCode::BAD_REQUEST,
+        HttpStatusCode|int $httpCode = HttpStatusCode::BAD_REQUEST,
         mixed $errors = null,
     ): string {
+        $code = $httpCode instanceof HttpStatusCode ? $httpCode->value : (int) $httpCode;
+
         return $this->jsonResponse(
-            ApiResponse::error($message, $httpCode->value, $errors),
+            ApiResponse::error($message, $code, $errors),
             $httpCode,
         );
     }
@@ -92,14 +98,17 @@ abstract class BaseController
 
         $httpCode = $this->getHttpCodeFromException($e);
 
-        return this->errorResponse($e->getMessage(), $httpCode);
+        return $this->errorResponse($e->getMessage(), $httpCode);
     }
 
     private function getHttpCodeFromException(Exception $e): HttpStatusCode
     {
         $className = get_class($e);
+        if (array_key_exists($className, self::EXCEPTION_HTTP_CODES)) {
+            return self::EXCEPTION_HTTP_CODES[$className];
+        }
 
-        return self::EXCEPTION_HTTP_CODES[$className] ?? HttpStatusCode::INTERNAL_SERVER_ERROR;
+        return HttpStatusCode::INTERNAL_SERVER_ERROR;
     }
 
     private function getFallbackJson(): string

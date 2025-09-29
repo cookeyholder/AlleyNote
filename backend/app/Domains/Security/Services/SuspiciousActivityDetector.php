@@ -662,6 +662,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             ActivitySeverity::CRITICAL => 'block_user_immediately',
             ActivitySeverity::HIGH => 'require_additional_verification',
             ActivitySeverity::MEDIUM => 'increase_monitoring',
+            ActivitySeverity::NORMAL => 'log_for_review',
             ActivitySeverity::LOW => 'log_for_review',
         };
 

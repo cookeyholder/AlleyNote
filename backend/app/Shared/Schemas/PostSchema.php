@@ -51,7 +51,7 @@ use OpenApi\Attributes as OA;
             property: 'priority',
             type: 'string',
             description: '優先級',
-            enum: [ActivitySeverity::LOW->value, ActivitySeverity::NORMAL->value, ActivitySeverity::HIGH->value, ActivitySeverity::URGENT->value],
+            enum: [ActivitySeverity::LOW->value, ActivitySeverity::NORMAL->value, ActivitySeverity::MEDIUM->value, ActivitySeverity::HIGH->value, ActivitySeverity::CRITICAL->value],
             example: 'normal',
         ),
         new OA\Property(

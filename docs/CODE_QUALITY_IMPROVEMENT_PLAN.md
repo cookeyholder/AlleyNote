@@ -45,6 +45,15 @@
 
 ## 🚀 第二階段：現代 PHP 特性採用提升 (優先級：🔥 高)
 
+## 🟢 進度更新 (暫存)
+
+- 2025-09-29: 已完成初步重構與修復項目，包含：
+	- 提取 `JsonFlag` 枚舉至 `app/Shared/Enums/JsonFlag.php`，並更新 `app/Application/Controllers/BaseController.php` 使用 enum（通過 php -l 與 PHPStan 針對相關檔案的檢查）。
+	- 修復 `app/Shared/Monitoring/Services/ErrorTrackerService.php` 中的重複/殘留非 PHP 區塊問題，覆寫為單一定義實作並通過 php -l 與 PHPStan 分析。
+
+下一步：依計劃提取 `SanitizerMode` 枚舉並更新 `OutputSanitizer`，之後在容器內執行整體 CI（PHPStan + PHPUnit）驗證。
+
+
 ### 2.1 枚舉型別大規模導入
 **目標**: 將常數群組、狀態標識符等替換為 enum
 
