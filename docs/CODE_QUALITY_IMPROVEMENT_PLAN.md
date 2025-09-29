@@ -58,6 +58,12 @@
 	- 修正 `ErrorTrackerService` 的通知處理與統計回傳結構，通過對應單元測試。
 	- CI 結果：Tests: 2066, Assertions: 9100, Skipped: 36（時間約 1m49s，PHPStan 與 PHP CS Fixer 通過）。
 
+	- 2025-09-29: 已新增 `ValidationRule` 枚舉（`app/Shared/Enums/ValidationRule.php`），並在容器內執行語法檢查、PHPStan 與完整 CI：
+		- 檔案已通過 `php -l` 語法檢查。
+		- `phpstan analyse` 對該檔案無錯誤回報。
+		- 執行 `composer ci`（php-cs-fixer、PHPStan、PHPUnit）後通過；php-cs-fixer 自動修正了格式細節。
+		- CI 最終結果：OK（含部分被略過的測試）。
+
 下一步：依照 `CODE_QUALITY_IMPROVEMENT_PLAN.md` 的優先順序繼續下一項改善（例如新增 `ValidationRule` 枚舉或開始型別宣告強化）。每完成一項我會重複：執行 CI 與 PHPStan → 更新計畫檔 → commit 變更。
 
 
