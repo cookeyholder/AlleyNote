@@ -50,6 +50,7 @@
 - 2025-09-29: 已完成初步重構與修復項目，包含：
 	- 提取 `JsonFlag` 枚舉至 `app/Shared/Enums/JsonFlag.php`，並更新 `app/Application/Controllers/BaseController.php` 使用 enum（通過 php -l 與 PHPStan 針對相關檔案的檢查）。
 	- 修復 `app/Shared/Monitoring/Services/ErrorTrackerService.php` 中的重複/殘留非 PHP 區塊問題，覆寫為單一定義實作並通過 php -l 與 PHPStan 分析。
+	- 提取 `SanitizerMode` 枚舉至 `app/Shared/Enums/SanitizerMode.php`，並更新 `app/Infrastructure/Services/OutputSanitizerService.php` 使用共用 enum；已在容器內通過 php -l 與 PHPStan 檢查。（2025-09-29）
 
 下一步：依計劃提取 `SanitizerMode` 枚舉並更新 `OutputSanitizer`，之後在容器內執行整體 CI（PHPStan + PHPUnit）驗證。
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
 
-use App\Infrastructure\Enums\SanitizerMode;
+use App\Shared\Enums\SanitizerMode;
 use App\Shared\Contracts\OutputSanitizerInterface;
 
 /**
