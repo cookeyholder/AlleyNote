@@ -52,7 +52,13 @@
 	- 修復 `app/Shared/Monitoring/Services/ErrorTrackerService.php` 中的重複/殘留非 PHP 區塊問題，覆寫為單一定義實作並通過 php -l 與 PHPStan 分析。
 	- 提取 `SanitizerMode` 枚舉至 `app/Shared/Enums/SanitizerMode.php`，並更新 `app/Infrastructure/Services/OutputSanitizerService.php` 使用共用 enum；已在容器內通過 php -l 與 PHPStan 檢查。（2025-09-29）
 
-下一步：依計劃提取 `SanitizerMode` 枚舉並更新 `OutputSanitizer`，之後在容器內執行整體 CI（PHPStan + PHPUnit）驗證。
+- 2025-09-29: 已在容器內執行完整 CI（php-cs-fixer、PHPStan、PHPUnit），並在修正若干單元測試相關實作後使 CI 通過：
+	- 修正並提取 `SanitizerMode`、`JsonFlag`，清理 `ErrorTrackerService` 的語法雜訊與行為差異。
+	- 調整 `ActivitySeverity` 枚舉（改為 int backing）以符合測試預期。
+	- 修正 `ErrorTrackerService` 的通知處理與統計回傳結構，通過對應單元測試。
+	- CI 結果：Tests: 2066, Assertions: 9100, Skipped: 36（時間約 1m49s，PHPStan 與 PHP CS Fixer 通過）。
+
+下一步：依照 `CODE_QUALITY_IMPROVEMENT_PLAN.md` 的優先順序繼續下一項改善（例如新增 `ValidationRule` 枚舉或開始型別宣告強化）。每完成一項我會重複：執行 CI 與 PHPStan → 更新計畫檔 → commit 變更。
 
 
 ### 2.1 枚舉型別大規模導入
