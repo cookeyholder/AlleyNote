@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Enums;
 
 /**
- * ValidationRule enum
+ * ValidationRule enum.
  *
  * 一個集中定義常用驗證規則名稱的 enum，方便在程式中以類型安全的方式使用。
  */
