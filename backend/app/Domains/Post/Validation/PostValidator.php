@@ -37,7 +37,7 @@ class PostValidator extends Validator
                 return false;
             }
 
-            return in_array($value, array_column(PostStatus::cases(), 'value'), true);
+            return PostStatus::isValid($value);
         });
 
         // RFC3339 日期時間格式驗證

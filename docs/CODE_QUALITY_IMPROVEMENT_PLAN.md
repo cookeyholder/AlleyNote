@@ -78,7 +78,7 @@
 - [x] 新增 `SecurityLevel` 枚舉
 - [x] 新增 `ValidationRule` 枚舉
 - [x] 新增 `EventType` 枚舉
-- [ ] 重構現有的 PostStatus 枚舉使用範圍
+- [x] 重構現有的 PostStatus 枚舉使用範圍
 
 **預期效果**: 現代 PHP 採用率 +5-8%
 

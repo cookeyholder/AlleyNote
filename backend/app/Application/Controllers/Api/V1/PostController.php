@@ -263,7 +263,7 @@ class PostController extends BaseController
                 targetId: (string) $post->getId(),
                 metadata: [
                     'title' => $post->getTitle(),
-                    'status' => $post->getStatus(),
+                    'status' => $post->getStatusValue(),
                     'ip_address' => $this->getUserIp($request),
                 ],
             );
@@ -374,7 +374,7 @@ class PostController extends BaseController
                 targetId: (string) $id,
                 metadata: [
                     'title' => $post->getTitle(),
-                    'status' => $post->getStatus(),
+                    'status' => $post->getStatusValue(),
                     'ip_address' => $userIp,
                 ],
             );
@@ -535,7 +535,7 @@ class PostController extends BaseController
                 targetId: (string) $id,
                 metadata: [
                     'title' => $post->getTitle(),
-                    'status' => $post->getStatus(),
+                    'status' => $post->getStatusValue(),
                     'changes' => $data, // 記錄變更的欄位
                     'ip_address' => $this->getUserIp($request),
                 ],
@@ -665,10 +665,9 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            // 在刪除前取得文章資訊以供記錄
             $post = $this->postService->findById($id);
             $postTitle = $post->getTitle();
-            $postStatus = $post->getStatus();
+            $postStatus = $post->getStatusValue();
 
             $this->postService->deletePost($id);
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Models;
 
+use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use JsonSerializable;
 
@@ -25,7 +26,7 @@ class Post implements JsonSerializable
 
     private bool $isPinned;
 
-    private string $status;
+    private PostStatus $status;
 
     private ?string $publishDate;
 
@@ -49,7 +50,7 @@ class Post implements JsonSerializable
         $this->userId = (int) ($data['user_id'] ?? 0);
         $this->userIp = isset($data['user_ip']) ? (string) $data['user_ip'] : null;
         $this->isPinned = filter_var($data['is_pinned'] ?? false, FILTER_VALIDATE_BOOLEAN);
-        $this->status = (string) ($data['status'] ?? 'draft');
+        $this->setStatus(PostStatus::tryFrom((string) ($data['status'] ?? 'draft')) ?? PostStatus::DRAFT);
         $this->publishDate = isset($data['publish_date']) ? (string) $data['publish_date'] : null;
         $this->views = (int) ($data['views'] ?? 0);
         $this->createdAt = (string) ($data['created_at'] ?? format_datetime());
@@ -106,9 +107,24 @@ class Post implements JsonSerializable
         return $this->isPinned();
     }
 
-    public function getStatus(): string
+    public function getStatus(): PostStatus
     {
         return $this->status;
+    }
+
+    public function setStatus(PostStatus $status): void
+    {
+        $this->status = $status;
+    }
+
+    public function hasStatus(PostStatus $status): bool
+    {
+        return $this->status === $status;
+    }
+
+    public function getStatusValue(): string
+    {
+        return $this->status->value;
     }
 
     public function getPublishDate(): ?string
@@ -164,7 +180,7 @@ class Post implements JsonSerializable
             'user_id' => $this->userId,
             'user_ip' => $this->userIp,
             'is_pinned' => $this->isPinned,
-            'status' => $this->status,
+            'status' => $this->getStatusValue(),
             'publish_date' => $this->publishDate,
             'views' => $this->views,
             'created_at' => $this->createdAt,

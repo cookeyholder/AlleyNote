@@ -30,4 +30,13 @@ class PostStatusTest extends TestCase
         $this->assertFalse(PostStatus::ARCHIVED->canTransitionTo(PostStatus::DRAFT));
         $this->assertFalse(PostStatus::ARCHIVED->canTransitionTo(PostStatus::PUBLISHED));
     }
+
+    public function testIsValid(): void
+    {
+        $this->assertTrue(PostStatus::isValid('draft'));
+        $this->assertTrue(PostStatus::isValid('published'));
+        $this->assertTrue(PostStatus::isValid('archived'));
+        $this->assertFalse(PostStatus::isValid('invalid-status'));
+        $this->assertFalse(PostStatus::isValid(''));
+    }
 }

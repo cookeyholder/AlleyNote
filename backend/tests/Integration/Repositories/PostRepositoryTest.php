@@ -195,7 +195,7 @@ class PostRepositoryTest extends TestCase
         $this->assertIsInt($post->getId());
         $this->assertEquals('新建文章', $post->getTitle());
         $this->assertEquals('新建文章內容', $post->getContent());
-        $this->assertEquals(PostStatus::DRAFT->value, $post->getStatus());
+        $this->assertTrue($post->hasStatus(PostStatus::DRAFT));
     }
 
     public function testFindPostById(): void
@@ -267,7 +267,7 @@ class PostRepositoryTest extends TestCase
         $this->assertInstanceOf(Post::class, $updatedPost);
         $this->assertEquals('更新後的標題', $updatedPost->getTitle());
         $this->assertEquals('更新後的內容', $updatedPost->getContent());
-        $this->assertEquals(PostStatus::PUBLISHED->value, $updatedPost->getStatus());
+        $this->assertTrue($updatedPost->hasStatus(PostStatus::PUBLISHED));
     }
 
     public function testSoftDeletePost(): void
