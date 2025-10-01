@@ -166,7 +166,7 @@ class Application
                 // 實作關閉流
             }
 
-            public function detach()
+            public function detach(): mixed
             {
                 return null;
             }
