@@ -146,12 +146,18 @@
 **目標**: 將原始型別包裝為有意義的領域概念
 
 **具體任務**:
-- [ ] 建立 `PostTitle` 值物件
-- [ ] 建立 `UserId` 值物件
-- [ ] 建立 `Email` 值物件
-- [ ] 建立 `IPAddress` 值物件
+- [x] 建立 `PostTitle` 值物件 (app/Domains/Post/ValueObjects/PostTitle.php)
+- [x] 建立 `UserId` 值物件 (app/Domains/Auth/ValueObjects/UserId.php)
+- [x] 建立 `Email` 值物件 (app/Domains/Shared/ValueObjects/Email.php)
+- [x] 建立 `IPAddress` 值物件 (app/Domains/Shared/ValueObjects/IPAddress.php)
 - [ ] 建立 `Timestamp` 值物件
 - [ ] 建立 `Statistics` 相關值物件群組
+
+**已完成**: 
+- 建立 4 個核心值物件，提供完整的驗證和行為封裝
+- 所有值物件使用 `readonly` 確保不可變性
+- 實作 `JsonSerializable` 和 `Stringable` 介面
+- 通過 PHPStan Level 10 和 PHP CS Fixer 檢查
 
 **預期效果**: DDD 結構完整性 +15-20%
 
