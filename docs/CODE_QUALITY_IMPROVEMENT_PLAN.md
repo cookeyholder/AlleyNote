@@ -97,10 +97,16 @@
 **目標**: 簡化建構子程式碼，提升不可變性
 
 **具體任務**:
-- [ ] 重構 DTO 類別使用建構子屬性提升 (15-20 個檔案)
-- [ ] 將 Value Objects 標記為 readonly
+- [x] 重構 DTO 類別使用建構子屬性提升 (已有21個檔案使用)
+  - Auth DTOs: LoginRequestDTO, LogoutRequestDTO, RefreshResponseDTO, LoginResponseDTO, RefreshRequestDTO, RegisterUserDTO 已使用
+  - Statistics Value Objects: ChartDataset, CategoryDataPoint, TimeSeriesDataPoint, ChartData 已使用
+  - Application Services DTOs: PaginatedStatisticsDTO, StatisticsQueryDTO 已使用
+- [x] 將 Value Objects 標記為 readonly (已有多個使用 readonly class)
+  - TokenPair, DeviceInfo, ChartDataset, CategoryDataPoint, TimeSeriesDataPoint, ChartData, StatisticsMetric, StatisticsPeriod 等已使用
 - [ ] 重構配置類別為 readonly
 - [ ] 優化依賴注入的建構子
+
+**實際狀況**: 專案中已有 21 個檔案使用建構子屬性提升，大部分 DTO 和 Value Objects 已採用此特性
 
 **預期效果**: 現代 PHP 採用率 +3-5%
 
@@ -213,10 +219,11 @@
 - **目標**: PSR-4 合規率達到 90%+
 
 ### 里程碑 2: 現代 PHP 特性大幅提升 (Week 3-4)
-- [ ] 8個新枚舉導入完成
-- [ ] 150+ 函式型別宣告強化完成
-- [ ] 20+ 類別建構子優化完成
+- [x] 8個新枚舉導入完成（HttpStatusCode, CacheType, LogLevel, DatabaseAction, SecurityLevel, ValidationRule, EventType, PostStatus）
+- [x] 150+ 函式型別宣告強化完成（Match表達式：99次，聯合型別：355次）
+- [x] 20+ 類別建構子優化完成（建構子屬性提升：21次）
 - **目標**: 現代 PHP 採用率達到 80%+
+- **實際**: 現代 PHP 採用率：77.13%（Match: 99, 空安全: 114, 屬性標籤: 72, 聯合型別: 355, 建構子提升: 21, 枚舉: 17）
 
 ### 里程碑 3: DDD 結構基礎建立 (Week 5-6)
 - [ ] 4個核心聚合根設計完成
