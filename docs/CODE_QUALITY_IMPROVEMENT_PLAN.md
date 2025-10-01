@@ -112,9 +112,11 @@
 - [x] 將 EnvironmentConfig.php 中的 switch 重構為 match（validateEnvironmentSpecific() 方法）
 - [x] 將 TrendAnalysisProcessor.php 中的 switch 重構為 match（趨勢分析類型判斷）
 - [x] 將 StatisticsCalculationCommand.php 中的 switch 重構為 match（週期類型判斷）
-- [ ] 重構路由處理中的 switch 語句
-- [ ] 重構驗證器中的條件判斷
-- [ ] 重構快取策略選擇邏輯
+- [x] 將 XssProtectionExtensionService.php 中的 switch 重構為 match（上下文保護選擇）
+- [x] 將 RichTextProcessorService.php 中的 switch 重構為 match（使用者層級處理選擇）
+- [ ] 重構 JwtAuthorizationMiddleware.php 中的 switch 語句（較複雜，暫緩）
+- [ ] 重構 StatisticsRecalculationCommand.php 中的 switch 語句（較複雜，暫緩）
+- [ ] 重構 AttachmentService.php 中的 switch 語句（涉及副作用，不適合 match）
 
 **預期效果**: 現代 PHP 採用率 +2-3%
 
