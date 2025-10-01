@@ -108,7 +108,8 @@
 **目標**: 提升程式碼簡潔性和型別安全性
 
 **具體任務**:
-- [ ] 將 BaseController 中的 switch 重構為 match
+- [x] 將 Application.php 中的 switch 重構為 match（seek() 方法）
+- [x] 將 EnvironmentConfig.php 中的 switch 重構為 match（validateEnvironmentSpecific() 方法）
 - [ ] 重構路由處理中的 switch 語句
 - [ ] 重構驗證器中的條件判斷
 - [ ] 重構快取策略選擇邏輯
