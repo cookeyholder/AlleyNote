@@ -25,13 +25,13 @@ final readonly class Email implements JsonSerializable, Stringable
             throw new InvalidArgumentException('Email 不能為空');
         }
 
-        if (!filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("無效的 Email 格式: {$trimmedEmail}");
-        }
-
-        // 檢查長度限制
+        // 先檢查長度限制
         if (strlen($trimmedEmail) > 254) {
             throw new InvalidArgumentException('Email 長度不能超過 254 個字元');
+        }
+
+        if (!filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("無效的 Email 格式: {$trimmedEmail}");
         }
 
         $this->value = strtolower($trimmedEmail); // 統一轉換為小寫
