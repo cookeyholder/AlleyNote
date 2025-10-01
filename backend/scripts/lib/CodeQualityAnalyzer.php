@@ -119,11 +119,15 @@ final class CodeQualityAnalyzer
         $features = [
             'enums' => 0,
             'readonly_properties' => 0,
+            'readonly_classes' => 0,
             'match_expressions' => 0,
             'union_types' => 0,
+            'intersection_types' => 0,
             'constructor_promotion' => 0,
             'attributes' => 0,
             'nullsafe_operator' => 0,
+            'named_arguments' => 0,
+            'first_class_callable_syntax' => 0,
         ];
 
         $improvableFiles = [];
@@ -134,21 +138,61 @@ final class CodeQualityAnalyzer
             $relativePath = $this->getRelativePath($file);
             $fileIssues = [];
 
-            // 檢查現代特性使用
+            // 檢查現代特性使用 - 更精確的模式匹配
+            
+            // 枚舉 (PHP 8.1+)
             if (preg_match('/\benum\s+\w+/i', $content)) {
-                $features['enums']++;
+                $features['enums'] += preg_match_all('/\benum\s+\w+/i', $content);
             }
 
-            if (preg_match('/\breadonly\s+/i', $content)) {
-                $features['readonly_properties']++;
+            // Readonly 屬性 (PHP 8.1+)
+            if (preg_match_all('/\breadonly\s+(public|protected|private)\s+/i', $content)) {
+                $features['readonly_properties'] += preg_match_all('/\breadonly\s+(public|protected|private)\s+/i', $content);
             }
 
-            if (preg_match('/\bmatch\s*\(/i', $content)) {
-                $features['match_expressions']++;
+            // Readonly 類別 (PHP 8.2+)
+            if (preg_match('/\breadonly\s+class\s+/i', $content)) {
+                $features['readonly_classes'] += preg_match_all('/\breadonly\s+class\s+/i', $content);
             }
 
-            if (preg_match('/\w+\|\w+/', $content)) {
-                $features['union_types']++;
+            // Match 表達式 (PHP 8.0+)
+            if (preg_match_all('/\bmatch\s*\(/i', $content)) {
+                $features['match_expressions'] += preg_match_all('/\bmatch\s*\(/i', $content);
+            }
+
+            // 聯合型別 (PHP 8.0+) - 更精確匹配型別宣告中的 |
+            if (preg_match_all('/:\s*\w+\|\w+/', $content)) {
+                $features['union_types'] += preg_match_all('/:\s*\w+\|\w+/', $content);
+            }
+
+            // 交集型別 (PHP 8.1+)
+            if (preg_match_all('/:\s*\w+&\w+/', $content)) {
+                $features['intersection_types'] += preg_match_all('/:\s*\w+&\w+/', $content);
+            }
+
+            // 建構子屬性提升 (PHP 8.0+)
+            if (preg_match_all('/__construct\s*\([^)]*\b(public|protected|private)\s+/i', $content)) {
+                $features['constructor_promotion']++;
+            }
+
+            // 屬性標籤 (PHP 8.0+)
+            if (preg_match_all('/#\[\w+/', $content)) {
+                $features['attributes'] += preg_match_all('/#\[\w+/', $content);
+            }
+
+            // 空安全運算子 (PHP 8.0+)
+            if (preg_match_all('/\?\->/', $content)) {
+                $features['nullsafe_operator'] += preg_match_all('/\?\->/', $content);
+            }
+
+            // 具名參數 (PHP 8.0+) - 檢測函式呼叫中的具名參數
+            if (preg_match_all('/\w+:\s*[^,\)]+/', $content)) {
+                $features['named_arguments'] += preg_match_all('/\w+:\s*[^,\)]+/', $content);
+            }
+
+            // First-class callable syntax (PHP 8.1+)
+            if (preg_match_all('/\w+\(...\)/', $content)) {
+                $features['first_class_callable_syntax'] += preg_match_all('/\w+\(...\)/', $content);
             }
 
             // 檢查可改善的項目
@@ -160,10 +204,11 @@ final class CodeQualityAnalyzer
                 ];
             }
 
-            if (preg_match_all('/function\s+\w+\([^)]*\)\s*(?::\s*\w+)?\s*\{/', $content, $matches)) {
+            // 更精確地檢查缺少回傳型別的函式
+            if (preg_match_all('/\b(?:public|protected|private|static)\s+function\s+\w+\([^)]*\)\s*\{/', $content, $matches)) {
                 $functionsWithoutReturnType = 0;
                 foreach ($matches[0] as $match) {
-                    if (!str_contains($match, ':')) {
+                    if (!preg_match('/\):\s*\w+/', $match)) {
                         $functionsWithoutReturnType++;
                     }
                 }
@@ -177,15 +222,45 @@ final class CodeQualityAnalyzer
                 }
             }
 
+            // 檢查可以使用 readonly 的類別
+            if (preg_match('/\bclass\s+\w+/i', $content) && 
+                !preg_match('/\breadonly\s+class/i', $content) &&
+                !preg_match('/\bpublic\s+function\s+set/i', $content) &&
+                preg_match('/\bprivate\s+(readonly\s+)?\w+\s+\$/', $content)) {
+                $fileIssues[] = [
+                    'type' => 'can_use_readonly_class',
+                    'count' => 1,
+                    'message' => '可以考慮將類別標記為 readonly',
+                ];
+            }
+
+            // 檢查可以使用建構子屬性提升的類別
+            if (preg_match('/__construct\s*\([^)]+\)\s*\{/', $content) &&
+                !preg_match('/__construct\s*\([^)]*\b(public|protected|private)\s+/', $content) &&
+                preg_match('/\$this->\w+\s*=\s*\$\w+;/', $content)) {
+                $fileIssues[] = [
+                    'type' => 'can_use_constructor_promotion',
+                    'count' => 1,
+                    'message' => '可以使用建構子屬性提升簡化程式碼',
+                ];
+            }
+
             if (!empty($fileIssues)) {
                 $improvableFiles[$relativePath] = $fileIssues;
             }
         }
 
+        // 計算現代 PHP 特性採用率
+        $totalFeatures = count($features);
+        $usedFeatures = count(array_filter($features, fn($count) => $count > 0));
+        $adoptionRate = $totalFeatures > 0 ? round(($usedFeatures / $totalFeatures) * 100, 2) : 0;
+
         $this->metrics['modern_php'] = [
             'features_used' => $features,
             'total_files_scanned' => count($phpFiles),
             'files_with_modern_features' => count(array_filter($features)),
+            'adoption_rate' => $adoptionRate,
+            'total_feature_usage' => array_sum($features),
         ];
 
         $this->issues['modern_php'] = $improvableFiles;
@@ -200,29 +275,143 @@ final class CodeQualityAnalyzer
             'repositories' => [],
             'domain_services' => [],
             'domain_events' => [],
+            'dtos' => [],
+            'specifications' => [],
+            'factories' => [],
         ];
 
         $issues = [];
         $domainPath = $this->basePath . '/app/Domains';
+        $applicationPath = $this->basePath . '/app/Application';
 
         if (is_dir($domainPath)) {
             $this->scanDomainDirectory($domainPath, $dddComponents);
         }
 
-        // 分析 DDD 結構問題
+        if (is_dir($applicationPath)) {
+            $this->scanApplicationDirectory($applicationPath, $dddComponents);
+        }
+
+        // 分析 DDD 結構問題和質量
         $this->analyzeDddIssues($dddComponents, $issues);
+        $qualityMetrics = $this->calculateDddQuality($dddComponents);
 
         $this->metrics['ddd'] = [
             'components' => $dddComponents,
             'total_components' => array_sum(array_map('count', $dddComponents)),
             'completeness_score' => $this->calculateDddCompleteness($dddComponents),
+            'quality_metrics' => $qualityMetrics,
+            'bounded_contexts' => $this->identifyBoundedContexts($domainPath),
         ];
 
         $this->issues['ddd'] = $issues;
     }
 
+    private function scanApplicationDirectory(string $path, array &$components): void
+    {
+        if (!is_dir($path)) {
+            return;
+        }
+
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($path)
+        );
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $relativePath = $this->getRelativePath($file->getPathname());
+
+                // 識別 DTOs
+                if (str_contains($relativePath, '/DTOs/') || 
+                    str_ends_with($relativePath, 'DTO.php')) {
+                    $components['dtos'][] = $relativePath;
+                }
+            }
+        }
+    }
+
+    private function identifyBoundedContexts(string $domainPath): array
+    {
+        $contexts = [];
+        
+        if (!is_dir($domainPath)) {
+            return $contexts;
+        }
+
+        $directories = glob($domainPath . '/*', GLOB_ONLYDIR);
+        
+        foreach ($directories as $dir) {
+            $contextName = basename($dir);
+            $contexts[$contextName] = [
+                'path' => $this->getRelativePath($dir),
+                'has_entities' => is_dir($dir . '/Entities'),
+                'has_value_objects' => is_dir($dir . '/ValueObjects'),
+                'has_repositories' => is_dir($dir . '/Repositories'),
+                'has_services' => is_dir($dir . '/Services'),
+                'has_events' => is_dir($dir . '/Events'),
+                'completeness' => 0,
+            ];
+
+            // 計算上下文完整度
+            $score = 0;
+            if ($contexts[$contextName]['has_entities']) $score += 25;
+            if ($contexts[$contextName]['has_value_objects']) $score += 20;
+            if ($contexts[$contextName]['has_repositories']) $score += 20;
+            if ($contexts[$contextName]['has_services']) $score += 20;
+            if ($contexts[$contextName]['has_events']) $score += 15;
+            
+            $contexts[$contextName]['completeness'] = $score;
+        }
+
+        return $contexts;
+    }
+
+    private function calculateDddQuality(array $components): array
+    {
+        $metrics = [
+            'value_object_ratio' => 0,
+            'repository_coverage' => 0,
+            'event_driven_readiness' => 0,
+            'separation_of_concerns' => 0,
+        ];
+
+        // 值物件使用率
+        $totalComponents = count($components['entities']) + count($components['value_objects']);
+        if ($totalComponents > 0) {
+            $metrics['value_object_ratio'] = round((count($components['value_objects']) / $totalComponents) * 100, 2);
+        }
+
+        // Repository 覆蓋率
+        $expectedRepositories = count($components['entities']);
+        if ($expectedRepositories > 0) {
+            $metrics['repository_coverage'] = round((count($components['repositories']) / $expectedRepositories) * 100, 2);
+        }
+
+        // 事件驅動準備度
+        $eventScore = 0;
+        if (count($components['domain_events']) > 0) $eventScore += 50;
+        if (count($components['domain_events']) >= 5) $eventScore += 30;
+        if (count($components['domain_events']) >= 10) $eventScore += 20;
+        $metrics['event_driven_readiness'] = min($eventScore, 100);
+
+        // 關注點分離度
+        $separationScore = 0;
+        if (count($components['entities']) > 0) $separationScore += 20;
+        if (count($components['value_objects']) > 0) $separationScore += 20;
+        if (count($components['repositories']) > 0) $separationScore += 20;
+        if (count($components['domain_services']) > 0) $separationScore += 20;
+        if (count($components['dtos']) > 0) $separationScore += 20;
+        $metrics['separation_of_concerns'] = $separationScore;
+
+        return $metrics;
+    }
+
     private function scanDomainDirectory(string $path, array &$components): void
     {
+        if (!is_dir($path)) {
+            return;
+        }
+
         $iterator = new RecursiveIteratorIterator(
             new RecursiveDirectoryIterator($path)
         );
@@ -232,7 +421,7 @@ final class CodeQualityAnalyzer
                 $content = file_get_contents($file->getPathname());
                 $relativePath = $this->getRelativePath($file->getPathname());
 
-                // 根據檔案模式和內容識別 DDD 組件
+                // 根據目錄結構識別 DDD 組件
                 if (str_contains($relativePath, '/Entities/')) {
                     $components['entities'][] = $relativePath;
                 } elseif (str_contains($relativePath, '/ValueObjects/')) {
@@ -243,12 +432,33 @@ final class CodeQualityAnalyzer
                     $components['domain_services'][] = $relativePath;
                 } elseif (str_contains($relativePath, '/Events/')) {
                     $components['domain_events'][] = $relativePath;
+                } elseif (str_contains($relativePath, '/Specifications/')) {
+                    $components['specifications'][] = $relativePath;
+                } elseif (str_contains($relativePath, '/Factories/')) {
+                    $components['factories'][] = $relativePath;
                 }
 
                 // 根據內容特徵識別聚合根
-                if (str_contains($content, 'AggregateRoot') ||
-                    str_contains($content, 'implements.*Entity.*Interface')) {
+                if (preg_match('/(class|interface)\s+\w+.*AggregateRoot/i', $content) ||
+                    preg_match('/implements\s+.*AggregateRootInterface/i', $content) ||
+                    (preg_match('/class\s+\w+.*extends.*Entity/i', $content) && 
+                     preg_match('/private.*\$domainEvents/i', $content))) {
                     $components['aggregates'][] = $relativePath;
+                }
+
+                // 額外識別：檢查是否為值物件（基於特徵）
+                if (!str_contains($relativePath, '/ValueObjects/') &&
+                    preg_match('/readonly\s+class/i', $content) &&
+                    preg_match('/public\s+function\s+equals\(/i', $content) &&
+                    !preg_match('/public\s+function\s+set\w+\(/i', $content)) {
+                    $components['value_objects'][] = $relativePath;
+                }
+
+                // 識別領域事件（基於特徵）
+                if (!str_contains($relativePath, '/Events/') &&
+                    (preg_match('/implements\s+.*Event(?:Interface)?/i', $content) ||
+                     str_ends_with($relativePath, 'Event.php'))) {
+                    $components['domain_events'][] = $relativePath;
                 }
             }
         }
