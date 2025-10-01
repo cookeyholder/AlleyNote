@@ -41,36 +41,19 @@ class TrendAnalysisProcessor
         /** @var array<float> $dataFloat */
         $dataFloat = array_map(fn($value): float => is_numeric($value) ? (float) $value : 0.0, $datasetData);
 
-        switch ($analysisType) {
-            case 'trend':
-                $trendDataset = $this->calculateLinearTrend($dataFloat, $baseChart->labels);
-                $datasets[] = $trendDataset;
-                break;
-            case 'moving_average':
-                $movingAvgDataset = $this->calculateMovingAverage($dataFloat, $baseChart->labels);
-                $datasets[] = $movingAvgDataset;
-                break;
-            case 'seasonal':
-                $seasonalDataset = $this->calculateSeasonalTrend($dataFloat, $baseChart->labels);
-                $datasets[] = $seasonalDataset;
-                break;
-            case 'growth':
-                $growthDataset = $this->calculateGrowthRate($dataFloat, $baseChart->labels);
-                $datasets[] = $growthDataset;
-                break;
-            case 'registration':
-                // 使用者註冊趨勢特別處理
-                $trendDataset = $this->calculateLinearTrend($dataFloat, $baseChart->labels);
-                $growthDataset = $this->calculateGrowthRate($dataFloat, $baseChart->labels);
-                $datasets[] = $trendDataset;
-                $datasets[] = $growthDataset;
-                break;
-            default:
-                // 預設使用線性趨勢
-                $trendDataset = $this->calculateLinearTrend($dataFloat, $baseChart->labels);
-                $datasets[] = $trendDataset;
-                break;
-        }
+        $additionalDatasets = match ($analysisType) {
+            'trend' => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
+            'moving_average' => [$this->calculateMovingAverage($dataFloat, $baseChart->labels)],
+            'seasonal' => [$this->calculateSeasonalTrend($dataFloat, $baseChart->labels)],
+            'growth' => [$this->calculateGrowthRate($dataFloat, $baseChart->labels)],
+            'registration' => [
+                $this->calculateLinearTrend($dataFloat, $baseChart->labels),
+                $this->calculateGrowthRate($dataFloat, $baseChart->labels),
+            ],
+            default => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
+        };
+
+        $datasets = array_merge($datasets, $additionalDatasets);
 
         return new ChartData(
             $baseChart->labels,

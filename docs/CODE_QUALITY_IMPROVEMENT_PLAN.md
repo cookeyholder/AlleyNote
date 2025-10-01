@@ -110,6 +110,8 @@
 **具體任務**:
 - [x] 將 Application.php 中的 switch 重構為 match（seek() 方法）
 - [x] 將 EnvironmentConfig.php 中的 switch 重構為 match（validateEnvironmentSpecific() 方法）
+- [x] 將 TrendAnalysisProcessor.php 中的 switch 重構為 match（趨勢分析類型判斷）
+- [x] 將 StatisticsCalculationCommand.php 中的 switch 重構為 match（週期類型判斷）
 - [ ] 重構路由處理中的 switch 語句
 - [ ] 重構驗證器中的條件判斷
 - [ ] 重構快取策略選擇邏輯

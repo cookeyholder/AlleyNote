@@ -172,22 +172,20 @@ final class StatisticsCalculationCommand
         $now = new DateTimeImmutable();
         $periodTypeEnum = self::SUPPORTED_PERIODS[$periodType];
 
-        switch ($periodTypeEnum) {
-            case PeriodType::DAILY:
-                $startTime = $now->modify('yesterday midnight');
-                $endTime = $startTime->add(new DateInterval('P1D'))->modify('-1 second');
-                break;
-            case PeriodType::WEEKLY:
-                $startTime = $now->modify('last monday midnight')->modify('-1 week');
-                $endTime = $startTime->add(new DateInterval('P7D'))->modify('-1 second');
-                break;
-            case PeriodType::MONTHLY:
-                $startTime = $now->modify('first day of last month midnight');
-                $endTime = $startTime->add(new DateInterval('P1M'))->modify('-1 second');
-                break;
-            default:
-                throw new RuntimeException('未知的週期類型: ' . $periodType);
-        }
+        [$startTime, $endTime] = match ($periodTypeEnum) {
+            PeriodType::DAILY => [
+                $now->modify('yesterday midnight'),
+                $now->modify('yesterday midnight')->add(new DateInterval('P1D'))->modify('-1 second'),
+            ],
+            PeriodType::WEEKLY => [
+                $now->modify('last monday midnight')->modify('-1 week'),
+                $now->modify('last monday midnight')->modify('-1 week')->add(new DateInterval('P7D'))->modify('-1 second'),
+            ],
+            PeriodType::MONTHLY => [
+                $now->modify('first day of last month midnight'),
+                $now->modify('first day of last month midnight')->add(new DateInterval('P1M'))->modify('-1 second'),
+            ],
+        };
 
         return new StatisticsPeriod($periodTypeEnum, $startTime, $endTime);
     }

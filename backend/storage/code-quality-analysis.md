@@ -1,26 +1,27 @@
 # 程式碼品質分析報告
 
-**生成時間**: 2025-09-29 17:14:16
+**生成時間**: 2025-10-01 19:42:29
 
 ## 📊 PSR-4 合規性
 
-- **總檔案數**: 325
-- **合規檔案數**: 321
-- **合規率**: 98.77%
+- **總檔案數**: 328
+- **合規檔案數**: 324
+- **合規率**: 98.78%
 
 ### PSR-4 問題清單
 
 - **app/Application.php**: 命名空間 App 與檔案路徑不符
 - **app/Shared/Helpers/functions.php**: 缺少命名空間宣告
 - **app/Infrastructure/Config/container.php**: 缺少命名空間宣告
+- **scripts/Analysis/scan-missing-return-types.php**: 類別名稱 ReturnTypeScanner 與檔案名稱 scan-missing-return-types 不一致
 - **scripts/ScriptBootstrap.php**: 命名空間 AlleyNote\Scripts 與檔案路徑不符
 
 ## 🚀 現代 PHP 特性使用情況
 
-- **枚舉型別**: 15 次使用
+- **枚舉型別**: 17 次使用
 - **唯讀屬性**: 92 次使用
-- **Match 表達式**: 70 次使用
-- **聯合型別**: 90 次使用
+- **Match 表達式**: 72 次使用
+- **聯合型別**: 91 次使用
 - **建構子屬性提升**: 0 次使用
 - **屬性標籤**: 0 次使用
 - **空安全運算子**: 0 次使用
@@ -28,8 +29,7 @@
 ### 可改善的檔案 (前10個)
 
 **app/Application.php**:
-  - 可以將 switch 語句改為 match 表達式 (1 處)
-  - 缺少回傳型別宣告的函式 (3 處)
+  - 缺少回傳型別宣告的函式 (2 處)
 
 **app/Domains/Statistics/Contracts/BatchExportResult.php**:
   - 缺少回傳型別宣告的函式 (1 處)
