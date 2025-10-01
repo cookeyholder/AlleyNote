@@ -1,14 +1,14 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-10-01 20:13:54
+**生成時間**: 2025-10-01 20:30:51
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 293 | - |
-| PSR-4 合規率 | 102.73% | ✅ 優秀 |
-| 現代 PHP 採用率 | 77.13% | ⚠️ 可改善 |
+| 總類別數 | 297 | - |
+| PSR-4 合規率 | 102.69% | ✅ 優秀 |
+| 現代 PHP 採用率 | 76.09% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
@@ -108,6 +108,9 @@
 
 ### `App\Domains\Post\Validation`
 - app/Domains/Post/Validation/PostValidator.php
+
+### `App\Domains\Post\ValueObjects`
+- app/Domains/Post/ValueObjects/PostTitle.php
 
 ### `App\Domains\Security\Contracts`
 - app/Domains/Security/Contracts/IpRepositoryInterface.php
@@ -236,6 +239,7 @@
 - app/Domains/Auth/ValueObjects/TokenBlacklistEntry.php
 - app/Domains/Auth/ValueObjects/TokenPair.php
 - app/Domains/Auth/ValueObjects/DeviceInfo.php
+- app/Domains/Auth/ValueObjects/UserId.php
 - app/Domains/Auth/ValueObjects/JwtPayload.php
 
 ### `App\Domains\Attachment\Contracts`
@@ -258,6 +262,10 @@
 ### `App\Domains\Attachment\Services`
 - app/Domains/Attachment/Services/AttachmentService.php
 - app/Domains/Attachment/Services/FileSecurityService.php
+
+### `App\Domains\Shared\ValueObjects`
+- app/Domains/Shared/ValueObjects/Email.php
+- app/Domains/Shared/ValueObjects/IPAddress.php
 
 ### `App\Shared\Cache\Drivers`
 - app/Shared/Cache/Drivers/MemoryCacheDriver.php
