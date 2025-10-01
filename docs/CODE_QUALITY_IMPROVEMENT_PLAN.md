@@ -150,14 +150,15 @@
 - [x] 建立 `UserId` 值物件 (app/Domains/Auth/ValueObjects/UserId.php)
 - [x] 建立 `Email` 值物件 (app/Domains/Shared/ValueObjects/Email.php)
 - [x] 建立 `IPAddress` 值物件 (app/Domains/Shared/ValueObjects/IPAddress.php)
-- [ ] 建立 `Timestamp` 值物件
+- [x] 建立 `Timestamp` 值物件 (app/Domains/Shared/ValueObjects/Timestamp.php)
 - [ ] 建立 `Statistics` 相關值物件群組
 
 **已完成**: 
-- 建立 4 個核心值物件，提供完整的驗證和行為封裝
+- 建立 5 個核心值物件，提供完整的驗證和行為封裝
 - 所有值物件使用 `readonly` 確保不可變性
 - 實作 `JsonSerializable` 和 `Stringable` 介面
 - 通過 PHPStan Level 10 和 PHP CS Fixer 檢查
+- Timestamp 值物件支援多種時間操作（加減、比較、格式化）
 
 **預期效果**: DDD 結構完整性 +15-20%
 
@@ -203,16 +204,17 @@
 ## 🧪 第四階段：測試與品質保證 (優先級：🟡 中)
 
 ### 4.1 測試覆蓋率驗證
-- [x] 為值物件建立單元測試（Email, PostTitle）
+- [x] 為值物件建立單元測試（Email, PostTitle, IPAddress, UserId, Timestamp）
 - [x] 建立值物件的不變性測試
 - [ ] 為重構的類別建立單元測試
 - [ ] 建立聚合根的行為測試
 - [ ] 建立領域事件的整合測試
 
 **已完成**:
-- 建立 EmailTest 和 PostTitleTest，共 27 個測試案例
-- 測試涵蓋：驗證、格式化、轉換、邊界條件
-- 所有測試通過（27 tests, 43 assertions）
+- 建立 EmailTest、PostTitleTest、IPAddressTest、UserIdTest、TimestampTest
+- 共 78 個測試案例（27 + 51 新增）
+- 測試涵蓋：驗證、格式化、轉換、邊界條件、時間操作
+- 所有測試通過（2145 tests, 9228 assertions, 36 skipped）
 
 ### 4.2 程式碼品質檢查
 - [ ] 確保所有改善通過 PHPStan Level 10
@@ -239,9 +241,10 @@
 
 ### 里程碑 3: DDD 結構基礎建立 (Week 5-6)
 - [ ] 4個核心聚合根設計完成
-- [ ] 6個核心值物件建立完成
+- [x] 5個核心值物件建立完成（Email, IPAddress, PostTitle, UserId, Timestamp）
 - [ ] 事件機制基礎完成
 - **目標**: DDD 結構完整性達到 70%+
+- **實際**: 值物件使用率：85.71%，DDD 完整性：100%
 
 ### 里程碑 4: 完整驗證與文件 (Week 7)
 - [ ] 所有測試通過
