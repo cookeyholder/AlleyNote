@@ -41,44 +41,175 @@
 
 ### 🤔 AlleyNote 是什麼？
 
-AlleyNote 是一個**公告欄系統**（想像成電子佈告欄），專為**學校、社區、企業**等組織設計。
+AlleyNote 是一個**公告欄系統**（想像成電子佈告欄），專為**學校、社區、企業**等組織設計。這不只是一個簡單的公告板，而是一個功能完整、安全可靠的內容管理系統。
 
-**簡單來說**：
-- 就像是一個數位化的公佈欄，但功能更強大
-- 可以發布公告、上傳檔案、管理使用者
-- 自動記錄誰看了什麼內容
-- 提供漂亮的數據圖表
+**詳細說明**：
+
+AlleyNote 提供了一個集中化的平台，讓組織能夠：
+- **發布資訊**：公告、新聞、活動通知、政策更新等各種內容
+- **管理內容**：完整的編輯、審核、分類、搜尋功能
+- **權限控制**：細緻的角色管理，確保資訊安全
+- **追蹤效果**：詳細的統計資料，了解資訊傳播效果
+- **附件支援**：上傳文件、圖片、PDF 等多種格式檔案
+
+**為什麼選擇 AlleyNote？**
+
+1. **開源免費**：完全開源，無需授權費用
+2. **易於部署**：使用 Docker 容器化，幾分鐘就能啟動
+3. **安全可靠**：通過 PHPStan Level 10 靜態分析，2190 個測試全部通過
+4. **現代架構**：採用 DDD 設計，程式碼清晰易維護
+5. **持續更新**：活躍的開發社群，持續改進
+
+**實際應用場景**：
+
+- **學校**：課程公告、考試時間、活動通知、校規更新
+- **社區**：住戶通知、活動公告、設施維護公告、繳費提醒
+- **企業**：內部公告、政策更新、活動報名、員工福利資訊
+- **政府機關**：政策宣導、活動訊息、表單下載、民眾服務資訊
 
 ### 👨‍🎓 適合誰使用？
 
-1. **學校老師**：發布作業通知、活動公告
-2. **社區管理員**：張貼社區消息、活動資訊
-3. **企業 HR**：公司公告、員工通知
-4. **開發者**：學習現代 PHP 開發實踐
+**1. 學校老師和行政人員**
+   - 發布作業通知、考試時間表
+   - 分享課程資料、教學影片
+   - 公告活動資訊、緊急通知
+   - 追蹤學生和家長的閱讀狀況
 
-### 🎯 設計理念（給初學者）
+**2. 社區管理員**
+   - 張貼社區消息、活動資訊
+   - 設施維護通知、停水停電公告
+   - 管理費繳納提醒
+   - 收集住戶回饋意見
 
-我們使用了一些聽起來很酷的技術概念，讓我們用簡單的方式解釋：
+**3. 企業 HR 和管理者**
+   - 公司政策、規章制度公告
+   - 員工福利、活動報名資訊
+   - 內部培訓通知
+   - 緊急狀況通報
 
-- **領域驅動設計（DDD）**: 
-  - 想像把系統分成不同的「部門」
-  - 例如：文章部門、用戶部門、統計部門
-  - 每個部門專心做好自己的事，互不干擾
+**4. 開發者和學習者**
+   - 學習現代 PHP 8.4 開發實踐
+   - 理解 DDD（領域驅動設計）架構
+   - 研究高品質程式碼的寫法
+   - 貢獻開源專案，累積經驗
+
+### 🎯 設計理念（給初學者的詳細說明）
+
+我們使用了一些專業的技術概念，但不用擔心，這裡用最簡單的方式解釋：
+
+#### 1. **領域驅動設計（Domain-Driven Design, DDD）**
+
+**什麼是 DDD？**
+想像一個大公司，如果所有部門都混在一起工作會很亂。所以我們把公司分成：行銷部、財務部、人資部等，每個部門各司其職。
+
+**在 AlleyNote 中的應用：**
+- **文章部門（Post Domain）**：負責所有跟文章相關的事
+  - 建立文章、編輯文章、刪除文章
+  - 管理文章狀態（草稿、已發布、已下架）
+  - 處理置頂、分類等功能
   
-- **前後端分離**: 
-  - 前端 = 你看到的網頁（就像商店的裝潢）
-  - 後端 = 資料處理（就像商店的倉庫和系統）
-  - 兩者分開，各自獨立運作
+- **用戶部門（Auth Domain）**：負責所有跟用戶相關的事
+  - 註冊、登入、登出
+  - 權限管理（管理員、一般用戶）
+  - 密碼重設、個人資料管理
   
-- **容器化部署（Docker）**: 
-  - 把整個系統打包成一個「便當盒」
-  - 到哪裡都能用，不用擔心環境問題
-  - 就像泡麵，加熱水就能吃
+- **統計部門（Statistics Domain）**：負責所有數據分析
+  - 計算瀏覽次數、熱門文章
+  - 產生統計報表、趨勢分析
+  - 建立每日/每週/每月快照
   
-- **數據驅動**: 
-  - 系統會記錄各種數據
-  - 幫你分析哪些公告最受歡迎
-  - 讓你做出更好的決策
+- **安全部門（Security Domain）**：負責系統安全
+  - 防止駭客攻擊（XSS、CSRF、SQL Injection）
+  - IP 黑白名單管理
+  - 異常行為偵測
+
+**好處是什麼？**
+- 程式碼更清楚，容易理解
+- 要修改某個功能時，只需要改對應的部門
+- 不同部門可以由不同開發者同時開發
+- 新加入的開發者更容易上手
+
+#### 2. **前後端分離架構**
+
+**什麼是前後端分離？**
+就像餐廳分成「外場」和「廚房」：
+
+- **前端（Frontend）= 外場**
+  - 這是客人（用戶）看到和接觸的部分
+  - 負責顯示漂亮的界面
+  - 處理用戶的點擊、輸入
+  - 就像餐廳的裝潢、菜單、服務生
+  
+- **後端（Backend）= 廚房**
+  - 這是客人看不到的部分
+  - 負責處理複雜的邏輯和資料
+  - 儲存和管理所有資料
+  - 就像廚房的廚師、食材、烹飪過程
+
+**在 AlleyNote 中：**
+- **前端**使用 Vite + JavaScript，負責：
+  - 顯示公告列表
+  - 提供搜尋和篩選功能
+  - 文章編輯器界面
+  - 統計圖表視覺化
+  
+- **後端**使用 PHP 8.4，負責：
+  - 驗證用戶身份
+  - 儲存文章到資料庫
+  - 計算統計數據
+  - 確保資料安全
+
+**好處是什麼？**
+- 前端和後端可以分別開發和測試
+- 未來可以輕鬆做手機 App（只需要改前端）
+- 可以換不同的前端技術（React、Vue 等）
+- 後端可以同時服務網頁和 App
+
+#### 3. **容器化部署（Docker）**
+
+**什麼是 Docker？**
+想像你要送朋友一個完整的「迷你餐廳」，不只有食材，連廚具、爐子、調味料都打包好。朋友收到後，只要打開就能立刻開始煮菜，不用自己準備工具。
+
+**Docker 做的就是這件事：**
+- 把整個 AlleyNote 系統打包成一個「容器」
+- 包含 PHP、Nginx、Redis、所有套件
+- 在任何支援 Docker 的 Linux 伺服器上都能運行
+- 不用擔心「在我電腦上可以跑啊」的問題
+
+**具體來說：**
+- **alleynote_web 容器**：運行 PHP 程式，處理業務邏輯
+- **alleynote_nginx 容器**：Web 伺服器，處理 HTTP 請求
+- **alleynote_redis 容器**：快取系統，加速資料存取
+- **alleynote_certbot 容器**：自動管理 SSL 憑證（HTTPS）
+
+**好處是什麼？**
+- 部署超級簡單：一個命令就能啟動整個系統
+- 環境一致：開發環境和正式環境完全相同
+- 易於維護：要更新只需要拉取新的容器映像
+- 資源隔離：每個容器獨立運行，互不影響
+
+#### 4. **數據驅動決策**
+
+**什麼是數據驅動？**
+不是憑感覺做決定，而是根據實際數據來決策。就像店長不是猜哪個商品賣得好，而是看銷售報表。
+
+**AlleyNote 收集的數據：**
+- **瀏覽數據**：哪些文章被看最多次？
+- **時間數據**：什麼時段使用者最活躍？
+- **來源數據**：使用者從哪裡來（手動輸入、RSS訂閱等）？
+- **行為數據**：使用者喜歡看什麼類型的內容？
+
+**這些數據能幫助你：**
+- 了解哪些公告最受關注
+- 決定什麼時間發布公告效果最好
+- 知道哪些內容需要改進
+- 評估溝通策略是否有效
+
+**隱私保護：**
+- 只記錄必要的統計數據
+- 不記錄個人隱私資訊
+- 符合 GDPR 等隱私法規
+- 管理員可以控制記錄的詳細程度
 
 ---
 
@@ -174,92 +305,341 @@ AlleyNote 是一個**公告欄系統**（想像成電子佈告欄），專為**�
 ```mermaid
 graph TB
     subgraph "🌐 使用者（你）"
-        Browser[瀏覽器<br/>Chrome、Firefox、Safari]
+        Browser[瀏覽器<br/>Chrome、Firefox、Safari<br/>任何現代瀏覽器]
     end
 
     subgraph "🐳 Docker 容器化環境（整個系統打包在這裡）"
         subgraph "🎨 前端服務（你看到的網頁）"
-            Frontend[網頁介面<br/>使用 Vite + TypeScript]
+            Frontend[網頁介面<br/>Vite 5 + JavaScript ES6+<br/>Axios HTTP 客戶端]
         end
 
         subgraph "🌐 Nginx（交通警察）"
-            Nginx[Nginx 伺服器<br/>處理 SSL 和分配流量]
+            Nginx[Nginx Web 伺服器<br/>處理 SSL 和分配流量<br/>靜態檔案服務]
         end
 
         subgraph "⚡ PHP 後端服務（處理資料的大腦）"
             subgraph "🎯 領域層（各個部門）"
-                Post[文章部門<br/>管理所有文章相關的事]
-                Auth[認證部門<br/>管理登入和權限]
-                Attachment[附件部門<br/>管理檔案上傳]
-                Security[安全部門<br/>保護系統安全]
-                Statistics[統計部門 ⭐<br/>分析數據]
+                Post[文章部門<br/>管理所有文章相關的事<br/>DDD 實體和值物件]
+                Auth[認證部門<br/>管理登入和權限<br/>JWT Token 處理]
+                Attachment[附件部門<br/>管理檔案上傳<br/>多格式支援]
+                Security[安全部門<br/>保護系統安全<br/>XSS/CSRF/SQL 注入防護]
+                Statistics[統計部門 ⭐<br/>分析數據<br/>快照系統]
             end
 
             subgraph "🚀 應用層（協調各部門）"
-                Controllers[API 控制器<br/>接收和回應請求]
-                Services[應用服務<br/>執行業務邏輯]
-                DTOs[資料傳輸物件<br/>格式化數據]
+                Controllers[API 控制器<br/>接收和回應請求<br/>RESTful 設計]
+                Services[應用服務<br/>執行業務邏輯<br/>協調多個領域]
+                DTOs[資料傳輸物件<br/>格式化數據<br/>驗證輸入輸出]
             end
 
             subgraph "🔧 基礎設施層（底層工具）"
-                Repositories[資料存取<br/>讀寫資料庫]
-                Cache[多層快取<br/>加速系統]
-                FileSystem[檔案系統<br/>儲存上傳的檔案]
+                Repositories[資料存取<br/>讀寫資料庫<br/>介面隔離]
+                Cache[多層快取<br/>加速系統<br/>Redis 整合]
+                FileSystem[檔案系統<br/>儲存上傳的檔案<br/>路徑管理]
             end
         end
 
         subgraph "💾 資料層（儲存所有資料）"
-            SQLite[(SQLite 資料庫<br/>儲存文章、用戶等資料)]
-            Redis[(Redis 快取<br/>暫存常用資料，加快速度)]
-            Storage[檔案儲存<br/>儲存上傳的圖片、文件]
+            SQLite[(SQLite 3 資料庫<br/>儲存文章、用戶等資料<br/>ACID 事務支援)]
+            Redis[(Redis 快取<br/>暫存常用資料，加快速度<br/>Session 管理)]
+            Storage[檔案儲存<br/>儲存上傳的圖片、文件<br/>組織化的目錄結構]
         end
     end
 
-    Browser -->|訪問網站| Nginx
-    Nginx -->|顯示網頁| Frontend
+    Browser -->|HTTPS 請求| Nginx
+    Nginx -->|靜態資源| Frontend
     Nginx -->|API 請求| Controllers
-    Controllers -->|協調| Services
-    Services -->|使用| Post
-    Services -->|使用| Auth
-    Services -->|使用| Attachment
-    Services -->|使用| Security
-    Services -->|使用| Statistics
-    Post -->|讀寫| Repositories
-    Auth -->|讀寫| Repositories
-    Statistics -->|讀寫| Repositories
-    Repositories -->|儲存| SQLite
-    Cache -->|快取| Redis
-    FileSystem -->|儲存檔案| Storage
+    Controllers -->|業務邏輯| Services
+    Services -->|文章操作| Post
+    Services -->|身份驗證| Auth
+    Services -->|檔案處理| Attachment
+    Services -->|安全檢查| Security
+    Services -->|數據分析| Statistics
+    Post -->|持久化| Repositories
+    Auth -->|持久化| Repositories
+    Statistics -->|持久化| Repositories
+    Repositories -->|SQL 查詢| SQLite
+    Cache -->|快取操作| Redis
+    FileSystem -->|檔案 I/O| Storage
 ```
+
+**圖解說明：**
+
+1. **使用者層**：任何人用瀏覽器訪問
+2. **Nginx 層**：負責接收請求並分流
+   - 靜態檔案直接回傳（快）
+   - API 請求轉給 PHP（需要處理）
+3. **前端層**：提供使用者界面
+4. **PHP 後端**：分三層處理邏輯
+   - 應用層：接收請求，協調各部門
+   - 領域層：核心業務邏輯
+   - 基礎設施層：技術實作細節
+5. **資料層**：儲存所有資料
 
 ### 🛠️ 技術棧（使用的工具）
 
-**給初學者的解釋**：
-- **後端**（伺服器端，處理資料）：
-  - PHP 8.4.12 - 一種程式語言
-  - DDD 架構 - 一種組織程式碼的方式
-  
-- **前端**（瀏覽器端，你看到的畫面）：
-  - Vite 5 - 快速的開發工具
-  - TypeScript - JavaScript 的加強版
-  - Axios - 與後端溝通的工具
-  - Tailwind CSS - 漂亮的 CSS 框架
-  
-- **資料庫**（儲存資料的地方）：
-  - SQLite 3 - 輕量級資料庫（適合中小型專案）
-  - 可以升級到 PostgreSQL 或 MySQL（給大型專案用）
-  
-- **快取**（加速系統）：
-  - Redis - 快速的記憶體資料庫
-  - 幫助系統更快回應
-  
-- **容器**（打包工具）：
-  - Docker - 把整個系統打包成容器
-  - Docker Compose - 管理多個容器
-  
-- **Web 伺服器**（網站的入口）：
-  - Nginx - 高效能的網頁伺服器
-  - 處理 SSL 憑證（HTTPS 加密）
+#### 後端技術（Backend - 伺服器端，處理資料和邏輯）
+
+**1. PHP 8.4.12**
+- **這是什麼？** 一種伺服器端程式語言，專門用來處理網站邏輯
+- **為什麼選它？**
+  - 成熟穩定，有 25+ 年的發展歷史
+  - PHP 8.4 是最新版本，速度快、功能強
+  - 大量的學習資源和活躍社群
+  - WordPress、Facebook 等都使用 PHP
+- **在 AlleyNote 中的角色：**
+  - 處理所有業務邏輯（發文、登入、權限檢查等）
+  - 與資料庫溝通，讀寫資料
+  - 產生 API 回應給前端
+
+**2. DDD（領域驅動設計）架構**
+- **這是什麼？** 一種組織程式碼的方法論
+- **為什麼使用？**
+  - 讓大型專案的程式碼更清楚易懂
+  - 業務邏輯和技術細節分開
+  - 方便多人協作開發
+  - 容易測試和維護
+- **具體實作：**
+  - 領域層（Domain）：核心業務邏輯
+  - 應用層（Application）：協調各領域
+  - 基礎設施層（Infrastructure）：技術實作（資料庫、快取等）
+
+**3. Composer**
+- **這是什麼？** PHP 的套件管理工具（類似 npm 對 JavaScript）
+- **用途：** 管理 PHP 相依套件，例如：
+  - PHPUnit（測試框架）
+  - PHPStan（靜態分析工具）
+  - PHP CS Fixer（程式碼風格檢查）
+
+#### 前端技術（Frontend - 瀏覽器端，使用者看到的畫面）
+
+**1. Vite 5.0**
+- **這是什麼？** 現代化的前端建構工具
+- **為什麼選它？**
+  - 啟動速度超快（比 Webpack 快 10-100 倍）
+  - 熱模組替換（Hot Module Replacement）- 改程式碼立刻看到效果
+  - 內建優化，自動產生高效能的產品代碼
+- **在 AlleyNote 中的角色：**
+  - 開發時提供即時預覽
+  - 打包前端代碼以便部署
+  - 處理 CSS、圖片等資源
+
+**2. 原生 JavaScript（ES6+）**
+- **這是什麼？** 瀏覽器原生支援的程式語言
+- **為什麼不用 TypeScript？**
+  - 專案選擇保持簡單，減少編譯步驟
+  - 原生 JavaScript 執行效率高
+  - 對初學者更友善
+  - 現代 JavaScript 已經很強大（箭頭函式、Promise、async/await 等）
+- **在 AlleyNote 中的角色：**
+  - 處理使用者互動（點擊、輸入等）
+  - 與後端 API 溝通
+  - 動態更新頁面內容
+
+**3. Axios 1.6.0**
+- **這是什麼？** 一個 HTTP 客戶端函式庫
+- **為什麼選它？**
+  - 比原生 fetch 更容易使用
+  - 自動處理 JSON 轉換
+  - 支援請求/回應攔截器
+  - 自動處理錯誤
+- **在 AlleyNote 中的角色：**
+  - 與後端 API 溝通（GET、POST、PUT、DELETE）
+  - 上傳檔案
+  - 處理身份驗證 Token
+
+**4. 原生 CSS + CSS Variables**
+- **為什麼不用 Tailwind CSS？**
+  - 專案使用原生 CSS，保持輕量
+  - 使用 CSS Variables 實現主題化
+  - 更容易自訂樣式
+  - 載入速度更快
+
+#### 資料庫技術（Database - 儲存資料的地方）
+
+**1. SQLite 3**
+- **這是什麼？** 一個嵌入式資料庫
+- **為什麼選它？**
+  - **零設定**：不需要安裝資料庫伺服器
+  - **單檔案**：整個資料庫就是一個檔案
+  - **輕量快速**：適合中小型專案（每月百萬次查詢沒問題）
+  - **ACID 支援**：確保資料完整性
+  - **跨平台**：Linux、Mac、Windows 都能用
+- **在 AlleyNote 中儲存：**
+  - 用戶資料（帳號、密碼）
+  - 文章內容（標題、內容、狀態）
+  - 統計數據（瀏覽次數、熱門文章）
+  - 系統設定
+
+**擴展性說明：**
+- 對於大型部署，可以輕鬆遷移到 PostgreSQL
+- 程式碼使用介面隔離，切換資料庫不需要大改
+- SQLite 支援：
+  - 最多 140 TB 的資料庫大小
+  - 數百萬筆資料沒問題
+  - 並發讀取（多人同時查詢）
+
+#### 快取技術（Cache - 加速系統回應）
+
+**1. Redis (Alpine Linux版本)**
+- **這是什麼？** 記憶體資料庫和快取系統
+- **為什麼需要快取？**
+  - 減少資料庫查詢，提升速度 10-100 倍
+  - 降低伺服器負擔
+  - 改善使用者體驗（頁面秒開）
+- **在 AlleyNote 中快取：**
+  - 熱門文章列表（每 5 分鐘更新）
+  - 使用者 Session 資料
+  - 統計數據（避免重複計算）
+  - API 回應結果
+- **Redis 特色：**
+  - 超快速度（100,000+ 次查詢/秒）
+  - 支援多種資料結構（字串、列表、集合、雜湊）
+  - 資料持久化（可選）
+  - 主從複製和叢集支援
+
+#### 容器化技術（Containerization - 打包和部署）
+
+**1. Docker Engine**
+- **這是什麼？** 容器化平台
+- **重要說明：**
+  - ⚠️ **本專案僅支援 Linux 環境（Debian/Ubuntu）**
+  - ⚠️ **不支援 Docker Desktop（Mac/Windows）**
+  - ⚠️ **必須使用原生 Docker Engine**
+- **為什麼這樣限制？**
+  - 生產環境通常是 Linux 伺服器
+  - Docker Desktop 有授權和效能問題
+  - Linux 原生 Docker 更穩定可靠
+  - 避免開發和生產環境差異
+- **使用的容器：**
+  - **alleynote_web**：PHP 8.4 + PHP-FPM
+  - **alleynote_nginx**：Nginx Web 伺服器
+  - **alleynote_redis**：Redis 快取服務
+  - **alleynote_certbot**：SSL 憑證管理（可選）
+
+**2. Docker Compose v2.39.2+**
+- **這是什麼？** 管理多容器應用的工具
+- **為什麼需要？**
+  - 一個命令啟動所有服務
+  - 定義容器間的網路和依賴關係
+  - 方便的環境變數管理
+  - 開發和生產環境一致
+- **docker-compose.yml 定義：**
+  - 服務配置（web、nginx、redis）
+  - 網路設定（內部通訊）
+  - 資料卷掛載（資料持久化）
+  - 環境變數
+
+#### Web 伺服器（Web Server - 網站的入口）
+
+**1. Nginx (Alpine Linux版本)**
+- **這是什麼？** 高效能的 Web 伺服器和反向代理
+- **為什麼選 Nginx？**
+  - 處理靜態檔案超快（圖片、CSS、JavaScript）
+  - 支援數萬併發連線
+  - 記憶體使用少
+  - 穩定可靠（許多大型網站使用）
+- **在 AlleyNote 中的角色：**
+  - 接收所有 HTTP/HTTPS 請求
+  - 提供靜態檔案（前端代碼、圖片）
+  - 反向代理到 PHP（處理動態請求）
+  - SSL/TLS 終止（HTTPS 加密）
+  - 速率限制（防止攻擊）
+  - GZIP 壓縮（減少傳輸量）
+
+#### 開發工具（Development Tools）
+
+**1. PHPUnit 11.5.34**
+- **這是什麼？** PHP 的測試框架
+- **為什麼重要？**
+  - 確保程式碼品質
+  - 自動化測試，節省時間
+  - 防止改 A 壞 B 的問題
+- **AlleyNote 的測試：**
+  - 2190 個測試案例
+  - 9300+ 個斷言
+  - 100% 通過率
+  - 涵蓋單元、整合、安全測試
+
+**2. PHPStan (Level 10)**
+- **這是什麼？** PHP 靜態分析工具
+- **為什麼重要？**
+  - 在執行前就找出潛在錯誤
+  - 檢查型別錯誤
+  - 發現未使用的變數
+  - 確保程式碼符合最佳實踐
+- **Level 10 是什麼？**
+  - 最嚴格的檢查等級
+  - 0 個錯誤通過
+  - 保證程式碼品質
+
+**3. PHP CS Fixer**
+- **這是什麼？** 程式碼風格檢查和修復工具
+- **為什麼需要？**
+  - 統一團隊的程式碼風格
+  - 自動修復格式問題
+  - 提升程式碼可讀性
+- **檢查內容：**
+  - 縮排和空格
+  - 命名規範
+  - 註解格式
+  - PSR-12 標準
+
+### 🔧 為什麼不支援 Mac/Windows 開發？
+
+**官方說明：**
+
+AlleyNote 專注於 Linux 生產環境，原因：
+
+1. **一致性考量**
+   - 生產環境 99% 是 Linux
+   - 避免「在我電腦上可以跑」的問題
+   - 開發和部署環境完全相同
+
+2. **Docker 授權問題**
+   - Docker Desktop 在大型組織需要付費授權
+   - Linux 原生 Docker 完全免費
+   - 避免法律和商業風險
+
+3. **效能優勢**
+   - Linux Docker 是原生運行，效能最佳
+   - Mac/Windows Docker 需要虛擬化層，效能較差
+   - 檔案系統效能差異大（特別是 Mac）
+
+4. **簡化維護**
+   - 只支援一種環境，降低複雜度
+   - 減少跨平台的 bug
+   - 文件和教學更專注
+
+**建議開發環境：**
+
+- **最佳選擇**：Ubuntu 22.04/24.04 LTS 或 Debian 12
+- **替代方案**：
+  - Windows 用戶：使用 WSL2 + Ubuntu
+  - Mac 用戶：使用雲端 Linux VM（AWS、GCP、Digital Ocean）
+  - 或使用 Multipass 建立 Ubuntu VM
+
+### 🚫 不使用的技術說明
+
+**為什麼不用 MySQL/MariaDB？**
+- SQLite 對中小型專案已經足夠
+- 免去資料庫伺服器的管理負擔
+- 部署更簡單（不需要額外的容器）
+- 需要時可以輕鬆遷移到 PostgreSQL
+
+**為什麼不用 TypeScript？**
+- 保持前端簡單輕量
+- 原生 JavaScript 已經很強大
+- 減少建構步驟和工具鏈複雜度
+- 對初學者更友善
+
+**為什麼不用前端框架（React/Vue）？**
+- AlleyNote 是內容管理系統，不是 SPA
+- 原生 JavaScript 效能最佳
+- 減少依賴，降低維護成本
+- 頁面載入速度更快
+
+---
 
 ### 📁 專案結構（檔案放在哪裡）
 
@@ -313,75 +693,352 @@ AlleyNote/
 
 ## 系統需求
 
+### ⚠️ 重要：作業系統限制
+
+**AlleyNote 僅支援 Linux 作業系統（Debian/Ubuntu）**
+
+本專案專為 Linux 生產環境設計，不支援 Docker Desktop（Mac/Windows）。這是為了：
+- 確保開發和生產環境完全一致
+- 避免 Docker Desktop 的授權問題
+- 獲得最佳效能（原生 Docker）
+- 簡化維護和故障排除
+
+### 🖥️ 支援的作業系統
+
+**✅ 完全支援（推薦）**：
+
+1. **Ubuntu 22.04 LTS（Jammy Jellyfish）** - 最推薦
+   - 長期支援到 2027 年
+   - 穩定且廣泛使用
+   - 大量的社群支援和教學資源
+   - Docker 官方完全支援
+
+2. **Ubuntu 24.04 LTS（Noble Numbat）** - 最新版
+   - 長期支援到 2029 年
+   - 最新的核心和套件
+   - 更好的硬體支援
+   - 適合新硬體
+
+3. **Debian 12（Bookworm）** - 伺服器首選
+   - 超穩定，適合生產環境
+   - 長期支援
+   - 資源佔用少
+   - 企業級品質
+
+**❌ 不支援**：
+- ❌ Windows（包含 WSL2）- Docker Desktop 授權問題
+- ❌ macOS - Docker Desktop 授權問題
+- ❌ 其他 Linux 發行版（CentOS、Fedora 等）- 未測試
+
 ### 🤔 我需要準備什麼？
 
-**給完全初學者**：在開始之前，你的電腦需要安裝一些工具。別擔心，我們會一步步說明！
+#### 1. Linux 伺服器或電腦
 
-### 🖥️ 基本需求（必須要有）
+**最低硬體需求**：
+- **CPU**: 2 核心（建議 4 核心）
+- **記憶體（RAM）**: 最少 2GB（建議 4GB 或以上）
+  - 2GB: 可以運行，但可能較慢
+  - 4GB: 舒適運行，推薦用於開發
+  - 8GB+: 最佳體驗，適合生產環境
+- **儲存空間**: 最少 10GB 可用空間
+  - 系統: ~2GB
+  - Docker 映像: ~2GB
+  - 資料庫和檔案: ~2GB
+  - 日誌和快取: ~1GB
+  - 預留空間: ~3GB
+- **網路**: 穩定的網際網路連線（初次安裝需要下載套件）
 
-1. **作業系統**：
-   - ✅ Linux（Ubuntu、Debian 等）
-   - ✅ macOS（Mac 電腦）
-   - ✅ Windows 10/11（需要 WSL2）
-   
-2. **Docker Desktop**：
-   - 版本：28.3.3 或更新
-   - **這是什麼？** 把整個系統打包的工具
-   - **怎麼安裝？** 
-     - Mac/Windows：下載 [Docker Desktop](https://www.docker.com/products/docker-desktop)
-     - Linux：參考 [官方安裝指南](https://docs.docker.com/engine/install/)
-   
-3. **Docker Compose**：
-   - 版本：v2.39.2 或更新
-   - **這是什麼？** 管理多個 Docker 容器的工具
-   - **通常會隨 Docker Desktop 一起安裝**
-   
-4. **電腦規格**：
-   - **記憶體（RAM）**：至少 2GB，建議 4GB 以上
-   - **儲存空間**：至少 5GB
-   - **網路**：需要網際網路連線（下載套件用）
+**推薦硬體配置**：
+- **CPU**: 4 核心或以上
+- **記憶體**: 8GB 或以上
+- **儲存**: 50GB SSD
+- **網路**: 100Mbps 或以上
 
-### 🔧 開發需求（如果你要改程式碼）
+**如何取得 Linux 環境？**
 
-只有想要修改程式碼的開發者才需要這些：
+如果你現在沒有 Linux 電腦，有這些選擇：
 
-1. **PHP 8.4.12+**
-   - Docker 容器裡已經包含，不用另外安裝！
-   
-2. **Node.js 18.0+**
-   - 用來建構前端
-   - 下載：[Node.js 官網](https://nodejs.org/)
-   
-3. **Composer 2.0+**
-   - PHP 的套件管理工具
-   - Docker 容器裡已經包含！
+1. **雲端虛擬機器（最簡單）**：
+   - [DigitalOcean](https://www.digitalocean.com/) - $6/月起
+   - [Linode](https://www.linode.com/) - $5/月起
+   - [Vultr](https://www.vultr.com/) - $6/月起
+   - [AWS Lightsail](https://aws.amazon.com/lightsail/) - $5/月起
+   - 選擇 Ubuntu 22.04 LTS 映像即可
 
-4. **程式碼編輯器**（推薦）：
-   - [Visual Studio Code](https://code.visualstudio.com/) - 免費、好用
-   - [PhpStorm](https://www.jetbrains.com/phpstorm/) - 專業的 PHP IDE
+2. **實體機器安裝**：
+   - 準備一台舊電腦或筆電
+   - 下載 [Ubuntu 22.04 LTS ISO](https://ubuntu.com/download/server)
+   - 製作開機 USB 並安裝
+   - 詳細教學：[Ubuntu 安裝指南](https://ubuntu.com/tutorials/install-ubuntu-server)
 
-### ✅ 檢查你的環境
+3. **虛擬機（本地測試）**：
+   - 使用 VirtualBox 或 VMware
+   - 建立 Ubuntu 22.04 虛擬機
+   - 分配至少 4GB RAM 和 20GB 硬碟
 
-在開始之前，執行這些命令檢查是否安裝正確：
+#### 2. Docker Engine（原生版本）
+
+**重要：必須安裝原生 Docker Engine，不是 Docker Desktop！**
+
+**版本需求**：
+- Docker Engine: 28.3.3 或更新
+- Docker Compose: v2.39.2 或更新（通常與 Docker 一起安裝）
+
+**Docker Engine 是什麼？**
+- 容器化平台，讓應用程式在隔離環境中運行
+- 就像在電腦裡建立多個獨立的「迷你電腦」
+- 每個容器有自己的檔案系統、網路、程序
+
+**安裝方法（Ubuntu/Debian）**：
+
+```bash
+# 1. 更新系統套件
+sudo apt update && sudo apt upgrade -y
+
+# 2. 安裝必要工具
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+# 3. 新增 Docker 官方 GPG 金鑰
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# 4. 新增 Docker 套件庫
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 5. 安裝 Docker Engine
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# 6. 將當前用戶加入 docker 群組（避免每次都要 sudo）
+sudo usermod -aG docker $USER
+
+# 7. 啟動 Docker 服務
+sudo systemctl enable docker
+sudo systemctl start docker
+
+# 8. 登出再登入（或重啟）讓群組變更生效
+```
+
+**安裝完成後的驗證**：
 
 ```bash
 # 檢查 Docker 版本（應該顯示版本號）
 docker --version
-# 範例輸出：Docker version 28.3.3, build...
+# 預期輸出：Docker version 28.3.3, build...
 
 # 檢查 Docker Compose 版本
 docker compose version
-# 範例輸出：Docker Compose version v2.39.2
+# 預期輸出：Docker Compose version v2.39.2
 
 # 檢查 Docker 是否正在運行
 docker ps
-# 如果顯示一個表格（即使是空的），表示運行正常！
+# 應該顯示一個表格（即使是空的）
+
+# 測試 Docker 是否正常工作
+docker run hello-world
+# 應該顯示 "Hello from Docker!" 訊息
 ```
 
-**遇到問題？** 
-- Windows 用戶請確保已啟用 WSL2
-- Mac 用戶請確保 Docker Desktop 已啟動
-- 詳細的故障排除請參考：[系統需求文件](docs/SYSTEM_REQUIREMENTS.md)
+#### 3. Git（版本控制）
+
+**Git 是什麼？**
+用來下載和管理專案原始碼的工具。
+
+**安裝方法**：
+
+```bash
+# Ubuntu/Debian
+sudo apt install -y git
+
+# 驗證安裝
+git --version
+# 預期輸出：git version 2.x.x
+```
+
+#### 4. 基本 Linux 知識
+
+**你需要會的基本命令**：
+
+```bash
+# 切換目錄
+cd /path/to/directory
+
+# 列出檔案
+ls -la
+
+# 建立目錄
+mkdir my-directory
+
+# 複製檔案
+cp source.txt destination.txt
+
+# 移動/重新命名檔案
+mv old-name.txt new-name.txt
+
+# 刪除檔案
+rm file.txt
+
+# 查看檔案內容
+cat file.txt
+
+# 編輯檔案
+nano file.txt  # 或 vim file.txt
+
+# 查看執行中的程序
+ps aux
+
+# 檢查磁碟空間
+df -h
+
+# 檢查記憶體使用
+free -h
+```
+
+**不熟悉 Linux？**
+建議先花 1-2 小時學習基礎：
+- [Linux 基礎教學](https://ubuntu.com/tutorials/command-line-for-beginners)
+- [鳥哥的 Linux 私房菜](http://linux.vbird.org/)
+
+### 🔧 開發需求（如果你要修改程式碼）
+
+如果你想要開發新功能或修改程式碼，除了上述基本需求外，還需要：
+
+**1. PHP 8.4.12+**
+- ✅ Docker 容器裡已經包含，不用另外安裝！
+- 如果想在本機測試：
+  ```bash
+  sudo apt install -y php8.4-cli php8.4-fpm php8.4-sqlite3 php8.4-redis php8.4-xml php8.4-mbstring
+  ```
+
+**2. Composer 2.0+**
+- ✅ Docker 容器裡已經包含！
+- 管理 PHP 套件的工具（類似 npm 對 JavaScript）
+
+**3. Node.js 18.0+**（前端建構用）
+- 用來執行 Vite 建構工具
+- 安裝方法：
+  ```bash
+  # 使用 NodeSource 套件庫
+  curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+  sudo apt install -y nodejs
+  
+  # 驗證安裝
+  node --version  # 應顯示 v18.x.x
+  npm --version   # 應顯示 9.x.x 或更新
+  ```
+
+**4. 程式碼編輯器（推薦）**：
+
+- **Visual Studio Code** - 免費、功能強大
+  ```bash
+  # 下載並安裝
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+  sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+  sudo apt update
+  sudo apt install -y code
+  ```
+
+- **PhpStorm** - 專業的 PHP IDE（付費）
+  - 下載：[JetBrains PhpStorm](https://www.jetbrains.com/phpstorm/)
+
+### ✅ 完整環境檢查清單
+
+在開始安裝 AlleyNote 之前，確保以下所有項目都打勾：
+
+```bash
+# 執行這個腳本來檢查你的環境
+cat > check-requirements.sh << 'EOF'
+#!/bin/bash
+echo "=== AlleyNote 系統需求檢查 ==="
+echo ""
+
+# 檢查作業系統
+echo "1. 檢查作業系統..."
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    if [[ "$ID" == "ubuntu" ]] || [[ "$ID" == "debian" ]]; then
+        echo "   ✅ 作業系統: $PRETTY_NAME (支援)"
+    else
+        echo "   ❌ 作業系統: $PRETTY_NAME (不支援，僅支援 Ubuntu/Debian)"
+    fi
+else
+    echo "   ❌ 無法識別作業系統"
+fi
+
+# 檢查 Docker
+echo "2. 檢查 Docker..."
+if command -v docker &> /dev/null; then
+    docker_version=$(docker --version | awk '{print $3}' | sed 's/,//')
+    echo "   ✅ Docker 版本: $docker_version"
+else
+    echo "   ❌ Docker 未安裝"
+fi
+
+# 檢查 Docker Compose
+echo "3. 檢查 Docker Compose..."
+if docker compose version &> /dev/null; then
+    compose_version=$(docker compose version | awk '{print $4}')
+    echo "   ✅ Docker Compose 版本: $compose_version"
+else
+    echo "   ❌ Docker Compose 未安裝"
+fi
+
+# 檢查 Docker 是否運行
+echo "4. 檢查 Docker 服務..."
+if systemctl is-active --quiet docker; then
+    echo "   ✅ Docker 服務正在運行"
+else
+    echo "   ❌ Docker 服務未運行"
+fi
+
+# 檢查用戶是否在 docker 群組
+echo "5. 檢查 Docker 權限..."
+if groups | grep -q docker; then
+    echo "   ✅ 用戶在 docker 群組中"
+else
+    echo "   ⚠️  用戶不在 docker 群組中（需要 sudo 或重新登入）"
+fi
+
+# 檢查 Git
+echo "6. 檢查 Git..."
+if command -v git &> /dev/null; then
+    git_version=$(git --version | awk '{print $3}')
+    echo "   ✅ Git 版本: $git_version"
+else
+    echo "   ❌ Git 未安裝"
+fi
+
+# 檢查系統資源
+echo "7. 檢查系統資源..."
+total_ram=$(free -g | awk '/^Mem:/{print $2}')
+if [ "$total_ram" -ge 2 ]; then
+    echo "   ✅ 記憶體: ${total_ram}GB (足夠)"
+else
+    echo "   ⚠️  記憶體: ${total_ram}GB (建議至少 2GB)"
+fi
+
+total_disk=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
+if [ "$total_disk" -ge 10 ]; then
+    echo "   ✅ 可用空間: ${total_disk}GB (足夠)"
+else
+    echo "   ⚠️  可用空間: ${total_disk}GB (建議至少 10GB)"
+fi
+
+echo ""
+echo "=== 檢查完成 ==="
+EOF
+
+chmod +x check-requirements.sh
+./check-requirements.sh
+```
+
+**所有項目都是 ✅ 嗎？**
+- 是：太好了！你可以繼續進行快速開始步驟
+- 否：請根據 ❌ 或 ⚠️  的項目進行安裝或修正
+
+**需要幫助？**
+- 詳細的故障排除：[系統需求文件](docs/SYSTEM_REQUIREMENTS.md)
+- 提問：[GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
 
 ---
 
