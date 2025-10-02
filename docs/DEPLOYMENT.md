@@ -60,7 +60,7 @@ mkdir -p /var/www/alleynote
 cd /var/www/alleynote
 
 # 複製專案檔案
-git clone https://github.com/your-org/alleynote.git .
+git clone https://github.com/cookeyholder/AlleyNote.git .
 
 # 設定後端環境變數
 cp backend/.env.example backend/.env

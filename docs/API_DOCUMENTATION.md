@@ -1306,9 +1306,9 @@ X-CSRF-TOKEN: abc123def456
 
 ### 社群資源
 
-- **GitHub**: [https://github.com/your-org/alleynote](https://github.com/your-org/alleynote)
-- **Issues**: [GitHub Issues](https://github.com/your-org/alleynote/issues)
-- **Wiki**: [專案 Wiki](https://github.com/your-org/alleynote/wiki)
+- **GitHub**: [https://github.com/cookeyholder/AlleyNote](https://github.com/cookeyholder/AlleyNote)
+- **Issues**: [GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
+- **Wiki**: [專案 Wiki](https://github.com/cookeyholder/AlleyNote/wiki)
 
 ---
 
@@ -1316,8 +1316,8 @@ X-CSRF-TOKEN: abc123def456
 
 如有 API 相關問題，請聯絡：
 
-- **Bug 回報**: [GitHub Issues](https://github.com/your-org/alleynote/issues)
-- **功能請求**: [GitHub Discussions](https://github.com/your-org/alleynote/discussions)
+- **Bug 回報**: [GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
+- **功能請求**: [GitHub Discussions](https://github.com/cookeyholder/AlleyNote/discussions)
 
 ---
 

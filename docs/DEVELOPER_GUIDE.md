@@ -27,7 +27,7 @@
 
 ```bash
 # 複製專案
-git clone https://github.com/your-org/alleynote.git
+git clone https://github.com/cookeyholder/AlleyNote.git
 cd alleynote
 
 # 環境設定
@@ -501,8 +501,8 @@ class StatisticsRangeValidator extends AbstractValidator
 - [管理員手冊](ADMIN_MANUAL.md) - 系統運維指南
 
 **📧 技術支援**
-- GitHub Issues: [提交問題](https://github.com/your-org/alleynote/issues/new)
-- 開發討論: [GitHub Discussions](https://github.com/your-org/alleynote/discussions)
+- GitHub Issues: [提交問題](https://github.com/cookeyholder/AlleyNote/issues/new)
+- 開發討論: [GitHub Discussions](https://github.com/cookeyholder/AlleyNote/discussions)
 
 **🎯 開發狀態**: ✅ 生產就緒 | 🧪 持續改進 | 📈 功能豐富
 
@@ -2015,7 +2015,7 @@ docker compose exec web composer install --optimize-autoloader --no-dev
 - [PHP 官方網站](https://www.php.net/)
 - [Vue.js 官方文件](https://vuejs.org/)
 - [Composer 套件庫](https://packagist.org/)
-- [GitHub Issues](https://github.com/your-org/alleynote/issues)
+- [GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
 
 ---
 
