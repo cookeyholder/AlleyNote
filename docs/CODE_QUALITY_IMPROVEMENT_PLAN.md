@@ -136,6 +136,8 @@
 **具體任務**:
 - [x] 重構 `Post` 為完整的聚合根（✅ 已完成，建立 PostAggregate.php）
 - [x] 建立 Post 領域事件（PostPublished, PostContentUpdated, PostStatusChanged）（✅ 已完成）
+- [x] 建立 Post 工廠（PostFactory）（✅ 已完成）
+- [x] 建立 Post 規格物件（7 個規格類別）（✅ 已完成）
 - [ ] 重構 `User` 為聚合根（設計已完成，待實施）
 - [ ] 建立 `ActivityLog` 聚合（設計已完成，待實施）
 - [ ] 建立 `Statistics` 聚合（設計已完成，待實施）
@@ -146,6 +148,21 @@
 - ✅ 實作完整的領域行為方法：publish(), updateContent(), archive(), setAsDraft(), setPin()
 - ✅ 實作領域事件記錄機制
 - ✅ 建立 3 個 Post 領域事件（PostPublished, PostContentUpdated, PostStatusChanged）
+- ✅ 建立 PostFactory 工廠類別，提供多種建立方法：
+  - createDraft(): 建立草稿文章
+  - createFromRequest(): 從請求資料建立
+  - reconstitute(): 從資料庫重建聚合
+  - reconstituteMany(): 批次重建聚合
+  - createCopy(): 建立文章副本
+  - createForTesting(): 建立測試文章
+- ✅ 建立 7 個 Post 規格物件：
+  - PostSpecificationInterface: 規格介面
+  - AbstractPostSpecification: 抽象基類（支援 and/or/not 組合）
+  - PublishedPostSpecification: 檢查是否已發佈
+  - DraftPostSpecification: 檢查是否為草稿
+  - PinnedPostSpecification: 檢查是否置頂
+  - AuthorPostSpecification: 檢查特定作者
+  - PopularPostSpecification: 檢查是否熱門（瀏覽次數）
 - ✅ 使用值物件封裝（PostId, PostTitle, PostContent, ViewCount, PostSlug）
 - ✅ 通過 PHPStan Level 10 和 PHP CS Fixer 檢查
 - ✅ 聚合根包含完整的不變條件驗證（ensureContentIsValid）
@@ -153,8 +170,12 @@
 - ✅ 實作 pullDomainEvents 方法用於提取和清空領域事件
 
 **預期效果**: DDD 結構完整性 +20-25%
-**狀態**: 🟢 Post 聚合根已完成實施並通過所有測試
-**實際效果**: Post 上下文完整度從 60% 提升到 75% (+15%)
+**狀態**: 🟢 Post 聚合根、工廠、規格物件已完成實施並通過所有測試
+**實際效果**: 
+- Post 上下文完整度從 60% 提升到 75% (+15%)
+- 工廠數量：0 → 1 個
+- 規格物件數量：0 → 7 個
+- DDD 組件總數：69 → 79 個 (+10)
 
 ### 3.2 值物件 (Value Objects) 擴充應用
 **目標**: 將原始型別包裝為有意義的領域概念
@@ -287,6 +308,8 @@
 - [x] Post 核心聚合根設計完成並實施（PostAggregate）
 - [x] 12個核心值物件建立完成（Email, IPAddress, PostTitle, UserId, Timestamp, PostContent, PostSlug, PostId, ViewCount, CreationSource, Username, Password）
 - [x] 事件機制基礎完成（3 個新的 Post 領域事件）
+- [x] 工廠模式建立（PostFactory）
+- [x] 規格物件模式建立（7 個 Post 規格）
 - **目標**: DDD 結構完整性達到 70%+
 - **實際**: 
   - 值物件使用率：89.29%
@@ -294,6 +317,9 @@
   - 值物件總數：25 個
   - 聚合根：1 個（PostAggregate）
   - 領域事件：7 個（+3 個新事件）
+  - 工廠：1 個（PostFactory）
+  - 規格物件：7 個（Post 規格）
+  - DDD 組件總數：79 個（+10）
   - Post 上下文完整度：75%（從 60% 提升）
 
 ### 里程碑 4: 完整驗證與文件 (Week 7)

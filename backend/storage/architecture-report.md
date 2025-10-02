@@ -1,14 +1,14 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-10-02 18:54:05
+**生成時間**: 2025-10-02 18:59:26
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 309 | - |
-| PSR-4 合規率 | 102.59% | ✅ 優秀 |
-| 現代 PHP 採用率 | 75.30% | ⚠️ 可改善 |
+| 總類別數 | 320 | - |
+| PSR-4 合規率 | 101.56% | ✅ 優秀 |
+| 現代 PHP 採用率 | 73.12% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
@@ -17,7 +17,7 @@
 | Match 表達式 (PHP 8.0+) | 99 | ✅ 更安全的條件分支 |
 | 空安全運算子 (PHP 8.0+) | 116 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 72 | ✅ 現代化 metadata |
-| 聯合型別 (PHP 8.0+) | 362 | ✅ 更靈活的型別定義 |
+| 聯合型別 (PHP 8.0+) | 366 | ✅ 更靈活的型別定義 |
 | 建構子屬性提升 (PHP 8.0+) | 32 | ✅ 減少樣板程式碼 |
 | 列舉型別 (PHP 8.1+) | 17 | ✅ 型別安全的常數 |
 
@@ -79,6 +79,15 @@
 - app/Domains/Statistics/ValueObjects/StatisticsPeriod.php
 - app/Domains/Statistics/ValueObjects/SourceType.php
 
+### `App\Domains\Post\Specifications`
+- app/Domains/Post/Specifications/PostSpecificationInterface.php
+- app/Domains/Post/Specifications/DraftPostSpecification.php
+- app/Domains/Post/Specifications/PublishedPostSpecification.php
+- app/Domains/Post/Specifications/PopularPostSpecification.php
+- app/Domains/Post/Specifications/PinnedPostSpecification.php
+- app/Domains/Post/Specifications/AbstractPostSpecification.php
+- app/Domains/Post/Specifications/AuthorPostSpecification.php
+
 ### `App\Domains\Post\Aggregates`
 - app/Domains/Post/Aggregates/PostAggregate.php
 
@@ -102,6 +111,9 @@
 ### `App\Domains\Post\DTOs`
 - app/Domains/Post/DTOs/UpdatePostDTO.php
 - app/Domains/Post/DTOs/CreatePostDTO.php
+
+### `App\Domains\Post\Factories`
+- app/Domains/Post/Factories/PostFactory.php
 
 ### `App\Domains\Post\Events`
 - app/Domains/Post/Events/PostPublished.php
