@@ -18,6 +18,7 @@ use App\Shared\Cache\Services\CacheGroupManager;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\DefaultCacheStrategy;
 use App\Shared\Contracts\CacheServiceInterface;
+use App\Shared\Enums\CacheType;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use DI\Container;
 use Exception;
@@ -79,14 +80,14 @@ class CacheServiceProvider
     private function registerDrivers(): void
     {
         // 記憶體快取驅動
-        $this->container->set('cache.driver.memory', function (Container $container) {
+        $this->container->set('cache.driver.' . CacheType::MEMORY->value, function (Container $container) {
             $driversConfig = $this->config['drivers'] ?? [];
             if (!is_array($driversConfig)) {
                 $driversConfig = [];
             }
 
             /** @var array<string, mixed> $memoryConfig */
-            $memoryConfig = $driversConfig['memory'] ?? [];
+            $memoryConfig = $driversConfig[CacheType::MEMORY->value] ?? [];
             $maxItems = $memoryConfig['max_size'] ?? 1000;
             if (!is_int($maxItems)) {
                 $maxItems = 1000;
@@ -96,14 +97,14 @@ class CacheServiceProvider
         });
 
         // 檔案快取驅動
-        $this->container->set('cache.driver.file', function (Container $container) {
+        $this->container->set('cache.driver.' . CacheType::FILE->value, function (Container $container) {
             $driversConfig = $this->config['drivers'] ?? [];
             if (!is_array($driversConfig)) {
                 $driversConfig = [];
             }
 
             /** @var array<string, mixed> $fileConfig */
-            $fileConfig = $driversConfig['file'] ?? [];
+            $fileConfig = $driversConfig[CacheType::FILE->value] ?? [];
             $path = $fileConfig['path'] ?? $this->getDefaultCachePath();
             if (!is_string($path)) {
                 $path = $this->getDefaultCachePath();
@@ -113,7 +114,7 @@ class CacheServiceProvider
         });
 
         // Redis 快取驅動
-        $this->container->set('cache.driver.redis', function (Container $container) {
+        $this->container->set('cache.driver.' . CacheType::REDIS->value, function (Container $container) {
             if (!extension_loaded('redis')) {
                 throw new RuntimeException('Redis 擴充功能未安裝');
             }
@@ -124,23 +125,23 @@ class CacheServiceProvider
             }
 
             /** @var array<string, mixed> $redisConfig */
-            $redisConfig = $driversConfig['redis'] ?? [];
+            $redisConfig = $driversConfig[CacheType::REDIS->value] ?? [];
 
             return new RedisCacheDriver($redisConfig);
         });
 
         // 註冊驅動別名
         $this->container->set(MemoryCacheDriver::class, function (Container $container) {
-            return $container->get('cache.driver.memory');
+            return $container->get('cache.driver.' . CacheType::MEMORY->value);
         });
 
         $this->container->set(FileCacheDriver::class, function (Container $container) {
-            return $container->get('cache.driver.file');
+            return $container->get('cache.driver.' . CacheType::FILE->value);
         });
 
         if (extension_loaded('redis')) {
             $this->container->set(RedisCacheDriver::class, function (Container $container) {
-                return $container->get('cache.driver.redis');
+                return $container->get('cache.driver.' . CacheType::REDIS->value);
             });
         }
     }
@@ -168,7 +169,7 @@ class CacheServiceProvider
             $this->addDriversToManager($manager, $container);
 
             // 設定預設驅動
-            $defaultDriver = $this->config['default_driver'] ?? 'memory';
+            $defaultDriver = $this->config['default_driver'] ?? CacheType::MEMORY->value;
             assert(is_string($defaultDriver), 'Default driver must be a string');
 
             if ($manager->getDriver($defaultDriver)) {
@@ -191,7 +192,7 @@ class CacheServiceProvider
     {
         $this->container->set(CacheServiceInterface::class, function (Container $container) {
             // 使用檔案快取驅動作為舊版服務的後端
-            return $container->get('cache.driver.file');
+            return $container->get('cache.driver.' . CacheType::FILE->value);
         });
     }
 
@@ -204,31 +205,31 @@ class CacheServiceProvider
         assert(is_array($drivers), 'Drivers config must be an array');
 
         // 記憶體驅動
-        if (isset($drivers['memory']) && is_array($drivers['memory']) && ($drivers['memory']['enabled'] ?? true)) {
-            $driver = $container->get('cache.driver.memory');
+        if (isset($drivers[CacheType::MEMORY->value]) && is_array($drivers[CacheType::MEMORY->value]) && ($drivers[CacheType::MEMORY->value]['enabled'] ?? true)) {
+            $driver = $container->get('cache.driver.' . CacheType::MEMORY->value);
             assert($driver instanceof CacheDriverInterface, 'Memory driver must implement CacheDriverInterface');
-            $priority = $drivers['memory']['priority'] ?? 90;
+            $priority = $drivers[CacheType::MEMORY->value]['priority'] ?? 90;
             assert(is_int($priority), 'Priority must be an integer');
-            $manager->addDriver('memory', $driver, $priority);
+            $manager->addDriver(CacheType::MEMORY->value, $driver, $priority);
         }
 
         // 檔案驅動
-        if (isset($drivers['file']) && is_array($drivers['file']) && ($drivers['file']['enabled'] ?? true)) {
-            $driver = $container->get('cache.driver.file');
+        if (isset($drivers[CacheType::FILE->value]) && is_array($drivers[CacheType::FILE->value]) && ($drivers[CacheType::FILE->value]['enabled'] ?? true)) {
+            $driver = $container->get('cache.driver.' . CacheType::FILE->value);
             assert($driver instanceof CacheDriverInterface, 'File driver must implement CacheDriverInterface');
-            $priority = $drivers['file']['priority'] ?? 50;
+            $priority = $drivers[CacheType::FILE->value]['priority'] ?? 50;
             assert(is_int($priority), 'Priority must be an integer');
-            $manager->addDriver('file', $driver, $priority);
+            $manager->addDriver(CacheType::FILE->value, $driver, $priority);
         }
 
         // Redis 驅動
-        if (extension_loaded('redis') && isset($drivers['redis']) && is_array($drivers['redis']) && ($drivers['redis']['enabled'] ?? false)) {
+        if (extension_loaded('redis') && isset($drivers[CacheType::REDIS->value]) && is_array($drivers[CacheType::REDIS->value]) && ($drivers[CacheType::REDIS->value]['enabled'] ?? false)) {
             try {
-                $driver = $container->get('cache.driver.redis');
+                $driver = $container->get('cache.driver.' . CacheType::REDIS->value);
                 assert($driver instanceof CacheDriverInterface, 'Redis driver must implement CacheDriverInterface');
-                $priority = $drivers['redis']['priority'] ?? 70;
+                $priority = $drivers[CacheType::REDIS->value]['priority'] ?? 70;
                 assert(is_int($priority), 'Priority must be an integer');
-                $manager->addDriver('redis', $driver, $priority);
+                $manager->addDriver(CacheType::REDIS->value, $driver, $priority);
             } catch (Exception $e) {
                 // Redis 連線失敗，記錄但不中斷啟動
                 if ($container->has(LoggerInterface::class)) {
@@ -263,8 +264,8 @@ class CacheServiceProvider
                 return new DefaultCacheStrategy($config);
             }),
 
-            'cache.driver.memory' => \DI\factory(function (ContainerInterface $c) {
-                $config = $c->has('cache.drivers.memory') ? $c->get('cache.drivers.memory') : [];
+            'cache.driver.' . CacheType::MEMORY->value => \DI\factory(function (ContainerInterface $c) {
+                $config = $c->has('cache.drivers.' . CacheType::MEMORY->value) ? $c->get('cache.drivers.' . CacheType::MEMORY->value) : [];
                 if (!is_array($config)) {
                     $config = [];
                 }
@@ -275,8 +276,8 @@ class CacheServiceProvider
                 return new MemoryCacheDriver($maxItems);
             }),
 
-            'cache.driver.file' => \DI\factory(function (ContainerInterface $c) {
-                $config = $c->has('cache.drivers.file') ? $c->get('cache.drivers.file') : [];
+            'cache.driver.' . CacheType::FILE->value => \DI\factory(function (ContainerInterface $c) {
+                $config = $c->has('cache.drivers.' . CacheType::FILE->value) ? $c->get('cache.drivers.' . CacheType::FILE->value) : [];
                 if (!is_array($config)) {
                     $config = [];
                 }
@@ -288,11 +289,11 @@ class CacheServiceProvider
                 return new FileCacheDriver($path);
             }),
 
-            'cache.driver.redis' => \DI\factory(function (ContainerInterface $c) {
+            'cache.driver.' . CacheType::REDIS->value => \DI\factory(function (ContainerInterface $c) {
                 if (!extension_loaded('redis')) {
                     throw new RuntimeException('Redis 擴充功能未安裝');
                 }
-                $config = $c->has('cache.drivers.redis') ? $c->get('cache.drivers.redis') : [];
+                $config = $c->has('cache.drivers.' . CacheType::REDIS->value) ? $c->get('cache.drivers.' . CacheType::REDIS->value) : [];
                 if (!is_array($config)) {
                     $config = [];
                 }
@@ -300,9 +301,9 @@ class CacheServiceProvider
                 return new RedisCacheDriver($config);
             }),
 
-            MemoryCacheDriver::class => \DI\get('cache.driver.memory'),
-            FileCacheDriver::class => \DI\get('cache.driver.file'),
-            RedisCacheDriver::class => \DI\get('cache.driver.redis'),
+            MemoryCacheDriver::class => \DI\get('cache.driver.' . CacheType::MEMORY->value),
+            FileCacheDriver::class => \DI\get('cache.driver.' . CacheType::FILE->value),
+            RedisCacheDriver::class => \DI\get('cache.driver.' . CacheType::REDIS->value),
 
             // 標籤倉庫
             'cache.tag.repository.memory' => \DI\factory(function (ContainerInterface $c) {
@@ -389,24 +390,24 @@ class CacheServiceProvider
                 }
                 $manager = new CacheManager($strategy, $logger, $config, $monitor, $tagRepository);
                 // 新增記憶體驅動
-                $memoryDriver = $c->get('cache.driver.memory');
+                $memoryDriver = $c->get('cache.driver.' . CacheType::MEMORY->value);
                 if ($memoryDriver instanceof CacheDriverInterface) {
-                    $memoryPriority = $c->has('cache.drivers.memory.priority') ? $c->get('cache.drivers.memory.priority') : 90;
-                    $manager->addDriver('memory', $memoryDriver, is_int($memoryPriority) ? $memoryPriority : 90);
+                    $memoryPriority = $c->has('cache.drivers.' . CacheType::MEMORY->value . '.priority') ? $c->get('cache.drivers.' . CacheType::MEMORY->value . '.priority') : 90;
+                    $manager->addDriver(CacheType::MEMORY->value, $memoryDriver, is_int($memoryPriority) ? $memoryPriority : 90);
                 }
                 // 新增檔案驅動
-                $fileDriver = $c->get('cache.driver.file');
+                $fileDriver = $c->get('cache.driver.' . CacheType::FILE->value);
                 if ($fileDriver instanceof CacheDriverInterface) {
-                    $filePriority = $c->has('cache.drivers.file.priority') ? $c->get('cache.drivers.file.priority') : 50;
-                    $manager->addDriver('file', $fileDriver, is_int($filePriority) ? $filePriority : 50);
+                    $filePriority = $c->has('cache.drivers.' . CacheType::FILE->value . '.priority') ? $c->get('cache.drivers.' . CacheType::FILE->value . '.priority') : 50;
+                    $manager->addDriver(CacheType::FILE->value, $fileDriver, is_int($filePriority) ? $filePriority : 50);
                 }
                 // 新增 Redis 驅動（如果可用）
                 if (extension_loaded('redis')) {
                     try {
-                        $redisDriver = $c->get('cache.driver.redis');
+                        $redisDriver = $c->get('cache.driver.' . CacheType::REDIS->value);
                         if ($redisDriver instanceof CacheDriverInterface) {
-                            $redisPriority = $c->has('cache.drivers.redis.priority') ? $c->get('cache.drivers.redis.priority') : 70;
-                            $manager->addDriver('redis', $redisDriver, is_int($redisPriority) ? $redisPriority : 70);
+                            $redisPriority = $c->has('cache.drivers.' . CacheType::REDIS->value . '.priority') ? $c->get('cache.drivers.' . CacheType::REDIS->value . '.priority') : 70;
+                            $manager->addDriver(CacheType::REDIS->value, $redisDriver, is_int($redisPriority) ? $redisPriority : 70);
                         }
                     } catch (Exception $e) {
                         if ($logger instanceof LoggerInterface) {
@@ -415,7 +416,7 @@ class CacheServiceProvider
                     }
                 }
                 // 設定預設驅動
-                $defaultDriver = $c->has('cache.default_driver') ? $c->get('cache.default_driver') : 'memory';
+                $defaultDriver = $c->has('cache.default_driver') ? $c->get('cache.default_driver') : CacheType::MEMORY->value;
                 if (is_string($defaultDriver) && $manager->getDriver($defaultDriver)) {
                     $manager->setDefaultDriver($defaultDriver);
                 }
@@ -426,7 +427,7 @@ class CacheServiceProvider
             CacheManager::class => \DI\get(CacheManagerInterface::class),
 
             // 向後相容：舊版快取服務介面
-            CacheServiceInterface::class => \DI\get('cache.driver.file'),
+            CacheServiceInterface::class => \DI\get('cache.driver.' . CacheType::FILE->value),
         ];
     }
 
@@ -436,21 +437,21 @@ class CacheServiceProvider
     private function getDefaultConfig(): array
     {
         return [
-            'default_driver' => 'memory',
+            'default_driver' => CacheType::MEMORY->value,
             'drivers' => [
-                'memory' => [
+                CacheType::MEMORY->value => [
                     'enabled' => true,
                     'priority' => 90,
                     'max_size' => 1000,
                     'ttl' => 3600,
                 ],
-                'file' => [
+                CacheType::FILE->value => [
                     'enabled' => true,
                     'priority' => 50,
                     'path' => $this->getDefaultCachePath(),
                     'ttl' => 3600,
                 ],
-                'redis' => [
+                CacheType::REDIS->value => [
                     'enabled' => false,
                     'priority' => 70,
                     'host' => '127.0.0.1',
@@ -515,9 +516,9 @@ class CacheConfigBuilder
     /**
      * 設定預設驅動。
      */
-    public function defaultDriver(string $driver): self
+    public function defaultDriver(CacheType $driver): self
     {
-        $this->config['default_driver'] = $driver;
+        $this->config['default_driver'] = $driver->value;
 
         return $this;
     }
@@ -530,7 +531,7 @@ class CacheConfigBuilder
         if (!isset($this->config['drivers']) || !is_array($this->config['drivers'])) {
             $this->config['drivers'] = [];
         }
-        $this->config['drivers']['memory'] = array_merge([
+        $this->config['drivers'][CacheType::MEMORY->value] = array_merge([
             'enabled' => true,
             'priority' => 90,
             'max_size' => 1000,
@@ -558,7 +559,7 @@ class CacheConfigBuilder
         if (!isset($this->config['drivers']) || !is_array($this->config['drivers'])) {
             $this->config['drivers'] = [];
         }
-        $this->config['drivers']['file'] = array_merge($defaultConfig, $config);
+        $this->config['drivers'][CacheType::FILE->value] = array_merge($defaultConfig, $config);
 
         return $this;
     }
@@ -571,7 +572,7 @@ class CacheConfigBuilder
         if (!isset($this->config['drivers']) || !is_array($this->config['drivers'])) {
             $this->config['drivers'] = [];
         }
-        $this->config['drivers']['redis'] = array_merge([
+        $this->config['drivers'][CacheType::REDIS->value] = array_merge([
             'enabled' => true,
             'priority' => 70,
             'host' => '127.0.0.1',

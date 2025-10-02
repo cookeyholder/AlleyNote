@@ -296,7 +296,7 @@ class PostRepository implements PostRepositoryInterface
             }
 
             // 檢查是否可以刪除（業務邏輯檢查在這裡進行，因為有鎖定保護）
-            if ($post->getStatus() === PostStatus::PUBLISHED->value) {
+            if ($post->getStatus() === PostStatus::PUBLISHED) {
                 throw new InvalidArgumentException('已發布的文章不能刪除，請改為封存');
             }
 
@@ -316,7 +316,7 @@ class PostRepository implements PostRepositoryInterface
             }
 
             // 檢查業務邏輯：只有已發布的文章可以置頂
-            if ($isPinned && $post->getStatus() !== PostStatus::PUBLISHED->value) {
+            if ($isPinned && $post->getStatus() !== PostStatus::PUBLISHED) {
                 throw new InvalidArgumentException('只有已發布的文章可以置頂');
             }
 

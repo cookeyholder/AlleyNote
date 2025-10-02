@@ -40,48 +40,18 @@ class XssProtectionExtensionService
      */
     public function protectByContext(string $input, string $context, array $options = []): array
     {
-        $result = [
-            'protected_content' => '',
-            'context' => $context,
-            'protection_level' => 'standard',
-            'modifications' => [],
-            'warnings' => [],
-            'security_score' => 100,
-        ];
-
-        switch ($context) {
-            case 'rich_text_editor':
-                $result = $this->protectRichTextEditor($input, $options);
-                break;
-            case 'user_bio':
-                $result = $this->protectUserBio($input, $options);
-                break;
-            case 'post_title':
-                $result = $this->protectPostTitle($input, $options);
-                break;
-            case 'post_content':
-                $result = $this->protectPostContent($input, $options);
-                break;
-            case 'comment':
-                $result = $this->protectComment($input, $options);
-                break;
-            case 'search_query':
-                $result = $this->protectSearchQuery($input, $options);
-                break;
-            case 'url_parameter':
-                $result = $this->protectUrlParameter($input, $options);
-                break;
-            case 'json_data':
-                $result = $this->protectJsonData($input, $options);
-                break;
-            case 'file_upload':
-                $result = $this->protectFileUpload($input, $options);
-                break;
-            default:
-                $result = $this->protectGeneric($input, $options);
-        }
-
-        return $result;
+        return match ($context) {
+            'rich_text_editor' => $this->protectRichTextEditor($input, $options),
+            'user_bio' => $this->protectUserBio($input, $options),
+            'post_title' => $this->protectPostTitle($input, $options),
+            'post_content' => $this->protectPostContent($input, $options),
+            'comment' => $this->protectComment($input, $options),
+            'search_query' => $this->protectSearchQuery($input, $options),
+            'url_parameter' => $this->protectUrlParameter($input, $options),
+            'json_data' => $this->protectJsonData($input, $options),
+            'file_upload' => $this->protectFileUpload($input, $options),
+            default => $this->protectGeneric($input, $options),
+        };
     }
 
     /**

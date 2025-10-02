@@ -166,7 +166,7 @@ class Application
                 // 實作關閉流
             }
 
-            public function detach()
+            public function detach(): mixed
             {
                 return null;
             }
@@ -193,17 +193,12 @@ class Application
 
             public function seek(int $offset, int $whence = SEEK_SET): void
             {
-                switch ($whence) {
-                    case SEEK_SET:
-                        $this->position = $offset;
-                        break;
-                    case SEEK_CUR:
-                        $this->position += $offset;
-                        break;
-                    case SEEK_END:
-                        $this->position = strlen($this->content) + $offset;
-                        break;
-                }
+                $this->position = match ($whence) {
+                    SEEK_SET => $offset,
+                    SEEK_CUR => $this->position + $offset,
+                    SEEK_END => strlen($this->content) + $offset,
+                    default => $offset,
+                };
             }
 
             public function rewind(): void

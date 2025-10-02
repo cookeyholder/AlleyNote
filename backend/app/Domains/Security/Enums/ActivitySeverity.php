@@ -10,11 +10,11 @@ namespace App\Domains\Security\Enums;
  */
 enum ActivitySeverity: int
 {
-    case LOW = 1;        // 一般操作，如瀏覽
-    case NORMAL = 2;     // 標準操作，如編輯內容
-    case MEDIUM = 3;     // 中等重要，如帳號設定變更
-    case HIGH = 4;       // 高重要性，如權限變更
-    case CRITICAL = 5;   // 關鍵操作，如系統設定變更
+    case LOW = 1;
+    case NORMAL = 2;
+    case MEDIUM = 3;
+    case HIGH = 4;
+    case CRITICAL = 5;
 
     /**
      * 取得嚴重程度顯示名稱.
@@ -49,7 +49,7 @@ enum ActivitySeverity: int
      */
     public function isAtLeast(self $level): bool
     {
-        return $this->value >= $level->value;
+        return $this->getSeverityValue() >= $level->getSeverityValue();
     }
 
     /**
@@ -57,7 +57,7 @@ enum ActivitySeverity: int
      */
     public function isAtMost(self $level): bool
     {
-        return $this->value <= $level->value;
+        return $this->getSeverityValue() <= $level->getSeverityValue();
     }
 
     /**
@@ -87,16 +87,29 @@ enum ActivitySeverity: int
     }
 
     /**
-     * 根據數值取得對應的嚴重程度.
+     * 根據數值取得對應的嚴重程度。
+     * 接受 string 或 int，並轉為字串後嘗試匹配。
      */
-    public static function fromValue(int $value): ?self
+    public static function fromValue(string|int $value): ?self
     {
+        $intVal = (int) $value;
         foreach (self::cases() as $case) {
-            if ($case->value === $value) {
+            if ($case->value === $intVal) {
                 return $case;
             }
         }
 
         return null;
+    }
+
+    private function getSeverityValue(): int
+    {
+        return match ($this) {
+            self::LOW => 1,
+            self::NORMAL => 2,
+            self::MEDIUM => 3,
+            self::HIGH => 4,
+            self::CRITICAL => 5,
+        };
     }
 }

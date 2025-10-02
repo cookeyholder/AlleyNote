@@ -353,19 +353,14 @@ final class EnvironmentConfig
     {
         $errors = [];
 
-        switch ($this->environment) {
-            case 'production':
-                $errors = array_merge($errors, $this->validateProductionConfig());
-                break;
-            case 'testing':
-                $errors = array_merge($errors, $this->validateTestingConfig());
-                break;
-            case 'development':
-                $errors = array_merge($errors, $this->validateDevelopmentConfig());
-                break;
-        }
+        $environmentErrors = match ($this->environment) {
+            'production' => $this->validateProductionConfig(),
+            'testing' => $this->validateTestingConfig(),
+            'development' => $this->validateDevelopmentConfig(),
+            default => [],
+        };
 
-        return $errors;
+        return array_merge($errors, $environmentErrors);
     }
 
     /**

@@ -60,7 +60,7 @@ class FileSystemBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
+            '/bin/bash %s/scripts/Maintenance/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->testDir),
             escapeshellarg($this->backupDir),
@@ -115,7 +115,7 @@ class FileSystemBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
+            '/bin/bash %s/scripts/Maintenance/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
             escapeshellarg($this->testDir),
@@ -151,7 +151,7 @@ class FileSystemBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            '/bin/bash %s/scripts/backup_files.sh %s %s 2>&1',
+            '/bin/bash %s/scripts/Maintenance/backup_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentDir),
             escapeshellarg($this->backupDir),
@@ -172,7 +172,7 @@ class FileSystemBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
+            '/bin/bash %s/scripts/Maintenance/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentBackup),
             escapeshellarg($this->testDir),
@@ -199,7 +199,7 @@ class FileSystemBackupTest extends TestCase
 
         // 嘗試使用不存在的備份檔案進行還原
         exec(sprintf(
-            '/bin/bash %s/scripts/restore_files.sh %s %s 2>&1',
+            '/bin/bash %s/scripts/Maintenance/restore_files.sh %s %s 2>&1',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentBackupFile),
             escapeshellarg($this->testDir),
@@ -229,7 +229,7 @@ class FileSystemBackupTest extends TestCase
         // 執行備份
         $backupFile = $this->backupDir . '/files_backup.tar.gz';
         exec(sprintf(
-            '/bin/bash %s/scripts/backup_files.sh %s %s',
+            '/bin/bash %s/scripts/Maintenance/backup_files.sh %s %s',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($this->testDir),
             escapeshellarg($backupFile),
@@ -242,7 +242,7 @@ class FileSystemBackupTest extends TestCase
 
         // 執行還原
         exec(sprintf(
-            '/bin/bash %s/scripts/restore_files.sh %s %s',
+            '/bin/bash %s/scripts/Maintenance/restore_files.sh %s %s',
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
             escapeshellarg($this->testDir),

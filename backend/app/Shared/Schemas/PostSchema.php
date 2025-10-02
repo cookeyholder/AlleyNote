@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Schemas;
 
+use App\Domains\Security\Enums\ActivitySeverity;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -50,7 +51,7 @@ use OpenApi\Attributes as OA;
             property: 'priority',
             type: 'string',
             description: '優先級',
-            enum: ['low', 'normal', 'high', 'urgent'],
+            enum: [ActivitySeverity::LOW->value, ActivitySeverity::NORMAL->value, ActivitySeverity::MEDIUM->value, ActivitySeverity::HIGH->value, ActivitySeverity::CRITICAL->value],
             example: 'normal',
         ),
         new OA\Property(

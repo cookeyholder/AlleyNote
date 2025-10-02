@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Security;
 
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Domains\Security\Enums\ActivitySeverity;
 use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -103,7 +104,7 @@ class CSPReportController
         ];
 
         // 使用安全日誌服務記錄 CSP 違規
-        if ($logData['severity'] === 'high') {
+        if ($logData['severity'] === ActivitySeverity::HIGH) {
             $this->logger->logCriticalSecurityEvent('CSP Violation (High Severity)', $logData);
         } else {
             $this->logger->logSecurityEvent('CSP Violation', $logData);
@@ -153,7 +154,7 @@ class CSPReportController
     /**
      * 計算違規嚴重程度.
      */
-    private function calculateSeverity(array $cspReport): string
+    private function calculateSeverity(array $cspReport): ActivitySeverity
     {
         $blockedUri = $cspReport['blocked-uri'] ?? '';
         $violatedDirective = $cspReport['violated-directive'] ?? '';
@@ -166,7 +167,7 @@ class CSPReportController
                 || strpos($blockedUri, 'data:') !== false
                 || preg_match('/[a-z0-9\-]+\.(tk|ml|ga|cf)/', $blockedUri)
             ) {
-                return 'high';
+                return ActivitySeverity::HIGH;
             }
         }
 
@@ -175,11 +176,11 @@ class CSPReportController
             strpos($violatedDirective, 'frame-ancestors') !== false
             || strpos($violatedDirective, 'form-action') !== false
         ) {
-            return 'medium';
+            return ActivitySeverity::MEDIUM;
         }
 
         // 低風險情況
-        return 'low';
+        return ActivitySeverity::LOW;
     }
 
     /**
