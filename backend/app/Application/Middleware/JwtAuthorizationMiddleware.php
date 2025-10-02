@@ -779,28 +779,21 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function matchesRuleConditions(array $conditions, string $resource, string $action, ?string $userRole): bool
     {
         foreach ($conditions as $key => $value) {
-            switch ($key) {
-                case 'resource':
-                    if (is_array($value) && !in_array($resource, $value, true)) {
-                        return false;
-                    } elseif (is_string($value) && $resource !== $value) {
-                        return false;
-                    }
-                    break;
-                case 'action':
-                    if (is_array($value) && !in_array($action, $value, true)) {
-                        return false;
-                    } elseif (is_string($value) && $action !== $value) {
-                        return false;
-                    }
-                    break;
-                case 'role':
-                    if (is_array($value) && !in_array($userRole, $value, true)) {
-                        return false;
-                    } elseif (is_string($value) && $userRole !== $value) {
-                        return false;
-                    }
-                    break;
+            $matches = match ($key) {
+                'resource' => is_array($value)
+                    ? in_array($resource, $value, true)
+                    : (is_string($value) ? $resource === $value : true),
+                'action' => is_array($value)
+                    ? in_array($action, $value, true)
+                    : (is_string($value) ? $action === $value : true),
+                'role' => is_array($value)
+                    ? in_array($userRole, $value, true)
+                    : (is_string($value) ? $userRole === $value : true),
+                default => true,
+            };
+
+            if (!$matches) {
+                return false;
             }
         }
 
@@ -821,30 +814,22 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $ruleType = $ruleConfig['type'] ?? 'allow';
         $ruleMessage = $ruleConfig['message'] ?? "自訂規則 {$ruleName} 生效";
 
-        switch ($ruleType) {
-            case 'allow':
-                return new AuthorizationResult(
-                    allowed: true,
-                    reason: $ruleMessage,
-                    code: 'CUSTOM_RULE_ALLOW',
-                    appliedRules: ["custom:{$ruleName}"],
-                );
-
-            case 'deny':
-                return new AuthorizationResult(
-                    allowed: false,
-                    reason: $ruleMessage,
-                    code: 'CUSTOM_RULE_DENY',
-                    appliedRules: ["custom:{$ruleName}"],
-                );
-
-            case 'conditional':
-                // 這裡可以實作更複雜的條件邏輯
-                // 例如檢查特定的請求參數、標頭等
-                return $this->evaluateConditionalRule($ruleConfig, $userId, $userRole, $request);
-        }
-
-        return null;
+        return match ($ruleType) {
+            'allow' => new AuthorizationResult(
+                allowed: true,
+                reason: $ruleMessage,
+                code: 'CUSTOM_RULE_ALLOW',
+                appliedRules: ["custom:{$ruleName}"],
+            ),
+            'deny' => new AuthorizationResult(
+                allowed: false,
+                reason: $ruleMessage,
+                code: 'CUSTOM_RULE_DENY',
+                appliedRules: ["custom:{$ruleName}"],
+            ),
+            'conditional' => $this->evaluateConditionalRule($ruleConfig, $userId, $userRole, $request),
+            default => null,
+        };
     }
 
     /**

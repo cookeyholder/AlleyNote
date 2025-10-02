@@ -115,11 +115,18 @@
 - [x] 將 StatisticsCalculationCommand.php 中的 switch 重構為 match（週期類型判斷）
 - [x] 將 XssProtectionExtensionService.php 中的 switch 重構為 match（上下文保護選擇）
 - [x] 將 RichTextProcessorService.php 中的 switch 重構為 match（使用者層級處理選擇）
-- [ ] 重構 JwtAuthorizationMiddleware.php 中的 switch 語句（較複雜，暫緩）
-- [ ] 重構 StatisticsRecalculationCommand.php 中的 switch 語句（較複雜，暫緩）
-- [ ] 重構 AttachmentService.php 中的 switch 語句（涉及副作用，不適合 match）
+- [x] 重構 JwtAuthorizationMiddleware.php 中的 switch 語句（✅ 已完成：matchesRuleConditions 和 executeCustomRule 方法）
+- [x] 重構 StatisticsRecalculationCommand.php 中的 switch 語句（✅ 已完成：processTask 方法）
+- [ ] 重構 AttachmentService.php 中的 switch 語句（評估後決定：涉及副作用如圖片處理，保持 switch 更清晰）
+
+**實際狀況**:
+- 成功重構 JwtAuthorizationMiddleware.php 中的 2 個 switch 語句
+- 成功重構 StatisticsRecalculationCommand.php 中的 1 個 switch 語句
+- AttachmentService.php 中的 switch 涉及圖片處理副作用（imagecreatefromjpeg, imagepng 等），保持原樣更清晰
+- Match 表達式使用次數：121次 → 124次 (+3次)
 
 **預期效果**: 現代 PHP 採用率 +2-3%
+**實際效果**: Match 表達式增加 3 次，提升程式碼簡潔性和型別安全性
 
 ---
 
