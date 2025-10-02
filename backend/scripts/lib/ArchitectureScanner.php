@@ -25,12 +25,15 @@ final class ArchitectureScanner
     private array $modernFeatures = [
         'match_expressions' => 0,
         'readonly_properties' => 0,
+        'readonly_classes' => 0,
         'nullsafe_operator' => 0,
         'attributes' => 0,
         'union_types' => 0,
+        'intersection_types' => 0,
         'constructor_promotion' => 0,
         'enums' => 0,
         'named_arguments' => 0,
+        'first_class_callable_syntax' => 0,
         'fibers' => 0,
     ];
 
@@ -94,11 +97,14 @@ final class ArchitectureScanner
         $featureMap = [
             'match_expressions' => 'Match 表達式 (PHP 8.0+)',
             'readonly_properties' => '唯讀屬性 (PHP 8.1+)',
+            'readonly_classes' => '唯讀類別 (PHP 8.2+)',
             'nullsafe_operator' => '空安全運算子 (PHP 8.0+)',
             'attributes' => '屬性標籤 (PHP 8.0+)',
             'union_types' => '聯合型別 (PHP 8.0+)',
+            'intersection_types' => '交集型別 (PHP 8.1+)',
             'constructor_promotion' => '建構子屬性提升 (PHP 8.0+)',
             'enums' => '列舉型別 (PHP 8.1+)',
+            'first_class_callable_syntax' => 'First-class Callable (PHP 8.1+)',
         ];
         if ($mostUsed && isset($featureMap[$mostUsed[0]])) {
             $summary .= "- 最常用: " . $featureMap[$mostUsed[0]] . " (" . $features[$mostUsed[0]] . " 次)\n";
@@ -201,11 +207,14 @@ final class ArchitectureScanner
 
     private function analyzePhpFeatures(string $content): void
     {
-        // Match expressions
+        // Match expressions - 與 CodeQualityAnalyzer 保持一致的統計方式
         $this->modernFeatures['match_expressions'] += preg_match_all('/\bmatch\s*\(/i', $content);
 
-        // Readonly properties
-        $this->modernFeatures['readonly_properties'] += preg_match_all('/\breadonly\s+(?:public|private|protected)\s+/i', $content);
+        // Readonly properties - 單獨的 readonly 屬性宣告（不是 readonly class）
+        $this->modernFeatures['readonly_properties'] += preg_match_all('/\breadonly\s+(?:public|private|protected)\s+(?!class)/i', $content);
+
+        // Readonly classes (PHP 8.2+)
+        $this->modernFeatures['readonly_classes'] += preg_match_all('/\breadonly\s+class\s+/i', $content);
 
         // Nullsafe operator
         $this->modernFeatures['nullsafe_operator'] += preg_match_all('/\?\->/', $content);
@@ -213,14 +222,25 @@ final class ArchitectureScanner
         // Attributes
         $this->modernFeatures['attributes'] += preg_match_all('/#\[\w+/', $content);
 
-        // Union types
-        $this->modernFeatures['union_types'] += preg_match_all('/\w+\|\w+/', $content);
+        // Union types - 匹配型別宣告中的 |
+        $this->modernFeatures['union_types'] += preg_match_all('/:\s*\w+\|\w+/', $content);
 
-        // Constructor promotion
-        $this->modernFeatures['constructor_promotion'] += preg_match_all('/public\s+readonly\s+\w+\s+\$\w+/i', $content);
+        // Intersection types (PHP 8.1+)
+        $this->modernFeatures['intersection_types'] += preg_match_all('/:\s*\w+&\w+/', $content);
+
+        // Constructor promotion - 檢查建構子中的屬性提升
+        if (preg_match_all('/__construct\s*\([^)]*\b(public|protected|private)\s+/i', $content)) {
+            $this->modernFeatures['constructor_promotion']++;
+        }
 
         // Enums
         $this->modernFeatures['enums'] += preg_match_all('/\benum\s+\w+/i', $content);
+        
+        // Named arguments - 檢測函式呼叫中的具名參數
+        $this->modernFeatures['named_arguments'] += preg_match_all('/\w+:\s*[^,\)]+/', $content);
+        
+        // First-class callable syntax (PHP 8.1+) - 檢測 ... 運算子用於函式引用
+        $this->modernFeatures['first_class_callable_syntax'] += preg_match_all('/\w+(?:\:\:)?\w+\.\.\.(,|\))/', $content);
     }
 
     private function analyzeCodeQuality(string $content, string $filePath): void
@@ -317,16 +337,16 @@ final class ArchitectureScanner
 
     private function calculateModernPhpScore(): float
     {
-        $totalFeatures = array_sum($this->modernFeatures);
-        $totalFiles = $this->codeQualityMetrics['total_classes'] +
-                      $this->codeQualityMetrics['total_interfaces'] +
-                      $this->codeQualityMetrics['total_traits'];
+        // 計算有多少種特性正在被使用（至少使用一次）
+        $totalFeatureTypes = count($this->modernFeatures);
+        $usedFeatureTypes = count(array_filter($this->modernFeatures, fn($count) => $count > 0));
 
-        if ($totalFiles === 0) {
+        if ($totalFeatureTypes === 0) {
             return 0.0;
         }
 
-        return ($totalFeatures / ($totalFiles * 3)) * 100; // Normalized to 100%
+        // 採用率 = 使用的特性種類數 / 總特性種類數 × 100
+        return round(($usedFeatureTypes / $totalFeatureTypes) * 100, 2);
     }
 
     private function generateJsonReport(): string
@@ -361,11 +381,14 @@ final class ArchitectureScanner
         $featureDescriptions = [
             'match_expressions' => 'Match 表達式 (PHP 8.0+)',
             'readonly_properties' => '唯讀屬性 (PHP 8.1+)',
+            'readonly_classes' => '唯讀類別 (PHP 8.2+)',
             'nullsafe_operator' => '空安全運算子 (PHP 8.0+)',
             'attributes' => '屬性標籤 (PHP 8.0+)',
             'union_types' => '聯合型別 (PHP 8.0+)',
+            'intersection_types' => '交集型別 (PHP 8.1+)',
             'constructor_promotion' => '建構子屬性提升 (PHP 8.0+)',
             'enums' => '列舉型別 (PHP 8.1+)',
+            'first_class_callable_syntax' => 'First-class Callable (PHP 8.1+)',
         ];
 
         foreach ($this->modernFeatures as $feature => $count) {
@@ -395,11 +418,14 @@ final class ArchitectureScanner
         return match ($feature) {
             'match_expressions' => '更安全的條件分支',
             'readonly_properties' => '提升資料不變性',
+            'readonly_classes' => '不可變類別設計',
             'nullsafe_operator' => '防止 null 指標異常',
             'attributes' => '現代化 metadata',
             'union_types' => '更靈活的型別定義',
+            'intersection_types' => '複雜型別約束',
             'constructor_promotion' => '減少樣板程式碼',
             'enums' => '型別安全的常數',
+            'first_class_callable_syntax' => '簡化函式引用',
             default => '現代 PHP 特性'
         };
     }
