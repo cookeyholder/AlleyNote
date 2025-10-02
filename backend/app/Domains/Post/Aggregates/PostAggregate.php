@@ -126,7 +126,7 @@ final class PostAggregate
         $creationSource = $data['creation_source'] ?? null;
 
         $aggregate = new self(
-            id: PostId::fromString($uuid),
+            id: is_int($uuid) ? PostId::fromInt($uuid) : PostId::fromString((string) $uuid),
             title: PostTitle::fromString($title),
             content: PostContent::fromString($content),
             authorId: $userId,
@@ -168,11 +168,11 @@ final class PostAggregate
     public function publish(): void
     {
         if ($this->status === PostStatus::PUBLISHED) {
-            throw new PostValidationException('文章已經發佈');
+            throw PostValidationException::alreadyPublished();
         }
 
         if ($this->status === PostStatus::ARCHIVED) {
-            throw new PostValidationException('已封存的文章不能發佈');
+            throw PostValidationException::archivedCannotPublish();
         }
 
         $this->ensureContentIsValid();
@@ -199,7 +199,7 @@ final class PostAggregate
     public function updateContent(PostTitle $title, PostContent $content): void
     {
         if ($this->status === PostStatus::ARCHIVED) {
-            throw new PostValidationException('已封存的文章不能編輯');
+            throw PostValidationException::archivedCannotEdit();
         }
 
         $oldTitle = $this->title;
@@ -227,7 +227,7 @@ final class PostAggregate
     public function archive(): void
     {
         if ($this->status === PostStatus::ARCHIVED) {
-            throw new PostValidationException('文章已經封存');
+            throw PostValidationException::alreadyArchived();
         }
 
         $oldStatus = $this->status;
@@ -436,11 +436,11 @@ final class PostAggregate
     private function ensureContentIsValid(): void
     {
         if ($this->title->getLength() === 0) {
-            throw new PostValidationException('文章標題不能為空');
+            throw PostValidationException::titleEmpty();
         }
 
         if ($this->content->getLength() === 0) {
-            throw new PostValidationException('文章內容不能為空');
+            throw PostValidationException::contentEmpty();
         }
     }
 }

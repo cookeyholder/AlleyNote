@@ -50,7 +50,7 @@ class PostSlugTest extends TestCase
     public function test_throws_exception_for_invalid_format(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Slug 只能包含小寫字母、數字和連字號');
+        $this->expectExceptionMessage('Slug 只能包含字母、數字和連字號');
 
         new PostSlug('Invalid_Slug!');
     }

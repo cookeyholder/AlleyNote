@@ -25,9 +25,9 @@ final readonly class PostSlug implements JsonSerializable, Stringable
             throw new InvalidArgumentException('Slug 不能為空');
         }
 
-        // 驗證 slug 格式：只允許小寫字母、數字和連字號
-        if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $trimmedSlug)) {
-            throw new InvalidArgumentException('Slug 只能包含小寫字母、數字和連字號，且不能以連字號開頭或結尾');
+        // 驗證 slug 格式：允許 Unicode 字母、數字和連字號
+        if (!preg_match('/^[\p{L}\p{N}]+([-][\p{L}\p{N}]+)*$/u', $trimmedSlug)) {
+            throw new InvalidArgumentException('Slug 只能包含字母、數字和連字號，且不能以連字號開頭或結尾');
         }
 
         if (mb_strlen($trimmedSlug) > 255) {
@@ -51,8 +51,11 @@ final readonly class PostSlug implements JsonSerializable, Stringable
     public static function fromTitle(string $title): self
     {
         // 轉換為小寫並替換空格為連字號
-        $slug = strtolower(trim($title));
-        $result = preg_replace('/[^a-z0-9\s-]/', '', $slug);
+        $slug = trim($title);
+
+        // 嘗試轉譯中文為拼音（如果有可能）或保留原文
+        // 移除特殊字符，但保留中文、數字、字母和空格
+        $result = preg_replace('/[^\p{L}\p{N}\s-]/u', '', $slug);
 
         if ($result === null) {
             throw new InvalidArgumentException('無法處理標題字串');
@@ -71,7 +74,7 @@ final readonly class PostSlug implements JsonSerializable, Stringable
             throw new InvalidArgumentException('無法從標題產生有效的 slug');
         }
 
-        return new self($slug);
+        return new self(strtolower($slug));
     }
 
     /**

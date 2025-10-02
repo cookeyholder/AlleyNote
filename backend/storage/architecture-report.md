@@ -1,14 +1,14 @@
 # 專案架構分析報告（基於 Context7 MCP 最新技術）
 
-**生成時間**: 2025-10-02 18:59:26
+**生成時間**: 2025-10-02 20:20:08
 
 ## 📊 程式碼品質指標
 
 | 指標 | 數值 | 狀態 |
 |------|------|------|
-| 總類別數 | 320 | - |
-| PSR-4 合規率 | 101.56% | ✅ 優秀 |
-| 現代 PHP 採用率 | 73.12% | ⚠️ 可改善 |
+| 總類別數 | 323 | - |
+| PSR-4 合規率 | 101.55% | ✅ 優秀 |
+| 現代 PHP 採用率 | 73.99% | ⚠️ 可改善 |
 
 ## 🚀 現代 PHP 特性使用情況
 
@@ -18,7 +18,7 @@
 | 空安全運算子 (PHP 8.0+) | 116 | ✅ 防止 null 指標異常 |
 | 屬性標籤 (PHP 8.0+) | 72 | ✅ 現代化 metadata |
 | 聯合型別 (PHP 8.0+) | 366 | ✅ 更靈活的型別定義 |
-| 建構子屬性提升 (PHP 8.0+) | 32 | ✅ 減少樣板程式碼 |
+| 建構子屬性提升 (PHP 8.0+) | 47 | ✅ 減少樣板程式碼 |
 | 列舉型別 (PHP 8.1+) | 17 | ✅ 型別安全的常數 |
 
 ## 🏷️ 命名空間分析
@@ -56,6 +56,7 @@
 - app/Domains/Statistics/DTOs/UserStatisticsDTO.php
 
 ### `App\Domains\Statistics\Events`
+- app/Domains/Statistics/Events/StatisticsCalculated.php
 - app/Domains/Statistics/Events/PostViewed.php
 - app/Domains/Statistics/Events/StatisticsSnapshotCreated.php
 
@@ -242,6 +243,10 @@
 - app/Domains/Auth/DTOs/LoginResponseDTO.php
 - app/Domains/Auth/DTOs/RegisterUserDTO.php
 - app/Domains/Auth/DTOs/RefreshRequestDTO.php
+
+### `App\Domains\Auth\Events`
+- app/Domains/Auth/Events/UserLoggedIn.php
+- app/Domains/Auth/Events/UserRegistered.php
 
 ### `App\Domains\Auth\Services\Advanced`
 - app/Domains/Auth/Services/Advanced/PwnedPasswordService.php

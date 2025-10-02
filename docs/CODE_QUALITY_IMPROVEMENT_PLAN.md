@@ -208,8 +208,9 @@
 - [x] 新增 `PostPublished` 事件（✅ 已完成）
 - [x] 新增 `PostContentUpdated` 事件（✅ 已完成）
 - [x] 新增 `PostStatusChanged` 事件（✅ 已完成）
-- [ ] 新增 `UserRegistered` 事件（設計已完成，待實施）
-- [ ] 新增 `StatisticsCalculated` 事件（設計已完成，待實施）
+- [x] 新增 `UserRegistered` 事件（✅ 已完成 2025-10-02）
+- [x] 新增 `UserLoggedIn` 事件（✅ 已完成 2025-10-02，額外增加）
+- [x] 新增 `StatisticsCalculated` 事件（✅ 已完成 2025-10-02）
 - [ ] 建立事件儲存與回放機制（已提供架構設計）
 - [ ] 實作事件溯源功能（已提供設計方案）
 
