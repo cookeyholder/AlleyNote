@@ -438,8 +438,10 @@ final class CodeQualityAnalyzer
                     $components['factories'][] = $relativePath;
                 }
 
-                // 根據內容特徵識別聚合根
-                if (preg_match('/(class|interface)\s+\w+.*AggregateRoot/i', $content) ||
+                // 根據目錄和內容特徵識別聚合根
+                if (str_contains($relativePath, '/Aggregates/') ||
+                    preg_match('/class\s+\w+Aggregate\b/i', $content) ||
+                    preg_match('/(class|interface)\s+\w+.*AggregateRoot/i', $content) ||
                     preg_match('/implements\s+.*AggregateRootInterface/i', $content) ||
                     (preg_match('/class\s+\w+.*extends.*Entity/i', $content) && 
                      preg_match('/private.*\$domainEvents/i', $content))) {
