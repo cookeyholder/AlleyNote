@@ -1,17 +1,23 @@
 # AlleyNote 公布欄網站
 
-[![測試](https://github.com/your-org/alleynote/workflows/測試/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![程式碼品質](https://github.com/your-org/alleynote/workflows/程式碼品質/badge.svg)](https://github.com/your-org/alleynote/actions)
-[![部署](https://github.com/your-org/alleynote/workflows/部署/badge.svg)](https://github.com/your-org/alleynote/actions)
+[![持續整合](https://github.com/cookeyholder/AlleyNote/workflows/Continuous%20Integration/badge.svg)](https://github.com/cookeyholder/AlleyNote/actions)
+[![安全審計](https://github.com/cookeyholder/AlleyNote/workflows/Security%20Audit/badge.svg)](https://github.com/cookeyholder/AlleyNote/actions)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.12-blue.svg)](https://www.php.net)
 [![Node Version](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![測試覆蓋率](https://img.shields.io/badge/Coverage-95%2B%25-brightgreen.svg)](#測試流程)
 [![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/ARCHITECTURE_AUDIT.md)
-[![統計模組](https://img.shields.io/badge/Statistics-Enabled-orange.svg)](docs/STATISTICS_FEATURE_OVERVIEW.md)
+[![統計模組](https://img.shields.io/badge/Statistics-Enabled-orange.svg)](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md)
 
-> ** 最新版本特色**
-> 基於 **DDD（領域驅動設計）架構** 的現代化公告系統，整合**多維度統計模組**，提供完整的內容管理、用戶權限控制、安全防護與數據分析能力。
+> **✨ 最新版本特色**
+> 
+> 這是一個基於 **DDD（領域驅動設計）架構** 的現代化公告系統。如果你是初學者，別擔心！這個系統雖然使用了先進的技術，但我們會在文件中用淺顯易懂的方式說明一切。
+>
+> **主要特色**：
+> - 📝 完整的內容管理（發布公告、上傳附件）
+> - 👥 用戶權限控制（管理員、一般用戶）
+> - 🔒 安全防護（防止駭客攻擊）
+> - 📊 數據分析（了解誰看了你的公告）
 
 ---
 
@@ -33,208 +39,768 @@
 
 ## 專案簡介
 
-AlleyNote 是一個企業級的公告欄系統，專為學校、社區、企業等組織設計。採用領域驅動設計（DDD）架構，整合統計分析模組，支援多用戶協作、權限管理、安全控制與數據洞察。
+### 🤔 AlleyNote 是什麼？
 
-### 🎯 設計理念
-- **領域驅動**: 按業務領域劃分模組，便於維護與擴展
-- **前後端分離**: 後端提供 RESTful API，前端使用現代化技術棧
-- **容器化部署**: Docker 統一環境，簡化部署與運維
-- **數據驅動**: 內建統計分析，支援業務決策
+AlleyNote 是一個**公告欄系統**（想像成電子佈告欄），專為**學校、社區、企業**等組織設計。
+
+**簡單來說**：
+- 就像是一個數位化的公佈欄，但功能更強大
+- 可以發布公告、上傳檔案、管理使用者
+- 自動記錄誰看了什麼內容
+- 提供漂亮的數據圖表
+
+### 👨‍🎓 適合誰使用？
+
+1. **學校老師**：發布作業通知、活動公告
+2. **社區管理員**：張貼社區消息、活動資訊
+3. **企業 HR**：公司公告、員工通知
+4. **開發者**：學習現代 PHP 開發實踐
+
+### 🎯 設計理念（給初學者）
+
+我們使用了一些聽起來很酷的技術概念，讓我們用簡單的方式解釋：
+
+- **領域驅動設計（DDD）**: 
+  - 想像把系統分成不同的「部門」
+  - 例如：文章部門、用戶部門、統計部門
+  - 每個部門專心做好自己的事，互不干擾
+  
+- **前後端分離**: 
+  - 前端 = 你看到的網頁（就像商店的裝潢）
+  - 後端 = 資料處理（就像商店的倉庫和系統）
+  - 兩者分開，各自獨立運作
+  
+- **容器化部署（Docker）**: 
+  - 把整個系統打包成一個「便當盒」
+  - 到哪裡都能用，不用擔心環境問題
+  - 就像泡麵，加熱水就能吃
+  
+- **數據驅動**: 
+  - 系統會記錄各種數據
+  - 幫你分析哪些公告最受歡迎
+  - 讓你做出更好的決策
 
 ---
 
 ## 核心功能
 
-### � 內容管理
-- **文章系統**: 發布、編輯、分類、標籤、置頂
-- **附件管理**: 多格式上傳、預覽、版本控制
-- **內容審核**: 自動過濾、人工審核、狀態管理
+### 📝 內容管理（發布公告）
 
-### 👥 用戶系統
-- **認證授權**: JWT Token、角色權限、會話管理
-- **用戶管理**: 註冊審核、資料維護、狀態控制
-- **活動記錄**: 21 種行為記錄、異常檢測、審計追踪
+**你可以做什麼**：
+- **發布文章**：撰寫公告、新聞、通知
+- **編輯管理**：隨時修改、刪除已發布的內容
+- **分類標籤**：用標籤整理文章，方便查找
+- **置頂功能**：重要公告可以置頂顯示
+- **上傳附件**：支援圖片、PDF、文件等多種格式
+- **內容審核**：管理員可以審核內容，確保品質
 
-### 🔒 安全控制
-- **存取控制**: IP 黑白名單、地理位置限制
-- **攻擊防護**: CSRF、XSS、SQL Injection 防護
-- **安全監控**: 異常行為檢測、自動封禁
+**初學者提示**：就像在 Facebook 發文，但功能更專業！
 
-### 📊 統計模組 ⭐
-- **多維度分析**: 內容、用戶、行為統計
-- **趨勢預測**: 時間序列分析、增長預測
-- **視覺化儀表板**: 實時數據、互動圖表
-- **快照系統**: 每日/週/月統計快照，支援歷史回溯
+### 👥 用戶系統（管理使用者）
 
-詳細介紹請參考：[統計功能總覽](docs/STATISTICS_FEATURE_OVERVIEW.md)
+**認證授權**（簡單說就是「登入和權限」）：
+- **JWT Token**：一種安全的登入方式（不用擔心密碼外洩）
+- **角色權限**：分成管理員和一般用戶
+  - 管理員：可以做任何事
+  - 一般用戶：只能看和發布
+- **會話管理**：記住你的登入狀態
+
+**用戶管理**：
+- **註冊審核**：新用戶需要管理員同意才能使用
+- **資料維護**：管理用戶的個人資料
+- **狀態控制**：可以停用違規用戶
+
+**活動記錄**（誰做了什麼）：
+- 記錄 21 種不同的行為（登入、發文、修改等）
+- 異常檢測（發現可疑行為會警告）
+- 審計追踪（事後可以查詢誰做了什麼）
+
+**初學者提示**：想像成一個有保全系統的辦公大樓，每個人都有門禁卡和權限。
+
+### 🔒 安全控制（保護系統）
+
+**存取控制**：
+- **IP 黑白名單**：可以封鎖特定 IP 位址
+- **地理位置限制**：限制只有特定國家可以訪問
+
+**攻擊防護**：
+- **CSRF 防護**：防止偽造請求攻擊
+- **XSS 防護**：防止惡意腳本注入
+- **SQL Injection 防護**：防止資料庫被攻擊
+
+**安全監控**：
+- **異常行為檢測**：系統會自動偵測可疑活動
+- **自動封禁**：發現攻擊會自動封鎖
+
+**初學者提示**：這些是網站的「保全系統」，自動幫你防禦各種網路攻擊。
+
+### 📊 統計模組 ⭐（了解數據）
+
+這是系統的「分析大腦」，幫你理解使用情況。
+
+**多維度分析**：
+- **內容統計**：哪些文章最受歡迎？
+- **用戶統計**：有多少活躍用戶？
+- **行為統計**：大家都在看什麼？
+
+**趨勢預測**：
+- **時間序列分析**：找出瀏覽量的變化趨勢
+- **增長預測**：預測未來的使用量
+
+**視覺化儀表板**：
+- **實時數據**：立即看到最新數據
+- **互動圖表**：漂亮的圖表，一目瞭然
+
+**快照系統**：
+- 每日/每週/每月自動儲存統計資料
+- 可以回顧歷史數據
+
+**初學者提示**：就像 Google Analytics，但是專為你的公告系統設計！
+
+📖 **想了解更多？** 請閱讀：[統計功能詳細說明](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md)
 
 ---
 
 ## 技術架構
 
-### 🏗️ DDD 架構設計
+### 🤓 給初學者的說明
+
+不懂技術也沒關係！這裡用簡單的方式說明系統是怎麼運作的。
+
+### 🏗️ 系統架構圖
+
+下面的圖表顯示系統的各個部分如何協同工作（就像公司的組織架構圖）：
 
 ```mermaid
 graph TB
-    subgraph "🌐 客戶端層"
-        Browser[瀏覽器]
+    subgraph "🌐 使用者（你）"
+        Browser[瀏覽器<br/>Chrome、Firefox、Safari]
     end
 
-    subgraph "🐳 Docker 容器化環境"
-        subgraph "🎨 前端服務"
-            Frontend[Vite + TypeScript + Axios<br/>Tailwind CSS]
+    subgraph "🐳 Docker 容器化環境（整個系統打包在這裡）"
+        subgraph "🎨 前端服務（你看到的網頁）"
+            Frontend[網頁介面<br/>使用 Vite + TypeScript]
         end
 
-        subgraph "🌐 反向代理"
-            Nginx[Nginx<br/>SSL 終止 & 負載均衡]
+        subgraph "🌐 Nginx（交通警察）"
+            Nginx[Nginx 伺服器<br/>處理 SSL 和分配流量]
         end
 
-        subgraph "⚡ PHP 後端服務"
-            subgraph "🎯 領域層 (Domain)"
-                Post[文章領域]
-                Auth[認證領域]
-                Attachment[附件領域]
-                Security[安全領域]
-                Statistics[統計領域 ⭐]
+        subgraph "⚡ PHP 後端服務（處理資料的大腦）"
+            subgraph "🎯 領域層（各個部門）"
+                Post[文章部門<br/>管理所有文章相關的事]
+                Auth[認證部門<br/>管理登入和權限]
+                Attachment[附件部門<br/>管理檔案上傳]
+                Security[安全部門<br/>保護系統安全]
+                Statistics[統計部門 ⭐<br/>分析數據]
             end
 
-            subgraph "🚀 應用層 (Application)"
-                Controllers[API 控制器]
-                Services[應用服務]
-                DTOs[資料傳輸物件]
+            subgraph "🚀 應用層（協調各部門）"
+                Controllers[API 控制器<br/>接收和回應請求]
+                Services[應用服務<br/>執行業務邏輯]
+                DTOs[資料傳輸物件<br/>格式化數據]
             end
 
-            subgraph "🔧 基礎設施層 (Infrastructure)"
-                Repositories[資料存取]
-                Cache[多層快取]
-                FileSystem[檔案系統]
+            subgraph "🔧 基礎設施層（底層工具）"
+                Repositories[資料存取<br/>讀寫資料庫]
+                Cache[多層快取<br/>加速系統]
+                FileSystem[檔案系統<br/>儲存上傳的檔案]
             end
         end
 
-        subgraph "💾 資料層"
-            SQLite[(SQLite 資料庫)]
-            Redis[(Redis 快取)]
-            Storage[檔案儲存]
+        subgraph "💾 資料層（儲存所有資料）"
+            SQLite[(SQLite 資料庫<br/>儲存文章、用戶等資料)]
+            Redis[(Redis 快取<br/>暫存常用資料，加快速度)]
+            Storage[檔案儲存<br/>儲存上傳的圖片、文件]
         end
     end
 
-    Browser --> Nginx
-    Nginx --> Frontend
-    Nginx --> Controllers
-    Controllers --> Services
-    Services --> Post
-    Services --> Auth
-    Services --> Attachment
-    Services --> Security
-    Services --> Statistics
-    Post --> Repositories
-    Auth --> Repositories
-    Statistics --> Repositories
-    Repositories --> SQLite
-    Cache --> Redis
-    FileSystem --> Storage
+    Browser -->|訪問網站| Nginx
+    Nginx -->|顯示網頁| Frontend
+    Nginx -->|API 請求| Controllers
+    Controllers -->|協調| Services
+    Services -->|使用| Post
+    Services -->|使用| Auth
+    Services -->|使用| Attachment
+    Services -->|使用| Security
+    Services -->|使用| Statistics
+    Post -->|讀寫| Repositories
+    Auth -->|讀寫| Repositories
+    Statistics -->|讀寫| Repositories
+    Repositories -->|儲存| SQLite
+    Cache -->|快取| Redis
+    FileSystem -->|儲存檔案| Storage
 ```
 
-### 🛠️ 技術棧
-- **後端**: PHP 8.4.12 + DDD 架構
-- **前端**: Vite 5 + TypeScript + Axios + Tailwind CSS
-- **資料庫**: SQLite 3 (生產環境可擴展至 PostgreSQL/MySQL)
-- **快取**: Redis (多層快取 + 工作佇列)
-- **容器**: Docker + Docker Compose v2.39.2
-- **Web 伺服器**: Nginx (反向代理 + SSL)
+### 🛠️ 技術棧（使用的工具）
 
-### � 專案結構
+**給初學者的解釋**：
+- **後端**（伺服器端，處理資料）：
+  - PHP 8.4.12 - 一種程式語言
+  - DDD 架構 - 一種組織程式碼的方式
+  
+- **前端**（瀏覽器端，你看到的畫面）：
+  - Vite 5 - 快速的開發工具
+  - TypeScript - JavaScript 的加強版
+  - Axios - 與後端溝通的工具
+  - Tailwind CSS - 漂亮的 CSS 框架
+  
+- **資料庫**（儲存資料的地方）：
+  - SQLite 3 - 輕量級資料庫（適合中小型專案）
+  - 可以升級到 PostgreSQL 或 MySQL（給大型專案用）
+  
+- **快取**（加速系統）：
+  - Redis - 快速的記憶體資料庫
+  - 幫助系統更快回應
+  
+- **容器**（打包工具）：
+  - Docker - 把整個系統打包成容器
+  - Docker Compose - 管理多個容器
+  
+- **Web 伺服器**（網站的入口）：
+  - Nginx - 高效能的網頁伺服器
+  - 處理 SSL 憑證（HTTPS 加密）
+
+### 📁 專案結構（檔案放在哪裡）
+
+**給初學者**：這是整個專案的資料夾結構，就像公司的檔案櫃一樣，每個資料夾都有特定用途。
+
 ```
 AlleyNote/
-├── 🎨 frontend/                    # 前端應用程式
-│   ├── src/                        # TypeScript 源碼
-│   ├── public/                     # 靜態資源
-│   └── package.json               # 前端依賴
-├── ⚡ backend/                     # 後端 API
+├── 🎨 frontend/                    # 前端應用程式（網頁介面）
+│   ├── src/                        # TypeScript 源碼（程式碼）
+│   ├── public/                     # 靜態資源（圖片、CSS 等）
+│   └── package.json               # 前端依賴清單
+│
+├── ⚡ backend/                     # 後端 API（資料處理）
 │   ├── app/                        # DDD 架構程式碼
-│   │   ├── Domains/               # 領域層
-│   │   ├── Application/           # 應用層
-│   │   ├── Infrastructure/        # 基礎設施層
-│   │   └── Shared/                # 共用組件
-│   ├── config/                    # 配置檔案
-│   ├── database/                  # 資料庫遷移與種子
-│   ├── tests/                     # 測試套件
-│   └── composer.json              # PHP 依賴
-├── 📖 docs/                       # 64+ 個文件
-├── 🐳 docker/                     # 容器配置
-└── �️ scripts/                    # 維運腳本
+│   │   ├── Domains/               # 領域層（各個部門）
+│   │   ├── Application/           # 應用層（協調部門）
+│   │   ├── Infrastructure/        # 基礎設施層（工具）
+│   │   └── Shared/                # 共用組件（大家都用的）
+│   ├── config/                    # 配置檔案（設定）
+│   ├── database/                  # 資料庫相關
+│   ├── tests/                     # 測試套件（確保品質）
+│   └── composer.json              # PHP 依賴清單
+│
+├── 📖 docs/                       # 64+ 份文件
+│   ├── statistics/                # 統計功能文件
+│   ├── ddd/                       # DDD 架構文件
+│   ├── reports/                   # 各種報告
+│   └── ...                        # 其他文件
+│
+├── 🐳 docker/                     # Docker 容器配置
+│   ├── nginx/                     # Nginx 設定
+│   ├── php/                       # PHP 環境設定
+│   └── redis/                     # Redis 設定
+│
+├── 🛠️ scripts/                    # 維運腳本（自動化工具）
+│   ├── Analysis/                  # 分析工具
+│   └── ...                        # 其他腳本
+│
+├── docker-compose.yml             # Docker 服務定義（很重要！）
+├── .env.example                   # 環境變數範例
+└── README.md                      # 你正在讀的這份文件 😊
 ```
+
+**重要檔案說明**：
+- `docker-compose.yml`：定義整個系統如何啟動
+- `.env`：環境變數設定檔（從 .env.example 複製）
+- `composer.json`：PHP 套件清單
+- `package.json`：前端套件清單
 
 ---
 
 ## 系統需求
 
-### 🖥️ 基本需求
-- **作業系統**: Linux/macOS/Windows (支援 Docker)
-- **Docker**: 28.3.3+
-- **Docker Compose**: v2.39.2+
-- **記憶體**: 2GB+ (推薦 4GB+)
-- **儲存空間**: 5GB+
+### 🤔 我需要準備什麼？
 
-### � 開發需求
-- **PHP**: 8.4.12+ (容器內提供)
-- **Node.js**: 18.0+ (前端建構)
-- **Composer**: 2.0+ (PHP 依賴管理)
+**給完全初學者**：在開始之前，你的電腦需要安裝一些工具。別擔心，我們會一步步說明！
 
-詳細需求請參考：[系統需求文件](docs/SYSTEM_REQUIREMENTS.md)
-- **100% 功能完成度**: 所有核心功能模組生產就緒
-- **0 PHPStan 錯誤**: PHPStan Level 8+ 完全通過
+### 🖥️ 基本需求（必須要有）
 
-### 🛠️ 統一腳本管理系統
-- **58+ 腳本整合**: 統一為單一入口點管理
-- **現代 PHP 8.4**: readonly 類別、union types、match 表達式
-- **DDD 原則**: 值物件、介面分離、依賴注入
-- **程式碼減少 85%**: 維護負擔大幅降低
-- **統計指令整合**: 提供 `statistics:recalculation`、`statistics:status` 等命令支援資料回填與健康檢查
+1. **作業系統**：
+   - ✅ Linux（Ubuntu、Debian 等）
+   - ✅ macOS（Mac 電腦）
+   - ✅ Windows 10/11（需要 WSL2）
+   
+2. **Docker Desktop**：
+   - 版本：28.3.3 或更新
+   - **這是什麼？** 把整個系統打包的工具
+   - **怎麼安裝？** 
+     - Mac/Windows：下載 [Docker Desktop](https://www.docker.com/products/docker-desktop)
+     - Linux：參考 [官方安裝指南](https://docs.docker.com/engine/install/)
+   
+3. **Docker Compose**：
+   - 版本：v2.39.2 或更新
+   - **這是什麼？** 管理多個 Docker 容器的工具
+   - **通常會隨 Docker Desktop 一起安裝**
+   
+4. **電腦規格**：
+   - **記憶體（RAM）**：至少 2GB，建議 4GB 以上
+   - **儲存空間**：至少 5GB
+   - **網路**：需要網際網路連線（下載套件用）
 
-### 🔧 維運功能
-- **自動備份**: 資料庫與檔案自動備份
-- **效能監控**: 快取統計、資料庫效能分析
-- **Docker 容器化**: 開發與生產環境一致
-- **SSL 支援**: Let's Encrypt 自動憑證管理
+### 🔧 開發需求（如果你要改程式碼）
+
+只有想要修改程式碼的開發者才需要這些：
+
+1. **PHP 8.4.12+**
+   - Docker 容器裡已經包含，不用另外安裝！
+   
+2. **Node.js 18.0+**
+   - 用來建構前端
+   - 下載：[Node.js 官網](https://nodejs.org/)
+   
+3. **Composer 2.0+**
+   - PHP 的套件管理工具
+   - Docker 容器裡已經包含！
+
+4. **程式碼編輯器**（推薦）：
+   - [Visual Studio Code](https://code.visualstudio.com/) - 免費、好用
+   - [PhpStorm](https://www.jetbrains.com/phpstorm/) - 專業的 PHP IDE
+
+### ✅ 檢查你的環境
+
+在開始之前，執行這些命令檢查是否安裝正確：
+
+```bash
+# 檢查 Docker 版本（應該顯示版本號）
+docker --version
+# 範例輸出：Docker version 28.3.3, build...
+
+# 檢查 Docker Compose 版本
+docker compose version
+# 範例輸出：Docker Compose version v2.39.2
+
+# 檢查 Docker 是否正在運行
+docker ps
+# 如果顯示一個表格（即使是空的），表示運行正常！
+```
+
+**遇到問題？** 
+- Windows 用戶請確保已啟用 WSL2
+- Mac 用戶請確保 Docker Desktop 已啟動
+- 詳細的故障排除請參考：[系統需求文件](docs/SYSTEM_REQUIREMENTS.md)
 
 ---
 
-## 技術架構
+## 快速開始
 
-### 🎯 核心技術棧
-- **後端語言**: PHP 8.4.11（強型別、現代語法）
-- **Web 伺服器**: NGINX（高效能、負載均衡）
-- **資料庫**: SQLite3（零設定、檔案型資料庫）
-- **快取系統**: File Cache + APCu（支援分散式快取）
+### 🚀 給完全初學者的安裝指南
 
-### 🏗️ DDD 架構組件
+不用擔心！我們會一步一步帶你完成安裝。整個過程大約需要 **10-15 分鐘**。
 
-#### 🎯 DDD 分層架構圖
+### 步驟 1：下載專案
 
-```mermaid
-graph TD
-    subgraph "🌐 外部介面層"
-        HTTP[HTTP 請求]
-        CLI[命令列介面]
-    end
+首先，打開終端機（Terminal）或命令提示字元（Command Prompt），然後執行：
 
-    subgraph "🚀 應用層 (Application Layer)"
-        subgraph "🎮 控制器"
-            WebCtrl[Web 控制器]
-            ApiCtrl[API 控制器]
-            SecurityCtrl[安全控制器]
-        end
+```bash
+# 下載專案（就像下載一個壓縮檔）
+git clone https://github.com/cookeyholder/AlleyNote.git
 
-        subgraph "📦 應用服務"
-            AppServices[應用服務]
-            DTOs[資料傳輸物件]
-            Middleware[中介軟體]
-        end
-    end
+# 進入專案資料夾
+cd AlleyNote
+```
 
-    subgraph "🌟 領域層 (Domain Layer)"
-        subgraph "📝 文章領域"
+**沒有 Git？**
+- Mac：已經內建，直接用！
+- Windows：下載 [Git for Windows](https://git-scm.com/download/win)
+- Linux：`sudo apt-get install git`
+
+### 步驟 2：設定環境變數
+
+環境變數就像是系統的「設定檔」，告訴系統一些重要資訊。
+
+```bash
+# 複製範例檔案（就像複製貼上）
+cp .env.example .env
+```
+
+**這個檔案裡有什麼？**
+- 資料庫位置
+- 安全金鑰
+- 系統設定
+
+**初學者不用改任何東西**，用預設值就可以了！
+
+### 步驟 3：啟動系統 🎉
+
+這是最簡單的一步！只要一個命令：
+
+```bash
+# 啟動所有服務（就像按下「開機」按鈕）
+docker compose up -d
+```
+
+**發生什麼事了？**
+Docker 會自動：
+1. 下載需要的套件（第一次會比較久，大約 5-10 分鐘）
+2. 設定資料庫
+3. 啟動網頁伺服器
+4. 啟動快取系統
+
+看到 `✓ Container ... Started` 就表示成功了！
+
+### 步驟 4：初始化資料庫
+
+資料庫需要建立一些表格來儲存資料：
+
+```bash
+# 建立資料庫結構
+docker compose exec web php backend/database/init.php
+```
+
+**這會做什麼？**
+- 建立用戶表格
+- 建立文章表格
+- 建立統計表格
+- 新增一些測試資料
+
+### 步驟 5：檢查是否成功 ✅
+
+打開瀏覽器，訪問：
+
+- **前端網頁**：http://localhost:3000
+- **後端 API**：http://localhost:8080
+- **健康檢查**：http://localhost:8080/health
+
+如果看到網頁，恭喜你！系統已經成功啟動了！🎊
+
+### 步驟 6：建立第一個帳號
+
+```bash
+# 執行註冊腳本
+docker compose exec web php scripts/create-admin.php
+```
+
+跟著提示輸入：
+- 用戶名稱
+- Email
+- 密碼
+
+### 常用命令速查表
+
+```bash
+# 🟢 啟動系統
+docker compose up -d
+
+# 🔴 停止系統
+docker compose down
+
+# 📊 查看執行狀態
+docker compose ps
+
+# 📝 查看日誌（看看系統在做什麼）
+docker compose logs -f
+
+# 🔄 重新啟動
+docker compose restart
+
+# 🧹 完全清除並重新開始
+docker compose down -v
+docker compose up -d
+```
+
+### 🆘 遇到問題？
+
+#### 問題 1：Port 已被占用
+
+**錯誤訊息**：`Error: port is already allocated`
+
+**解決方法**：
+```bash
+# 查看誰占用了 port
+# Mac/Linux:
+lsof -i :8080
+
+# Windows:
+netstat -ano | findstr :8080
+
+# 停止占用 port 的程式，或修改 docker-compose.yml 中的 port 號碼
+```
+
+#### 問題 2：Docker 沒有啟動
+
+**錯誤訊息**：`Cannot connect to Docker daemon`
+
+**解決方法**：
+- Mac/Windows：打開 Docker Desktop 應用程式
+- Linux：`sudo systemctl start docker`
+
+#### 問題 3：下載很慢
+
+**原因**：網路速度或 Docker Hub 在海外
+
+**解決方法**：
+- 使用 VPN
+- 或等待下載完成（第一次比較久，之後就快了）
+
+#### 更多問題？
+
+查看詳細的故障排除指南：[故障排除文件](docs/TROUBLESHOOTING_GUIDE.md)
+
+### 🎓 下一步學什麼？
+
+恭喜你成功安裝了 AlleyNote！接下來你可以：
+
+1. **管理員**：閱讀 [管理員快速入門](docs/ADMIN_QUICK_START.md)
+2. **開發者**：閱讀 [開發者指南](docs/DEVELOPER_GUIDE.md)
+3. **了解統計功能**：閱讀 [統計功能總覽](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md)
+
+---
+
+## 開發指南
+
+### 👨‍💻 給開發者的說明
+
+如果你想要修改程式碼或添加新功能，這裡有一些重要資訊。
+
+### 🛠️ 統一腳本管理系統
+
+我們整合了 58+ 個腳本到一個統一的入口點，讓管理更簡單：
+
+```bash
+# 查看系統狀態
+docker compose exec web php scripts/unified-scripts.php status
+
+# 執行測試
+docker compose exec web php scripts/unified-scripts.php test --action=run
+
+# 程式碼修復
+docker compose exec web php scripts/unified-scripts.php fix --type=all
+
+# 統計資料重算
+docker compose exec web php scripts/unified-scripts.php statistics:recalculation
+```
+
+**特色**：
+- 統一管理介面
+- 使用現代 PHP 8.4 特性
+- 遵循 DDD 原則
+- 85% 程式碼減少
+
+### 🔧 常用開發命令
+
+```bash
+# 進入 PHP 容器（就像「進入」伺服器）
+docker compose exec web bash
+
+# 執行 Composer（PHP 套件管理）
+docker compose exec web composer install
+docker compose exec web composer update
+
+# 執行測試
+docker compose exec -T web ./vendor/bin/phpunit
+
+# 程式碼風格檢查
+docker compose exec -T web ./vendor/bin/php-cs-fixer fix
+
+# 靜態分析（找出潛在問題）
+docker compose exec -T web ./vendor/bin/phpstan analyse
+
+# 完整 CI 檢查（提交前必做！）
+docker compose exec -T web composer ci
+```
+
+### 📝 開發流程
+
+1. **建立新分支**
+   ```bash
+   git checkout -b feature/my-new-feature
+   ```
+
+2. **寫程式碼**（遵循 DDD 原則）
+   - 先寫測試（TDD）
+   - 實作功能
+   - 確保測試通過
+
+3. **檢查品質**
+   ```bash
+   docker compose exec -T web composer ci
+   ```
+
+4. **提交**
+   ```bash
+   git add .
+   git commit -m "feat: 新增某某功能"
+   git push origin feature/my-new-feature
+   ```
+
+5. **建立 Pull Request**
+
+**詳細開發指南**：[開發者文件](docs/DEVELOPER_GUIDE.md)
+
+
+## 測試流程
+
+### 🧪 給初學者的測試說明
+
+**什麼是測試？**
+測試就像是「品質檢查」，確保程式碼沒有問題。就像出廠前要檢查產品一樣！
+
+### ✅ 為什麼要測試？
+
+1. **確保功能正確**：避免發布有 bug 的程式碼
+2. **防止破壞現有功能**：改A功能不會影響B功能
+3. **提升信心**：敢放心修改程式碼
+4. **文件化**：測試就是活的使用範例
+
+### 📊 測試統計
+
+我們的系統測試非常完整：
+- **總測試數**：2190 個測試
+- **總斷言數**：9300+ 個斷言
+- **通過率**：100%（全部通過！）
+- **測試覆蓋率**：95%+ 的程式碼都有測試
+
+### 🎯 如何執行測試？
+
+**最簡單的方式**（執行所有測試）：
+```bash
+docker compose exec -T web ./vendor/bin/phpunit
+```
+
+**分類執行**（只測試特定部分）：
+```bash
+# 單元測試（測試單一函式）
+docker compose exec -T web ./vendor/bin/phpunit --testsuite Unit
+
+# 整合測試（測試多個組件協作）
+docker compose exec -T web ./vendor/bin/phpunit --testsuite Integration
+
+# 安全測試（測試安全機制）
+docker compose exec -T web ./vendor/bin/phpunit --testsuite Security
+```
+
+**完整 CI 檢查**（提交前必做）：
+```bash
+# 這會執行：程式碼風格檢查 + 靜態分析 + 所有測試
+docker compose exec -T web composer ci
+```
+
+### 📖 測試類型說明
+
+**1. 單元測試（Unit Tests）**
+- **目的**：測試單一函式或類別
+- **範例**：測試密碼驗證函式是否正確
+- **數量**：約 1500 個
+
+**2. 整合測試（Integration Tests）**
+- **目的**：測試多個組件是否正常協作
+- **範例**：測試登入流程（包含驗證、資料庫、JWT）
+- **數量**：約 600 個
+
+**3. 安全測試（Security Tests）**
+- **目的**：確保系統安全
+- **範例**：測試是否能防止 SQL Injection
+- **數量**：約 90 個
+
+### 🆘 測試失敗怎麼辦？
+
+1. **看錯誤訊息**：PHPUnit 會告訴你哪裡錯了
+2. **檢查你的改動**：是不是改壞了什麼？
+3. **參考測試程式碼**：看看測試期望什麼結果
+4. **修復後重新測試**：直到全部通過
+
+**更多幫助**：[測試改善文件](docs/reports/quality/TEST_SUITE_IMPROVEMENTS.md)
+
+---
+
+## 文件資源
+
+### 📚 給不同角色的文件導航
+
+我們準備了 64+ 份詳細文件！不用全看，根據你的角色選擇適合的文件：
+
+### 👨‍💼 如果你是**管理員/營運人員**
+
+**快速入門（必讀）**：
+1. [管理員 30 分鐘快速入門](docs/ADMIN_QUICK_START.md) ⭐⭐⭐
+2. [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)
+3. [部署指南](docs/DEPLOYMENT.md)
+
+**日常維護**：
+- [管理員操作手冊](docs/ADMIN_MANUAL.md) - 完整的管理指南
+- [統計操作手冊](docs/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 統計功能管理
+- [故障排除指南](docs/TROUBLESHOOTING_GUIDE.md) - 遇到問題看這裡
+
+**安全與備份**：
+- [SSL 設定指南](docs/SSL_DEPLOYMENT_GUIDE.md) - HTTPS 憑證設定
+- 備份說明在[管理員手冊](docs/ADMIN_MANUAL.md)的備份章節
+
+### 👨‍💻 如果你是**開發者**
+
+**快速入門（必讀）**：
+1. [開發者指南](docs/DEVELOPER_GUIDE.md) ⭐⭐⭐ - 開發環境設定
+2. [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 了解程式碼標準
+3. [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 理解系統架構
+
+**API 開發**：
+- [API 文件](docs/API_DOCUMENTATION.md) - 完整的 API 規格
+- [路由系統指南](docs/routing/ROUTING_SYSTEM_GUIDE.md) - 路由設計
+- [DI 容器指南](docs/DI_CONTAINER_GUIDE.md) - 依賴注入
+
+**進階主題**：
+- [驗證器指南](docs/VALIDATOR_GUIDE.md) - 29 種驗證規則
+- [快取標籤系統](docs/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
+- [使用者活動記錄](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md) - 行為追蹤
+
+**測試**：
+- [測試套件改善](docs/reports/quality/TEST_SUITE_IMPROVEMENTS.md) - 測試最佳實踐
+
+### 📊 如果你想了解**統計功能**
+
+**統計模組文件**（8 份）：
+1. [統計功能總覽](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md) ⭐ - 先看這個！
+2. [統計功能規格書](docs/statistics/STATISTICS_FEATURE_SPECIFICATION.md) - 詳細規格
+3. [統計操作手冊](docs/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 如何使用
+4. [統計效能報告](docs/statistics/STATISTICS_PERFORMANCE_REPORT.md) - 效能分析
+5. [統計資料庫遷移](docs/statistics/STATISTICS_DATABASE_MIGRATION_GUIDE.md) - 資料庫設定
+6. [統計領域分析](docs/statistics/STATISTICS_DOMAIN_ANALYSIS.md) - 領域設計
+7. [統計重算指南](docs/statistics/STATISTICS_RECALCULATION_GUIDE.md) - 資料重算
+8. [統計 TODO](docs/statistics/STATISTICS_FEATURE_TODO.md) - 開發記錄
+
+### 🏗️ 如果你想深入理解**系統架構**
+
+**架構文件**：
+- [架構審計報告](docs/ARCHITECTURE_AUDIT.md) - 完整架構分析
+- [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 領域驅動設計
+- [DDD 值物件總結](docs/ddd/DDD_VALUE_OBJECTS_SUMMARY.md) - 值物件實作
+- [DDD 聚合根設計](docs/ddd/POST_AGGREGATE_DESIGN.md) - 聚合根範例
+
+### 📁 完整文件列表
+
+**按目錄分類**：
+- `docs/` - 主要文件（35 份）
+- `docs/statistics/` - 統計模組文件（8 份）
+- `docs/ddd/` - DDD 設計文件（6 份）
+- `docs/reports/` - 各種報告
+- `docs/routing/` - 路由系統文件（5 份）
+- `docs/migration/` - 遷移文件
+
+**文件索引**：完整列表請看 [文件資源](#文件資源) 章節底部
+
+### 💡 文件閱讀建議
+
+**初學者**：
+1. 先看對應角色的「必讀」文件
+2. 遇到問題再查相關文件
+3. 不要試圖一次看完所有文件
+
+**開發者**：
+1. 先理解 DDD 架構
+2. 熟悉開發流程
+3. 需要時查閱 API 文件
+
+**進階使用**：
+- 所有文件都使用 Markdown 格式
+- 可以用任何文字編輯器開啟
+- GitHub 上可以直接閱讀
+
+---
+
+---
             PostEntity[文章實體]
             PostVO[文章值物件]
             PostService[文章服務]
