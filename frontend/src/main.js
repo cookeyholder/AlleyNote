@@ -1,54 +1,38 @@
 /**
  * AlleyNote 前端應用程式主入口
- *
- * @version 1.0.0
- * @author AlleyNote Team
  */
 
-import "./style.css";
-import { ApiClient } from "./api/ApiClient.js";
-import { StatisticsDashboard } from "./views/StatisticsDashboard.js";
+import './style.css';
+import { initRouter } from './router/index.js';
+import { globalActions } from './store/globalStore.js';
+import { authAPI } from './api/modules/auth.js';
 
 /**
- * 應用程式主類別
+ * 初始化應用程式
  */
-class App {
-    constructor() {
-        this.apiClient = new ApiClient();
-        this.init();
-    }
+async function initApp() {
+  console.log('🚀 AlleyNote 前端應用程式啟動中...');
 
-    /**
-     * 初始化應用程式
-     */
-    init() {
-        this.setupEventListeners();
-        this.initializeStatisticsDashboard();
+  // 檢查登入狀態
+  if (authAPI.isAuthenticated()) {
+    try {
+      const user = await authAPI.me();
+      globalActions.setUser(user);
+      console.log('✅ 使用者已登入:', user);
+    } catch (error) {
+      console.warn('⚠️ 驗證失敗，清除登入狀態');
+      globalActions.clearUser();
     }
+  }
 
-    /**
-     * 設定事件監聽器
-     */
-    setupEventListeners() {
-        document.addEventListener("DOMContentLoaded", () => {
-            console.log("AlleyNote 前端應用程式已啟動");
-        });
-    }
+  // 初始化路由
+  initRouter();
 
-    /**
-     * 載入初始資料
-     */
-    initializeStatisticsDashboard() {
-        try {
-            this.statisticsDashboard = new StatisticsDashboard({
-                apiClient: this.apiClient,
-            });
-            this.statisticsDashboard.init();
-        } catch (error) {
-            console.error("初始化統計儀表板失敗:", error);
-        }
-    }
+  console.log('✅ AlleyNote 前端應用程式啟動完成');
 }
 
 // 啟動應用程式
-new App();
+initApp().catch((error) => {
+  console.error('❌ 應用程式啟動失敗:', error);
+});
+
