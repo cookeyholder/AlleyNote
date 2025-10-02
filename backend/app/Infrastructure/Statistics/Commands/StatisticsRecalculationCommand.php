@@ -434,22 +434,13 @@ final class StatisticsRecalculationCommand extends Command
         while ($currentDate <= $endDate) {
             $period = DomainStatisticsPeriod::createDaily($currentDate);
 
-            switch ($task['type']) {
-                case 'overview':
-                    $this->aggregationService->createOverviewSnapshot($period);
-                    break;
-                case 'posts':
-                    $this->aggregationService->createPostsSnapshot($period);
-                    break;
-                case 'users':
-                    $this->aggregationService->createUsersSnapshot($period);
-                    break;
-                case 'popular':
-                    $this->aggregationService->createPopularSnapshot($period);
-                    break;
-                default:
-                    throw new Exception('不支援的統計類型: ' . $task['type']);
-            }
+            match ($task['type']) {
+                'overview' => $this->aggregationService->createOverviewSnapshot($period),
+                'posts' => $this->aggregationService->createPostsSnapshot($period),
+                'users' => $this->aggregationService->createUsersSnapshot($period),
+                'popular' => $this->aggregationService->createPopularSnapshot($period),
+                default => throw new Exception('不支援的統計類型: ' . $task['type']),
+            };
 
             $currentDate = $currentDate->modify('+1 day');
         }

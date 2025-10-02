@@ -52,7 +52,8 @@ class PostService implements PostServiceInterface
 
         // 處理狀態轉換（如果有提供狀態）
         if ($dto->status !== null) {
-            $currentStatus = PostStatus::from($post->getStatus());
+            /** @var PostStatus $currentStatus */
+            $currentStatus = $post->getStatus();
             $targetStatus = $dto->status;
 
             if (!$currentStatus->canTransitionTo($targetStatus)) {
@@ -167,7 +168,7 @@ class PostService implements PostServiceInterface
         }
 
         // 只有已發布的文章才能計算瀏覽次數
-        if ($post->getStatus() !== PostStatus::PUBLISHED->value) {
+        if (!$post->hasStatus(PostStatus::PUBLISHED)) {
             return false;
         }
 

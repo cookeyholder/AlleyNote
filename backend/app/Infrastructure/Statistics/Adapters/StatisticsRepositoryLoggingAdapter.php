@@ -7,6 +7,7 @@ namespace App\Infrastructure\Statistics\Adapters;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Shared\Enums\LogLevel;
 use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -177,7 +178,7 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
                 'period_type' => $snapshot->getPeriod()->type->value,
                 'data_size' => strlen(json_encode($snapshot->getStatisticsData(), JSON_THROW_ON_ERROR)),
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
-            ], 'info');
+            ], LogLevel::INFO);
 
             return $savedSnapshot;
         } catch (Throwable $e) {
@@ -270,7 +271,7 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
                 'before_date' => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
                 'deleted_count' => $deletedCount,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
-            ], 'info');
+            ], LogLevel::INFO);
 
             return $deletedCount;
         } catch (Throwable $e) {
@@ -371,14 +372,14 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
     /**
      * 記錄操作日誌.
      */
-    private function logOperation(string $operation, array $context = [], string $level = 'debug'): void
+    private function logOperation(string $operation, array $context = [], LogLevel $level = LogLevel::DEBUG): void
     {
         $message = sprintf('Statistics Repository Operation: %s', $operation);
 
         match ($level) {
-            'info' => $this->logger->info($message, $context),
-            'warning' => $this->logger->warning($message, $context),
-            'error' => $this->logger->error($message, $context),
+            LogLevel::INFO => $this->logger->info($message, $context),
+            LogLevel::WARNING => $this->logger->warning($message, $context),
+            LogLevel::ERROR => $this->logger->error($message, $context),
             default => $this->logger->debug($message, $context),
         };
     }

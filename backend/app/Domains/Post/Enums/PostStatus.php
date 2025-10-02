@@ -37,4 +37,12 @@ enum PostStatus: string
             self::ARCHIVED => false // 已封存不能轉換到其他狀態
         };
     }
+
+    /**
+     * 檢查給定的值是否是有效的狀態.
+     */
+    public static function isValid(string $value): bool
+    {
+        return in_array($value, array_column(self::cases(), 'value'), true);
+    }
 }

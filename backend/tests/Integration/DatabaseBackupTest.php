@@ -122,7 +122,7 @@ class DatabaseBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            'DB_PATH=%s /bin/bash %s/scripts/restore_db.sh %s 2>&1',
+            'DB_PATH=%s /bin/bash %s/scripts/Database/restore_db.sh %s 2>&1',
             escapeshellarg($this->dbPath),
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),
@@ -150,7 +150,7 @@ class DatabaseBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            'DB_PATH=%s BACKUP_DIR=%s /bin/bash %s/scripts/backup_db.sh 2>&1',
+            'DB_PATH=%s BACKUP_DIR=%s /bin/bash %s/scripts/Database/backup_db.sh 2>&1',
             escapeshellarg($nonExistentDb),
             escapeshellarg($this->backupDir),
             escapeshellarg(dirname(__DIR__, 2)),
@@ -171,7 +171,7 @@ class DatabaseBackupTest extends TestCase
         $returnVar = 0;
 
         exec(sprintf(
-            'DB_PATH=%s /bin/bash %s/scripts/restore_db.sh %s 2>&1',
+            'DB_PATH=%s /bin/bash %s/scripts/Database/restore_db.sh %s 2>&1',
             escapeshellarg($this->dbPath),
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($nonExistentBackup),
@@ -191,7 +191,7 @@ class DatabaseBackupTest extends TestCase
 
         // 執行備份
         exec(sprintf(
-            'DB_PATH=%s BACKUP_DIR=%s /bin/bash %s/scripts/backup_db.sh',
+            'DB_PATH=%s BACKUP_DIR=%s /bin/bash %s/scripts/Database/backup_db.sh',
             escapeshellarg($this->dbPath),
             escapeshellarg($this->backupDir),
             escapeshellarg(dirname(__DIR__, 2)),
@@ -208,7 +208,7 @@ class DatabaseBackupTest extends TestCase
 
         // 執行還原
         exec(sprintf(
-            'DB_PATH=%s /bin/bash %s/scripts/restore_db.sh %s',
+            'DB_PATH=%s /bin/bash %s/scripts/Database/restore_db.sh %s',
             escapeshellarg($this->dbPath),
             escapeshellarg(dirname(__DIR__, 2)),
             escapeshellarg($backupFile),

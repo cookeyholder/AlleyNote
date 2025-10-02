@@ -95,26 +95,18 @@ class RichTextProcessorService
      */
     public function processContent(string $content, string $userLevel = 'basic'): mixed
     {
+        // 根據使用者層級選擇處理器
+        $processedContent = match ($userLevel) {
+            'admin' => $content, // 暫時使用原內容 TODO: $this->adminPurifier->purify($content)
+            'extended' => $content, // 暫時使用原內容 TODO: $this->extendedPurifier->purify($content)
+            default => $content, // 暫時使用原內容 TODO: $this->basicPurifier->purify($content)
+        };
+
         $result = [
-            'content' => '',
+            'content' => $processedContent,
             'warnings' => [],
             'statistics' => [],
         ];
-
-        // 根據使用者層級選擇處理器
-        switch ($userLevel) {
-            case 'admin':
-                // $result['content'] = $this->adminPurifier->purify($content);
-                $result['content'] = $content; // 暫時使用原內容
-                break;
-            case 'extended':
-                // $result['content'] = $this->extendedPurifier->purify($content);
-                $result['content'] = $content; // 暫時使用原內容
-                break;
-            default:
-                // $result['content'] = $this->basicPurifier->purify($content);
-                $result['content'] = $content; // 暫時使用原內容
-        }
 
         // 生成統計資訊
         // $result['statistics'] = $this->generateStatistics($content, $result['content']);

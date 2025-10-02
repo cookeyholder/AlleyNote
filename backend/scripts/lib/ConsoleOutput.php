@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace AlleyNote\Scripts\Lib;
+
 /**
  * 控制台輸出幫助類
  * 提供格式化的控制台訊息輸出功能

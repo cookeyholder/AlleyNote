@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Models;
 
+use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Models\Post;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Factory\PostFactory;
@@ -67,7 +68,7 @@ class PostTest extends TestCase
 
         $this->assertEquals(0, $post->getId());
         $this->assertEquals(0, $post->getViewCount());
-        $this->assertEquals('draft', $post->getStatus());
+        $this->assertEquals(PostStatus::DRAFT, $post->getStatus());
         $this->assertFalse($post->isPinned());
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getCreatedAt());
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getUpdatedAt());

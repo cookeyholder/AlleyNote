@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace App\Shared\OpenApi;
+
 /**
  * OpenAPI 規格配置.
  *
