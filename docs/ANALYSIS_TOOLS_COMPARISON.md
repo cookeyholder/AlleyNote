@@ -20,7 +20,7 @@
 
 ### 2. CodeQualityAnalyzer（程式碼品質分析器）
 - **位置**: `backend/scripts/Lib/CodeQualityAnalyzer.php`
-- **執行**: `backend/scripts/Analysis/analyze-code-quality.php`
+- **執行**: `scripts/Analysis/analyze-code-quality.php`
 - **用途**: 詳細分析程式碼品質，提供精確指標
 - **特點**:
   - 詳細分析
@@ -212,13 +212,13 @@ $adoptionRate = ($usedFeatures / $totalFeatures) * 100;
 ### 日常開發
 ```bash
 # 快速檢查（5-10秒）
-docker compose exec -T web php /var/www/html/scripts/Analysis/scan-project-architecture.php
+docker compose exec -T web php scripts/Analysis/scan-project-architecture.php
 ```
 
 ### 詳細分析（標準參考）
 ```bash
 # 完整分析（30-60秒）
-docker compose exec -T web php -d memory_limit=512M /var/www/html/scripts/Analysis/analyze-code-quality.php
+docker compose exec -T web php scripts/Analysis/analyze-code-quality.php
 ```
 
 ### CI/CD 管道

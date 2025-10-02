@@ -82,7 +82,7 @@ docker compose exec web composer test:coverage
 
 ```bash
 # 程式碼品質完整分析（標準參考）
-docker compose exec -T web php -d memory_limit=512M scripts/Analysis/analyze-code-quality.php
+docker compose exec -T web php scripts/Analysis/analyze-code-quality.php
 
 # 掃描缺少回傳型別的函式
 docker compose exec -T web php scripts/Analysis/scan-missing-return-types.php

@@ -26,7 +26,7 @@
 
 **替代方案**: 
 - 使用 **CodeQualityAnalyzer** 作為唯一的程式碼品質分析工具
-- 執行：`docker compose exec -T web php backend/scripts/Analysis/analyze-code-quality.php`
+- 執行：`docker compose exec -T web php scripts/Analysis/analyze-code-quality.php`
 
 **比較結果**:
 | 指標 | ArchitectureScanner | CodeQualityAnalyzer |
@@ -107,7 +107,7 @@ docker compose exec web composer test
 - ✅ **CodeQualityAnalyzer** (`backend/scripts/lib/CodeQualityAnalyzer.php`)
   - 唯一的程式碼品質分析工具
   - 提供 PSR-4、現代 PHP、DDD 架構的完整分析
-  - 執行：`docker compose exec -T web php backend/scripts/Analysis/analyze-code-quality.php`
+  - 執行：`docker compose exec -T web php scripts/Analysis/analyze-code-quality.php`
 
 - ✅ **scan-missing-return-types.php** (`backend/scripts/Analysis/`)
   - 掃描缺少回傳型別的函式
@@ -181,8 +181,8 @@ docker compose exec web composer ci
 ### 詳細分析
 ```bash
 # 程式碼品質完整分析（每週執行）
-docker compose exec -T web php -d memory_limit=512M \
-  backend/scripts/Analysis/analyze-code-quality.php
+docker compose exec -T web php \
+  scripts/Analysis/analyze-code-quality.php
 ```
 
 ### 統計維護
