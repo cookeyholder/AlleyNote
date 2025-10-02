@@ -78,7 +78,10 @@
 - [x] 新增 `SecurityLevel` 枚舉
 - [x] 新增 `ValidationRule` 枚舉
 - [x] 新增 `EventType` 枚舉
+- [x] 新增 `StatisticsType` 枚舉（✅ 已完成 2025-10-02）
 - [x] 重構現有的 PostStatus 枚舉使用範圍
+
+**實際狀況**: 枚舉總數達到 18 個（從 9 個增加到 18 個，+100%）
 
 **預期效果**: 現代 PHP 採用率 +5-8%
 
