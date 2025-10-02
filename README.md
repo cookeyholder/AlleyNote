@@ -6,8 +6,8 @@
 [![Node Version](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![測試覆蓋率](https://img.shields.io/badge/Coverage-95%2B%25-brightgreen.svg)](#測試流程)
-[![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/ARCHITECTURE_AUDIT.md)
-[![統計模組](https://img.shields.io/badge/Statistics-Enabled-orange.svg)](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md)
+[![架構版本](https://img.shields.io/badge/Architecture-DDD-green.svg)](docs/domains/shared/ARCHITECTURE_AUDIT.md)
+[![統計模組](https://img.shields.io/badge/Statistics-Enabled-orange.svg)](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md)
 
 > **✨ 最新版本特色**
 > 
@@ -288,7 +288,7 @@ AlleyNote 提供了一個集中化的平台，讓組織能夠：
 
 **初學者提示**：就像 Google Analytics，但是專為你的公告系統設計！
 
-📖 **想了解更多？** 請閱讀：[統計功能詳細說明](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md)
+📖 **想了解更多？** 請閱讀：[統計功能詳細說明](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md)
 
 ---
 
@@ -619,26 +619,6 @@ AlleyNote 專注於 Linux 生產環境，原因：
   - Mac 用戶：使用雲端 Linux VM（AWS、GCP、Digital Ocean）
   - 或使用 Multipass 建立 Ubuntu VM
 
-### 🚫 不使用的技術說明
-
-**為什麼不用 MySQL/MariaDB？**
-- SQLite 對中小型專案已經足夠
-- 免去資料庫伺服器的管理負擔
-- 部署更簡單（不需要額外的容器）
-- 需要時可以輕鬆遷移到 PostgreSQL
-
-**為什麼不用 TypeScript？**
-- 保持前端簡單輕量
-- 原生 JavaScript 已經很強大
-- 減少建構步驟和工具鏈複雜度
-- 對初學者更友善
-
-**為什麼不用前端框架（React/Vue）？**
-- AlleyNote 是內容管理系統，不是 SPA
-- 原生 JavaScript 效能最佳
-- 減少依賴，降低維護成本
-- 頁面載入速度更快
-
 ---
 
 ### 📁 專案結構（檔案放在哪裡）
@@ -648,7 +628,7 @@ AlleyNote 專注於 Linux 生產環境，原因：
 ```
 AlleyNote/
 ├── 🎨 frontend/                    # 前端應用程式（網頁介面）
-│   ├── src/                        # TypeScript 源碼（程式碼）
+│   ├── src/                        # JavaScript 源碼（程式碼）
 │   ├── public/                     # 靜態資源（圖片、CSS 等）
 │   └── package.json               # 前端依賴清單
 │
@@ -725,11 +705,6 @@ AlleyNote/
    - 資源佔用少
    - 企業級品質
 
-**❌ 不支援**：
-- ❌ Windows（包含 WSL2）- Docker Desktop 授權問題
-- ❌ macOS - Docker Desktop 授權問題
-- ❌ 其他 Linux 發行版（CentOS、Fedora 等）- 未測試
-
 ### 🤔 我需要準備什麼？
 
 #### 1. Linux 伺服器或電腦
@@ -737,15 +712,7 @@ AlleyNote/
 **最低硬體需求**：
 - **CPU**: 2 核心（建議 4 核心）
 - **記憶體（RAM）**: 最少 2GB（建議 4GB 或以上）
-  - 2GB: 可以運行，但可能較慢
-  - 4GB: 舒適運行，推薦用於開發
-  - 8GB+: 最佳體驗，適合生產環境
 - **儲存空間**: 最少 10GB 可用空間
-  - 系統: ~2GB
-  - Docker 映像: ~2GB
-  - 資料庫和檔案: ~2GB
-  - 日誌和快取: ~1GB
-  - 預留空間: ~3GB
 - **網路**: 穩定的網際網路連線（初次安裝需要下載套件）
 
 **推薦硬體配置**：
@@ -754,40 +721,11 @@ AlleyNote/
 - **儲存**: 50GB SSD
 - **網路**: 100Mbps 或以上
 
-**如何取得 Linux 環境？**
-
-如果你現在沒有 Linux 電腦，有這些選擇：
-
-1. **雲端虛擬機器（最簡單）**：
-   - [DigitalOcean](https://www.digitalocean.com/) - $6/月起
-   - [Linode](https://www.linode.com/) - $5/月起
-   - [Vultr](https://www.vultr.com/) - $6/月起
-   - [AWS Lightsail](https://aws.amazon.com/lightsail/) - $5/月起
-   - 選擇 Ubuntu 22.04 LTS 映像即可
-
-2. **實體機器安裝**：
-   - 準備一台舊電腦或筆電
-   - 下載 [Ubuntu 22.04 LTS ISO](https://ubuntu.com/download/server)
-   - 製作開機 USB 並安裝
-   - 詳細教學：[Ubuntu 安裝指南](https://ubuntu.com/tutorials/install-ubuntu-server)
-
-3. **虛擬機（本地測試）**：
-   - 使用 VirtualBox 或 VMware
-   - 建立 Ubuntu 22.04 虛擬機
-   - 分配至少 4GB RAM 和 20GB 硬碟
-
 #### 2. Docker Engine（原生版本）
-
-**重要：必須安裝原生 Docker Engine，不是 Docker Desktop！**
 
 **版本需求**：
 - Docker Engine: 28.3.3 或更新
-- Docker Compose: v2.39.2 或更新（通常與 Docker 一起安裝）
-
-**Docker Engine 是什麼？**
-- 容器化平台，讓應用程式在隔離環境中運行
-- 就像在電腦裡建立多個獨立的「迷你電腦」
-- 每個容器有自己的檔案系統、網路、程序
+- Docker Compose: v2.39.2 或更新
 
 **安裝方法（Ubuntu/Debian）**：
 
@@ -808,11 +746,225 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docke
 sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-# 6. 將當前用戶加入 docker 群組（避免每次都要 sudo）
+# 6. 將當前用戶加入 docker 群組
 sudo usermod -aG docker $USER
 
 # 7. 啟動 Docker 服務
 sudo systemctl enable docker
+sudo systemctl start docker
+
+# 8. 登出再登入讓群組變更生效
+```
+
+**安裝完成後的驗證**：
+
+```bash
+# 檢查 Docker 版本
+docker --version
+
+# 檢查 Docker Compose 版本
+docker compose version
+
+# 檢查 Docker 是否正在運行
+docker ps
+
+# 測試 Docker 是否正常工作
+docker run hello-world
+```
+
+#### 3. Git（版本控制）
+
+```bash
+# Ubuntu/Debian
+sudo apt install -y git
+
+# 驗證安裝
+git --version
+```
+
+#### 4. 基本 Linux 知識
+
+**你需要會的基本命令**：
+
+```bash
+# 切換目錄
+cd /path/to/directory
+
+# 列出檔案
+ls -la
+
+# 建立目錄
+mkdir my-directory
+
+# 複製檔案
+cp source.txt destination.txt
+
+# 移動/重新命名檔案
+mv old-name.txt new-name.txt
+
+# 刪除檔案
+rm file.txt
+
+# 查看檔案內容
+cat file.txt
+
+# 編輯檔案
+nano file.txt  # 或 vim file.txt
+
+# 查看執行中的程序
+ps aux
+
+# 檢查磁碟空間
+df -h
+
+# 檢查記憶體使用
+free -h
+```
+
+**不熟悉 Linux？**
+建議先花 1-2 小時學習基礎：
+- [Linux 基礎教學](https://ubuntu.com/tutorials/command-line-for-beginners)
+- [鳥哥的 Linux 私房菜](http://linux.vbird.org/)
+
+### 🔧 開發需求（如果你要修改程式碼）
+
+如果你想要開發新功能或修改程式碼，除了上述基本需求外，還需要：
+
+**1. PHP 8.4.12+**
+- ✅ Docker 容器裡已經包含，不用另外安裝！
+
+**2. Composer 2.0+**
+- ✅ Docker 容器裡已經包含！
+- 管理 PHP 套件的工具（類似 npm 對 JavaScript）
+
+**3. Node.js 18.0+**（前端建構用）
+- 用來執行 Vite 建構工具
+- 安裝方法：
+  ```bash
+  # 使用 NodeSource 套件庫
+  curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+  sudo apt install -y nodejs
+  
+  # 驗證安裝
+  node --version
+  npm --version
+  ```
+
+**4. 程式碼編輯器（推薦）**：
+
+- **Visual Studio Code** - 免費、功能強大
+  ```bash
+  # 下載並安裝
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+  sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+  sudo apt update
+  sudo apt install -y code
+  ```
+
+- **PhpStorm** - 專業的 PHP IDE（付費）
+  - 下載：[JetBrains PhpStorm](https://www.jetbrains.com/phpstorm/)
+
+### ✅ 完整環境檢查清單
+
+在開始安裝 AlleyNote 之前，確保以下所有項目都打勾：
+
+```bash
+# 執行這個腳本來檢查你的環境
+cat > check-requirements.sh << 'EOF'
+#!/bin/bash
+echo "=== AlleyNote 系統需求檢查 ==="
+echo ""
+
+# 檢查作業系統
+echo "1. 檢查作業系統..."
+if [ -f /etc/os-release ]; then
+    source /etc/os-release
+    if [[ "$ID" == "ubuntu" ]] || [[ "$ID" == "debian" ]]; then
+        echo "   ✅ 作業系統: $PRETTY_NAME (支援)"
+    else
+        echo "   ❌ 作業系統: $PRETTY_NAME (不支援，僅支援 Ubuntu/Debian)"
+    fi
+else
+    echo "   ❌ 無法識別作業系統"
+fi
+
+# 檢查 Docker
+echo "2. 檢查 Docker..."
+if command -v docker &> /dev/null; then
+    docker_version=$(docker --version | awk '{print $3}' | sed 's/,//')
+    echo "   ✅ Docker 版本: $docker_version"
+else
+    echo "   ❌ Docker 未安裝"
+fi
+
+# 檢查 Docker Compose
+echo "3. 檢查 Docker Compose..."
+if docker compose version &> /dev/null; then
+    compose_version=$(docker compose version | awk '{print $4}')
+    echo "   ✅ Docker Compose 版本: $compose_version"
+else
+    echo "   ❌ Docker Compose 未安裝"
+fi
+
+# 檢查 Docker 是否運行
+echo "4. 檢查 Docker 服務..."
+if systemctl is-active --quiet docker; then
+    echo "   ✅ Docker 服務正在運行"
+else
+    echo "   ❌ Docker 服務未運行"
+fi
+
+# 檢查用戶是否在 docker 群組
+echo "5. 檢查 Docker 權限..."
+if groups | grep -q docker; then
+    echo "   ✅ 用戶在 docker 群組中"
+else
+    echo "   ⚠️  用戶不在 docker 群組中（需要 sudo 或重新登入）"
+fi
+
+# 檢查 Git
+echo "6. 檢查 Git..."
+if command -v git &> /dev/null; then
+    git_version=$(git --version | awk '{print $3}')
+    echo "   ✅ Git 版本: $git_version"
+else
+    echo "   ❌ Git 未安裝"
+fi
+
+# 檢查系統資源
+echo "7. 檢查系統資源..."
+total_ram=$(free -g | awk '/^Mem:/{print $2}')
+if [ "$total_ram" -ge 2 ]; then
+    echo "   ✅ 記憶體: ${total_ram}GB (足夠)"
+else
+    echo "   ⚠️  記憶體: ${total_ram}GB (建議至少 2GB)"
+fi
+
+total_disk=$(df -BG / | awk 'NR==2 {print $4}' | sed 's/G//')
+if [ "$total_disk" -ge 10 ]; then
+    echo "   ✅ 可用空間: ${total_disk}GB (足夠)"
+else
+    echo "   ⚠️  可用空間: ${total_disk}GB (建議至少 10GB)"
+fi
+
+echo ""
+echo "=== 檢查完成 ==="
+EOF
+
+chmod +x check-requirements.sh
+./check-requirements.sh
+```
+
+**所有項目都是 ✅ 嗎？**
+- 是：太好了！你可以繼續進行快速開始步驟
+- 否：請根據 ❌ 或 ⚠️  的項目進行安裝或修正
+
+**需要幫助？**
+- 詳細的故障排除：[系統需求文件](docs/guides/admin/SYSTEM_REQUIREMENTS.md)
+- 提問：[GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
+
+---
 sudo systemctl start docker
 
 # 8. 登出再登入（或重啟）讓群組變更生效
@@ -1037,7 +1189,7 @@ chmod +x check-requirements.sh
 - 否：請根據 ❌ 或 ⚠️  的項目進行安裝或修正
 
 **需要幫助？**
-- 詳細的故障排除：[系統需求文件](docs/SYSTEM_REQUIREMENTS.md)
+- 詳細的故障排除：[系統需求文件](docs/guides/admin/SYSTEM_REQUIREMENTS.md)
 - 提問：[GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
 
 ---
@@ -1195,15 +1347,15 @@ netstat -ano | findstr :8080
 
 #### 更多問題？
 
-查看詳細的故障排除指南：[故障排除文件](docs/TROUBLESHOOTING_GUIDE.md)
+查看詳細的故障排除指南：[故障排除文件](docs/guides/admin/TROUBLESHOOTING_GUIDE.md)
 
 ### 🎓 下一步學什麼？
 
 恭喜你成功安裝了 AlleyNote！接下來你可以：
 
-1. **管理員**：閱讀 [管理員快速入門](docs/ADMIN_QUICK_START.md)
-2. **開發者**：閱讀 [開發者指南](docs/DEVELOPER_GUIDE.md)
-3. **了解統計功能**：閱讀 [統計功能總覽](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md)
+1. **管理員**：閱讀 [管理員快速入門](docs/guides/admin/ADMIN_QUICK_START.md)
+2. **開發者**：閱讀 [開發者指南](docs/guides/developer/DEVELOPER_GUIDE.md)
+3. **了解統計功能**：閱讀 [統計功能總覽](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md)
 
 ---
 
@@ -1286,7 +1438,7 @@ docker compose exec -T web composer ci
 
 5. **建立 Pull Request**
 
-**詳細開發指南**：[開發者文件](docs/DEVELOPER_GUIDE.md)
+**詳細開發指南**：[開發者文件](docs/guides/developer/DEVELOPER_GUIDE.md)
 
 
 ## 測試流程
@@ -1376,28 +1528,28 @@ docker compose exec -T web composer ci
 ### 👨‍💼 如果你是**管理員/營運人員**
 
 **快速入門（必讀）**：
-1. [管理員 30 分鐘快速入門](docs/ADMIN_QUICK_START.md) ⭐⭐⭐
-2. [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)
-3. [部署指南](docs/DEPLOYMENT.md)
+1. [管理員 30 分鐘快速入門](docs/guides/admin/ADMIN_QUICK_START.md) ⭐⭐⭐
+2. [系統需求說明](docs/guides/admin/SYSTEM_REQUIREMENTS.md)
+3. [部署指南](docs/guides/deployment/DEPLOYMENT.md)
 
 **日常維護**：
-- [管理員操作手冊](docs/ADMIN_MANUAL.md) - 完整的管理指南
+- [管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md) - 完整的管理指南
 - [統計操作手冊](docs/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 統計功能管理
-- [故障排除指南](docs/TROUBLESHOOTING_GUIDE.md) - 遇到問題看這裡
+- [故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) - 遇到問題看這裡
 
 **安全與備份**：
-- [SSL 設定指南](docs/SSL_DEPLOYMENT_GUIDE.md) - HTTPS 憑證設定
-- 備份說明在[管理員手冊](docs/ADMIN_MANUAL.md)的備份章節
+- [SSL 設定指南](docs/guides/deployment/SSL_DEPLOYMENT_GUIDE.md) - HTTPS 憑證設定
+- 備份說明在[管理員手冊](docs/guides/admin/ADMIN_MANUAL.md)的備份章節
 
 ### 👨‍💻 如果你是**開發者**
 
 **快速入門（必讀）**：
-1. [開發者指南](docs/DEVELOPER_GUIDE.md) ⭐⭐⭐ - 開發環境設定
+1. [開發者指南](docs/guides/developer/DEVELOPER_GUIDE.md) ⭐⭐⭐ - 開發環境設定
 2. [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 了解程式碼標準
 3. [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 理解系統架構
 
 **API 開發**：
-- [API 文件](docs/API_DOCUMENTATION.md) - 完整的 API 規格
+- [API 文件](docs/guides/developer/API_DOCUMENTATION.md) - 完整的 API 規格
 - [路由系統指南](docs/routing/ROUTING_SYSTEM_GUIDE.md) - 路由設計
 - [DI 容器指南](docs/DI_CONTAINER_GUIDE.md) - 依賴注入
 
@@ -1414,7 +1566,7 @@ docker compose exec -T web composer ci
 ### 📊 如果你想了解**統計功能**
 
 **統計模組文件**（8 份）：
-1. [統計功能總覽](docs/statistics/STATISTICS_FEATURE_OVERVIEW.md) ⭐ - 先看這個！
+1. [統計功能總覽](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md) ⭐ - 先看這個！
 2. [統計功能規格書](docs/statistics/STATISTICS_FEATURE_SPECIFICATION.md) - 詳細規格
 3. [統計操作手冊](docs/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 如何使用
 4. [統計效能報告](docs/statistics/STATISTICS_PERFORMANCE_REPORT.md) - 效能分析
@@ -1426,7 +1578,7 @@ docker compose exec -T web composer ci
 ### 🏗️ 如果你想深入理解**系統架構**
 
 **架構文件**：
-- [架構審計報告](docs/ARCHITECTURE_AUDIT.md) - 完整架構分析
+- [架構審計報告](docs/domains/shared/ARCHITECTURE_AUDIT.md) - 完整架構分析
 - [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 領域驅動設計
 - [DDD 值物件總結](docs/reports/completion/DDD_VALUE_OBJECTS_SUMMARY.md) - 值物件實作
 - [程式碼品質改善執行報告](docs/reports/CODE_QUALITY_IMPROVEMENT_EXECUTION_REPORT.md) - 品質改善記錄
@@ -1752,9 +1904,9 @@ AlleyNote/
 ## 文件資源
 
 #### 🚀 快速入門
-- [系統需求](docs/SYSTEM_REQUIREMENTS.md) - 硬體與軟體需求
-- [管理員快速開始](docs/ADMIN_QUICK_START.md) - 5 分鐘快速部署
-- [開發者指南](docs/DEVELOPER_GUIDE.md) - 開發環境設置與規範
+- [系統需求](docs/guides/admin/SYSTEM_REQUIREMENTS.md) - 硬體與軟體需求
+- [管理員快速開始](docs/guides/admin/ADMIN_QUICK_START.md) - 5 分鐘快速部署
+- [開發者指南](docs/guides/developer/DEVELOPER_GUIDE.md) - 開發環境設置與規範
 
 #### 📊 統計模組文件
 - [統計功能總覽](docs/STATISTICS_FEATURE_OVERVIEW.md) - 統計模組介紹 ⭐
@@ -1762,26 +1914,26 @@ AlleyNote/
 - [統計運維手冊](docs/STATISTICS_OPERATIONS_MANUAL.md) - 運維操作指南
 
 #### 🏗️ 架構與設計
-- [架構審計報告](docs/ARCHITECTURE_AUDIT.md) - DDD 架構分析
+- [架構審計報告](docs/domains/shared/ARCHITECTURE_AUDIT.md) - DDD 架構分析
 - [DI 容器指南](docs/DI_CONTAINER_GUIDE.md) - 依賴注入系統
 - [驗證器指南](docs/VALIDATOR_GUIDE.md) - 29 種驗證規則
 
 #### 🛠️ 運維管理
-- [管理員手冊](docs/ADMIN_MANUAL.md) - 完整運維指南
-- [部署指南](docs/DEPLOYMENT.md) - 生產環境部署
-- [故障排除指南](docs/TROUBLESHOOTING_GUIDE.md) - 常見問題解決
+- [管理員手冊](docs/guides/admin/ADMIN_MANUAL.md) - 完整運維指南
+- [部署指南](docs/guides/deployment/DEPLOYMENT.md) - 生產環境部署
+- [故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) - 常見問題解決
 
 #### 🔐 安全與認證
 - [JWT 認證規格](docs/JWT_AUTHENTICATION_SPECIFICATION.md) - 認證機制
 - [用戶活動記錄](docs/USER_ACTIVITY_LOGGING_GUIDE.md) - 行為監控
-- [SSL 部署指南](docs/SSL_DEPLOYMENT_GUIDE.md) - HTTPS 配置
+- [SSL 部署指南](docs/guides/deployment/SSL_DEPLOYMENT_GUIDE.md) - HTTPS 配置
 
 #### 📊 快取與效能
 - [多層快取系統](docs/MULTI_LAYER_CACHE_SYSTEM.md) - 快取架構
 - [快取標籤系統](docs/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
 
 #### 📖 API 文件
-- [API 文件](docs/API_DOCUMENTATION.md) - RESTful API 規格
+- [API 文件](docs/guides/developer/API_DOCUMENTATION.md) - RESTful API 規格
 - [Swagger 整合](docs/SWAGGER_INTEGRATION.md) - API 文件生成
 
 ### 📁 文件分類
@@ -1806,7 +1958,7 @@ AlleyNote/
 
 **📧 聯絡資訊**
 - 專案維護: [GitHub Issues](https://github.com/your-org/alleynote/issues)
-- 技術支援: 請查閱 [FAQ](docs/TROUBLESHOOTING_GUIDE.md) 或提交 Issue
+- 技術支援: 請查閱 [FAQ](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) 或提交 Issue
 - 文件更新: 最後更新於 2025-09-27
 
 **🎯 專案狀態**: ✅ 生產就緒 | 🧪 持續更新 | � 統計模組啟用
@@ -2012,7 +2164,7 @@ docker compose exec web ./vendor/bin/phpunit --testsuite Security
 
 ## 快速部署（管理員）
 
-🚀 **新管理員**：請先閱讀 [管理員快速入門指南](docs/ADMIN_QUICK_START.md)，30分鐘內完成部署！
+🚀 **新管理員**：請先閱讀 [管理員快速入門指南](docs/guides/admin/ADMIN_QUICK_START.md)，30分鐘內完成部署！
 
 ### 基本部署步驟
 ```bash
@@ -2031,10 +2183,10 @@ docker compose exec web php scripts/unified-scripts.php status
 ```
 
 ### 完整管理文件
-- **[系統需求檢查](docs/SYSTEM_REQUIREMENTS.md)** - 環境準備和需求確認
-- **[完整部署指南](docs/DEPLOYMENT.md)** - 詳細部署流程
-- **[管理員操作手冊](docs/ADMIN_MANUAL.md)** - 日常管理和維護
-- **[故障排除指南](docs/TROUBLESHOOTING_GUIDE.md)** - 問題診斷和解決
+- **[系統需求檢查](docs/guides/admin/SYSTEM_REQUIREMENTS.md)** - 環境準備和需求確認
+- **[完整部署指南](docs/guides/deployment/DEPLOYMENT.md)** - 詳細部署流程
+- **[管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md)** - 日常管理和維護
+- **[故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md)** - 問題診斷和解決
 
 ### SSL 憑證設定
 ```bash
@@ -2052,29 +2204,29 @@ A: 執行 `docker compose exec web php scripts/unified-scripts.php status` 查�
 A: 重要的基礎設施腳本（備份、SSL、部署）仍保留可用，58+ 個開發工具腳本已整合到統一系統。
 
 **Q: 系統無法啟動怎麼辦？**
-A: 參考 [故障排除指南](docs/TROUBLESHOOTING_GUIDE.md) 的緊急故障處理章節。
+A: 參考 [故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) 的緊急故障處理章節。
 
 **Q: 如何進行日常維護？**
-A: 使用 `docker compose exec web php scripts/unified-scripts.php maintain --task=all` 或查看 [管理員操作手冊](docs/ADMIN_MANUAL.md)。
+A: 使用 `docker compose exec web php scripts/unified-scripts.php maintain --task=all` 或查看 [管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md)。
 
 **Q: 測試失敗如何除錯？**
 A: 首先查看錯誤訊息，確認測試期望什麼結果。參考 [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) 和 [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) 了解常見問題的解決方法。
 
 **Q: 如何還原備份？**
-A: 參考 [管理員操作手冊](docs/ADMIN_MANUAL.md) 的備份與還原章節。
+A: 參考 [管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md) 的備份與還原章節。
 
 **Q: 系統需求是什麼？**
-A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
+A: 詳見 [系統需求說明](docs/guides/admin/SYSTEM_REQUIREMENTS.md)。
 
 ---
 
 ## 文件資源
 
 ### 👨‍💼 管理員文件
-- **[ADMIN_QUICK_START.md](docs/ADMIN_QUICK_START.md)**: 30分鐘快速入門指南 ⭐
-- **[SYSTEM_REQUIREMENTS.md](docs/SYSTEM_REQUIREMENTS.md)**: 系統需求和環境準備
-- **[ADMIN_MANUAL.md](docs/ADMIN_MANUAL.md)**: 完整管理員操作手冊
-- **[TROUBLESHOOTING_GUIDE.md](docs/TROUBLESHOOTING_GUIDE.md)**: 故障排除和維護指南
+- **[ADMIN_QUICK_START.md](docs/guides/admin/ADMIN_QUICK_START.md)**: 30分鐘快速入門指南 ⭐
+- **[SYSTEM_REQUIREMENTS.md](docs/guides/admin/SYSTEM_REQUIREMENTS.md)**: 系統需求和環境準備
+- **[ADMIN_MANUAL.md](docs/guides/admin/ADMIN_MANUAL.md)**: 完整管理員操作手冊
+- **[TROUBLESHOOTING_GUIDE.md](docs/guides/admin/TROUBLESHOOTING_GUIDE.md)**: 故障排除和維護指南
 
 ### 🛠️ 維運工具文件
 - **[UNIFIED_SCRIPTS_DOCUMENTATION.md](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)**: 統一腳本系統完整指南 ⭐
@@ -2084,23 +2236,23 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 - **[STATISTICS_OPERATIONS_MANUAL.md](docs/STATISTICS_OPERATIONS_MANUAL.md)**: 統計模組維運操作手冊 🆕
 
 ### 📖 開發者文件
-- **[DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md)**: 完整開發者指南
+- **[DEVELOPER_GUIDE.md](docs/guides/developer/DEVELOPER_GUIDE.md)**: 完整開發者指南
 - **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊
 - **[VALIDATOR_GUIDE.md](docs/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
-- **[API_DOCUMENTATION.md](docs/API_DOCUMENTATION.md)**: API 文件（含統計查詢與管理端點）
+- **[API_DOCUMENTATION.md](docs/guides/developer/API_DOCUMENTATION.md)**: API 文件（含統計查詢與管理端點）
 - **[STATISTICS_FEATURE_SPECIFICATION.md](docs/STATISTICS_FEATURE_SPECIFICATION.md)**: 統計模組完整規格 🆕
 - **[STATISTICS_FEATURE_OVERVIEW.md](docs/STATISTICS_FEATURE_OVERVIEW.md)**: 統計模組概覽與使用情境 🆕
 - **[USER_ACTIVITY_LOGGING_ARCHITECTURE.md](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md)**: 使用者活動記錄系統架構 ⭐
 - **[CACHE_TAGGING_SYSTEM_GUIDE.md](docs/CACHE_TAGGING_SYSTEM_GUIDE.md)**: 快取標籤系統使用指南 ⭐
 
 ### 📋 專案文件
-- **[ARCHITECTURE_AUDIT.md](docs/ARCHITECTURE_AUDIT.md)**: 架構審查報告
+- **[ARCHITECTURE_AUDIT.md](docs/domains/shared/ARCHITECTURE_AUDIT.md)**: 架構審查報告
 - **[USER_ACTIVITY_LOGGING_TODO.md](docs/USER_ACTIVITY_LOGGING_TODO.md)**: 專案狀態與完成報告 ⭐
 - **[STATISTICS_FEATURE_TODO.md](docs/STATISTICS_FEATURE_TODO.md)**: 統計模組開發待辦與完成紀錄 🆕
 - **[STATISTICS_PERFORMANCE_REPORT.md](docs/STATISTICS_PERFORMANCE_REPORT.md)**: 統計模組效能測試報告 🆕
 - **[STATISTICS_DATABASE_MIGRATION_GUIDE.md](docs/STATISTICS_DATABASE_MIGRATION_GUIDE.md)**: 統計資料庫遷移指南 🆕
-- **[DEPLOYMENT.md](docs/DEPLOYMENT.md)**: 詳細部署說明
-- **[SSL_DEPLOYMENT_GUIDE.md](docs/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
+- **[DEPLOYMENT.md](docs/guides/deployment/DEPLOYMENT.md)**: 詳細部署說明
+- **[SSL_DEPLOYMENT_GUIDE.md](docs/guides/deployment/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
 - **[CHANGELOG.md](CHANGELOG.md)**: 版本更新日誌
 
 ### 🏗️ 遷移文件
@@ -2158,4 +2310,4 @@ A: 詳見 [系統需求說明](docs/SYSTEM_REQUIREMENTS.md)。
 
 ---
 
-*🎉 歡迎貢獻！請先閱讀 [docs/DEVELOPER_GUIDE.md](docs/DEVELOPER_GUIDE.md) 了解開發流程。*
+*🎉 歡迎貢獻！請先閱讀 [docs/guides/developer/DEVELOPER_GUIDE.md](docs/guides/developer/DEVELOPER_GUIDE.md) 了解開發流程。*
