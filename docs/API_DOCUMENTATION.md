@@ -33,7 +33,7 @@ AlleyNote API v4.0 提供完整的前後端分離公布欄網站功能，基於 
 
 ### 版本 4.0 特色
 
-- ✅ **前後端分離**: TypeScript Composition API + PHP 8.4.12 DDD 後端
+- ✅ **前後端分離**: JavaScript Composition API + PHP 8.4.12 DDD 後端
 - ✅ **DDD 架構**: 領域驅動設計，採用最新 PHP 8.4 語法特性
 - ✅ **完整測試覆蓋**: 148 個測試檔案，1,393 個通過測試
 - ✅ **統計模組**: 新增 5 個查詢端點、3 個管理端點與瀏覽追蹤 API
@@ -47,7 +47,7 @@ AlleyNote API v4.0 提供完整的前後端分離公布欄網站功能，基於 
 ### 技術堆疊
 
 - **後端**: PHP 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
-- **前端**: TypeScript Composition API
+- **前端**: JavaScript Composition API
 - **測試**: PHPUnit 11.5.34
 - **容器**: Docker 28.3.3 & Docker Compose v2.39.2
 - **資料庫**: SQLite3 (預設推薦) / PostgreSQL 16 (大型部署)
