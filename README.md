@@ -703,7 +703,10 @@ docker compose exec -T web composer ci
 3. **參考測試程式碼**：看看測試期望什麼結果
 4. **修復後重新測試**：直到全部通過
 
-**更多幫助**：[測試改善文件](docs/reports/quality/TEST_SUITE_IMPROVEMENTS.md)
+**更多幫助**：
+- [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) - 靜態分析問題修復
+- [零錯誤修復報告](docs/reports/quality/ZERO_ERROR_FIX_REPORT.md) - 達成零錯誤的過程
+- [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 整體品質提升策略
 
 ---
 
@@ -746,8 +749,10 @@ docker compose exec -T web composer ci
 - [快取標籤系統](docs/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
 - [使用者活動記錄](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md) - 行為追蹤
 
-**測試**：
-- [測試套件改善](docs/reports/quality/TEST_SUITE_IMPROVEMENTS.md) - 測試最佳實踐
+**測試與品質**：
+- [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 品質提升策略
+- [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) - 靜態分析
+- [綜合品質檢查報告](docs/COMPREHENSIVE_QUALITY_CHECK_REPORT.md) - 完整品質檢查
 
 ### 📊 如果你想了解**統計功能**
 
@@ -766,16 +771,18 @@ docker compose exec -T web composer ci
 **架構文件**：
 - [架構審計報告](docs/ARCHITECTURE_AUDIT.md) - 完整架構分析
 - [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 領域驅動設計
-- [DDD 值物件總結](docs/ddd/DDD_VALUE_OBJECTS_SUMMARY.md) - 值物件實作
-- [DDD 聚合根設計](docs/ddd/POST_AGGREGATE_DESIGN.md) - 聚合根範例
+- [DDD 值物件總結](docs/reports/completion/DDD_VALUE_OBJECTS_SUMMARY.md) - 值物件實作
+- [程式碼品質改善執行報告](docs/reports/CODE_QUALITY_IMPROVEMENT_EXECUTION_REPORT.md) - 品質改善記錄
 
 ### 📁 完整文件列表
 
 **按目錄分類**：
-- `docs/` - 主要文件（35 份）
+- `docs/` - 主要文件（35+ 份）
 - `docs/statistics/` - 統計模組文件（8 份）
-- `docs/ddd/` - DDD 設計文件（6 份）
-- `docs/reports/` - 各種報告
+- `docs/reports/` - 各種報告和完成總結
+  - `reports/completion/` - 專案完成報告
+  - `reports/quality/` - 品質報告
+  - `reports/architecture/` - 架構報告
 - `docs/routing/` - 路由系統文件（5 份）
 - `docs/migration/` - 遷移文件
 
@@ -1394,7 +1401,7 @@ A: 參考 [故障排除指南](docs/TROUBLESHOOTING_GUIDE.md) 的緊急故障處
 A: 使用 `docker compose exec web php scripts/unified-scripts.php maintain --task=all` 或查看 [管理員操作手冊](docs/ADMIN_MANUAL.md)。
 
 **Q: 測試失敗如何除錯？**
-A: 檢查 [TEST_SUITE_IMPROVEMENTS.md](docs/TEST_SUITE_IMPROVEMENTS.md) 了解測試改善歷程和除錯方法。
+A: 首先查看錯誤訊息，確認測試期望什麼結果。參考 [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) 和 [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) 了解常見問題的解決方法。
 
 **Q: 如何還原備份？**
 A: 參考 [管理員操作手冊](docs/ADMIN_MANUAL.md) 的備份與還原章節。
