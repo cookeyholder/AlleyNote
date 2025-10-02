@@ -1513,9 +1513,9 @@ docker compose exec -T web composer ci
 4. **修復後重新測試**：直到全部通過
 
 **更多幫助**：
-- [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) - 靜態分析問題修復
-- [零錯誤修復報告](docs/reports/quality/ZERO_ERROR_FIX_REPORT.md) - 達成零錯誤的過程
-- [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 整體品質提升策略
+- [PHPStan 修復報告](docs/archive/reports/quality/PHPSTAN_FIX_REPORT.md) - 靜態分析問題修復
+- [零錯誤修復報告](docs/archive/reports/quality/ZERO_ERROR_FIX_REPORT.md) - 達成零錯誤的過程
+- [程式碼品質改善計劃](docs/archive/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 整體品質提升策略
 
 ---
 
@@ -1534,7 +1534,7 @@ docker compose exec -T web composer ci
 
 **日常維護**：
 - [管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md) - 完整的管理指南
-- [統計操作手冊](docs/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 統計功能管理
+- [統計操作手冊](docs/domains/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 統計功能管理
 - [故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) - 遇到問題看這裡
 
 **安全與備份**：
@@ -1545,43 +1545,43 @@ docker compose exec -T web composer ci
 
 **快速入門（必讀）**：
 1. [開發者指南](docs/guides/developer/DEVELOPER_GUIDE.md) ⭐⭐⭐ - 開發環境設定
-2. [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 了解程式碼標準
-3. [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 理解系統架構
+2. [程式碼品質改善計劃](docs/archive/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 了解程式碼標準
+3. [DDD 架構設計](docs/domains/shared/DDD_ARCHITECTURE_DESIGN.md) - 理解系統架構
 
 **API 開發**：
 - [API 文件](docs/guides/developer/API_DOCUMENTATION.md) - 完整的 API 規格
-- [路由系統指南](docs/routing/ROUTING_SYSTEM_GUIDE.md) - 路由設計
-- [DI 容器指南](docs/DI_CONTAINER_GUIDE.md) - 依賴注入
+- [路由系統指南](docs/domains/shared/ROUTING_SYSTEM_GUIDE.md) - 路由設計
+- [DI 容器指南](docs/guides/developer/DI_CONTAINER_GUIDE.md) - 依賴注入
 
 **進階主題**：
-- [驗證器指南](docs/VALIDATOR_GUIDE.md) - 29 種驗證規則
-- [快取標籤系統](docs/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
-- [使用者活動記錄](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md) - 行為追蹤
+- [驗證器指南](docs/guides/developer/VALIDATOR_GUIDE.md) - 29 種驗證規則
+- [快取標籤系統](docs/domains/shared/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
+- [使用者活動記錄](docs/domains/auth/USER_ACTIVITY_LOGGING_ARCHITECTURE.md) - 行為追蹤
 
 **測試與品質**：
-- [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 品質提升策略
-- [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) - 靜態分析
-- [綜合品質檢查報告](docs/COMPREHENSIVE_QUALITY_CHECK_REPORT.md) - 完整品質檢查
+- [程式碼品質改善計劃](docs/archive/CODE_QUALITY_IMPROVEMENT_PLAN.md) - 品質提升策略
+- [PHPStan 修復報告](docs/archive/reports/quality/PHPSTAN_FIX_REPORT.md) - 靜態分析
+- [綜合品質檢查報告](docs/archive/COMPREHENSIVE_QUALITY_CHECK_REPORT.md) - 完整品質檢查
 
 ### 📊 如果你想了解**統計功能**
 
 **統計模組文件**（8 份）：
 1. [統計功能總覽](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md) ⭐ - 先看這個！
-2. [統計功能規格書](docs/statistics/STATISTICS_FEATURE_SPECIFICATION.md) - 詳細規格
-3. [統計操作手冊](docs/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 如何使用
-4. [統計效能報告](docs/statistics/STATISTICS_PERFORMANCE_REPORT.md) - 效能分析
-5. [統計資料庫遷移](docs/statistics/STATISTICS_DATABASE_MIGRATION_GUIDE.md) - 資料庫設定
-6. [統計領域分析](docs/statistics/STATISTICS_DOMAIN_ANALYSIS.md) - 領域設計
-7. [統計重算指南](docs/statistics/STATISTICS_RECALCULATION_GUIDE.md) - 資料重算
-8. [統計 TODO](docs/statistics/STATISTICS_FEATURE_TODO.md) - 開發記錄
+2. [統計功能規格書](docs/domains/statistics/STATISTICS_FEATURE_SPECIFICATION.md) - 詳細規格
+3. [統計操作手冊](docs/domains/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 如何使用
+4. [統計效能報告](docs/archive/STATISTICS_PERFORMANCE_REPORT.md) - 效能分析
+5. [統計資料庫遷移](docs/domains/statistics/STATISTICS_DATABASE_MIGRATION_GUIDE.md) - 資料庫設定
+6. [統計領域分析](docs/domains/statistics/STATISTICS_DOMAIN_ANALYSIS.md) - 領域設計
+7. [統計重算指南](docs/domains/statistics/STATISTICS_RECALCULATION_GUIDE.md) - 資料重算
+8. [統計 TODO](docs/archive/STATISTICS_FEATURE_TODO.md) - 開發記錄
 
 ### 🏗️ 如果你想深入理解**系統架構**
 
 **架構文件**：
 - [架構審計報告](docs/domains/shared/ARCHITECTURE_AUDIT.md) - 完整架構分析
-- [DDD 架構設計](docs/DDD_ARCHITECTURE_DESIGN.md) - 領域驅動設計
-- [DDD 值物件總結](docs/reports/completion/DDD_VALUE_OBJECTS_SUMMARY.md) - 值物件實作
-- [程式碼品質改善執行報告](docs/reports/CODE_QUALITY_IMPROVEMENT_EXECUTION_REPORT.md) - 品質改善記錄
+- [DDD 架構設計](docs/domains/shared/DDD_ARCHITECTURE_DESIGN.md) - 領域驅動設計
+- [DDD 值物件總結](docs/archive/reports/completion/DDD_VALUE_OBJECTS_SUMMARY.md) - 值物件實作
+- [程式碼品質改善執行報告](docs/archive/reports/CODE_QUALITY_IMPROVEMENT_EXECUTION_REPORT.md) - 品質改善記錄
 
 ### 📁 完整文件列表
 
@@ -1850,11 +1850,11 @@ php scripts/demo-unified-scripts.php demo
 ```
 
 ### 📚 完整文件
-- **[統一腳本使用文件](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)**: 詳細使用說明
-- **[腳本遷移計劃](docs/SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md)**: 整合策略與實作
-- **[腳本清理報告](docs/SCRIPTS_CLEANUP_REPORT.md)**: 清理成果統計
-- **[完成總結報告](docs/UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md)**: 建立完成摘要
-- **[統計模組概覽](docs/STATISTICS_FEATURE_OVERVIEW.md)**: 統計功能摘要與儀表板導覽 🆕
+- **[統一腳本使用文件](docs/archive/UNIFIED_SCRIPTS_DOCUMENTATION.md)**: 詳細使用說明
+- **[腳本遷移計劃](docs/archive/SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md)**: 整合策略與實作
+- **[腳本清理報告](docs/archive/SCRIPTS_CLEANUP_REPORT.md)**: 清理成果統計
+- **[完成總結報告](docs/archive/UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md)**: 建立完成摘要
+- **[統計模組概覽](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md)**: 統計功能摘要與儀表板導覽 🆕
 
 ---
 
@@ -1909,14 +1909,14 @@ AlleyNote/
 - [開發者指南](docs/guides/developer/DEVELOPER_GUIDE.md) - 開發環境設置與規範
 
 #### 📊 統計模組文件
-- [統計功能總覽](docs/STATISTICS_FEATURE_OVERVIEW.md) - 統計模組介紹 ⭐
-- [統計功能規格書](docs/STATISTICS_FEATURE_SPECIFICATION.md) - 詳細功能規格
-- [統計運維手冊](docs/STATISTICS_OPERATIONS_MANUAL.md) - 運維操作指南
+- [統計功能總覽](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md) - 統計模組介紹 ⭐
+- [統計功能規格書](docs/domains/statistics/STATISTICS_FEATURE_SPECIFICATION.md) - 詳細功能規格
+- [統計運維手冊](docs/domains/statistics/STATISTICS_OPERATIONS_MANUAL.md) - 運維操作指南
 
 #### 🏗️ 架構與設計
 - [架構審計報告](docs/domains/shared/ARCHITECTURE_AUDIT.md) - DDD 架構分析
-- [DI 容器指南](docs/DI_CONTAINER_GUIDE.md) - 依賴注入系統
-- [驗證器指南](docs/VALIDATOR_GUIDE.md) - 29 種驗證規則
+- [DI 容器指南](docs/guides/developer/DI_CONTAINER_GUIDE.md) - 依賴注入系統
+- [驗證器指南](docs/guides/developer/VALIDATOR_GUIDE.md) - 29 種驗證規則
 
 #### 🛠️ 運維管理
 - [管理員手冊](docs/guides/admin/ADMIN_MANUAL.md) - 完整運維指南
@@ -1924,17 +1924,17 @@ AlleyNote/
 - [故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) - 常見問題解決
 
 #### 🔐 安全與認證
-- [JWT 認證規格](docs/JWT_AUTHENTICATION_SPECIFICATION.md) - 認證機制
-- [用戶活動記錄](docs/USER_ACTIVITY_LOGGING_GUIDE.md) - 行為監控
+- [JWT 認證規格](docs/domains/auth/JWT_AUTHENTICATION_SPECIFICATION.md) - 認證機制
+- [用戶活動記錄](docs/domains/auth/USER_ACTIVITY_LOGGING_GUIDE.md) - 行為監控
 - [SSL 部署指南](docs/guides/deployment/SSL_DEPLOYMENT_GUIDE.md) - HTTPS 配置
 
 #### 📊 快取與效能
-- [多層快取系統](docs/MULTI_LAYER_CACHE_SYSTEM.md) - 快取架構
-- [快取標籤系統](docs/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
+- [多層快取系統](docs/domains/shared/MULTI_LAYER_CACHE_SYSTEM.md) - 快取架構
+- [快取標籤系統](docs/domains/shared/CACHE_TAGGING_SYSTEM_GUIDE.md) - 快取管理
 
 #### 📖 API 文件
 - [API 文件](docs/guides/developer/API_DOCUMENTATION.md) - RESTful API 規格
-- [Swagger 整合](docs/SWAGGER_INTEGRATION.md) - API 文件生成
+- [Swagger 整合](docs/guides/deployment/SWAGGER_INTEGRATION.md) - API 文件生成
 
 ### 📁 文件分類
 
@@ -2198,7 +2198,7 @@ docker compose exec web php scripts/unified-scripts.php status
 ## 常見問題 FAQ
 
 **Q: 如何使用新的統一腳本系統？**
-A: 執行 `docker compose exec web php scripts/unified-scripts.php status` 查看系統狀態，參考 [統一腳本文件](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)。
+A: 執行 `docker compose exec web php scripts/unified-scripts.php status` 查看系統狀態，參考 [統一腳本文件](docs/archive/UNIFIED_SCRIPTS_DOCUMENTATION.md)。
 
 **Q: 舊的腳本還能使用嗎？**
 A: 重要的基礎設施腳本（備份、SSL、部署）仍保留可用，58+ 個開發工具腳本已整合到統一系統。
@@ -2210,7 +2210,7 @@ A: 參考 [故障排除指南](docs/guides/admin/TROUBLESHOOTING_GUIDE.md) 的�
 A: 使用 `docker compose exec web php scripts/unified-scripts.php maintain --task=all` 或查看 [管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md)。
 
 **Q: 測試失敗如何除錯？**
-A: 首先查看錯誤訊息，確認測試期望什麼結果。參考 [程式碼品質改善計劃](docs/CODE_QUALITY_IMPROVEMENT_PLAN.md) 和 [PHPStan 修復報告](docs/reports/quality/PHPSTAN_FIX_REPORT.md) 了解常見問題的解決方法。
+A: 首先查看錯誤訊息，確認測試期望什麼結果。參考 [程式碼品質改善計劃](docs/archive/CODE_QUALITY_IMPROVEMENT_PLAN.md) 和 [PHPStan 修復報告](docs/archive/reports/quality/PHPSTAN_FIX_REPORT.md) 了解常見問題的解決方法。
 
 **Q: 如何還原備份？**
 A: 參考 [管理員操作手冊](docs/guides/admin/ADMIN_MANUAL.md) 的備份與還原章節。
@@ -2229,39 +2229,39 @@ A: 詳見 [系統需求說明](docs/guides/admin/SYSTEM_REQUIREMENTS.md)。
 - **[TROUBLESHOOTING_GUIDE.md](docs/guides/admin/TROUBLESHOOTING_GUIDE.md)**: 故障排除和維護指南
 
 ### 🛠️ 維運工具文件
-- **[UNIFIED_SCRIPTS_DOCUMENTATION.md](docs/UNIFIED_SCRIPTS_DOCUMENTATION.md)**: 統一腳本系統完整指南 ⭐
-- **[SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md](docs/SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md)**: 腳本整合策略文件
-- **[SCRIPTS_CLEANUP_REPORT.md](docs/SCRIPTS_CLEANUP_REPORT.md)**: 腳本清理成果報告
-- **[UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md](docs/UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md)**: 系統建立完成總結
-- **[STATISTICS_OPERATIONS_MANUAL.md](docs/STATISTICS_OPERATIONS_MANUAL.md)**: 統計模組維運操作手冊 🆕
+- **[UNIFIED_SCRIPTS_DOCUMENTATION.md](docs/archive/UNIFIED_SCRIPTS_DOCUMENTATION.md)**: 統一腳本系統完整指南 ⭐
+- **[SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md](docs/archive/SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md)**: 腳本整合策略文件
+- **[SCRIPTS_CLEANUP_REPORT.md](docs/archive/SCRIPTS_CLEANUP_REPORT.md)**: 腳本清理成果報告
+- **[UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md](docs/archive/UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md)**: 系統建立完成總結
+- **[STATISTICS_OPERATIONS_MANUAL.md](docs/domains/statistics/STATISTICS_OPERATIONS_MANUAL.md)**: 統計模組維運操作手冊 🆕
 
 ### 📖 開發者文件
 - **[DEVELOPER_GUIDE.md](docs/guides/developer/DEVELOPER_GUIDE.md)**: 完整開發者指南
-- **[DI_CONTAINER_GUIDE.md](docs/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊
-- **[VALIDATOR_GUIDE.md](docs/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
+- **[DI_CONTAINER_GUIDE.md](docs/guides/developer/DI_CONTAINER_GUIDE.md)**: DI 容器使用手冊
+- **[VALIDATOR_GUIDE.md](docs/guides/developer/VALIDATOR_GUIDE.md)**: 驗證器詳細指南
 - **[API_DOCUMENTATION.md](docs/guides/developer/API_DOCUMENTATION.md)**: API 文件（含統計查詢與管理端點）
-- **[STATISTICS_FEATURE_SPECIFICATION.md](docs/STATISTICS_FEATURE_SPECIFICATION.md)**: 統計模組完整規格 🆕
-- **[STATISTICS_FEATURE_OVERVIEW.md](docs/STATISTICS_FEATURE_OVERVIEW.md)**: 統計模組概覽與使用情境 🆕
-- **[USER_ACTIVITY_LOGGING_ARCHITECTURE.md](docs/USER_ACTIVITY_LOGGING_ARCHITECTURE.md)**: 使用者活動記錄系統架構 ⭐
-- **[CACHE_TAGGING_SYSTEM_GUIDE.md](docs/CACHE_TAGGING_SYSTEM_GUIDE.md)**: 快取標籤系統使用指南 ⭐
+- **[STATISTICS_FEATURE_SPECIFICATION.md](docs/domains/statistics/STATISTICS_FEATURE_SPECIFICATION.md)**: 統計模組完整規格 🆕
+- **[STATISTICS_FEATURE_OVERVIEW.md](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md)**: 統計模組概覽與使用情境 🆕
+- **[USER_ACTIVITY_LOGGING_ARCHITECTURE.md](docs/domains/auth/USER_ACTIVITY_LOGGING_ARCHITECTURE.md)**: 使用者活動記錄系統架構 ⭐
+- **[CACHE_TAGGING_SYSTEM_GUIDE.md](docs/domains/shared/CACHE_TAGGING_SYSTEM_GUIDE.md)**: 快取標籤系統使用指南 ⭐
 
 ### 📋 專案文件
 - **[ARCHITECTURE_AUDIT.md](docs/domains/shared/ARCHITECTURE_AUDIT.md)**: 架構審查報告
-- **[USER_ACTIVITY_LOGGING_TODO.md](docs/USER_ACTIVITY_LOGGING_TODO.md)**: 專案狀態與完成報告 ⭐
-- **[STATISTICS_FEATURE_TODO.md](docs/STATISTICS_FEATURE_TODO.md)**: 統計模組開發待辦與完成紀錄 🆕
-- **[STATISTICS_PERFORMANCE_REPORT.md](docs/STATISTICS_PERFORMANCE_REPORT.md)**: 統計模組效能測試報告 🆕
-- **[STATISTICS_DATABASE_MIGRATION_GUIDE.md](docs/STATISTICS_DATABASE_MIGRATION_GUIDE.md)**: 統計資料庫遷移指南 🆕
+- **[USER_ACTIVITY_LOGGING_TODO.md](docs/archive/USER_ACTIVITY_LOGGING_TODO.md)**: 專案狀態與完成報告 ⭐
+- **[STATISTICS_FEATURE_TODO.md](docs/archive/STATISTICS_FEATURE_TODO.md)**: 統計模組開發待辦與完成紀錄 🆕
+- **[STATISTICS_PERFORMANCE_REPORT.md](docs/archive/STATISTICS_PERFORMANCE_REPORT.md)**: 統計模組效能測試報告 🆕
+- **[STATISTICS_DATABASE_MIGRATION_GUIDE.md](docs/domains/statistics/STATISTICS_DATABASE_MIGRATION_GUIDE.md)**: 統計資料庫遷移指南 🆕
 - **[DEPLOYMENT.md](docs/guides/deployment/DEPLOYMENT.md)**: 詳細部署說明
 - **[SSL_DEPLOYMENT_GUIDE.md](docs/guides/deployment/SSL_DEPLOYMENT_GUIDE.md)**: SSL 設定指南
 - **[CHANGELOG.md](CHANGELOG.md)**: 版本更新日誌
 
 ### 🏗️ 遷移文件
-- **[前後端分離完成報告](docs/migration/FRONTEND_BACKEND_SEPARATION_COMPLETION_REPORT.md)**: 詳細的架構遷移記錄與最佳實踐 🆕
+- **[前後端分離完成報告](docs/archive/FRONTEND_BACKEND_SEPARATION_COMPLETION_REPORT.md)**: 詳細的架構遷移記錄與最佳實踐 🆕
 
 ### 📊 規劃文件
-- **[AlleyNote公布欄網站規格書.md](docs/architecture/AlleyNote公布欄網站規格書.md)**: 系統規格
-- **[USER_ACTIVITY_LOGGING_SPEC.md](docs/USER_ACTIVITY_LOGGING_SPEC.md)**: 使用者活動記錄規格 ⭐
-- **[CACHE_TAGGING_SYSTEM_API_REFERENCE.md](docs/CACHE_TAGGING_SYSTEM_API_REFERENCE.md)**: 快取系統 API 參考 ⭐
+- **[AlleyNote公布欄網站規格書.md](docs/archive/AlleyNote公布欄網站規格書.md)**: 系統規格
+- **[USER_ACTIVITY_LOGGING_SPEC.md](docs/domains/auth/USER_ACTIVITY_LOGGING_SPEC.md)**: 使用者活動記錄規格 ⭐
+- **[CACHE_TAGGING_SYSTEM_API_REFERENCE.md](docs/domains/shared/CACHE_TAGGING_SYSTEM_API_REFERENCE.md)**: 快取系統 API 參考 ⭐
 
 ---
 
