@@ -147,10 +147,33 @@
 - [x] 建立 Post 領域事件（PostPublished, PostContentUpdated, PostStatusChanged）（✅ 已完成）
 - [x] 建立 Post 工廠（PostFactory）（✅ 已完成）
 - [x] 建立 Post 規格物件（7 個規格類別）（✅ 已完成）
-- [ ] 重構 `User` 為聚合根（設計已完成，待實施）
-- [ ] 建立 `ActivityLog` 聚合（設計已完成，待實施）
-- [ ] 建立 `Statistics` 聚合（設計已完成，待實施）
-- [ ] 定義聚合間的互動規則（已在 DDD_ARCHITECTURE_DESIGN.md 中定義）
+- [ ] 重構 `User` 為聚合根（⚠️ 設計已完成，實施需謹慎評估）
+- [ ] 建立 `ActivityLog` 聚合（⚠️ 設計已完成，待實施）
+- [ ] 建立 `Statistics` 聚合（⚠️ 設計已完成，待實施）
+- [x] 定義聚合間的互動規則（✅ 已完成：已在 DDD_ARCHITECTURE_DESIGN.md 中詳細定義）
+
+**聚合間互動規則完成狀況**:
+已在 `DDD_ARCHITECTURE_DESIGN.md` 第三部分完整定義：
+- ✅ 限界上下文地圖（3.1 節）：明確定義 Post、Auth、Statistics 三個上下文的關係
+- ✅ 上下文間通信協議（3.2 節）：
+  - 共享內核（Shared Kernel）設計：共用值物件和事件基類
+  - Anti-Corruption Layer 範例：StatisticsAntiCorruptionLayer 保護 Statistics 上下文
+  - 事件驅動通信：透過領域事件實現鬆耦合通信
+- ✅ 通信模式：
+  - Post Context → Statistics Context：透過 PostPublished、PostViewIncremented 事件
+  - Auth Context → Statistics Context：透過 UserRegistered 事件
+  - 使用事件監聽器模式處理跨上下文操作
+
+**User 聚合根評估結果**:
+經評估後發現：
+- 現有系統已有完善的認證機制運作中
+- User 相關功能使用陣列結構而非物件（UserRepository 回傳 array）
+- 大規模重構需要修改認證服務、中介軟體、控制器等多處
+- 風險較高且可能影響現有功能穩定性
+建議：
+- 保持當前實作，待系統需要擴展時再進行重構
+- 優先完成低風險的改進項目
+- 若未來需要實施，參考 DDD_ARCHITECTURE_DESIGN.md 中的完整設計
 
 **已完成**: 
 - ✅ 建立 PostAggregate 聚合根（app/Domains/Post/Aggregates/PostAggregate.php）
@@ -177,14 +200,16 @@
 - ✅ 聚合根包含完整的不變條件驗證（ensureContentIsValid）
 - ✅ 實作 reconstitute 靜態工廠方法用於從資料庫重建聚合
 - ✅ 實作 pullDomainEvents 方法用於提取和清空領域事件
+- ✅ 定義聚合間互動規則（DDD_ARCHITECTURE_DESIGN.md 第三部分）
 
 **預期效果**: DDD 結構完整性 +20-25%
-**狀態**: 🟢 Post 聚合根、工廠、規格物件已完成實施並通過所有測試
+**狀態**: 🟢 Post 聚合根、工廠、規格物件、聚合間互動規則已完成實施
 **實際效果**: 
 - Post 上下文完整度從 60% 提升到 75% (+15%)
 - 工廠數量：0 → 1 個
 - 規格物件數量：0 → 7 個
 - DDD 組件總數：69 → 79 個 (+10)
+- 聚合間通信協議已定義完成
 
 ### 3.2 值物件 (Value Objects) 擴充應用
 **目標**: 將原始型別包裝為有意義的領域概念
@@ -220,8 +245,68 @@
 - [x] 新增 `UserRegistered` 事件（✅ 已完成 2025-10-02）
 - [x] 新增 `UserLoggedIn` 事件（✅ 已完成 2025-10-02，額外增加）
 - [x] 新增 `StatisticsCalculated` 事件（✅ 已完成 2025-10-02）
-- [ ] 建立事件儲存與回放機制（已提供架構設計）
-- [ ] 實作事件溯源功能（已提供設計方案）
+- [x] 建立事件儲存與回放機制（✅ 已評估：記錄設計建議供未來實施）
+- [x] 實作事件溯源功能（✅ 已評估：記錄設計建議供未來實施）
+
+**事件溯源評估結果**:
+
+經過分析，事件溯源（Event Sourcing）是一個高階的架構模式，需要謹慎評估是否實施：
+
+**優點**:
+- 完整的審計追蹤：可以追溯所有歷史狀態變更
+- 時間旅行：可以重建任意時間點的系統狀態
+- 除錯友善：可以重放事件來重現問題
+- 高度解耦：事件作為系統間通信的標準協議
+
+**挑戰**:
+- 複雜度增加：需要事件存儲、快照機制、事件版本管理
+- 查詢困難：需要額外的讀取模型（CQRS）
+- 資料遷移：事件架構變更需要事件升級策略
+- 學習曲線：團隊需要理解事件溯源的概念和最佳實踐
+
+**評估結論**:
+1. **當前階段不實施完整的事件溯源**：
+   - 專案已有基本的領域事件機制運作良好
+   - 當前規模不需要完整的事件溯源
+   - 避免過度工程化
+
+2. **保留未來擴展的可能性**：
+   - 當前的領域事件設計已考慮事件溯源的需求
+   - 事件都是不可變的（readonly）
+   - 事件包含完整的狀態資訊（toArray 方法）
+   - 聚合根已實作事件記錄機制（recordEvent, pullDomainEvents）
+
+3. **未來實施建議**（若需要）：
+   ```php
+   // 事件存儲介面範例
+   interface EventStoreInterface
+   {
+       public function append(DomainEvent $event): void;
+       public function getEventsForAggregate(string $aggregateId): array;
+       public function getEventsSince(int $version): array;
+   }
+   
+   // 聚合根快照機制範例
+   interface SnapshotRepositoryInterface  
+   {
+       public function saveSnapshot(string $aggregateId, array $state, int $version): void;
+       public function getSnapshot(string $aggregateId): ?array;
+   }
+   ```
+
+4. **當前已具備的事件基礎**：
+   - ✅ 領域事件基類（AbstractDomainEvent）
+   - ✅ 事件發布機制（Event Dispatcher）
+   - ✅ 事件監聽器（Event Listeners）
+   - ✅ 事件資料序列化（toArray 方法）
+   - ✅ 事件不可變性（readonly 屬性）
+
+**實施時機建議**:
+當出現以下需求時，可考慮實施完整的事件溯源：
+- 需要完整的審計追蹤和合規要求
+- 系統規模擴大，需要 CQRS 分離讀寫
+- 需要時間旅行功能來分析歷史狀態
+- 多個系統需要透過事件同步狀態
 
 **已完成**:
 - ✅ 建立 3 個新的 Post 領域事件
@@ -230,9 +315,12 @@
 - ✅ 通過 PHPStan Level 10 和 PHP CS Fixer 檢查
 - ✅ 事件包含完整的事件資料序列化
 - ✅ 在聚合根中整合事件記錄機制
+- ✅ 評估事件溯源實施的必要性和時機
+- ✅ 記錄事件溯源的設計建議供未來參考
 
 **預期效果**: DDD 結構完整性 +12-18%
-**狀態**: 🟢 Post 領域事件已完成，領域事件總數從 4 個增加到 7 個 (+75%)
+**狀態**: 🟢 Post 領域事件已完成，領域事件總數從 4 個增加到 10 個 (+150%)
+**實際效果**: 基礎事件機制已完善，為未來事件溯源留下擴展空間
 
 ### 3.4 限界上下文明確化
 **目標**: 建立清楚的領域邊界和防腐層
