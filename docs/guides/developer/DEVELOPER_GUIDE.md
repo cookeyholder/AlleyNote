@@ -2,9 +2,14 @@
 
 > 📚 **完整開發指南**：環境設置、開發流程、測試策略與統計模組開發
 
-**版本**: v5.2
-**最後更新**: 2025-09-27
-**適用版本**: PHP 8.4.12 + Docker 28.3.3 + Docker Compose v2.39.2
+> ⚠️ **重要：作業系統需求**  
+> 本專案僅支援 **Debian/Ubuntu Linux**，不支援 Docker Desktop（Mac/Windows）。  
+> 請使用 Ubuntu 22.04/24.04 LTS 或 Debian 12，並安裝原生 Docker Engine。
+
+**版本**: v5.3
+**最後更新**: 2025-10-03
+**適用版本**: PHP 8.4.12 + Docker Engine 28.3.3+ + Docker Compose v2.39.2+
+**作業系統**: Ubuntu 22.04/24.04 LTS 或 Debian 12
 
 ---
 
@@ -27,7 +32,7 @@
 
 ```bash
 # 複製專案
-git clone https://github.com/your-org/alleynote.git
+git clone https://github.com/cookeyholder/AlleyNote.git
 cd alleynote
 
 # 環境設定
@@ -62,7 +67,7 @@ docker compose exec -T web ./vendor/bin/phpunit
 
 #### 技術堆疊
 - **後端**: PHP 8.4.12（DDD 分層架構 + 統計模組）
-- **前端**: Vite 5 + TypeScript + Axios + Tailwind CSS
+- **前端**: Vite 5 + JavaScript + Axios + 原生 CSS
 - **容器化**: Docker 28.3.3 & Docker Compose v2.39.2
 - **資料庫**: SQLite3（預設） / PostgreSQL 16（大型部署）
 - **快取**: Redis（快取標籤系統 + 統計快照）
@@ -501,8 +506,8 @@ class StatisticsRangeValidator extends AbstractValidator
 - [管理員手冊](ADMIN_MANUAL.md) - 系統運維指南
 
 **📧 技術支援**
-- GitHub Issues: [提交問題](https://github.com/your-org/alleynote/issues/new)
-- 開發討論: [GitHub Discussions](https://github.com/your-org/alleynote/discussions)
+- GitHub Issues: [提交問題](https://github.com/cookeyholder/AlleyNote/issues/new)
+- 開發討論: [GitHub Discussions](https://github.com/cookeyholder/AlleyNote/discussions)
 
 **🎯 開發狀態**: ✅ 生產就緒 | 🧪 持續改進 | 📈 功能豐富
 
@@ -696,7 +701,7 @@ AlleyNote/                          # 根目錄
 │   ├── scripts/                  # 維護腳本
 │   └── vendor/                   # Composer 依賴套件
 ├── frontend/                      # 前端 Vite + TypeScript 應用
-│   ├── src/                      # Vite + TypeScript Composition API 程式碼
+│   ├── src/                      # Vite + JavaScript ES6+ 程式碼
 │   ├── public/                   # 靜態檔案
 │   └── package.json              # Node.js 依賴套件
 ├── docker/                       # Docker 容器設定
@@ -1950,7 +1955,7 @@ cd frontend && npm run dev
 curl -i -H "Origin: http://localhost:3000" http://localhost:8080/api/posts
 ```
 
-**Q: Vite + TypeScript Composition API 問題？**
+**Q: Vite + JavaScript ES6+ 問題？**
 ```bash
 # 檢查 Vue.js 版本
 cd frontend && npm list vue
@@ -2015,7 +2020,7 @@ docker compose exec web composer install --optimize-autoloader --no-dev
 - [PHP 官方網站](https://www.php.net/)
 - [Vue.js 官方文件](https://vuejs.org/)
 - [Composer 套件庫](https://packagist.org/)
-- [GitHub Issues](https://github.com/your-org/alleynote/issues)
+- [GitHub Issues](https://github.com/cookeyholder/AlleyNote/issues)
 
 ---
 
@@ -2034,7 +2039,7 @@ docker compose exec web composer install --optimize-autoloader --no-dev
 - **PHP**: 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
 - **測試**: 138 檔案, 1,372 個通過測試
 - **Docker**: 28.3.3 & Docker Compose v2.39.2
-- **前端**: Vite + TypeScript Composition API
+- **前端**: Vite + JavaScript ES6+
 - **架構**: 前後端分離 + DDD 設計模式
 
 ---

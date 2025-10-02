@@ -40,7 +40,7 @@ free -h
 
 ### 1. 下載專案
 ```bash
-git clone https://github.com/your-org/alleynote.git
+git clone https://github.com/cookeyholder/AlleyNote.git
 cd alleynote
 ```
 
@@ -411,9 +411,9 @@ docker compose version >> environment_info.txt
 ```
 
 ### 支援管道
-- **GitHub Issues**: [提交問題報告](https://github.com/your-org/alleynote/issues)
+- **GitHub Issues**: [提交問題報告](https://github.com/cookeyholder/AlleyNote/issues)
 - **文件查詢**: 詳細文件位於 [docs/](../docs/) 資料夾
-- **社群討論**: [GitHub Discussions](https://github.com/your-org/alleynote/discussions)
+- **社群討論**: [GitHub Discussions](https://github.com/cookeyholder/AlleyNote/discussions)
 
 ---
 

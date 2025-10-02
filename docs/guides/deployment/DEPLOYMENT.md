@@ -3,7 +3,7 @@
 **版本**: v4.0
 **更新日期**: 2025-01-20
 **適用環境**: 生產環境、預備環境
-**架構**: 前後端分離 (Vite + TypeScript + PHP 8.4.12 DDD 後端)
+**架構**: 前後端分離 (Vite + JavaScript + PHP 8.4.12 DDD 後端)
 
 ## 1. 系統需求
 
@@ -16,7 +16,7 @@
 ### 1.2 軟體需求
 - **作業系統**: Debian 12 (強烈推薦) / Ubuntu 24.04 LTS
 - **後端**: PHP 8.4.12+ (Docker 容器內自動提供)
-- **前端**: Vite + TypeScript + Node.js 20.x LTS
+- **前端**: Vite + JavaScript + Node.js 20.x LTS
 - **資料庫**: SQLite3 (預設推薦) / PostgreSQL 16+ (大型部署)
 - **Web Server**: NGINX (Docker 容器內自動提供)
 - **容器平台**: Docker 28.3.3+ & Docker Compose v2.39.2+
@@ -60,7 +60,7 @@ mkdir -p /var/www/alleynote
 cd /var/www/alleynote
 
 # 複製專案檔案
-git clone https://github.com/your-org/alleynote.git .
+git clone https://github.com/cookeyholder/AlleyNote.git .
 
 # 設定後端環境變數
 cp backend/.env.example backend/.env
@@ -128,7 +128,7 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | crontab -
 
 ### 3.1 NGINX 設定 (前後端分離)
 ```nginx
-# 前端 (Vite + TypeScript)
+# 前端 (Vite + JavaScript)
 server {
     listen 80;
     server_name your-domain.com;
@@ -288,7 +288,7 @@ docker compose run --rm web ./vendor/bin/phinx migrate
 docker compose run --rm web php -r "opcache_reset();"
 
 # 前端部署
-echo "部署前端 (Vite + TypeScript)..."
+echo "部署前端 (Vite + JavaScript)..."
 cd ../frontend
 npm ci --production
 npm run build

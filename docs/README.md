@@ -1,111 +1,233 @@
-# AlleyNote 文件索引
+# AlleyNote 文件目錄
 
-> 提供 AlleyNote 專案所有技術、營運與維運文件的導覽索引。
+這個目錄包含 AlleyNote 專案的所有技術文件，按照 DDD 領域架構組織。
 
-**最新更新**：2025-09-27 — 重新整理分類、組織主題文件夾，提升文件查找效率。
-**檔案總數**：65+ 個技術文件，按主題分類組織。
+## 📂 文件結構說明
 
----
+### 目錄組織原則
 
-## 目錄結構導覽
-
-### 📁 主題分類
-- `statistics/`：統計模組完整文件集 - 7個專門文件
-- `cache/`：快取系統設計與實作文件 - 4個文件
-- `routing/`：路由系統架構與 API 文件 - 5個文件
-- `migration/`：重大遷移與架構變更記錄
-- `architecture/`：系統規格書與架構決策記錄
-- `archive/`：已完成項目與歷史性文件
-- `development/`：開發過程優化紀錄
-- `reports/`：架構與品質審查報告
+文件依照**領域驅動設計（DDD）**的概念組織：
+- **`domains/`** - 按業務領域分類的文件（系統架構和深入說明）
+- **`guides/`** - 按使用者角色分類的指南（實用教學）
+- **`archive/`** - 開發過程文件、TODO、規劃、報告（歷史記錄）
 
 ---
 
-## 文件分類
+## 📚 主要目錄
 
-### 👨‍💼 管理員指南
-- [ADMIN_QUICK_START.md](ADMIN_QUICK_START.md) — 30 分鐘完成部署與啟動。
-- [ADMIN_MANUAL.md](ADMIN_MANUAL.md) — 日常維運、權限與安全作業手冊。
-- [SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md) — 硬體、軟體與網路需求。
-- [TROUBLESHOOTING_GUIDE.md](TROUBLESHOOTING_GUIDE.md) — 常見故障排除流程。
+### 🎯 `domains/` - 領域文件（深入理解系統）
 
-### 🧑‍💻 開發者與架構文件
-- [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) — 開發環境設定、流程與品質規範。
-- [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) — 架構審視與演進計畫。
-- [NAMING_CONVENTIONS.md](NAMING_CONVENTIONS.md) — 命名與程式碼風格規範。
-- [PHPSTAN_LEVEL_10_ENFORCEMENT.md](PHPSTAN_LEVEL_10_ENFORCEMENT.md) — 靜態分析標準。
-- [DI_CONTAINER_GUIDE.md](DI_CONTAINER_GUIDE.md)、[DI_VALIDATION_INTEGRATION.md](DI_VALIDATION_INTEGRATION.md) — 相依性注入與驗證整合指南。
+按照系統的業務領域組織，每個領域包含該部分的架構設計、技術規格和實作細節。
 
-### 📊 統計模組文件
-- [STATISTICS_FEATURE_OVERVIEW.md](STATISTICS_FEATURE_OVERVIEW.md) — 統計模組產品導覽（新）。
-- [STATISTICS_FEATURE_SPECIFICATION.md](STATISTICS_FEATURE_SPECIFICATION.md) — 詳細功能規格與驗收標準。
-- [STATISTICS_OPERATIONS_MANUAL.md](STATISTICS_OPERATIONS_MANUAL.md) — 維運、快照與快取管理指南。
-- [STATISTICS_PERFORMANCE_REPORT.md](STATISTICS_PERFORMANCE_REPORT.md) — 效能測試與指標。
-- [STATISTICS_RECALCULATION_GUIDE.md](STATISTICS_RECALCULATION_GUIDE.md) — 再計算與修正流程。
-- [STATISTICS_DATABASE_MIGRATION_GUIDE.md](STATISTICS_DATABASE_MIGRATION_GUIDE.md) — 資料庫調整與回溯策略。
+#### **`domains/post/`** - 文章領域
+目前無專門文件（規劃中）
 
-### 🔐 安全與認證
-- [JWT_AUTHENTICATION_SPECIFICATION.md](JWT_AUTHENTICATION_SPECIFICATION.md) — JWT 規格。
-- [JWT_SETUP_TOOL_GUIDE.md](JWT_SETUP_TOOL_GUIDE.md) — JWT 工具設定。
-- [ROUTE_JWT_CONFIGURATION.md](ROUTE_JWT_CONFIGURATION.md) — 路由與授權配置。
-- [USER_ACTIVITY_LOGGING_ARCHITECTURE.md](USER_ACTIVITY_LOGGING_ARCHITECTURE.md)、[USER_ACTIVITY_LOGGING_GUIDE.md](USER_ACTIVITY_LOGGING_GUIDE.md)、[USER_ACTIVITY_LOGGING_SPEC.md](USER_ACTIVITY_LOGGING_SPEC.md) — 活動紀錄系統。
+**涵蓋內容**：
+- 文章的建立、編輯、刪除
+- 文章狀態管理（草稿、已發布、已下架）
+- 分類和標籤系統
+- 置頂和排序功能
 
-### 🚀 核心系統與 API
-- [API_DOCUMENTATION.md](API_DOCUMENTATION.md) — RESTful API 規格（含統計端點）。
-- [ROUTING_SYSTEM_GUIDE.md](ROUTING_SYSTEM_GUIDE.md)、[ROUTING_SYSTEM_API_REFERENCE.md](ROUTING_SYSTEM_API_REFERENCE.md)、[ROUTING_SYSTEM_PERFORMANCE_GUIDE.md](ROUTING_SYSTEM_PERFORMANCE_GUIDE.md) — 路由系統相關文件。
-- [CACHE_TAGGING_SYSTEM_GUIDE.md](CACHE_TAGGING_SYSTEM_GUIDE.md)、[CACHE_TAGGING_SYSTEM_API_REFERENCE.md](CACHE_TAGGING_SYSTEM_API_REFERENCE.md)、[CACHE_TAGGING_SYSTEM_PERFORMANCE_GUIDE.md](CACHE_TAGGING_SYSTEM_PERFORMANCE_GUIDE.md) — 快取與標籤系統。
-- [MULTI_LAYER_CACHE_SYSTEM.md](MULTI_LAYER_CACHE_SYSTEM.md) — 多層快取設計。
+#### **`domains/auth/`** - 認證與授權領域
+- JWT_AUTHENTICATION_SPECIFICATION.md - JWT 認證機制規格
+- JWT_SETUP_TOOL_GUIDE.md - JWT 設定工具使用指南
+- USER_ACTIVITY_LOGGING_ARCHITECTURE.md - 使用者活動記錄架構
+- USER_ACTIVITY_LOGGING_GUIDE.md - 活動記錄使用指南
+- USER_ACTIVITY_LOGGING_SPEC.md - 活動記錄規格
+- ROUTE_JWT_CONFIGURATION.md - 路由層級的 JWT 配置
 
-### 🛠️ 部署與維運
-- [DEPLOYMENT.md](DEPLOYMENT.md) — 正式環境部署流程。
-- [SSL_DEPLOYMENT_GUIDE.md](SSL_DEPLOYMENT_GUIDE.md) — SSL 與憑證自動化。
-- [ENVIRONMENT_CONFIGURATION_GUIDE.md](ENVIRONMENT_CONFIGURATION_GUIDE.md) — 環境設定細節。
-- [SWAGGER_INTEGRATION.md](SWAGGER_INTEGRATION.md) — API 文件產生整合。
+**涵蓋內容**：
+- 使用者註冊、登入、登出
+- JWT Token 管理
+- 角色和權限控制
+- 使用者活動追蹤（21 種活動類型）
+- 異常行為偵測
 
-### 🗃️ 歷史歸檔（archive/）
-- [DATABASE_SCRIPT_MIGRATION_GUIDE.md](archive/DATABASE_SCRIPT_MIGRATION_GUIDE.md) — 資料庫腳本遷移紀錄。
-- [SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md](archive/SCRIPT_CONSOLIDATION_MIGRATION_PLAN.md)、[SCRIPTS_CLEANUP_REPORT.md](archive/SCRIPTS_CLEANUP_REPORT.md) — 腳本整併成果。
-- [UNIFIED_SCRIPTS_DOCUMENTATION.md](archive/UNIFIED_SCRIPTS_DOCUMENTATION.md)、[UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md](archive/UNIFIED_SCRIPTS_COMPLETION_SUMMARY.md) — 統一腳本歷史文件。
-- 其餘檔案保留供稽核與追溯。
+#### **`domains/security/`** - 安全領域
+目前無專門文件（規劃中）
+
+**涵蓋內容**：
+- XSS、CSRF、SQL Injection 防護
+- IP 黑白名單
+- 地理位置限制
+- 攻擊偵測和自動封禁
+
+#### **`domains/attachment/`** - 附件領域
+目前無專門文件（規劃中）
+
+**涵蓋內容**：
+- 檔案上傳和管理
+- 多格式支援（圖片、PDF、文件）
+- 檔案驗證和安全檢查
+- 儲存空間管理
+
+#### **`domains/statistics/`** - 統計領域 ⭐
+- STATISTICS_FEATURE_OVERVIEW.md - 統計功能總覽（從這裡開始！）
+- STATISTICS_FEATURE_SPECIFICATION.md - 詳細功能規格
+- STATISTICS_OPERATIONS_MANUAL.md - 運維操作手冊
+- STATISTICS_DATABASE_MIGRATION_GUIDE.md - 資料庫遷移指南
+- STATISTICS_DOMAIN_ANALYSIS.md - 領域分析
+- STATISTICS_RECALCULATION_GUIDE.md - 資料重算指南
+
+**涵蓋內容**：
+- 多維度統計分析（內容、用戶、行為）
+- 趨勢預測和時間序列分析
+- 統計快照系統（每日/週/月）
+- 視覺化儀表板
+
+#### **`domains/shared/`** - 共享基礎設施
+- ARCHITECTURE_AUDIT.md - 完整架構審查報告
+- DDD_ARCHITECTURE_DESIGN.md - DDD 架構設計文件
+- PHPSTAN_LEVEL_10_ENFORCEMENT.md - PHPStan Level 10 實施
+- CACHE_TAGGING_SYSTEM_GUIDE.md - 快取標籤系統使用指南
+- CACHE_TAGGING_SYSTEM_API_REFERENCE.md - 快取系統 API 參考
+- CACHE_TAGGING_SYSTEM_PERFORMANCE_GUIDE.md - 快取效能指南
+- CACHE_TAGGING_SYSTEM_DEPLOYMENT_GUIDE.md - 快取系統部署指南
+- MULTI_LAYER_CACHE_SYSTEM.md - 多層快取系統
+- ROUTING_SYSTEM_GUIDE.md - 路由系統指南
+- ROUTING_SYSTEM_ARCHITECTURE.md - 路由系統架構
+- ROUTING_IMPLEMENTATION_GUIDE.md - 路由實作指南
+
+**涵蓋內容**：
+- 整體系統架構
+- DI（依賴注入）容器
+- 驗證系統
+- 快取機制
+- 路由系統
+- 共用工具和輔助函式
 
 ---
 
-## 角色建議閱讀順序
+### 📖 `guides/` - 使用指南（實用教學）
 
-### 系統管理員
-1. [SYSTEM_REQUIREMENTS.md](SYSTEM_REQUIREMENTS.md)
-2. [ADMIN_QUICK_START.md](ADMIN_QUICK_START.md)
-3. [ADMIN_MANUAL.md](ADMIN_MANUAL.md)
-4. [STATISTICS_OPERATIONS_MANUAL.md](STATISTICS_OPERATIONS_MANUAL.md)
+按照使用者角色組織的實用指南和教學文件。
 
-### 新進開發者
-1. [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md)
-2. [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md)
-3. [STATISTICS_FEATURE_OVERVIEW.md](STATISTICS_FEATURE_OVERVIEW.md)
-4. [API_DOCUMENTATION.md](API_DOCUMENTATION.md)
+#### **`guides/admin/`** - 管理員指南
+- ADMIN_QUICK_START.md - **30分鐘快速入門**（從這裡開始！）⭐
+- ADMIN_MANUAL.md - 完整管理員操作手冊
+- TROUBLESHOOTING_GUIDE.md - 故障排除指南
+- SYSTEM_REQUIREMENTS.md - 系統需求說明
 
-### 維運與產品分析
-1. [STATISTICS_FEATURE_OVERVIEW.md](STATISTICS_FEATURE_OVERVIEW.md)
-2. [STATISTICS_PERFORMANCE_REPORT.md](STATISTICS_PERFORMANCE_REPORT.md)
-3. [STATISTICS_RECALCULATION_GUIDE.md](STATISTICS_RECALCULATION_GUIDE.md)
-4. [CACHE_TAGGING_SYSTEM_GUIDE.md](CACHE_TAGGING_SYSTEM_GUIDE.md)
+**適合對象**：
+- 系統管理員
+- 運維人員
+- 第一次部署的人
+
+**內容**：
+- 如何安裝和部署
+- 日常維護任務
+- 備份和還原
+- 常見問題解決
+- 系統監控
+
+#### **`guides/developer/`** - 開發者指南
+- DEVELOPER_GUIDE.md - **完整開發者指南**（從這裡開始！）⭐
+- API_DOCUMENTATION.md - RESTful API 文件
+- DI_CONTAINER_GUIDE.md - DI 容器使用手冊
+- VALIDATOR_GUIDE.md - 驗證器使用指南（29 種驗證規則）
+- DI_VALIDATION_INTEGRATION.md - DI 與驗證整合
+- ENVIRONMENT_CONFIGURATION_GUIDE.md - 環境配置指南
+- MODERN_DATABASE_INITIALIZATION_GUIDE.md - 資料庫初始化指南
+- NAMING_CONVENTIONS.md - 命名規範
+
+**適合對象**：
+- PHP 開發者
+- 想要貢獻程式碼的人
+- 學習 DDD 架構的人
+
+**內容**：
+- 開發環境設置
+- 程式碼規範
+- 測試指南
+- API 使用方式
+- DDD 設計模式
+- 如何擴展功能
+
+#### **`guides/deployment/`** - 部署指南
+- DEPLOYMENT.md - 詳細部署說明
+- SSL_DEPLOYMENT_GUIDE.md - SSL/HTTPS 設定指南
+
+**適合對象**：
+- DevOps 工程師
+- 系統管理員
+- 準備上線的團隊
+
+**內容**：
+- 生產環境部署
+- SSL 憑證設定
+- Docker 配置
+- 效能優化
+- 安全加固
 
 ---
 
-## 文件維護原則
+### 🗄️ `archive/` - 歷史文件（開發記錄）
 
-- 所有文件均採 `declare(strict_types=1);` 的程式碼為基準，內容需與主分支同步。
-- 新功能正式合併前，需先更新對應的指南、API 文檔與操作手冊。
-- 任何重大決策、架構調整請記錄於 `architecture/` 或 `docs/decision-log/`。
-- 歷史檔案僅做追溯，不得直接引用於新實作。
+存放開發過程中的 TODO、規劃文件、完成報告等。這些文件記錄了專案的發展歷程，但不是使用者日常需要的。
+
+**包含內容**：
+- TODO 清單和完成報告
+- 開發計劃和時程
+- 技術決策記錄
+- 重構報告
+- 效能測試報告
+- 程式碼品質改善記錄
+- 遷移指南
+
+**適合對象**：
+- 想了解專案歷史的人
+- 研究技術決策的人
+- 核心開發團隊
 
 ---
 
-## 相關連結
+## 🚀 快速導航
 
-- 專案首頁：[../README.md](../README.md)
-- 版本記錄：[../CHANGELOG.md](../CHANGELOG.md)
-- 系統規格書：[architecture/AlleyNote公布欄網站規格書.md](architecture/AlleyNote公布欄網站規格書.md)
-- 專案腳本報告：`reports/`
+### 我是**系統管理員**，想要部署系統
+1. 先看 guides/admin/ADMIN_QUICK_START.md
+2. 遇到問題看 guides/admin/TROUBLESHOOTING_GUIDE.md
+3. 需要詳細操作看 guides/admin/ADMIN_MANUAL.md
 
-> 維護文件時，請連同相依文件一併更新，並在提交前執行 `composer ci` 確保品質。
+### 我是**開發者**，想要開發功能
+1. 先看 guides/developer/DEVELOPER_GUIDE.md
+2. 了解 API 看 guides/developer/API_DOCUMENTATION.md
+3. 理解架構看 domains/shared/DDD_ARCHITECTURE_DESIGN.md
+
+### 我想**了解統計功能**
+1. 先看 domains/statistics/STATISTICS_FEATURE_OVERVIEW.md
+2. 詳細規格看 domains/statistics/STATISTICS_FEATURE_SPECIFICATION.md
+3. 操作手冊看 domains/statistics/STATISTICS_OPERATIONS_MANUAL.md
+
+### 我想**深入研究某個領域**
+- **認證授權**：domains/auth/
+- **統計分析**：domains/statistics/
+- **快取系統**：domains/shared/ (快取相關文件)
+- **整體架構**：domains/shared/ (架構文件)
+
+---
+
+## 📝 文件貢獻指南
+
+如果你要新增或修改文件，請遵循以下原則：
+
+1. **領域文件** (domains/) - 放技術規格、架構設計、領域分析
+2. **使用指南** (guides/) - 放實用教學、操作手冊、快速入門
+3. **歷史文件** (archive/) - 放 TODO、計劃、報告、開發記錄
+
+**命名規範**：
+- 使用大寫加底線：MY_DOCUMENT.md
+- 清楚描述內容：STATISTICS_FEATURE_OVERVIEW.md ✅  stats.md ❌
+- 包含文件類型：_GUIDE.md, _SPECIFICATION.md, _MANUAL.md
+
+---
+
+## 📊 文件統計
+
+- **領域文件**：30+ 份技術規格和架構文件
+- **使用指南**：15+ 份實用教學和操作手冊
+- **歷史文件**：50+ 份開發過程記錄
+- **總計**：95+ 份完整文件
+
+---
+
+*最後更新：2025-10-03*
