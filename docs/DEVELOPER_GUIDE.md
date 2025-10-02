@@ -57,7 +57,7 @@ docker compose exec -T web ./vendor/bin/phpunit
 - **測試框架**: PHPUnit 11.x（版本依 `composer.lock` 為準）
 - **執行建議**: `docker compose exec -T web ./vendor/bin/phpunit`
 - **測試統計**: 1,300+ 測試案例，以 CI 報告為準，提交前請執行 `composer ci`
-- **架構掃描**: 建議每次功能開發前執行 `php backend/scripts/scan-project-architecture.php`
+- **程式碼品質分析**: 建議每次功能開發前執行 `docker compose exec -T web php backend/scripts/Analysis/analyze-code-quality.php`
 
 #### 技術堆疊
 - **後端**: PHP 8.4.12（DDD 分層架構 + 統計模組）

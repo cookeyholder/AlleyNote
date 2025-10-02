@@ -5,28 +5,18 @@
 ## 📁 目錄結構
 
 ### Analysis/ - 分析工具
-- `analyze-code-quality.php` - 程式碼品質分析腳本
-- `scan-project-architecture.php` - 專案架構掃描工具
+- `analyze-code-quality.php` - **主要程式碼品質分析工具**（使用 CodeQualityAnalyzer）
+- `scan-missing-return-types.php` - 掃描缺少回傳型別的函式
 
-### CI/ - 持續整合腳本
-- `ci-generate-docs.sh` - 自動生成文件
-- `ci-test.sh` - CI 測試腳本
-- `create-activity-log-test.sh` - 活動日誌測試建立
-- `docker-entrypoint.sh` - Docker 容器進入點
+### Archive/ - 已封存的舊工具
+- `Consolidated*.php` - 舊的統一腳本系統（已由 Composer scripts 取代）
+- `Default*.php` - 舊的預設腳本（已不再使用）
+- `ScriptManager.php` - 舊的腳本管理器（已由 Composer scripts 取代）
+- `unified-scripts.php` - 舊的統一入口點（已由 Composer scripts 取代）
 
 ### Core/ - 核心腳本工具
-- `ConsolidatedAnalyzer.php` - 整合分析器
-- `ConsolidatedDeployer.php` - 整合部署器
-- `ConsolidatedErrorFixer.php` - 整合錯誤修復器
-- `ConsolidatedMaintainer.php` - 整合維護工具
-- `ConsolidatedTestManager.php` - 整合測試管理器
-- `DefaultScriptAnalyzer.php` - 預設腳本分析器
-- `DefaultScriptConfiguration.php` - 預設腳本配置
-- `DefaultScriptExecutor.php` - 預設腳本執行器
-- `ScriptManager.php` - 腳本管理器
 - `generate-swagger-docs.php` - Swagger 文件生成器
-- `statistics-calculation.php` - 統計計算腳本
-- `unified-scripts.php` - 統一腳本管理工具
+- `statistics-calculation.php` - 統計計算定時任務
 
 ### Database/ - 資料庫相關腳本
 - `backup_db.sh` - 資料庫備份
@@ -43,8 +33,7 @@
 - `ssl-setup.sh` - SSL 設定
 
 ### lib/ - 共用函式庫
-- `ArchitectureScanner.php` - 架構掃描器
-- `CodeQualityAnalyzer.php` - 程式碼品質分析器
+- `CodeQualityAnalyzer.php` - **主要程式碼品質分析器**（取代 ArchitectureScanner）
 - `ConsoleOutput.php` - 控制台輸出工具
 
 ### Maintenance/ - 維護腳本
@@ -57,8 +46,8 @@
 
 ### Quality/ - 程式碼品質工具
 - `check-environment.sh` - 環境檢查
-- `phpstan-fixer.php` - 統一的 PHPStan 修復工具
-- `unified-syntax-fixer.php` - 統一的語法修復工具
+- `PhpstanFixer.php` - PHPStan 修復工具
+- `UnifiedSyntaxFixer.php` - 統一語法修復工具
 
 ### 根目錄檔案
 - `ScriptBootstrap.php` - 腳本統一載入器
@@ -66,113 +55,66 @@
 
 ## 🚀 使用方法
 
-### 基本原則
+### 主要工具鏈（推薦）
 
-所有 PHP 腳本現在都使用 PSR-4 命名空間：
-- `AlleyNote\Scripts\Analysis\*` - 分析工具
-- `AlleyNote\Scripts\Core\*` - 核心工具
-- `AlleyNote\Scripts\Quality\*` - 品質工具
-- `AlleyNote\Scripts\Maintenance\*` - 維護工具
-- `AlleyNote\Scripts\Lib\*` - 共用函式庫
-
-### 執行方式
-
-使用 Docker 容器執行（推薦）：
+使用 Composer scripts 執行（最簡單）：
 ```bash
-# 程式碼品質分析
-docker-compose exec web php scripts/Analysis/analyze-code-quality.php
+# 完整 CI 檢查（程式碼風格 + 靜態分析 + 測試）
+docker compose exec web composer ci
 
-# 專案架構掃描
-docker-compose exec web php scripts/Analysis/scan-project-architecture.php
+# 程式碼風格檢查
+docker compose exec web composer cs-check
 
-# PHPStan 錯誤修復
-docker-compose exec web php scripts/Quality/phpstan-fixer.php --list
-docker-compose exec web php scripts/Quality/phpstan-fixer.php type-hints
+# 程式碼風格自動修復
+docker compose exec web composer cs-fix
 
-# 統一語法修復
-docker-compose exec web php scripts/Quality/unified-syntax-fixer.php --list
-docker-compose exec web php scripts/Quality/unified-syntax-fixer.php basic-syntax
+# PHPStan 靜態分析
+docker compose exec web composer analyse
+
+# 執行測試
+docker compose exec web composer test
+
+# 測試覆蓋率
+docker compose exec web composer test:coverage
 ```
 
-### 共用載入器使用
+### 分析工具
 
-所有腳本都可以使用 `ScriptBootstrap` 進行統一初始化：
+```bash
+# 程式碼品質完整分析（標準參考）
+docker compose exec -T web php -d memory_limit=512M scripts/Analysis/analyze-code-quality.php
 
-```php
-<?php
-use function AlleyNote\Scripts\bootstrap;
-use function AlleyNote\Scripts\script_output;
-
-// 初始化腳本環境
-$bootstrap = bootstrap();
-
-// 輸出格式化訊息
-script_output('開始執行腳本...', 'info');
-script_output('執行成功！', 'success');
-script_output('發生警告', 'warning');
-script_output('執行失敗', 'error');
+# 掃描缺少回傳型別的函式
+docker compose exec -T web php scripts/Analysis/scan-missing-return-types.php
 ```
 
-## 📊 重新整理成果
+### 統計工具
 
-### 文件數量變化
-- **整理前**: 94 個檔案 (74 PHP + 20 Shell)
-- **整理後**: 40 個檔案 (22 PHP + 18 Shell)
-- **減少率**: 57%
+```bash
+# 統計計算定時任務
+docker compose exec web php scripts/Core/statistics-calculation.php --periods=daily,weekly
 
-### 已刪除的冗餘檔案 (59 個)
+# 統計資料回填（位於根目錄 scripts/）
+php scripts/statistics-recalculation.php overview 2024-01-01 2024-01-31 --force
+```
 
-#### PHPStan 修復工具 (15 個) → 整合為 `Quality/phpstan-fixer.php`
-- fix-phpstan-attributes.php
-- fix-phpstan-callable-errors.php
-- fix-phpstan-core-fixes.php
-- fix-phpstan-generics.php
-- fix-phpstan-iterables.php
-- fix-phpstan-method-calls.php
-- fix-phpstan-mixed-types.php
-- fix-phpstan-null-check.php
-- fix-phpstan-return-types.php
-- fix-phpstan-type-hints.php
-- fix-phpstan-undefined-variables.php
-- fix-phpstan-union-types.php
-- fix-phpstan-unused-variables.php
-- phpstan-auto-fixer.php
-- phpstan-final-fixes.php
+## 📊 最近一次整理成果（2025-10-02）
 
-#### 語法修復工具 (10 個) → 整合為 `Quality/unified-syntax-fixer.php`
-- fix-basic-syntax.php
-- fix-constructor-promotion.php
-- fix-generics.php
-- fix-match-expressions.php
-- fix-mixed-types.php
-- fix-modern-php.php
-- fix-nullsafe-operators.php
-- fix-string-interpolation.php
-- fix-syntax-errors.php
-- fix-union-types.php
+### 移除的工具
+- ✅ **ArchitectureScanner** - 由 CodeQualityAnalyzer 完全取代
+- ✅ **舊的統一腳本系統** - 移至 Archive/（Consolidated*, Default*, ScriptManager, unified-scripts）
+- ✅ 原因：功能重複，且 Composer scripts 提供更好的工具鏈
 
-#### 其他冗餘工具 (34 個)
-[包含各種重複的分析、配置、維護工具等]
+### 保留的核心工具
+- ✅ **CodeQualityAnalyzer** - 唯一的程式碼品質分析工具
+- ✅ **Composer scripts** - CI/CD 標準管道
+- ✅ 統計相關腳本 - 業務功能必需
 
-### 新增的統一工具
-
-#### `Quality/phpstan-fixer.php` - 統一 PHPStan 修復工具
-支援的修復類型：
-- `type-hints` - 修復型別提示問題
-- `generics` - 修復泛型語法問題
-- `null-checks` - 修復 null 檢查問題
-- `iterables` - 修復 iterable 型別問題
-- `mixed-types` - 修復 mixed 型別問題
-- `undefined-variables` - 修復未定義變數問題
-
-#### `Quality/unified-syntax-fixer.php` - 統一語法修復工具
-支援的修復類型：
-- `basic-syntax` - 基本語法修復
-- `generics` - 泛型語法修復
-- `string-interpolation` - 字串插值修復
-- `match-expressions` - Match 表達式修復
-- `constructor-promotion` - 建構子屬性提升
-- `nullsafe-operators` - 空安全運算子修復
+### 工具選擇原則
+- **一件事只用一項工具** - 避免功能重複
+- **優先使用標準工具** - Composer scripts, PHPStan, PHP CS Fixer
+- **保留業務必需工具** - 統計、部署、維護腳本
+- **封存過時工具** - 移至 Archive/ 而非刪除
 
 ## 🔧 開發指南
 
@@ -181,25 +123,25 @@ script_output('執行失敗', 'error');
 1. 根據功能放在適當的目錄中
 2. 使用適當的 PSR-4 命名空間
 3. 在檔案開頭添加 `declare(strict_types=1);`
-4. 使用 `ScriptBootstrap` 進行初始化
-5. 更新此 README.md
+4. 更新此 README.md
+5. 確保不與現有工具重複
 
 ### 修改現有腳本
 
 1. 確保 autoload 路徑正確：`require_once __DIR__ . '/../../vendor/autoload.php';`
 2. 遵循現代 PHP 最佳實踐
-3. 執行本地程式碼品質檢查
+3. 執行 `composer ci` 確保品質
 
 ## 📝 最佳實踐
 
-- 所有腳本都應該使用 `docker-compose exec web` 執行
-- 重要的腳本都應該有錯誤處理和日誌記錄
-- 使用統一的訊息輸出格式
+- 優先使用 `composer ci` 進行品質檢查
+- 使用 `CodeQualityAnalyzer` 作為品質分析的標準參考
+- 所有腳本都應該使用 `docker compose exec` 執行
 - 遵循 DDD 和 PSR-4 原則
-- 定期執行程式碼品質分析
+- 避免建立重複功能的工具
 
 ---
 
-**本次重新整理完成於**: 2025-09-28
-**維護者**: GitHub Copilot
+**最近更新**: 2025-10-02  
+**維護者**: GitHub Copilot  
 **遵循指南**: [copilot-instructions.md](../.github/copilot-instructions.md)
