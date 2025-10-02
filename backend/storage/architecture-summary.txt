@@ -1,34 +1,35 @@
-=== 專案架構快速摘要 (2025-10-02 22:03:33) ===
+=== 專案架構快速摘要 (2025-09-28 09:54:04) ===
 
 📊 品質指標:
-- 總類別數: 323
-- 介面比例: 20.43%
-- 現代 PHP 採用率: 66.67%
-- PSR-4 合規率: 101.86%
+- 總類別數: 284
+- 介面比例: 23.24%
+- 現代 PHP 採用率: 64.79%
+- PSR-4 合規率: 76.59%
 
-🚀 現代 PHP 特性: 8 種正在使用
+🚀 現代 PHP 特性: 7 種正在使用
+- 最常用: Match 表達式 (PHP 8.0+) (279 次)
 
 📊 統計資訊:
-- 類別: 323 個
+- 類別: 284 個
 - 介面: 66 個
-- 命名空間: 112 個
+- 命名空間: 107 個
 
 🏗️ DDD 架構:
 
 🧪 測試覆蓋:
 - 有測試: 0 個類別
-- 缺少測試: 323 個類別
+- 缺少測試: 284 個類別
 
 🔌 介面實作:
-- : 66 個實作
-- JsonSerializable: 0 個實作
-- EventListenerInterface: 0 個實作
-- StatisticsAggregationServiceInterface: 0 個實作
-- PostRepositoryInterface: 0 個實作
+- : 178 個實作
+- JsonSerializable: 25 個實作
+- EventListenerInterface: 2 個實作
+- StatisticsAggregationServiceInterface: 1 個實作
+- PostRepositoryInterface: 1 個實作
 
-💉 重依賴類別 (≥3個依賴): 0 個
+💉 重依賴類別 (≥3個依賴): 41 個
 
-❓ 可能問題引用: 0 個
+❓ 可能問題引用: 239 個
 
 🔑 重點服務/控制器:
 - StatisticsServiceProvider (app/Domains/Statistics/Providers/StatisticsServiceProvider.php)
