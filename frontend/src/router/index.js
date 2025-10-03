@@ -103,6 +103,16 @@ export function initRouter() {
     }
   });
 
+  // 後台標籤管理
+  router.on('/admin/tags', () => {
+    if (requireAuth()) {
+      import('../pages/admin/tags.js').then((module) => {
+        const page = new module.default();
+        page.init();
+      });
+    }
+  });
+
   // 404
   router.notFound(() => {
     import('../pages/notFound.js').then((module) => module.render404());

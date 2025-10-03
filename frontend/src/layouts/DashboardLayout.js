@@ -35,6 +35,10 @@ export function renderDashboardLayout(content) {
             <span>📝</span>
             ${sidebarCollapsed ? '' : '<span>文章管理</span>'}
           </a>
+          <a href="/admin/tags" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+            <span>🏷️</span>
+            ${sidebarCollapsed ? '' : '<span>標籤管理</span>'}
+          </a>
           ${globalGetters.isAdmin() ? `
             <a href="/admin/users" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
               <span>👥</span>
