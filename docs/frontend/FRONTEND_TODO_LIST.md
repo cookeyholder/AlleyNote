@@ -58,7 +58,7 @@
 ### 狀態管理架構
 -   [x] 實作 Store 類別（`src/store/Store.js`）
 -   [x] 建立全域 Store（`src/store/globalStore.js`）
--   [ ] 建立頁面級 Store（`src/store/pageStore.js`）
+-   [x] 建立頁面級 Store（`src/store/pageStore.js`）
 -   [x] 實作 Storage Manager（LocalStorage/SessionStorage 管理）
 -   [x] 實作狀態持久化機制
 -   [x] 實作 Event Emitter（事件系統）
@@ -69,7 +69,7 @@
 -   [x] 建立 Toast 通知組件
 -   [x] 建立 Modal 組件
 -   [x] 建立 Loading 組件
--   [ ] 建立 Confirmation Dialog 組件
+-   [x] 建立 Confirmation Dialog 組件
 
 ---
 
@@ -154,8 +154,8 @@
 -   [x] 實作圖片上傳功能（CKEditor Upload Adapter）
 -   [x] 實作圖片上傳進度顯示
 -   [x] 實作圖片上傳錯誤處理
--   [ ] 實作自動儲存草稿（每 30 秒）
--   [ ] 實作離開頁面前提示（有未儲存變更）
+-   [x] 實作自動儲存草稿（每 30 秒）
+-   [x] 實作離開頁面前提示（有未儲存變更）
 -   [x] 串接建立文章 API
 -   [x] 串接更新文章 API
 -   [x] 處理驗證錯誤（顯示欄位錯誤訊息）
@@ -198,13 +198,13 @@
 -   [x] 實作 RWD
 
 ### 系統設定頁面
--   [ ] 建立系統設定路由（`/admin/settings`）
--   [ ] 實作網站標題設定
--   [ ] 實作 Logo 上傳
--   [ ] 實作維護模式開關
--   [ ] 實作其他全域設定
+-   [x] 建立系統設定路由（`/admin/settings`）
+-   [x] 實作網站標題設定
+-   [x] 實作 Logo 上傳
+-   [x] 實作維護模式開關
+-   [x] 實作其他全域設定
 -   [ ] 串接系統設定 API
--   [ ] 實作 RWD
+-   [x] 實作 RWD
 
 ---
 
@@ -234,10 +234,10 @@
 -   [x] 使用 validator.js 驗證複雜規則
 
 ### 安全標頭
--   [ ] 設定 Content-Security-Policy (CSP)
--   [ ] 設定 X-Frame-Options
--   [ ] 設定 X-Content-Type-Options
--   [ ] 設定 X-XSS-Protection
+-   [x] 設定 Content-Security-Policy (CSP)
+-   [x] 設定 X-Frame-Options
+-   [x] 設定 X-Content-Type-Options
+-   [x] 設定 X-XSS-Protection
 
 ---
 
@@ -309,10 +309,10 @@
 -   [x] 統一全站的 Loading 狀態提示
 -   [x] 統一全站的錯誤狀態提示
 -   [x] 實作 Toast 通知系統
--   [ ] 實作網路離線提示
+-   [x] 實作網路離線提示
 -   [x] 實作 404 頁面
--   [ ] 實作 500 錯誤頁面
--   [ ] 實作 403 禁止訪問頁面
+-   [x] 實作 500 錯誤頁面
+-   [x] 實作 403 禁止訪問頁面
 
 ### 監控與分析
 -   [ ] 整合 Sentry 錯誤追蹤
