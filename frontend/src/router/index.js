@@ -122,6 +122,15 @@ export function initRouter() {
     }
   });
 
+  // 錯誤頁面
+  router.on('/403', () => {
+    import('../pages/forbidden.js').then((module) => module.render403());
+  });
+
+  router.on('/500', () => {
+    import('../pages/serverError.js').then((module) => module.render500());
+  });
+
   // 404
   router.notFound(() => {
     import('../pages/notFound.js').then((module) => module.render404());

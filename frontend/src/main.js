@@ -6,12 +6,16 @@ import './style.css';
 import { initRouter } from './router/index.js';
 import { globalActions } from './store/globalStore.js';
 import { authAPI } from './api/modules/auth.js';
+import { offlineDetector } from './utils/offlineDetector.js';
 
 /**
  * 初始化應用程式
  */
 async function initApp() {
   console.log('🚀 AlleyNote 前端應用程式啟動中...');
+
+  // 初始化離線偵測
+  offlineDetector.init();
 
   // 檢查登入狀態
   if (authAPI.isAuthenticated()) {
@@ -35,4 +39,3 @@ async function initApp() {
 initApp().catch((error) => {
   console.error('❌ 應用程式啟動失敗:', error);
 });
-
