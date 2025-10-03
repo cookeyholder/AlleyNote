@@ -4,35 +4,35 @@
 
 ## 📝 開發前準備
 
--   [ ] 閱讀所有前端規劃文件
-    -   [ ] `FRONTEND_INTERFACE_DESIGN_SPECIFICATION.md` - 介面設計規範
-    -   [ ] `API_INTEGRATION_GUIDE.md` - API 整合指南
-    -   [ ] `STATE_MANAGEMENT_STRATEGY.md` - 狀態管理策略
-    -   [ ] `SECURITY_CHECKLIST.md` - 安全檢查清單
-    -   [ ] `TESTING_STRATEGY.md` - 測試策略
-    -   [ ] `DEPLOYMENT_GUIDE.md` - 部署指南
--   [ ] 熟悉後端 API 文件 (`docs/guides/developer/API_DOCUMENTATION.md`)
--   [ ] 設定開發環境（Node.js 18+, npm 9+）
+-   [x] 閱讀所有前端規劃文件
+    -   [x] `FRONTEND_INTERFACE_DESIGN_SPECIFICATION.md` - 介面設計規範
+    -   [x] `API_INTEGRATION_GUIDE.md` - API 整合指南
+    -   [x] `STATE_MANAGEMENT_STRATEGY.md` - 狀態管理策略
+    -   [x] `SECURITY_CHECKLIST.md` - 安全檢查清單
+    -   [x] `TESTING_STRATEGY.md` - 測試策略
+    -   [x] `DEPLOYMENT_GUIDE.md` - 部署指南
+-   [x] 熟悉後端 API 文件 (`docs/guides/developer/API_DOCUMENTATION.md`)
+-   [x] 設定開發環境（Node.js 18+, npm 9+）
 
 ---
 
-## 🚧 階段一：基礎建設與環境設定
+## 🚧 階段一：基礎建設與環境設定 ✅
 
 ### 專案初始化
--   [ ] 初始化 Vite 專案 (`npm create vite@latest frontend`)
--   [ ] 安裝並配置 Tailwind CSS
--   [ ] 將 `index.html` 中的 `tailwind.config` 提取到 `tailwind.config.js` 檔案中
--   [ ] 設定 Prettier 與 ESLint
--   [ ] 建立 `.env` 環境變數檔案（development, staging, production）
+-   [x] 初始化 Vite 專案 (`npm create vite@latest frontend`)
+-   [x] 安裝並配置 Tailwind CSS
+-   [x] 將 `index.html` 中的 `tailwind.config` 提取到 `tailwind.config.js` 檔案中
+-   [x] 設定 Prettier 與 ESLint
+-   [x] 建立 `.env` 環境變數檔案（development, staging, production）
 
 ### 依賴套件安裝
--   [ ] 安裝核心套件：`axios`, `navigo`（路由）
--   [ ] 安裝安全套件：`dompurify`, `validator`
--   [ ] 安裝開發工具：`husky`, `lint-staged`
--   [ ] 安裝測試套件：`vitest`, `@playwright/test`
+-   [x] 安裝核心套件：`axios`, `navigo`（路由）
+-   [x] 安裝安全套件：`dompurify`, `validator`
+-   [x] 安裝開發工具：`husky`, `lint-staged`
+-   [x] 安裝測試套件：`vitest`, `@playwright/test`
 
 ### 專案結構建立
--   [ ] 建立完整的檔案結構：
+-   [x] 建立完整的檔案結構：
     ```
     src/
     ├── api/              # API 相關
@@ -47,155 +47,155 @@
     ```
 
 ### API 整合架構
--   [ ] 建立 API Client (`src/api/client.js`)
--   [ ] 實作請求攔截器（自動加入 JWT & CSRF Token）
--   [ ] 實作回應攔截器（統一錯誤處理）
--   [ ] 建立 API 模組（auth, posts, attachments, users, statistics）
--   [ ] 實作 Token Manager（JWT Token 管理）
--   [ ] 實作 CSRF Manager（CSRF Token 管理）
--   [ ] 建立 API 錯誤處理機制
+-   [x] 建立 API Client (`src/api/client.js`)
+-   [x] 實作請求攔截器（自動加入 JWT & CSRF Token）
+-   [x] 實作回應攔截器（統一錯誤處理）
+-   [x] 建立 API 模組（auth, posts, attachments, users, statistics）
+-   [x] 實作 Token Manager（JWT Token 管理）
+-   [x] 實作 CSRF Manager（CSRF Token 管理）
+-   [x] 建立 API 錯誤處理機制
 
 ### 狀態管理架構
--   [ ] 實作 Store 類別（`src/store/Store.js`）
--   [ ] 建立全域 Store（`src/store/globalStore.js`）
+-   [x] 實作 Store 類別（`src/store/Store.js`）
+-   [x] 建立全域 Store（`src/store/globalStore.js`）
 -   [ ] 建立頁面級 Store（`src/store/pageStore.js`）
--   [ ] 實作 Storage Manager（LocalStorage/SessionStorage 管理）
--   [ ] 實作狀態持久化機制
--   [ ] 實作 Event Emitter（事件系統）
+-   [x] 實作 Storage Manager（LocalStorage/SessionStorage 管理）
+-   [x] 實作狀態持久化機制
+-   [x] 實作 Event Emitter（事件系統）
 
 ### 共用工具與組件
--   [ ] 建立 Form Manager（表單管理器）
--   [ ] 建立驗證器（validators）
--   [ ] 建立 Toast 通知組件
--   [ ] 建立 Modal 組件
--   [ ] 建立 Loading 組件
+-   [x] 建立 Form Manager（表單管理器）
+-   [x] 建立驗證器（validators）
+-   [x] 建立 Toast 通知組件
+-   [x] 建立 Modal 組件
+-   [x] 建立 Loading 組件
 -   [ ] 建立 Confirmation Dialog 組件
 
 ---
 
-## 🚶 階段二：公開介面開發（訪客視角）
+## 🚶 階段二：公開介面開發（訪客視角） ✅
 
 ### 佈局建立
--   [ ] 建立 Public Layout（`src/layouts/PublicLayout.js`）
--   [ ] 建立頂部導航列（Logo、登入按鈕）
--   [ ] 建立頁腳（版權資訊）
+-   [x] 建立 Public Layout（`src/layouts/PublicLayout.js`）
+-   [x] 建立頂部導航列（Logo、登入按鈕）
+-   [x] 建立頁腳（版權資訊）
 
 ### 首頁 / 文章列表頁
--   [ ] 建立首頁路由（`/`）
--   [ ] 實作文章卡片組件
--   [ ] 串接文章列表 API
--   [ ] 實作分頁功能
--   [ ] 實作搜尋功能
--   [ ] 實作分類篩選功能
--   [ ] 實作 RWD（響應式設計）
+-   [x] 建立首頁路由（`/`）
+-   [x] 實作文章卡片組件
+-   [x] 串接文章列表 API
+-   [x] 實作分頁功能
+-   [x] 實作搜尋功能
+-   [x] 實作分類篩選功能
+-   [x] 實作 RWD（響應式設計）
 
 ### 文章內頁
--   [ ] 建立文章內頁路由（`/posts/:id`）
--   [ ] 串接文章詳情 API
--   [ ] 使用 DOMPurify 淨化 HTML 內容
+-   [x] 建立文章內頁路由（`/posts/:id`）
+-   [x] 串接文章詳情 API
+-   [x] 使用 DOMPurify 淨化 HTML 內容
 -   [ ] 實作相關文章推薦（可選）
 -   [ ] 實作社群分享按鈕（可選）
--   [ ] 實作 RWD
+-   [x] 實作 RWD
 
 ### 登入頁面
--   [ ] 建立登入頁面路由（`/login`）
--   [ ] 建立登入表單（Email、密碼）
--   [ ] 實作前端驗證（Email 格式、密碼長度）
--   [ ] 串接登入 API
--   [ ] 處理登入成功（儲存 Token、導向後台）
--   [ ] 處理登入失敗（顯示錯誤訊息）
+-   [x] 建立登入頁面路由（`/login`）
+-   [x] 建立登入表單（Email、密碼）
+-   [x] 實作前端驗證（Email 格式、密碼長度）
+-   [x] 串接登入 API
+-   [x] 處理登入成功（儲存 Token、導向後台）
+-   [x] 處理登入失敗（顯示錯誤訊息）
 -   [ ] 實作「記住我」功能（可選）
--   [ ] 實作 RWD
+-   [x] 實作 RWD
 
 ---
 
-## 👨‍💼 階段三：管理員核心功能開發（Admin 視角）
+## 👨‍💼 階段三：管理員核心功能開發（Admin 視角） ✅
 
 ### 後台佈局建立
--   [ ] 建立 Dashboard Layout（`src/layouts/DashboardLayout.js`）
--   [ ] 建立側邊導覽列（Logo、選單、使用者資訊）
--   [ ] 建立頂部標頭（頁面標題、搜尋、通知、登出）
--   [ ] 實作側邊欄展開/收合功能
--   [ ] 實作權限控制（根據角色顯示選單）
+-   [x] 建立 Dashboard Layout（`src/layouts/DashboardLayout.js`）
+-   [x] 建立側邊導覽列（Logo、選單、使用者資訊）
+-   [x] 建立頂部標頭（頁面標題、搜尋、通知、登出）
+-   [x] 實作側邊欄展開/收合功能
+-   [x] 實作權限控制（根據角色顯示選單）
 
 ### 路由守衛
--   [ ] 實作 `requireAuth` 中介軟體（檢查登入狀態）
--   [ ] 實作角色權限檢查
--   [ ] 處理未授權訪問（導向登入頁或 403 頁面）
+-   [x] 實作 `requireAuth` 中介軟體（檢查登入狀態）
+-   [x] 實作角色權限檢查
+-   [x] 處理未授權訪問（導向登入頁或 403 頁面）
 
 ### 儀表板頁面
--   [ ] 建立儀表板路由（`/admin/dashboard`）
--   [ ] 顯示統計數據卡片（文章數、瀏覽量等）
--   [ ] 串接統計 API
--   [ ] 顯示最近發布的文章列表
--   [ ] 實作 RWD
+-   [x] 建立儀表板路由（`/admin/dashboard`）
+-   [x] 顯示統計數據卡片（文章數、瀏覽量等）
+-   [x] 串接統計 API
+-   [x] 顯示最近發布的文章列表
+-   [x] 實作 RWD
 
 ### 文章管理頁面
--   [ ] 建立文章管理路由（`/admin/posts`）
--   [ ] 實作文章列表表格
--   [ ] 串接文章列表 API（含篩選、排序、搜尋）
--   [ ] 實作分頁功能
--   [ ] 實作操作按鈕（編輯、刪除、發布/草稿切換）
--   [ ] 實作刪除確認對話框
+-   [x] 建立文章管理路由（`/admin/posts`）
+-   [x] 實作文章列表表格
+-   [x] 串接文章列表 API（含篩選、排序、搜尋）
+-   [x] 實作分頁功能
+-   [x] 實作操作按鈕（編輯、刪除、發布/草稿切換）
+-   [x] 實作刪除確認對話框
 -   [ ] 實作批次操作（可選）
--   [ ] 實作 RWD
+-   [x] 實作 RWD
 
 ### 新增/編輯文章頁面
--   [ ] 建立新增文章路由（`/admin/posts/create`）
--   [ ] 建立編輯文章路由（`/admin/posts/:id/edit`）
--   [ ] 整合 CKEditor 5（Classic Build）
--   [ ] 實作標題輸入框
--   [ ] 實作內容編輯器（CKEditor）
--   [ ] 實作右側設定欄
-    -   [ ] 發布狀態選擇
-    -   [ ] 分類選擇
-    -   [ ] 標籤輸入
-    -   [ ] 特色圖片上傳
--   [ ] 實作圖片上傳功能（CKEditor Upload Adapter）
--   [ ] 實作圖片上傳進度顯示
--   [ ] 實作圖片上傳錯誤處理
+-   [x] 建立新增文章路由（`/admin/posts/create`）
+-   [x] 建立編輯文章路由（`/admin/posts/:id/edit`）
+-   [x] 整合 CKEditor 5（Classic Build）
+-   [x] 實作標題輸入框
+-   [x] 實作內容編輯器（CKEditor）
+-   [x] 實作右側設定欄
+    -   [x] 發布狀態選擇
+    -   [x] 分類選擇
+    -   [x] 標籤輸入
+    -   [x] 特色圖片上傳
+-   [x] 實作圖片上傳功能（CKEditor Upload Adapter）
+-   [x] 實作圖片上傳進度顯示
+-   [x] 實作圖片上傳錯誤處理
 -   [ ] 實作自動儲存草稿（每 30 秒）
 -   [ ] 實作離開頁面前提示（有未儲存變更）
--   [ ] 串接建立文章 API
--   [ ] 串接更新文章 API
--   [ ] 處理驗證錯誤（顯示欄位錯誤訊息）
--   [ ] 實作 RWD
+-   [x] 串接建立文章 API
+-   [x] 串接更新文章 API
+-   [x] 處理驗證錯誤（顯示欄位錯誤訊息）
+-   [x] 實作 RWD
 
 ### 個人資料頁面
--   [ ] 建立個人資料路由（`/admin/profile`）
--   [ ] 顯示使用者資訊
--   [ ] 實作修改密碼功能
--   [ ] 實作修改個人資訊功能
--   [ ] 串接更新個人資料 API
--   [ ] 實作 RWD
+-   [x] 建立個人資料路由（`/admin/profile`）
+-   [x] 顯示使用者資訊
+-   [x] 實作修改密碼功能
+-   [x] 實作修改個人資訊功能
+-   [x] 串接更新個人資料 API
+-   [x] 實作 RWD
 
 ---
 
-## 👑 階段四：主管理員專屬功能開發（Super Admin 視角）
+## 👑 階段四：主管理員專屬功能開發（Super Admin 視角） ✅
 
 ### 使用者管理頁面
--   [ ] 建立使用者管理路由（`/admin/users`）
--   [ ] 實作使用者列表表格
--   [ ] 串接使用者列表 API
--   [ ] 實作操作按鈕（編輯、刪除）
--   [ ] 實作新增使用者模態框
--   [ ] 實作編輯使用者模態框
--   [ ] 實作刪除確認對話框
--   [ ] 串接建立使用者 API
--   [ ] 串接更新使用者 API
--   [ ] 串接刪除使用者 API
--   [ ] 實作 RWD
+-   [x] 建立使用者管理路由（`/admin/users`）
+-   [x] 實作使用者列表表格
+-   [x] 串接使用者列表 API
+-   [x] 實作操作按鈕（編輯、刪除）
+-   [x] 實作新增使用者模態框
+-   [x] 實作編輯使用者模態框
+-   [x] 實作刪除確認對話框
+-   [x] 串接建立使用者 API
+-   [x] 串接更新使用者 API
+-   [x] 串接刪除使用者 API
+-   [x] 實作 RWD
 
 ### 系統統計頁面
--   [ ] 建立系統統計路由（`/admin/statistics`）
--   [ ] 安裝圖表庫（Chart.js）
--   [ ] 實作每日文章發布趨勢圖
--   [ ] 實作熱門文章排行榜
--   [ ] 實作使用者活動分析
--   [ ] 串接統計 API
--   [ ] 實作日期範圍篩選
+-   [x] 建立系統統計路由（`/admin/statistics`）
+-   [x] 安裝圖表庫（Chart.js）
+-   [x] 實作每日文章發布趨勢圖
+-   [x] 實作熱門文章排行榜
+-   [x] 實作使用者活動分析
+-   [x] 串接統計 API
+-   [x] 實作日期範圍篩選
 -   [ ] 實作匯出報表功能（可選）
--   [ ] 實作 RWD
+-   [x] 實作 RWD
 
 ### 系統設定頁面
 -   [ ] 建立系統設定路由（`/admin/settings`）
@@ -208,30 +208,30 @@
 
 ---
 
-## 🛡️ 階段五：安全性強化
+## 🛡️ 階段五：安全性強化 ✅
 
 ### XSS 防護
--   [ ] 所有使用者輸入使用 `textContent` 而非 `innerHTML`
--   [ ] CKEditor 內容使用 DOMPurify 淨化
--   [ ] URL 參數使用 `encodeURIComponent` 編碼
--   [ ] 避免使用 `eval()` 或 `Function()`
+-   [x] 所有使用者輸入使用 `textContent` 而非 `innerHTML`
+-   [x] CKEditor 內容使用 DOMPurify 淨化
+-   [x] URL 參數使用 `encodeURIComponent` 編碼
+-   [x] 避免使用 `eval()` 或 `Function()`
 
 ### CSRF 防護
--   [ ] 所有 POST/PUT/DELETE 請求自動加入 CSRF Token
--   [ ] 實作 CSRF Token 自動更新機制
--   [ ] 處理 CSRF Token 遺失的情況
+-   [x] 所有 POST/PUT/DELETE 請求自動加入 CSRF Token
+-   [x] 實作 CSRF Token 自動更新機制
+-   [x] 處理 CSRF Token 遺失的情況
 
 ### 認證與授權
--   [ ] JWT Token 使用 SessionStorage 儲存
--   [ ] 實作 Token 過期處理（自動導向登入頁）
--   [ ] 實作 Token 自動刷新機制
--   [ ] 敏感操作需要二次確認
+-   [x] JWT Token 使用 SessionStorage 儲存
+-   [x] 實作 Token 過期處理（自動導向登入頁）
+-   [x] 實作 Token 自動刷新機制
+-   [x] 敏感操作需要二次確認
 
 ### 資料驗證
--   [ ] 所有表單實作前端驗證
--   [ ] 檔案上傳驗證（大小、類型、尺寸）
--   [ ] 防止 SQL Injection 字元
--   [ ] 使用 validator.js 驗證複雜規則
+-   [x] 所有表單實作前端驗證
+-   [x] 檔案上傳驗證（大小、類型、尺寸）
+-   [x] 防止 SQL Injection 字元
+-   [x] 使用 validator.js 驗證複雜規則
 
 ### 安全標頭
 -   [ ] 設定 Content-Security-Policy (CSP)
@@ -241,20 +241,20 @@
 
 ---
 
-## 🧪 階段六：測試
+## 🧪 階段六：測試 🟡 (部分完成)
 
 ### 測試環境設定
--   [ ] 配置 Vitest（單元測試）
--   [ ] 配置 Playwright（E2E 測試）
+-   [x] 配置 Vitest（單元測試）
+-   [x] 配置 Playwright（E2E 測試）
 -   [ ] 建立 Mock Server（MSW）
 -   [ ] 建立測試 Fixtures
 
 ### 單元測試
--   [ ] 測試工具函式（validators, formatters 等）
--   [ ] 測試 Store 類別
+-   [x] 測試工具函式（validators, formatters 等）
+-   [x] 測試 Store 類別
 -   [ ] 測試 API Client
 -   [ ] 測試錯誤處理邏輯
--   [ ] 測試表單驗證邏輯
+-   [x] 測試表單驗證邏輯
 -   [ ] 達到 80% 以上程式碼覆蓋率
 
 ### 整合測試
@@ -264,7 +264,7 @@
 -   [ ] 測試事件系統
 
 ### E2E 測試
--   [ ] 測試使用者登入流程
+-   [x] 測試使用者登入流程
 -   [ ] 測試文章建立流程
 -   [ ] 測試文章編輯流程
 -   [ ] 測試文章刪除流程
@@ -279,38 +279,38 @@
 
 ---
 
-## ✨ 階段七：優化與收尾
+## ✨ 階段七：優化與收尾 🟡 (部分完成)
 
 ### 效能優化
--   [ ] 實作 Code Splitting（路由懶加載）
+-   [x] 實作 Code Splitting（路由懶加載）
 -   [ ] 實作圖片懶加載
--   [ ] 設定資源預載入（preload, prefetch）
+-   [x] 設定資源預載入（preload, prefetch）
 -   [ ] 實作 Service Worker（PWA，可選）
--   [ ] 優化 Vite 建構配置
+-   [x] 優化 Vite 建構配置
 -   [ ] 壓縮圖片與靜態資源
 -   [ ] 確保 LCP < 2.5 秒
 
 ### 響應式設計（RWD）
--   [ ] 全面測試手機版（< 640px）
--   [ ] 全面測試平板版（640px - 1024px）
--   [ ] 全面測試桌面版（> 1024px）
--   [ ] 測試觸控操作（按鈕大小 ≥ 44px）
+-   [x] 全面測試手機版（< 640px）
+-   [x] 全面測試平板版（640px - 1024px）
+-   [x] 全面測試桌面版（> 1024px）
+-   [x] 測試觸控操作（按鈕大小 ≥ 44px）
 -   [ ] 測試橫向/直向切換
 
 ### 無障礙性（Accessibility）
 -   [ ] 所有互動元素可用鍵盤操作
--   [ ] 表單有正確的 label 關聯
+-   [x] 表單有正確的 label 關聯
 -   [ ] 圖片有 alt 屬性
 -   [ ] 模態框實作 focus trap
--   [ ] 使用語意化 HTML
+-   [x] 使用語意化 HTML
 -   [ ] 通過 WCAG 2.1 AA 標準（可選）
 
 ### 錯誤處理與使用者體驗
--   [ ] 統一全站的 Loading 狀態提示
--   [ ] 統一全站的錯誤狀態提示
--   [ ] 實作 Toast 通知系統
+-   [x] 統一全站的 Loading 狀態提示
+-   [x] 統一全站的錯誤狀態提示
+-   [x] 實作 Toast 通知系統
 -   [ ] 實作網路離線提示
--   [ ] 實作 404 頁面
+-   [x] 實作 404 頁面
 -   [ ] 實作 500 錯誤頁面
 -   [ ] 實作 403 禁止訪問頁面
 
@@ -322,22 +322,22 @@
 
 ---
 
-## 🚀 階段八：部署
+## 🚀 階段八：部署 🟡 (部分完成)
 
 ### 部署前準備
 -   [ ] 執行完整測試套件（unit + E2E）
 -   [ ] 執行 Lighthouse 測試（效能、SEO、Accessibility）
--   [ ] 檢查所有環境變數設定
+-   [x] 檢查所有環境變數設定
 -   [ ] 檢查安全標頭配置
 -   [ ] 檢查 CSP 政策
 -   [ ] 移除 console.log 與 debugger
 
 ### 建構與部署
--   [ ] 建構生產版本（`npm run build`）
+-   [x] 建構生產版本（`npm run build`）
 -   [ ] 驗證建構產物大小（main.js < 500KB）
--   [ ] 配置 Nginx（Gzip、快取、SPA 路由）
--   [ ] 建立 Dockerfile
--   [ ] 設定 Docker Compose
+-   [x] 配置 Nginx（Gzip、快取、SPA 路由）
+-   [x] 建立 Dockerfile
+-   [x] 設定 Docker Compose
 -   [ ] 設定 CI/CD（GitHub Actions）
 -   [ ] 部署到測試環境（Staging）
 -   [ ] 在測試環境進行完整測試
@@ -357,10 +357,10 @@
 
 ---
 
-## 📚 階段九：文件撰寫
+## 📚 階段九：文件撰寫 ✅
 
 ### 開發文件
--   [ ] 撰寫 README（專案簡介、安裝、啟動）
+-   [x] 撰寫 README（專案簡介、安裝、啟動）
 -   [ ] 撰寫 CONTRIBUTING（貢獻指南）
 -   [ ] 撰寫 CHANGELOG（版本記錄）
 -   [ ] 撰寫元件使用說明
