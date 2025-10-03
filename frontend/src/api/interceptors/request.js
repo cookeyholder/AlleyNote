@@ -3,9 +3,19 @@ import { csrfManager } from '../../utils/csrfManager.js';
 import { API_CONFIG } from '../config.js';
 
 /**
- * 請求攔截器 - 自動加入認證 Token
+ * 請求攔截器 - 自動加入認證 Token 並處理自動刷新
  */
-export function requestInterceptor(config) {
+export async function requestInterceptor(config) {
+  // 檢查 Token 是否需要刷新
+  if (tokenManager.shouldRefresh()) {
+    try {
+      await tokenManager.refreshToken();
+    } catch (error) {
+      console.error('Token refresh failed:', error);
+      // Token 刷新失敗，讓請求繼續（可能會導致 401）
+    }
+  }
+
   // 加入 JWT Token
   const token = tokenManager.getToken();
   if (token) {

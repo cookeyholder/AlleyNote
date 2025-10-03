@@ -73,6 +73,36 @@ export function initRouter() {
     }
   });
 
+  // 後台個人資料
+  router.on('/admin/profile', () => {
+    if (requireAuth()) {
+      import('../pages/admin/profile.js').then((module) => {
+        const page = new module.default();
+        page.init();
+      });
+    }
+  });
+
+  // 後台使用者管理
+  router.on('/admin/users', () => {
+    if (requireAuth()) {
+      import('../pages/admin/users.js').then((module) => {
+        const page = new module.default();
+        page.init();
+      });
+    }
+  });
+
+  // 後台系統統計
+  router.on('/admin/statistics', () => {
+    if (requireAuth()) {
+      import('../pages/admin/statistics.js').then((module) => {
+        const page = new module.default();
+        page.init();
+      });
+    }
+  });
+
   // 404
   router.notFound(() => {
     import('../pages/notFound.js').then((module) => module.render404());

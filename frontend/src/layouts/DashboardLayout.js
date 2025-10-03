@@ -40,7 +40,15 @@ export function renderDashboardLayout(content) {
               <span>👥</span>
               ${sidebarCollapsed ? '' : '<span>使用者管理</span>'}
             </a>
+            <a href="/admin/statistics" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+              <span>📈</span>
+              ${sidebarCollapsed ? '' : '<span>系統統計</span>'}
+            </a>
           ` : ''}
+          <a href="/admin/profile" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+            <span>👤</span>
+            ${sidebarCollapsed ? '' : '<span>個人資料</span>'}
+          </a>
         </nav>
         
         <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-modern-200">

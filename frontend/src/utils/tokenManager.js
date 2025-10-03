@@ -7,6 +7,7 @@ class TokenManager {
   constructor() {
     this.storageKey = API_CONFIG.jwt.storageKey;
     this.refreshThreshold = API_CONFIG.jwt.refreshThreshold;
+    this.refreshPromise = null; // 防止重複刷新
   }
 
   /**
@@ -31,6 +32,7 @@ class TokenManager {
    */
   removeToken() {
     sessionStorage.removeItem(this.storageKey);
+    this.refreshPromise = null;
   }
 
   /**
@@ -50,6 +52,67 @@ class TokenManager {
     if (!tokenData) return false;
     const timeRemaining = (tokenData.expiresAt - Date.now()) / 1000;
     return timeRemaining > 0 && timeRemaining < this.refreshThreshold;
+  }
+
+  /**
+   * 刷新 Token
+   */
+  async refreshToken() {
+    // 如果已經有刷新請求正在進行中，返回同一個 Promise
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = this._doRefreshToken()
+      .then((result) => {
+        this.refreshPromise = null;
+        return result;
+      })
+      .catch((error) => {
+        this.refreshPromise = null;
+        throw error;
+      });
+
+    return this.refreshPromise;
+  }
+
+  /**
+   * 執行 Token 刷新
+   * @private
+   */
+  async _doRefreshToken() {
+    try {
+      const currentToken = this.getToken();
+      if (!currentToken) {
+        throw new Error('No token to refresh');
+      }
+
+      // 呼叫刷新 API
+      const response = await fetch(`${API_CONFIG.baseURL}/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Token refresh failed');
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.data?.token) {
+        this.setToken(data.data.token, data.data.expires_in);
+        return data.data.token;
+      }
+
+      throw new Error('Invalid refresh response');
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      this.removeToken();
+      throw error;
+    }
   }
 
   /**
