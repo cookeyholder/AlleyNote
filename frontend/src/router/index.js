@@ -113,6 +113,15 @@ export function initRouter() {
     }
   });
 
+  // 後台系統設定
+  router.on('/admin/settings', () => {
+    if (requireAuth()) {
+      import('../pages/admin/settings.js').then((module) =>
+        module.renderSettingsPage()
+      );
+    }
+  });
+
   // 404
   router.notFound(() => {
     import('../pages/notFound.js').then((module) => module.render404());

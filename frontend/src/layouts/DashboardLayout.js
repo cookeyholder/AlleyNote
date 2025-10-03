@@ -48,6 +48,10 @@ export function renderDashboardLayout(content) {
               <span>📈</span>
               ${sidebarCollapsed ? '' : '<span>系統統計</span>'}
             </a>
+            <a href="/admin/settings" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+              <span>⚙️</span>
+              ${sidebarCollapsed ? '' : '<span>系統設定</span>'}
+            </a>
           ` : ''}
           <a href="/admin/profile" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
             <span>👤</span>
