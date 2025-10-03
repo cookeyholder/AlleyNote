@@ -1,7 +1,7 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { postsAPI } from '../../api/modules/posts.js';
 import { toast } from '../../utils/toast.js';
-import { confirm } from '../../components/Modal.js';
+import { confirmDelete } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
 
 let currentPage = 1;
@@ -263,12 +263,9 @@ function renderPagination(pagination) {
  * 刪除文章
  */
 window.deletePost = async function (postId) {
-  const confirmed = await confirm({
-    title: '確認刪除',
-    message: '確定要刪除這篇文章嗎？此操作無法復原。',
-    confirmText: '刪除',
-    cancelText: '取消',
-  });
+  // 取得文章標題
+  const post = currentState.posts.find((p) => p.id === postId);
+  const confirmed = await confirmDelete(post?.title || '此文章');
   
   if (!confirmed) return;
   

@@ -3,7 +3,7 @@ import { postsAPI } from '../../api/modules/posts.js';
 import { router } from '../../router/index.js';
 import { toast } from '../../utils/toast.js';
 import { CKEditorWrapper } from '../../components/CKEditorWrapper.js';
-import { confirm } from '../../components/Modal.js';
+import { confirmDiscard } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
 
 let editorInstance = null;
@@ -186,12 +186,7 @@ function bindFormEvents(postId) {
   // 取消
   cancelBtn.addEventListener('click', async () => {
     if (hasUnsavedChanges) {
-      const confirmed = await confirm({
-        title: '確認離開',
-        message: '您有未儲存的變更，確定要離開嗎？',
-        confirmText: '離開',
-        cancelText: '繼續編輯',
-      });
+      const confirmed = await confirmDiscard();
       
       if (!confirmed) return;
     }
