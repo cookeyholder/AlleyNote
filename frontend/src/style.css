@@ -7,7 +7,7 @@
 /* 自訂樣式 */
 @layer base {
   body {
-    @apply font-inter bg-modern-50 text-modern-900;
+    @apply font-inter bg-modern-50 text-modern-900 antialiased;
   }
 }
 
@@ -21,11 +21,11 @@
   }
 
   .btn-primary {
-    @apply bg-accent-600 text-white px-4 py-2 rounded-lg hover:bg-accent-700 transition-colors;
+    @apply bg-accent-600 text-white px-4 py-2 rounded-lg hover:bg-accent-700 transition-colors disabled:bg-modern-300 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply border-2 border-accent-600 text-accent-700 px-4 py-2 rounded-lg hover:bg-accent-50 transition-colors;
+    @apply border-2 border-accent-600 text-accent-700 px-4 py-2 rounded-lg hover:bg-accent-50 transition-colors disabled:bg-modern-100 disabled:cursor-not-allowed;
   }
 
   .btn-danger {
@@ -33,11 +33,141 @@
   }
 
   .input-field {
-    @apply w-full px-4 py-2 border border-modern-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent;
+    @apply w-full px-4 py-2 border border-modern-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent disabled:bg-modern-100 disabled:cursor-not-allowed;
   }
 
   .card {
     @apply bg-white p-8 rounded-2xl border border-modern-200 shadow-sm;
+  }
+
+  /* Modal 動畫 */
+  .modal-show {
+    @apply opacity-100;
+  }
+
+  .modal-show .modal-content {
+    @apply scale-100;
+  }
+
+  /* 文章內容樣式 (Prose) */
+  .prose-modern {
+    @apply text-modern-800 leading-relaxed;
+  }
+
+  .prose-modern h1 {
+    @apply text-3xl font-bold mt-8 mb-4 text-modern-900;
+  }
+
+  .prose-modern h2 {
+    @apply text-2xl font-bold mt-6 mb-3 text-modern-900;
+  }
+
+  .prose-modern h3 {
+    @apply text-xl font-bold mt-5 mb-2 text-modern-900;
+  }
+
+  .prose-modern p {
+    @apply mb-4;
+  }
+
+  .prose-modern a {
+    @apply text-accent-600 hover:text-accent-700 underline;
+  }
+
+  .prose-modern ul,
+  .prose-modern ol {
+    @apply mb-4 pl-6;
+  }
+
+  .prose-modern ul {
+    @apply list-disc;
+  }
+
+  .prose-modern ol {
+    @apply list-decimal;
+  }
+
+  .prose-modern li {
+    @apply mb-2;
+  }
+
+  .prose-modern blockquote {
+    @apply border-l-4 border-accent-500 pl-4 italic text-modern-700 my-4;
+  }
+
+  .prose-modern pre {
+    @apply bg-modern-900 text-modern-100 rounded-lg p-4 overflow-x-auto my-4;
+  }
+
+  .prose-modern code {
+    @apply bg-modern-100 text-modern-800 px-1 py-0.5 rounded text-sm;
+  }
+
+  .prose-modern pre code {
+    @apply bg-transparent text-modern-100 px-0 py-0;
+  }
+
+  .prose-modern img {
+    @apply rounded-lg my-4 max-w-full h-auto;
+  }
+
+  .prose-modern table {
+    @apply w-full border-collapse my-4;
+  }
+
+  .prose-modern th,
+  .prose-modern td {
+    @apply border border-modern-300 px-4 py-2;
+  }
+
+  .prose-modern th {
+    @apply bg-modern-100 font-semibold;
+  }
+
+  /* Line Clamp */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@layer utilities {
+  /* 動畫 */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
@@ -45,3 +175,39 @@
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* CKEditor 5 樣式客製化 */
+.ck-editor__editable {
+  min-height: 400px;
+  max-height: 600px;
+}
+
+.ck.ck-editor__main > .ck-editor__editable {
+  @apply border border-modern-300 rounded-lg;
+}
+
+.ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
+  @apply border-modern-300;
+}
+
+.ck.ck-toolbar {
+  @apply border border-modern-300 rounded-t-lg bg-modern-50;
+}
+
+/* Toast 容器 */
+#toast-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 24rem;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  backdrop-filter: blur(2px);
+}
+

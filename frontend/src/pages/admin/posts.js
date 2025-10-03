@@ -1,6 +1,11 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { postsAPI } from '../../api/modules/posts.js';
 import { toast } from '../../utils/toast.js';
+import { confirm } from '../../components/Modal.js';
+import { loading } from '../../components/Loading.js';
+
+let currentPage = 1;
+let currentFilters = {};
 
 /**
  * 渲染文章列表頁面
@@ -17,19 +22,26 @@ export async function renderPostsList() {
       
       <!-- 搜尋與篩選 -->
       <div class="card mb-6">
-        <div class="flex gap-4">
+        <div class="flex flex-col md:flex-row gap-4">
           <input
             type="text"
             id="search-input"
-            placeholder="搜尋文章..."
+            placeholder="搜尋文章標題..."
             class="input-field flex-1"
           />
-          <select id="status-filter" class="input-field w-48">
+          <select id="status-filter" class="input-field md:w-48">
             <option value="">所有狀態</option>
             <option value="published">已發布</option>
             <option value="draft">草稿</option>
           </select>
-          <button id="search-btn" class="btn-primary">搜尋</button>
+          <select id="sort-filter" class="input-field md:w-48">
+            <option value="-created_at">最新優先</option>
+            <option value="created_at">最舊優先</option>
+            <option value="title">標題 A-Z</option>
+            <option value="-title">標題 Z-A</option>
+          </select>
+          <button id="search-btn" class="btn-primary md:w-auto">搜尋</button>
+          <button id="reset-btn" class="btn-secondary md:w-auto">重置</button>
         </div>
       </div>
       
@@ -53,7 +65,28 @@ export async function renderPostsList() {
   await loadPosts();
   
   // 綁定搜尋事件
-  document.getElementById('search-btn')?.addEventListener('click', loadPosts);
+  document.getElementById('search-btn')?.addEventListener('click', () => {
+    currentPage = 1;
+    loadPosts();
+  });
+  
+  // 綁定重置事件
+  document.getElementById('reset-btn')?.addEventListener('click', () => {
+    document.getElementById('search-input').value = '';
+    document.getElementById('status-filter').value = '';
+    document.getElementById('sort-filter').value = '-created_at';
+    currentPage = 1;
+    currentFilters = {};
+    loadPosts();
+  });
+  
+  // Enter 鍵搜尋
+  document.getElementById('search-input')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      currentPage = 1;
+      loadPosts();
+    }
+  });
 }
 
 /**
@@ -63,16 +96,35 @@ async function loadPosts() {
   const container = document.getElementById('posts-table-container');
   const search = document.getElementById('search-input')?.value || '';
   const status = document.getElementById('status-filter')?.value || '';
+  const sort = document.getElementById('sort-filter')?.value || '-created_at';
+  
+  loading.show('載入中...');
   
   try {
-    const result = await postsAPI.list({ search, status });
+    currentFilters = { 
+      search, 
+      status,
+      sort,
+      page: currentPage,
+      per_page: 10,
+    };
+    
+    const result = await postsAPI.list(currentFilters);
     const posts = result.data || [];
+    const pagination = result.pagination || {};
+    
+    loading.hide();
     
     if (posts.length === 0) {
       container.innerHTML = `
         <div class="text-center py-12">
-          <p class="text-modern-600">目前沒有文章</p>
-          <a href="/admin/posts/create" class="btn-primary mt-4 inline-block">新增第一篇文章</a>
+          <div class="text-6xl mb-4">📝</div>
+          <p class="text-modern-600 mb-4">
+            ${search || status ? '找不到符合條件的文章' : '目前沒有文章'}
+          </p>
+          ${!search && !status ? `
+            <a href="/admin/posts/create" class="btn-primary inline-block">新增第一篇文章</a>
+          ` : ''}
         </div>
       `;
       return;
@@ -107,37 +159,156 @@ async function loadPosts() {
               <td class="px-6 py-4 text-sm text-modern-600">${post.author || 'Unknown'}</td>
               <td class="px-6 py-4 text-sm text-modern-600">${new Date(post.created_at).toLocaleDateString('zh-TW')}</td>
               <td class="px-6 py-4 text-right text-sm">
-                <a href="/admin/posts/${post.id}/edit" class="text-accent-600 hover:text-accent-900 mr-3">編輯</a>
-                <button onclick="deletePost(${post.id})" class="text-red-600 hover:text-red-900">刪除</button>
+                <div class="flex justify-end gap-2">
+                  <a href="/admin/posts/${post.id}/edit" class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors">
+                    編輯
+                  </a>
+                  <button 
+                    onclick="window.togglePostStatus(${post.id}, '${post.status}')" 
+                    class="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                  >
+                    ${post.status === 'published' ? '轉草稿' : '發布'}
+                  </button>
+                  <button 
+                    onclick="window.deletePost(${post.id})" 
+                    class="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                  >
+                    刪除
+                  </button>
+                </div>
               </td>
             </tr>
           `).join('')}
         </tbody>
       </table>
+      
+      <!-- 分頁 -->
+      ${renderPagination(pagination)}
     `;
   } catch (error) {
+    loading.hide();
     container.innerHTML = `
       <div class="text-center py-12">
-        <p class="text-red-600">載入失敗：${error.message}</p>
-        <button onclick="location.reload()" class="btn-primary mt-4">重試</button>
+        <div class="text-6xl mb-4">⚠️</div>
+        <p class="text-red-600 mb-4">載入失敗：${error.message}</p>
+        <button onclick="location.reload()" class="btn-primary">重試</button>
       </div>
     `;
   }
 }
 
 /**
+ * 渲染分頁
+ */
+function renderPagination(pagination) {
+  if (!pagination || pagination.total_pages <= 1) return '';
+  
+  const { current_page, total_pages } = pagination;
+  const pages = [];
+  
+  // 生成頁碼
+  for (let i = 1; i <= total_pages; i++) {
+    if (
+      i === 1 ||
+      i === total_pages ||
+      (i >= current_page - 2 && i <= current_page + 2)
+    ) {
+      pages.push(i);
+    } else if (pages[pages.length - 1] !== '...') {
+      pages.push('...');
+    }
+  }
+  
+  return `
+    <div class="flex items-center justify-between px-6 py-4 border-t border-modern-200">
+      <div class="text-sm text-modern-600">
+        第 ${current_page} 頁，共 ${total_pages} 頁
+      </div>
+      <div class="flex gap-2">
+        <button 
+          onclick="window.goToPage(${current_page - 1})"
+          ${current_page === 1 ? 'disabled' : ''}
+          class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          上一頁
+        </button>
+        ${pages.map(page => {
+          if (page === '...') {
+            return '<span class="px-3 py-1">...</span>';
+          }
+          return `
+            <button 
+              onclick="window.goToPage(${page})"
+              class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 ${
+                page === current_page ? 'bg-accent-600 text-white border-accent-600' : ''
+              }"
+            >
+              ${page}
+            </button>
+          `;
+        }).join('')}
+        <button 
+          onclick="window.goToPage(${current_page + 1})"
+          ${current_page === total_pages ? 'disabled' : ''}
+          class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          下一頁
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+/**
  * 刪除文章
  */
 window.deletePost = async function (postId) {
-  if (!confirm('確定要刪除這篇文章嗎？此操作無法復原。')) {
-    return;
-  }
+  const confirmed = await confirm({
+    title: '確認刪除',
+    message: '確定要刪除這篇文章嗎？此操作無法復原。',
+    confirmText: '刪除',
+    cancelText: '取消',
+  });
+  
+  if (!confirmed) return;
+  
+  loading.show('刪除中...');
   
   try {
     await postsAPI.delete(postId);
+    loading.hide();
     toast.success('文章已刪除');
     await loadPosts();
   } catch (error) {
+    loading.hide();
     toast.error('刪除失敗：' + error.message);
   }
+};
+
+/**
+ * 切換文章狀態
+ */
+window.togglePostStatus = async function (postId, currentStatus) {
+  const newStatus = currentStatus === 'published' ? 'draft' : 'published';
+  const action = newStatus === 'published' ? '發布' : '轉為草稿';
+  
+  loading.show(`${action}中...`);
+  
+  try {
+    await postsAPI.update(postId, { status: newStatus });
+    loading.hide();
+    toast.success(`文章已${action}`);
+    await loadPosts();
+  } catch (error) {
+    loading.hide();
+    toast.error(`${action}失敗：` + error.message);
+  }
+};
+
+/**
+ * 跳轉到指定頁碼
+ */
+window.goToPage = function (page) {
+  currentPage = page;
+  loadPosts();
 };

@@ -2,6 +2,13 @@ import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/
 import { postsAPI } from '../../api/modules/posts.js';
 import { router } from '../../router/index.js';
 import { toast } from '../../utils/toast.js';
+import { CKEditorWrapper } from '../../components/CKEditorWrapper.js';
+import { confirm } from '../../components/Modal.js';
+import { loading } from '../../components/Loading.js';
+
+let editorInstance = null;
+let hasUnsavedChanges = false;
+let autoSaveTimer = null;
 
 /**
  * 渲染文章編輯器
@@ -9,15 +16,21 @@ import { toast } from '../../utils/toast.js';
 export async function renderPostEditor(postId = null) {
   let post = null;
   
+  // 清理舊的編輯器
+  cleanupEditor();
+  
   // 如果是編輯模式，載入文章
   if (postId) {
+    loading.show('載入文章中...');
     try {
       post = await postsAPI.get(postId);
     } catch (error) {
+      loading.hide();
       toast.error('載入文章失敗');
       router.navigate('/admin/posts');
       return;
     }
+    loading.hide();
   }
   
   const content = `
@@ -54,18 +67,13 @@ export async function renderPostEditor(postId = null) {
           <label class="block text-sm font-medium text-modern-700 mb-2">
             文章內容 *
           </label>
-          <div class="prose max-w-none">
-            <textarea
-              id="content"
-              name="content"
-              rows="15"
-              class="input-field font-mono text-sm"
-              placeholder="輸入文章內容...&#10;&#10;提示：未來版本將整合 CKEditor 5 富文本編輯器"
-            >${post?.content || ''}</textarea>
+          <div id="editor-container">
+            <div id="content"></div>
           </div>
           <p class="text-red-500 text-sm mt-1 hidden" data-error-for="content"></p>
-          <p class="text-sm text-modern-500 mt-2">
-            💡 提示：目前使用純文字編輯器，CKEditor 5 整合將在下一版本完成
+          <p class="text-sm text-modern-500 mt-2 flex items-center gap-2">
+            <span class="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            自動儲存已啟用（每 30 秒）
           </p>
         </div>
         
@@ -120,7 +128,39 @@ export async function renderPostEditor(postId = null) {
   const app = document.getElementById('app');
   app.innerHTML = renderDashboardLayout(content);
   bindDashboardLayoutEvents();
+  
+  // 初始化 CKEditor
+  await initCKEditor(post);
+  
+  // 綁定表單事件
   bindFormEvents(postId);
+  
+  // 啟動自動儲存
+  startAutoSave(postId);
+  
+  // 離開頁面前提示
+  setupBeforeUnload();
+}
+
+/**
+ * 初始化 CKEditor
+ */
+async function initCKEditor(post) {
+  try {
+    editorInstance = new CKEditorWrapper('content', {
+      initialData: post?.content || '',
+      placeholder: '開始撰寫您的文章內容...',
+      onChange: () => {
+        hasUnsavedChanges = true;
+      },
+    });
+    
+    await editorInstance.init();
+    toast.success('編輯器已準備就緒');
+  } catch (error) {
+    console.error('CKEditor initialization failed:', error);
+    toast.error('編輯器初始化失敗');
+  }
 }
 
 /**
@@ -144,11 +184,77 @@ function bindFormEvents(postId) {
   });
   
   // 取消
-  cancelBtn.addEventListener('click', () => {
-    if (confirm('確定要離開嗎？未儲存的變更將會遺失。')) {
-      router.navigate('/admin/posts');
+  cancelBtn.addEventListener('click', async () => {
+    if (hasUnsavedChanges) {
+      const confirmed = await confirm({
+        title: '確認離開',
+        message: '您有未儲存的變更，確定要離開嗎？',
+        confirmText: '離開',
+        cancelText: '繼續編輯',
+      });
+      
+      if (!confirmed) return;
+    }
+    
+    cleanupEditor();
+    router.navigate('/admin/posts');
+  });
+}
+
+/**
+ * 啟動自動儲存
+ */
+function startAutoSave(postId) {
+  if (!postId) return; // 新建文章不自動儲存
+  
+  autoSaveTimer = setInterval(async () => {
+    if (!hasUnsavedChanges) return;
+    
+    try {
+      const form = document.getElementById('post-form');
+      const data = {
+        title: form.title.value,
+        content: editorInstance.getData(),
+        status: form.status.value,
+        excerpt: form.excerpt.value,
+      };
+      
+      await postsAPI.update(postId, data);
+      hasUnsavedChanges = false;
+      console.log('Auto-saved at', new Date().toLocaleTimeString());
+    } catch (error) {
+      console.error('Auto-save failed:', error);
+    }
+  }, 30000); // 每 30 秒
+}
+
+/**
+ * 設定離開頁面前提示
+ */
+function setupBeforeUnload() {
+  window.addEventListener('beforeunload', (e) => {
+    if (hasUnsavedChanges) {
+      e.preventDefault();
+      e.returnValue = '';
     }
   });
+}
+
+/**
+ * 清理編輯器
+ */
+function cleanupEditor() {
+  if (editorInstance) {
+    editorInstance.destroy();
+    editorInstance = null;
+  }
+  
+  if (autoSaveTimer) {
+    clearInterval(autoSaveTimer);
+    autoSaveTimer = null;
+  }
+  
+  hasUnsavedChanges = false;
 }
 
 /**
@@ -160,7 +266,7 @@ async function savePost(postId, status) {
   
   const data = {
     title: form.title.value,
-    content: form.content.value,
+    content: editorInstance ? editorInstance.getData() : '',
     status: status || form.status.value,
     excerpt: form.excerpt.value,
   };
@@ -176,11 +282,16 @@ async function savePost(postId, status) {
   try {
     if (postId) {
       await postsAPI.update(postId, data);
+      hasUnsavedChanges = false;
       toast.success('文章已更新');
     } else {
       const result = await postsAPI.create(data);
+      hasUnsavedChanges = false;
       toast.success('文章已建立');
-      router.navigate(`/admin/posts/${result.id}/edit`);
+      // 重新導向到編輯頁面
+      setTimeout(() => {
+        router.navigate(`/admin/posts/${result.id}/edit`);
+      }, 1000);
     }
   } catch (error) {
     if (error.isValidationError()) {
