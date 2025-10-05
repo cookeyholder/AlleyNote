@@ -1,6 +1,6 @@
-import DashboardLayout from '../../layouts/DashboardLayout.js';
+import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { toast } from '../../utils/toast.js';
-import Modal from '../../components/Modal.js';
+import { Modal } from '../../components/Modal.js';
 import apiClient from '../../api/client.js';
 
 /**
@@ -56,8 +56,8 @@ export default class TagsPage {
       <div id="modal-container"></div>
     `;
 
-    const dashboardLayout = new DashboardLayout();
-    dashboardLayout.render(content);
+    const app = document.getElementById("app");
+    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 

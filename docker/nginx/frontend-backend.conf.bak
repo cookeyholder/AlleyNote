@@ -1,0 +1,109 @@
+server {
+    listen 80;
+    server_name localhost ${SSL_DOMAIN} www.${SSL_DOMAIN};
+    root /usr/share/nginx/html;
+    index index.html;
+    error_log /var/log/nginx/error.log;
+    access_log /var/log/nginx/access.log;
+
+    # ACME Challenge 路徑 (Let's Encrypt 憑證驗證)
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+        try_files $uri =404;
+    }
+
+    # 前端靜態檔案 (SPA)
+    location / {
+        # 如果是正式環境且啟用 HTTPS，則重導向
+        if ($host != "localhost") {
+            return 301 https://$host$request_uri;
+        }
+
+        try_files $uri $uri/ /index.html;
+
+        # 靜態資源快取
+        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            try_files $uri =404;
+        }
+    }
+
+    # API 路由代理到 PHP 容器
+    location /api {
+        # 如果是正式環境且啟用 HTTPS，則重導向
+        if ($host != "localhost") {
+            return 301 https://$host$request_uri;
+        }
+
+        # 直接代理 API 路徑到 PHP 處理
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass web:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/public/index.php;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+        fastcgi_param REQUEST_URI $request_uri;
+
+        # API 專用標頭
+        add_header Access-Control-Allow-Origin "http://localhost:3000" always;
+        add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" always;
+        add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With" always;
+        add_header Access-Control-Allow-Credentials true always;
+
+        # 處理 OPTIONS 預檢請求
+        if ($request_method = OPTIONS) {
+            add_header Access-Control-Allow-Origin "http://localhost:3000";
+            add_header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS";
+            add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With";
+            add_header Access-Control-Allow-Credentials true;
+            add_header Content-Length 0;
+            add_header Content-Type text/plain;
+            return 204;
+        }
+    }
+
+    # 健康檢查端點
+    location /health {
+        fastcgi_pass web:9000;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /var/www/html/public/index.php;
+        fastcgi_param REQUEST_URI /health;
+    }
+
+    # 安全標頭設定 (開發環境 - 允許 CDN)
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "geolocation=(), microphone=(), camera=()" always;
+    
+    # Content Security Policy - 支援 CKEditor, Chart.js, Font Awesome
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.ckeditor.com https://cdn.tailwindcss.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.ckeditor.com https://cdn.tailwindcss.com https://fonts.googleapis.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https: http:; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.ckeditor.com; connect-src 'self' https://cdn.ckeditor.com; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self';" always;
+
+    # 隱藏 Nginx 版本
+    server_tokens off;
+}
+
+# 開發環境 Webpack/Vite 開發伺服器代理 (可選)
+upstream frontend_dev {
+    server host.docker.internal:3000;
+}
+
+server {
+    listen 3000;
+    server_name localhost;
+
+    location / {
+        proxy_pass http://frontend_dev;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}

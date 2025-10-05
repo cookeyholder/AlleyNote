@@ -1,4 +1,4 @@
-import DashboardLayout from '../../layouts/DashboardLayout.js';
+import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { authAPI } from '../../api/modules/auth.js';
 import { usersAPI } from '../../api/modules/users.js';
 import { toast } from '../../utils/toast.js';
@@ -66,8 +66,8 @@ export default class ProfilePage {
       </div>
     `;
 
-    const dashboardLayout = new DashboardLayout();
-    dashboardLayout.render(content);
+    const app = document.getElementById("app");
+    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 

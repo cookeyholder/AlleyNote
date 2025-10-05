@@ -1,4 +1,4 @@
-import DashboardLayout from '../../layouts/DashboardLayout.js';
+import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { statisticsAPI } from '../../api/modules/statistics.js';
 import { toast } from '../../utils/toast.js';
 import {
@@ -101,8 +101,8 @@ export default class StatisticsPage {
       </div>
     `;
 
-    const dashboardLayout = new DashboardLayout();
-    dashboardLayout.render(content);
+    const app = document.getElementById("app");
+    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 

@@ -4,8 +4,8 @@
  */
 import { globalStore } from '../../store/globalStore.js';
 import { toast } from '../../utils/toast.js';
-import { apiClient } from '../../api/client.js';
-import { showLoading, hideLoading } from '../../components/Loading.js';
+import apiClient from '../../api/client.js';
+import { loading } from '../../components/Loading.js';
 
 export async function renderSettingsPage() {
     const container = document.getElementById('app-content');
@@ -288,7 +288,7 @@ export async function renderSettingsPage() {
  */
 async function loadSettings() {
     try {
-        showLoading();
+        loading.show();
 
         // 這裡應該從後端 API 載入設定
         // 目前先使用模擬資料
@@ -310,7 +310,7 @@ async function loadSettings() {
         console.error('載入設定失敗:', error);
         toast.error('載入設定失敗');
     } finally {
-        hideLoading();
+        loading.hide();
     }
 }
 
@@ -381,7 +381,7 @@ async function handleSettingsSubmit(e) {
     }
 
     try {
-        showLoading();
+        loading.show();
 
         // 這裡應該呼叫後端 API 儲存設定
         // await apiClient.put('/api/settings', settings);
@@ -394,7 +394,7 @@ async function handleSettingsSubmit(e) {
         console.error('儲存設定失敗:', error);
         toast.error('儲存設定失敗');
     } finally {
-        hideLoading();
+        loading.hide();
     }
 }
 
@@ -417,7 +417,7 @@ async function handleLogoUpload(e) {
     }
 
     try {
-        showLoading();
+        loading.show();
 
         // 預覽圖片
         const reader = new FileReader();
@@ -437,6 +437,6 @@ async function handleLogoUpload(e) {
         console.error('上傳 Logo 失敗:', error);
         toast.error('上傳 Logo 失敗');
     } finally {
-        hideLoading();
+        loading.hide();
     }
 }

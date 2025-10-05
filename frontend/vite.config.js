@@ -9,7 +9,7 @@ export default defineConfig({
         
         // Code Splitting 優化
         rollupOptions: {
-            input: "./public/index.html",
+            input: "./index.html",
             output: {
                 entryFileNames: "assets/[name]-[hash].js",
                 chunkFileNames: "assets/[name]-[hash].js",

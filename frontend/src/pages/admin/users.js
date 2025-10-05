@@ -1,7 +1,7 @@
-import DashboardLayout from '../../layouts/DashboardLayout.js';
+import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { usersAPI } from '../../api/modules/users.js';
 import { toast } from '../../utils/toast.js';
-import Modal from '../../components/Modal.js';
+import { Modal } from '../../components/Modal.js';
 
 /**
  * 使用者管理頁面
@@ -60,8 +60,8 @@ export default class UsersPage {
       <div id="modal-container"></div>
     `;
 
-    const dashboardLayout = new DashboardLayout();
-    dashboardLayout.render(content);
+    const app = document.getElementById("app");
+    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 
