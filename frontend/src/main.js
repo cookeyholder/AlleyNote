@@ -19,6 +19,11 @@ import { initWebVitals } from './utils/webVitals.js';
 async function initApp() {
   console.log('🚀 AlleyNote 前端應用程式啟動中...');
 
+  // ⚡ 優先恢復使用者狀態（修復路由守衛問題）
+  console.log('🔄 恢復使用者狀態...');
+  globalActions.restoreUser();
+  console.log('✅ 使用者狀態已恢復');
+
   // 初始化錯誤追蹤（Sentry）
   try {
     await initErrorTracking({
@@ -80,7 +85,7 @@ async function initApp() {
     }, 100);
   });
 
-  // 檢查登入狀態
+  // 檢查登入狀態並刷新使用者資訊
   if (authAPI.isAuthenticated()) {
     try {
       const user = await authAPI.me();
