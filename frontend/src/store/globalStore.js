@@ -1,4 +1,5 @@
 import { Store } from './Store.js';
+import { tokenManager } from '../utils/tokenManager.js';
 
 /**
  * 全域狀態初始值
@@ -26,6 +27,13 @@ export const globalActions = {
   setUser(user) {
     globalStore.set('user', user);
     globalStore.set('isAuthenticated', !!user);
+    
+    // 同步儲存到 localStorage 以持久化
+    if (user) {
+      localStorage.setItem('alleynote_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('alleynote_user');
+    }
   },
 
   /**
@@ -34,6 +42,25 @@ export const globalActions = {
   clearUser() {
     globalStore.set('user', null);
     globalStore.set('isAuthenticated', false);
+    localStorage.removeItem('alleynote_user');
+  },
+
+  /**
+   * 從儲存中恢復使用者狀態
+   */
+  restoreUser() {
+    try {
+      const userData = localStorage.getItem('alleynote_user');
+      if (userData && tokenManager.isValid()) {
+        const user = JSON.parse(userData);
+        globalStore.set('user', user);
+        globalStore.set('isAuthenticated', true);
+        return user;
+      }
+    } catch (error) {
+      console.error('Failed to restore user:', error);
+    }
+    return null;
   },
 
   /**
@@ -70,7 +97,19 @@ export const globalGetters = {
   },
 
   isAuthenticated() {
-    return globalStore.get('isAuthenticated');
+    // 先檢查記憶體中的狀態
+    const isAuth = globalStore.get('isAuthenticated');
+    if (isAuth) {
+      return true;
+    }
+    
+    // 如果記憶體中沒有，嘗試從儲存中恢復
+    if (tokenManager.isValid()) {
+      globalActions.restoreUser();
+      return globalStore.get('isAuthenticated');
+    }
+    
+    return false;
   },
 
   getUserRole() {
@@ -83,3 +122,6 @@ export const globalGetters = {
     return role === 'admin' || role === 'super_admin';
   },
 };
+
+// 初始化時嘗試恢復使用者狀態
+globalActions.restoreUser();
