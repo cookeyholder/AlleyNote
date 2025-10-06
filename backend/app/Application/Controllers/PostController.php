@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
+use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -14,16 +15,77 @@ class PostController extends BaseController
      */
     public function index(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $data = [
-            'posts' => [
-                ['id' => 1, 'title' => '第一篇貼文', 'content' => '這是第一篇貼文的內容'],
-                ['id' => 2, 'title' => '第二篇貼文', 'content' => '這是第二篇貼文的內容'],
-            ],
-        ];
-
-        $response->getBody()->write($this->successResponse($data));
-
-        return $response->withHeader('Content-Type', 'application/json');
+        try {
+            // 獲取查詢參數
+            $queryParams = $request->getQueryParams();
+            $page = max(1, (int) ($queryParams['page'] ?? 1));
+            $perPage = min(100, max(1, (int) ($queryParams['per_page'] ?? 10)));
+            $search = $queryParams['search'] ?? '';
+            $status = $queryParams['status'] ?? '';
+            
+            // 建立資料庫連接
+            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
+            $pdo = new PDO("sqlite:{$dbPath}");
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            // 建立查詢
+            $where = ['deleted_at IS NULL'];
+            $params = [];
+            
+            if (!empty($search)) {
+                $where[] = '(title LIKE :search OR content LIKE :search)';
+                $params[':search'] = "%{$search}%";
+            }
+            
+            if (!empty($status)) {
+                $where[] = 'status = :status';
+                $params[':status'] = $status;
+            }
+            
+            $whereClause = implode(' AND ', $where);
+            
+            // 計算總數
+            $countSql = "SELECT COUNT(*) as total FROM posts WHERE {$whereClause}";
+            $countStmt = $pdo->prepare($countSql);
+            $countStmt->execute($params);
+            $total = (int) $countStmt->fetchColumn();
+            
+            // 獲取資料
+            $offset = ($page - 1) * $perPage;
+            $sql = "SELECT p.id, p.title, p.content, p.status, p.user_id, p.created_at, p.updated_at,
+                           u.username as author
+                    FROM posts p
+                    LEFT JOIN users u ON p.user_id = u.id
+                    WHERE {$whereClause} 
+                    ORDER BY p.created_at DESC 
+                    LIMIT :limit OFFSET :offset";
+            
+            $stmt = $pdo->prepare($sql);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // 確保每個 post 都有 author 欄位
+            $posts = array_map(function ($post) {
+                $post['author'] = $post['author'] ?? 'Unknown';
+                return $post;
+            }, $posts);
+            
+            // 格式化回應
+            $responseData = $this->paginatedResponse($posts, $total, $page, $perPage);
+            $response->getBody()->write($responseData);
+            
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (\Exception $e) {
+            $errorResponse = $this->errorResponse('Failed to fetch posts: ' . $e->getMessage());
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 
     /**

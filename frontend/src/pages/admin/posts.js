@@ -112,8 +112,15 @@ async function loadPosts() {
     };
     
     const result = await postsAPI.list(currentFilters);
+    console.log('[DEBUG] API result:', result);
+    console.log('[DEBUG] result.data:', result.data);
+    console.log('[DEBUG] Array.isArray(result.data):', Array.isArray(result.data));
+    
     const posts = result.data || [];
     const pagination = result.pagination || {};
+    
+    console.log('[DEBUG] posts:', posts);
+    console.log('[DEBUG] posts.length:', posts.length);
     
     // Store posts in current state for deletion
     currentState.posts = posts;

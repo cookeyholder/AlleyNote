@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Controllers\PostController;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Application\Controllers\Api\V1\ActivityLogController;
+use App\Application\Controllers\Api\V1\PostController as ApiPostController;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 
 /**
@@ -85,25 +86,25 @@ return function (RouterInterface $router): void {
     // =========================================
 
     // 瀏覽貼文清單 (公開，但認證使用者可看到更多資訊)
-    $postsIndex = $router->get('/api/posts', [PostController::class, 'index']);
+    $postsIndex = $router->get('/api/posts', [ApiPostController::class, 'index']);
     $postsIndex->setName('posts.index');
 
     // 檢視特定貼文 (公開，但認證使用者可看到更多資訊)
-    $postsShow = $router->get('/api/posts/{id}', [PostController::class, 'show']);
+    $postsShow = $router->get('/api/posts/{id}', [ApiPostController::class, 'show']);
     $postsShow->setName('posts.show');
 
     // 建立新貼文 (需要認證和權限)
-    $postsStore = $router->post('/api/posts', [PostController::class, 'store']);
+    $postsStore = $router->post('/api/posts', [ApiPostController::class, 'store']);
     $postsStore->setName('posts.store');
     $postsStore->middleware(['jwt.auth']);
 
     // 更新貼文 (需要認證和權限 - 只有作者或管理員)
-    $postsUpdate = $router->put('/api/posts/{id}', [PostController::class, 'update']);
+    $postsUpdate = $router->put('/api/posts/{id}', [ApiPostController::class, 'update']);
     $postsUpdate->setName('posts.update');
     $postsUpdate->middleware(['jwt.auth', 'jwt.authorize']);
 
     // 刪除貼文 (需要認證和權限 - 只有作者或管理員)
-    $postsDestroy = $router->delete('/api/posts/{id}', [PostController::class, 'destroy']);
+    $postsDestroy = $router->delete('/api/posts/{id}', [ApiPostController::class, 'destroy']);
     $postsDestroy->setName('posts.destroy');
     $postsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
 
