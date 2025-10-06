@@ -111,8 +111,14 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         }
 
         try {
+            file_put_contents('php://stderr', "[JWT] 開始驗證 Token...\n");
+            file_put_contents('php://stderr', "[JWT] Token 前 50 字元: " . substr($token, 0, 50) . "...\n");
+            file_put_contents('php://stderr', "[JWT] 公鑰長度: " . strlen($this->publicKey) . " bytes\n");
+            
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
             $payload = (array) $decoded;
+
+            file_put_contents('php://stderr', "[JWT] Token 解碼成功\n");
 
             // 驗證必要欄位
             $this->validateRequiredFields($payload);
@@ -125,8 +131,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             // 驗證 issuer 和 audience
             $this->validateIssuerAndAudience($payload);
 
+            file_put_contents('php://stderr', "[JWT] 所有驗證通過\n");
             return $payload;
         } catch (ExpiredException $e) {
+            file_put_contents('php://stderr', "[JWT] Token 已過期\n");
             // 嘗試從過期的 token 中取得過期時間
             $expiredAt = null;
 
@@ -144,8 +152,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 'Token 已過期',
             );
         } catch (SignatureInvalidException $e) {
+            file_put_contents('php://stderr', "[JWT] 簽名無效: " . $e->getMessage() . "\n");
             throw TokenValidationException::invalidSignature($e);
         } catch (UnexpectedValueException $e) {
+            file_put_contents('php://stderr', "[JWT] Token 格式無效: " . $e->getMessage() . "\n");
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_MALFORMED,
                 InvalidTokenException::ACCESS_TOKEN,

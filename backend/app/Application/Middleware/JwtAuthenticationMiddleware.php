@@ -77,10 +77,16 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             // 5. 繼續執行後續中介軟體
             return $handler->handle($request);
         } catch (TokenExpiredException $e) {
+            error_log('[JWT] Token 已過期: ' . $e->getMessage());
             return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
         } catch (InvalidTokenException $e) {
+            error_log('[JWT] Token 無效: ' . $e->getMessage());
+            error_log('[JWT] 異常類型: ' . get_class($e));
+            error_log('[JWT] 堆疊追蹤: ' . $e->getTraceAsString());
             return $this->createUnauthorizedResponse('Token 無效', 'TOKEN_INVALID');
         } catch (Exception $e) {
+            error_log('[JWT] 認證驗證失敗: ' . $e->getMessage());
+            error_log('[JWT] 異常類型: ' . get_class($e));
             return $this->createUnauthorizedResponse('認證驗證失敗', 'AUTH_FAILED');
         }
     }
