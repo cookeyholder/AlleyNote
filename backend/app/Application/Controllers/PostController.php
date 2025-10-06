@@ -110,18 +110,82 @@ class PostController extends BaseController
      */
     public function store(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $body = $request->getParsedBody();
-
-        $post = [
-            'id' => rand(1000, 9999),
-            'title' => $body['title'] ?? '未命名貼文',
-            'content' => $body['content'] ?? '',
-            'created_at' => date('c'),
-        ];
-
-        $response->getBody()->write($this->successResponse($post, '貼文建立成功'));
-
-        return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+        try {
+            $body = $request->getParsedBody();
+            
+            // 驗證必要欄位
+            $title = $body['title'] ?? null;
+            $content = $body['content'] ?? null;
+            
+            if (empty($title) || empty($content)) {
+                $errorResponse = $this->errorResponse('標題和內容為必填欄位', 422);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+            }
+            
+            // 獲取使用者 ID（從 JWT token）
+            $userId = $request->getAttribute('user_id') ?? 1;
+            $status = $body['status'] ?? 'draft';
+            
+            // 建立資料庫連接
+            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
+            $pdo = new PDO("sqlite:{$dbPath}");
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
+            // 生成 UUID
+            $uuid = sprintf(
+                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0x0fff) | 0x4000,
+                mt_rand(0, 0x3fff) | 0x8000,
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff),
+                mt_rand(0, 0xffff)
+            );
+            
+            // 獲取最新的 seq_number
+            $seqStmt = $pdo->query('SELECT MAX(seq_number) as max_seq FROM posts');
+            $maxSeq = $seqStmt->fetchColumn();
+            $seqNumber = ($maxSeq ?? 0) + 1;
+            
+            // 插入新文章
+            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, created_at) 
+                    VALUES (:uuid, :seq_number, :title, :content, :user_id, :status, 0, 0, datetime('now'))";
+            
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':uuid' => $uuid,
+                ':seq_number' => $seqNumber,
+                ':title' => $title,
+                ':content' => $content,
+                ':user_id' => $userId,
+                ':status' => $status,
+            ]);
+            
+            $postId = $pdo->lastInsertId();
+            
+            // 回傳新建立的文章
+            $post = [
+                'id' => (int) $postId,
+                'uuid' => $uuid,
+                'seq_number' => $seqNumber,
+                'title' => $title,
+                'content' => $content,
+                'user_id' => $userId,
+                'status' => $status,
+                'created_at' => date('c'),
+            ];
+            
+            $response->getBody()->write($this->successResponse($post, '貼文建立成功'));
+            return $response->withStatus(201)->withHeader('Content-Type', 'application/json');
+            
+        } catch (\Exception $e) {
+            $errorResponse = $this->errorResponse('建立文章失敗: ' . $e->getMessage());
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 
     /**
