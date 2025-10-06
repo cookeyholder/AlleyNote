@@ -3,8 +3,9 @@ import { globalGetters } from '../store/globalStore.js';
 
 /**
  * 路由實例
+ * 啟用 link interception 讓 Navigo 自動處理所有內部連結
  */
-export const router = new Navigo('/');
+export const router = new Navigo('/', { hash: false });
 
 /**
  * 路由守衛 - 需要認證

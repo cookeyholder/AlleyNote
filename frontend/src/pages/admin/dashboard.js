@@ -1,5 +1,6 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { globalGetters } from '../../store/globalStore.js';
+import { router } from '../../router/index.js';
 
 /**
  * 渲染儀表板頁面
@@ -78,7 +79,7 @@ export function renderDashboard() {
             </div>
           </div>
           <div class="mt-4">
-            <a href="/admin/posts" class="text-accent-600 hover:text-accent-700 text-sm font-medium">
+            <a href="/admin/posts" data-navigo class="text-accent-600 hover:text-accent-700 text-sm font-medium">
               查看所有文章 →
             </a>
           </div>
@@ -88,7 +89,7 @@ export function renderDashboard() {
         <div class="card">
           <h2 class="text-xl font-semibold text-modern-900 mb-4">快速操作</h2>
           <div class="space-y-3">
-            <a href="/admin/posts/create" class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
+            <a href="/admin/posts/create" data-navigo class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
               <div class="flex items-center gap-3">
                 <span class="text-2xl">✏️</span>
                 <div>
@@ -98,7 +99,7 @@ export function renderDashboard() {
               </div>
             </a>
             
-            <a href="/admin/posts" class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
+            <a href="/admin/posts" data-navigo class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
               <div class="flex items-center gap-3">
                 <span class="text-2xl">📋</span>
                 <div>
@@ -109,7 +110,7 @@ export function renderDashboard() {
             </a>
             
             ${globalGetters.isAdmin() ? `
-              <a href="/admin/users" class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
+              <a href="/admin/users" data-navigo class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
                 <div class="flex items-center gap-3">
                   <span class="text-2xl">👥</span>
                   <div>

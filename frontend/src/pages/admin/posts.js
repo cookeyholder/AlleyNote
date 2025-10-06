@@ -3,9 +3,11 @@ import { postsAPI } from '../../api/modules/posts.js';
 import { toast } from '../../utils/toast.js';
 import { confirmDelete } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
+import { router } from '../../router/index.js';
 
 let currentPage = 1;
 let currentFilters = {};
+let currentState = { posts: [] };
 
 /**
  * 渲染文章列表頁面
@@ -15,7 +17,7 @@ export async function renderPostsList() {
     <div>
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-modern-900">文章管理</h1>
-        <a href="/admin/posts/create" class="btn-primary">
+        <a href="/admin/posts/create" data-navigo class="btn-primary">
           ✏️ 新增文章
         </a>
       </div>
@@ -113,6 +115,9 @@ async function loadPosts() {
     const posts = result.data || [];
     const pagination = result.pagination || {};
     
+    // Store posts in current state for deletion
+    currentState.posts = posts;
+    
     loading.hide();
     
     if (posts.length === 0) {
@@ -123,10 +128,11 @@ async function loadPosts() {
             ${search || status ? '找不到符合條件的文章' : '目前沒有文章'}
           </p>
           ${!search && !status ? `
-            <a href="/admin/posts/create" class="btn-primary inline-block">新增第一篇文章</a>
+            <a href="/admin/posts/create" data-navigo class="btn-primary inline-block">新增第一篇文章</a>
           ` : ''}
         </div>
       `;
+      router.updatePageLinks();
       return;
     }
     
@@ -160,7 +166,7 @@ async function loadPosts() {
               <td class="px-6 py-4 text-sm text-modern-600">${new Date(post.created_at).toLocaleDateString('zh-TW')}</td>
               <td class="px-6 py-4 text-right text-sm">
                 <div class="flex justify-end gap-2">
-                  <a href="/admin/posts/${post.id}/edit" class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors">
+                  <a href="/admin/posts/${post.id}/edit" data-navigo class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors">
                     編輯
                   </a>
                   <button 
@@ -185,6 +191,9 @@ async function loadPosts() {
       <!-- 分頁 -->
       ${renderPagination(pagination)}
     `;
+    
+    // Update Navigo to handle new links
+    router.updatePageLinks();
   } catch (error) {
     loading.hide();
     container.innerHTML = `

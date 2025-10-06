@@ -27,33 +27,33 @@ export function renderDashboardLayout(content) {
         </div>
         
         <nav class="p-4 space-y-2">
-          <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+          <a href="/admin/dashboard" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
             <span>📊</span>
             ${sidebarCollapsed ? '' : '<span>儀表板</span>'}
           </a>
-          <a href="/admin/posts" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+          <a href="/admin/posts" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
             <span>📝</span>
             ${sidebarCollapsed ? '' : '<span>文章管理</span>'}
           </a>
-          <a href="/admin/tags" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+          <a href="/admin/tags" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
             <span>🏷️</span>
             ${sidebarCollapsed ? '' : '<span>標籤管理</span>'}
           </a>
           ${globalGetters.isAdmin() ? `
-            <a href="/admin/users" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+            <a href="/admin/users" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
               <span>👥</span>
               ${sidebarCollapsed ? '' : '<span>使用者管理</span>'}
             </a>
-            <a href="/admin/statistics" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+            <a href="/admin/statistics" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
               <span>📈</span>
               ${sidebarCollapsed ? '' : '<span>系統統計</span>'}
             </a>
-            <a href="/admin/settings" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+            <a href="/admin/settings" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
               <span>⚙️</span>
               ${sidebarCollapsed ? '' : '<span>系統設定</span>'}
             </a>
           ` : ''}
-          <a href="/admin/profile" class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+          <a href="/admin/profile" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
             <span>👤</span>
             ${sidebarCollapsed ? '' : '<span>個人資料</span>'}
           </a>
@@ -118,4 +118,7 @@ export function bindDashboardLayoutEvents() {
       }
     });
   }
+  
+  // 更新路由連結，讓 Navigo 攔截所有內部連結點擊
+  router.updatePageLinks();
 }
