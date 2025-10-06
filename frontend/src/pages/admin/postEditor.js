@@ -93,6 +93,22 @@ export async function renderPostEditor(postId = null) {
             </div>
             
             <div>
+              <label for="publish_date" class="block text-sm font-medium text-modern-700 mb-2">
+                發布日期與時間
+              </label>
+              <input
+                type="datetime-local"
+                id="publish_date"
+                name="publish_date"
+                class="input-field"
+                value="${post?.publish_date ? new Date(post.publish_date).toISOString().slice(0, 16) : ''}"
+              />
+              <p class="text-sm text-modern-500 mt-1">
+                留空則使用當前時間。設定未來時間可實現定時發布。
+              </p>
+            </div>
+            
+            <div>
               <label for="excerpt" class="block text-sm font-medium text-modern-700 mb-2">
                 摘要（選填）
               </label>
@@ -265,6 +281,11 @@ async function savePost(postId, status) {
     status: status || form.status.value,
     excerpt: form.excerpt.value,
   };
+  
+  // 添加發布日期時間
+  if (form.publish_date.value) {
+    data.publish_date = new Date(form.publish_date.value).toISOString();
+  }
   
   // 清除舊錯誤
   clearErrors();

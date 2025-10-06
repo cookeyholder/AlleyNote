@@ -8,10 +8,22 @@ use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * 文章管理控制器
+ * 
+ * 注意：此控制器專為管理員後台設計，所有操作都直接與資料庫互動，
+ * 不使用快取機制，以確保管理員看到的資料始終是最新的。
+ * 
+ * 快取策略：
+ * - 讀取操作：直接從資料庫查詢（管理員需要即時資料）
+ * - 寫入操作：直接寫入資料庫（新增、修改、刪除）
+ * 
+ * 前台使用者查看文章時，應使用 ApiPostController，其中實作了適當的快取策略。
+ */
 class PostController extends BaseController
 {
     /**
-     * 取得所有貼文.
+     * 取得所有貼文（管理員後台，不使用快取）
      */
     public function index(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
@@ -127,6 +139,21 @@ class PostController extends BaseController
             $userId = $request->getAttribute('user_id') ?? 1;
             $status = $body['status'] ?? 'draft';
             
+            // 處理發布日期
+            $publishDate = null;
+            if (!empty($body['publish_date'])) {
+                try {
+                    $date = new \DateTime($body['publish_date']);
+                    $publishDate = $date->format('Y-m-d H:i:s');
+                } catch (\Exception $e) {
+                    // 如果日期格式錯誤，使用當前時間
+                    $publishDate = date('Y-m-d H:i:s');
+                }
+            } elseif ($status === 'published') {
+                // 如果狀態是已發布但沒有指定日期，使用當前時間
+                $publishDate = date('Y-m-d H:i:s');
+            }
+            
             // 建立資料庫連接
             $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
             $pdo = new PDO("sqlite:{$dbPath}");
@@ -151,8 +178,8 @@ class PostController extends BaseController
             $seqNumber = ($maxSeq ?? 0) + 1;
             
             // 插入新文章
-            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, created_at) 
-                    VALUES (:uuid, :seq_number, :title, :content, :user_id, :status, 0, 0, datetime('now'))";
+            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, publish_date, created_at) 
+                    VALUES (:uuid, :seq_number, :title, :content, :user_id, :status, 0, 0, :publish_date, datetime('now'))";
             
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
@@ -162,6 +189,7 @@ class PostController extends BaseController
                 ':content' => $content,
                 ':user_id' => $userId,
                 ':status' => $status,
+                ':publish_date' => $publishDate,
             ]);
             
             $postId = $pdo->lastInsertId();
@@ -175,6 +203,7 @@ class PostController extends BaseController
                 'content' => $content,
                 'user_id' => $userId,
                 'status' => $status,
+                'publish_date' => $publishDate,
                 'created_at' => date('c'),
             ];
             
