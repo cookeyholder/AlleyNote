@@ -31,6 +31,11 @@ export function initRouter() {
     import('../pages/login.js').then((module) => module.renderLogin());
   });
 
+  // 忘記密碼頁
+  router.on('/forgot-password', () => {
+    import('../pages/forgotPassword.js').then((module) => module.renderForgotPassword());
+  });
+
   // 文章內頁
   router.on('/posts/:id', ({ data }) => {
     import('../pages/post.js').then((module) => module.renderPost(data.id));

@@ -73,10 +73,32 @@ export function responseErrorInterceptor(error) {
 
   // 500+ 伺服器錯誤
   if (status >= 500) {
-    return Promise.reject(new APIError('SERVER_ERROR', '伺服器錯誤，請稍後再試', status));
+    // 處理後端的錯誤格式
+    let message = '伺服器錯誤，請稍後再試';
+    
+    if (data) {
+      // 檢查各種可能的錯誤訊息欄位
+      if (data.error) {
+        message = data.error;
+      } else if (data.message) {
+        message = data.message;
+      }
+    }
+    
+    return Promise.reject(new APIError('SERVER_ERROR', message, status));
   }
 
   // 其他錯誤
-  const message = data.message || '發生未知錯誤';
+  let message = '發生未知錯誤';
+  
+  if (data) {
+    // 檢查後端回傳的錯誤訊息
+    if (data.error) {
+      message = data.error;
+    } else if (data.message) {
+      message = data.message;
+    }
+  }
+  
   return Promise.reject(new APIError('UNKNOWN_ERROR', message, status));
 }

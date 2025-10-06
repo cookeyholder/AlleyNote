@@ -59,9 +59,10 @@ class UserRepositoryAdapter implements UserRepositoryInterface
      */
     public function validateCredentials(string $username, string $password): ?array
     {
-        // 暫時實作 - 原始 repository 沒有此方法，需要自行實現驗證邏輯
+        // 嘗試通過 email 查找使用者
         $user = $this->userRepository->findByEmail($username);
         if (!is_array($user)) {
+            // 如果通過 email 找不到，嘗試通過 username 查找
             $user = $this->userRepository->findByUsername($username);
         }
 
@@ -69,14 +70,21 @@ class UserRepositoryAdapter implements UserRepositoryInterface
             return null;
         }
 
-        // 這裡應該要進行密碼驗證，但原始 repository 沒有提供此功能
-        // 暫時返回測試數據以保持系統運作
-        if ($username === 'test@example.com' && $password === 'password') {
-            /** @var array<string, mixed> */
-            return $user;
+        // 驗證密碼
+        // 支援 password 和 password_hash 兩種欄位名稱
+        $passwordHash = $user['password_hash'] ?? $user['password'] ?? null;
+        
+        if ($passwordHash === null) {
+            return null;
         }
 
-        return null;
+        // 使用 password_verify 驗證密碼
+        if (!password_verify($password, $passwordHash)) {
+            return null;
+        }
+
+        /** @var array<string, mixed> */
+        return $user;
     }
 
     public function updateLastLogin(int $userId): bool

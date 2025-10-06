@@ -12,12 +12,32 @@ export const authAPI = {
   async login(credentials) {
     const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
     
-    // 儲存 Token
-    if (response.data && response.data.token) {
-      tokenManager.setToken(response.data.token, response.data.expires_in);
+    // 儲存 Token - 支援多種回應格式
+    if (response && response.data) {
+      const data = response.data;
+      
+      // 檢查 access_token (JWT 格式)
+      if (data.access_token) {
+        tokenManager.setToken(data.access_token, data.expires_in || 3600);
+        
+        // 儲存 refresh token
+        if (data.refresh_token) {
+          localStorage.setItem('alleynote_refresh_token', data.refresh_token);
+        }
+      }
+      // 檢查 token (舊格式)
+      else if (data.token) {
+        tokenManager.setToken(data.token, data.expires_in || 3600);
+      }
+      
+      return data;
+    } else if (response && response.access_token) {
+      // 直接在 response 層級
+      tokenManager.setToken(response.access_token, response.expires_in || 3600);
+      return response;
     }
     
-    return response.data;
+    return response;
   },
 
   /**

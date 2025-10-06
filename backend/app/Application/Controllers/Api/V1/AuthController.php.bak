@@ -285,7 +285,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤: ' . $e->getMessage(),
+                'error' => '系統發生錯誤',
             ];
 
             $response->getBody()->write((json_encode($responseData) ?? ''));
@@ -469,7 +469,7 @@ class AuthController extends BaseController
 
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤: ' . $e->getMessage(),
+                'error' => '系統發生錯誤',
             ];
 
             $response->getBody()->write((json_encode($responseData) ?? ''));
@@ -608,7 +608,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤: ' . $e->getMessage(),
+                'error' => '系統發生錯誤',
             ];
             $response->getBody()->write((json_encode($responseData) ?? ''));
 
@@ -750,7 +750,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤: ' . $e->getMessage(),
+                'error' => '系統發生錯誤',
             ];
             $response->getBody()->write((json_encode($responseData) ?? ''));
 
@@ -893,7 +893,7 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤: ' . $e->getMessage(),
+                'error' => '系統發生錯誤',
             ];
             $response->getBody()->write((json_encode($responseData) ?? ''));
 

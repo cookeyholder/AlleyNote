@@ -62,7 +62,7 @@ export function renderLogin() {
               />
               <span class="ml-2 text-sm text-modern-700">記住我</span>
             </label>
-            <a href="#" class="text-sm text-accent-600 hover:text-accent-700">
+            <a href="/forgot-password" class="text-sm text-accent-600 hover:text-accent-700">
               忘記密碼？
             </a>
           </div>
@@ -150,7 +150,8 @@ function bindLoginForm() {
     } catch (error) {
       loading.hide();
       
-      if (error.isValidationError()) {
+      // 修復：檢查 error 是否有 isValidationError 方法
+      if (error && typeof error.isValidationError === 'function' && error.isValidationError()) {
         const errors = error.getValidationErrors();
         Object.entries(errors).forEach(([field, messages]) => {
           const errorEl = document.querySelector(`[data-error-for="${field}"]`);
@@ -160,7 +161,18 @@ function bindLoginForm() {
           }
         });
       } else {
-        toast.error(error.getUserMessage() || '登入失敗，請檢查您的帳號密碼');
+        // 處理各種錯誤格式
+        let errorMessage = '登入失敗，請檢查您的帳號密碼';
+        
+        if (error && typeof error.getUserMessage === 'function') {
+          errorMessage = error.getUserMessage();
+        } else if (error && error.message) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        
+        toast.error(errorMessage);
       }
       
       // 重置按鈕

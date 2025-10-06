@@ -53,7 +53,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $expiresAt->format('Y-m-d H:i:s'),
                 $deviceInfo->getDeviceId(),
                 $deviceInfo->getDeviceName(),
-                $deviceInfo->getPlatform(),
+                $deviceInfo->getDeviceType(),  // 修復：使用 getDeviceType()
                 $deviceInfo->getUserAgent(),
                 $deviceInfo->getIpAddress(),
                 $deviceInfo->getPlatform(),
