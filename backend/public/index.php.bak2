@@ -5,9 +5,6 @@ declare(strict_types=1);
 // 載入 Composer autoloader
 require __DIR__ . '/../vendor/autoload.php';
 
-// 載入環境變數
-require __DIR__ . '/../bootstrap/load_env.php';
-
 use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
 
