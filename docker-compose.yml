@@ -35,7 +35,7 @@ services:
         container_name: alleynote_nginx
         restart: unless-stopped
         ports:
-            - "8080:80"
+            - "8000:80"
             - "443:443"
         volumes:
             - ./frontend/dist:/usr/share/nginx/html
