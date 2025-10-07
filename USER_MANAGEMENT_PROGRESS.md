@@ -42,101 +42,118 @@
 
 ---
 
-## 第二階段：後端 Domain Layer ⏳ 進行中
+## 第二階段：後端 Domain Layer ✅ 已完成
 
-### ✅ 已存在的模型
-- `Role.php` - 角色實體
-- `Permission.php` - 權限實體
+### ✅ DTOs
+- `CreateUserDTO.php` - 建立使用者
+- `UpdateUserDTO.php` - 更新使用者
+- `UserListResponseDTO.php` - 使用者列表回應
 
-### ⏳ 待開發
-1. **Repositories**
-   - [ ] UserRepository 擴充（查詢、更新使用者）
-   - [ ] RoleRepository
-   - [ ] PermissionRepository
+### ✅ Repositories
+- `RoleRepository.php` - 角色資料存取
+- `PermissionRepository.php` - 權限資料存取
+- `UserRepository.php` - 擴充使用者資料存取
+  - paginate() - 分頁查詢
+  - getUserRoleIds() - 取得使用者角色
+  - setUserRoles() - 設定使用者角色
+  - findByIdWithRoles() - 取得完整資訊
 
-2. **Services**
-   - [ ] UserManagementService
-   - [ ] RoleManagementService
-   - [ ] PermissionService
+### ✅ Services
+- `UserManagementService.php` - 使用者管理服務
+  - listUsers() - 列表
+  - getUser() - 取得
+  - createUser() - 建立
+  - updateUser() - 更新
+  - deleteUser() - 刪除
+  - assignRoles() - 分配角色
 
-3. **DTOs**
-   - [ ] CreateUserDTO
-   - [ ] UpdateUserDTO
-   - [ ] AssignRoleDTO
-   - [ ] UserListResponseDTO
-
----
-
-## 第三階段：後端 Application Layer ⏳ 待開發
-
-### 待開發內容
-1. **Controllers**
-   - [ ] UserController (CRUD)
-   - [ ] RoleController (CRUD)
-   - [ ] UserRoleController (分配角色)
-
-2. **API 端點設計**
-```
-GET    /api/users              - 使用者列表（分頁、搜尋）
-GET    /api/users/{id}         - 取得單一使用者
-POST   /api/users              - 新增使用者
-PUT    /api/users/{id}         - 更新使用者
-DELETE /api/users/{id}         - 刪除使用者
-POST   /api/users/{id}/roles   - 分配角色給使用者
-DELETE /api/users/{id}/roles/{roleId} - 移除使用者角色
-
-GET    /api/roles              - 角色列表
-GET    /api/roles/{id}         - 取得單一角色
-POST   /api/roles              - 新增角色
-PUT    /api/roles/{id}         - 更新角色
-DELETE /api/roles/{id}         - 刪除角色
-GET    /api/roles/{id}/permissions - 取得角色的權限列表
-PUT    /api/roles/{id}/permissions - 更新角色權限
-
-GET    /api/permissions        - 權限列表
-```
+- `RoleManagementService.php` - 角色管理服務
+  - listRoles() - 列表
+  - getRole() - 取得（含權限）
+  - createRole() - 建立
+  - updateRole() - 更新
+  - deleteRole() - 刪除
+  - setRolePermissions() - 設定權限
+  - listPermissions() - 權限列表
 
 ---
 
-## 第四階段：前端 ⏳ 待開發
+## 第三階段：後端 Application Layer ✅ 已完成
+
+### ✅ Controllers
+- `UserController.php` - 使用者管理 API
+  - index() - GET /api/users
+  - show() - GET /api/users/{id}
+  - store() - POST /api/users
+  - update() - PUT /api/users/{id}
+  - destroy() - DELETE /api/users/{id}
+  - assignRoles() - PUT /api/users/{id}/roles
+
+- `RoleController.php` - 角色管理 API
+  - index() - GET /api/roles
+  - show() - GET /api/roles/{id}
+  - store() - POST /api/roles
+  - update() - PUT /api/roles/{id}
+  - destroy() - DELETE /api/roles/{id}
+  - updatePermissions() - PUT /api/roles/{id}/permissions
+  - permissions() - GET /api/permissions
+  - permissionsGrouped() - GET /api/permissions/grouped
+
+---
+
+## 第四階段：路由與依賴注入 ⏳ 進行中
+
+### ⏳ 待完成
+1. **路由註冊** (`backend/routes/api.php`)
+   - [ ] 註冊 UserController 路由
+   - [ ] 註冊 RoleController 路由
+   - [ ] 加入權限中間件
+
+2. **依賴注入** (`backend/bootstrap/dependencies.php`)
+   - [ ] 註冊 RoleRepository
+   - [ ] 註冊 PermissionRepository
+   - [ ] 註冊 UserManagementService
+   - [ ] 註冊 RoleManagementService
+   - [ ] 註冊 Controllers
+
+---
+
+## 第五階段：前端開發 ⏳ 待開發
 
 ### 待開發內容
 1. **API 模組** (`frontend/src/api/modules/users.js`)
    - [ ] 使用者 CRUD API 封裝
    - [ ] 角色管理 API 封裝
-   - [ ] 權限 API 封裝
 
 2. **使用者列表頁面** (`frontend/src/pages/admin/users.js`)
    - [ ] 使用者表格
    - [ ] 搜尋功能
    - [ ] 分頁
-   - [ ] 操作按鈕（新增、編輯、刪除）
+   - [ ] 操作按鈕
 
 3. **使用者編輯頁面** (`frontend/src/pages/admin/userEditor.js`)
    - [ ] 使用者表單
-   - [ ] 角色選擇（多選）
+   - [ ] 角色選擇
    - [ ] 密碼設定
-   - [ ] 狀態設定
 
 4. **角色管理頁面** (`frontend/src/pages/admin/roles.js`)
    - [ ] 角色列表
-   - [ ] 權限分配介面
-   - [ ] 新增/編輯角色
+   - [ ] 權限分配
 
 5. **路由配置**
-   - [ ] 更新 `frontend/src/router/index.js`
-   - [ ] 新增使用者管理路由
+   - [ ] 更新 router/index.js
 
 ---
 
 ## 下一步行動
 
-1. ⏳ **立即開始**：開發 UserRepository 和相關 Services
-2. ⏳ **今日完成**：後端 API Controllers
+1. ⏳ **立即開始**：路由註冊與依賴注入
+2. ⏳ **今日完成**：前端 API 模組
 3. ⏳ **明日完成**：前端介面開發
 
 ---
 
 **開發人員**：AI Assistant (Claude)  
-**狀態**：資料庫層已完成，後端開發中  
-**預估完成時間**：2-3 天
+**狀態**：後端 API 已完成，準備註冊路由  
+**完成度**：約 60%（後端完成，前端待開發）
+

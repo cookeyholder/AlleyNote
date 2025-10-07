@@ -158,4 +158,165 @@ class UserRepository
             'password' => $hashedPassword,
         ]);
     }
+
+    /**
+     * 取得使用者列表（分頁）
+     */
+    public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
+    {
+        $offset = ($page - 1) * $perPage;
+        
+        // 建立 WHERE 條件
+        $where = [];
+        $params = [];
+        
+        if (!empty($filters['search'])) {
+            $where[] = '(username LIKE :search OR email LIKE :search)';
+            $params['search'] = '%' . $filters['search'] . '%';
+        }
+        
+        $whereClause = empty($where) ? '' : ' WHERE ' . implode(' AND ', $where);
+        
+        // 計算總數
+        $countSql = 'SELECT COUNT(*) FROM users' . $whereClause;
+        $countStmt = $this->db->prepare($countSql);
+        $countStmt->execute($params);
+        $total = (int) $countStmt->fetchColumn();
+        
+        // 取得資料
+        $sql = 'SELECT u.*, 
+                GROUP_CONCAT(r.id) as role_ids,
+                GROUP_CONCAT(r.display_name) as role_names
+                FROM users u
+                LEFT JOIN user_roles ur ON u.id = ur.user_id
+                LEFT JOIN roles r ON ur.role_id = r.id'
+                . $whereClause .
+                ' GROUP BY u.id
+                ORDER BY u.id DESC
+                LIMIT :limit OFFSET :offset';
+        
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        $users = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $roleIds = $row['role_ids'] ? explode(',', $row['role_ids']) : [];
+            $roleNames = $row['role_names'] ? explode(',', $row['role_names']) : [];
+            
+            $roles = [];
+            for ($i = 0; $i < count($roleIds); $i++) {
+                $roles[] = [
+                    'id' => (int) $roleIds[$i],
+                    'name' => $roleNames[$i],
+                ];
+            }
+            
+            unset($row['role_ids'], $row['role_names']);
+            $row['roles'] = $roles;
+            $users[] = $row;
+        }
+        
+        return [
+            'items' => $users,
+            'total' => $total,
+            'page' => $page,
+            'per_page' => $perPage,
+            'last_page' => ceil($total / $perPage),
+        ];
+    }
+
+    /**
+     * 取得使用者的角色
+     * 
+     * @return int[]
+     */
+    public function getUserRoleIds(int $userId): array
+    {
+        $sql = 'SELECT role_id FROM user_roles WHERE user_id = :user_id';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['user_id' => $userId]);
+        
+        return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
+    }
+
+    /**
+     * 設定使用者的角色
+     * 
+     * @param int[] $roleIds
+     */
+    public function setUserRoles(int $userId, array $roleIds): bool
+    {
+        $this->db->beginTransaction();
+
+        try {
+            // 刪除舊的角色
+            $deleteSql = 'DELETE FROM user_roles WHERE user_id = :user_id';
+            $deleteStmt = $this->db->prepare($deleteSql);
+            $deleteStmt->execute(['user_id' => $userId]);
+
+            // 新增新的角色
+            if (!empty($roleIds)) {
+                $insertSql = 'INSERT INTO user_roles (user_id, role_id, created_at) 
+                              VALUES (:user_id, :role_id, datetime(\'now\'))';
+                $insertStmt = $this->db->prepare($insertSql);
+
+                foreach ($roleIds as $roleId) {
+                    $insertStmt->execute([
+                        'user_id' => $userId,
+                        'role_id' => $roleId,
+                    ]);
+                }
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (\Exception $e) {
+            $this->db->rollBack();
+            throw $e;
+        }
+    }
+
+    /**
+     * 取得使用者完整資訊（包含角色）
+     */
+    public function findByIdWithRoles(int $id): ?array
+    {
+        $sql = 'SELECT u.*,
+                GROUP_CONCAT(r.id) as role_ids,
+                GROUP_CONCAT(r.display_name) as role_names
+                FROM users u
+                LEFT JOIN user_roles ur ON u.id = ur.user_id
+                LEFT JOIN roles r ON ur.role_id = r.id
+                WHERE u.id = :id
+                GROUP BY u.id';
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if (!$row) {
+            return null;
+        }
+        
+        $roleIds = $row['role_ids'] ? explode(',', $row['role_ids']) : [];
+        $roleNames = $row['role_names'] ? explode(',', $row['role_names']) : [];
+        
+        $roles = [];
+        for ($i = 0; $i < count($roleIds); $i++) {
+            $roles[] = [
+                'id' => (int) $roleIds[$i],
+                'name' => $roleNames[$i],
+            ];
+        }
+        
+        unset($row['role_ids'], $row['role_names']);
+        $row['roles'] = $roles;
+        
+        return $row;
+    }
 }
