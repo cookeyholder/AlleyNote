@@ -99,6 +99,15 @@ export function initRouter() {
     }
   });
 
+  // 後台角色管理
+  router.on('/admin/roles', () => {
+    if (requireAuth()) {
+      import('../pages/admin/roles.js').then((module) => {
+        module.renderRoles();
+      });
+    }
+  });
+
   // 後台系統統計
   router.on('/admin/statistics', () => {
     if (requireAuth()) {

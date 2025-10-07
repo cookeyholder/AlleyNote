@@ -43,4 +43,86 @@ export const usersAPI = {
   async delete(id) {
     await apiClient.delete(API_ENDPOINTS.USERS.DELETE(id));
   },
+
+  /**
+   * 分配角色給使用者
+   */
+  async assignRoles(id, roleIds) {
+    const response = await apiClient.put(`/api/users/${id}/roles`, { role_ids: roleIds });
+    return response.data;
+  }
 };
+
+/**
+ * 角色管理 API
+ */
+export const rolesAPI = {
+  /**
+   * 取得角色列表
+   */
+  async list() {
+    const response = await apiClient.get('/api/roles');
+    return response.data;
+  },
+
+  /**
+   * 取得單一角色（包含權限）
+   */
+  async get(id) {
+    const response = await apiClient.get(`/api/roles/${id}`);
+    return response.data;
+  },
+
+  /**
+   * 建立角色
+   */
+  async create(data) {
+    const response = await apiClient.post('/api/roles', data);
+    return response.data;
+  },
+
+  /**
+   * 更新角色
+   */
+  async update(id, data) {
+    const response = await apiClient.put(`/api/roles/${id}`, data);
+    return response.data;
+  },
+
+  /**
+   * 刪除角色
+   */
+  async delete(id) {
+    await apiClient.delete(`/api/roles/${id}`);
+  },
+
+  /**
+   * 更新角色的權限
+   */
+  async updatePermissions(id, permissionIds) {
+    const response = await apiClient.put(`/api/roles/${id}/permissions`, { permission_ids: permissionIds });
+    return response.data;
+  }
+};
+
+/**
+ * 權限 API
+ */
+export const permissionsAPI = {
+  /**
+   * 取得所有權限
+   */
+  async list() {
+    const response = await apiClient.get('/api/permissions');
+    return response.data;
+  },
+
+  /**
+   * 取得所有權限（按資源分組）
+   */
+  async listGrouped() {
+    const response = await apiClient.get('/api/permissions/grouped');
+    return response.data;
+  }
+};
+

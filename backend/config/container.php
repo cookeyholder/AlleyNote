@@ -9,6 +9,13 @@ declare(strict_types=1);
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Auth\Repositories\RoleRepository;
+use App\Domains\Auth\Repositories\PermissionRepository;
+use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Services\UserManagementService;
+use App\Domains\Auth\Services\RoleManagementService;
+use App\Application\Controllers\Api\V1\UserController;
+use App\Application\Controllers\Api\V1\RoleController;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Repositories\PostRepository;
@@ -245,6 +252,35 @@ return array_merge(
         ValidatorFactory::class => \DI\autowire(ValidatorFactory::class),
         ValidatorInterface::class => \DI\factory(static fn (ValidatorFactory $factory) => $factory->createForDTO()),
         Validator::class => \DI\autowire(Validator::class),
+
+        // ========================================
+        // 使用者管理模組
+        // ========================================
+        
+        // Repositories
+        RoleRepository::class => \DI\autowire(RoleRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        PermissionRepository::class => \DI\autowire(PermissionRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        UserRepository::class => \DI\autowire(UserRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        // Services
+        UserManagementService::class => \DI\autowire(UserManagementService::class)
+            ->constructorParameter('userRepository', \DI\get(UserRepository::class)),
+
+        RoleManagementService::class => \DI\autowire(RoleManagementService::class)
+            ->constructorParameter('roleRepository', \DI\get(RoleRepository::class))
+            ->constructorParameter('permissionRepository', \DI\get(PermissionRepository::class)),
+
+        // Controllers
+        UserController::class => \DI\autowire(UserController::class)
+            ->constructorParameter('userManagementService', \DI\get(UserManagementService::class)),
+
+        RoleController::class => \DI\autowire(RoleController::class)
+            ->constructorParameter('roleManagementService', \DI\get(RoleManagementService::class)),
     ],
 
     // 監控服務

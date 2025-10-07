@@ -44,6 +44,10 @@ export function renderDashboardLayout(content) {
               <span>👥</span>
               ${sidebarCollapsed ? '' : '<span>使用者管理</span>'}
             </a>
+            <a href="/admin/roles" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
+              <span>🔐</span>
+              ${sidebarCollapsed ? '' : '<span>角色管理</span>'}
+            </a>
             <a href="/admin/statistics" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
               <span>📈</span>
               ${sidebarCollapsed ? '' : '<span>系統統計</span>'}
