@@ -11,7 +11,7 @@
     "dev": "npm run frontend:dev",
     "build": "npm run frontend:build",
     "frontend:dev": "cd frontend && npm run dev",
-    "frontend:build": "cd frontend && npm run build",
+    "frontend:build": "cd frontend && npm install --include=dev && npm run build",
     "frontend:preview": "cd frontend && npm run preview",
     "backend:test": "cd backend && composer test",
     "backend:cs-fix": "cd backend && composer cs-fix",

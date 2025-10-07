@@ -508,15 +508,18 @@ class PostRepository implements PostRepositoryInterface
             }
 
             // 計算總筆數
-            $countSql = 'SELECT COUNT(*) FROM posts'
-                . (empty($where) ? ' WHERE deleted_at IS NULL' : ' WHERE ' . implode(' AND ', $where) . ' AND deleted_at IS NULL');
+            $baseWhere = empty($where) ? 'deleted_at IS NULL' : implode(' AND ', $where) . ' AND deleted_at IS NULL';
+            // 對於已發布的文章，只顯示發布時間已到的
+            $publishTimeCheck = "AND (status != 'published' OR publish_date IS NULL OR publish_date <= datetime('now'))";
+            
+            $countSql = 'SELECT COUNT(*) FROM posts WHERE ' . $baseWhere . ' ' . $publishTimeCheck;
             $stmt = $this->db->prepare($countSql);
             $stmt->execute($params);
             $total = (int) $stmt->fetchColumn();
 
             // 取得分頁資料
             $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts'
-                . (empty($where) ? ' WHERE deleted_at IS NULL' : ' WHERE ' . implode(' AND ', $where) . ' AND deleted_at IS NULL')
+                . ' WHERE ' . $baseWhere . ' ' . $publishTimeCheck
                 . ' ORDER BY is_pinned DESC, publish_date DESC LIMIT :offset, :limit';
 
             $stmt = $this->db->prepare($sql);
@@ -548,7 +551,7 @@ class PostRepository implements PostRepositoryInterface
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
         return $this->cache->remember($cacheKey, function () use ($limit) {
-            $sql = $this->buildSelectQuery('is_pinned = 1')
+            $sql = $this->buildSelectQuery("is_pinned = 1 AND (status != 'published' OR publish_date IS NULL OR publish_date <= datetime('now'))")
                 . ' ORDER BY publish_date DESC LIMIT :limit';
 
             $stmt = $this->db->prepare($sql);
@@ -570,9 +573,10 @@ class PostRepository implements PostRepositoryInterface
             $offset = ($page - 1) * $perPage;
 
             // 計算總筆數
+            $publishTimeCheck = "AND (p.status != 'published' OR p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
             $countSql = 'SELECT COUNT(*) FROM posts p '
                 . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
-                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL';
+                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL ' . $publishTimeCheck;
 
             $stmt = $this->db->prepare($countSql);
             $stmt->execute(['tag_id' => $tagId]);
@@ -581,7 +585,7 @@ class PostRepository implements PostRepositoryInterface
             // 取得分頁資料
             $sql = 'SELECT ' . str_replace('id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at', 'p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at', self::POST_SELECT_FIELDS) . ' FROM posts p '
                 . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
-                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL '
+                . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL ' . $publishTimeCheck . ' '
                 . 'ORDER BY p.is_pinned DESC, p.publish_date DESC '
                 . 'LIMIT :offset, :limit';
 

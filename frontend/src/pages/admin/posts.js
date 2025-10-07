@@ -212,7 +212,7 @@ async function loadPosts() {
 function renderPagination(pagination) {
   if (!pagination || pagination.total_pages <= 1) return '';
   
-  const { current_page, total_pages } = pagination;
+  const { page: current_page, total_pages } = pagination;
   const pages = [];
   
   // 生成頁碼

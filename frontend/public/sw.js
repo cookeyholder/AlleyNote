@@ -3,11 +3,12 @@
  * 提供離線支援和快取策略
  * 
  * @author AlleyNote Team
- * @version 1.0.0
+ * @version 1.2.0
  */
 
-const CACHE_NAME = 'alleynote-v1';
-const RUNTIME_CACHE = 'alleynote-runtime-v1';
+const CACHE_VERSION = 'v1.2.0';  // 每次更新遞增
+const CACHE_NAME = `alleynote-${CACHE_VERSION}`;
+const RUNTIME_CACHE = `alleynote-runtime-${CACHE_VERSION}`;
 
 // 需要快取的靜態資源
 const STATIC_ASSETS = [

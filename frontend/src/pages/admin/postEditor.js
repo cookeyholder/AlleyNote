@@ -23,7 +23,8 @@ export async function renderPostEditor(postId = null) {
   if (postId) {
     loading.show('載入文章中...');
     try {
-      post = await postsAPI.get(postId);
+      const result = await postsAPI.get(postId);
+      post = result.data;
     } catch (error) {
       loading.hide();
       toast.error('載入文章失敗');
