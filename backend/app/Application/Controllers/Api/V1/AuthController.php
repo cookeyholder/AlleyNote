@@ -7,6 +7,7 @@ namespace App\Application\Controllers\Api\V1;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
@@ -42,6 +43,7 @@ class AuthController extends BaseController
         private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
         private ActivityLoggingServiceInterface $activityLoggingService,
+        private UserRepositoryInterface $userRepository,
     ) {}
 
     /**
@@ -672,12 +674,19 @@ class AuthController extends BaseController
                 $payload = $this->jwtTokenService->validateAccessToken($accessToken);
                 $userId = $payload->getUserId();
 
-                // 這裡你可能需要從資料庫取得完整的使用者資訊
-                // 目前先回傳基本的使用者 ID 和從 token 取得的資訊
+                // 從資料庫取得完整的使用者資訊（包含角色）
+                $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
+                
+                if (!$userWithRoles) {
+                    throw new NotFoundException('使用者不存在');
+                }
+
                 $userInfo = [
                     'user_id' => $userId,
-                    'email' => $payload->getCustomClaim('email'),
-                    'name' => $payload->getCustomClaim('name'),
+                    'email' => $userWithRoles['email'],
+                    'name' => $userWithRoles['name'] ?? null,
+                    'username' => $userWithRoles['username'] ?? null,
+                    'roles' => $userWithRoles['roles'] ?? [],
                     'token_issued_at' => $payload->getIssuedAt()->getTimestamp(),
                     'token_expires_at' => $payload->getExpiresAt()->getTimestamp(),
                 ];
@@ -704,6 +713,8 @@ class AuthController extends BaseController
                         'id' => $userInfo['user_id'],
                         'email' => $userInfo['email'],
                         'name' => $userInfo['name'],
+                        'username' => $userInfo['username'],
+                        'roles' => $userInfo['roles'],
                     ],
                     'token_info' => [
                         'issued_at' => $userInfo['token_issued_at'],

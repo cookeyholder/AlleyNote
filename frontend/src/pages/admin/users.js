@@ -9,6 +9,7 @@ import { Modal } from '../../components/Modal.js';
 export default class UsersPage {
   constructor() {
     this.users = [];
+    this.roles = [];
     this.loading = false;
     this.currentPage = 1;
     this.totalPages = 1;
@@ -17,7 +18,23 @@ export default class UsersPage {
   }
 
   async init() {
-    await this.loadUsers();
+    await Promise.all([
+      this.loadUsers(),
+      this.loadRoles()
+    ]);
+  }
+
+  async loadRoles() {
+    try {
+      const { rolesAPI } = await import('../../api/modules/users.js');
+      const result = await rolesAPI.list();
+      // result 已經是後端回應物件 {success, data}
+      this.roles = result.data || [];
+    } catch (error) {
+      console.error('載入角色列表失敗:', error);
+      // 使用預設角色
+      this.roles = [];
+    }
   }
 
   async loadUsers(page = 1) {
@@ -26,9 +43,10 @@ export default class UsersPage {
       this.currentPage = page;
       this.render();
 
-      const response = await usersAPI.list({ page });
-      this.users = response.data || [];
-      this.totalPages = response.pagination?.total_pages || 1;
+      const result = await usersAPI.list({ page });
+      // result 已經是後端回應物件 {success, data, pagination}
+      this.users = result.data || [];
+      this.totalPages = result.pagination?.last_page || 1;
       this.loading = false;
       this.render();
     } catch (error) {
@@ -114,6 +132,12 @@ export default class UsersPage {
   }
 
   renderUserRow(user) {
+    // 取得使用者角色（支援新舊格式）
+    const userRoles = user.roles || [];
+    const primaryRole = userRoles.length > 0 ? userRoles[0] : null;
+    const roleName = primaryRole?.name || '無角色';
+    const isSuperAdmin = roleName.includes('超級管理員') || roleName.includes('super_admin');
+    
     return `
       <tr class="hover:bg-modern-50 transition-colors">
         <td class="px-6 py-4">
@@ -127,11 +151,11 @@ export default class UsersPage {
         <td class="px-6 py-4 text-modern-700">${this.escapeHtml(user.email)}</td>
         <td class="px-6 py-4">
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-            user.role === 'super_admin' 
+            isSuperAdmin
               ? 'bg-purple-100 text-purple-800' 
               : 'bg-blue-100 text-blue-800'
           }">
-            ${user.role === 'super_admin' ? '主管理員' : '管理員'}
+            ${this.escapeHtml(roleName)}
           </span>
         </td>
         <td class="px-6 py-4 text-modern-700">${this.formatDate(user.created_at)}</td>
@@ -236,6 +260,10 @@ export default class UsersPage {
     const isEdit = !!user;
     const modalTitle = isEdit ? '編輯使用者' : '新增使用者';
 
+    // 取得使用者當前的角色 ID
+    const currentRoleIds = user?.roles?.map(r => r.id) || [];
+    const primaryRoleId = currentRoleIds.length > 0 ? currentRoleIds[0] : (this.roles[0]?.id || '');
+
     const modalContent = `
       <form id="userForm" class="space-y-6">
         <div>
@@ -269,17 +297,23 @@ export default class UsersPage {
         </div>
 
         <div>
-          <label for="role" class="block text-sm font-medium text-modern-700 mb-2">
+          <label for="role_id" class="block text-sm font-medium text-modern-700 mb-2">
             角色 *
           </label>
           <select
-            id="role"
-            name="role"
+            id="role_id"
+            name="role_id"
             class="w-full px-4 py-3 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
             required
           >
-            <option value="admin" ${!user || user.role === 'admin' ? 'selected' : ''}>管理員</option>
-            <option value="super_admin" ${user && user.role === 'super_admin' ? 'selected' : ''}>主管理員</option>
+            ${this.roles.length > 0 
+              ? this.roles.map(role => `
+                <option value="${role.id}" ${role.id === primaryRoleId ? 'selected' : ''}>
+                  ${this.escapeHtml(role.name || role.display_name || '未知角色')}
+                </option>
+              `).join('')
+              : '<option value="">載入角色中...</option>'
+            }
           </select>
         </div>
 
@@ -332,7 +366,12 @@ export default class UsersPage {
       </form>
     `;
 
-    this.modal = new Modal(modalTitle, modalContent);
+    this.modal = new Modal({
+      title: modalTitle,
+      content: modalContent,
+      size: 'lg',
+      showCancel: false // 表單內已經有取消按鈕
+    });
     this.modal.show();
 
     // 綁定表單事件
@@ -360,7 +399,7 @@ export default class UsersPage {
       const data = {
         username: formData.get('username'),
         email: formData.get('email'),
-        role: formData.get('role'),
+        role_ids: [parseInt(formData.get('role_id'))], // 使用角色 ID 陣列
         password: formData.get('password'),
         password_confirmation: formData.get('password_confirmation'),
       };
@@ -401,7 +440,7 @@ export default class UsersPage {
       const data = {
         username: formData.get('username'),
         email: formData.get('email'),
-        role: formData.get('role'),
+        role_ids: [parseInt(formData.get('role_id'))], // 使用角色 ID 陣列
       };
 
       // 驗證

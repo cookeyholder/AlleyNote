@@ -103,7 +103,8 @@ export function initRouter() {
   router.on('/admin/roles', () => {
     if (requireAuth()) {
       import('../pages/admin/roles.js').then((module) => {
-        module.renderRoles();
+        const page = new module.default();
+        page.init();
       });
     }
   });

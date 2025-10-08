@@ -100,6 +100,15 @@ class UserRepositoryAdapter implements UserRepositoryInterface
     }
 
     /**
+     * @return array<string, mixed>|null
+     */
+    public function findByIdWithRoles(int $id): ?array
+    {
+        // 委託給原始 repository
+        return $this->userRepository->findByIdWithRoles($id);
+    }
+
+    /**
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */

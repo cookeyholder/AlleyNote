@@ -61,6 +61,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
             $userId = (int) $user['id'];
             $userEmail = $user['email'] ?? $request->email;
+            $userName = $user['username'] ?? null;
 
             // 3. 清理該使用者過期的 refresh token
             $this->refreshTokenRepository->cleanup();
@@ -84,7 +85,11 @@ final class AuthenticationService implements AuthenticationServiceInterface
             // 6. 更新使用者最後登入時間
             $this->userRepository->updateLastLogin($userId);
 
-            // 7. 建立回應
+            // 7. 取得使用者角色資訊
+            $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
+            $roles = $userWithRoles['roles'] ?? [];
+
+            // 8. 建立回應
             $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
 
             return new LoginResponseDTO(
@@ -92,8 +97,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 userId: $userId,
                 userEmail: $userEmail,
                 expiresAt: $payload->getExpiresAt()->getTimestamp(),
+                userName: $userName,
                 sessionId: $payload->getJti(),
                 permissions: $request->scopes,
+                roles: $roles,
             );
         } catch (AuthenticationException $e) {
             throw $e;

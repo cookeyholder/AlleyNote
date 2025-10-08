@@ -281,7 +281,8 @@ class UserRepository
     {
         $sql = 'SELECT u.*,
                 GROUP_CONCAT(r.id) as role_ids,
-                GROUP_CONCAT(r.display_name) as role_names
+                GROUP_CONCAT(r.name) as role_names,
+                GROUP_CONCAT(r.display_name) as role_display_names
                 FROM users u
                 LEFT JOIN user_roles ur ON u.id = ur.user_id
                 LEFT JOIN roles r ON ur.role_id = r.id
@@ -298,16 +299,18 @@ class UserRepository
         
         $roleIds = $row['role_ids'] ? explode(',', $row['role_ids']) : [];
         $roleNames = $row['role_names'] ? explode(',', $row['role_names']) : [];
+        $roleDisplayNames = $row['role_display_names'] ? explode(',', $row['role_display_names']) : [];
         
         $roles = [];
         for ($i = 0; $i < count($roleIds); $i++) {
             $roles[] = [
                 'id' => (int) $roleIds[$i],
-                'name' => $roleNames[$i],
+                'name' => $roleNames[$i] ?? '',
+                'display_name' => $roleDisplayNames[$i] ?? '',
             ];
         }
         
-        unset($row['role_ids'], $row['role_names']);
+        unset($row['role_ids'], $row['role_names'], $row['role_display_names']);
         $row['roles'] = $roles;
         
         return $row;

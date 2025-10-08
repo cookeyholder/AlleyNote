@@ -10,7 +10,7 @@ export const usersAPI = {
    */
   async list(params = {}) {
     const response = await apiClient.get(API_ENDPOINTS.USERS.LIST, { params });
-    return response.data;
+    return response; // 直接回傳完整回應物件，包含 success, data, pagination
   },
 
   /**
@@ -18,7 +18,7 @@ export const usersAPI = {
    */
   async get(id) {
     const response = await apiClient.get(API_ENDPOINTS.USERS.DETAIL(id));
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -26,7 +26,7 @@ export const usersAPI = {
    */
   async create(data) {
     const response = await apiClient.post(API_ENDPOINTS.USERS.CREATE, data);
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -34,7 +34,7 @@ export const usersAPI = {
    */
   async update(id, data) {
     const response = await apiClient.put(API_ENDPOINTS.USERS.UPDATE(id), data);
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -49,7 +49,7 @@ export const usersAPI = {
    */
   async assignRoles(id, roleIds) {
     const response = await apiClient.put(`/api/users/${id}/roles`, { role_ids: roleIds });
-    return response.data;
+    return response; // 直接回傳完整回應物件
   }
 };
 
@@ -62,7 +62,7 @@ export const rolesAPI = {
    */
   async list() {
     const response = await apiClient.get('/api/roles');
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -70,7 +70,7 @@ export const rolesAPI = {
    */
   async get(id) {
     const response = await apiClient.get(`/api/roles/${id}`);
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -78,7 +78,7 @@ export const rolesAPI = {
    */
   async create(data) {
     const response = await apiClient.post('/api/roles', data);
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -86,7 +86,7 @@ export const rolesAPI = {
    */
   async update(id, data) {
     const response = await apiClient.put(`/api/roles/${id}`, data);
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -101,7 +101,7 @@ export const rolesAPI = {
    */
   async updatePermissions(id, permissionIds) {
     const response = await apiClient.put(`/api/roles/${id}/permissions`, { permission_ids: permissionIds });
-    return response.data;
+    return response; // 直接回傳完整回應物件
   }
 };
 
@@ -114,7 +114,7 @@ export const permissionsAPI = {
    */
   async list() {
     const response = await apiClient.get('/api/permissions');
-    return response.data;
+    return response; // 直接回傳完整回應物件
   },
 
   /**
@@ -122,7 +122,7 @@ export const permissionsAPI = {
    */
   async listGrouped() {
     const response = await apiClient.get('/api/permissions/grouped');
-    return response.data;
+    return response; // 直接回傳完整回應物件
   }
 };
 
