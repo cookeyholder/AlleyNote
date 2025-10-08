@@ -137,11 +137,22 @@ export const globalGetters = {
 
   isAdmin() {
     const user = globalStore.get('user');
+    
+    // Debug 輸出
+    console.log('isAdmin() Debug:', {
+      user,
+      hasUser: !!user,
+      userRole: user?.role,
+      userRoles: user?.roles
+    });
+    
     // 多種方式檢查是否為管理員
     
     // 方式 1: 檢查 role 欄位
     const role = this.getUserRole();
+    console.log('getUserRole() returned:', role);
     if (role === 'admin' || role === 'super_admin' || role === '超級管理員') {
+      console.log('✅ Admin detected via role field');
       return true;
     }
     
@@ -151,16 +162,19 @@ export const globalGetters = {
         if (typeof r === 'object') {
           // 檢查角色 ID (1 = 超級管理員)
           if (r.id === 1) {
+            console.log('✅ Admin detected via role ID');
             return true;
           }
           // 檢查角色名稱
           if (r.name === '超級管理員' || r.name === 'admin' || r.name === 'super_admin') {
+            console.log('✅ Admin detected via role name');
             return true;
           }
         }
       }
     }
     
+    console.log('❌ Not admin');
     return false;
   },
 };

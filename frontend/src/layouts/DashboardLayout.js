@@ -9,6 +9,14 @@ import { toast } from '../utils/toast.js';
 export function renderDashboardLayout(content) {
   const user = globalGetters.getCurrentUser();
   const sidebarCollapsed = globalStore.get('sidebarCollapsed');
+  const isAdmin = globalGetters.isAdmin();
+  
+  // Debug: 在開發環境中輸出使用者資訊
+  console.log('DashboardLayout Debug:', {
+    user,
+    isAdmin,
+    userRole: globalGetters.getUserRole()
+  });
   
   return `
     <div class="min-h-screen bg-modern-50">
@@ -39,7 +47,7 @@ export function renderDashboardLayout(content) {
             <span>🏷️</span>
             ${sidebarCollapsed ? '' : '<span>標籤管理</span>'}
           </a>
-          ${globalGetters.isAdmin() ? `
+          ${isAdmin ? `
             <a href="/admin/users" data-navigo class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-accent-50 text-modern-700 transition-colors">
               <span>👥</span>
               ${sidebarCollapsed ? '' : '<span>使用者管理</span>'}
