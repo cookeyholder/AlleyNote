@@ -31,11 +31,17 @@ export const postsApi = {
     },
 
     async getPublicPosts(params = {}) {
-        const queryString = new URLSearchParams(params).toString();
-        return await apiClient.get(`/public/posts${queryString ? '?' + queryString : ''}`);
+        // 公開文章使用相同的 /posts API，但預設只取已發布的文章
+        const publicParams = {
+            status: 'published',
+            ...params
+        };
+        const queryString = new URLSearchParams(publicParams).toString();
+        return await apiClient.get(`/posts${queryString ? '?' + queryString : ''}`);
     },
 
     async getPublicPost(id) {
-        return await apiClient.get(`/public/posts/${id}`);
+        // 公開文章詳情使用相同的 /posts/:id API
+        return await apiClient.get(`/posts/${id}`);
     }
 };
