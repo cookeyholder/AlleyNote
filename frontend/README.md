@@ -53,7 +53,24 @@ frontend/
 
 ## 開發
 
-直接打開 `index.html` 或透過本地伺服器執行：
+### Docker 部署（推薦）
+
+前端透過 Docker Compose 中的 nginx 容器提供服務：
+
+```bash
+# 啟動所有服務
+docker-compose up -d
+
+# 訪問前端
+open http://localhost:3000
+
+# 查看 nginx 日誌
+docker-compose logs -f nginx
+```
+
+### 本地開發（不推薦）
+
+如果需要獨立運行前端進行測試：
 
 ```bash
 # 使用 Python 本地伺服器
@@ -63,6 +80,8 @@ python3 -m http.server 3000
 # 或使用 PHP 內建伺服器
 php -S localhost:3000
 ```
+
+**注意**：本地開發時需要修改 API URL 或設定 CORS。
 
 ## API 配置
 
