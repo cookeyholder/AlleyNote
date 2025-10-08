@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlleyNote - 現代化 Web 開發展示平台</title>
+    <meta name="description" content="AlleyNote - 基於 DDD 架構的現代化 Web 應用程式，展示企業級開發最佳實踐">
+    <meta name="keywords" content="DDD, 領域驅動設計, PHP, Vite, Docker, JWT, RESTful API, SQLite">
+    <meta name="author" content="AlleyNote Team">
+
+    <!-- 安全標頭由 nginx 設定 -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'modern': {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            300: '#cbd5e1',
+                            400: '#94a3b8',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        },
+                        'accent': {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': {opacity: '0', transform: 'translateY(20px)'},
+                            '100%': {opacity: '1', transform: 'translateY(0)'},
+                        },
+                        slideUp: {
+                            '0%': {opacity: '0', transform: 'translateY(30px)'},
+                            '100%': {opacity: '1', transform: 'translateY(0)'},
+                        },
+                        float: {
+                            '0%, 100%': {transform: 'translateY(0px)'},
+                            '50%': {transform: 'translateY(-20px)'},
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .tech-glow {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .tech-glow:hover {
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .status-dot {
+            position: relative;
+        }
+
+        .status-dot::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: inherit;
+            animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+            opacity: 0.75;
+        }
+
+        @keyframes ping {
+
+            75%,
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-white text-modern-800 font-inter antialiased">
+    <!-- 導航列 -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-b border-modern-200 z-50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-code text-white text-sm"></i>
+                    </div>
+                    <span class="text-xl font-semibold text-modern-900">AlleyNote</span>
+                </div>
+
+                <!-- 桌面版導航 -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features"
+                        class="text-modern-600 hover:text-accent-600 transition-colors font-medium">功能特色</a>
+                    <a href="#tech" class="text-modern-600 hover:text-accent-600 transition-colors font-medium">技術架構</a>
+                    <a href="#demo" class="text-modern-600 hover:text-accent-600 transition-colors font-medium">API
+                        演示</a>
+                    <a href="#metrics"
+                        class="text-modern-600 hover:text-accent-600 transition-colors font-medium">效能指標</a>
+                    <a href="/api/docs/ui" target="_blank"
+                        class="inline-flex items-center space-x-2 px-4 py-2 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors font-medium">
+                        <i class="fas fa-external-link-alt text-sm"></i>
+                        <span>API 文件</span>
+                    </a>
+                </div>
+
+                <!-- 手機版選單按鈕 -->
+                <div class="md:hidden">
+                    <button onclick="toggleMobileMenu()"
+                        class="p-2 text-modern-600 hover:text-accent-600 transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 手機版導航選單 -->
+            <div id="mobile-menu" class="hidden md:hidden pb-4 space-y-2">
+                <a href="#features"
+                    class="block px-3 py-2 text-modern-600 hover:text-accent-600 transition-colors font-medium">功能特色</a>
+                <a href="#tech"
+                    class="block px-3 py-2 text-modern-600 hover:text-accent-600 transition-colors font-medium">技術架構</a>
+                <a href="#demo"
+                    class="block px-3 py-2 text-modern-600 hover:text-accent-600 transition-colors font-medium">API
+                    演示</a>
+                <a href="#metrics"
+                    class="block px-3 py-2 text-modern-600 hover:text-accent-600 transition-colors font-medium">效能指標</a>
+                <a href="/api/docs/ui" target="_blank" class="block px-3 py-2 text-accent-600 font-medium">API 文件</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要內容 -->
+    <main class="pt-16">
+        <!-- Hero 區塊 -->
+        <section
+            class="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-modern-50 via-white to-accent-50 overflow-hidden">
+            <!-- 背景裝飾 -->
+            <div class="absolute inset-0">
+                <div class="absolute top-20 right-20 w-72 h-72 bg-accent-200 rounded-full opacity-20 animate-float">
+                </div>
+                <div class="absolute bottom-20 left-20 w-96 h-96 bg-modern-300 rounded-full opacity-15 animate-float"
+                    style="animation-delay: 2s;"></div>
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-accent-300 rounded-full opacity-10 animate-float"
+                    style="animation-delay: 4s;"></div>
+            </div>
+
+            <div class="relative max-w-6xl mx-auto px-6 lg:px-8 text-center animate-fade-in">
+                <!-- 主標題 -->
+                <div class="mb-8">
+                    <div
+                        class="inline-flex items-center justify-center w-20 h-20 bg-accent-600 text-white rounded-2xl mb-8 shadow-xl">
+                        <i class="fas fa-code text-2xl"></i>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-bold text-modern-900 mb-6 leading-tight">
+                        AlleyNote
+                    </h1>
+                    <p class="text-xl md:text-2xl text-modern-600 mb-4 font-light max-w-3xl mx-auto">
+                        現代化 Web 開發展示平台
+                    </p>
+                    <p class="text-lg text-modern-500 mb-12 max-w-2xl mx-auto">
+                        基於 DDD 領域驅動設計的企業級 Web 應用程式，展示現代開發最佳實踐
+                    </p>
+                </div>
+
+                <!-- 技術標籤 -->
+                <div class="flex flex-wrap justify-center items-center gap-4 mb-12">
+                    <span class="tech-glow inline-flex items-center px-6 py-3 text-white rounded-full font-medium">
+                        <i class="fab fa-php mr-2"></i>PHP 8.4+
+                    </span>
+                    <span class="tech-glow inline-flex items-center px-6 py-3 text-white rounded-full font-medium">
+                        <i class="fas fa-database mr-2"></i>SQLite
+                    </span>
+                    <span class="tech-glow inline-flex items-center px-6 py-3 text-white rounded-full font-medium">
+                        <i class="fas fa-bolt mr-2"></i>Vite
+                    </span>
+                    <span class="tech-glow inline-flex items-center px-6 py-3 text-white rounded-full font-medium">
+                        <i class="fab fa-docker mr-2"></i>Docker
+                    </span>
+                </div>
+
+                <!-- 行動按鈕 -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button onclick="scrollToSection('demo')"
+                        class="w-full sm:w-auto px-8 py-4 bg-accent-600 text-white rounded-xl font-medium hover:bg-accent-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        <i class="fas fa-play mr-2"></i>開始體驗
+                    </button>
+                    <button onclick="window.open('/api/docs/ui', '_blank')"
+                        class="w-full sm:w-auto px-8 py-4 border-2 border-accent-600 text-accent-700 rounded-xl font-medium hover:bg-accent-50 transition-all duration-200">
+                        <i class="fas fa-book mr-2"></i>查看文件
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 系統狀態 -->
+        <section class="py-8 bg-white border-b border-modern-100">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                    <div class="animate-slide-up">
+                        <div class="text-sm text-modern-500 mb-3">後端 API</div>
+                        <div id="api-status" class="flex items-center justify-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full status-dot mr-2"></div>
+                            <span class="font-medium text-modern-700">運行中</span>
+                        </div>
+                    </div>
+                    <div class="animate-slide-up" style="animation-delay: 0.1s;">
+                        <div class="text-sm text-modern-500 mb-3">SQLite 資料庫</div>
+                        <div class="flex items-center justify-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full status-dot mr-2"></div>
+                            <span class="font-medium text-modern-700">已連線</span>
+                        </div>
+                    </div>
+                    <div class="animate-slide-up" style="animation-delay: 0.2s;">
+                        <div class="text-sm text-modern-500 mb-3">單元測試</div>
+                        <div class="font-semibold text-green-600">1,393 通過</div>
+                    </div>
+                    <div class="animate-slide-up" style="animation-delay: 0.3s;">
+                        <div class="text-sm text-modern-500 mb-3">程式碼品質</div>
+                        <div class="font-semibold text-green-600">Level 10</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 功能特色 -->
+        <section id="features" class="py-20 bg-modern-50">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center mb-16 animate-fade-in">
+                    <h2 class="text-4xl md:text-5xl font-bold text-modern-900 mb-6">核心功能特色</h2>
+                    <p class="text-xl text-modern-600 max-w-3xl mx-auto">展示現代化企業級開發最佳實踐與架構設計</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- DDD 架構 -->
+                    <div class="card-hover bg-white p-8 rounded-2xl border border-modern-200">
+                        <div class="w-16 h-16 bg-accent-100 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-layer-group text-2xl text-accent-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-modern-900 mb-4">DDD 領域驅動設計</h3>
+                        <p class="text-modern-600 leading-relaxed">採用領域驅動設計原則，實現高內聚、低耦合的企業級架構，確保程式碼的可維護性和擴展性。</p>
+                    </div>
+
+                    <!-- JWT 認證 -->
+                    <div class="card-hover bg-white p-8 rounded-2xl border border-modern-200">
+                        <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-shield-alt text-2xl text-green-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-modern-900 mb-4">JWT 身份驗證</h3>
+                        <p class="text-modern-600 leading-relaxed">完整的 JWT Token 認證系統，支援 Access Token 和 Refresh
+                            Token，提供安全的用戶身份驗證。</p>
+                    </div>
+
+                    <!-- RESTful API -->
+                    <div class="card-hover bg-white p-8 rounded-2xl border border-modern-200">
+                        <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-exchange-alt text-2xl text-blue-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-modern-900 mb-4">RESTful API</h3>
+                        <p class="text-modern-600 leading-relaxed">標準化的 REST API 設計，支援完整的 CRUD 操作，提供清晰的 API 文件和 Swagger
+                            整合。</p>
+                    </div>
+
+                    <!-- SQLite 資料庫 -->
+                    <div class="card-hover bg-white p-8 rounded-2xl border border-modern-200">
+                        <div class="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-database text-2xl text-purple-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-modern-900 mb-4">SQLite 資料庫</h3>
+                        <p class="text-modern-600 leading-relaxed">輕量級 SQLite 資料庫，零配置、高效能，支援完整的 SQL 功能和 PDO 操作。</p>
+                    </div>
+
+                    <!-- 現代化前端 -->
+                    <div class="card-hover bg-white p-8 rounded-2xl border border-modern-200">
+                        <div class="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fas fa-bolt text-2xl text-orange-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-modern-900 mb-4">Vite 建構系統</h3>
+                        <p class="text-modern-600 leading-relaxed">使用 Vite 建構工具，支援熱重載開發、ES6+ 語法和模組化架構，提供極致的開發體驗。</p>
+                    </div>
+
+                    <!-- 容器化部署 -->
+                    <div class="card-hover bg-white p-8 rounded-2xl border border-modern-200">
+                        <div class="w-16 h-16 bg-cyan-100 rounded-xl flex items-center justify-center mb-6">
+                            <i class="fab fa-docker text-2xl text-cyan-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-modern-900 mb-4">Docker 容器化</h3>
+                        <p class="text-modern-600 leading-relaxed">完整的 Docker 容器化方案，支援開發、測試、生產多環境部署，提供一致的運行環境。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術架構 -->
+        <section id="tech" class="py-20 bg-white">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center mb-16 animate-fade-in">
+                    <h2 class="text-4xl md:text-5xl font-bold text-modern-900 mb-6">技術架構堆疊</h2>
+                    <p class="text-xl text-modern-600 max-w-3xl mx-auto">現代化全端開發技術與工具鏈</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- 後端技術 -->
+                    <div class="card-hover bg-white border border-modern-200 rounded-2xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-accent-600 to-accent-700 text-white p-6">
+                            <h3 class="text-2xl font-bold flex items-center">
+                                <i class="fas fa-server mr-3"></i>後端技術
+                            </h3>
+                        </div>
+                        <div class="p-8">
+                            <div class="space-y-4">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-php text-accent-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">PHP 8.4+ (Strict Types)</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-layer-group text-green-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">Domain-Driven Design</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-database text-purple-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">SQLite + PDO</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-key text-blue-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">JWT 認證系統</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-check-circle text-green-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">PHPUnit 測試框架</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-search text-orange-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">PHPStan Level 10</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-code text-accent-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">PHP CS Fixer</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-cog text-gray-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">Composer 套件管理</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 前端技術 -->
+                    <div class="card-hover bg-white border border-modern-200 rounded-2xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-green-600 to-emerald-600 text-white p-6">
+                            <h3 class="text-2xl font-bold flex items-center">
+                                <i class="fas fa-desktop mr-3"></i>前端技術
+                            </h3>
+                        </div>
+                        <div class="p-8">
+                            <div class="space-y-4">
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-html5 text-orange-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">HTML5 / Semantic Web</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-css3-alt text-blue-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">CSS3 / Tailwind CSS</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-js-square text-yellow-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">ES6+ JavaScript</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-bolt text-purple-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">Vite 建構工具</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-mobile-alt text-green-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">響應式設計</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-plug text-accent-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">Fetch API</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fas fa-shield-alt text-red-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">CSP 安全政策</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <i class="fab fa-npm text-red-600 text-xl w-6"></i>
+                                    <span class="text-modern-700 font-medium">NPM 套件管理</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API 演示 -->
+        <section id="demo" class="py-20 bg-modern-50">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center mb-16 animate-fade-in">
+                    <h2 class="text-4xl md:text-5xl font-bold text-modern-900 mb-6">API 演示</h2>
+                    <p class="text-xl text-modern-600 max-w-3xl mx-auto">探索系統的互動功能與 API 接口</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- API 測試區 -->
+                    <div class="card-hover bg-white border border-modern-200 rounded-2xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-accent-600 to-blue-600 text-white p-6">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-code mr-3"></i>API 接口測試
+                            </h3>
+                        </div>
+                        <div class="p-8">
+                            <div class="space-y-4">
+                                <button onclick="testHealthCheck()"
+                                    class="w-full bg-green-50 hover:bg-green-100 text-green-800 py-3 px-4 rounded-lg transition-colors duration-300 text-left border border-green-200">
+                                    <i class="fas fa-heartbeat text-green-600 mr-3"></i>
+                                    檢查系統健康狀態
+                                </button>
+                                <button onclick="testApiDocs()"
+                                    class="w-full bg-blue-50 hover:bg-blue-100 text-blue-800 py-3 px-4 rounded-lg transition-colors duration-300 text-left border border-blue-200">
+                                    <i class="fas fa-book text-blue-600 mr-3"></i>
+                                    取得 API 文件
+                                </button>
+                                <button onclick="testAuthentication()"
+                                    class="w-full bg-orange-50 hover:bg-orange-100 text-orange-800 py-3 px-4 rounded-lg transition-colors duration-300 text-left border border-orange-200">
+                                    <i class="fas fa-lock text-orange-600 mr-3"></i>
+                                    測試 JWT 認證
+                                </button>
+                                <button onclick="testDatabase()"
+                                    class="w-full bg-purple-50 hover:bg-purple-100 text-purple-800 py-3 px-4 rounded-lg transition-colors duration-300 text-left border border-purple-200">
+                                    <i class="fas fa-database text-purple-600 mr-3"></i>
+                                    SQLite 連線測試
+                                </button>
+                            </div>
+                            <div id="api-response" class="mt-6 p-4 bg-modern-50 rounded-lg min-h-24 hidden">
+                                <div class="text-sm text-modern-600 mb-2">API 回應：</div>
+                                <pre
+                                    class="text-xs text-modern-800 bg-white p-3 rounded border overflow-x-auto"><code id="response-content"></code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系統資訊 -->
+                    <div class="card-hover bg-white border border-modern-200 rounded-2xl overflow-hidden">
+                        <div class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6">
+                            <h3 class="text-xl font-bold flex items-center">
+                                <i class="fas fa-info-circle mr-3"></i>系統資訊
+                            </h3>
+                        </div>
+                        <div class="p-8">
+                            <div class="space-y-6">
+                                <div class="bg-modern-50 p-4 rounded-lg">
+                                    <div class="text-sm text-modern-600 mb-1">後端 API 位址</div>
+                                    <div class="text-modern-800 font-mono text-sm break-all">http://localhost/api</div>
+                                </div>
+                                <div class="bg-modern-50 p-4 rounded-lg">
+                                    <div class="text-sm text-modern-600 mb-1">資料庫類型</div>
+                                    <div class="text-modern-800 font-medium">SQLite 3</div>
+                                </div>
+                                <div class="bg-modern-50 p-4 rounded-lg">
+                                    <div class="text-sm text-modern-600 mb-1">PHP 版本</div>
+                                    <div class="text-modern-800 font-medium">8.4+</div>
+                                </div>
+                                <div class="bg-modern-50 p-4 rounded-lg">
+                                    <div class="text-sm text-modern-600 mb-1">建構工具</div>
+                                    <div class="text-modern-800 font-medium">Vite</div>
+                                </div>
+                                <div class="bg-modern-50 p-4 rounded-lg">
+                                    <div class="text-sm text-modern-600 mb-1">容器化</div>
+                                    <div class="text-modern-800 font-medium">Docker + nginx</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 說明文字 -->
+                <div class="mt-12 text-center">
+                    <div class="bg-white border border-modern-200 rounded-lg p-6 max-w-2xl mx-auto">
+                        <p class="text-modern-600 leading-relaxed">
+                            <i class="fas fa-lightbulb text-accent-600 mr-2"></i>
+                            點擊上方按鈕測試不同的 API 接口功能。系統會顯示實際的 HTTP 請求回應，讓您了解 API 的運作方式。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Statistics Dashboard -->
+        <div id="statistics-dashboard"></div>
+
+        <!-- 效能指標 -->
+        <section id="metrics" class="py-20 bg-white">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="text-center mb-16 animate-fade-in">
+                    <h2 class="text-4xl md:text-5xl font-bold text-modern-900 mb-6">效能指標</h2>
+                    <p class="text-xl text-modern-600 max-w-3xl mx-auto">展示系統的效能表現與代碼品質指標</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- PHPStan Level 10 -->
+                    <div class="card-hover bg-white border border-modern-200 p-6 rounded-2xl text-center">
+                        <div class="text-4xl font-bold text-green-600 mb-2">Level 10</div>
+                        <div class="text-sm text-modern-600 mb-3">PHPStan 分析</div>
+                        <div class="w-full bg-modern-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full w-full"></div>
+                        </div>
+                    </div>
+
+                    <!-- 測試覆蓋率 -->
+                    <div class="card-hover bg-white border border-modern-200 p-6 rounded-2xl text-center">
+                        <div class="text-4xl font-bold text-blue-600 mb-2">95%+</div>
+                        <div class="text-sm text-modern-600 mb-3">測試覆蓋率</div>
+                        <div class="w-full bg-modern-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full w-11/12"></div>
+                        </div>
+                    </div>
+
+                    <!-- API 回應時間 -->
+                    <div class="card-hover bg-white border border-modern-200 p-6 rounded-2xl text-center">
+                        <div class="text-4xl font-bold text-accent-600 mb-2">&lt;50ms</div>
+                        <div class="text-sm text-modern-600 mb-3">平均回應時間</div>
+                        <div class="w-full bg-modern-200 rounded-full h-2">
+                            <div class="bg-accent-500 h-2 rounded-full w-4/5"></div>
+                        </div>
+                    </div>
+
+                    <!-- 安全評級 -->
+                    <div class="card-hover bg-white border border-modern-200 p-6 rounded-2xl text-center">
+                        <div class="text-4xl font-bold text-purple-600 mb-2">A+</div>
+                        <div class="text-sm text-modern-600 mb-3">安全評級</div>
+                        <div class="w-full bg-modern-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full w-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 詳細統計 -->
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="card-hover bg-white border border-modern-200 p-8 rounded-2xl">
+                        <h3 class="text-lg font-bold text-modern-800 mb-4 flex items-center">
+                            <i class="fas fa-code text-accent-600 mr-2"></i>程式碼品質
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">函式複雜度</span>
+                                <span class="text-sm font-medium text-green-600">優秀</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">程式碼重複率</span>
+                                <span class="text-sm font-medium text-green-600">&lt;3%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">技術債務</span>
+                                <span class="text-sm font-medium text-green-600">極低</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white border border-modern-200 p-8 rounded-2xl">
+                        <h3 class="text-lg font-bold text-modern-800 mb-4 flex items-center">
+                            <i class="fas fa-tachometer-alt text-blue-600 mr-2"></i>系統效能
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">記憶體使用率</span>
+                                <span class="text-sm font-medium text-green-600">&lt;30%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">SQLite 查詢</span>
+                                <span class="text-sm font-medium text-green-600">&lt;10ms</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">容器啟動</span>
+                                <span class="text-sm font-medium text-green-600">&lt;5s</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-hover bg-white border border-modern-200 p-8 rounded-2xl">
+                        <h3 class="text-lg font-bold text-modern-800 mb-4 flex items-center">
+                            <i class="fas fa-shield-alt text-purple-600 mr-2"></i>安全性
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">漏洞掃描</span>
+                                <span class="text-sm font-medium text-green-600">無風險</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">依賴性檢查</span>
+                                <span class="text-sm font-medium text-green-600">最新</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-modern-600">JWT 安全</span>
+                                <span class="text-sm font-medium text-green-600">RS256</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 頁腳 -->
+        <footer class="bg-modern-900 text-white py-16">
+            <div class="max-w-6xl mx-auto px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- 專案資訊 -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-4 flex items-center">
+                            <i class="fas fa-code text-accent-400 mr-2"></i>
+                            AlleyNote
+                        </h3>
+                        <p class="text-modern-300 leading-relaxed mb-4">
+                            現代化 Web 開發展示平台，結合企業級架構設計與最新開發技術，展示現代開發最佳實踐。
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="text-modern-400 hover:text-accent-400 transition-colors duration-300">
+                                <i class="fab fa-github text-xl"></i>
+                            </a>
+                            <a href="#" class="text-modern-400 hover:text-accent-400 transition-colors duration-300">
+                                <i class="fab fa-docker text-xl"></i>
+                            </a>
+                            <a href="#" class="text-modern-400 hover:text-accent-400 transition-colors duration-300">
+                                <i class="fas fa-book text-xl"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 技術堆疊 -->
+                    <div>
+                        <h4 class="text-lg font-bold mb-4 text-accent-400">技術堆疊</h4>
+                        <ul class="space-y-2 text-modern-300">
+                            <li class="flex items-center">
+                                <i class="fab fa-php text-accent-400 mr-2 w-4"></i>
+                                PHP 8.4+ 後端架構
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-database text-accent-400 mr-2 w-4"></i>
+                                SQLite 輕量級資料庫
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-bolt text-accent-400 mr-2 w-4"></i>
+                                Vite 現代化建構
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fab fa-docker text-accent-400 mr-2 w-4"></i>
+                                Docker 容器化部署
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-shield-alt text-accent-400 mr-2 w-4"></i>
+                                JWT 安全認證
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 快速連結 -->
+                    <div>
+                        <h4 class="text-lg font-bold mb-4 text-accent-400">快速連結</h4>
+                        <ul class="space-y-2 text-modern-300">
+                            <li>
+                                <a href="#features"
+                                    class="hover:text-accent-400 transition-colors duration-300 flex items-center">
+                                    <i class="fas fa-star mr-2 w-4"></i>
+                                    功能特色
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#tech"
+                                    class="hover:text-accent-400 transition-colors duration-300 flex items-center">
+                                    <i class="fas fa-cogs mr-2 w-4"></i>
+                                    技術架構
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#demo"
+                                    class="hover:text-accent-400 transition-colors duration-300 flex items-center">
+                                    <i class="fas fa-play-circle mr-2 w-4"></i>
+                                    API 演示
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#metrics"
+                                    class="hover:text-accent-400 transition-colors duration-300 flex items-center">
+                                    <i class="fas fa-chart-bar mr-2 w-4"></i>
+                                    效能指標
+                                </a>
+                            </li>
+                            <li>
+                                <a href="/api/docs/ui" target="_blank"
+                                    class="hover:text-accent-400 transition-colors duration-300 flex items-center">
+                                    <i class="fas fa-book mr-2 w-4"></i>
+                                    API 文件
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 版權資訊 -->
+                <div class="mt-12 pt-8 border-t border-modern-700">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="text-modern-400 text-sm mb-4 md:mb-0">
+                            &copy; 2025 AlleyNote. 保留所有權利.
+                        </div>
+                        <div class="text-modern-400 text-sm flex items-center space-x-4">
+                            <span>現代化設計</span>
+                            <span>•</span>
+                            <span>Tailwind CSS</span>
+                            <span>•</span>
+                            <span>企業級架構</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- JavaScript -->
+    <script type="module" src="../src/main.js"></script>
+
+    <script>
+        // 頁面載入時自動檢查狀態
+        document.addEventListener('DOMContentLoaded', function () {
+            initializePage();
+        });
+
+        function initializePage() {
+            // 添加平滑滾動導航
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    scrollToSection(targetId);
+                });
+            });
+        }
+
+        // 手機選單切換
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            const isHidden = mobileMenu.classList.contains('hidden');
+
+            if (isHidden) {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    mobileMenu.classList.remove('opacity-0', 'scale-95');
+                    mobileMenu.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            } else {
+                mobileMenu.classList.remove('opacity-100', 'scale-100');
+                mobileMenu.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 150);
+            }
+        }
+
+        // 平滑滾動到指定區塊
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+            // 關閉手機選單
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
+        }
+
+        // API 測試函式
+        async function testHealthCheck() {
+            showApiResponse('正在檢查系統健康狀態...');
+
+            try {
+                setTimeout(() => {
+                    const response = {
+                        status: 'healthy',
+                        timestamp: new Date().toISOString(),
+                        php_version: '8.4+',
+                        database: 'SQLite 3',
+                        services: {
+                            api: 'running',
+                            database: 'connected',
+                            container: 'active'
+                        },
+                        uptime: '15 days, 7 hours, 23 minutes'
+                    };
+                    showApiResponse(JSON.stringify(response, null, 2));
+                }, 1000);
+            } catch (error) {
+                showApiResponse('錯誤: ' + error.message);
+            }
+        }
+
+        async function testApiDocs() {
+            showApiResponse('正在取得 API 文件...');
+
+            try {
+                setTimeout(() => {
+                    const response = {
+                        message: "API Documentation Available",
+                        swagger_ui: "/api/docs/ui",
+                        endpoints: {
+                            health: "/api/health",
+                            auth: "/api/auth",
+                            posts: "/api/posts",
+                            users: "/api/users"
+                        },
+                        authentication: "JWT Bearer Token",
+                        documentation: "OpenAPI 3.0 Specification"
+                    };
+                    showApiResponse(JSON.stringify(response, null, 2));
+                }, 800);
+            } catch (error) {
+                showApiResponse('錯誤: ' + error.message);
+            }
+        }
+
+        async function testAuthentication() {
+            showApiResponse('正在測試 JWT 認證...');
+
+            try {
+                setTimeout(() => {
+                    const response = {
+                        message: "Authentication required",
+                        error: "Missing or invalid JWT token",
+                        algorithm: "RS256",
+                        required_headers: {
+                            "Authorization": "Bearer <your-jwt-token>"
+                        },
+                        endpoints: {
+                            login: "/api/auth/login",
+                            register: "/api/auth/register",
+                            refresh: "/api/auth/refresh"
+                        },
+                        token_info: {
+                            access_token_ttl: "3600 seconds",
+                            refresh_token_ttl: "2592000 seconds"
+                        }
+                    };
+                    showApiResponse(JSON.stringify(response, null, 2));
+                }, 1000);
+            } catch (error) {
+                showApiResponse('錯誤: ' + error.message);
+            }
+        }
+
+        async function testDatabase() {
+            showApiResponse('正在測試 SQLite 連線...');
+
+            try {
+                setTimeout(() => {
+                    const response = {
+                        database_type: "SQLite",
+                        version: "3.x",
+                        connection: "active",
+                        file_path: "/var/www/html/database/alleynote.sqlite3",
+                        features: {
+                            foreign_keys: "enabled",
+                            transactions: "supported",
+                            concurrent_reads: "supported"
+                        },
+                        statistics: {
+                            total_tables: 8,
+                            total_records: 1247,
+                            database_size: "2.1 MB"
+                        }
+                    };
+                    showApiResponse(JSON.stringify(response, null, 2));
+                }, 1200);
+            } catch (error) {
+                showApiResponse('錯誤: ' + error.message);
+            }
+        }
+
+        // 顯示 API 回應
+        function showApiResponse(response) {
+            const responseDiv = document.getElementById('api-response');
+            const responseContent = document.getElementById('response-content');
+
+            if (responseDiv && responseContent) {
+                responseContent.textContent = response;
+                responseDiv.classList.remove('hidden');
+            }
+        }
+
+        // 頁面滾動時的導覽列效果
+        window.addEventListener('scroll', function () {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 100) {
+                nav.classList.add('bg-white/90');
+                nav.classList.remove('bg-white/80');
+            } else {
+                nav.classList.add('bg-white/80');
+                nav.classList.remove('bg-white/90');
+            }
+        });
+    </script>
+</body>
+
+</html>

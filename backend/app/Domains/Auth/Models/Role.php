@@ -10,6 +10,8 @@ class Role
 
     private string $name;
 
+    private string $displayName;
+
     private ?string $description;
 
     private string $createdAt;
@@ -19,12 +21,14 @@ class Role
     public function __construct(
         int $id,
         string $name,
+        string $displayName = '',
         ?string $description = null,
         string $createdAt = '',
         string $updatedAt = '',
     ) {
         $this->id = $id;
         $this->name = $name;
+        $this->displayName = $displayName ?: $name;
         $this->description = $description;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
@@ -38,6 +42,11 @@ class Role
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->displayName;
     }
 
     public function getDescription(): ?string
@@ -60,6 +69,7 @@ class Role
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'display_name' => $this->displayName,
             'description' => $this->description,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
@@ -71,6 +81,7 @@ class Role
         return new self(
             (int) $data['id'],
             $data['name'],
+            $data['display_name'] ?? '',
             $data['description'] ?? null,
             $data['created_at'] ?? '',
             $data['updated_at'] ?? '',
