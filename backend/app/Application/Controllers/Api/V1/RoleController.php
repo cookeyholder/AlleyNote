@@ -46,7 +46,7 @@ class RoleController
     public function show(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $roleData = $this->roleManagementService->getRole($id);
             
             $responseData = json_encode([
@@ -112,7 +112,7 @@ class RoleController
     public function update(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
             
             $displayName = $data['display_name'] ?? null;
@@ -147,7 +147,7 @@ class RoleController
     public function destroy(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $this->roleManagementService->deleteRole($id);
             
             $responseData = json_encode([
@@ -185,7 +185,7 @@ class RoleController
     public function updatePermissions(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
             $permissionIds = $data['permission_ids'] ?? [];
             
