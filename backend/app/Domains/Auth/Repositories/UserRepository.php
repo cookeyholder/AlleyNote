@@ -18,26 +18,13 @@ class UserRepository
 
     public function create(array $data): array
     {
-        $sql = 'INSERT INTO users (uuid, username, email, password) VALUES (:uuid, :username, :email, :password)';
+        $sql = 'INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password)';
         $stmt = $this->db->prepare($sql);
 
-        $uuid = sprintf(
-            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000,
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-            mt_rand(0, 0xffff),
-        );
-
         $stmt->execute([
-            'uuid' => $uuid,
             'username' => $data['username'],
             'email' => $data['email'],
-            'password' => $data['password'],  // 密碼已在 AuthService 中雜湊
+            'password' => $data['password'],  // 密碼已在 Service 中雜湊
         ]);
 
         return $this->findById((int) $this->db->lastInsertId());
@@ -50,9 +37,14 @@ class UserRepository
 
         foreach ($data as $key => $value) {
             if (in_array($key, ['username', 'email', 'status', 'password'])) {
-                $fields[] = "{$key} = :{$key}";
-                $params[$key] = $key === 'password'
-                    ? password_hash($value, PASSWORD_ARGON2ID) : $value;
+                // 如果是 password 欄位，要對應到資料庫的 password_hash
+                if ($key === 'password') {
+                    $fields[] = "password_hash = :password_hash";
+                    $params['password_hash'] = password_hash($value, PASSWORD_ARGON2ID);
+                } else {
+                    $fields[] = "{$key} = :{$key}";
+                    $params[$key] = $value;
+                }
             }
         }
 
@@ -216,7 +208,8 @@ class UserRepository
                 ];
             }
             
-            unset($row['role_ids'], $row['role_names']);
+            // 移除敏感欄位
+            unset($row['role_ids'], $row['role_names'], $row['password_hash'], $row['password']);
             $row['roles'] = $roles;
             $users[] = $row;
         }

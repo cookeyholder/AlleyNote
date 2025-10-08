@@ -43,7 +43,7 @@ class RoleController
      * 
      * GET /api/roles/{id}
      */
-    public function show(Request $request, Response $response, array $args): Response
+    public function show(Request $request, Response $response): Response
     {
         try {
             $id = (int) $args['id'];
@@ -109,7 +109,7 @@ class RoleController
      * 
      * PUT /api/roles/{id}
      */
-    public function update(Request $request, Response $response, array $args): Response
+    public function update(Request $request, Response $response): Response
     {
         try {
             $id = (int) $args['id'];
@@ -144,7 +144,7 @@ class RoleController
      * 
      * DELETE /api/roles/{id}
      */
-    public function destroy(Request $request, Response $response, array $args): Response
+    public function destroy(Request $request, Response $response): Response
     {
         try {
             $id = (int) $args['id'];
@@ -182,7 +182,7 @@ class RoleController
      * 
      * PUT /api/roles/{id}/permissions
      */
-    public function updatePermissions(Request $request, Response $response, array $args): Response
+    public function updatePermissions(Request $request, Response $response): Response
     {
         try {
             $id = (int) $args['id'];

@@ -62,10 +62,10 @@ class UserController
      * 
      * GET /api/users/{id}
      */
-    public function show(Request $request, Response $response, array $args): Response
+    public function show(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $user = $this->userManagementService->getUser($id);
             
             $responseData = json_encode([
@@ -124,10 +124,10 @@ class UserController
      * 
      * PUT /api/users/{id}
      */
-    public function update(Request $request, Response $response, array $args): Response
+    public function update(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
             
             $dto = UpdateUserDTO::fromArray($data);
@@ -166,10 +166,10 @@ class UserController
      * 
      * DELETE /api/users/{id}
      */
-    public function destroy(Request $request, Response $response, array $args): Response
+    public function destroy(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $this->userManagementService->deleteUser($id);
             
             $responseData = json_encode([
@@ -195,10 +195,10 @@ class UserController
      * 
      * PUT /api/users/{id}/roles
      */
-    public function assignRoles(Request $request, Response $response, array $args): Response
+    public function assignRoles(Request $request, Response $response): Response
     {
         try {
-            $id = (int) $args['id'];
+            $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
             $roleIds = $data['role_ids'] ?? [];
             

@@ -24,16 +24,32 @@ export const authAPI = {
         if (data.refresh_token) {
           localStorage.setItem('alleynote_refresh_token', data.refresh_token);
         }
+        
+        // 同時儲存到 alleynote_user 中，以確保前端可以取得 token
+        const userData = JSON.parse(localStorage.getItem('alleynote_user') || '{}');
+        userData.access_token = data.access_token;
+        localStorage.setItem('alleynote_user', JSON.stringify(userData));
       }
       // 檢查 token (舊格式)
       else if (data.token) {
         tokenManager.setToken(data.token, data.expires_in || 3600);
+        
+        // 同時儲存到 alleynote_user 中
+        const userData = JSON.parse(localStorage.getItem('alleynote_user') || '{}');
+        userData.access_token = data.token;
+        localStorage.setItem('alleynote_user', JSON.stringify(userData));
       }
       
       return data;
     } else if (response && response.access_token) {
       // 直接在 response 層級
       tokenManager.setToken(response.access_token, response.expires_in || 3600);
+      
+      // 同時儲存到 alleynote_user 中
+      const userData = JSON.parse(localStorage.getItem('alleynote_user') || '{}');
+      userData.access_token = response.access_token;
+      localStorage.setItem('alleynote_user', JSON.stringify(userData));
+      
       return response;
     }
     

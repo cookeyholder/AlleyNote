@@ -114,12 +114,54 @@ export const globalGetters = {
 
   getUserRole() {
     const user = globalStore.get('user');
-    return user?.role || null;
+    // 嘗試從 user 物件的多個可能位置取得角色
+    if (user?.role) {
+      return user.role;
+    }
+    if (user?.roles && Array.isArray(user.roles) && user.roles.length > 0) {
+      // 如果 roles 是陣列，檢查是否包含管理員角色
+      const roles = user.roles;
+      for (const role of roles) {
+        if (typeof role === 'object' && role.id) {
+          // 檢查角色 ID，1 通常是超級管理員
+          if (role.id === 1) {
+            return 'super_admin';
+          }
+        }
+      }
+      // 回傳第一個角色名稱
+      return typeof roles[0] === 'object' ? roles[0].name : roles[0];
+    }
+    return null;
   },
 
   isAdmin() {
+    const user = globalStore.get('user');
+    // 多種方式檢查是否為管理員
+    
+    // 方式 1: 檢查 role 欄位
     const role = this.getUserRole();
-    return role === 'admin' || role === 'super_admin';
+    if (role === 'admin' || role === 'super_admin' || role === '超級管理員') {
+      return true;
+    }
+    
+    // 方式 2: 檢查 roles 陣列
+    if (user?.roles && Array.isArray(user.roles)) {
+      for (const r of user.roles) {
+        if (typeof r === 'object') {
+          // 檢查角色 ID (1 = 超級管理員)
+          if (r.id === 1) {
+            return true;
+          }
+          // 檢查角色名稱
+          if (r.name === '超級管理員' || r.name === 'admin' || r.name === 'super_admin') {
+            return true;
+          }
+        }
+      }
+    }
+    
+    return false;
   },
 };
 
