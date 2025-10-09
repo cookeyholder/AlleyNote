@@ -8,6 +8,9 @@ declare(strict_types=1);
  * 這個檔案包含所有管理員功能相關的路由定義
  */
 
+use App\Application\Controllers\Api\V1\UserController;
+use App\Application\Controllers\Api\V1\PostController;
+
 return [
     // 管理員儀表板
     'admin.dashboard' => [
@@ -26,20 +29,14 @@ return [
             ];
         },
         'name' => 'admin.dashboard',
-        'middleware' => ['auth', 'admin'] // 需要認證和管理員權限
+        'middleware' => ['auth', 'admin']
     ],
 
     // 使用者管理
     'admin.users.index' => [
         'methods' => ['GET'],
         'path' => '/api/admin/users',
-        'handler' => function () {
-            // TODO: 實作使用者清單
-            return [
-                'message' => '使用者清單功能尚未實作',
-                'status' => 'not_implemented'
-            ];
-        },
+        'handler' => [UserController::class, 'index'],
         'name' => 'admin.users.index',
         'middleware' => ['auth', 'admin']
     ],
@@ -47,104 +44,81 @@ return [
     'admin.users.show' => [
         'methods' => ['GET'],
         'path' => '/api/admin/users/{id}',
-        'handler' => function ($id) {
-            // TODO: 實作使用者詳細資訊
-            return [
-                'message' => '使用者詳細資訊功能尚未實作',
-                'user_id' => $id,
-                'status' => 'not_implemented'
-            ];
-        },
+        'handler' => [UserController::class, 'show'],
         'name' => 'admin.users.show',
+        'middleware' => ['auth', 'admin']
+    ],
+
+    'admin.users.store' => [
+        'methods' => ['POST'],
+        'path' => '/api/admin/users',
+        'handler' => [UserController::class, 'store'],
+        'name' => 'admin.users.store',
         'middleware' => ['auth', 'admin']
     ],
 
     'admin.users.update' => [
         'methods' => ['PUT', 'PATCH'],
         'path' => '/api/admin/users/{id}',
-        'handler' => function ($id) {
-            // TODO: 實作使用者更新
-            return [
-                'message' => '使用者更新功能尚未實作',
-                'user_id' => $id,
-                'status' => 'not_implemented'
-            ];
-        },
+        'handler' => [UserController::class, 'update'],
         'name' => 'admin.users.update',
         'middleware' => ['auth', 'admin']
     ],
 
-    'admin.users.delete' => [
+    'admin.users.destroy' => [
         'methods' => ['DELETE'],
         'path' => '/api/admin/users/{id}',
-        'handler' => function ($id) {
-            // TODO: 實作使用者刪除
-            return [
-                'message' => '使用者刪除功能尚未實作',
-                'user_id' => $id,
-                'status' => 'not_implemented'
-            ];
-        },
-        'name' => 'admin.users.delete',
+        'handler' => [UserController::class, 'destroy'],
+        'name' => 'admin.users.destroy',
         'middleware' => ['auth', 'admin']
     ],
 
-    // 貼文管理
-    'admin.posts.index' => [
-        'methods' => ['GET'],
-        'path' => '/api/admin/posts',
-        'handler' => function () {
-            // TODO: 實作管理員貼文清單
-            return [
-                'message' => '管理員貼文清單功能尚未實作',
-                'status' => 'not_implemented'
-            ];
-        },
-        'name' => 'admin.posts.index',
-        'middleware' => ['auth', 'admin']
-    ],
-
-    'admin.posts.moderate' => [
+    'admin.users.activate' => [
         'methods' => ['POST'],
-        'path' => '/api/admin/posts/{id}/moderate',
-        'handler' => function ($id) {
-            // TODO: 實作貼文審查
-            return [
-                'message' => '貼文審查功能尚未實作',
-                'post_id' => $id,
-                'status' => 'not_implemented'
-            ];
-        },
-        'name' => 'admin.posts.moderate',
+        'path' => '/api/admin/users/{id}/activate',
+        'handler' => [UserController::class, 'activate'],
+        'name' => 'admin.users.activate',
         'middleware' => ['auth', 'admin']
     ],
 
-    // 系統設定
-    'admin.settings.show' => [
-        'methods' => ['GET'],
-        'path' => '/api/admin/settings',
-        'handler' => function () {
-            // TODO: 實作系統設定顯示
-            return [
-                'message' => '系統設定功能尚未實作',
-                'status' => 'not_implemented'
-            ];
-        },
-        'name' => 'admin.settings.show',
+    'admin.users.deactivate' => [
+        'methods' => ['POST'],
+        'path' => '/api/admin/users/{id}/deactivate',
+        'handler' => [UserController::class, 'deactivate'],
+        'name' => 'admin.users.deactivate',
         'middleware' => ['auth', 'admin']
     ],
 
-    'admin.settings.update' => [
-        'methods' => ['PUT', 'PATCH'],
-        'path' => '/api/admin/settings',
-        'handler' => function () {
-            // TODO: 實作系統設定更新
-            return [
-                'message' => '系統設定更新功能尚未實作',
-                'status' => 'not_implemented'
-            ];
-        },
-        'name' => 'admin.settings.update',
+    'admin.users.reset-password' => [
+        'methods' => ['POST'],
+        'path' => '/api/admin/users/{id}/reset-password',
+        'handler' => [UserController::class, 'resetPassword'],
+        'name' => 'admin.users.reset-password',
+        'middleware' => ['auth', 'admin']
+    ],
+
+    // 文章發布管理
+    'admin.posts.publish' => [
+        'methods' => ['POST'],
+        'path' => '/api/posts/{id}/publish',
+        'handler' => [PostController::class, 'publish'],
+        'name' => 'admin.posts.publish',
+        'middleware' => ['auth', 'admin']
+    ],
+
+    'admin.posts.unpublish' => [
+        'methods' => ['POST'],
+        'path' => '/api/posts/{id}/unpublish',
+        'handler' => [PostController::class, 'unpublish'],
+        'name' => 'admin.posts.unpublish',
+        'middleware' => ['auth', 'admin']
+    ],
+
+    'admin.posts.unpin' => [
+        'methods' => ['DELETE'],
+        'path' => '/api/posts/{id}/pin',
+        'handler' => [PostController::class, 'unpin'],
+        'name' => 'admin.posts.unpin',
         'middleware' => ['auth', 'admin']
     ],
 
@@ -157,9 +131,9 @@ return [
                 'php_version' => PHP_VERSION,
                 'memory_limit' => ini_get('memory_limit'),
                 'max_execution_time' => ini_get('max_execution_time'),
-                'server_software' => (is_array($_SERVER) ? $_SERVER['SERVER_SOFTWARE'] : (is_object($_SERVER) ? $_SERVER->SERVER_SOFTWARE : null)) ?? 'Unknown',
+                'server_software' => ($_SERVER['SERVER_SOFTWARE'] ?? 'Unknown'),
                 'system_time' => date('c'),
-                'uptime' => 'N/A' // TODO: 實作系統運行時間
+                'uptime' => 'N/A'
             ];
         },
         'name' => 'admin.info.system',

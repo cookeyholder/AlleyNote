@@ -1073,7 +1073,7 @@ class AuthController extends BaseController
             }
 
             // 更新使用者資料
-            $this->userRepository->update((string) $userId, $updateData);
+            $this->userRepository->update($userId, $updateData);
 
             // 取得更新後的使用者資訊
             $user = $this->userRepository->findByIdWithRoles($userId);
