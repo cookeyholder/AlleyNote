@@ -1023,4 +1023,202 @@ class PostController extends BaseController
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
+
+    /**
+     * 發布貼文
+     * 
+     * POST /api/posts/{id}/publish
+     */
+    #[OA\Post(
+        path: '/posts/{id}/publish',
+        summary: '發布貼文',
+        description: '將草稿貼文發布為公開狀態',
+        operationId: 'publishPost',
+        tags: ['posts'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: '貼文 ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1)
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '發布成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '貼文已發布'),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: '貼文不存在'),
+            new OA\Response(response: 500, description: '伺服器錯誤'),
+        ],
+    )]
+    public function publish(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $postId = (int) $args['id'];
+            
+            // 更新貼文狀態為 published
+            $post = $this->postService->updatePostStatus($postId, 'published');
+
+            $responseData = [
+                'success' => true,
+                'message' => '貼文已發布',
+                'data' => $post,
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '發布貼文失敗: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 取消發布貼文
+     * 
+     * POST /api/posts/{id}/unpublish
+     */
+    #[OA\Post(
+        path: '/posts/{id}/unpublish',
+        summary: '取消發布貼文',
+        description: '將已發布的貼文改為草稿狀態',
+        operationId: 'unpublishPost',
+        tags: ['posts'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: '貼文 ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1)
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '取消發布成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '貼文已取消發布'),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: '貼文不存在'),
+            new OA\Response(response: 500, description: '伺服器錯誤'),
+        ],
+    )]
+    public function unpublish(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $postId = (int) $args['id'];
+            
+            // 更新貼文狀態為 draft
+            $post = $this->postService->updatePostStatus($postId, 'draft');
+
+            $responseData = [
+                'success' => true,
+                'message' => '貼文已取消發布',
+                'data' => $post,
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '取消發布失敗: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 取消置頂貼文
+     * 
+     * DELETE /api/posts/{id}/pin
+     */
+    #[OA\Delete(
+        path: '/posts/{id}/pin',
+        summary: '取消置頂貼文',
+        description: '取消貼文的置頂狀態',
+        operationId: 'unpinPost',
+        tags: ['posts'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: '貼文 ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1)
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '取消置頂成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '已取消置頂'),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: '貼文不存在'),
+            new OA\Response(response: 500, description: '伺服器錯誤'),
+        ],
+    )]
+    public function unpin(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $postId = (int) $args['id'];
+            
+            // 取消置頂
+            $post = $this->postService->unpinPost($postId);
+
+            $responseData = [
+                'success' => true,
+                'message' => '已取消置頂',
+                'data' => $post,
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '取消置頂失敗: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
 }

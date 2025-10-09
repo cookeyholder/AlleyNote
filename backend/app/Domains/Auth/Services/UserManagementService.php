@@ -168,4 +168,90 @@ class UserManagementService
     {
         return $this->userRepository->getUserRoleIds($userId);
     }
+
+    /**
+     * 啟用使用者
+     */
+    public function activateUser(int $id): array
+    {
+        $user = $this->userRepository->findById($id);
+        
+        if (!$user) {
+            throw new NotFoundException('使用者不存在');
+        }
+
+        $this->userRepository->update((string) $id, ['is_active' => true]);
+
+        return $this->getUser($id);
+    }
+
+    /**
+     * 停用使用者
+     */
+    public function deactivateUser(int $id): array
+    {
+        $user = $this->userRepository->findById($id);
+        
+        if (!$user) {
+            throw new NotFoundException('使用者不存在');
+        }
+
+        $this->userRepository->update((string) $id, ['is_active' => false]);
+
+        return $this->getUser($id);
+    }
+
+    /**
+     * 重設使用者密碼
+     */
+    public function resetPassword(int $id, string $newPassword): bool
+    {
+        $user = $this->userRepository->findById($id);
+        
+        if (!$user) {
+            throw new NotFoundException('使用者不存在');
+        }
+
+        // 驗證密碼長度
+        if (strlen($newPassword) < 6) {
+            throw ValidationException::fromSingleError('password', '密碼長度至少需要 6 個字元');
+        }
+
+        // 雜湊密碼
+        $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
+
+        return $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+    }
+
+    /**
+     * 變更使用者密碼（需驗證舊密碼）
+     */
+    public function changePassword(int $id, string $currentPassword, string $newPassword): bool
+    {
+        $user = $this->userRepository->findById($id);
+        
+        if (!$user) {
+            throw new NotFoundException('使用者不存在');
+        }
+
+        // 驗證當前密碼
+        if (!password_verify($currentPassword, $user['password'])) {
+            throw ValidationException::fromSingleError('current_password', '當前密碼不正確');
+        }
+
+        // 驗證新密碼長度
+        if (strlen($newPassword) < 6) {
+            throw ValidationException::fromSingleError('new_password', '新密碼長度至少需要 6 個字元');
+        }
+
+        // 驗證新密碼不能與舊密碼相同
+        if ($currentPassword === $newPassword) {
+            throw ValidationException::fromSingleError('new_password', '新密碼不能與當前密碼相同');
+        }
+
+        // 雜湊新密碼
+        $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
+
+        return $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+    }
 }

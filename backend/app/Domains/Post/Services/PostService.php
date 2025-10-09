@@ -174,4 +174,33 @@ class PostService implements PostServiceInterface
 
         return $this->repository->incrementViews($id, $userIp, $userId);
     }
+
+    /**
+     * 更新貼文狀態
+     */
+    public function updatePostStatus(int $id, string $status): Post
+    {
+        $post = $this->findById($id);
+        
+        // 驗證狀態值
+        $validStatuses = ['draft', 'published', 'archived'];
+        if (!in_array($status, $validStatuses)) {
+            throw ValidationException::fromSingleError('status', '無效的狀態值');
+        }
+
+        // 更新狀態
+        $this->repository->update($id, ['status' => $status]);
+
+        // 重新取得更新後的貼文
+        return $this->findById($id);
+    }
+
+    /**
+     * 取消置頂貼文
+     */
+    public function unpinPost(int $id): Post
+    {
+        $this->setPinned($id, false);
+        return $this->findById($id);
+    }
 }

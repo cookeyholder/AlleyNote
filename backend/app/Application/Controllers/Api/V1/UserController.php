@@ -221,4 +221,108 @@ class UserController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
+    /**
+     * 啟用使用者
+     * 
+     * POST /api/admin/users/{id}/activate
+     */
+    public function activate(Request $request, Response $response): Response
+    {
+        try {
+            $id = (int) $request->getAttribute('id');
+            $user = $this->userManagementService->activateUser($id);
+            
+            $responseData = json_encode([
+                'success' => true,
+                'message' => '使用者已啟用',
+                'data' => $user,
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } catch (NotFoundException $e) {
+            $responseData = json_encode([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+    }
+
+    /**
+     * 停用使用者
+     * 
+     * POST /api/admin/users/{id}/deactivate
+     */
+    public function deactivate(Request $request, Response $response): Response
+    {
+        try {
+            $id = (int) $request->getAttribute('id');
+            $user = $this->userManagementService->deactivateUser($id);
+            
+            $responseData = json_encode([
+                'success' => true,
+                'message' => '使用者已停用',
+                'data' => $user,
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } catch (NotFoundException $e) {
+            $responseData = json_encode([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        }
+    }
+
+    /**
+     * 重設使用者密碼（管理員）
+     * 
+     * POST /api/admin/users/{id}/reset-password
+     */
+    public function resetPassword(Request $request, Response $response): Response
+    {
+        try {
+            $id = (int) $request->getAttribute('id');
+            $data = json_decode((string) $request->getBody(), true) ?? [];
+            
+            if (empty($data['password'])) {
+                throw ValidationException::fromSingleError('password', '密碼欄位為必填');
+            }
+
+            $this->userManagementService->resetPassword($id, $data['password']);
+            
+            $responseData = json_encode([
+                'success' => true,
+                'message' => '密碼重設成功',
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+        } catch (NotFoundException $e) {
+            $responseData = json_encode([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        } catch (ValidationException $e) {
+            $responseData = json_encode([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->getErrors(),
+            ]);
+            
+            $response->getBody()->write($responseData ?: '');
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+        }
+    }
 }

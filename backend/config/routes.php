@@ -6,6 +6,7 @@ use App\Application\Controllers\PostController;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Application\Controllers\Api\V1\ActivityLogController;
 use App\Application\Controllers\Api\V1\PostController as ApiPostController;
+use App\Application\Controllers\Api\V1\UserController;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 
 /**
@@ -81,6 +82,16 @@ return function (RouterInterface $router): void {
     $authMe->setName('auth.me');
     $authMe->middleware('jwt.auth');
 
+    // 更新個人資料 (需要認證)
+    $authUpdateProfile = $router->put('/api/auth/profile', [AuthController::class, 'updateProfile']);
+    $authUpdateProfile->setName('auth.profile.update');
+    $authUpdateProfile->middleware('jwt.auth');
+
+    // 變更密碼 (需要認證)
+    $authChangePassword = $router->post('/api/auth/change-password', [AuthController::class, 'changePassword']);
+    $authChangePassword->setName('auth.change-password');
+    $authChangePassword->middleware('jwt.auth');
+
     // =========================================
     // 貼文相關路由 (需要認證和授權)
     // =========================================
@@ -107,6 +118,70 @@ return function (RouterInterface $router): void {
     $postsDestroy = $router->delete('/api/posts/{id}', [ApiPostController::class, 'destroy']);
     $postsDestroy->setName('posts.destroy');
     $postsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 發布貼文 (需要認證和權限)
+    $postsPublish = $router->post('/api/posts/{id}/publish', [ApiPostController::class, 'publish']);
+    $postsPublish->setName('posts.publish');
+    $postsPublish->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取消發布貼文 (需要認證和權限)
+    $postsUnpublish = $router->post('/api/posts/{id}/unpublish', [ApiPostController::class, 'unpublish']);
+    $postsUnpublish->setName('posts.unpublish');
+    $postsUnpublish->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 置頂貼文 (需要認證和權限)
+    $postsPin = $router->patch('/api/posts/{id}/pin', [ApiPostController::class, 'togglePin']);
+    $postsPin->setName('posts.pin');
+    $postsPin->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取消置頂貼文 (需要認證和權限)
+    $postsUnpin = $router->delete('/api/posts/{id}/pin', [ApiPostController::class, 'unpin']);
+    $postsUnpin->setName('posts.unpin');
+    $postsUnpin->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // =========================================
+    // 使用者管理 API 路由 (需要管理員權限)
+    // =========================================
+
+    // 取得使用者列表 (需要管理員權限)
+    $adminUsersIndex = $router->get('/api/admin/users', [UserController::class, 'index']);
+    $adminUsersIndex->setName('admin.users.index');
+    $adminUsersIndex->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取得單一使用者 (需要管理員權限)
+    $adminUsersShow = $router->get('/api/admin/users/{id}', [UserController::class, 'show']);
+    $adminUsersShow->setName('admin.users.show');
+    $adminUsersShow->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 建立使用者 (需要管理員權限)
+    $adminUsersStore = $router->post('/api/admin/users', [UserController::class, 'store']);
+    $adminUsersStore->setName('admin.users.store');
+    $adminUsersStore->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 更新使用者 (需要管理員權限)
+    $adminUsersUpdate = $router->put('/api/admin/users/{id}', [UserController::class, 'update']);
+    $adminUsersUpdate->setName('admin.users.update');
+    $adminUsersUpdate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 刪除使用者 (需要管理員權限)
+    $adminUsersDestroy = $router->delete('/api/admin/users/{id}', [UserController::class, 'destroy']);
+    $adminUsersDestroy->setName('admin.users.destroy');
+    $adminUsersDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 啟用使用者 (需要管理員權限)
+    $adminUsersActivate = $router->post('/api/admin/users/{id}/activate', [UserController::class, 'activate']);
+    $adminUsersActivate->setName('admin.users.activate');
+    $adminUsersActivate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 停用使用者 (需要管理員權限)
+    $adminUsersDeactivate = $router->post('/api/admin/users/{id}/deactivate', [UserController::class, 'deactivate']);
+    $adminUsersDeactivate->setName('admin.users.deactivate');
+    $adminUsersDeactivate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 重設使用者密碼 (需要管理員權限)
+    $adminUsersResetPassword = $router->post('/api/admin/users/{id}/reset-password', [UserController::class, 'resetPassword']);
+    $adminUsersResetPassword->setName('admin.users.reset-password');
+    $adminUsersResetPassword->middleware(['jwt.auth', 'jwt.authorize']);
 
     // =========================================
     // 活動記錄 API 路由 (需要認證)
