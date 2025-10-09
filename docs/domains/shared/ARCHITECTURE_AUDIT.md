@@ -449,7 +449,7 @@ class CreatePostDTO
 
 - [ ] **建立初始 schema migration**（4小時）
   ```php
-  // 從現有 database/alleynote.db 產生初始 migration
+  // 從現有 database/alleynote.sqlite3 產生初始 migration
   ```
 
 - [ ] **建立 migration 執行腳本**（2小時）

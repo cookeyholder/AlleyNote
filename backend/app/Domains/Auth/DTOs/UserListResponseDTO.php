@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\DTOs;
 
 /**
- * 使用者列表回應 DTO
+ * 使用者列表回應 DTO.
  */
 final readonly class UserListResponseDTO
 {
@@ -16,8 +16,7 @@ final readonly class UserListResponseDTO
         public array $roles,
         public ?string $lastLogin,
         public string $createdAt,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

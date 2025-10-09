@@ -10,21 +10,21 @@ use App\Domains\Auth\Repositories\PermissionRepository;
 use App\Domains\Auth\Repositories\RoleRepository;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+use RuntimeException;
 
 /**
- * 角色管理服務
+ * 角色管理服務.
  */
 class RoleManagementService
 {
     public function __construct(
         private readonly RoleRepository $roleRepository,
         private readonly PermissionRepository $permissionRepository,
-    ) {
-    }
+    ) {}
 
     /**
-     * 取得所有角色
-     * 
+     * 取得所有角色.
+     *
      * @return Role[]
      */
     public function listRoles(): array
@@ -33,12 +33,12 @@ class RoleManagementService
     }
 
     /**
-     * 取得單一角色（包含權限）
+     * 取得單一角色（包含權限）.
      */
     public function getRole(int $id): array
     {
         $role = $this->roleRepository->findById($id);
-        
+
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
@@ -54,7 +54,7 @@ class RoleManagementService
     }
 
     /**
-     * 建立角色
+     * 建立角色.
      */
     public function createRole(string $name, string $displayName, ?string $description = null, array $permissionIds = []): Role
     {
@@ -74,28 +74,28 @@ class RoleManagementService
     }
 
     /**
-     * 更新角色
+     * 更新角色.
      */
     public function updateRole(int $id, ?string $displayName = null, ?string $description = null): Role
     {
         $role = $this->roleRepository->findById($id);
-        
+
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
 
         $this->roleRepository->update($id, $displayName, $description);
 
-        return $this->roleRepository->findById($id) ?? throw new \RuntimeException('Failed to get updated role');
+        return $this->roleRepository->findById($id) ?? throw new RuntimeException('Failed to get updated role');
     }
 
     /**
-     * 刪除角色
+     * 刪除角色.
      */
     public function deleteRole(int $id): bool
     {
         $role = $this->roleRepository->findById($id);
-        
+
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
@@ -109,14 +109,14 @@ class RoleManagementService
     }
 
     /**
-     * 設定角色的權限
-     * 
+     * 設定角色的權限.
+     *
      * @param int[] $permissionIds
      */
     public function setRolePermissions(int $roleId, array $permissionIds): bool
     {
         $role = $this->roleRepository->findById($roleId);
-        
+
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
@@ -125,8 +125,8 @@ class RoleManagementService
     }
 
     /**
-     * 取得所有權限
-     * 
+     * 取得所有權限.
+     *
      * @return Permission[]
      */
     public function listPermissions(): array
@@ -135,8 +135,8 @@ class RoleManagementService
     }
 
     /**
-     * 取得所有權限（按資源分組）
-     * 
+     * 取得所有權限（按資源分組）.
+     *
      * @return array<string, Permission[]>
      */
     public function listPermissionsGroupedByResource(): array

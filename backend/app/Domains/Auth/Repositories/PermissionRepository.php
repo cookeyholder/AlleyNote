@@ -8,18 +8,17 @@ use App\Domains\Auth\Models\Permission;
 use PDO;
 
 /**
- * 權限 Repository
+ * 權限 Repository.
  */
 class PermissionRepository
 {
     public function __construct(
         private readonly PDO $db,
-    ) {
-    }
+    ) {}
 
     /**
-     * 取得所有權限
-     * 
+     * 取得所有權限.
+     *
      * @return Permission[]
      */
     public function findAll(): array
@@ -32,7 +31,7 @@ class PermissionRepository
     }
 
     /**
-     * 根據 ID 取得權限
+     * 根據 ID 取得權限.
      */
     public function findById(int $id): ?Permission
     {
@@ -45,7 +44,7 @@ class PermissionRepository
     }
 
     /**
-     * 根據名稱取得權限
+     * 根據名稱取得權限.
      */
     public function findByName(string $name): ?Permission
     {
@@ -58,8 +57,8 @@ class PermissionRepository
     }
 
     /**
-     * 根據 IDs 取得多個權限
-     * 
+     * 根據 IDs 取得多個權限.
+     *
      * @param int[] $ids
      * @return Permission[]
      */
@@ -79,8 +78,8 @@ class PermissionRepository
     }
 
     /**
-     * 根據資源取得權限
-     * 
+     * 根據資源取得權限.
+     *
      * @return Permission[]
      */
     public function findByResource(string $resource): array
@@ -94,8 +93,8 @@ class PermissionRepository
     }
 
     /**
-     * 取得所有權限，按資源分組
-     * 
+     * 取得所有權限，按資源分組.
+     *
      * @return array<string, Permission[]>
      */
     public function findAllGroupedByResource(): array

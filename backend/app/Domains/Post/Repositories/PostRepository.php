@@ -511,7 +511,7 @@ class PostRepository implements PostRepositoryInterface
             $baseWhere = empty($where) ? 'deleted_at IS NULL' : implode(' AND ', $where) . ' AND deleted_at IS NULL';
             // 對於已發布的文章，只顯示發布時間已到的
             $publishTimeCheck = "AND (status != 'published' OR publish_date IS NULL OR publish_date <= datetime('now'))";
-            
+
             $countSql = 'SELECT COUNT(*) FROM posts WHERE ' . $baseWhere . ' ' . $publishTimeCheck;
             $stmt = $this->db->prepare($countSql);
             $stmt->execute($params);

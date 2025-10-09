@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\DTOs;
 
 /**
- * 建立使用者 DTO
+ * 建立使用者 DTO.
  */
 final readonly class CreateUserDTO
 {
@@ -14,8 +14,7 @@ final readonly class CreateUserDTO
         public string $email,
         public string $password,
         public array $roleIds = [],
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

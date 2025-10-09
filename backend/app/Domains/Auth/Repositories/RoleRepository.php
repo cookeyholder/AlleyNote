@@ -5,21 +5,22 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Models\Role;
+use Exception;
 use PDO;
+use RuntimeException;
 
 /**
- * 角色 Repository
+ * 角色 Repository.
  */
 class RoleRepository
 {
     public function __construct(
         private readonly PDO $db,
-    ) {
-    }
+    ) {}
 
     /**
-     * 取得所有角色
-     * 
+     * 取得所有角色.
+     *
      * @return Role[]
      */
     public function findAll(): array
@@ -32,7 +33,7 @@ class RoleRepository
     }
 
     /**
-     * 根據 ID 取得角色
+     * 根據 ID 取得角色.
      */
     public function findById(int $id): ?Role
     {
@@ -45,7 +46,7 @@ class RoleRepository
     }
 
     /**
-     * 根據名稱取得角色
+     * 根據名稱取得角色.
      */
     public function findByName(string $name): ?Role
     {
@@ -58,8 +59,8 @@ class RoleRepository
     }
 
     /**
-     * 根據 IDs 取得多個角色
-     * 
+     * 根據 IDs 取得多個角色.
+     *
      * @param int[] $ids
      * @return Role[]
      */
@@ -79,13 +80,13 @@ class RoleRepository
     }
 
     /**
-     * 建立角色
+     * 建立角色.
      */
     public function create(string $name, string $displayName, ?string $description = null): Role
     {
         $sql = 'INSERT INTO roles (name, display_name, description, created_at) 
                 VALUES (:name, :display_name, :description, datetime(\'now\'))';
-        
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'name' => $name,
@@ -94,12 +95,12 @@ class RoleRepository
         ]);
 
         $id = (int) $this->db->lastInsertId();
-        
-        return $this->findById($id) ?? throw new \RuntimeException('Failed to create role');
+
+        return $this->findById($id) ?? throw new RuntimeException('Failed to create role');
     }
 
     /**
-     * 更新角色
+     * 更新角色.
      */
     public function update(int $id, ?string $displayName = null, ?string $description = null): bool
     {
@@ -124,24 +125,24 @@ class RoleRepository
 
         $sql = 'UPDATE roles SET ' . implode(', ', $updates) . ' WHERE id = :id';
         $stmt = $this->db->prepare($sql);
-        
+
         return $stmt->execute($params);
     }
 
     /**
-     * 刪除角色
+     * 刪除角色.
      */
     public function delete(int $id): bool
     {
         $sql = 'DELETE FROM roles WHERE id = :id';
         $stmt = $this->db->prepare($sql);
-        
+
         return $stmt->execute(['id' => $id]);
     }
 
     /**
-     * 取得角色的權限 IDs
-     * 
+     * 取得角色的權限 IDs.
+     *
      * @return int[]
      */
     public function getRolePermissionIds(int $roleId): array
@@ -149,13 +150,13 @@ class RoleRepository
         $sql = 'SELECT permission_id FROM role_permissions WHERE role_id = :role_id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['role_id' => $roleId]);
-        
+
         return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
     }
 
     /**
-     * 設定角色的權限
-     * 
+     * 設定角色的權限.
+     *
      * @param int[] $permissionIds
      */
     public function setRolePermissions(int $roleId, array $permissionIds): bool
@@ -183,9 +184,11 @@ class RoleRepository
             }
 
             $this->db->commit();
+
             return true;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }

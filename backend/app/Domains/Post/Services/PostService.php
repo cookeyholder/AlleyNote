@@ -176,12 +176,12 @@ class PostService implements PostServiceInterface
     }
 
     /**
-     * 更新貼文狀態
+     * 更新貼文狀態.
      */
     public function updatePostStatus(int $id, string $status): Post
     {
         $post = $this->findById($id);
-        
+
         // 驗證狀態值
         $validStatuses = ['draft', 'published', 'archived'];
         if (!in_array($status, $validStatuses)) {
@@ -196,11 +196,12 @@ class PostService implements PostServiceInterface
     }
 
     /**
-     * 取消置頂貼文
+     * 取消置頂貼文.
      */
     public function unpinPost(int $id): Post
     {
         $this->setPinned($id, false);
+
         return $this->findById($id);
     }
 }

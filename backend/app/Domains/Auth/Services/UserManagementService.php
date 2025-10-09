@@ -11,17 +11,16 @@ use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 
 /**
- * 使用者管理服務
+ * 使用者管理服務.
  */
 class UserManagementService
 {
     public function __construct(
         private readonly UserRepository $userRepository,
-    ) {
-    }
+    ) {}
 
     /**
-     * 取得使用者列表
+     * 取得使用者列表.
      */
     public function listUsers(int $page = 1, int $perPage = 10, array $filters = []): array
     {
@@ -29,24 +28,24 @@ class UserManagementService
     }
 
     /**
-     * 取得單一使用者
+     * 取得單一使用者.
      */
     public function getUser(int $id): array
     {
         $user = $this->userRepository->findByIdWithRoles($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-        
+
         // 移除敏感資訊
         unset($user['password_hash']);
-        
+
         return $user;
     }
 
     /**
-     * 建立使用者
+     * 建立使用者.
      */
     public function createUser(CreateUserDTO $dto): array
     {
@@ -80,12 +79,12 @@ class UserManagementService
     }
 
     /**
-     * 更新使用者
+     * 更新使用者.
      */
     public function updateUser(int $id, UpdateUserDTO $dto): array
     {
         $user = $this->userRepository->findById($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -130,12 +129,12 @@ class UserManagementService
     }
 
     /**
-     * 刪除使用者
+     * 刪除使用者.
      */
     public function deleteUser(int $id): bool
     {
         $user = $this->userRepository->findById($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -144,14 +143,14 @@ class UserManagementService
     }
 
     /**
-     * 分配角色給使用者
-     * 
+     * 分配角色給使用者.
+     *
      * @param int[] $roleIds
      */
     public function assignRoles(int $userId, array $roleIds): bool
     {
         $user = $this->userRepository->findById($userId);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -160,8 +159,8 @@ class UserManagementService
     }
 
     /**
-     * 取得使用者的角色
-     * 
+     * 取得使用者的角色.
+     *
      * @return int[]
      */
     public function getUserRoles(int $userId): array
@@ -170,12 +169,12 @@ class UserManagementService
     }
 
     /**
-     * 啟用使用者
+     * 啟用使用者.
      */
     public function activateUser(int $id): array
     {
         $user = $this->userRepository->findById($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -186,12 +185,12 @@ class UserManagementService
     }
 
     /**
-     * 停用使用者
+     * 停用使用者.
      */
     public function deactivateUser(int $id): array
     {
         $user = $this->userRepository->findById($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -207,7 +206,7 @@ class UserManagementService
     public function resetPassword(int $id, string $newPassword): bool
     {
         $user = $this->userRepository->findById($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -220,22 +219,25 @@ class UserManagementService
         // 雜湊密碼
         $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
 
-        return $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+        $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+
+        return true;
     }
 
     /**
-     * 變更使用者密碼（需驗證舊密碼）
+     * 變更使用者密碼（需驗證舊密碼）.
      */
     public function changePassword(int $id, string $currentPassword, string $newPassword): bool
     {
         $user = $this->userRepository->findById($id);
-        
+
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
 
         // 驗證當前密碼
-        if (!password_verify($currentPassword, $user['password'])) {
+        $passwordHash = $user['password'] ?? $user['password_hash'] ?? '';
+        if (! password_verify($currentPassword, $passwordHash)) {
             throw ValidationException::fromSingleError('current_password', '當前密碼不正確');
         }
 
@@ -252,6 +254,8 @@ class UserManagementService
         // 雜湊新密碼
         $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
 
-        return $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+        $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+
+        return true;
     }
 }

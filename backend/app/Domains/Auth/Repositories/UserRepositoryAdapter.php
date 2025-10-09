@@ -73,7 +73,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
         // 驗證密碼
         // 支援 password 和 password_hash 兩種欄位名稱
         $passwordHash = $user['password_hash'] ?? $user['password'] ?? null;
-        
+
         if ($passwordHash === null) {
             return null;
         }

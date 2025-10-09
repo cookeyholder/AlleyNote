@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\DTOs;
 
 /**
- * 更新使用者 DTO
+ * 更新使用者 DTO.
  */
 final readonly class UpdateUserDTO
 {
@@ -14,8 +14,7 @@ final readonly class UpdateUserDTO
         public ?string $email = null,
         public ?string $password = null,
         public ?array $roleIds = null,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {
@@ -30,7 +29,7 @@ final readonly class UpdateUserDTO
     public function toArray(): array
     {
         $result = [];
-        
+
         if ($this->username !== null) {
             $result['username'] = $this->username;
         }
@@ -43,7 +42,7 @@ final readonly class UpdateUserDTO
         if ($this->roleIds !== null) {
             $result['role_ids'] = $this->roleIds;
         }
-        
+
         return $result;
     }
 

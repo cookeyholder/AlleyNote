@@ -231,7 +231,6 @@ return function (RouterInterface $router): void {
     $adminSettings->setName('admin.settings');
     $adminSettings->middleware(['jwt.auth', 'jwt.authorize:super_admin']);
     */
-};
 
 /*
  * 路由配置說明：
@@ -261,13 +260,14 @@ return function (RouterInterface $router): void {
  * 注意：實際的中介軟體註冊需要在應用程式啟動時透過 DI 容器完成
  */
 
+    // 注意：以下路由需要 Slim App 實例，暫時註釋
     // 加載快取監控路由
-    $cacheMonitorRoutes = require __DIR__ . '/routes/cache-monitor.php';
-    $cacheMonitorRoutes($app);
+    // $cacheMonitorRoutes = require __DIR__ . '/routes/cache-monitor.php';
+    // $cacheMonitorRoutes($app);
 
     // 加載標籤管理路由
-    $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
-    $tagManagementRoutes($app);
+    // $tagManagementRoutes = require __DIR__ . '/routes/tag-management.php';
+    // $tagManagementRoutes($app);
 
     // 加載統計功能路由
     $statisticsRoutes = require __DIR__ . '/routes/statistics.php';
@@ -285,3 +285,4 @@ return function (RouterInterface $router): void {
             }
         }
     }
+};

@@ -228,6 +228,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             file_put_contents('php://stderr', '[JWT] isTokenRevoked 失敗: ' . $e->getMessage() . "\n");
             file_put_contents('php://stderr', '[JWT] 異常類型: ' . get_class($e) . "\n");
             file_put_contents('php://stderr', '[JWT] 追蹤: ' . $e->getTraceAsString() . "\n");
+
             return true; // 無法解析的 token 視為已撤銷
         }
     }

@@ -197,7 +197,7 @@ APP_URL=https://yourdomain.com
 
 # 資料庫設定
 DB_CONNECTION=sqlite
-DB_DATABASE=/var/www/html/database/alleynote.db
+DB_DATABASE=/var/www/html/database/alleynote.sqlite3
 
 # 快取設定
 CACHE_DRIVER=redis
@@ -495,7 +495,7 @@ dig yourdomain.com
 #### 資料庫連線錯誤
 ```bash
 # 1. 檢查資料庫檔案
-ls -la database/alleynote.db
+ls -la database/alleynote.sqlite3
 
 # 2. 檢查檔案權限
 docker compose exec web ls -la database/alleynote.sqlite3
@@ -579,7 +579,7 @@ docker compose exec web sqlite3 database/alleynote.sqlite3 "VACUUM;"
 docker compose exec web sqlite3 database/alleynote.sqlite3 "ANALYZE;"
 
 # 4. 檢查資料庫統計
-docker compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.sqlite3 "
 SELECT name, COUNT(*) as row_count
 FROM sqlite_master m JOIN pragma_table_info(m.name) p
 WHERE m.type='table'

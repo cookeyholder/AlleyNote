@@ -2,115 +2,172 @@
  * Modal 對話框組件
  */
 
-export class Modal {
-    constructor(options = {}) {
-        this.title = options.title || '';
-        this.content = options.content || '';
-        this.onConfirm = options.onConfirm || null;
-        this.onCancel = options.onCancel || null;
-        this.showCancel = options.showCancel !== false;
-        this.confirmText = options.confirmText || '確認';
-        this.cancelText = options.cancelText || '取消';
-        this.size = options.size || 'md'; // sm, md, lg, xl
+class ModalComponent {
+  constructor() {
+    this.modals = [];
+  }
+
+  /**
+   * 顯示 Modal
+   */
+  show(title, content, options = {}) {
+    const {
+      size = 'md', // sm, md, lg, xl
+      onClose = null,
+      showCloseButton = true,
+      closeOnBackdrop = true,
+    } = options;
+
+    // 建立 Modal 容器
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in';
+    
+    const sizeClasses = {
+      sm: 'max-w-md',
+      md: 'max-w-lg',
+      lg: 'max-w-2xl',
+      xl: 'max-w-4xl',
+      full: 'max-w-full',
+    };
+
+    modal.innerHTML = `
+      <div class="absolute inset-0 bg-black bg-opacity-50" data-modal-backdrop></div>
+      <div class="relative bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-modern-200">
+          <h3 class="text-xl font-semibold text-modern-900">${title}</h3>
+          ${showCloseButton ? `
+            <button type="button" class="text-modern-400 hover:text-modern-600 transition-colors" data-modal-close>
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          ` : ''}
+        </div>
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          ${content}
+        </div>
+      </div>
+    `;
+
+    // 關閉函數
+    const closeModal = () => {
+      modal.remove();
+      this.modals = this.modals.filter(m => m !== modal);
+      if (onClose) onClose();
+    };
+
+    // 綁定關閉事件
+    if (showCloseButton) {
+      const closeButton = modal.querySelector('[data-modal-close]');
+      if (closeButton) {
+        closeButton.addEventListener('click', closeModal);
+      }
     }
 
-    render() {
-        const sizeClasses = {
-            sm: 'max-w-sm',
-            md: 'max-w-md',
-            lg: 'max-w-lg',
-            xl: 'max-w-xl'
-        };
+    // 點擊背景關閉
+    if (closeOnBackdrop) {
+      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      if (backdrop) {
+        backdrop.addEventListener('click', closeModal);
+      }
+    }
 
-        const modal = document.createElement('div');
-        modal.className = 'modal-overlay';
-        modal.innerHTML = `
-            <div class="modal-content ${sizeClasses[this.size]} w-full p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-semibold">${this.title}</h3>
-                    <button class="text-gray-400 hover:text-gray-600" data-close>
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="mb-6">
-                    ${this.content}
-                </div>
-                <div class="flex justify-end gap-2">
-                    ${this.showCancel ? `
-                        <button class="btn btn-outline" data-cancel>
-                            ${this.cancelText}
-                        </button>
-                    ` : ''}
-                    <button class="btn btn-primary" data-confirm>
-                        ${this.confirmText}
-                    </button>
-                </div>
-            </div>
-        `;
+    // 添加到頁面
+    document.body.appendChild(modal);
+    this.modals.push(modal);
 
-        // 綁定事件
-        const closeBtn = modal.querySelector('[data-close]');
-        const cancelBtn = modal.querySelector('[data-cancel]');
-        const confirmBtn = modal.querySelector('[data-confirm]');
+    return {
+      close: closeModal,
+      element: modal,
+    };
+  }
 
-        closeBtn.addEventListener('click', () => this.close());
-        
-        if (cancelBtn) {
-            cancelBtn.addEventListener('click', () => {
-                if (this.onCancel) this.onCancel();
-                this.close();
-            });
+  /**
+   * 確認對話框
+   */
+  confirm(title, message, onConfirm, onCancel = null) {
+    const content = `
+      <div class="text-modern-700 mb-6">${message}</div>
+      <div class="flex justify-end gap-3">
+        <button type="button" class="btn-secondary px-6 py-2" data-action="cancel">
+          取消
+        </button>
+        <button type="button" class="btn-primary px-6 py-2" data-action="confirm">
+          確定
+        </button>
+      </div>
+    `;
+
+    const modalInstance = this.show(title, content, {
+      size: 'sm',
+      showCloseButton: false,
+      closeOnBackdrop: false,
+    });
+
+    // 綁定按鈕事件
+    const cancelBtn = modalInstance.element.querySelector('[data-action="cancel"]');
+    const confirmBtn = modalInstance.element.querySelector('[data-action="confirm"]');
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', () => {
+        modalInstance.close();
+        if (onCancel) onCancel();
+      });
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', async () => {
+        try {
+          if (onConfirm) await onConfirm();
+          modalInstance.close();
+        } catch (error) {
+          console.error('Confirm action error:', error);
         }
-
-        confirmBtn.addEventListener('click', async () => {
-            if (this.onConfirm) {
-                const result = await this.onConfirm();
-                if (result !== false) {
-                    this.close();
-                }
-            } else {
-                this.close();
-            }
-        });
-
-        // 點擊背景關閉
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                this.close();
-            }
-        });
-
-        this.element = modal;
-        return modal;
+      });
     }
 
-    show() {
-        document.body.appendChild(this.render());
+    return modalInstance;
+  }
+
+  /**
+   * 警告對話框
+   */
+  alert(title, message, onClose = null) {
+    const content = `
+      <div class="text-modern-700 mb-6">${message}</div>
+      <div class="flex justify-end">
+        <button type="button" class="btn-primary px-6 py-2" data-action="ok">
+          確定
+        </button>
+      </div>
+    `;
+
+    const modalInstance = this.show(title, content, {
+      size: 'sm',
+      showCloseButton: false,
+      closeOnBackdrop: false,
+    });
+
+    // 綁定按鈕事件
+    const okBtn = modalInstance.element.querySelector('[data-action="ok"]');
+    if (okBtn) {
+      okBtn.addEventListener('click', () => {
+        modalInstance.close();
+        if (onClose) onClose();
+      });
     }
 
-    close() {
-        if (this.element && this.element.parentElement) {
-            this.element.remove();
-        }
-    }
+    return modalInstance;
+  }
 
-    static confirm(title, message, onConfirm) {
-        return new Modal({
-            title,
-            content: `<p>${message}</p>`,
-            onConfirm,
-            size: 'sm'
-        }).show();
-    }
-
-    static alert(title, message) {
-        return new Modal({
-            title,
-            content: `<p>${message}</p>`,
-            showCancel: false,
-            size: 'sm'
-        }).show();
-    }
+  /**
+   * 關閉所有 Modal
+   */
+  closeAll() {
+    this.modals.forEach(modal => modal.remove());
+    this.modals = [];
+  }
 }
+
+// 建立並匯出單例
+export const modal = new ModalComponent();

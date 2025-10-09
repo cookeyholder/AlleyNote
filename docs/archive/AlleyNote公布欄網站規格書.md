@@ -172,7 +172,7 @@
 │       ├── database/# 資料庫備份
 │       └── files/   # 檔案備份
 └── database/        # 資料庫
-    └── alleynote.db # SQLite 資料庫
+    └── alleynote.sqlite3 # SQLite 資料庫
 
 ```
 
@@ -203,7 +203,7 @@ alleynote/                  # 專案根目錄
 ├── database/            # 資料庫相關
 │   ├── migrations/      # 資料庫遷移檔案
 │   ├── seeders/        # 資料填充類別
-│   └── alleynote.db    # SQLite 資料庫檔案
+│   └── alleynote.sqlite3    # SQLite 資料庫檔案
 ├── public/              # 公開存取目錄
 │   ├── index.php       # 入口檔案
 │   ├── css/            # 編譯後的 CSS 檔案

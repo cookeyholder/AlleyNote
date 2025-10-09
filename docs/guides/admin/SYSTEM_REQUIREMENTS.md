@@ -324,7 +324,7 @@ systemctl status docker
 ```
 /var/alleynote/              # 主要安裝目錄
 ├── database/                # SQLite 資料庫檔案
-│   ├── alleynote.db        # 主要資料庫
+│   ├── alleynote.sqlite3        # 主要資料庫
 │   └── backups/            # 資料庫備份
 ├── storage/                 # 應用程式儲存
 │   ├── uploads/            # 上傳檔案

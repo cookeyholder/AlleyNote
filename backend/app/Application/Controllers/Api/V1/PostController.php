@@ -1025,8 +1025,8 @@ class PostController extends BaseController
     }
 
     /**
-     * 發布貼文
-     * 
+     * 發布貼文.
+     *
      * POST /api/posts/{id}/publish
      */
     #[OA\Post(
@@ -1042,7 +1042,7 @@ class PostController extends BaseController
                 description: '貼文 ID',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer', example: 1)
+                schema: new OA\Schema(type: 'integer', example: 1),
             ),
         ],
         responses: [
@@ -1065,7 +1065,7 @@ class PostController extends BaseController
     {
         try {
             $postId = (int) $args['id'];
-            
+
             // 更新貼文狀態為 published
             $post = $this->postService->updatePostStatus($postId, 'published');
 
@@ -1091,8 +1091,8 @@ class PostController extends BaseController
     }
 
     /**
-     * 取消發布貼文
-     * 
+     * 取消發布貼文.
+     *
      * POST /api/posts/{id}/unpublish
      */
     #[OA\Post(
@@ -1108,7 +1108,7 @@ class PostController extends BaseController
                 description: '貼文 ID',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer', example: 1)
+                schema: new OA\Schema(type: 'integer', example: 1),
             ),
         ],
         responses: [
@@ -1131,7 +1131,7 @@ class PostController extends BaseController
     {
         try {
             $postId = (int) $args['id'];
-            
+
             // 更新貼文狀態為 draft
             $post = $this->postService->updatePostStatus($postId, 'draft');
 
@@ -1157,8 +1157,8 @@ class PostController extends BaseController
     }
 
     /**
-     * 取消置頂貼文
-     * 
+     * 取消置頂貼文.
+     *
      * DELETE /api/posts/{id}/pin
      */
     #[OA\Delete(
@@ -1174,7 +1174,7 @@ class PostController extends BaseController
                 description: '貼文 ID',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'integer', example: 1)
+                schema: new OA\Schema(type: 'integer', example: 1),
             ),
         ],
         responses: [
@@ -1197,7 +1197,7 @@ class PostController extends BaseController
     {
         try {
             $postId = (int) $args['id'];
-            
+
             // 取消置頂
             $post = $this->postService->unpinPost($postId);
 

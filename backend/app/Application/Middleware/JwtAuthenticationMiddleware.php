@@ -60,39 +60,42 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
-        $this->logToFile("=== JwtAuthenticationMiddleware::process START ===");
+        $this->logToFile('=== JwtAuthenticationMiddleware::process START ===');
         $this->logToFile("Request: {$request->getMethod()} {$request->getUri()->getPath()}");
-        $this->logToFile("Enabled: " . ($this->enabled ? 'YES' : 'NO'));
-        
+        $this->logToFile('Enabled: ' . ($this->enabled ? 'YES' : 'NO'));
+
         if (!$this->enabled) {
-            $this->logToFile("❌ 中介軟體已禁用");
-            return $handler->handle($request);
-        }
-        
-        $shouldProcess = $this->shouldProcess($request);
-        $this->logToFile("Should process: " . ($shouldProcess ? 'YES' : 'NO'));
-        
-        if (!$shouldProcess) {
-            $this->logToFile("❌ 路徑不需要處理");
+            $this->logToFile('❌ 中介軟體已禁用');
+
             return $handler->handle($request);
         }
 
-        $this->logToFile("✅ 開始驗證");
-        
+        $shouldProcess = $this->shouldProcess($request);
+        $this->logToFile('Should process: ' . ($shouldProcess ? 'YES' : 'NO'));
+
+        if (!$shouldProcess) {
+            $this->logToFile('❌ 路徑不需要處理');
+
+            return $handler->handle($request);
+        }
+
+        $this->logToFile('✅ 開始驗證');
+
         try {
             // 1. 提取 JWT token
             $accessToken = $this->extractToken($request);
-            $this->logToFile("Token extracted: " . ($accessToken ? substr($accessToken, 0, 50) . '...' : 'NULL'));
+            $this->logToFile('Token extracted: ' . ($accessToken ? substr($accessToken, 0, 50) . '...' : 'NULL'));
 
             if ($accessToken === null) {
-                $this->logToFile("❌ Token 缺失");
+                $this->logToFile('❌ Token 缺失');
+
                 return $this->createUnauthorizedResponse('缺少有效的認證 Token');
             }
 
-            $this->logToFile("開始驗證 Token...");
+            $this->logToFile('開始驗證 Token...');
             // 2. 驗證 token 有效性（包含黑名單檢查）
             $payload = $this->jwtTokenService->validateAccessToken($accessToken);
-            $this->logToFile("✅ Token 驗證成功");
+            $this->logToFile('✅ Token 驗證成功');
 
             // 3. 執行額外的安全性檢查
             $this->performSecurityChecks($request, $payload);
@@ -101,27 +104,31 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             $request = $this->injectUserContext($request, $payload, $accessToken);
 
             // 5. 繼續執行後續中介軟體
-            $this->logToFile("繼續執行後續處理器...");
+            $this->logToFile('繼續執行後續處理器...');
             $response = $handler->handle($request);
             $this->logToFile("=== JwtAuthenticationMiddleware::process END (SUCCESS) ===\n");
+
             return $response;
         } catch (TokenExpiredException $e) {
-            $this->logToFile("❌ Token 已過期: " . $e->getMessage());
+            $this->logToFile('❌ Token 已過期: ' . $e->getMessage());
             error_log('[JWT] Token 已過期: ' . $e->getMessage());
+
             return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
         } catch (InvalidTokenException $e) {
-            $this->logToFile("❌ Token 無效: " . $e->getMessage());
-            $this->logToFile("錯誤原因: " . $e->getReason());
+            $this->logToFile('❌ Token 無效: ' . $e->getMessage());
+            $this->logToFile('錯誤原因: ' . $e->getReason());
             error_log('[JWT] Token 無效: ' . $e->getMessage());
             error_log('[JWT] 異常類型: ' . get_class($e));
             error_log('[JWT] 堆疊追蹤: ' . $e->getTraceAsString());
+
             return $this->createUnauthorizedResponse('Token 無效', 'TOKEN_INVALID');
         } catch (Exception $e) {
-            $this->logToFile("❌ 認證驗證失敗: " . $e->getMessage());
-            $this->logToFile("錯誤類型: " . get_class($e));
+            $this->logToFile('❌ 認證驗證失敗: ' . $e->getMessage());
+            $this->logToFile('錯誤類型: ' . get_class($e));
             $this->logToFile("堆疊追蹤:\n" . $e->getTraceAsString());
             error_log('[JWT] 認證驗證失敗: ' . $e->getMessage());
             error_log('[JWT] 異常類型: ' . get_class($e));
+
             return $this->createUnauthorizedResponse('認證驗證失敗', 'AUTH_FAILED');
         }
     }
@@ -174,7 +181,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
     {
         // TODO: 暫時禁用 IP 檢查以便調試
         // IP 地址在開發環境中可能不一致（Docker, Nginx proxy等）
-        
+
         /*
         // 1. IP 地址驗證（如果 payload 包含 IP 資訊）
         $tokenIpAddress = $payload->getCustomClaim('ip_address');

@@ -1,135 +1,208 @@
-/**
- * 管理後台儀表板
- */
-
-import { authApi } from '../../api/auth.js';
-import { statisticsApi } from '../../api/statistics.js';
-import { toast } from '../../utils/toast.js';
-import { loading } from '../../components/Loading.js';
+import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
+import { globalGetters } from '../../store/globalStore.js';
 import { router } from '../../utils/router.js';
+import { postsAPI } from '../../api/modules/posts.js';
+import { loading } from '../../components/Loading.js';
 
+/**
+ * 渲染儀表板頁面
+ */
 export async function renderDashboard() {
-    // 檢查是否已登入
-    if (!authApi.isAuthenticated()) {
-        router.navigate('/login');
-        return;
-    }
-
-    loading.show();
-
-    try {
-        const [user, stats] = await Promise.all([
-            authApi.getCurrentUser(),
-            statisticsApi.getDashboard().catch(() => ({
-                totalPosts: 0,
-                totalUsers: 0,
-                totalViews: 0
-            }))
-        ]);
-
-        const content = document.getElementById('content');
-        content.innerHTML = `
-            <div class="flex h-screen bg-gray-100">
-                <!-- 側邊欄 -->
-                ${renderSidebar(user)}
-
-                <!-- 主要內容 -->
-                <div class="flex-1 overflow-y-auto">
-                    <!-- 頂部導航 -->
-                    <header class="bg-white shadow-sm">
-                        <div class="px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-                            <h1 class="text-2xl font-semibold text-gray-900">儀表板</h1>
-                            <div class="flex items-center gap-4">
-                                <span class="text-gray-700">歡迎，${user.username}</span>
-                                <button id="logout-btn" class="btn btn-outline btn-sm">登出</button>
-                            </div>
-                        </div>
-                    </header>
-
-                    <!-- 內容區域 -->
-                    <main class="p-6">
-                        <!-- 統計卡片 -->
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <div class="card">
-                                <h3 class="text-gray-500 text-sm font-medium mb-2">文章總數</h3>
-                                <p class="text-3xl font-bold text-gray-900">${stats.totalPosts || 0}</p>
-                            </div>
-                            <div class="card">
-                                <h3 class="text-gray-500 text-sm font-medium mb-2">使用者總數</h3>
-                                <p class="text-3xl font-bold text-gray-900">${stats.totalUsers || 0}</p>
-                            </div>
-                            <div class="card">
-                                <h3 class="text-gray-500 text-sm font-medium mb-2">總瀏覽次數</h3>
-                                <p class="text-3xl font-bold text-gray-900">${stats.totalViews || 0}</p>
-                            </div>
-                        </div>
-
-                        <!-- 快速操作 -->
-                        <div class="card">
-                            <h2 class="text-xl font-semibold mb-4">快速操作</h2>
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <a href="/admin/posts/new" data-link class="btn btn-primary">新增文章</a>
-                                <a href="/admin/posts" data-link class="btn btn-secondary">文章管理</a>
-                                <a href="/admin/users" data-link class="btn btn-secondary">使用者管理</a>
-                                <a href="/admin/settings" data-link class="btn btn-secondary">系統設定</a>
-                            </div>
-                        </div>
-                    </main>
+  const user = globalGetters.getCurrentUser();
+  
+  // 確保隱藏載入指示器
+  loading.hide();
+  
+  // 先顯示基本架構
+  const content = `
+    <div>
+      <h1 class="text-3xl font-bold text-modern-900 mb-8">儀表板</h1>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8" id="stats-cards">
+        <!-- 統計卡片載入中 -->
+      </div>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- 最近文章 -->
+        <div class="card">
+          <h2 class="text-xl font-semibold text-modern-900 mb-4">最近發布的文章</h2>
+          <div id="recent-posts" class="space-y-3">
+            <!-- 載入中 -->
+          </div>
+          <div class="mt-4">
+            <a href="/admin/posts" data-navigo class="text-accent-600 hover:text-accent-700 text-sm font-medium">
+              查看所有文章 →
+            </a>
+          </div>
+        </div>
+        
+        <!-- 快速操作 -->
+        <div class="card">
+          <h2 class="text-xl font-semibold text-modern-900 mb-4">快速操作</h2>
+          <div class="space-y-3">
+            <a href="/admin/posts/create" data-navigo class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">✏️</span>
+                <div>
+                  <h3 class="font-medium text-modern-900">新增文章</h3>
+                  <p class="text-sm text-modern-600">建立新的公告或文章</p>
                 </div>
-            </div>
+              </div>
+            </a>
+            
+            <a href="/admin/posts" data-navigo class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
+              <div class="flex items-center gap-3">
+                <span class="text-2xl">📋</span>
+                <div>
+                  <h3 class="font-medium text-modern-900">管理文章</h3>
+                  <p class="text-sm text-modern-600">編輯或刪除現有文章</p>
+                </div>
+              </div>
+            </a>
+            
+            ${globalGetters.isAdmin() ? `
+              <a href="/admin/users" data-navigo class="block p-4 border-2 border-modern-200 rounded-lg hover:border-accent-500 hover:bg-accent-50 transition-all">
+                <div class="flex items-center gap-3">
+                  <span class="text-2xl">👥</span>
+                  <div>
+                    <h3 class="font-medium text-modern-900">使用者管理</h3>
+                    <p class="text-sm text-modern-600">管理系統使用者</p>
+                  </div>
+                </div>
+              </a>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  const app = document.getElementById('app');
+  app.innerHTML = renderDashboardLayout(content);
+  bindDashboardLayoutEvents();
+  router.updatePageLinks();
+  
+  // 載入統計資料和最近文章
+  await loadDashboardData();
+}
+
+/**
+ * 載入儀表板資料
+ */
+async function loadDashboardData() {
+  try {
+    // 載入文章列表以計算統計資料
+    const result = await postsAPI.list({ page: 1, per_page: 100 });
+    const posts = result.data || [];
+    const total = result.pagination?.total || 0;
+    
+    // 計算統計資料
+    const publishedCount = posts.filter(p => p.status === 'published').length;
+    const draftCount = posts.filter(p => p.status === 'draft').length;
+    const totalViews = posts.reduce((sum, p) => sum + (parseInt(p.views) || 0), 0);
+    
+    // 更新統計卡片
+    const statsContainer = document.getElementById('stats-cards');
+    if (statsContainer) {
+      statsContainer.innerHTML = `
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-modern-600">總文章數</h3>
+            <span class="text-2xl">📝</span>
+          </div>
+          <p class="text-3xl font-bold text-modern-900">${total}</p>
+          <p class="text-sm text-modern-500 mt-2">已發布 ${publishedCount} 篇</p>
+        </div>
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-modern-600">總瀏覽量</h3>
+            <span class="text-2xl">👁️</span>
+          </div>
+          <p class="text-3xl font-bold text-modern-900">${totalViews.toLocaleString()}</p>
+          <p class="text-sm text-modern-500 mt-2">全部文章累計</p>
+        </div>
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-modern-600">草稿數</h3>
+            <span class="text-2xl">✏️</span>
+          </div>
+          <p class="text-3xl font-bold text-modern-900">${draftCount}</p>
+          <p class="text-sm text-modern-600 mt-2">待發布</p>
+        </div>
+        
+        <div class="card">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-medium text-modern-600">已發布</h3>
+            <span class="text-2xl">✅</span>
+          </div>
+          <p class="text-3xl font-bold text-modern-900">${publishedCount}</p>
+          <p class="text-sm text-modern-500 mt-2">線上中的文章</p>
+        </div>
+      `;
+    }
+    
+    // 更新最近文章列表（只顯示最近 5 篇）
+    const recentPosts = posts
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 5);
+    
+    const recentPostsContainer = document.getElementById('recent-posts');
+    if (recentPostsContainer) {
+      if (recentPosts.length === 0) {
+        recentPostsContainer.innerHTML = `
+          <div class="text-center py-8 text-modern-500">
+            <p>尚無文章</p>
+            <a href="/admin/posts/create" data-navigo class="text-accent-600 hover:text-accent-700 mt-2 inline-block">
+              立即新增第一篇文章
+            </a>
+          </div>
         `;
-
-        // 綁定登出按鈕
-        document.getElementById('logout-btn').addEventListener('click', handleLogout);
-
-    } catch (error) {
-        toast.error('載入失敗');
-        console.error(error);
-        router.navigate('/login');
-    } finally {
-        loading.hide();
-    }
-}
-
-function renderSidebar(user) {
-    const menuItems = [
-        { path: '/admin/dashboard', label: '儀表板', icon: '📊' },
-        { path: '/admin/posts', label: '文章管理', icon: '📝' },
-        { path: '/admin/users', label: '使用者管理', icon: '👥' },
-        { path: '/admin/roles', label: '角色管理', icon: '🔐' },
-        { path: '/admin/statistics', label: '系統統計', icon: '📈' },
-        { path: '/admin/settings', label: '系統設定', icon: '⚙️' },
-        { path: '/', label: '返回首頁', icon: '🏠' }
-    ];
-
-    return `
-        <aside class="sidebar">
-            <div class="p-4 border-b border-gray-700">
-                <h2 class="text-xl font-bold">AlleyNote</h2>
-                <p class="text-sm text-gray-400">管理後台</p>
+      } else {
+        recentPostsContainer.innerHTML = recentPosts.map((post, index) => {
+          const date = new Date(post.created_at);
+          const formattedDate = date.toLocaleDateString('zh-TW', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          });
+          
+          return `
+            <div class="flex items-center justify-between py-3 ${index < recentPosts.length - 1 ? 'border-b border-modern-100' : ''}">
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-modern-900 truncate">${post.title}</h3>
+                <div class="flex items-center gap-2 mt-1">
+                  <p class="text-sm text-modern-500">${formattedDate}</p>
+                  ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ''}
+                </div>
+              </div>
+              <span class="ml-4 px-3 py-1 ${
+                post.status === 'published'
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-yellow-100 text-yellow-700'
+              } text-sm rounded-full whitespace-nowrap">
+                ${post.status === 'published' ? '已發布' : '草稿'}
+              </span>
             </div>
-            <nav class="flex-1 p-4">
-                ${menuItems.map(item => `
-                    <a href="${item.path}" data-link class="sidebar-link ${window.location.pathname === item.path ? 'active' : ''}">
-                        <span class="mr-3">${item.icon}</span>
-                        ${item.label}
-                    </a>
-                `).join('')}
-            </nav>
-            <div class="p-4 border-t border-gray-700">
-                <p class="text-sm text-gray-400">登入身分</p>
-                <p class="text-white">${user.username}</p>
-            </div>
-        </aside>
-    `;
-}
-
-async function handleLogout() {
-    try {
-        await authApi.logout();
-        toast.success('已登出');
-        router.navigate('/login');
-    } catch (error) {
-        toast.error('登出失敗');
+          `;
+        }).join('');
+      }
+      
+      // 更新連結
+      router.updatePageLinks();
     }
+  } catch (error) {
+    console.error('載入儀表板資料失敗:', error);
+    
+    // 顯示錯誤訊息
+    const statsContainer = document.getElementById('stats-cards');
+    if (statsContainer) {
+      statsContainer.innerHTML = `
+        <div class="col-span-4 card">
+          <p class="text-red-600">載入統計資料失敗，請重新整理頁面</p>
+        </div>
+      `;
+    }
+  }
 }
