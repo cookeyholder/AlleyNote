@@ -1,5 +1,8 @@
 /**
- * 文章 API 模組
+ * 文章 API 模組（舊版 - 相容性保留）
+ * 
+ * 注意：此檔案為舊版 API，建議使用 modules/posts.js
+ * 保留此檔案以確保向後相容性
  */
 
 import { apiClient } from './client.js';
@@ -27,7 +30,8 @@ export const postsApi = {
     },
 
     async togglePin(id) {
-        return await apiClient.put(`/posts/${id}/pin`);
+        // 修正：使用 PATCH 而不是 PUT
+        return await apiClient.patch(`/posts/${id}/pin`);
     },
 
     async getPublicPosts(params = {}) {
