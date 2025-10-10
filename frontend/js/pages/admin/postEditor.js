@@ -11,6 +11,24 @@ let hasUnsavedChanges = false;
 let autoSaveTimer = null;
 
 /**
+ * 格式化日期時間為 datetime-local 輸入格式
+ * 確保使用本地時區而不是 UTC
+ */
+function formatDateTimeLocal(dateString) {
+  if (!dateString) return '';
+  
+  const date = new Date(dateString);
+  // 取得本地時間的年月日時分
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+/**
  * 渲染文章編輯器
  */
 export async function renderPostEditor(postId = null) {
@@ -102,7 +120,7 @@ export async function renderPostEditor(postId = null) {
                 id="publish_date"
                 name="publish_date"
                 class="input-field"
-                value="${post?.publish_date ? new Date(post.publish_date).toISOString().slice(0, 16) : ''}"
+                value="${post?.publish_date ? formatDateTimeLocal(post.publish_date) : ''}"
               />
               <p class="text-sm text-modern-500 mt-1">
                 留空則使用當前時間。設定未來時間可實現定時發布。
@@ -277,16 +295,30 @@ async function savePost(postId, status) {
   const form = document.getElementById('post-form');
   const submitBtn = document.getElementById('submit-btn');
   
-  const data = {
+  // 取得編輯器內容
+  let content = '';
+  if (editorInstance && editorInstance.editor) {
+    content = editorInstance.editor.getData();
+  }
+  
+  console.log('[PostEditor] 儲存文章:', {
     title: form.title.value,
-    content: editorInstance ? editorInstance.getData() : '',
+    contentLength: content.length,
+    status: status || form.status.value
+  });
+  
+  const data = {
+    title: form.title.value.trim(),
+    content: content,
     status: status || form.status.value,
-    excerpt: form.excerpt.value,
+    excerpt: form.excerpt.value.trim(),
   };
   
-  // 添加發布日期時間
+  // 添加發布日期時間 - 確保正確轉換為 UTC ISO 字串
   if (form.publish_date.value) {
-    data.publish_date = new Date(form.publish_date.value).toISOString();
+    // datetime-local 輸入的值是本地時間，需要轉換為 UTC ISO
+    const localDate = new Date(form.publish_date.value);
+    data.publish_date = localDate.toISOString();
   }
   
   // 清除舊錯誤
@@ -306,16 +338,21 @@ async function savePost(postId, status) {
       const result = await apiClient.post('/posts', data);
       hasUnsavedChanges = false;
       toast.success('文章已建立');
-      // 重新導向到編輯頁面
+      // 清理編輯器並返回列表頁面，讓列表重新載入
+      cleanupEditor();
       setTimeout(() => {
-        router.navigate(`/admin/posts/${result.id}/edit`);
+        router.navigate('/admin/posts');
       }, 1000);
+      return; // 提早返回，避免重新啟用按鈕
     }
   } catch (error) {
-    if (error.isValidationError()) {
-      showValidationErrors(error.getValidationErrors());
+    console.error('[PostEditor] 儲存失敗:', error);
+    
+    // 檢查是否為驗證錯誤 (422)
+    if (error.status === 422 && error.data && error.data.errors) {
+      showValidationErrors(error.data.errors);
     } else {
-      toast.error(error.getUserMessage());
+      toast.error(error.message || '儲存失敗');
     }
   } finally {
     submitBtn.disabled = false;
