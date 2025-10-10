@@ -5,7 +5,7 @@ import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/
 import { globalGetters } from '../../store/globalStore.js';
 import { toast } from '../../utils/toast.js';
 
-export async function renderSettingsPage() {
+export async function renderSettings() {
   const content = `
     <div class="max-w-4xl mx-auto">
       <!-- 基本設定 -->
