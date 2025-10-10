@@ -159,6 +159,13 @@ class ApiClient {
       // 建構完整 URL
       let fullUrl = `${this.baseURL}${url}`;
       
+      console.log('[API Client] 請求 URL:', {
+        baseURL: this.baseURL,
+        path: url,
+        fullUrl: fullUrl,
+        method: method
+      });
+      
       // 處理查詢參數
       if (params) {
         const searchParams = new URLSearchParams();

@@ -92,7 +92,9 @@ export async function renderDashboard() {
 async function loadDashboardData() {
   try {
     // 載入文章列表以計算統計資料
+    console.log('[Dashboard] 開始載入文章列表...');
     const result = await postsAPI.list({ page: 1, per_page: 100 });
+    console.log('[Dashboard] API 回應:', result);
     const posts = result.data || [];
     const total = result.pagination?.total || 0;
     
