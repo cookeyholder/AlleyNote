@@ -9,6 +9,7 @@ import { loading } from '../../components/Loading.js';
 let editorInstance = null;
 let hasUnsavedChanges = false;
 let autoSaveTimer = null;
+let originalPostData = null; // 保存原始文章數據用於取消操作
 
 /**
  * 格式化日期時間為 datetime-local 輸入格式
@@ -43,6 +44,8 @@ export async function renderPostEditor(postId = null) {
     try {
       const result = await apiClient.get(`/posts/${postId}`);
       post = result.data;
+      // 保存原始數據的深拷貝
+      originalPostData = JSON.parse(JSON.stringify(post));
     } catch (error) {
       loading.hide();
       toast.error('載入文章失敗');
@@ -50,6 +53,8 @@ export async function renderPostEditor(postId = null) {
       return;
     }
     loading.hide();
+  } else {
+    originalPostData = null;
   }
   
   const content = `
@@ -227,6 +232,24 @@ function bindFormEvents(postId) {
       if (!confirmed) return;
     }
     
+    // 如果是編輯模式且有原始數據，恢復原始數據
+    if (postId && originalPostData) {
+      const form = document.getElementById('post-form');
+      form.title.value = originalPostData.title || '';
+      form.status.value = originalPostData.status || 'draft';
+      form.excerpt.value = originalPostData.excerpt || '';
+      form.publish_date.value = originalPostData.publish_date ? formatDateTimeLocal(originalPostData.publish_date) : '';
+      
+      // 恢復編輯器內容
+      if (editorInstance && editorInstance.editor) {
+        editorInstance.editor.setData(originalPostData.content || '');
+      }
+      
+      hasUnsavedChanges = false;
+      toast.info('已恢復原始內容');
+      return;
+    }
+    
     cleanupEditor();
     router.navigate('/admin/posts');
   });
@@ -286,6 +309,7 @@ function cleanupEditor() {
   }
   
   hasUnsavedChanges = false;
+  originalPostData = null; // 清除原始數據
 }
 
 /**
@@ -333,6 +357,15 @@ async function savePost(postId, status) {
     if (postId) {
       await apiClient.put(`/posts/${postId}`, data);
       hasUnsavedChanges = false;
+      // 更新原始數據為當前保存的數據
+      originalPostData = JSON.parse(JSON.stringify({
+        ...originalPostData,
+        title: data.title,
+        content: data.content,
+        status: data.status,
+        excerpt: data.excerpt,
+        publish_date: data.publish_date
+      }));
       toast.success('文章已更新');
     } else {
       const result = await apiClient.post('/posts', data);

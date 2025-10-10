@@ -146,9 +146,13 @@ async function loadDashboardData() {
       `;
     }
     
-    // 更新最近文章列表（只顯示最近 5 篇）
+    // 更新最近文章列表（只顯示最近 5 篇，依照 publish_date 或 created_at 排序）
     const recentPosts = posts
-      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .sort((a, b) => {
+        const dateA = new Date(a.publish_date || a.created_at);
+        const dateB = new Date(b.publish_date || b.created_at);
+        return dateB - dateA;
+      })
       .slice(0, 5);
     
     const recentPostsContainer = document.getElementById('recent-posts');
@@ -164,11 +168,17 @@ async function loadDashboardData() {
         `;
       } else {
         recentPostsContainer.innerHTML = recentPosts.map((post, index) => {
-          const date = new Date(post.created_at);
+          // 優先使用 publish_date，若無則使用 created_at
+          const dateString = post.publish_date || post.created_at;
+          const date = new Date(dateString);
           const formattedDate = date.toLocaleDateString('zh-TW', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit'
+          });
+          const formattedTime = date.toLocaleTimeString('zh-TW', {
+            hour: '2-digit',
+            minute: '2-digit'
           });
           
           return `
@@ -176,7 +186,7 @@ async function loadDashboardData() {
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-modern-900 truncate">${post.title}</h3>
                 <div class="flex items-center gap-2 mt-1">
-                  <p class="text-sm text-modern-500">${formattedDate}</p>
+                  <p class="text-sm text-modern-500">${formattedDate} ${formattedTime}</p>
                   ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ''}
                 </div>
               </div>
