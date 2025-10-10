@@ -1,5 +1,5 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
-import { postsAPI } from '../../api/modules/posts.js';
+import { apiClient } from '../../api/client.js';
 import { router } from '../../utils/router.js';
 import { toast } from '../../utils/toast.js';
 import { CKEditorWrapper } from '../../components/CKEditorWrapper.js';
@@ -23,7 +23,7 @@ export async function renderPostEditor(postId = null) {
   if (postId) {
     loading.show('載入文章中...');
     try {
-      const result = await postsAPI.get(postId);
+      const result = await apiClient.get(`/posts/${postId}`);
       post = result.data;
     } catch (error) {
       loading.hide();
@@ -143,7 +143,7 @@ export async function renderPostEditor(postId = null) {
   `;
   
   const app = document.getElementById('app');
-  app.innerHTML = renderDashboardLayout(content);
+  renderDashboardLayout(content, { title: isEdit ? '編輯文章' : '新增文章' });
   bindDashboardLayoutEvents();
   
   // 初始化 CKEditor
@@ -231,7 +231,7 @@ function startAutoSave(postId) {
         excerpt: form.excerpt.value,
       };
       
-      await postsAPI.update(postId, data);
+      await apiClient.put(`/posts/${postId}`, data);
       hasUnsavedChanges = false;
       console.log('Auto-saved at', new Date().toLocaleTimeString());
     } catch (error) {
@@ -298,11 +298,11 @@ async function savePost(postId, status) {
   
   try {
     if (postId) {
-      await postsAPI.update(postId, data);
+      await apiClient.put(`/posts/${postId}`, data);
       hasUnsavedChanges = false;
       toast.success('文章已更新');
     } else {
-      const result = await postsAPI.create(data);
+      const result = await apiClient.post('/posts', data);
       hasUnsavedChanges = false;
       toast.success('文章已建立');
       // 重新導向到編輯頁面

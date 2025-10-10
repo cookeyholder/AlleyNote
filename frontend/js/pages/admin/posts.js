@@ -1,5 +1,5 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
-import { postsAPI } from '../../api/modules/posts.js';
+import { apiClient } from '../../api/client.js';
 import { toast } from '../../utils/toast.js';
 import { confirmDelete } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
@@ -60,7 +60,7 @@ export async function renderPostsList() {
   `;
   
   const app = document.getElementById('app');
-  app.innerHTML = renderDashboardLayout(content);
+  renderDashboardLayout(content, { title: '文章管理' });
   bindDashboardLayoutEvents();
   
   // 載入文章列表
@@ -111,7 +111,8 @@ async function loadPosts() {
       per_page: 10,
     };
     
-    const result = await postsAPI.list(currentFilters);
+    // 直接使用 apiClient 避免模組緩存問題
+    const result = await apiClient.get('/posts', { params: currentFilters });
     const posts = result.data || [];
     const pagination = result.pagination || {};
     
@@ -281,7 +282,7 @@ window.deletePost = async function (postId) {
   loading.show('刪除中...');
   
   try {
-    await postsAPI.delete(postId);
+    await apiClient.delete(`/posts/${postId}`);
     loading.hide();
     toast.success('文章已刪除');
     await loadPosts();
@@ -301,7 +302,7 @@ window.togglePostStatus = async function (postId, currentStatus) {
   loading.show(`${action}中...`);
   
   try {
-    await postsAPI.update(postId, { status: newStatus });
+    await apiClient.put(`/posts/${postId}`, { status: newStatus });
     loading.hide();
     toast.success(`文章已${action}`);
     await loadPosts();
