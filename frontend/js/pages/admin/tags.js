@@ -1,7 +1,7 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { toast } from '../../utils/toast.js';
-import { Modal } from '../../components/Modal.js';
-import apiClient from '../../api/client.js';
+import { modal } from '../../components/Modal.js';
+import { apiClient } from '../../api/client.js';
 
 /**
  * 標籤管理頁面

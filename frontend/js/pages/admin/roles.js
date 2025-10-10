@@ -5,7 +5,7 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { rolesAPI, permissionsAPI } from '../../api/modules/users.js';
 import { toast } from '../../utils/toast.js';
-import { Modal } from '../../components/Modal.js';
+import { modal } from '../../components/Modal.js';
 
 /**
  * 角色管理頁面類別

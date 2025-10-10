@@ -4,7 +4,7 @@
  */
 import { globalStore } from '../../store/globalStore.js';
 import { toast } from '../../utils/toast.js';
-import apiClient from '../../api/client.js';
+import { apiClient } from '../../api/client.js';
 import { loading } from '../../components/Loading.js';
 
 export async function renderSettingsPage() {
