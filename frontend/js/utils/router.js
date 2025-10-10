@@ -207,6 +207,10 @@ export const router = {
   navigate: async (path) => {
     const r = await getRouter();
     r.navigate(path);
+  },
+  updatePageLinks: async () => {
+    const r = await getRouter();
+    r.updatePageLinks();
   }
 };
 
