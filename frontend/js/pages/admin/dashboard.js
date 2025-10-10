@@ -77,9 +77,9 @@ export async function renderDashboard() {
     </div>
   `;
   
-  const app = document.getElementById('app');
-  app.innerHTML = renderDashboardLayout(content);
-  bindDashboardLayoutEvents();
+  renderDashboardLayout(content, {
+    title: '儀表板'
+  });
   router.updatePageLinks();
   
   // 載入統計資料和最近文章
