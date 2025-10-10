@@ -392,3 +392,11 @@ export default class ProfilePage {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 }
+
+/**
+ * 渲染個人資料頁面（wrapper 函數）
+ */
+export async function renderProfile() {
+  const page = new ProfilePage();
+  await page.init();
+}

@@ -387,3 +387,11 @@ export default class StatisticsPage {
     return num.toString();
   }
 }
+
+/**
+ * 渲染系統統計頁面（wrapper 函數）
+ */
+export async function renderStatistics() {
+  const page = new StatisticsPage();
+  await page.init();
+}

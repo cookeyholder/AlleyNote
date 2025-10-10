@@ -427,3 +427,11 @@ export default class RolesPage {
   }
 }
 
+
+/**
+ * 渲染角色管理頁面（wrapper 函數）
+ */
+export async function renderRoles() {
+  const page = new RolesPage();
+  await page.init();
+}

@@ -343,3 +343,11 @@ export default class TagsPage {
     return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : '';
   }
 }
+
+/**
+ * 渲染標籤管理頁面（wrapper 函數）
+ */
+export async function renderTags() {
+  const page = new TagsPage();
+  await page.init();
+}

@@ -511,3 +511,11 @@ export default class UsersPage {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 }
+
+/**
+ * 渲染使用者管理頁面（wrapper 函數）
+ */
+export async function renderUsers() {
+  const page = new UsersPage();
+  await page.init();
+}
