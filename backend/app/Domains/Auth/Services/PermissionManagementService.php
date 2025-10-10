@@ -24,7 +24,7 @@ class PermissionManagementService
      */
     public function listPermissions(): array
     {
-        return $this->permissionRepository->findAll();
+        return array_values($this->permissionRepository->findAll());
     }
 
     /**
@@ -66,6 +66,12 @@ class PermissionManagementService
      */
     public function getPermissionsByGroup(): array
     {
-        return $this->permissionRepository->findAllGroupedByResource();
+        $grouped = $this->permissionRepository->findAllGroupedByResource();
+        $result = [];
+        foreach ($grouped as $key => $permissions) {
+            $result[$key] = array_values($permissions);
+        }
+
+        return $result;
     }
 }

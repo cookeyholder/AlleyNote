@@ -22,8 +22,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Tag extends Model
 {
+    /** @var string */
     protected $table = 'tags';
 
+    /** @var array<int, string> */
     protected $fillable = [
         'name',
         'slug',
@@ -32,6 +34,7 @@ class Tag extends Model
         'usage_count',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'usage_count' => 'integer',
         'created_at' => 'datetime',

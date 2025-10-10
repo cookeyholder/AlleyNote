@@ -13,15 +13,17 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $key
  * @property string|null $value
- * @property string|null $type
+ * @property string $type
  * @property string|null $description
  * @property Carbon $created_at
  * @property Carbon $updated_at
  */
 class Setting extends Model
 {
+    /** @var string */
     protected $table = 'settings';
 
+    /** @var array<int, string> */
     protected $fillable = [
         'key',
         'value',
@@ -29,6 +31,7 @@ class Setting extends Model
         'description',
     ];
 
+    /** @var array<string, string> */
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

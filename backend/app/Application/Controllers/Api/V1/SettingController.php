@@ -83,15 +83,14 @@ class SettingController
     {
         try {
             $data = json_decode((string) $request->getBody(), true);
-            if (!is_array($data)) {
-                $data = [];
-            }
+            /** @var array<string, mixed> */
+            $settings = is_array($data) ? $data : [];
 
-            $settings = $this->settingManagementService->updateSettings($data);
+            $result = $this->settingManagementService->updateSettings($settings);
 
             $responseData = json_encode([
                 'success' => true,
-                'data' => $settings,
+                'data' => $result,
                 'message' => '系統設定更新成功',
             ]);
 

@@ -499,6 +499,336 @@ parameters:
 			path: app/Domains/Auth/Services/UserManagementService.php
 
 		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$color\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$name\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$slug\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$usage_count\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Call to an undefined method App\\Domains\\Post\\Models\\Tag\:\:belongsToMany\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Models\\Tag\:\:posts\(\) has invalid return type Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Models\\Tag\:\:posts\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Domains\\Post\\Models\\Tag\:\:\$created_at contains unknown class Carbon\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Domains\\Post\\Models\\Tag\:\:\$updated_at contains unknown class Carbon\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Post/Models/Tag.php
+
+		-
+			message: '#^Binary operation "/" between mixed and int results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:create\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:find\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 3
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:query\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:where\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 4
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Call to static method slug\(\) on an unknown class Illuminate\\Support\\Str\.$#'
+			identifier: class.notFound
+			count: 2
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method count\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method delete\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method detach\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method exists\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method fresh\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method get\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method map\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method orWhere\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method orderBy\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method posts\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method skip\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method take\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method toArray\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 5
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method update\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Cannot call method where\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:createTag\(\) should return array\<string, mixed\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:getTag\(\) should return array\<string, mixed\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:listTags\(\) should return array\{items\: array\<int, array\<string, mixed\>\>, total\: int, page\: int, per_page\: int, last_page\: int\} but returns array\{items\: mixed, total\: mixed, page\: int, per_page\: int, last_page\: int\}\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:updateTag\(\) should return array\<string, mixed\> but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Parameter \#1 \$validationResult of class App\\Shared\\Exceptions\\ValidationException constructor expects App\\Shared\\Validation\\ValidationResult, string given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Parameter \#2 \$message of class App\\Shared\\Exceptions\\ValidationException constructor expects string, array\<string, list\<string\>\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Part \$search \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 3
+			path: app/Domains/Post/Services/TagManagementService.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$created_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$description\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$id\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$key\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$type\.$#'
+			identifier: property.notFound
+			count: 2
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$updated_at\.$#'
+			identifier: property.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$value\.$#'
+			identifier: property.notFound
+			count: 4
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Cannot cast mixed to float\.$#'
+			identifier: cast.double
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Domains\\Setting\\Models\\Setting\:\:\$created_at contains unknown class Carbon\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^PHPDoc tag @property for property App\\Domains\\Setting\\Models\\Setting\:\:\$updated_at contains unknown class Carbon\\Carbon\.$#'
+			identifier: class.notFound
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Setting/Models/Setting.php
+
+		-
 			message: '#^Cannot cast mixed to string\.$#'
 			identifier: cast.string
 			count: 1

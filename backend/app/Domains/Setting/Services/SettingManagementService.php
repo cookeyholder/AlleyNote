@@ -22,7 +22,7 @@ class SettingManagementService
     /**
      * 取得所有設定.
      *
-     * @return array<string, mixed>
+     * @return array<string, array<string, mixed>>
      */
     public function getAllSettings(): array
     {
@@ -30,11 +30,14 @@ class SettingManagementService
 
         $result = [];
         foreach ($settings as $setting) {
-            $result[$setting['key']] = [
-                'value' => $setting['value'],
-                'type' => $setting['type'],
-                'description' => $setting['description'],
-            ];
+            $key = is_string($setting['key'] ?? null) ? $setting['key'] : '';
+            if ($key !== '') {
+                $result[$key] = [
+                    'value' => $setting['value'],
+                    'type' => $setting['type'],
+                    'description' => $setting['description'],
+                ];
+            }
         }
 
         return $result;
@@ -71,10 +74,16 @@ class SettingManagementService
      */
     public function updateSettings(array $data): array
     {
+        /** @var array<string, array<int, string>> */
         $errors = [];
+        /** @var array<string, mixed> */
         $updated = [];
 
         foreach ($data as $key => $value) {
+            if (!is_string($key)) {
+                continue;
+            }
+
             try {
                 $updated[$key] = $this->updateSetting($key, $value);
             } catch (NotFoundException $e) {
@@ -83,12 +92,7 @@ class SettingManagementService
         }
 
         if (!empty($errors)) {
-            $validationResult = new ValidationResult();
-            foreach ($errors as $field => $messages) {
-                foreach ($messages as $message) {
-                    $validationResult->addError($field, $message);
-                }
-            }
+            $validationResult = new ValidationResult(false, $errors);
 
             throw new ValidationException($validationResult, '部分設定更新失敗');
         }
@@ -110,7 +114,7 @@ class SettingManagementService
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
 
-        $type = $setting['type'];
+        $type = is_string($setting['type'] ?? null) ? $setting['type'] : 'string';
         $updatedSetting = $this->settingRepository->updateValue($key, $value, $type);
 
         if (!$updatedSetting) {
@@ -139,7 +143,8 @@ class SettingManagementService
         $setting = $this->settingRepository->findByKey($key);
 
         if ($setting) {
-            $updatedSetting = $this->settingRepository->updateValue($key, $value, $type ?? $setting['type']);
+            $settingType = is_string($setting['type'] ?? null) ? $setting['type'] : 'string';
+            $updatedSetting = $this->settingRepository->updateValue($key, $value, $type ?? $settingType);
             if (!$updatedSetting) {
                 throw new RuntimeException("設定更新失敗 (Key: {$key})");
             }

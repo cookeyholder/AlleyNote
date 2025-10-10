@@ -24,21 +24,32 @@ class SettingRepository
     {
         $sql = 'SELECT * FROM settings ORDER BY key ASC';
         $stmt = $this->db->query($sql);
+        if ($stmt === false) {
+            return [];
+        }
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return array_map(function (array $row): array {
-            $value = $this->castValue($row['value'] ?? null, $row['type'] ?? 'string');
+        $result = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $type = is_string($row['type'] ?? null) ? $row['type'] : 'string';
+            $valueStr = is_string($row['value'] ?? null) ? $row['value'] : null;
+            $value = $this->castValue($valueStr, $type);
 
-            return [
-                'id' => (int) $row['id'],
-                'key' => $row['key'],
+            $result[] = [
+                'id' => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
+                'key' => is_string($row['key'] ?? null) ? $row['key'] : '',
                 'value' => $value,
-                'type' => $row['type'] ?? 'string',
-                'description' => $row['description'] ?? null,
-                'created_at' => $row['created_at'] ?? '',
-                'updated_at' => $row['updated_at'] ?? '',
+                'type' => $type,
+                'description' => is_string($row['description'] ?? null) ? $row['description'] : null,
+                'created_at' => is_string($row['created_at'] ?? null) ? $row['created_at'] : '',
+                'updated_at' => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
             ];
-        }, $rows);
+        }
+
+        return $result;
     }
 
     /**
@@ -53,20 +64,22 @@ class SettingRepository
         $stmt->execute(['key' => $key]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$row) {
+        if (!is_array($row)) {
             return null;
         }
 
-        $value = $this->castValue($row['value'] ?? null, $row['type'] ?? 'string');
+        $type = is_string($row['type'] ?? null) ? $row['type'] : 'string';
+        $valueStr = is_string($row['value'] ?? null) ? $row['value'] : null;
+        $value = $this->castValue($valueStr, $type);
 
         return [
-            'id' => (int) $row['id'],
-            'key' => $row['key'],
+            'id' => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
+            'key' => is_string($row['key'] ?? null) ? $row['key'] : '',
             'value' => $value,
-            'type' => $row['type'] ?? 'string',
-            'description' => $row['description'] ?? null,
-            'created_at' => $row['created_at'] ?? '',
-            'updated_at' => $row['updated_at'] ?? '',
+            'type' => $type,
+            'description' => is_string($row['description'] ?? null) ? $row['description'] : null,
+            'created_at' => is_string($row['created_at'] ?? null) ? $row['created_at'] : '',
+            'updated_at' => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
         ];
     }
 
@@ -147,10 +160,10 @@ class SettingRepository
     {
         return match ($type) {
             'boolean' => $value ? '1' : '0',
-            'integer' => (string) (int) $value,
-            'float' => (string) (float) $value,
-            'array', 'json' => json_encode($value),
-            default => (string) $value,
+            'integer' => is_int($value) || is_string($value) || is_float($value) ? (string) ((int) $value) : '0',
+            'float' => is_int($value) || is_string($value) || is_float($value) ? (string) ((float) $value) : '0.0',
+            'array', 'json' => json_encode($value) ?: '[]',
+            default => is_string($value) ? $value : (is_int($value) || is_float($value) ? (string) $value : ''),
         };
     }
 }
