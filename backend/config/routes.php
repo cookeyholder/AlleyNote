@@ -7,6 +7,10 @@ use App\Application\Controllers\Api\V1\AuthController;
 use App\Application\Controllers\Api\V1\ActivityLogController;
 use App\Application\Controllers\Api\V1\PostController as ApiPostController;
 use App\Application\Controllers\Api\V1\UserController;
+use App\Application\Controllers\Api\V1\RoleController;
+use App\Application\Controllers\Api\V1\PermissionController;
+use App\Application\Controllers\Api\V1\TagController;
+use App\Application\Controllers\Api\V1\SettingController;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 
 /**
@@ -144,44 +148,171 @@ return function (RouterInterface $router): void {
     // =========================================
 
     // 取得使用者列表 (需要管理員權限)
+    $usersIndex = $router->get('/api/users', [UserController::class, 'index']);
+    $usersIndex->setName('users.index');
+    $usersIndex->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取得單一使用者 (需要管理員權限)
+    $usersShow = $router->get('/api/users/{id}', [UserController::class, 'show']);
+    $usersShow->setName('users.show');
+    $usersShow->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 建立使用者 (需要管理員權限)
+    $usersStore = $router->post('/api/users', [UserController::class, 'store']);
+    $usersStore->setName('users.store');
+    $usersStore->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 更新使用者 (需要管理員權限)
+    $usersUpdate = $router->put('/api/users/{id}', [UserController::class, 'update']);
+    $usersUpdate->setName('users.update');
+    $usersUpdate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 刪除使用者 (需要管理員權限)
+    $usersDestroy = $router->delete('/api/users/{id}', [UserController::class, 'destroy']);
+    $usersDestroy->setName('users.destroy');
+    $usersDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 啟用使用者 (需要管理員權限)
+    $usersActivate = $router->post('/api/users/{id}/activate', [UserController::class, 'activate']);
+    $usersActivate->setName('users.activate');
+    $usersActivate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 停用使用者 (需要管理員權限)
+    $usersDeactivate = $router->post('/api/users/{id}/deactivate', [UserController::class, 'deactivate']);
+    $usersDeactivate->setName('users.deactivate');
+    $usersDeactivate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 重設使用者密碼 (需要管理員權限)
+    $usersResetPassword = $router->post('/api/users/{id}/reset-password', [UserController::class, 'resetPassword']);
+    $usersResetPassword->setName('users.reset-password');
+    $usersResetPassword->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // Admin 路由別名 (向後兼容)
     $adminUsersIndex = $router->get('/api/admin/users', [UserController::class, 'index']);
     $adminUsersIndex->setName('admin.users.index');
     $adminUsersIndex->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 取得單一使用者 (需要管理員權限)
     $adminUsersShow = $router->get('/api/admin/users/{id}', [UserController::class, 'show']);
     $adminUsersShow->setName('admin.users.show');
     $adminUsersShow->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 建立使用者 (需要管理員權限)
     $adminUsersStore = $router->post('/api/admin/users', [UserController::class, 'store']);
     $adminUsersStore->setName('admin.users.store');
     $adminUsersStore->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 更新使用者 (需要管理員權限)
     $adminUsersUpdate = $router->put('/api/admin/users/{id}', [UserController::class, 'update']);
     $adminUsersUpdate->setName('admin.users.update');
     $adminUsersUpdate->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 刪除使用者 (需要管理員權限)
     $adminUsersDestroy = $router->delete('/api/admin/users/{id}', [UserController::class, 'destroy']);
     $adminUsersDestroy->setName('admin.users.destroy');
     $adminUsersDestroy->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 啟用使用者 (需要管理員權限)
     $adminUsersActivate = $router->post('/api/admin/users/{id}/activate', [UserController::class, 'activate']);
     $adminUsersActivate->setName('admin.users.activate');
     $adminUsersActivate->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 停用使用者 (需要管理員權限)
     $adminUsersDeactivate = $router->post('/api/admin/users/{id}/deactivate', [UserController::class, 'deactivate']);
     $adminUsersDeactivate->setName('admin.users.deactivate');
     $adminUsersDeactivate->middleware(['jwt.auth', 'jwt.authorize']);
 
-    // 重設使用者密碼 (需要管理員權限)
     $adminUsersResetPassword = $router->post('/api/admin/users/{id}/reset-password', [UserController::class, 'resetPassword']);
     $adminUsersResetPassword->setName('admin.users.reset-password');
     $adminUsersResetPassword->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // =========================================
+    // 角色管理 API 路由 (需要管理員權限)
+    // =========================================
+
+    // 取得角色列表
+    $rolesIndex = $router->get('/api/roles', [RoleController::class, 'index']);
+    $rolesIndex->setName('roles.index');
+    $rolesIndex->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取得單一角色
+    $rolesShow = $router->get('/api/roles/{id}', [RoleController::class, 'show']);
+    $rolesShow->setName('roles.show');
+    $rolesShow->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 建立角色
+    $rolesStore = $router->post('/api/roles', [RoleController::class, 'store']);
+    $rolesStore->setName('roles.store');
+    $rolesStore->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 更新角色
+    $rolesUpdate = $router->put('/api/roles/{id}', [RoleController::class, 'update']);
+    $rolesUpdate->setName('roles.update');
+    $rolesUpdate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 刪除角色
+    $rolesDestroy = $router->delete('/api/roles/{id}', [RoleController::class, 'destroy']);
+    $rolesDestroy->setName('roles.destroy');
+    $rolesDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // =========================================
+    // 權限管理 API 路由 (需要管理員權限)
+    // =========================================
+
+    // 取得權限列表
+    $permissionsIndex = $router->get('/api/permissions', [PermissionController::class, 'index']);
+    $permissionsIndex->setName('permissions.index');
+    $permissionsIndex->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取得單一權限
+    $permissionsShow = $router->get('/api/permissions/{id}', [PermissionController::class, 'show']);
+    $permissionsShow->setName('permissions.show');
+    $permissionsShow->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // =========================================
+    // 標籤管理 API 路由 (需要認證)
+    // =========================================
+
+    // 取得標籤列表 (公開)
+    $tagsIndex = $router->get('/api/tags', [TagController::class, 'index']);
+    $tagsIndex->setName('tags.index');
+
+    // 取得單一標籤
+    $tagsShow = $router->get('/api/tags/{id}', [TagController::class, 'show']);
+    $tagsShow->setName('tags.show');
+
+    // 建立標籤 (需要認證)
+    $tagsStore = $router->post('/api/tags', [TagController::class, 'store']);
+    $tagsStore->setName('tags.store');
+    $tagsStore->middleware(['jwt.auth']);
+
+    // 更新標籤 (需要認證和授權)
+    $tagsUpdate = $router->put('/api/tags/{id}', [TagController::class, 'update']);
+    $tagsUpdate->setName('tags.update');
+    $tagsUpdate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 刪除標籤 (需要認證和授權)
+    $tagsDestroy = $router->delete('/api/tags/{id}', [TagController::class, 'destroy']);
+    $tagsDestroy->setName('tags.destroy');
+    $tagsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // =========================================
+    // 系統設定 API 路由 (需要管理員權限)
+    // =========================================
+
+    // 取得系統設定
+    $settingsIndex = $router->get('/api/settings', [SettingController::class, 'index']);
+    $settingsIndex->setName('settings.index');
+    $settingsIndex->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 更新系統設定
+    $settingsUpdate = $router->put('/api/settings', [SettingController::class, 'update']);
+    $settingsUpdate->setName('settings.update');
+    $settingsUpdate->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取得單一設定
+    $settingsShow = $router->get('/api/settings/{key}', [SettingController::class, 'show']);
+    $settingsShow->setName('settings.show');
+    $settingsShow->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 更新單一設定
+    $settingsUpdateSingle = $router->put('/api/settings/{key}', [SettingController::class, 'updateSingle']);
+    $settingsUpdateSingle->setName('settings.update.single');
+    $settingsUpdateSingle->middleware(['jwt.auth', 'jwt.authorize']);
 
     // =========================================
     // 活動記錄 API 路由 (需要認證)
