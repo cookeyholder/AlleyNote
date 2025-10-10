@@ -99,10 +99,10 @@ export async function renderPost(postId) {
             </div>
           ` : ''}
           
-          <!-- 相關文章 -->
+          <!-- 上一篇/下一篇 -->
           <div class="mt-12">
-            <h2 class="text-2xl font-bold text-modern-900 mb-6">相關文章</h2>
-            <div id="related-posts" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <h2 class="text-2xl font-bold text-modern-900 mb-6">文章導航</h2>
+            <div id="post-navigation" class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="text-center py-8 text-modern-600">載入中...</div>
             </div>
           </div>
@@ -119,8 +119,8 @@ export async function renderPost(postId) {
       </div>
     `;
     
-    // 載入相關文章
-    loadRelatedPosts(postId);
+    // 載入上一篇/下一篇文章
+    loadPostNavigation(postId, post);
     
   } catch (error) {
     loading.hide();
@@ -130,49 +130,108 @@ export async function renderPost(postId) {
 }
 
 /**
- * 載入相關文章
+ * 載入上一篇/下一篇文章
  */
-async function loadRelatedPosts(currentPostId) {
-  const container = document.getElementById('related-posts');
+async function loadPostNavigation(currentPostId, currentPost) {
+  const container = document.getElementById('post-navigation');
   
   try {
+    // 獲取所有已發布的文章，按發布日期排序
     const result = await postsAPI.list({ 
       status: 'published',
-      per_page: 4,
-      exclude: currentPostId,
+      sort: '-publish_date,-created_at', // 優先使用 publish_date 排序
+      per_page: 100, // 取得足夠的文章來找到上一篇和下一篇
     });
     
     const posts = result.data || [];
     
-    if (posts.length === 0) {
+    // 找到當前文章的索引
+    const currentIndex = posts.findIndex(post => post.id === parseInt(currentPostId));
+    
+    if (currentIndex === -1) {
       container.innerHTML = `
         <div class="col-span-2 text-center py-8 text-modern-600">
-          目前沒有相關文章
+          無法載入文章導航
         </div>
       `;
       return;
     }
     
-    container.innerHTML = posts.slice(0, 2).map(post => `
-      <a href="/posts/${post.id}" class="card card-hover block">
-        <h3 class="text-lg font-semibold text-modern-900 mb-2">
-          ${post.title}
-        </h3>
-        ${post.excerpt ? `
-          <p class="text-modern-600 text-sm mb-4 line-clamp-2">
-            ${post.excerpt}
-          </p>
-        ` : ''}
-        <div class="flex items-center justify-between text-sm text-modern-500">
-          <span>${new Date(post.publish_date || post.created_at).toLocaleDateString('zh-TW')}</span>
-          <span class="text-accent-600 hover:text-accent-700">閱讀更多 →</span>
+    const prevPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+    const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
+    
+    // 如果沒有上一篇和下一篇
+    if (!prevPost && !nextPost) {
+      container.innerHTML = `
+        <div class="col-span-2 text-center py-8 text-modern-600">
+          這是唯一的文章
         </div>
-      </a>
-    `).join('');
+      `;
+      return;
+    }
+    
+    container.innerHTML = `
+      ${prevPost ? `
+        <a href="/posts/${prevPost.id}" class="card card-hover block group">
+          <div class="flex items-start gap-3 mb-3">
+            <span class="text-2xl">←</span>
+            <div class="flex-1">
+              <p class="text-sm text-modern-500 mb-1">上一篇</p>
+              <h3 class="text-lg font-semibold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2">
+                ${prevPost.title}
+              </h3>
+            </div>
+          </div>
+          ${prevPost.excerpt ? `
+            <p class="text-modern-600 text-sm line-clamp-2 ml-9">
+              ${prevPost.excerpt}
+            </p>
+          ` : ''}
+          <div class="mt-3 ml-9 text-sm text-modern-500">
+            ${new Date(prevPost.publish_date || prevPost.created_at).toLocaleDateString('zh-TW')}
+          </div>
+        </a>
+      ` : `
+        <div class="card opacity-50">
+          <div class="text-center py-8 text-modern-500">
+            沒有更早的文章了
+          </div>
+        </div>
+      `}
+      
+      ${nextPost ? `
+        <a href="/posts/${nextPost.id}" class="card card-hover block group">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="flex-1 text-right">
+              <p class="text-sm text-modern-500 mb-1">下一篇</p>
+              <h3 class="text-lg font-semibold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2">
+                ${nextPost.title}
+              </h3>
+            </div>
+            <span class="text-2xl">→</span>
+          </div>
+          ${nextPost.excerpt ? `
+            <p class="text-modern-600 text-sm line-clamp-2 mr-9 text-right">
+              ${nextPost.excerpt}
+            </p>
+          ` : ''}
+          <div class="mt-3 mr-9 text-sm text-modern-500 text-right">
+            ${new Date(nextPost.publish_date || nextPost.created_at).toLocaleDateString('zh-TW')}
+          </div>
+        </a>
+      ` : `
+        <div class="card opacity-50">
+          <div class="text-center py-8 text-modern-500">
+            沒有更新的文章了
+          </div>
+        </div>
+      `}
+    `;
   } catch (error) {
+    console.error('載入文章導航失敗:', error);
     container.innerHTML = `
       <div class="col-span-2 text-center py-8 text-modern-600">
-        載入相關文章失敗
+        載入文章導航失敗
       </div>
     `;
   }
