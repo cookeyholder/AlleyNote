@@ -25,7 +25,7 @@ export function renderDashboardLayout(content, options = {}) {
       ${renderSidebar(user)}
       
       <!-- 主要內容區 -->
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 flex flex-col overflow-hidden main-content-with-sidebar">
         <!-- 頂部導航列 -->
         <header class="bg-white shadow-sm">
           <div class="px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
