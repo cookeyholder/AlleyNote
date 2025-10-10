@@ -143,7 +143,7 @@ export async function renderPostEditor(postId = null) {
   `;
   
   const app = document.getElementById('app');
-  renderDashboardLayout(content, { title: isEdit ? '編輯文章' : '新增文章' });
+  renderDashboardLayout(content, { title: postId ? '編輯文章' : '新增文章' });
   bindDashboardLayoutEvents();
   
   // 初始化 CKEditor
@@ -164,19 +164,20 @@ export async function renderPostEditor(postId = null) {
  */
 async function initCKEditor(post) {
   try {
-    editorInstance = new CKEditorWrapper('content', {
-      initialData: post?.content || '',
-      placeholder: '開始撰寫您的文章內容...',
-      onChange: () => {
-        hasUnsavedChanges = true;
-      },
-    });
+    editorInstance = new CKEditorWrapper();
+    await editorInstance.init('content', post?.content || '');
     
-    await editorInstance.init();
-    toast.success('編輯器已準備就緒');
+    // 監聽內容變化
+    if (editorInstance.editor) {
+      editorInstance.editor.model.document.on('change:data', () => {
+        hasUnsavedChanges = true;
+      });
+    }
+    
+    console.log('[PostEditor] CKEditor 已初始化');
   } catch (error) {
-    console.error('CKEditor initialization failed:', error);
-    toast.error('編輯器初始化失敗');
+    console.error('[PostEditor] CKEditor 初始化失敗:', error);
+    toast.error('編輯器初始化失敗，請重新整理頁面');
   }
 }
 

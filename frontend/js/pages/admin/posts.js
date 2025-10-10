@@ -17,9 +17,9 @@ export async function renderPostsList() {
     <div>
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-modern-900">文章管理</h1>
-        <a href="/admin/posts/create" data-navigo class="btn-primary">
+        <button id="create-post-btn" class="btn-primary">
           ✏️ 新增文章
-        </a>
+        </button>
       </div>
       
       <!-- 搜尋與篩選 -->
@@ -62,6 +62,11 @@ export async function renderPostsList() {
   const app = document.getElementById('app');
   renderDashboardLayout(content, { title: '文章管理' });
   bindDashboardLayoutEvents();
+  
+  // 綁定新增文章按鈕
+  document.getElementById('create-post-btn')?.addEventListener('click', () => {
+    router.navigate('/admin/posts/create');
+  });
   
   // 載入文章列表
   await loadPosts();
@@ -167,18 +172,26 @@ async function loadPosts() {
               <td class="px-6 py-4 text-sm text-modern-600">${new Date(post.created_at).toLocaleDateString('zh-TW')}</td>
               <td class="px-6 py-4 text-right text-sm">
                 <div class="flex justify-end gap-2">
-                  <a href="/admin/posts/${post.id}/edit" data-navigo class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors">
-                    編輯
-                  </a>
                   <button 
-                    onclick="window.togglePostStatus(${post.id}, '${post.status}')" 
+                    class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors"
+                    data-action="edit"
+                    data-post-id="${post.id}"
+                  >
+                    編輯
+                  </button>
+                  <button 
                     class="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                    data-action="toggle-status"
+                    data-post-id="${post.id}"
+                    data-current-status="${post.status}"
                   >
                     ${post.status === 'published' ? '轉草稿' : '發布'}
                   </button>
                   <button 
-                    onclick="window.deletePost(${post.id})" 
                     class="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                    data-action="delete"
+                    data-post-id="${post.id}"
+                    data-post-title="${post.title}"
                   >
                     刪除
                   </button>
@@ -193,6 +206,9 @@ async function loadPosts() {
       ${renderPagination(pagination)}
     `;
     
+    // 綁定操作按鈕事件
+    bindPostActions(container);
+    
     // Update Navigo to handle new links
     router.updatePageLinks();
   } catch (error) {
@@ -205,6 +221,33 @@ async function loadPosts() {
       </div>
     `;
   }
+}
+
+/**
+ * 綁定文章操作按鈕事件
+ */
+function bindPostActions(container) {
+  container.addEventListener('click', async (e) => {
+    const button = e.target.closest('[data-action]');
+    if (!button) return;
+    
+    const action = button.dataset.action;
+    const postId = button.dataset.postId;
+    
+    switch (action) {
+      case 'edit':
+        router.navigate(`/admin/posts/${postId}/edit`);
+        break;
+        
+      case 'toggle-status':
+        await togglePostStatus(postId, button.dataset.currentStatus);
+        break;
+        
+      case 'delete':
+        await deletePost(postId, button.dataset.postTitle);
+        break;
+    }
+  });
 }
 
 /**
@@ -272,13 +315,16 @@ function renderPagination(pagination) {
 /**
  * 刪除文章
  */
-window.deletePost = async function (postId) {
-  // 取得文章標題
-  const post = currentState.posts.find((p) => p.id === postId);
-  const confirmed = await confirmDelete(post?.title || '此文章');
+async function deletePost(postId, postTitle) {
+  // 先詢問使用者確認，只有確認後才刪除
+  const confirmed = await confirmDelete(postTitle || '此文章');
   
-  if (!confirmed) return;
+  // 如果用戶取消，直接返回
+  if (!confirmed) {
+    return;
+  }
   
+  // 用戶確認後才執行刪除
   loading.show('刪除中...');
   
   try {
@@ -290,12 +336,12 @@ window.deletePost = async function (postId) {
     loading.hide();
     toast.error('刪除失敗：' + error.message);
   }
-};
+}
 
 /**
  * 切換文章狀態
  */
-window.togglePostStatus = async function (postId, currentStatus) {
+async function togglePostStatus(postId, currentStatus) {
   const newStatus = currentStatus === 'published' ? 'draft' : 'published';
   const action = newStatus === 'published' ? '發布' : '轉為草稿';
   
@@ -310,12 +356,15 @@ window.togglePostStatus = async function (postId, currentStatus) {
     loading.hide();
     toast.error(`${action}失敗：` + error.message);
   }
-};
+}
 
 /**
  * 跳轉到指定頁碼
  */
-window.goToPage = function (page) {
+function goToPage(page) {
   currentPage = page;
   loadPosts();
-};
+}
+
+// 保留舊的全域函數供分頁使用
+window.goToPage = goToPage;
