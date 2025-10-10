@@ -58,12 +58,12 @@ export default class StatisticsPage {
       // 載入統計資料
       const [overview, postsStats, popular] = await Promise.all([
         statisticsAPI.getOverview({ period: this.dateRange }),
-        statisticsAPI.getPostsStats({ period: this.dateRange }),
+        statisticsAPI.getPosts({ period: this.dateRange }),
         statisticsAPI.getPopular({ period: this.dateRange, limit: 10 }),
       ]);
 
-      this.overview = overview;
-      this.postsStats = postsStats;
+      this.overview = overview.data || overview;
+      this.postsStats = postsStats.data || postsStats;
       this.popularPosts = popular?.data?.top_posts?.by_views || [];
 
       this.loading = false;

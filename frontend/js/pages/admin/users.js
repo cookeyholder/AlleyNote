@@ -26,13 +26,15 @@ export default class UsersPage {
 
   async loadRoles() {
     try {
-      const { rolesAPI } = await import('../../api/modules/users.js');
-      const result = await rolesAPI.list();
-      // result 已經是後端回應物件 {success, data}
-      this.roles = result.data || [];
+      // 使用模擬數據（待後端 API 實現）
+      // TODO: 實現後端 GET /api/roles API
+      this.roles = [
+        { id: 1, name: 'admin', display_name: '管理員' },
+        { id: 2, name: 'editor', display_name: '編輯者' },
+        { id: 3, name: 'viewer', display_name: '訪客' }
+      ];
     } catch (error) {
       console.error('載入角色列表失敗:', error);
-      // 使用預設角色
       this.roles = [];
     }
   }
@@ -43,10 +45,21 @@ export default class UsersPage {
       this.currentPage = page;
       this.render();
 
-      const result = await usersAPI.list({ page });
-      // result 已經是後端回應物件 {success, data, pagination}
-      this.users = result.data || [];
-      this.totalPages = result.pagination?.last_page || 1;
+      // 使用模擬數據（待後端 API 實現）
+      // TODO: 實現後端 GET /api/users API
+      this.users = [
+        {
+          id: 1,
+          username: 'admin',
+          email: 'admin@example.com',
+          role: 'admin',
+          role_name: '管理員',
+          status: 'active',
+          created_at: '2025-01-01T00:00:00Z',
+          last_login_at: '2025-10-10T10:00:00Z'
+        }
+      ];
+      this.totalPages = 1;
       this.loading = false;
       this.render();
     } catch (error) {

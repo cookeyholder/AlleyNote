@@ -22,8 +22,34 @@ export default class TagsPage {
       this.loading = true;
       this.render();
 
-      const response = await apiClient.get('/api/tags');
-      this.tags = response.data?.data || [];
+      // 使用模擬數據（待後端 API 實現）
+      // TODO: 實現後端 GET /api/tags API
+      this.tags = [
+        {
+          id: 1,
+          name: '公告',
+          slug: 'announcement',
+          color: '#3b82f6',
+          post_count: 5,
+          created_at: '2025-01-01T00:00:00Z'
+        },
+        {
+          id: 2,
+          name: '教學',
+          slug: 'tutorial',
+          color: '#10b981',
+          post_count: 3,
+          created_at: '2025-01-02T00:00:00Z'
+        },
+        {
+          id: 3,
+          name: '新聞',
+          slug: 'news',
+          color: '#f59e0b',
+          post_count: 2,
+          created_at: '2025-01-03T00:00:00Z'
+        }
+      ];
       
       this.loading = false;
       this.render();

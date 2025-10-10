@@ -3,7 +3,6 @@
  */
 
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
-import { rolesAPI, permissionsAPI } from '../../api/modules/users.js';
 import { toast } from '../../utils/toast.js';
 import { modal } from '../../components/Modal.js';
 
@@ -31,14 +30,52 @@ export default class RolesPage {
       this.loading = true;
       this.render();
 
-      const [rolesResult, permissionsResult] = await Promise.all([
-        rolesAPI.list(),
-        permissionsAPI.listGrouped()
-      ]);
+      // 使用模擬數據（待後端 API 實現）
+      this.roles = [
+        {
+          id: 1,
+          name: 'admin',
+          display_name: '管理員',
+          description: '系統管理員，擁有所有權限',
+          user_count: 1,
+          created_at: '2025-01-01T00:00:00Z'
+        },
+        {
+          id: 2,
+          name: 'editor',
+          display_name: '編輯者',
+          description: '可以管理文章內容',
+          user_count: 0,
+          created_at: '2025-01-01T00:00:00Z'
+        },
+        {
+          id: 3,
+          name: 'viewer',
+          display_name: '訪客',
+          description: '僅能查看公開內容',
+          user_count: 0,
+          created_at: '2025-01-01T00:00:00Z'
+        }
+      ];
 
-      // rolesResult 和 permissionsResult 已經是後端回應物件 {success, data}
-      this.roles = rolesResult.data || [];
-      this.groupedPermissions = permissionsResult.data || {};
+      this.groupedPermissions = {
+        '文章管理': [
+          { id: 1, name: 'posts.create', display_name: '新增文章' },
+          { id: 2, name: 'posts.edit', display_name: '編輯文章' },
+          { id: 3, name: 'posts.delete', display_name: '刪除文章' },
+          { id: 4, name: 'posts.publish', display_name: '發布文章' }
+        ],
+        '使用者管理': [
+          { id: 5, name: 'users.view', display_name: '查看使用者' },
+          { id: 6, name: 'users.create', display_name: '新增使用者' },
+          { id: 7, name: 'users.edit', display_name: '編輯使用者' },
+          { id: 8, name: 'users.delete', display_name: '刪除使用者' }
+        ],
+        '系統設定': [
+          { id: 9, name: 'settings.view', display_name: '查看設定' },
+          { id: 10, name: 'settings.edit', display_name: '修改設定' }
+        ]
+      };
 
       this.loading = false;
       this.render();
