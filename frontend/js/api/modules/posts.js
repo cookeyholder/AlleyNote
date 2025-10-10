@@ -11,6 +11,7 @@ class PostsAPI {
    * 注意：後端 /posts 端點可以處理認證和非認證請求
    */
   async list(params = {}) {
+    console.log('[PostsAPI v2] Calling API with /posts path');
     return await apiClient.get('/posts', { params });
   }
 
