@@ -237,7 +237,7 @@ class UserManagementService
 
         // 驗證當前密碼
         $passwordHash = $user['password'] ?? $user['password_hash'] ?? '';
-        if (! password_verify($currentPassword, $passwordHash)) {
+        if (!password_verify($currentPassword, $passwordHash)) {
             throw ValidationException::fromSingleError('current_password', '當前密碼不正確');
         }
 

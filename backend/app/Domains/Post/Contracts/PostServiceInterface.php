@@ -88,4 +88,20 @@ interface PostServiceInterface
      * @throws NotFoundException
      */
     public function recordView(int $id, string $userIp, ?int $userId = null): bool;
+
+    /**
+     * 更新貼文狀態.
+     * @param int $id 文章 ID
+     * @param string $status 狀態（draft, published, archived）
+     * @throws NotFoundException
+     * @throws ValidationException
+     */
+    public function updatePostStatus(int $id, string $status): Post;
+
+    /**
+     * 取消置頂貼文.
+     * @param int $id 文章 ID
+     * @throws NotFoundException
+     */
+    public function unpinPost(int $id): Post;
 }
