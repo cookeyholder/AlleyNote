@@ -229,7 +229,9 @@ async function loadPosts() {
  */
 function renderPostCard(post) {
   const excerpt = post.excerpt || extractExcerpt(post.content);
-  const date = new Date(post.created_at).toLocaleDateString('zh-TW', {
+  // 優先使用 publish_date，若無則使用 created_at
+  const dateString = post.publish_date || post.created_at;
+  const date = new Date(dateString).toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -249,11 +251,11 @@ function renderPostCard(post) {
       <div class="flex items-center justify-between text-sm text-modern-500">
         <div class="flex items-center gap-2">
           <span>📅</span>
-          <time datetime="${post.created_at}">${date}</time>
+          <time datetime="${dateString}">${date}</time>
         </div>
         <div class="flex items-center gap-2">
           <span>👤</span>
-          <span>${post.author?.name || '匿名'}</span>
+          <span>${post.author?.name || post.author || '匿名'}</span>
         </div>
       </div>
       ${post.tags && post.tags.length > 0 ? `

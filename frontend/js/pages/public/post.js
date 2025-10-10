@@ -13,7 +13,8 @@ export async function renderPost(postId) {
   loading.show('載入文章中...');
   
   try {
-    const post = await postsAPI.get(postId);
+    const response = await postsAPI.get(postId);
+    const post = response.data; // 從響應中提取 data
     loading.hide();
     
     // 淨化 HTML 內容
@@ -63,8 +64,8 @@ export async function renderPost(postId) {
               </div>
               <div class="flex items-center gap-2">
                 <span>📅</span>
-                <time datetime="${post.created_at}">
-                  ${new Date(post.created_at).toLocaleDateString('zh-TW', {
+                <time datetime="${post.publish_date || post.created_at}">
+                  ${new Date(post.publish_date || post.created_at).toLocaleDateString('zh-TW', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -163,7 +164,7 @@ async function loadRelatedPosts(currentPostId) {
           </p>
         ` : ''}
         <div class="flex items-center justify-between text-sm text-modern-500">
-          <span>${new Date(post.created_at).toLocaleDateString('zh-TW')}</span>
+          <span>${new Date(post.publish_date || post.created_at).toLocaleDateString('zh-TW')}</span>
           <span class="text-accent-600 hover:text-accent-700">閱讀更多 →</span>
         </div>
       </a>
