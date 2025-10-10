@@ -144,6 +144,13 @@ function renderSidebar(user) {
 /**
  * 綁定管理後台事件
  */
+export function bindDashboardLayoutEvents() {
+  bindDashboardEvents();
+}
+
+/**
+ * 綁定管理後台事件（內部使用）
+ */
 function bindDashboardEvents() {
   // 側邊欄切換（手機版）
   const sidebarToggle = document.getElementById('sidebar-toggle');
