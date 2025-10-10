@@ -102,7 +102,7 @@ export default class StatisticsPage {
     `;
 
     const app = document.getElementById("app");
-    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
+    renderDashboardLayout(content, { title: "系統統計" }); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 

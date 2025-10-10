@@ -79,7 +79,7 @@ export default class UsersPage {
     `;
 
     const app = document.getElementById("app");
-    app.innerHTML = renderDashboardLayout(content);
+    renderDashboardLayout(content, { title: "使用者管理" }); bindDashboardLayoutEvents();
     bindDashboardLayoutEvents();
     this.attachEventListeners();
   }

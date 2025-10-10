@@ -57,7 +57,7 @@ export default class TagsPage {
     `;
 
     const app = document.getElementById("app");
-    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
+    renderDashboardLayout(content, { title: "標籤管理" }); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 

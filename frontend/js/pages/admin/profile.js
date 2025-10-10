@@ -67,7 +67,7 @@ export default class ProfilePage {
     `;
 
     const app = document.getElementById("app");
-    app.innerHTML = renderDashboardLayout(content); bindDashboardLayoutEvents();
+    renderDashboardLayout(content, { title: "個人資料" }); bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 
