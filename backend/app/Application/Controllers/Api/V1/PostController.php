@@ -122,6 +122,7 @@ class PostController extends BaseController
             $items = array_map(function($post) {
                 return $post->toArray();
             }, $result['items']);
+            
 
             $responseData = $this->paginatedResponse(
                 $items,

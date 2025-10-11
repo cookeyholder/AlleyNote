@@ -66,7 +66,7 @@ class PostController extends BaseController
 
             // 獲取資料
             $offset = ($page - 1) * $perPage;
-            $sql = "SELECT p.id, p.title, p.content, p.status, p.user_id, p.created_at, p.updated_at,
+            $sql = "SELECT p.id, p.title, p.content, p.status, p.user_id, p.created_at, p.updated_at, p.publish_date,
                            u.username as author
                     FROM posts p
                     LEFT JOIN users u ON p.user_id = u.id
