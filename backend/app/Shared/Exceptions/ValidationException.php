@@ -55,6 +55,19 @@ class ValidationException extends Exception
         return new self($validationResult, $message);
     }
 
+    /**
+     * 從多個欄位錯誤建立異常.
+     *
+     * @param array<string, array<string>> $errors 錯誤訊息陣列，格式：['field' => ['error1', 'error2']]
+     * @param string $message 自訂錯誤訊息
+     */
+    public static function fromMultipleErrors(array $errors, string $message = ''): self
+    {
+        $validationResult = ValidationResult::failure($errors);
+
+        return new self($validationResult, $message);
+    }
+
     // Override getErrors to delegate to ValidationResult
     public function getErrors(): array
     {

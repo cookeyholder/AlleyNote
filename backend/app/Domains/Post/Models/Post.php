@@ -6,6 +6,9 @@ namespace App\Domains\Post\Models;
 
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\OutputSanitizerInterface;
+use DateTime;
+use DateTimeZone;
+use Exception;
 use JsonSerializable;
 
 class Post implements JsonSerializable
@@ -197,7 +200,7 @@ class Post implements JsonSerializable
 
     /**
      * 格式化發布時間為 API 輸出格式（RFC3339 / ISO 8601）
-     * 資料庫儲存的是 UTC 時間，需要明確加上時區資訊
+     * 資料庫儲存的是 UTC 時間，需要明確加上時區資訊.
      */
     protected function formatPublishDateForApi(): ?string
     {
@@ -213,9 +216,10 @@ class Post implements JsonSerializable
         // 資料庫格式：YYYY-MM-DD HH:MM:SS (UTC)
         // 轉換為：YYYY-MM-DDTHH:MM:SSZ (RFC3339)
         try {
-            $dateTime = new \DateTime($this->publishDate, new \DateTimeZone('UTC'));
-            return $dateTime->format(\DateTime::ATOM); // RFC3339 格式
-        } catch (\Exception $e) {
+            $dateTime = new DateTime($this->publishDate, new DateTimeZone('UTC'));
+
+            return $dateTime->format(DateTime::ATOM); // RFC3339 格式
+        } catch (Exception $e) {
             // 如果轉換失敗，返回原始值
             return $this->publishDate;
         }

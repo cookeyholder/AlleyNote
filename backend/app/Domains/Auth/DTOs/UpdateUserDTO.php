@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
 
+use App\Shared\ValueObjects\SecurePassword;
+
 /**
  * 更新使用者 DTO.
  */
@@ -14,7 +16,12 @@ final readonly class UpdateUserDTO
         public ?string $email = null,
         public ?string $password = null,
         public ?array $roleIds = null,
-    ) {}
+    ) {
+        // 如果有更新密碼，驗證密碼安全性
+        if ($this->password !== null) {
+            new SecurePassword($this->password, $this->username, $this->email);
+        }
+    }
 
     public static function fromArray(array $data): self
     {

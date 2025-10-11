@@ -70,6 +70,20 @@ export class FormValidator {
   }
 
   /**
+   * 驗證安全密碼（進階版）
+   * 包含更嚴格的安全檢查
+   */
+  static isSecurePassword(value, username = null, email = null) {
+    // 導入 PasswordValidator（需要確保已載入）
+    if (typeof PasswordValidator !== 'undefined') {
+      const result = PasswordValidator.validate(value, { username, email });
+      return result.isValid;
+    }
+    // Fallback 到基本驗證
+    return FormValidator.isStrongPassword(value);
+  }
+
+  /**
    * 驗證表單
    */
   validate(rules = null) {
@@ -123,6 +137,14 @@ export class FormValidator {
             break;
           case 'strongPassword':
             valid = FormValidator.isStrongPassword(value);
+            break;
+          case 'securePassword':
+            // params 應該是 { username, email }
+            valid = FormValidator.isSecurePassword(
+              value,
+              params?.username,
+              params?.email
+            );
             break;
           case 'custom':
             valid = params(value, formData);
@@ -243,6 +265,12 @@ export const ValidationRules = {
   
   strongPassword: (message = '密碼至少需要 8 個字元，包含大小寫字母和數字') => ({
     rule: 'strongPassword',
+    message,
+  }),
+  
+  securePassword: (options = {}, message = '密碼不符合安全要求') => ({
+    rule: 'securePassword',
+    params: options,
     message,
   }),
   

@@ -10,6 +10,8 @@ use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostCacheKeyService;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
 use PDO;
@@ -163,9 +165,9 @@ class PostRepository implements PostRepositoryInterface
         if ($publishDate && strpos($publishDate, 'T') === false) {
             // 資料庫格式轉 RFC3339
             try {
-                $dt = new \DateTime($publishDate, new \DateTimeZone('UTC'));
-                $publishDate = $dt->format(\DateTime::ATOM);
-            } catch (\Exception $e) {
+                $dt = new DateTime($publishDate, new DateTimeZone('UTC'));
+                $publishDate = $dt->format(DateTime::ATOM);
+            } catch (Exception $e) {
                 // 轉換失敗時保持原值
             }
         }

@@ -18,6 +18,8 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
 use App\Shared\Exceptions\ValidationException;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -388,19 +390,19 @@ class PostController extends BaseController
             );
 
             $postData = $post->toSafeArray($this->sanitizer);
-            
+
             // 確保 publish_date 是 RFC3339 格式
             if (isset($postData['publish_date']) && $postData['publish_date'] !== null) {
                 if (strpos($postData['publish_date'], 'T') === false) {
                     try {
-                        $dt = new \DateTime($postData['publish_date'], new \DateTimeZone('UTC'));
-                        $postData['publish_date'] = $dt->format(\DateTime::ATOM);
-                    } catch (\Exception $e) {
+                        $dt = new DateTime($postData['publish_date'], new DateTimeZone('UTC'));
+                        $postData['publish_date'] = $dt->format(DateTime::ATOM);
+                    } catch (Exception $e) {
                         // 保持原值
                     }
                 }
             }
-            
+
             $successResponse = $this->successResponse($postData, '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));
 

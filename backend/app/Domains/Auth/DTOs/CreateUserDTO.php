@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
 
+use App\Shared\ValueObjects\SecurePassword;
+
 /**
  * 建立使用者 DTO.
  */
@@ -14,7 +16,10 @@ final readonly class CreateUserDTO
         public string $email,
         public string $password,
         public array $roleIds = [],
-    ) {}
+    ) {
+        // 驗證密碼安全性
+        new SecurePassword($this->password, $this->username, $this->email);
+    }
 
     public static function fromArray(array $data): self
     {

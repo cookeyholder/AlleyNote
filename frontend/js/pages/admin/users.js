@@ -2,6 +2,8 @@ import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/
 import { usersAPI } from '../../api/modules/users.js';
 import { toast } from '../../utils/toast.js';
 import { Modal, modal } from '../../components/Modal.js';
+import { PasswordStrengthIndicator } from '../../components/PasswordStrengthIndicator.js';
+import { PasswordGenerator } from '../../utils/passwordGenerator.js';
 
 /**
  * 使用者管理頁面
@@ -15,6 +17,7 @@ export default class UsersPage {
     this.totalPages = 1;
     this.editingUser = null;
     this.modal = null;
+    this.passwordIndicator = null;
   }
 
   async init() {
@@ -341,18 +344,36 @@ export default class UsersPage {
 
         ${!isEdit ? `
           <div>
-            <label for="password" class="block text-sm font-medium text-modern-700 mb-2">
-              密碼 *
-            </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              class="w-full px-4 py-3 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
-              required
-              minlength="8"
-            />
-            <p class="mt-1 text-sm text-modern-500">密碼長度至少 8 個字元</p>
+            <div class="flex justify-between items-center mb-2">
+              <label for="password" class="block text-sm font-medium text-modern-700">
+                密碼 *
+              </label>
+              <button
+                type="button"
+                id="generatePasswordBtn"
+                class="text-sm text-accent-600 hover:text-accent-700 font-medium"
+              >
+                🎲 生成密碼
+              </button>
+            </div>
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="w-full px-4 py-3 pr-12 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                required
+                minlength="8"
+              />
+              <button
+                type="button"
+                id="togglePasswordBtn"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-modern-500 hover:text-modern-700"
+              >
+                👁️
+              </button>
+            </div>
+            <!-- 密碼強度指示器將自動插入此處 -->
           </div>
 
           <div>
@@ -396,6 +417,86 @@ export default class UsersPage {
     });
     this.modal.show();
 
+    // 初始化密碼強度指示器（僅在新增模式）
+    if (!isEdit) {
+      const passwordInput = document.getElementById('password');
+      const usernameInput = document.getElementById('username');
+      const emailInput = document.getElementById('email');
+      
+      if (passwordInput) {
+        // 清理舊的指示器
+        if (this.passwordIndicator) {
+          this.passwordIndicator.destroy();
+        }
+        
+        // 建立新的指示器
+        this.passwordIndicator = new PasswordStrengthIndicator(passwordInput, {
+          username: usernameInput?.value,
+          email: emailInput?.value,
+          showRequirements: true,
+          showSuggestions: true
+        });
+
+        // 當使用者名稱或 email 變更時更新指示器
+        usernameInput?.addEventListener('input', () => {
+          this.passwordIndicator.updateOptions({
+            username: usernameInput.value
+          });
+        });
+
+        emailInput?.addEventListener('input', () => {
+          this.passwordIndicator.updateOptions({
+            email: emailInput.value
+          });
+        });
+      }
+
+      // 密碼顯示/隱藏切換
+      const togglePasswordBtn = document.getElementById('togglePasswordBtn');
+      if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', () => {
+          const type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = type;
+          togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+      }
+
+      // 密碼生成按鈕
+      const generatePasswordBtn = document.getElementById('generatePasswordBtn');
+      if (generatePasswordBtn && passwordInput) {
+        generatePasswordBtn.addEventListener('click', () => {
+          try {
+            const generatedPassword = PasswordGenerator.generate({
+              length: 12,
+              lowercase: true,
+              uppercase: true,
+              numbers: true,
+              special: true,
+              username: usernameInput?.value,
+              email: emailInput?.value
+            });
+            
+            passwordInput.value = generatedPassword;
+            passwordInput.type = 'text';
+            togglePasswordBtn.textContent = '🙈';
+            
+            // 觸發 input 事件以更新強度指示器
+            passwordInput.dispatchEvent(new Event('input'));
+            
+            // 同步到確認密碼
+            const confirmPassword = document.getElementById('password_confirmation');
+            if (confirmPassword) {
+              confirmPassword.value = generatedPassword;
+            }
+            
+            toast.success('已生成安全密碼！');
+          } catch (error) {
+            toast.error('生成密碼失敗：' + error.message);
+          }
+        });
+      }
+    }
+
     // 綁定表單事件
     const userForm = document.getElementById('userForm');
     if (userForm) {
@@ -412,7 +513,14 @@ export default class UsersPage {
     // 取消按鈕
     const cancelBtn = document.getElementById('cancelModalBtn');
     if (cancelBtn) {
-      cancelBtn.addEventListener('click', () => this.modal.hide());
+      cancelBtn.addEventListener('click', () => {
+        // 清理密碼指示器
+        if (this.passwordIndicator) {
+          this.passwordIndicator.destroy();
+          this.passwordIndicator = null;
+        }
+        this.modal.hide();
+      });
     }
   }
 

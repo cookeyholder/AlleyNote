@@ -9,6 +9,7 @@ declare(strict_types=1);
  */
 
 use App\Application\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Auth\PasswordValidationController;
 
 return [
     // 登入
@@ -51,6 +52,14 @@ return [
         'path' => '/api/auth/refresh',
         'handler' => [AuthController::class, 'refresh'],
         'name' => 'auth.refresh'
+    ],
+
+    // 密碼驗證
+    'auth.password.validate' => [
+        'methods' => ['POST'],
+        'path' => '/api/auth/validate-password',
+        'handler' => [PasswordValidationController::class, 'validate'],
+        'name' => 'auth.password.validate'
     ],
 
     // 密碼重設請求 (TODO: 實作)
