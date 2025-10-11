@@ -4,7 +4,7 @@
 
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { toast } from '../../utils/toast.js';
-import { modal } from '../../components/Modal.js';
+import { rolesAPI } from '../../api/modules/roles.js';
 
 /**
  * 角色管理頁面類別
@@ -30,52 +30,14 @@ export default class RolesPage {
       this.loading = true;
       this.render();
 
-      // 使用模擬數據（待後端 API 實現）
-      this.roles = [
-        {
-          id: 1,
-          name: 'admin',
-          display_name: '管理員',
-          description: '系統管理員，擁有所有權限',
-          user_count: 1,
-          created_at: '2025-01-01T00:00:00Z'
-        },
-        {
-          id: 2,
-          name: 'editor',
-          display_name: '編輯者',
-          description: '可以管理文章內容',
-          user_count: 0,
-          created_at: '2025-01-01T00:00:00Z'
-        },
-        {
-          id: 3,
-          name: 'viewer',
-          display_name: '訪客',
-          description: '僅能查看公開內容',
-          user_count: 0,
-          created_at: '2025-01-01T00:00:00Z'
-        }
-      ];
+      // 載入角色列表和權限列表
+      const [rolesResponse, permissionsResponse] = await Promise.all([
+        rolesAPI.getAll(),
+        rolesAPI.getGroupedPermissions()
+      ]);
 
-      this.groupedPermissions = {
-        '文章管理': [
-          { id: 1, name: 'posts.create', display_name: '新增文章' },
-          { id: 2, name: 'posts.edit', display_name: '編輯文章' },
-          { id: 3, name: 'posts.delete', display_name: '刪除文章' },
-          { id: 4, name: 'posts.publish', display_name: '發布文章' }
-        ],
-        '使用者管理': [
-          { id: 5, name: 'users.view', display_name: '查看使用者' },
-          { id: 6, name: 'users.create', display_name: '新增使用者' },
-          { id: 7, name: 'users.edit', display_name: '編輯使用者' },
-          { id: 8, name: 'users.delete', display_name: '刪除使用者' }
-        ],
-        '系統設定': [
-          { id: 9, name: 'settings.view', display_name: '查看設定' },
-          { id: 10, name: 'settings.edit', display_name: '修改設定' }
-        ]
-      };
+      this.roles = rolesResponse.data || [];
+      this.groupedPermissions = permissionsResponse.data || {};
 
       this.loading = false;
       this.render();
@@ -191,7 +153,7 @@ export default class RolesPage {
                 <input
                   type="checkbox"
                   value="${perm.id}"
-                  ${permission_ids.includes(perm.id) ? 'checked' : ''}
+                  ${permission_ids && permission_ids.includes(perm.id) ? 'checked' : ''}
                   class="permission-checkbox rounded border-gray-300 text-accent-600 focus:ring-accent-500"
                 />
                 <span class="text-sm">${this.escapeHtml(perm.display_name || perm.name)}</span>
@@ -323,7 +285,9 @@ export default class RolesPage {
             value="${role ? this.escapeHtml(role.name) : ''}"
             class="w-full px-4 py-3 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
             required
+            ${isEdit ? 'readonly' : ''}
           />
+          ${isEdit ? '<p class="mt-1 text-xs text-gray-500">角色名稱無法修改</p>' : ''}
         </div>
 
         <div>
@@ -370,13 +334,8 @@ export default class RolesPage {
       </form>
     `;
 
-    const modal = new Modal({
-      title: modalTitle,
-      content: modalContent,
-      size: 'lg',
-      showCancel: false // 表單內已經有取消按鈕
-    });
-    modal.show();
+    // 創建 Modal
+    this.currentModal = this.createModal(modalTitle, modalContent);
 
     // 綁定表單事件
     const roleForm = document.getElementById('roleForm');
@@ -388,14 +347,62 @@ export default class RolesPage {
         } else {
           await this.handleCreateRole(new FormData(roleForm));
         }
-        modal.hide();
+        this.closeModal();
       });
     }
 
     // 取消按鈕
     const cancelBtn = document.getElementById('cancelModalBtn');
     if (cancelBtn) {
-      cancelBtn.addEventListener('click', () => modal.hide());
+      cancelBtn.addEventListener('click', () => this.closeModal());
+    }
+  }
+
+  /**
+   * 創建 Modal
+   */
+  createModal(title, content) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in';
+    modal.innerHTML = `
+      <div class="absolute inset-0 bg-black bg-opacity-50" data-modal-backdrop></div>
+      <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-modern-200">
+          <h3 class="text-xl font-semibold text-modern-900">${title}</h3>
+          <button type="button" class="text-modern-400 hover:text-modern-600 transition-colors" data-modal-close>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          ${content}
+        </div>
+      </div>
+    `;
+
+    // 綁定關閉事件
+    const closeButton = modal.querySelector('[data-modal-close]');
+    if (closeButton) {
+      closeButton.addEventListener('click', () => this.closeModal());
+    }
+
+    const backdrop = modal.querySelector('[data-modal-backdrop]');
+    if (backdrop) {
+      backdrop.addEventListener('click', () => this.closeModal());
+    }
+
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  /**
+   * 關閉 Modal
+   */
+  closeModal() {
+    if (this.currentModal) {
+      this.currentModal.remove();
+      this.currentModal = null;
     }
   }
 
