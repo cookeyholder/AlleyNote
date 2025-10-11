@@ -34,7 +34,7 @@ test.describe('登入功能測試', () => {
     await page.waitForURL('**/admin/dashboard', { timeout: 10000 });
     
     // 驗證登入成功
-    await expect(page.locator('h1:has-text("儀表板")')).toBeVisible();
+    await expect(page.locator('main h1:has-text("儀表板")')).toBeVisible();
     await expect(page.locator(`text=${TEST_USER.email}`)).toBeVisible();
   });
 

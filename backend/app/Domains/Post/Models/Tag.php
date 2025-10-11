@@ -4,49 +4,88 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Models;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use DateTimeImmutable;
+use JsonSerializable;
 
 /**
  * 標籤 Model.
- *
- * @property int $id
- * @property string $name
- * @property string $slug
- * @property string|null $description
- * @property string|null $color
- * @property int $usage_count
- * @property Carbon $created_at
- * @property Carbon $updated_at
  */
-class Tag extends Model
+class Tag implements JsonSerializable
 {
-    /** @var string */
-    protected $table = 'tags';
+    private int $id;
 
-    /** @var array<int, string> */
-    protected $fillable = [
-        'name',
-        'slug',
-        'description',
-        'color',
-        'usage_count',
-    ];
+    private string $name;
 
-    /** @var array<string, string> */
-    protected $casts = [
-        'usage_count' => 'integer',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
+    private ?string $slug;
 
-    /**
-     * 與文章的多對多關係.
-     */
-    public function posts(): BelongsToMany
+    private ?string $description;
+
+    private ?string $color;
+
+    private int $usageCount;
+
+    private DateTimeImmutable $createdAt;
+
+    private ?DateTimeImmutable $updatedAt;
+
+    public function __construct(
+        int $id,
+        string $name,
+        ?string $slug = null,
+        ?string $description = null,
+        ?string $color = null,
+        int $usageCount = 0,
+        ?DateTimeImmutable $createdAt = null,
+        ?DateTimeImmutable $updatedAt = null,
+    ) {
+        $this->id = $id;
+        $this->name = $name;
+        $this->slug = $slug;
+        $this->description = $description;
+        $this->color = $color;
+        $this->usageCount = $usageCount;
+        $this->createdAt = $createdAt ?? new DateTimeImmutable();
+        $this->updatedAt = $updatedAt;
+    }
+
+    public function getId(): int
     {
-        return $this->belongsToMany(Post::class, 'post_tags', 'tag_id', 'post_id');
+        return $this->id;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    public function getUsageCount(): int
+    {
+        return $this->usageCount;
+    }
+
+    public function getCreatedAt(): DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function getUpdatedAt(): ?DateTimeImmutable
+    {
+        return $this->updatedAt;
     }
 
     /**
@@ -62,9 +101,18 @@ class Tag extends Model
             'slug' => $this->slug,
             'description' => $this->description,
             'color' => $this->color,
-            'usage_count' => $this->usage_count,
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'usage_count' => $this->usageCount,
+            'post_count' => $this->usageCount, // 前端使用的別名
+            'created_at' => $this->createdAt->format('c'),
+            'updated_at' => $this->updatedAt?->format('c'),
         ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

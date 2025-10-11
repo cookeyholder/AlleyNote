@@ -18,8 +18,11 @@ use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Contracts\TagRepositoryInterface;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Repositories\TagRepository;
 use App\Domains\Post\Services\PostService;
+use App\Domains\Post\Services\TagManagementService;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Providers\SecurityServiceProvider;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
@@ -245,6 +248,12 @@ return array_merge(
 
         PostServiceInterface::class => \DI\autowire(PostService::class)
             ->constructorParameter('repository', \DI\get(PostRepositoryInterface::class)),
+
+        TagRepositoryInterface::class => \DI\autowire(TagRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        TagManagementService::class => \DI\autowire(TagManagementService::class)
+            ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class)),
 
         RateLimitService::class => \DI\autowire(RateLimitService::class)
             ->constructorParameter('cache', \DI\get(CacheService::class)),

@@ -1,6 +1,6 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { toast } from '../../utils/toast.js';
-import { modal } from '../../components/Modal.js';
+import { Modal } from '../../components/Modal.js';
 import { apiClient } from '../../api/client.js';
 
 /**
@@ -22,34 +22,13 @@ export default class TagsPage {
       this.loading = true;
       this.render();
 
-      // 使用模擬數據（待後端 API 實現）
-      // TODO: 實現後端 GET /api/tags API
-      this.tags = [
-        {
-          id: 1,
-          name: '公告',
-          slug: 'announcement',
-          color: '#3b82f6',
-          post_count: 5,
-          created_at: '2025-01-01T00:00:00Z'
-        },
-        {
-          id: 2,
-          name: '教學',
-          slug: 'tutorial',
-          color: '#10b981',
-          post_count: 3,
-          created_at: '2025-01-02T00:00:00Z'
-        },
-        {
-          id: 3,
-          name: '新聞',
-          slug: 'news',
-          color: '#f59e0b',
-          post_count: 2,
-          created_at: '2025-01-03T00:00:00Z'
-        }
-      ];
+      const result = await apiClient.get('/api/tags');
+      
+      if (result.success && result.data) {
+        this.tags = result.data;
+      } else {
+        this.tags = [];
+      }
       
       this.loading = false;
       this.render();
@@ -261,7 +240,11 @@ export default class TagsPage {
       </form>
     `;
 
-    this.modal = new Modal(modalTitle, modalContent);
+    this.modal = new Modal({
+      title: modalTitle,
+      content: modalContent,
+      size: 'md'
+    });
     this.modal.show();
 
     // 綁定表單事件

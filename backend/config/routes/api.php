@@ -12,6 +12,7 @@ use App\Application\Controllers\PostController;
 use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
 use App\Application\Controllers\Api\V1\SettingController;
+use App\Application\Controllers\Api\V1\TagController;
 
 return [
     // API 健康檢查
@@ -247,5 +248,46 @@ return [
         'path' => '/api/settings/timezone/info',
         'handler' => [SettingController::class, 'getTimezoneInfo'],
         'name' => 'settings.timezone_info'
+    ],
+
+    // ========================================
+    // 標籤管理 API
+    // ========================================
+    'tags.index' => [
+        'methods' => ['GET'],
+        'path' => '/api/tags',
+        'handler' => [TagController::class, 'index'],
+        'name' => 'tags.index'
+    ],
+
+    'tags.show' => [
+        'methods' => ['GET'],
+        'path' => '/api/tags/{id}',
+        'handler' => [TagController::class, 'show'],
+        'name' => 'tags.show'
+    ],
+
+    'tags.store' => [
+        'methods' => ['POST'],
+        'path' => '/api/tags',
+        'handler' => [TagController::class, 'store'],
+        'middleware' => ['auth'],
+        'name' => 'tags.store'
+    ],
+
+    'tags.update' => [
+        'methods' => ['PUT'],
+        'path' => '/api/tags/{id}',
+        'handler' => [TagController::class, 'update'],
+        'middleware' => ['auth'],
+        'name' => 'tags.update'
+    ],
+
+    'tags.destroy' => [
+        'methods' => ['DELETE'],
+        'path' => '/api/tags/{id}',
+        'handler' => [TagController::class, 'destroy'],
+        'middleware' => ['auth'],
+        'name' => 'tags.destroy'
     ]
 ];

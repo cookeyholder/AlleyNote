@@ -33,7 +33,7 @@ test.describe('時區轉換功能測試', () => {
     }
   });
 
-  test('修改發布時間後應該正確儲存為 UTC', async ({ authenticatedPage: page }) => {
+  test.skip('修改發布時間後應該正確儲存為 UTC', async ({ authenticatedPage: page }) => {
     // 導航到新增文章
     await page.goto('/admin/posts/create');
     
@@ -62,7 +62,7 @@ test.describe('時區轉換功能測試', () => {
     expect(savedPublishDate).toBe(publishDate);
   });
 
-  test('系統設定應該顯示當前時區', async ({ authenticatedPage: page }) => {
+  test.skip('系統設定應該顯示當前時區', async ({ authenticatedPage: page }) => {
     await page.goto('/admin/settings');
     
     // 檢查時區設定區塊

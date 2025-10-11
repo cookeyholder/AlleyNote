@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
 
+use App\Domains\Post\Contracts\TagRepositoryInterface;
 use App\Domains\Post\DTOs\CreateTagDTO;
 use App\Domains\Post\DTOs\UpdateTagDTO;
-use App\Domains\Post\Models\Tag;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use Illuminate\Support\Str;
@@ -16,6 +16,10 @@ use Illuminate\Support\Str;
  */
 class TagManagementService
 {
+    public function __construct(
+        private readonly TagRepositoryInterface $tagRepository,
+    ) {}
+
     /**
      * 取得標籤列表.
      *
@@ -24,31 +28,13 @@ class TagManagementService
      */
     public function listTags(int $page = 1, int $perPage = 20, array $filters = []): array
     {
-        $query = Tag::query();
+        $result = $this->tagRepository->list($page, $perPage, $filters);
 
-        // 搜尋過濾
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where(function ($q) use ($search): void {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('slug', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
-
-        // 排序
-        $query->orderBy('usage_count', 'desc')->orderBy('name', 'asc');
-
-        // 分頁
-        $total = $query->count();
-        $lastPage = (int) ceil($total / $perPage);
-        $offset = ($page - 1) * $perPage;
-
-        $tags = $query->skip($offset)->take($perPage)->get();
+        $lastPage = (int) ceil($result['total'] / $perPage);
 
         return [
-            'items' => $tags->map(fn($tag) => $tag->toArray())->toArray(),
-            'total' => $total,
+            'items' => array_map(fn($tag) => $tag->toArray(), $result['items']),
+            'total' => $result['total'],
             'page' => $page,
             'per_page' => $perPage,
             'last_page' => $lastPage,
@@ -63,7 +49,7 @@ class TagManagementService
      */
     public function getTag(int $id): array
     {
-        $tag = Tag::find($id);
+        $tag = $this->tagRepository->findById($id);
 
         if (!$tag) {
             throw new NotFoundException("標籤不存在 (ID: {$id})");
@@ -90,7 +76,7 @@ class TagManagementService
         }
 
         // 檢查名稱是否重複
-        if (!empty($dto->name) && Tag::where('name', $dto->name)->exists()) {
+        if (!empty($dto->name) && $this->tagRepository->findByName($dto->name)) {
             $errors['name'] = ['標籤名稱已存在'];
         }
 
@@ -98,7 +84,7 @@ class TagManagementService
         $slug = $dto->slug ?? Str::slug($dto->name);
 
         // 檢查 slug 是否重複
-        if (Tag::where('slug', $slug)->exists()) {
+        if (is_string($slug) && $this->tagRepository->findBySlug($slug)) {
             $errors['slug'] = ['標籤 slug 已存在'];
         }
 
@@ -107,7 +93,7 @@ class TagManagementService
         }
 
         // 建立標籤
-        $tag = Tag::create([
+        $tag = $this->tagRepository->create([
             'name' => $dto->name,
             'slug' => $slug,
             'description' => $dto->description,
@@ -126,7 +112,7 @@ class TagManagementService
      */
     public function updateTag(UpdateTagDTO $dto): array
     {
-        $tag = Tag::find($dto->id);
+        $tag = $this->tagRepository->findById($dto->id);
 
         if (!$tag) {
             throw new NotFoundException("標籤不存在 (ID: {$dto->id})");
@@ -140,13 +126,17 @@ class TagManagementService
                 $errors['name'] = ['標籤名稱為必填'];
             } elseif (mb_strlen($dto->name) > 50) {
                 $errors['name'] = ['標籤名稱不可超過 50 字元'];
-            } elseif (Tag::where('name', $dto->name)->where('id', '!=', $dto->id)->exists()) {
-                $errors['name'] = ['標籤名稱已存在'];
+            } else {
+                $existingTag = $this->tagRepository->findByName($dto->name);
+                if ($existingTag && $existingTag->getId() !== $dto->id) {
+                    $errors['name'] = ['標籤名稱已存在'];
+                }
             }
         }
 
         if ($dto->slug !== null) {
-            if (Tag::where('slug', $dto->slug)->where('id', '!=', $dto->id)->exists()) {
+            $existingTag = $this->tagRepository->findBySlug($dto->slug);
+            if ($existingTag && $existingTag->getId() !== $dto->id) {
                 $errors['slug'] = ['標籤 slug 已存在'];
             }
         }
@@ -173,11 +163,9 @@ class TagManagementService
             $updateData['color'] = $dto->color;
         }
 
-        if (!empty($updateData)) {
-            $tag->update($updateData);
-        }
+        $updatedTag = $this->tagRepository->update($dto->id, $updateData);
 
-        return $tag->fresh()->toArray();
+        return $updatedTag->toArray();
     }
 
     /**
@@ -187,16 +175,16 @@ class TagManagementService
      */
     public function deleteTag(int $id): void
     {
-        $tag = Tag::find($id);
+        $tag = $this->tagRepository->findById($id);
 
         if (!$tag) {
             throw new NotFoundException("標籤不存在 (ID: {$id})");
         }
 
         // 解除與文章的關聯
-        $tag->posts()->detach();
+        $this->tagRepository->detachFromAllPosts($id);
 
         // 刪除標籤
-        $tag->delete();
+        $this->tagRepository->delete($id);
     }
 }

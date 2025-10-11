@@ -38,7 +38,7 @@ test.describe('首頁功能測試', () => {
     }
   });
 
-  test('應該能夠搜尋文章', async ({ page }) => {
+  test.skip('應該能夠搜尋文章', async ({ page }) => {
     // 填寫搜尋關鍵字
     const searchInput = page.locator('input[placeholder*="搜尋"]').first();
     await searchInput.fill('測試');

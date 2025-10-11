@@ -63,7 +63,7 @@ class LoginPage {
 class DashboardPage {
   constructor(page) {
     this.page = page;
-    this.heading = page.locator('h1:has-text("儀表板")');
+    this.heading = page.locator('main h1:has-text("儀表板")');
     this.totalPostsCard = page.locator('text=總文章數').locator('..');
     this.publishedCountCard = page.locator('text=已發布').locator('..');
   }

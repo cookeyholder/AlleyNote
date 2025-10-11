@@ -392,7 +392,7 @@ class PostController extends BaseController
             $postData = $post->toSafeArray($this->sanitizer);
 
             // 確保 publish_date 是 RFC3339 格式
-            if (isset($postData['publish_date']) && $postData['publish_date'] !== null) {
+            if (isset($postData['publish_date']) && is_string($postData['publish_date'])) {
                 if (strpos($postData['publish_date'], 'T') === false) {
                     try {
                         $dt = new DateTime($postData['publish_date'], new DateTimeZone('UTC'));

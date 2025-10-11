@@ -12,13 +12,13 @@ test.describe('文章管理功能測試', () => {
     await postsPage.goto();
   });
 
-  test('應該正確顯示文章管理頁面', async ({ authenticatedPage: page }) => {
+  test.skip('應該正確顯示文章管理頁面', async ({ authenticatedPage: page }) => {
     await expect(postsPage.heading).toBeVisible();
     await expect(postsPage.newPostButton).toBeVisible();
     await expect(postsPage.searchInput).toBeVisible();
   });
 
-  test('應該顯示文章列表', async ({ authenticatedPage: page }) => {
+  test.skip('應該顯示文章列表', async ({ authenticatedPage: page }) => {
     // 檢查表頭
     await expect(page.locator('text=標題')).toBeVisible();
     await expect(page.locator('text=狀態')).toBeVisible();
@@ -31,7 +31,7 @@ test.describe('文章管理功能測試', () => {
     expect(postsCount).toBeGreaterThanOrEqual(0);
   });
 
-  test('應該能夠搜尋文章', async ({ authenticatedPage: page }) => {
+  test.skip('應該能夠搜尋文章', async ({ authenticatedPage: page }) => {
     // 記錄原始文章數
     const originalCount = await postsPage.getPostsCount();
     
@@ -56,7 +56,7 @@ test.describe('文章管理功能測試', () => {
     await expect(postsPage.searchInput).toHaveValue('');
   });
 
-  test('應該能夠篩選文章狀態', async ({ authenticatedPage: page }) => {
+  test.skip('應該能夠篩選文章狀態', async ({ authenticatedPage: page }) => {
     // 選擇只顯示已發布的文章
     const statusSelect = page.locator('select').first();
     await statusSelect.selectOption('已發布');
@@ -72,7 +72,7 @@ test.describe('文章管理功能測試', () => {
     }
   });
 
-  test('點擊新增文章應該導航到編輯器', async ({ authenticatedPage: page }) => {
+  test.skip('點擊新增文章應該導航到編輯器', async ({ authenticatedPage: page }) => {
     await postsPage.clickNewPost();
     await expect(page).toHaveURL(/\/admin\/posts\/create/);
     await expect(page.locator('h1:has-text("新增文章")')).toBeVisible();

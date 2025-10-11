@@ -19,10 +19,10 @@ test.describe('Dashboard 功能測試', () => {
 
   test('應該顯示統計卡片', async ({ authenticatedPage: page }) => {
     // 檢查統計卡片
-    await expect(page.locator('text=總文章數')).toBeVisible();
-    await expect(page.locator('text=總瀏覽量')).toBeVisible();
-    await expect(page.locator('text=草稿數')).toBeVisible();
-    await expect(page.locator('text=已發布')).toBeVisible();
+    await expect(page.locator('text=總文章數').first()).toBeVisible();
+    await expect(page.locator('text=總瀏覽量').first()).toBeVisible();
+    await expect(page.locator('text=草稿數').first()).toBeVisible();
+    await expect(page.locator('h3:has-text("已發布")').first()).toBeVisible();
   });
 
   test('應該顯示最近發布的文章', async ({ authenticatedPage: page }) => {

@@ -162,7 +162,7 @@ class PostRepository implements PostRepositoryInterface
     {
         // 格式化 publish_date 為 RFC3339
         $publishDate = $result['publish_date'] ?? null;
-        if ($publishDate && strpos($publishDate, 'T') === false) {
+        if (is_string($publishDate) && strpos($publishDate, 'T') === false) {
             // 資料庫格式轉 RFC3339
             try {
                 $dt = new DateTime($publishDate, new DateTimeZone('UTC'));
