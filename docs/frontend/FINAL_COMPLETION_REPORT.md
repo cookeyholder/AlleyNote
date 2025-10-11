@@ -19,7 +19,7 @@
    - 主管理員功能
 
 2. **現代化技術棧** - ✅ 已完成
-   - Vite + Vanilla JS
+   - 原生 HTML/JavaScript/CSS
    - Tailwind CSS
    - CKEditor 5
 
@@ -190,7 +190,7 @@ E2E 測試：50+ 測試案例
 - ✅ 持久化
 
 #### 3. API 整合
-- ✅ Axios Client
+- ✅ Fetch API Client
 - ✅ 請求攔截器
 - ✅ 回應攔截器
 - ✅ 錯誤處理
@@ -315,7 +315,7 @@ E2E 測試：50+ 測試案例
 
 ### 測試
 
-#### 1. 單元測試（Vitest）
+#### 1. 單元測試（Jest 或瀏覽器原生測試）
 - ✅ TokenManager（13 測試）
 - ✅ FormValidator（26 測試）
 - ✅ StorageManager（60 測試）
@@ -411,8 +411,8 @@ frontend/
 ├── playwright.config.js       # Playwright 配置
 ├── postcss.config.js
 ├── tailwind.config.js
-├── vite.config.js             # Vite 配置
-└── vitest.config.js           # Vitest 配置
+├── （無需配置檔案）             # 無需配置（原生技術）
+└── jest 或瀏覽器原生測試.config.js           # Jest 或瀏覽器原生測試 配置
 ```
 
 ---

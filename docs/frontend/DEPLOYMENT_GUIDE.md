@@ -33,10 +33,10 @@
 
 ```bash
 # 安裝依賴
-npm install
+docker-compose up -d
 
-# 啟動開發伺服器（Vite HMR）
-npm run dev
+# 啟動開發伺服器（瀏覽器原生刷新）
+直接編輯文件並刷新瀏覽器
 
 # 開啟在 http://localhost:5173
 ```
@@ -45,7 +45,7 @@ npm run dev
 
 ```bash
 # 建構生產版本
-npm run build
+無需構建（已移除）
 
 # 預覽建構結果
 npm run preview
@@ -66,12 +66,12 @@ dist/
 └── fonts/                # 字體檔案
 ```
 
-### 4. Vite 建構配置
+### 4. 前端部署配置
 
-**`vite.config.js`**
+**`（無需配置檔案）`**
 
 ```javascript
-import { defineConfig } from 'vite';
+
 import { resolve } from 'path';
 
 export default defineConfig({
@@ -235,7 +235,7 @@ RUN npm ci --only=production
 COPY . .
 
 # 建構
-RUN npm run build
+RUN 無需構建（已移除）
 
 # 生產階段
 FROM nginx:alpine
@@ -406,7 +406,7 @@ networks:
 
 ```bash
 # 安裝 Vercel CLI
-npm install -g vercel
+docker-compose up -d -g vercel
 
 # 登入
 vercel login
@@ -425,7 +425,7 @@ vercel --prod
 #!/bin/bash
 
 # 建構
-npm run build
+無需構建（已移除）
 
 # 同步到 S3
 aws s3 sync dist/ s3://alleynote-frontend \
@@ -614,7 +614,7 @@ getTTFB(sendToAnalytics);
 ### 1. Sentry 錯誤追蹤
 
 ```bash
-npm install @sentry/browser
+docker-compose up -d @sentry/browser
 ```
 
 ```javascript
@@ -778,7 +778,7 @@ jobs:
         run: npm ci
       
       - name: Build
-        run: npm run build
+        run: 無需構建（已移除）
         env:
           VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
           VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}

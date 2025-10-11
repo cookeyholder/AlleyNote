@@ -4,7 +4,7 @@
 
 **版本**: v4.2
 **更新日期**: 2025-09-27
-**適用版本**: PHP 8.4.12 + Docker 28.3.3 + Vite 5
+**適用版本**: PHP 8.4.12 + Docker 28.3.3 + 無構建工具
 
 ---
 
@@ -37,7 +37,7 @@
 ### 🐳 容器化環境 (推薦)
 - **Docker**: 28.3.3 或更新版本
 - **Docker Compose**: v2.39.2 或更新版本
-- **前端技術**: Vite 5 + TypeScript + Axios + Tailwind CSS
+- **前端技術**: 無構建工具 + TypeScript + Fetch API + Tailwind CSS
 - **後端架構**: PHP 8.4.12 DDD 分層架構
 
 ### 🗄️ 資料庫系統

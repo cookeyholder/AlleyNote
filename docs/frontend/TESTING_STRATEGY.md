@@ -67,7 +67,7 @@ AlleyNote 前端採用**完整的測試策略**，確保應用程式的穩定性
 ### 安裝與設定
 
 ```bash
-npm install --save-dev @playwright/test
+docker-compose up -d --save-dev @playwright/test
 npx playwright install
 ```
 
@@ -137,7 +137,7 @@ export default defineConfig({
   
   // 開發伺服器
   webServer: {
-    command: 'npm run dev',
+    command: '直接編輯文件並刷新瀏覽器',
     port: 5173,
     reuseExistingServer: !process.env.CI,
   },
@@ -333,18 +333,18 @@ setup('authenticate', async ({ page }) => {
 
 ## 整合測試
 
-### 使用 Vitest
+### 使用 Jest 或瀏覽器原生測試
 
 **安裝**
 
 ```bash
-npm install --save-dev vitest jsdom @testing-library/dom
+docker-compose up -d --save-dev jest 或瀏覽器原生測試 jsdom @testing-library/dom
 ```
 
-**`vitest.config.js`**
+**`jest 或瀏覽器原生測試.config.js`**
 
 ```javascript
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'jest 或瀏覽器原生測試/config';
 
 export default defineConfig({
   test: {
@@ -367,7 +367,7 @@ export default defineConfig({
 **`tests/integration/api-integration.test.js`**
 
 ```javascript
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'jest 或瀏覽器原生測試';
 import { authAPI } from '../../src/api/modules/auth.js';
 import { postsAPI } from '../../src/api/modules/posts.js';
 import { setupMockServer } from '../mocks/server.js';
@@ -437,7 +437,7 @@ describe('API 整合測試', () => {
 **`tests/unit/utils/validation.test.js`**
 
 ```javascript
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from 'jest 或瀏覽器原生測試';
 import { validators } from '../../../src/utils/formManager.js';
 
 describe('Validators', () => {
@@ -495,7 +495,7 @@ describe('Validators', () => {
 **`tests/unit/store/Store.test.js`**
 
 ```javascript
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'jest 或瀏覽器原生測試';
 import { Store } from '../../../src/store/Store.js';
 
 describe('Store', () => {
@@ -608,7 +608,7 @@ test.describe('視覺回歸測試', () => {
 **安裝**
 
 ```bash
-npm install --save-dev msw
+docker-compose up -d --save-dev msw
 ```
 
 **`tests/mocks/handlers.js`**
@@ -800,9 +800,9 @@ test('顯示文章列表', () => {
 ```json
 {
   "scripts": {
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage",
+    "test": "jest 或瀏覽器原生測試",
+    "test:ui": "jest 或瀏覽器原生測試 --ui",
+    "test:coverage": "jest 或瀏覽器原生測試 --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
@@ -860,8 +860,8 @@ jobs:
 AlleyNote 前端測試策略涵蓋：
 
 1. ✅ **E2E 測試** - Playwright 驗證關鍵使用者流程
-2. ✅ **整合測試** - Vitest + MSW 測試 API 整合
-3. ✅ **單元測試** - Vitest 測試獨立函式與模組
+2. ✅ **整合測試** - Jest 或瀏覽器原生測試 + MSW 測試 API 整合
+3. ✅ **單元測試** - Jest 或瀏覽器原生測試 測試獨立函式與模組
 4. ✅ **視覺回歸測試** - Playwright 截圖比對
 5. ✅ **Mock Server** - MSW 隔離外部依賴
 

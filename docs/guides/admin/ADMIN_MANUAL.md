@@ -30,7 +30,7 @@
 AlleyNote 採用 Docker 容器化部署並遵循 DDD 原則，主要組成如下：
 
 - **後端**: PHP 8.4.12、SQLite、RESTful API、分層式 DDD 模組
-- **前端**: Vite 5 + TypeScript + Tailwind CSS（以 Axios 與後端溝通）
+- **前端**: 無構建工具 + TypeScript + Tailwind CSS（以 Fetch API 與後端溝通）
 - **Web 伺服器**: Nginx（反向代理與 SSL 終止）
 - **容器化**: Docker 28.3.3 + Docker Compose v2.39.2
 - **快取系統**: Redis（快取、佇列與暫存）

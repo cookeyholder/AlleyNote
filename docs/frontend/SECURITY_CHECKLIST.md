@@ -61,7 +61,7 @@ element.appendChild(textNode);
 **安裝**
 
 ```bash
-npm install dompurify
+docker-compose up -d dompurify
 ```
 
 **使用範例**
@@ -626,7 +626,7 @@ npm audit --json
 ### 2. 限制套件權限
 
 ```javascript
-// vite.config.js
+// （無需配置檔案）
 export default {
   build: {
     rollupOptions: {

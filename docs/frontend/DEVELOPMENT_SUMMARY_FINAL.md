@@ -3,7 +3,7 @@
 ## 📅 專案資訊
 
 - **專案名稱**: AlleyNote 前端應用程式
-- **技術棧**: Vite + Vanilla JavaScript + Tailwind CSS
+- **技術棧**: 原生 HTML/JavaScript/CSS + Tailwind CSS (CDN)
 - **開發期間**: 2024年9月 - 2024年10月
 - **最後更新**: 2024年10月3日
 
@@ -14,7 +14,7 @@
 ### 🎯 階段一：基礎建設與環境設定 (100% 完成)
 
 #### 專案架構
-- ✅ Vite 專案初始化與配置
+- ✅ 前端目錄結構初始化
 - ✅ Tailwind CSS 整合
 - ✅ ESLint + Prettier 程式碼品質工具
 - ✅ 環境變數管理 (.env.development, .env.staging, .env.production)
@@ -26,7 +26,7 @@
   "核心": ["axios", "navigo", "dompurify", "validator"],
   "編輯器": ["@ckeditor/ckeditor5-build-classic"],
   "圖表": ["chart.js"],
-  "測試": ["vitest", "@playwright/test", "jsdom"],
+  "測試": ["jest 或瀏覽器原生測試", "@playwright/test", "jsdom"],
   "開發工具": ["husky", "lint-staged", "prettier", "eslint"]
 }
 ```
@@ -202,7 +202,7 @@
 ### 🧪 階段六：測試 (40% 完成)
 
 #### 測試環境
-- ✅ Vitest 配置
+- ✅ Jest 或瀏覽器原生測試 配置
 - ✅ Playwright 配置
 - ⏳ Mock Server (MSW)
 - ⏳ 測試 Fixtures
@@ -227,7 +227,7 @@
 #### 效能優化
 - ✅ Code Splitting (路由懶加載)
 - ✅ 資源預載入
-- ✅ Vite 建構優化
+- ✅ 前端效能優化
 - ⏳ 圖片懶加載
 - ⏳ Service Worker (PWA)
 

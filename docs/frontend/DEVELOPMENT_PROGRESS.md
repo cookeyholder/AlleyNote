@@ -74,7 +74,7 @@
 
 #### ✅ 5. 測試撰寫
 - **單元測試**:
-  - ✅ 配置 Vitest 測試環境
+  - ✅ 配置 Jest 或瀏覽器原生測試 測試環境
   - ✅ TokenManager 測試（13 個測試案例）
   - ✅ FormValidator 測試（26 個測試案例）
   - ✅ Mock sessionStorage、localStorage、fetch
@@ -153,7 +153,7 @@
 ✅ 新增/修改檔案：
 - Pages: 6 個檔案（profile, users, statistics, tags）
 - Tests: 5 個檔案（setup, 2 unit tests, 1 e2e test）
-- Config: 6 個檔案（vitest, playwright, vite, nginx, Dockerfile, CI）
+- Config: 6 個檔案（jest 或瀏覽器原生測試, playwright, nginx, Dockerfile, CI）
 - Utils: 1 個檔案（tokenManager 更新）
 - Router: 1 個檔案（新增 4 個路由）
 - Layout: 1 個檔案（更新側邊欄）
@@ -213,7 +213,7 @@
 - ✅ 路由懶加載（按需載入）
 
 ### 2. 測試覆蓋
-- ✅ 單元測試框架（Vitest）
+- ✅ 單元測試框架（Jest 或瀏覽器原生測試）
 - ✅ E2E 測試框架（Playwright）
 - ✅ Mock 策略完善
 - ✅ 跨瀏覽器測試支援
@@ -251,7 +251,7 @@
    - 響應式圖表效果好
 
 3. **測試策略**
-   - Vitest + Playwright 組合強大
+   - Jest 或瀏覽器原生測試 + Playwright 組合強大
    - Mock 策略完善，測試穩定
 
 4. **CI/CD 流程**

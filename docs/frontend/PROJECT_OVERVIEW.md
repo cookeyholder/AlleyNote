@@ -5,7 +5,7 @@
 - **專案名稱**: AlleyNote Frontend
 - **版本**: 1.0.0
 - **狀態**: ✅ 生產就緒
-- **技術棧**: Vite + Vanilla JavaScript + Tailwind CSS
+- **技術棧**: 原生 HTML/JavaScript/CSS + Tailwind CSS (CDN)
 - **開發週期**: 4 週（2024年9月 - 2024年10月）
 
 ---
@@ -26,10 +26,10 @@
 
 ```
 前端框架: Vanilla JavaScript (ES6+)
-建構工具: Vite 5.x
+建構工具: 無構建工具（原生 ES6 Modules）
 CSS 框架: Tailwind CSS 4.x
 路由: Navigo 8.x
-HTTP 客戶端: Axios 1.6
+HTTP 客戶端: Fetch API 1.6
 編輯器: CKEditor 5
 圖表: Chart.js 4.x
 ```
@@ -91,7 +91,7 @@ frontend/
 ├── Dockerfile            # Docker 配置
 ├── nginx.conf            # Nginx 配置
 ├── package.json          # 專案配置
-├── vite.config.js        # Vite 配置
+├── （無需配置檔案）        # 無需配置（原生技術）
 └── tailwind.config.js    # Tailwind 配置
 ```
 
@@ -195,7 +195,7 @@ Lighthouse Performance: > 95
 
 ## 🧪 測試策略
 
-### 1. 單元測試（Vitest）
+### 1. 單元測試（Jest 或瀏覽器原生測試）
 
 ```
 TokenManager: 13 測試案例
@@ -288,7 +288,7 @@ INP - Interaction to Next Paint
 
 ```bash
 # 啟動開發伺服器
-npm run dev
+直接編輯文件並刷新瀏覽器
 
 # 訪問
 http://localhost:5173
@@ -298,7 +298,7 @@ http://localhost:5173
 
 ```bash
 # 建構
-npm run build
+無需構建（已移除）
 
 # 預覽
 npm run preview
@@ -322,7 +322,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+RUN 無需構建（已移除）
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
@@ -440,13 +440,13 @@ server {
 ```json
 {
   "@playwright/test": "^1.55.1",
-  "@vitest/ui": "^3.2.4",
+  "@jest 或瀏覽器原生測試/ui": "^3.2.4",
   "autoprefixer": "^10.4.21",
   "eslint": "^8.50.0",
   "prettier": "^3.6.2",
   "tailwindcss": "^4.1.14",
-  "vite": "^5.4.20",
-  "vitest": "^3.2.4"
+  （無需此依賴）,
+  "jest 或瀏覽器原生測試": "^3.2.4"
 }
 ```
 

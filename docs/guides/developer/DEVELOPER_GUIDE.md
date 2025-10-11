@@ -67,7 +67,7 @@ docker compose exec -T web ./vendor/bin/phpunit
 
 #### 技術堆疊
 - **後端**: PHP 8.4.12（DDD 分層架構 + 統計模組）
-- **前端**: Vite 5 + JavaScript + Axios + 原生 CSS
+- **前端**: 無構建工具 + JavaScript + Fetch API + 原生 CSS
 - **容器化**: Docker 28.3.3 & Docker Compose v2.39.2
 - **資料庫**: SQLite3（預設） / PostgreSQL 16（大型部署）
 - **快取**: Redis（快取標籤系統 + 統計快照）
@@ -700,8 +700,8 @@ AlleyNote/                          # 根目錄
 │   ├── public/                   # 公開存取檔案
 │   ├── scripts/                  # 維護腳本
 │   └── vendor/                   # Composer 依賴套件
-├── frontend/                      # 前端 Vite + TypeScript 應用
-│   ├── src/                      # Vite + JavaScript ES6+ 程式碼
+├── frontend/                      # 前端 原生 HTML/JavaScript/CSS 應用
+│   ├── src/                      # 原生 JavaScript ES6+ Modules 程式碼
 │   ├── public/                   # 靜態檔案
 │   └── package.json              # Node.js 依賴套件
 ├── docker/                       # Docker 容器設定
@@ -1614,7 +1614,7 @@ curl -i http://localhost:8080/api/health
 curl -i -H "Origin: http://localhost:3000" http://localhost:8080/api/posts
 
 # 檢查前端建構
-cd frontend && npm run build
+cd frontend && 無需構建（已移除）
 ```
 
 ---
@@ -1949,13 +1949,13 @@ open coverage-reports/index.html
 curl -i http://localhost:8080/api/health
 
 # 檢查前端服務
-cd frontend && npm run dev
+cd frontend && 直接編輯文件並刷新瀏覽器
 
 # 檢查 CORS 設定
 curl -i -H "Origin: http://localhost:3000" http://localhost:8080/api/posts
 ```
 
-**Q: Vite + JavaScript ES6+ 問題？**
+**Q: 原生 JavaScript ES6+ Modules 問題？**
 ```bash
 # 檢查 Vue.js 版本
 cd frontend && npm list vue
@@ -2002,7 +2002,7 @@ docker compose exec web composer install --optimize-autoloader --no-dev
 - [PHPUnit 11.5 文件](https://phpunit.de/documentation.html)
 - [Docker Compose v2.39 文件](https://docs.docker.com/compose/)
 - [TypeScript 官方文件](https://www.typescriptlang.org/)
-- [Vite 官方文件](https://vitejs.dev/)
+- [MDN JavaScript 模組](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Guide/Modules)
 
 ### 專案文件
 - [ARCHITECTURE_AUDIT.md](ARCHITECTURE_AUDIT.md) - 架構審查報告
@@ -2014,7 +2014,7 @@ docker compose exec web composer install --optimize-autoloader --no-dev
 - **後端測試**: `./vendor/bin/phpunit` (1,372 個通過測試)
 - **程式碼風格**: `./vendor/bin/php-cs-fixer` (PSR-12 標準)
 - **靜態分析**: `./vendor/bin/phpstan` (Level 10)
-- **前端開發**: `npm run dev` (Vite + TypeScript)
+- **前端開發**: `直接編輯文件並刷新瀏覽器` (原生 HTML/JavaScript/CSS)
 
 ### 社群資源
 - [PHP 官方網站](https://www.php.net/)
@@ -2039,7 +2039,7 @@ docker compose exec web composer install --optimize-autoloader --no-dev
 - **PHP**: 8.4.12 (Xdebug 3.4.5, Zend OPcache v8.4.12)
 - **測試**: 138 檔案, 1,372 個通過測試
 - **Docker**: 28.3.3 & Docker Compose v2.39.2
-- **前端**: Vite + JavaScript ES6+
+- **前端**: 原生 JavaScript ES6+ Modules
 - **架構**: 前後端分離 + DDD 設計模式
 
 ---

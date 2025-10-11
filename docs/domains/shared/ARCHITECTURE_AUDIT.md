@@ -3,7 +3,7 @@
 **版本**: v4.2
 **更新日期**: 2025-09-27
 **架構**: DDD 分層架構 (PHP 8.4.12) + 統計模組
-**前端**: Vite 5 + TypeScript + Axios + Tailwind CSS
+**前端**: 無構建工具 + TypeScript + Fetch API + Tailwind CSS
 **系統版本**: Docker 28.3.3, Docker Compose v2.39.2
 **主要特色**: 統計模組已整合並啟用
 **作者**: 架構審視小組（結合自動化分析與人工審查）

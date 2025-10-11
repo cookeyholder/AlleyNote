@@ -12,7 +12,7 @@
 ### ✅ 已達成目標
 
 1. **✅ 完整的前端架構**
-   - Vite + Tailwind CSS 技術棧
+   - 原生技術 + Tailwind CSS (CDN) 技術棧
    - 模組化程式碼組織
    - API Client 統一管理
    - 路由系統與守衛
@@ -31,7 +31,7 @@
    - 安全標頭配置
 
 4. **✅ 測試與品質保證**
-   - 單元測試（Vitest）
+   - 單元測試（Jest 或瀏覽器原生測試）
    - E2E 測試（Playwright）
    - ESLint + Prettier
    - 測試覆蓋率報告
@@ -185,7 +185,7 @@ test('應該成功登入並導向後台', async ({ page }) => {
 
 #### Code Splitting
 ```javascript
-// vite.config.js
+// （無需配置檔案）
 manualChunks: {
   'vendor-chart': ['chart.js'],
   'vendor-ckeditor': ['@ckeditor/ckeditor5-build-classic'],
@@ -213,7 +213,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
-RUN npm run build
+RUN 無需構建（已移除）
 
 # Stage 2: Production
 FROM nginx:alpine
@@ -244,7 +244,7 @@ jobs:
    - ✅ 失敗時優雅降級
 
 2. **測試策略**
-   - ✅ Vitest + Playwright 組合強大
+   - ✅ Jest 或瀏覽器原生測試 + Playwright 組合強大
    - ✅ Mock 策略完善，測試穩定
    - ✅ 跨瀏覽器測試支援
 
@@ -324,10 +324,10 @@ dist/
 ```bash
 # 安裝依賴
 cd frontend
-npm install
+docker-compose up -d
 
 # 啟動開發伺服器
-npm run dev
+直接編輯文件並刷新瀏覽器
 
 # 開啟 http://localhost:5173
 ```
@@ -336,7 +336,7 @@ npm run dev
 
 ```bash
 # 建構
-npm run build
+無需構建（已移除）
 
 # 預覽
 npm run preview
@@ -467,11 +467,11 @@ docker compose down
 感謝所有參與專案開發的人員，以及提供技術支援的開源社群。
 
 特別感謝：
-- **Vite** - 極速的建構工具
+- **原生技術** - 零構建時間，修改即生效
 - **Tailwind CSS** - 優秀的 CSS 框架
 - **Chart.js** - 強大的圖表庫
 - **CKEditor** - 專業的編輯器
-- **Vitest** - 快速的測試框架
+- **Jest 或瀏覽器原生測試** - 快速的測試框架
 - **Playwright** - 完善的 E2E 測試工具
 
 ---
