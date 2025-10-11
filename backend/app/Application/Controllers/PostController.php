@@ -71,7 +71,7 @@ class PostController extends BaseController
                     FROM posts p
                     LEFT JOIN users u ON p.user_id = u.id
                     WHERE {$whereClause} 
-                    ORDER BY p.created_at DESC 
+                    ORDER BY COALESCE(p.publish_date, p.created_at) DESC 
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $pdo->prepare($sql);
