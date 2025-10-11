@@ -55,6 +55,10 @@ class PostController extends BaseController
                 $where[] = 'status = :status';
                 $params[':status'] = $status;
             }
+            
+            // 只顯示發布時間小於等於現在的文章（過濾未來的文章）
+            // 如果 publish_date 為 NULL，則允許顯示（使用 created_at）
+            $where[] = "(publish_date IS NULL OR publish_date <= datetime('now'))";
 
             $whereClause = implode(' AND ', $where);
 
