@@ -249,6 +249,11 @@ return function (RouterInterface $router): void {
     $rolesDestroy->setName('roles.destroy');
     $rolesDestroy->middleware(['jwt.auth', 'jwt.authorize']);
 
+    // 更新角色的權限
+    $rolesUpdatePermissions = $router->put('/api/roles/{id}/permissions', [RoleController::class, 'updatePermissions']);
+    $rolesUpdatePermissions->setName('roles.update.permissions');
+    $rolesUpdatePermissions->middleware(['jwt.auth', 'jwt.authorize']);
+
     // =========================================
     // 權限管理 API 路由 (需要管理員權限)
     // =========================================
@@ -262,6 +267,11 @@ return function (RouterInterface $router): void {
     $permissionsShow = $router->get('/api/permissions/{id}', [PermissionController::class, 'show']);
     $permissionsShow->setName('permissions.show');
     $permissionsShow->middleware(['jwt.auth', 'jwt.authorize']);
+
+    // 取得權限列表（按資源分組）
+    $permissionsGrouped = $router->get('/api/permissions/grouped', [RoleController::class, 'permissionsGrouped']);
+    $permissionsGrouped->setName('permissions.grouped');
+    $permissionsGrouped->middleware(['jwt.auth', 'jwt.authorize']);
 
     // =========================================
     // 標籤管理 API 路由 (需要認證)

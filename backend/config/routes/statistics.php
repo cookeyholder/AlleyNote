@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 use App\Application\Controllers\Api\V1\StatisticsController;
 use App\Application\Controllers\Api\V1\StatisticsAdminController;
+use App\Application\Controllers\Api\V1\StatisticsChartController;
 use App\Application\Controllers\Api\V1\PostViewController;
 
 return [
@@ -104,5 +105,54 @@ return [
         'handler' => [StatisticsAdminController::class, 'health'],
         'name' => 'statistics.admin.health',
         'middleware' => ['jwt.auth', 'jwt.authorize']
+    ],
+
+    // =========================================
+    // 圖表統計 API 路由 (需要認證)
+    // =========================================
+
+    // 取得文章發布時間序列統計
+    'statistics.charts.posts.timeseries' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/charts/posts/timeseries',
+        'handler' => [StatisticsChartController::class, 'getPostsTimeSeries'],
+        'name' => 'statistics.charts.posts.timeseries',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得使用者活動時間序列統計
+    'statistics.charts.users.timeseries' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/charts/users/timeseries',
+        'handler' => [StatisticsChartController::class, 'getUserActivityTimeSeries'],
+        'name' => 'statistics.charts.users.timeseries',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得瀏覽量時間序列統計
+    'statistics.charts.views.timeseries' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/charts/views/timeseries',
+        'handler' => [StatisticsChartController::class, 'getViewsTimeSeries'],
+        'name' => 'statistics.charts.views.timeseries',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得標籤分布統計
+    'statistics.charts.tags.distribution' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/charts/tags/distribution',
+        'handler' => [StatisticsChartController::class, 'getTagsDistribution'],
+        'name' => 'statistics.charts.tags.distribution',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得來源分布統計
+    'statistics.charts.sources.distribution' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/charts/sources/distribution',
+        'handler' => [StatisticsChartController::class, 'getSourcesDistribution'],
+        'name' => 'statistics.charts.sources.distribution',
+        'middleware' => ['jwt.auth']
     ]
 ];
