@@ -135,22 +135,19 @@ class PostRepository implements PostRepositoryInterface
      */
     private function buildSelectQuery(string $additionalConditions = '', string $tableAlias = ''): string
     {
-        $fields = $tableAlias
-            ? str_replace(
-                'id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at',
-                $tableAlias . '.id, ' . $tableAlias . '.uuid, ' . $tableAlias . '.seq_number, ' . $tableAlias . '.title, ' . $tableAlias . '.content, ' . $tableAlias . '.user_id, ' . $tableAlias . '.user_ip, ' . $tableAlias . '.is_pinned, ' . $tableAlias . '.status, ' . $tableAlias . '.publish_date, ' . $tableAlias . '.views, ' . $tableAlias . '.created_at, ' . $tableAlias . '.updated_at',
-                self::POST_SELECT_FIELDS,
-            )
-            : self::POST_SELECT_FIELDS;
+        $alias = $tableAlias ?: 'p';
+        $fields = $alias . '.id, ' . $alias . '.uuid, ' . $alias . '.seq_number, ' . $alias . '.title, ' . $alias . '.content, ' 
+                . $alias . '.user_id, ' . $alias . '.user_ip, ' . $alias . '.is_pinned, ' . $alias . '.status, ' 
+                . $alias . '.publish_date, ' . $alias . '.views, ' . $alias . '.created_at, ' . $alias . '.updated_at, '
+                . $alias . '.creation_source, ' . $alias . '.creation_source_detail, u.username as author';
 
-        $tableName = $tableAlias ? "posts {$tableAlias}" : 'posts';
-        $sql = "SELECT {$fields} FROM {$tableName}";
+        $sql = "SELECT {$fields} FROM posts {$alias} LEFT JOIN users u ON {$alias}.user_id = u.id";
 
         if ($additionalConditions) {
             $sql .= " WHERE {$additionalConditions}";
-            $sql = $this->addDeletedAtCondition($sql, $tableAlias);
+            $sql = $this->addDeletedAtCondition($sql, $alias);
         } else {
-            $sql = $this->addDeletedAtCondition($sql, $tableAlias);
+            $sql = $this->addDeletedAtCondition($sql, $alias);
         }
 
         return $sql;
@@ -177,6 +174,7 @@ class PostRepository implements PostRepositoryInterface
             'creation_source_detail' => $result['creation_source_detail'] ?? null,
             'created_at' => $result['created_at'] ?? null,
             'updated_at' => $result['updated_at'] ?? null,
+            'author' => $result['author'] ?? 'Unknown', // 添加 author 字段
         ];
     }
 
@@ -518,9 +516,11 @@ class PostRepository implements PostRepositoryInterface
             $total = (int) $stmt->fetchColumn();
 
             // 取得分頁資料
-            $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts'
+            $sql = 'SELECT p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at, p.creation_source, p.creation_source_detail, u.username as author'
+                . ' FROM posts p'
+                . ' LEFT JOIN users u ON p.user_id = u.id'
                 . ' WHERE ' . $baseWhere . ' ' . $publishTimeCheck
-                . ' ORDER BY is_pinned DESC, publish_date DESC LIMIT :offset, :limit';
+                . ' ORDER BY p.is_pinned DESC, p.publish_date DESC LIMIT :offset, :limit';
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
