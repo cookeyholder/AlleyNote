@@ -9,6 +9,7 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
+use DateTimeImmutable;
 use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -113,8 +114,11 @@ class ActivityLogController extends BaseController
     {
         try {
             $params = $request->getQueryParams();
-            $limit = (int) ($params['limit'] ?? 20);
-            $offset = (int) ($params['offset'] ?? 0);
+            $limitParam = $params['limit'] ?? 20;
+            $offsetParam = $params['offset'] ?? 0;
+
+            $limit = is_numeric($limitParam) ? (int) $limitParam : 20;
+            $offset = is_numeric($offsetParam) ? (int) $offsetParam : 0;
 
             $logs = $this->repository->findAll($limit, $offset);
 
@@ -122,6 +126,112 @@ class ActivityLogController extends BaseController
                 'success' => true,
                 'data' => $logs,
                 'message' => 'Activity logs retrieved successfully',
+            ]);
+            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error_code' => 500,
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    #[OA\Get(
+        path: '/api/v1/activity-logs/stats',
+        operationId: 'getActivityLogStats',
+        summary: 'Get activity log statistics',
+        tags: ['Activity Log'],
+        parameters: [
+            new OA\Parameter(name: 'start_date', in: 'query', schema: new OA\Schema(type: 'string', format: 'date-time')),
+            new OA\Parameter(name: 'end_date', in: 'query', schema: new OA\Schema(type: 'string', format: 'date-time')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Activity log statistics retrieved successfully'),
+            new OA\Response(response: 500, description: 'Internal server error'),
+        ],
+    )]
+    public function getStats(Request $request, Response $response): Response
+    {
+        try {
+            $params = $request->getQueryParams();
+            $startDate = isset($params['start_date']) && is_string($params['start_date'])
+                ? new DateTimeImmutable($params['start_date'])
+                : new DateTimeImmutable('-30 days');
+            $endDate = isset($params['end_date']) && is_string($params['end_date'])
+                ? new DateTimeImmutable($params['end_date'])
+                : new DateTimeImmutable();
+
+            $stats = $this->repository->getActivityStatistics($startDate, $endDate);
+
+            $successResponse = json_encode([
+                'success' => true,
+                'data' => $stats,
+                'message' => 'Activity log statistics retrieved successfully',
+            ]);
+            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error',
+                'error_code' => 500,
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
+
+    #[OA\Get(
+        path: '/api/v1/activity-logs/me',
+        operationId: 'getCurrentUserActivityLogs',
+        summary: 'Get current user activity logs',
+        tags: ['Activity Log'],
+        parameters: [
+            new OA\Parameter(name: 'limit', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+            new OA\Parameter(name: 'offset', in: 'query', schema: new OA\Schema(type: 'integer', default: 0)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Current user activity logs retrieved successfully'),
+            new OA\Response(response: 401, description: 'Unauthorized'),
+            new OA\Response(response: 500, description: 'Internal server error'),
+        ],
+    )]
+    public function getCurrentUserLogs(Request $request, Response $response): Response
+    {
+        try {
+            $userId = $request->getAttribute('user_id');
+            if (!is_numeric($userId)) {
+                $errorResponse = json_encode([
+                    'success' => false,
+                    'message' => 'Unauthorized',
+                    'error_code' => 401,
+                ]);
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+            }
+
+            $params = $request->getQueryParams();
+            $limitParam = $params['limit'] ?? 20;
+            $offsetParam = $params['offset'] ?? 0;
+
+            $limit = is_numeric($limitParam) ? (int) $limitParam : 20;
+            $offset = is_numeric($offsetParam) ? (int) $offsetParam : 0;
+
+            $logs = $this->repository->findByUser((int) $userId, $limit, $offset);
+
+            $successResponse = json_encode([
+                'success' => true,
+                'data' => $logs,
+                'message' => 'Current user activity logs retrieved successfully',
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
