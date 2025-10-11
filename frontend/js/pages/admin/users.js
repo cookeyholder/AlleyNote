@@ -1,7 +1,7 @@
 import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
 import { usersAPI } from '../../api/modules/users.js';
 import { toast } from '../../utils/toast.js';
-import { modal } from '../../components/Modal.js';
+import { Modal, modal } from '../../components/Modal.js';
 
 /**
  * 使用者管理頁面
