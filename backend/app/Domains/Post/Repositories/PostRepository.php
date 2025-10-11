@@ -136,8 +136,8 @@ class PostRepository implements PostRepositoryInterface
     private function buildSelectQuery(string $additionalConditions = '', string $tableAlias = ''): string
     {
         $alias = $tableAlias ?: 'p';
-        $fields = $alias . '.id, ' . $alias . '.uuid, ' . $alias . '.seq_number, ' . $alias . '.title, ' . $alias . '.content, ' 
-                . $alias . '.user_id, ' . $alias . '.user_ip, ' . $alias . '.is_pinned, ' . $alias . '.status, ' 
+        $fields = $alias . '.id, ' . $alias . '.uuid, ' . $alias . '.seq_number, ' . $alias . '.title, ' . $alias . '.content, '
+                . $alias . '.user_id, ' . $alias . '.user_ip, ' . $alias . '.is_pinned, ' . $alias . '.status, '
                 . $alias . '.publish_date, ' . $alias . '.views, ' . $alias . '.created_at, ' . $alias . '.updated_at, '
                 . $alias . '.creation_source, ' . $alias . '.creation_source_detail, u.username as author';
 

@@ -56,7 +56,7 @@ class PostController extends BaseController
                 $where[] = 'status = :status';
                 $params[':status'] = $status;
             }
-            
+
             // 根據 include_future 參數決定是否過濾未來文章
             // 預設為 false（過濾未來文章，用於首頁等公開頁面）
             // 設為 true 時顯示所有文章（用於文章管理頁面）
@@ -129,7 +129,7 @@ class PostController extends BaseController
 
             // 建立查詢條件
             $conditions = ['p.id = :id', 'p.deleted_at IS NULL'];
-            
+
             // 根據 include_future 參數決定是否過濾
             // 當 include_future=false（公開訪問）時：
             // - 只顯示已發布的文章
@@ -138,7 +138,7 @@ class PostController extends BaseController
                 $conditions[] = "p.status = 'published'";
                 $conditions[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
             }
-            
+
             $whereClause = implode(' AND ', $conditions);
 
             // 查詢文章

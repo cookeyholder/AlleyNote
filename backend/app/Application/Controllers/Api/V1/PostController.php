@@ -119,10 +119,9 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 將 Post 對象正確序列化為數組
-            $items = array_map(function($post) {
+            $items = array_map(function ($post) {
                 return $post->toArray();
             }, $result['items']);
-            
 
             $responseData = $this->paginatedResponse(
                 $items,

@@ -39,7 +39,7 @@ class Post implements JsonSerializable
     private ?string $creationSource;
 
     private ?string $creationSourceDetail;
-    
+
     private ?string $author; // 作者用戶名（從 users 表 JOIN 得到）
 
     public function __construct(array $data)

@@ -13,19 +13,22 @@
 ## 待辦清單
 
 ### 階段 1：資料庫準備
-- [ ] 1.1 檢查 settings 表結構
-- [ ] 1.2 創建初始時區設定記錄（預設 UTC+8 Asia/Taipei）
+- [x] 1.1 檢查 settings 表結構 ✅
+- [x] 1.2 創建初始時區設定記錄（預設 UTC+8 Asia/Taipei） ✅
 - [ ] 1.3 創建資料庫遷移腳本（將現有時間格式轉為 RFC3339）
 
 ### 階段 2：後端核心功能
-- [ ] 2.1 創建時區輔助函數類 `TimezoneHelper.php`
-  - [ ] UTC 轉網站時區
-  - [ ] 網站時區轉 UTC
-  - [ ] RFC3339 格式驗證
-  - [ ] 獲取網站時區設定
-- [ ] 2.2 修改 SettingController
-  - [ ] GET /api/settings - 返回時區設定
-  - [ ] PUT /api/settings - 更新時區設定
+- [x] 2.1 創建時區輔助函數類 `TimezoneHelper.php` ✅
+  - [x] UTC 轉網站時區 ✅
+  - [x] 網站時區轉 UTC ✅
+  - [x] RFC3339 格式驗證 ✅
+  - [x] 獲取網站時區設定 ✅
+  - [x] 時區偏移計算 ✅
+  - [x] 常用時區列表 ✅
+  - [x] 格式化顯示 ✅
+- [x] 2.2 修改 SettingController ✅
+  - [x] 添加 getTimezoneInfo() 方法 ✅
+  - [x] 使用現有 API 獲取/更新時區 ✅
 - [ ] 2.3 修改 PostController
   - [ ] index: 時間輸出轉換為網站時區
   - [ ] show: 時間輸出轉換為網站時區
@@ -132,5 +135,6 @@ Response: { "success": true }
 
 ## 進度追蹤
 - 開始時間：2025-10-11
-- 當前階段：準備開始
-- 完成進度：0%
+- 當前階段：階段 3 - 前端核心功能
+- 完成進度：30%
+- 最後更新：2025-10-11 12:20

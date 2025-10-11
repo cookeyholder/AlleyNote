@@ -165,7 +165,7 @@ class SettingController
     }
 
     /**
-     * 取得時區設定資訊
+     * 取得時區設定資訊.
      *
      * GET /api/settings/timezone/info
      */
