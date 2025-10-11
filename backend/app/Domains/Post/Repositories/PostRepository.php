@@ -158,6 +158,18 @@ class PostRepository implements PostRepositoryInterface
      */
     private function preparePostData(array $result): mixed
     {
+        // 格式化 publish_date 為 RFC3339
+        $publishDate = $result['publish_date'] ?? null;
+        if ($publishDate && strpos($publishDate, 'T') === false) {
+            // 資料庫格式轉 RFC3339
+            try {
+                $dt = new \DateTime($publishDate, new \DateTimeZone('UTC'));
+                $publishDate = $dt->format(\DateTime::ATOM);
+            } catch (\Exception $e) {
+                // 轉換失敗時保持原值
+            }
+        }
+
         return [
             'id' => (int) ($result['id'] ?? 0),
             'uuid' => $result['uuid'] ?? '',
@@ -169,7 +181,7 @@ class PostRepository implements PostRepositoryInterface
             'views' => (int) ($result['views'] ?? 0),
             'is_pinned' => (bool) ($result['is_pinned'] ?? false),
             'status' => $result['status'] ?? 'draft',
-            'publish_date' => $result['publish_date'] ?? null,
+            'publish_date' => $publishDate,
             'creation_source' => $result['creation_source'] ?? null,
             'creation_source_detail' => $result['creation_source_detail'] ?? null,
             'created_at' => $result['created_at'] ?? null,

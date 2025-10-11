@@ -132,7 +132,8 @@ class Post implements JsonSerializable
 
     public function getPublishDate(): ?string
     {
-        return $this->publishDate;
+        // 返回格式化為 RFC3339 的時間
+        return $this->formatPublishDateForApi();
     }
 
     public function getViews(): int
@@ -184,7 +185,7 @@ class Post implements JsonSerializable
             'user_ip' => $this->userIp,
             'is_pinned' => $this->isPinned,
             'status' => $this->getStatusValue(),
-            'publish_date' => $this->publishDate,
+            'publish_date' => $this->formatPublishDateForApi(),
             'views' => $this->views,
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
@@ -192,6 +193,32 @@ class Post implements JsonSerializable
             'creation_source_detail' => $this->creationSourceDetail,
             'author' => $this->author,
         ];
+    }
+
+    /**
+     * 格式化發布時間為 API 輸出格式（RFC3339 / ISO 8601）
+     * 資料庫儲存的是 UTC 時間，需要明確加上時區資訊
+     */
+    protected function formatPublishDateForApi(): ?string
+    {
+        if ($this->publishDate === null) {
+            return null;
+        }
+
+        // 如果已經是 ISO 8601 格式（包含 T 和時區），直接返回
+        if (strpos($this->publishDate, 'T') !== false) {
+            return $this->publishDate;
+        }
+
+        // 資料庫格式：YYYY-MM-DD HH:MM:SS (UTC)
+        // 轉換為：YYYY-MM-DDTHH:MM:SSZ (RFC3339)
+        try {
+            $dateTime = new \DateTime($this->publishDate, new \DateTimeZone('UTC'));
+            return $dateTime->format(\DateTime::ATOM); // RFC3339 格式
+        } catch (\Exception $e) {
+            // 如果轉換失敗，返回原始值
+            return $this->publishDate;
+        }
     }
 
     /**

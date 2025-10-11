@@ -178,24 +178,49 @@ class TimezoneUtils {
   }
 
   /**
-   * 將時間轉換為 datetime-local 輸入格式
+   * 將 UTC 時間轉換為 datetime-local 輸入格式（網站時區）
    * 
-   * @param {string} utcTimeString - UTC 時間字串
-   * @returns {string} YYYY-MM-DDTHH:MM 格式
+   * @param {string} utcTimeString - UTC 時間字串 (ISO 8601 / RFC3339 或資料庫格式)
+   * @returns {string} YYYY-MM-DDTHH:MM 格式（網站時區）
    */
   async toDateTimeLocalFormat(utcTimeString) {
     if (!utcTimeString) {
-      // 返回當前時間
+      // 如果沒有提供時間，返回當前時間（網站時區）
+      const timezone = await this.getSiteTimezone();
+      const offsetHours = this.getTimezoneOffsetHours(timezone);
       const now = new Date();
-      return this.dateToLocalFormat(now);
+      const siteNow = new Date(now.getTime() + offsetHours * 3600000);
+      return this.dateToLocalFormat(siteNow);
     }
 
     try {
-      const utcDate = new Date(utcTimeString);
+      let utcDate;
+      
+      // 處理不同的時間格式
+      if (utcTimeString.includes('T')) {
+        // ISO 8601 / RFC3339 format
+        utcDate = new Date(utcTimeString);
+      } else {
+        // 資料庫格式：YYYY-MM-DD HH:MM:SS (假設為 UTC)
+        // 明確指定為 UTC 時間
+        const utcString = utcTimeString.replace(' ', 'T') + 'Z';
+        utcDate = new Date(utcString);
+      }
+      
+      if (isNaN(utcDate.getTime())) {
+        console.warn('無效的 UTC 時間:', utcTimeString);
+        return '';
+      }
+
+      // 獲取網站時區偏移
       const timezone = await this.getSiteTimezone();
       const offsetHours = this.getTimezoneOffsetHours(timezone);
+      
+      // UTC 時間加上偏移 = 網站時區時間
+      // 例如：UTC 07:30 + 8小時 = 網站時區 15:30
       const siteDate = new Date(utcDate.getTime() + offsetHours * 3600000);
 
+      // 格式化為 datetime-local 格式
       return this.dateToLocalFormat(siteDate);
     } catch (error) {
       console.error('格式轉換錯誤:', error);
@@ -205,27 +230,59 @@ class TimezoneUtils {
 
   /**
    * Date 對象轉 datetime-local 格式
+   * 
+   * 注意：傳入的 Date 物件應該已經是網站時區調整後的時間
+   * 我們只需要提取其 UTC 表示的年月日時分（這些值實際代表網站時區）
+   * 
+   * @param {Date} date - 已調整為網站時區的 Date 物件
+   * @returns {string} YYYY-MM-DDTHH:MM 格式
    */
   dateToLocalFormat(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    // 使用 UTC 方法提取值，因為我們已經將時區偏移加入到時間中
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   /**
-   * 從 datetime-local 格式轉換為 UTC
+   * 從 datetime-local 格式轉換為 UTC RFC3339 格式
+   * 
+   * datetime-local 輸入的值代表「網站時區」的時間
+   * 需要轉換為 UTC ISO 8601 / RFC3339 格式
+   * 
+   * @param {string} localTimeString - datetime-local 格式 (YYYY-MM-DDTHH:MM)
+   * @returns {string} UTC RFC3339 格式的時間字串
    */
   async fromDateTimeLocalFormat(localTimeString) {
     if (!localTimeString) return '';
 
     try {
       // datetime-local 格式: YYYY-MM-DDTHH:MM
-      const siteDate = new Date(localTimeString);
-      return await this.siteTimezoneToUtc(siteDate);
+      // 這個值代表的是「網站時區」的時間
+      const [datePart, timePart] = localTimeString.split('T');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hours, minutes] = timePart.split(':').map(Number);
+
+      // 獲取網站時區偏移
+      const timezone = await this.getSiteTimezone();
+      const offsetHours = this.getTimezoneOffsetHours(timezone);
+
+      // 建立 UTC 時間：網站時區的時間減去偏移 = UTC 時間
+      // 例如：網站時區 15:30 (UTC+8) = UTC 07:30
+      const utcDate = new Date(Date.UTC(
+        year,
+        month - 1,  // JavaScript 月份從 0 開始
+        day,
+        hours - offsetHours,  // 減去時區偏移得到 UTC 小時
+        minutes
+      ));
+
+      // 返回 RFC3339 / ISO 8601 格式
+      return utcDate.toISOString();
     } catch (error) {
       console.error('格式轉換錯誤:', error);
       return '';
