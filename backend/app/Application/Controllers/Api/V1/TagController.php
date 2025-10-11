@@ -10,12 +10,17 @@ use App\Domains\Post\Services\TagManagementService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
  * 標籤管理 Controller.
  */
+#[OA\Tag(
+    name: 'Tags',
+    description: 'Tag management endpoints',
+)]
 class TagController
 {
     public function __construct(
@@ -27,6 +32,21 @@ class TagController
      *
      * GET /api/tags
      */
+    #[OA\Get(
+        path: '/api/tags',
+        operationId: 'getTags',
+        summary: 'Get list of tags',
+        tags: ['Tags'],
+        parameters: [
+            new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1)),
+            new OA\Parameter(name: 'per_page', in: 'query', schema: new OA\Schema(type: 'integer', default: 20)),
+            new OA\Parameter(name: 'search', in: 'query', schema: new OA\Schema(type: 'string')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Tags retrieved successfully'),
+            new OA\Response(response: 500, description: 'Internal server error'),
+        ],
+    )]
     public function index(Request $request, Response $response): Response
     {
         $params = $request->getQueryParams();
@@ -67,6 +87,19 @@ class TagController
      *
      * GET /api/tags/{id}
      */
+    #[OA\Get(
+        path: '/api/tags/{id}',
+        operationId: 'getTag',
+        summary: 'Get a single tag',
+        tags: ['Tags'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Tag retrieved successfully'),
+            new OA\Response(response: 404, description: 'Tag not found'),
+        ],
+    )]
     public function show(Request $request, Response $response): Response
     {
         try {
@@ -102,6 +135,28 @@ class TagController
      *
      * POST /api/tags
      */
+    #[OA\Post(
+        path: '/api/tags',
+        operationId: 'createTag',
+        summary: 'Create a new tag',
+        tags: ['Tags'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', maxLength: 50),
+                    new OA\Property(property: 'slug', type: 'string'),
+                    new OA\Property(property: 'description', type: 'string'),
+                    new OA\Property(property: 'color', type: 'string'),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Tag created successfully'),
+            new OA\Response(response: 422, description: 'Validation failed'),
+        ],
+    )]
     public function store(Request $request, Response $response): Response
     {
         try {
@@ -151,6 +206,31 @@ class TagController
      *
      * PUT /api/tags/{id}
      */
+    #[OA\Put(
+        path: '/api/tags/{id}',
+        operationId: 'updateTag',
+        summary: 'Update a tag',
+        tags: ['Tags'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', maxLength: 50),
+                    new OA\Property(property: 'slug', type: 'string'),
+                    new OA\Property(property: 'description', type: 'string'),
+                    new OA\Property(property: 'color', type: 'string'),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Tag updated successfully'),
+            new OA\Response(response: 404, description: 'Tag not found'),
+            new OA\Response(response: 422, description: 'Validation failed'),
+        ],
+    )]
     public function update(Request $request, Response $response): Response
     {
         try {
@@ -216,6 +296,19 @@ class TagController
      *
      * DELETE /api/tags/{id}
      */
+    #[OA\Delete(
+        path: '/api/tags/{id}',
+        operationId: 'deleteTag',
+        summary: 'Delete a tag',
+        tags: ['Tags'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Tag deleted successfully'),
+            new OA\Response(response: 404, description: 'Tag not found'),
+        ],
+    )]
     public function destroy(Request $request, Response $response): Response
     {
         try {

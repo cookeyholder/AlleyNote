@@ -9,12 +9,17 @@ use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Helpers\TimezoneHelper;
 use InvalidArgumentException;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
  * 系統設定管理 Controller.
  */
+#[OA\Tag(
+    name: 'Settings',
+    description: 'System settings management endpoints',
+)]
 class SettingController
 {
     public function __construct(
@@ -167,8 +172,17 @@ class SettingController
     /**
      * 取得時區設定資訊.
      *
-     * GET /api/settings/timezone/info
+     * GET /api/timezone-info
      */
+    #[OA\Get(
+        path: '/api/timezone-info',
+        operationId: 'getTimezoneInfo',
+        summary: 'Get timezone information',
+        tags: ['Settings'],
+        responses: [
+            new OA\Response(response: 200, description: 'Timezone information retrieved successfully'),
+        ],
+    )]
     public function getTimezoneInfo(Request $request, Response $response): Response
     {
         $timezone = TimezoneHelper::getSiteTimezone();

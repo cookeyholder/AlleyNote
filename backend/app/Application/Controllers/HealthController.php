@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 class HealthController
 {
     #[OA\Get(
-        path: '/health',
+        path: '/api/health',
         summary: '健康檢查端點',
         tags: ['health'],
         responses: [new OA\Response(response: 200, description: '系統正常運行')],

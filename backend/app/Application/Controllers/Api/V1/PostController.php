@@ -33,7 +33,7 @@ class PostController extends BaseController
     ) {}
 
     #[OA\Get(
-        path: '/posts',
+        path: '/api/posts',
         summary: '取得所有貼文',
         description: '取得分頁的貼文列表，支援搜尋和篩選',
         operationId: 'getPosts',
@@ -186,7 +186,7 @@ class PostController extends BaseController
     }
 
     #[OA\Post(
-        path: '/posts',
+        path: '/api/posts',
         summary: '建立新貼文',
         description: '建立一篇新的貼文，需要 CSRF Token 驗證',
         operationId: 'createPost',
@@ -313,7 +313,7 @@ class PostController extends BaseController
     }
 
     #[OA\Get(
-        path: '/posts/{id}',
+        path: '/api/posts/{id}',
         summary: '取得單一貼文',
         description: '根據 ID 取得貼文詳細資訊，並記錄瀏覽次數',
         operationId: 'getPostById',
@@ -427,7 +427,7 @@ class PostController extends BaseController
     }
 
     #[OA\Put(
-        path: '/posts/{id}',
+        path: '/api/posts/{id}',
         summary: '更新貼文',
         description: '更新指定 ID 的貼文，需要 CSRF Token 驗證',
         operationId: 'updatePost',
@@ -606,7 +606,7 @@ class PostController extends BaseController
     }
 
     #[OA\Delete(
-        path: '/posts/{id}',
+        path: '/api/posts/{id}',
         summary: '刪除貼文',
         description: '刪除指定 ID 的貼文，需要 CSRF Token 驗證',
         operationId: 'deletePost',
@@ -763,7 +763,7 @@ class PostController extends BaseController
     }
 
     #[OA\Patch(
-        path: '/posts/{id}/pin',
+        path: '/api/posts/{id}/pin',
         summary: '更新貼文置頂狀態',
         description: '設定或取消貼文的置頂狀態，需要 CSRF Token 驗證',
         operationId: 'togglePostPin',
@@ -1038,7 +1038,7 @@ class PostController extends BaseController
      * POST /api/posts/{id}/publish
      */
     #[OA\Post(
-        path: '/posts/{id}/publish',
+        path: '/api/posts/{id}/publish',
         summary: '發布貼文',
         description: '將草稿貼文發布為公開狀態',
         operationId: 'publishPost',
@@ -1104,7 +1104,7 @@ class PostController extends BaseController
      * POST /api/posts/{id}/unpublish
      */
     #[OA\Post(
-        path: '/posts/{id}/unpublish',
+        path: '/api/posts/{id}/unpublish',
         summary: '取消發布貼文',
         description: '將已發布的貼文改為草稿狀態',
         operationId: 'unpublishPost',
@@ -1170,7 +1170,7 @@ class PostController extends BaseController
      * DELETE /api/posts/{id}/pin
      */
     #[OA\Delete(
-        path: '/posts/{id}/pin',
+        path: '/api/posts/{id}/pin',
         summary: '取消置頂貼文',
         description: '取消貼文的置頂狀態',
         operationId: 'unpinPost',

@@ -97,7 +97,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/register',
+        path: '/api/auth/register',
         summary: '使用者註冊',
         description: '建立新的使用者帳號，需要提供使用者名稱、電子郵件和密碼',
         operationId: 'registerUser',
@@ -301,7 +301,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/login',
+        path: '/api/auth/login',
         summary: '使用者登入',
         description: '使用帳號密碼或電子郵件密碼進行登入驗證',
         operationId: 'loginUser',
@@ -485,7 +485,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/logout',
+        path: '/api/auth/logout',
         summary: '使用者登出',
         description: '登出當前使用者，清除認證狀態和會話',
         operationId: 'logoutUser',
@@ -623,7 +623,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Get(
-        path: '/auth/me',
+        path: '/api/auth/me',
         summary: '取得當前使用者資訊',
         description: '取得目前登入使用者的詳細資訊',
         operationId: 'getCurrentUser',
@@ -774,7 +774,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/refresh',
+        path: '/api/auth/refresh',
         summary: '刷新認證 Token',
         description: '使用 Refresh Token 取得新的 Access Token',
         operationId: 'refreshToken',
@@ -948,7 +948,7 @@ class AuthController extends BaseController
      * PUT /auth/profile
      */
     #[OA\Put(
-        path: '/auth/profile',
+        path: '/api/auth/profile',
         summary: '更新個人資料',
         description: '更新當前登入使用者的個人資料',
         operationId: 'updateProfile',
@@ -1130,7 +1130,7 @@ class AuthController extends BaseController
      * POST /auth/change-password
      */
     #[OA\Post(
-        path: '/auth/change-password',
+        path: '/api/auth/change-password',
         summary: '變更密碼',
         description: '變更當前登入使用者的密碼',
         operationId: 'changePassword',

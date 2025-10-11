@@ -33,7 +33,7 @@ class AttachmentController
     }
 
     #[OA\Post(
-        path: '/posts/{post_id}/attachments',
+        path: '/api/posts/{post_id}/attachments',
         summary: '上傳文件附件',
         description: '為指定貼文上傳附件檔案，支援多種檔案格式',
         operationId: 'uploadAttachment',
@@ -175,7 +175,7 @@ class AttachmentController
     }
 
     #[OA\Get(
-        path: '/attachments/{id}/download',
+        path: '/api/attachments/{id}/download',
         summary: '下載附件',
         description: '下載指定的附件檔案',
         operationId: 'downloadAttachment',
@@ -300,7 +300,7 @@ class AttachmentController
     }
 
     #[OA\Get(
-        path: '/posts/{post_id}/attachments',
+        path: '/api/posts/{post_id}/attachments',
         summary: '取得貼文附件列表',
         description: '取得指定貼文的所有附件檔案清單',
         operationId: 'listAttachments',
@@ -367,7 +367,7 @@ class AttachmentController
     }
 
     #[OA\Delete(
-        path: '/attachments/{id}',
+        path: '/api/attachments/{id}',
         summary: '刪除附件',
         description: '刪除指定的附件檔案，只有上傳者或管理員可以刪除',
         operationId: 'deleteAttachment',
