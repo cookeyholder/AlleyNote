@@ -314,6 +314,10 @@ return function (RouterInterface $router): void {
     $settingsUpdateSingle->setName('settings.update.single');
     $settingsUpdateSingle->middleware(['jwt.auth', 'jwt.authorize']);
 
+    // 取得時區資訊（公開 API）
+    $timezoneInfo = $router->get('/api/timezone-info', [SettingController::class, 'getTimezoneInfo']);
+    $timezoneInfo->setName('timezone.info');
+
     // =========================================
     // 活動記錄 API 路由 (需要認證)
     // =========================================

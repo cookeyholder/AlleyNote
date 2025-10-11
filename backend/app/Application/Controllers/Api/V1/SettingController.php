@@ -7,6 +7,7 @@ namespace App\Application\Controllers\Api\V1;
 use App\Domains\Setting\Services\SettingManagementService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Helpers\TimezoneHelper;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -161,5 +162,32 @@ class SettingController
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
+    }
+
+    /**
+     * 取得時區設定資訊
+     *
+     * GET /api/settings/timezone/info
+     */
+    public function getTimezoneInfo(Request $request, Response $response): Response
+    {
+        $timezone = TimezoneHelper::getSiteTimezone();
+        $offset = TimezoneHelper::getTimezoneOffset();
+        $currentTime = TimezoneHelper::nowSiteTimezone();
+        $commonTimezones = TimezoneHelper::getCommonTimezones();
+
+        $responseData = json_encode([
+            'success' => true,
+            'data' => [
+                'timezone' => $timezone,
+                'offset' => $offset,
+                'current_time' => $currentTime,
+                'common_timezones' => $commonTimezones,
+            ],
+        ]);
+
+        $response->getBody()->write($responseData ?: '');
+
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }
