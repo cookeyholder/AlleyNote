@@ -27,13 +27,18 @@ class TimezoneHelper
         if (self::$siteTimezone === null) {
             // 從資料庫讀取時區設定
             try {
+                /** @var string $dbPath */
                 $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
                 $pdo = new PDO("sqlite:{$dbPath}");
                 $stmt = $pdo->prepare("SELECT value FROM settings WHERE key = 'site_timezone' LIMIT 1");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                self::$siteTimezone = $result['value'] ?? 'Asia/Taipei';
+                if (is_array($result) && isset($result['value']) && is_string($result['value'])) {
+                    self::$siteTimezone = $result['value'];
+                } else {
+                    self::$siteTimezone = 'Asia/Taipei';
+                }
             } catch (Exception $e) {
                 // 如果讀取失敗，使用預設值
                 self::$siteTimezone = 'Asia/Taipei';
@@ -129,7 +134,7 @@ class TimezoneHelper
             $dt = new DateTimeImmutable($dateTime);
 
             // 檢查是否能成功解析
-            return $dt !== false;
+            return true;
         } catch (Exception $e) {
             return false;
         }

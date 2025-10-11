@@ -4,6 +4,7 @@ import { toast } from '../../utils/toast.js';
 import { confirmDelete } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
 import { router } from '../../utils/router.js';
+import { timezoneUtils } from '../../utils/timezoneUtils.js';
 
 let currentPage = 1;
 let currentFilters = {};
@@ -143,6 +144,13 @@ async function loadPosts() {
       return;
     }
     
+    // 先格式化所有文章的時間
+    const postsWithFormattedDates = await Promise.all(posts.map(async (post) => {
+      const dateString = post.publish_date || post.created_at;
+      const formattedDateTime = await timezoneUtils.utcToSiteTimezone(dateString, 'datetime');
+      return { ...post, formattedDateTime };
+    }));
+    
     container.innerHTML = `
       <table class="w-full">
         <thead class="bg-modern-50">
@@ -155,22 +163,7 @@ async function loadPosts() {
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-modern-200">
-          ${posts.map((post) => {
-            // 優先使用 publish_date，若無則使用 created_at
-            const dateString = post.publish_date || post.created_at;
-            const dateObj = new Date(dateString);
-            const formattedDate = dateObj.toLocaleDateString('zh-TW', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            });
-            const formattedTime = dateObj.toLocaleTimeString('zh-TW', {
-              hour: '2-digit',
-              minute: '2-digit',
-              hour12: false, // 使用 24 時制
-            });
-            
-            return `
+          ${postsWithFormattedDates.map((post) => `
             <tr class="hover:bg-modern-50">
               <td class="px-6 py-4">
                 <div class="text-sm font-medium text-modern-900">${post.title}</div>
@@ -186,8 +179,7 @@ async function loadPosts() {
               </td>
               <td class="px-6 py-4 text-sm text-modern-600">${post.author || 'Unknown'}</td>
               <td class="px-6 py-4 text-sm text-modern-600">
-                <div>${formattedDate}</div>
-                <div class="text-xs text-modern-500">${formattedTime}</div>
+                ${post.formattedDateTime}
               </td>
               <td class="px-6 py-4 text-right text-sm">
                 <div class="flex justify-end gap-2">
@@ -217,8 +209,7 @@ async function loadPosts() {
                 </div>
               </td>
             </tr>
-          `;
-          }).join('')}
+          `).join('')}
         </tbody>
       </table>
       

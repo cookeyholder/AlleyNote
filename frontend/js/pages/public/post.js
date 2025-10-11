@@ -2,6 +2,7 @@ import { postsAPI } from '../../api/modules/posts.js';
 import { router } from '../../utils/router.js';
 import { toast } from '../../utils/toast.js';
 import { loading } from '../../components/Loading.js';
+import { timezoneUtils } from '../../utils/timezoneUtils.js';
 
 // DOMPurify 從 CDN 全域載入
 const DOMPurify = window.DOMPurify;
@@ -16,6 +17,10 @@ export async function renderPost(postId) {
     const response = await postsAPI.get(postId);
     const post = response.data; // 從響應中提取 data
     loading.hide();
+    
+    // 格式化時間
+    const dateString = post.publish_date || post.created_at;
+    const formattedDate = await timezoneUtils.utcToSiteTimezone(dateString, 'date');
     
     // 淨化 HTML 內容
     const cleanContent = DOMPurify.sanitize(post.content, {
@@ -64,12 +69,8 @@ export async function renderPost(postId) {
               </div>
               <div class="flex items-center gap-2">
                 <span>📅</span>
-                <time datetime="${post.publish_date || post.created_at}">
-                  ${new Date(post.publish_date || post.created_at).toLocaleDateString('zh-TW', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                <time datetime="${dateString}">
+                  ${formattedDate}
                 </time>
               </div>
               ${post.views ? `
@@ -160,6 +161,16 @@ async function loadPostNavigation(currentPostId, currentPost) {
     const prevPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
     const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
     
+    // 格式化相關文章的日期
+    let prevDate = '';
+    let nextDate = '';
+    if (prevPost) {
+      prevDate = await timezoneUtils.utcToSiteTimezone(prevPost.publish_date || prevPost.created_at, 'date');
+    }
+    if (nextPost) {
+      nextDate = await timezoneUtils.utcToSiteTimezone(nextPost.publish_date || nextPost.created_at, 'date');
+    }
+    
     // 如果沒有上一篇和下一篇
     if (!prevPost && !nextPost) {
       container.innerHTML = `
@@ -188,7 +199,7 @@ async function loadPostNavigation(currentPostId, currentPost) {
             </p>
           ` : ''}
           <div class="mt-3 ml-9 text-sm text-modern-500">
-            ${new Date(prevPost.publish_date || prevPost.created_at).toLocaleDateString('zh-TW')}
+            ${prevDate}
           </div>
         </a>
       ` : `
@@ -216,7 +227,7 @@ async function loadPostNavigation(currentPostId, currentPost) {
             </p>
           ` : ''}
           <div class="mt-3 mr-9 text-sm text-modern-500 text-right">
-            ${new Date(nextPost.publish_date || nextPost.created_at).toLocaleDateString('zh-TW')}
+            ${nextDate}
           </div>
         </a>
       ` : `

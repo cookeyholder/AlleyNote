@@ -3,6 +3,7 @@ import { globalGetters } from '../../store/globalStore.js';
 import { router } from '../../utils/router.js';
 import { apiClient } from '../../api/client.js';
 import { loading } from '../../components/Loading.js';
+import { timezoneUtils } from '../../utils/timezoneUtils.js';
 
 /**
  * 渲染儀表板頁面
@@ -167,27 +168,19 @@ async function loadDashboardData() {
           </div>
         `;
       } else {
-        recentPostsContainer.innerHTML = recentPosts.map((post, index) => {
-          // 優先使用 publish_date，若無則使用 created_at
+        // 先格式化所有時間
+        const postsWithDates = await Promise.all(recentPosts.map(async (post) => {
           const dateString = post.publish_date || post.created_at;
-          const date = new Date(dateString);
-          const formattedDate = date.toLocaleDateString('zh-TW', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          });
-          const formattedTime = date.toLocaleTimeString('zh-TW', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false // 使用 24 時制
-          });
-          
-          return `
+          const formattedDateTime = await timezoneUtils.utcToSiteTimezone(dateString, 'datetime');
+          return { ...post, formattedDateTime };
+        }));
+        
+        recentPostsContainer.innerHTML = postsWithDates.map((post, index) => `
             <div class="flex items-center justify-between py-3 ${index < recentPosts.length - 1 ? 'border-b border-modern-100' : ''}">
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-modern-900 truncate">${post.title}</h3>
                 <div class="flex items-center gap-2 mt-1">
-                  <p class="text-sm text-modern-500">${formattedDate} ${formattedTime}</p>
+                  <p class="text-sm text-modern-500">${post.formattedDateTime}</p>
                   ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ''}
                 </div>
               </div>

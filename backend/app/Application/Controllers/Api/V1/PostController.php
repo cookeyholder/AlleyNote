@@ -10,6 +10,7 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\OutputSanitizerInterface;
@@ -119,9 +120,11 @@ class PostController extends BaseController
             $result = $this->postService->listPosts($page, $limit, $filters);
 
             // 將 Post 對象正確序列化為數組
-            $items = array_map(function ($post) {
+            /** @var array<int, Post> $postItems */
+            $postItems = $result['items'];
+            $items = array_map(function (Post $post) {
                 return $post->toArray();
-            }, $result['items']);
+            }, $postItems);
 
             $responseData = $this->paginatedResponse(
                 $items,

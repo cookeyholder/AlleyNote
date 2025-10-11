@@ -1,6 +1,7 @@
 import { router } from '../../utils/router.js';
 import { postsAPI } from '../../api/modules/posts.js';
 import { loading } from '../../components/Loading.js';
+import { timezoneUtils } from '../../utils/timezoneUtils.js';
 
 let currentPage = 1;
 let currentSearch = '';
@@ -199,9 +200,10 @@ async function loadPosts() {
     }
     
     // 渲染文章卡片
+    const postCards = await Promise.all(posts.map(post => renderPostCard(post)));
     container.innerHTML = `
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        ${posts.map((post) => renderPostCard(post)).join('')}
+        ${postCards.join('')}
       </div>
     `;
     
@@ -227,21 +229,13 @@ async function loadPosts() {
 /**
  * 渲染文章卡片
  */
-function renderPostCard(post) {
+async function renderPostCard(post) {
   const excerpt = post.excerpt || extractExcerpt(post.content);
   // 優先使用 publish_date，若無則使用 created_at
   const dateString = post.publish_date || post.created_at;
-  const dateObj = new Date(dateString);
-  const date = dateObj.toLocaleDateString('zh-TW', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-  const time = dateObj.toLocaleTimeString('zh-TW', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false, // 使用 24 時制
-  });
+  
+  // 使用時區工具格式化時間
+  const formattedDate = await timezoneUtils.utcToSiteTimezone(dateString, 'datetime');
   
   return `
     <article class="card card-hover">
@@ -257,7 +251,7 @@ function renderPostCard(post) {
       <div class="flex items-center justify-between text-sm text-modern-500">
         <div class="flex items-center gap-2">
           <span>📅</span>
-          <time datetime="${dateString}">${date} ${time}</time>
+          <time datetime="${dateString}">${formattedDate}</time>
         </div>
         <div class="flex items-center gap-2">
           <span>👤</span>

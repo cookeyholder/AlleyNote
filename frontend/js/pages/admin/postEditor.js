@@ -5,28 +5,23 @@ import { toast } from '../../utils/toast.js';
 import { CKEditorWrapper } from '../../components/CKEditorWrapper.js';
 import { confirmDiscard } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
+import { timezoneUtils } from '../../utils/timezoneUtils.js';
 
 let editorInstance = null;
 let hasUnsavedChanges = false;
 let autoSaveTimer = null;
 let originalPostData = null; // 保存原始文章數據用於取消操作
+let siteTimezone = 'Asia/Taipei'; // 網站時區快取
 
 /**
  * 格式化日期時間為 datetime-local 輸入格式
- * 確保使用本地時區而不是 UTC
+ * 使用網站時區
  */
-function formatDateTimeLocal(dateString) {
+async function formatDateTimeLocal(dateString) {
   if (!dateString) return '';
   
-  const date = new Date(dateString);
-  // 取得本地時間的年月日時分
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
+  // 使用時區工具轉換
+  return await timezoneUtils.toDateTimeLocalFormat(dateString);
 }
 
 /**
@@ -38,7 +33,11 @@ export async function renderPostEditor(postId = null) {
   // 清理舊的編輯器
   cleanupEditor();
   
+  // 載入網站時區
+  siteTimezone = await timezoneUtils.getSiteTimezone();
+  
   // 如果是編輯模式，載入文章
+  let formattedPublishDate = '';
   if (postId) {
     loading.show('載入文章中...');
     try {
@@ -49,6 +48,11 @@ export async function renderPostEditor(postId = null) {
       post = result.data;
       // 保存原始數據的深拷貝
       originalPostData = JSON.parse(JSON.stringify(post));
+      
+      // 格式化發布日期
+      if (post.publish_date) {
+        formattedPublishDate = await formatDateTimeLocal(post.publish_date);
+      }
     } catch (error) {
       loading.hide();
       toast.error('載入文章失敗');
@@ -150,10 +154,11 @@ export async function renderPostEditor(postId = null) {
                 id="publish_date"
                 name="publish_date"
                 class="input-field"
-                value="${post?.publish_date ? formatDateTimeLocal(post.publish_date) : ''}"
+                value="${formattedPublishDate}"
               />
               <p class="text-sm text-modern-500 mt-1">
-                留空則使用當前時間。設定未來時間可實現定時發布。
+                留空則使用當前時間。設定未來時間可實現定時發布。<br>
+                <span class="text-accent-600">時區：${siteTimezone}</span>
               </p>
             </div>
             
@@ -263,7 +268,8 @@ function bindFormEvents(postId) {
       form.title.value = originalPostData.title || '';
       form.status.value = originalPostData.status || 'draft';
       form.excerpt.value = originalPostData.excerpt || '';
-      form.publish_date.value = originalPostData.publish_date ? formatDateTimeLocal(originalPostData.publish_date) : '';
+      // 使用時區工具格式化
+      form.publish_date.value = originalPostData.publish_date ? await formatDateTimeLocal(originalPostData.publish_date) : '';
       
       // 恢復編輯器內容
       if (editorInstance && editorInstance.editor) {
@@ -363,11 +369,10 @@ async function savePost(postId, status) {
     excerpt: form.excerpt.value.trim(),
   };
   
-  // 添加發布日期時間 - 確保正確轉換為 UTC ISO 字串
+  // 添加發布日期時間 - 使用時區工具轉換為 UTC
   if (form.publish_date.value) {
-    // datetime-local 輸入的值是本地時間，需要轉換為 UTC ISO
-    const localDate = new Date(form.publish_date.value);
-    data.publish_date = localDate.toISOString();
+    // datetime-local 輸入的值是網站時區，需要轉換為 UTC ISO
+    data.publish_date = await timezoneUtils.fromDateTimeLocalFormat(form.publish_date.value);
   }
   
   // 清除舊錯誤
