@@ -36,27 +36,26 @@ export const usersApi = {
     },
 
     async getRoles() {
-        // 修正：使用完整的 API 路徑
-        return await apiClient.get('/api/v1/roles');
+        return await apiClient.get('/roles');
     },
 
     async createRole(data) {
-        return await apiClient.post('/api/v1/roles', data);
+        return await apiClient.post('/roles', data);
     },
 
     async updateRole(id, data) {
-        return await apiClient.put(`/api/v1/roles/${id}`, data);
+        return await apiClient.put(`/roles/${id}`, data);
     },
 
     async deleteRole(id) {
-        return await apiClient.delete(`/api/v1/roles/${id}`);
+        return await apiClient.delete(`/roles/${id}`);
     },
 
     async getRolePermissions(id) {
-        return await apiClient.get(`/api/v1/roles/${id}/permissions`);
+        return await apiClient.get(`/roles/${id}/permissions`);
     },
 
     async updateRolePermissions(id, permissions) {
-        return await apiClient.put(`/api/v1/roles/${id}/permissions`, { permissions });
+        return await apiClient.put(`/roles/${id}/permissions`, { permissions });
     }
 };

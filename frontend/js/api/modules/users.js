@@ -85,42 +85,42 @@ class UsersAPI {
    * 使用已實作的角色端點
    */
   async getRoles() {
-    return await apiClient.get('/api/v1/roles');
+    return await apiClient.get('/roles');
   }
 
   /**
    * 建立角色
    */
   async createRole(data) {
-    return await apiClient.post('/api/v1/roles', data);
+    return await apiClient.post('/roles', data);
   }
 
   /**
    * 更新角色
    */
   async updateRole(id, data) {
-    return await apiClient.put(`/api/v1/roles/${id}`, data);
+    return await apiClient.put(`/roles/${id}`, data);
   }
 
   /**
    * 刪除角色
    */
   async deleteRole(id) {
-    return await apiClient.delete(`/api/v1/roles/${id}`);
+    return await apiClient.delete(`/roles/${id}`);
   }
 
   /**
    * 取得角色權限
    */
   async getRolePermissions(id) {
-    return await apiClient.get(`/api/v1/roles/${id}/permissions`);
+    return await apiClient.get(`/roles/${id}/permissions`);
   }
 
   /**
    * 更新角色權限
    */
   async updateRolePermissions(id, permissions) {
-    return await apiClient.put(`/api/v1/roles/${id}/permissions`, { permissions });
+    return await apiClient.put(`/roles/${id}/permissions`, { permissions });
   }
 }
 
