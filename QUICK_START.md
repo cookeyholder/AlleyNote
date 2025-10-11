@@ -1,12 +1,8 @@
 # AlleyNote 快速開始指南
 
-## 問題已解決 ✅
+> 5 分鐘內啟動並運行 AlleyNote 專案
 
-**問題**：無法正常訪問 http://localhost:3000，因為 Vite 開發伺服器佔用了端口。
-
-**解決方案**：終止了 Vite 開發伺服器，現在 Docker nginx 容器正常提供前端服務。
-
-## 當前架構
+## 系統架構
 
 ```
 ┌─────────────────────────────────────────┐
@@ -41,226 +37,245 @@
 └─────────────────────────────────────────┘
 ```
 
-## 啟動服務
+## 前置需求
+
+- Docker 20.10+
+- Docker Compose 2.0+
+- 可用端口：3000（前端）、8080（API）、6379（Redis）
+
+## 快速啟動
+
+### 1. Clone 專案
 
 ```bash
-# 進入專案目錄
-cd /Users/cookeyholder/projects/AlleyNote
+git clone https://github.com/cookeyholder/AlleyNote.git
+cd AlleyNote
+```
 
-# 啟動所有服務
+### 2. 複製環境變數
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+### 3. 啟動服務
+
+```bash
 docker-compose up -d
-
-# 檢查服務狀態
-docker-compose ps
-
-# 查看日誌
-docker-compose logs -f
 ```
 
-## 訪問應用
+### 4. 初始化資料庫（首次啟動）
 
-- **前端**：http://localhost:3000
-- **API**：http://localhost:8080/api
-- **Redis**：localhost:6379
-
-## 開發前端
-
-前端採用純 HTML/JavaScript/CSS 架構，**無需任何構建工具**：
-
-### 技術棧
-- ✅ 原生 HTML5
-- ✅ 原生 JavaScript（ES6+ Modules）
-- ✅ Tailwind CSS（透過 CDN）
-- ✅ Chart.js、CKEditor 5 等（透過 CDN）
-
-### 開發流程
-
-1. **編輯檔案**
-   ```bash
-   # 直接編輯 frontend/ 目錄下的檔案
-   vim frontend/js/pages/public/home.js
-   vim frontend/css/main.css
-   vim frontend/index.html
-   ```
-
-2. **即時生效**
-   - 由於使用 Docker volume bind mount，修改會立即反映在容器中
-   - 重新整理瀏覽器即可看到變更
-   - **無需重新構建或重啟容器**
-
-3. **除錯工具**
-   - 使用瀏覽器 DevTools（F12）
-   - Console 標籤：查看 JavaScript 輸出和錯誤
-   - Network 標籤：檢查 API 請求和回應
-   - Elements 標籤：查看和修改 HTML/CSS
-   - Sources 標籤：設置 JavaScript 中斷點
-
-4. **本地開發服務器（可選）**
-   ```bash
-   # 如果不想使用 Docker，可以用 Python 快速啟動
-   cd frontend
-   python3 -m http.server 3000
-   
-   # 注意：本地開發需要配置 CORS 或修改 API URL
-   ```
-
-## 開發後端
-
-後端採用 PHP + Slim Framework + DDD 架構：
-
-1. **執行測試**
-   ```bash
-   docker-compose exec web composer test
-   ```
-
-2. **程式碼風格檢查**
-   ```bash
-   docker-compose exec web composer cs-fix
-   ```
-
-3. **靜態分析**
-   ```bash
-   docker-compose exec web composer analyse
-   ```
-
-4. **完整 CI 檢查**
-   ```bash
-   docker-compose exec web composer ci
-   ```
-
-## 預設帳號
-
-**主管理員**
-- 帳號：`admin`
-- 密碼：`admin123`
-
-**一般使用者**
-- 帳號：`user`
-- 密碼：`user123`
-
-## 資料庫
-
-- **類型**：SQLite 3
-- **位置**：`backend/database/alleynote.sqlite3`
-- **容器內**：`/var/www/html/database/alleynote.sqlite3`
-
-**查看資料庫**：
 ```bash
-# 進入容器
-docker-compose exec web bash
+# 執行資料庫遷移
+docker-compose exec web php vendor/bin/phinx migrate
 
-# 查看資料庫
-sqlite3 database/alleynote.sqlite3
-.tables
-.exit
-```
-
-## 常見問題
-
-### 1. 端口被佔用
-
-**錯誤**：Cannot assign requested address
-
-**解決方案**：
-```bash
-# 檢查佔用 3000 端口的程序
-lsof -i :3000
-
-# 終止程序（替換 <PID> 為實際的程序 ID）
-kill <PID>
-
-# 重啟容器
-docker-compose restart nginx
-```
-
-### 2. API 無法連線
-
-**檢查**：
-```bash
-# 測試 API 是否正常
-curl http://localhost:8080/api/health
-
-# 查看 nginx 日誌
-docker-compose logs nginx
-
-# 查看 PHP 日誌
-docker-compose logs web
-```
-
-### 3. 前端無法載入
-
-**檢查**：
-```bash
-# 確認檔案存在
-ls -la frontend/index.html
-
-# 確認容器中的檔案
-docker exec alleynote_nginx ls -la /usr/share/nginx/html/
-
-# 測試 nginx
-curl -I http://localhost:3000
-```
-
-### 4. 登入失敗
-
-**可能原因**：
-- JWT 金鑰未設定
-- 資料庫中沒有使用者
-- 密碼錯誤
-
-**解決方案**：
-```bash
-# 檢查環境變數
-docker-compose exec web env | grep JWT
-
-# 重新執行種子資料
+# 載入種子資料（測試帳號和範例資料）
 docker-compose exec web php vendor/bin/phinx seed:run
 ```
 
-## 重要提醒
+### 5. 訪問應用
 
-### ⚠️ 不要啟動 Vite 或 npm 開發伺服器
+- **前端**：http://localhost:3000
+- **API 文件**：http://localhost:8080/api
+- **健康檢查**：http://localhost:8080/api/health
 
-前端已經改為純 HTML/JavaScript/CSS，**不需要也不應該**使用任何構建工具：
+### 6. 測試帳號
+
+| 角色 | 帳號 | 密碼 |
+|------|------|------|
+| 主管理員 | admin | admin123 |
+| 一般使用者 | user | user123 |
+
+## 開發指令
+
+### 前端開發
+
+前端使用原生 HTML/JavaScript/CSS，**無需構建工具**：
 
 ```bash
-# ❌ 錯誤：不要執行這些命令（已移除）
-npm install
-npm run dev
-npm run build
-vite
-pnpm dev
+# 直接編輯檔案，刷新瀏覽器即可看到變更
+vim frontend/index.html
+vim frontend/js/main.js
+vim frontend/css/main.css
+```
 
-# ✅ 正確：使用 Docker 提供前端服務
+### 後端開發
+
+```bash
+# 執行測試
+docker-compose exec web composer test
+
+# 程式碼風格檢查與修復
+docker-compose exec web composer cs-fix
+
+# 靜態分析
+docker-compose exec web composer analyse
+
+# 完整 CI 檢查
+docker-compose exec web composer ci
+
+# 查看日誌
+docker-compose logs -f web
+
+# 進入容器
+docker-compose exec web bash
+```
+
+### 常用 Docker 指令
+
+```bash
+# 檢查服務狀態
+docker-compose ps
+
+# 重啟服務
+docker-compose restart
+
+# 停止服務
+docker-compose down
+
+# 重建容器
+docker-compose up -d --build
+
+# 查看所有日誌
+docker-compose logs -f
+```
+
+## 故障排除
+
+### 問題 1：端口已被佔用
+
+**錯誤訊息**：
+```
+Error: bind: address already in use
+```
+
+**解決方案**：
+```bash
+# 檢查端口佔用（macOS/Linux）
+lsof -i :3000
+lsof -i :8080
+
+# 終止佔用端口的程序
+kill -9 <PID>
+
+# 或修改 docker-compose.yml 使用其他端口
+```
+
+### 問題 2：容器無法啟動
+
+**錯誤訊息**：
+```
+Error: container failed to start
+```
+
+**解決方案**：
+```bash
+# 查看容器日誌
+docker-compose logs web
+docker-compose logs nginx
+
+# 重建容器
+docker-compose down
+docker-compose up -d --build
+
+# 清理並重建
+docker-compose down -v
 docker-compose up -d
 ```
 
-### 前端服務說明
+### 問題 3：無法訪問前端
 
-- 前端文件位於 `frontend/` 目錄
-- 透過 Docker nginx 容器提供靜態文件服務
-- 訪問地址：http://localhost:3000
-- 修改文件後直接刷新瀏覽器即可看到變更
-- 無需任何編譯或構建步驟
+**檢查步驟**：
+```bash
+# 1. 確認容器運行中
+docker-compose ps
+
+# 2. 測試 nginx
+curl -I http://localhost:3000
+
+# 3. 查看 nginx 日誌
+docker-compose logs nginx
+
+# 4. 確認文件存在
+ls -la frontend/index.html
+```
+
+### 問題 4：API 回應 500 錯誤
+
+**檢查步驟**：
+```bash
+# 1. 查看 PHP 錯誤日誌
+docker-compose logs web
+
+# 2. 確認資料庫已初始化
+docker-compose exec web php vendor/bin/phinx status
+
+# 3. 檢查環境變數
+docker-compose exec web env | grep -E "JWT|DATABASE"
+
+# 4. 重新執行遷移
+docker-compose exec web php vendor/bin/phinx migrate
+docker-compose exec web php vendor/bin/phinx seed:run
+```
+
+### 問題 5：無法登入
+
+**可能原因與解決**：
+
+1. **種子資料未載入**
+   ```bash
+   docker-compose exec web php vendor/bin/phinx seed:run
+   ```
+
+2. **JWT 金鑰未設定**
+   ```bash
+   # 檢查 backend/.env 檔案
+   cat backend/.env | grep JWT_SECRET
+   
+   # 若未設定，新增隨機金鑰
+   echo "JWT_SECRET=$(openssl rand -hex 32)" >> backend/.env
+   docker-compose restart web
+   ```
+
+3. **快取問題**
+   ```bash
+   # 清除瀏覽器 localStorage
+   # 開啟 DevTools > Application > Local Storage > 清除
+   
+   # 或重新整理頁面（Ctrl+Shift+R / Cmd+Shift+R）
+   ```
+
+### 問題 6：權限錯誤
+
+**錯誤訊息**：
+```
+Permission denied
+```
+
+**解決方案**：
+```bash
+# 確保目錄權限正確
+chmod -R 755 backend/database
+chmod -R 755 frontend
+chmod -R 777 backend/storage
+
+# 確保資料庫檔案可寫入
+chmod 666 backend/database/alleynote.sqlite3
+```
+
+## 技術支援
+
+- **文件**：查看 `README.md` 了解專案架構
+- **問題回報**：開啟 GitHub Issue
+- **日誌分析**：`docker-compose logs -f`
 
 ## 下一步
 
-1. ✅ 前端架構已經從 Vite 遷移到純 HTML/JS/CSS
-2. ✅ Docker 部署環境已經正確配置
-3. ⏳ 需要完成文章編輯器功能
-4. ⏳ 需要完成使用者管理模組
-5. ⏳ 需要完成角色管理模組
-6. ⏳ 需要修復未發布文章在首頁顯示的問題
+專案啟動成功後，您可以：
 
-詳細的開發計劃和狀態報告請參考：
-- `FRONTEND_STATUS_REPORT.md` - 前端完整狀態報告
-- `USER_MANAGEMENT_TEST_REPORT.md` - 使用者管理測試報告
-- `NEXT_STEPS.md` - 下一步開發計劃
-
-## 獲取幫助
-
-如有問題，請：
-1. 查看日誌：`docker-compose logs -f`
-2. 檢查狀態：`docker-compose ps`
-3. 查看文件：`FRONTEND_STATUS_REPORT.md`
-4. 開啟 issue
+1. 瀏覽前端介面：http://localhost:3000
+2. 使用測試帳號登入體驗功能
+3. 查看 API 文件了解後端接口
+4. 閱讀 `README.md` 了解專案架構
+5. 查看 `docs/` 目錄獲取詳細文件

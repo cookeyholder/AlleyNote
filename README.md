@@ -10,7 +10,7 @@
 [![統計模組](https://img.shields.io/badge/Statistics-Enabled-orange.svg)](docs/domains/statistics/STATISTICS_FEATURE_OVERVIEW.md)
 
 > **✨ 最新版本特色**
-> 
+>
 > 這是一個基於 **DDD（領域驅動設計）架構** 的現代化公告系統。如果你是初學者，別擔心！這個系統雖然使用了先進的技術，但我們會在文件中用淺顯易懂的方式說明一切。
 >
 > **主要特色**：
@@ -107,17 +107,17 @@ AlleyNote 提供了一個集中化的平台，讓組織能夠：
   - 建立文章、編輯文章、刪除文章
   - 管理文章狀態（草稿、已發布、已下架）
   - 處理置頂、分類等功能
-  
+
 - **用戶部門（Auth Domain）**：負責所有跟用戶相關的事
   - 註冊、登入、登出
   - 權限管理（管理員、一般用戶）
   - 密碼重設、個人資料管理
-  
+
 - **統計部門（Statistics Domain）**：負責所有數據分析
   - 計算瀏覽次數、熱門文章
   - 產生統計報表、趨勢分析
   - 建立每日/每週/每月快照
-  
+
 - **安全部門（Security Domain）**：負責系統安全
   - 防止駭客攻擊（XSS、CSRF、SQL Injection）
   - IP 黑白名單管理
@@ -139,7 +139,7 @@ AlleyNote 提供了一個集中化的平台，讓組織能夠：
   - 負責顯示漂亮的界面
   - 處理用戶的點擊、輸入
   - 就像餐廳的裝潢、菜單、服務生
-  
+
 - **後端（Backend）= 廚房**
   - 這是客人看不到的部分
   - 負責處理複雜的邏輯和資料
@@ -152,7 +152,7 @@ AlleyNote 提供了一個集中化的平台，讓組織能夠：
   - 提供搜尋和篩選功能
   - 文章編輯器界面
   - 統計圖表視覺化
-  
+
 - **後端**使用 PHP 8.4，負責：
   - 驗證用戶身份
   - 儲存文章到資料庫
@@ -453,11 +453,6 @@ graph TB
   - 上傳和下載檔案
 
 **4. 原生 CSS + CSS Variables**
-- **為什麼不用 Tailwind CSS？**
-  - 專案使用原生 CSS，保持輕量
-  - 使用 CSS Variables 實現主題化
-  - 更容易自訂樣式
-  - 載入速度更快
 
 #### 資料庫技術（Database - 儲存資料的地方）
 
@@ -589,31 +584,6 @@ graph TB
   - 註解格式
   - PSR-12 標準
 
-### 🔧 為什麼不支援 Mac/Windows 開發？
-
-**官方說明：**
-
-AlleyNote 專注於 Linux 生產環境，原因：
-
-1. **一致性考量**
-   - 生產環境 99% 是 Linux
-   - 避免「在我電腦上可以跑」的問題
-   - 開發和部署環境完全相同
-
-2. **Docker 授權問題**
-   - Docker Desktop 在大型組織需要付費授權
-   - Linux 原生 Docker 完全免費
-   - 避免法律和商業風險
-
-3. **效能優勢**
-   - Linux Docker 是原生運行，效能最佳
-   - Mac/Windows Docker 需要虛擬化層，效能較差
-   - 檔案系統效能差異大（特別是 Mac）
-
-4. **簡化維護**
-   - 只支援一種環境，降低複雜度
-   - 減少跨平台的 bug
-   - 文件和教學更專注
 
 **建議開發環境：**
 
@@ -621,7 +591,6 @@ AlleyNote 專注於 Linux 生產環境，原因：
 - **替代方案**：
   - Windows 用戶：使用 WSL2 + Ubuntu
   - Mac 用戶：使用雲端 Linux VM（AWS、GCP、Digital Ocean）
-  - 或使用 Multipass 建立 Ubuntu VM
 
 ---
 
@@ -701,19 +670,7 @@ AlleyNote/
 
 ## 系統需求
 
-### ⚠️ 重要：作業系統限制
-
-**AlleyNote 僅支援 Linux 作業系統（Debian/Ubuntu）**
-
-本專案專為 Linux 生產環境設計，不支援 Docker Desktop（Mac/Windows）。這是為了：
-- 確保開發和生產環境完全一致
-- 避免 Docker Desktop 的授權問題
-- 獲得最佳效能（原生 Docker）
-- 簡化維護和故障排除
-
 ### 🖥️ 支援的作業系統
-
-**✅ 完全支援（推薦）**：
 
 1. **Ubuntu 22.04 LTS（Jammy Jellyfish）** - 最推薦
    - 長期支援到 2027 年
@@ -1092,7 +1049,7 @@ free -h
   # 使用 NodeSource 套件庫
   curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
   sudo apt install -y nodejs
-  
+
   # 驗證安裝
   node --version  # 應顯示 v18.x.x
   npm --version   # 應顯示 9.x.x 或更新
