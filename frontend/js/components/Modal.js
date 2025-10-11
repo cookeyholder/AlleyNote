@@ -169,5 +169,36 @@ class ModalComponent {
   }
 }
 
+/**
+ * Modal 類別（用於實例化）
+ */
+export class Modal {
+  constructor(options = {}) {
+    this.options = options;
+    this.modalInstance = null;
+    this.modalComponent = new ModalComponent();
+  }
+
+  show() {
+    const { title, content, size = 'md', showFooter = true, onClose } = this.options;
+    
+    this.modalInstance = this.modalComponent.show(title, content, {
+      size,
+      onClose,
+      showCloseButton: true,
+      closeOnBackdrop: true,
+    });
+
+    return this.modalInstance;
+  }
+
+  hide() {
+    if (this.modalInstance) {
+      this.modalInstance.close();
+      this.modalInstance = null;
+    }
+  }
+}
+
 // 建立並匯出單例
 export const modal = new ModalComponent();

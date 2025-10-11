@@ -26,16 +26,25 @@ export default class UsersPage {
 
   async loadRoles() {
     try {
-      // 使用模擬數據（待後端 API 實現）
-      // TODO: 實現後端 GET /api/roles API
+      const response = await usersAPI.getRoles();
+      if (response.success && response.data) {
+        this.roles = response.data;
+      } else {
+        // 使用預設角色
+        this.roles = [
+          { id: 1, name: 'admin', display_name: '管理員' },
+          { id: 2, name: 'editor', display_name: '編輯者' },
+          { id: 3, name: 'viewer', display_name: '訪客' }
+        ];
+      }
+    } catch (error) {
+      console.error('載入角色列表失敗:', error);
+      // 使用預設角色
       this.roles = [
         { id: 1, name: 'admin', display_name: '管理員' },
         { id: 2, name: 'editor', display_name: '編輯者' },
         { id: 3, name: 'viewer', display_name: '訪客' }
       ];
-    } catch (error) {
-      console.error('載入角色列表失敗:', error);
-      this.roles = [];
     }
   }
 
@@ -45,26 +54,25 @@ export default class UsersPage {
       this.currentPage = page;
       this.render();
 
-      // 使用模擬數據（待後端 API 實現）
-      // TODO: 實現後端 GET /api/users API
-      this.users = [
-        {
-          id: 1,
-          username: 'admin',
-          email: 'admin@example.com',
-          role: 'admin',
-          role_name: '管理員',
-          status: 'active',
-          created_at: '2025-01-01T00:00:00Z',
-          last_login_at: '2025-10-10T10:00:00Z'
-        }
-      ];
-      this.totalPages = 1;
+      const response = await usersAPI.getAll({
+        page,
+        per_page: 20,
+      });
+
+      if (response.success && response.data) {
+        this.users = Array.isArray(response.data) ? response.data : response.data.items || [];
+        this.totalPages = response.data.last_page || response.data.total_pages || 1;
+      } else {
+        this.users = [];
+        this.totalPages = 1;
+      }
+
       this.loading = false;
       this.render();
     } catch (error) {
       console.error('載入使用者列表失敗:', error);
-      toast.error('載入使用者列表失敗');
+      toast.error('載入使用者列表失敗：' + (error.message || '未知錯誤'));
+      this.users = [];
       this.loading = false;
       this.render();
     }
