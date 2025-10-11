@@ -114,6 +114,7 @@ async function loadPosts() {
       sort,
       page: currentPage,
       per_page: 10,
+      include_future: true, // 文章管理頁面顯示所有文章，包括未來的文章
     };
     
     // 直接使用 apiClient 避免模組緩存問題

@@ -36,6 +36,7 @@ class PostController extends BaseController
             $perPage = min(100, max(1, (int) ($queryParams['per_page'] ?? 10)));
             $search = $queryParams['search'] ?? '';
             $status = $queryParams['status'] ?? '';
+            $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
             // 建立資料庫連接
             $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
@@ -56,9 +57,12 @@ class PostController extends BaseController
                 $params[':status'] = $status;
             }
             
-            // 只顯示發布時間小於等於現在的文章（過濾未來的文章）
-            // 如果 publish_date 為 NULL，則允許顯示（使用 created_at）
-            $where[] = "(publish_date IS NULL OR publish_date <= datetime('now'))";
+            // 根據 include_future 參數決定是否過濾未來文章
+            // 預設為 false（過濾未來文章，用於首頁等公開頁面）
+            // 設為 true 時顯示所有文章（用於文章管理頁面）
+            if (!$includeFuture) {
+                $where[] = "(publish_date IS NULL OR publish_date <= datetime('now'))";
+            }
 
             $whereClause = implode(' AND ', $where);
 
