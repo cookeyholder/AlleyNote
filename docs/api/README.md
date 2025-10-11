@@ -18,6 +18,9 @@
 | 文件 | 說明 | 適合對象 |
 |-----|------|---------|
 | [開發者指南](./DEVELOPER_GUIDE.md) | API 開發規範與最佳實踐 | 後端開發者 |
+| [錯誤碼說明](./ERROR_CODES.md) | 完整的錯誤碼定義與處理 | 所有開發者 |
+| [使用率限制](./RATE_LIMITS.md) | API 使用率限制詳細說明 | 所有開發者 |
+| [API 版本控制](./API_VERSIONING.md) | 版本策略與遷移指南 | 所有開發者 |
 
 ---
 
@@ -244,16 +247,19 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 ### 適合初學者
 
 1. 閱讀 [API 使用指南](./API_USAGE_GUIDE.md)
-2. 在 Swagger UI 中探索 API
-3. 使用 Postman 測試簡單的端點
-4. 查看範例程式碼
+2. 了解 [錯誤碼說明](./ERROR_CODES.md)
+3. 查看 [使用率限制](./RATE_LIMITS.md)
+4. 在 Swagger UI 中探索 API
+5. 使用 Postman 測試簡單的端點
 
 ### 適合開發者
 
 1. 閱讀 [開發者指南](./DEVELOPER_GUIDE.md)
-2. 了解 OpenAPI 註解規範
-3. 學習 DDD 架構設計
-4. 參與程式碼貢獻
+2. 了解 [API 版本控制](./API_VERSIONING.md)策略
+3. 學習 OpenAPI 註解規範
+4. 了解錯誤處理與使用率限制
+5. 學習 DDD 架構設計
+6. 參與程式碼貢獻
 
 ---
 
@@ -278,6 +284,24 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 ---
 
 ## 📋 版本記錄
+
+### v1.0.1 (2025-10-11)
+
+#### 新增文件
+- 📝 錯誤碼說明文件（ERROR_CODES.md）
+- 📝 API 使用率限制文件（RATE_LIMITS.md）
+- 📝 API 版本控制策略（API_VERSIONING.md）
+
+#### 新增功能
+- ✨ 統一的錯誤碼系統（ErrorCode Enum）
+- ✨ API 使用率限制配置（ApiRateLimits）
+- ✨ 完整的錯誤處理說明
+- ✨ 詳細的使用率限制規範
+
+#### 改進
+- 🔧 更新 API 文件索引
+- 🔧 補充版本控制說明
+- 🔧 添加遷移指南
 
 ### v1.0.0 (2025-10-11)
 
