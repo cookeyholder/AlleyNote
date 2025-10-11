@@ -1,5 +1,5 @@
 import { router } from '../../utils/router.js';
-import { postsAPI } from '../../api/modules/posts.js';
+import { postsAPI } from '../../api/modules/posts.js?v=20251011';
 import { loading } from '../../components/Loading.js';
 import { timezoneUtils } from '../../utils/timezoneUtils.js';
 

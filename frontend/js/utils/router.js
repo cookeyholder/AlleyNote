@@ -84,7 +84,7 @@ export async function initRouter() {
 
   // 首頁
   router.on('/', () => {
-    import('../pages/public/home.js').then(module => module.renderHome());
+    import('../pages/public/home.js?v=20251011').then(module => module.renderHome());
   });
 
   // 登入頁
