@@ -175,8 +175,13 @@ async function loadDashboardData() {
           return { ...post, formattedDateTime };
         }));
         
-        recentPostsContainer.innerHTML = postsWithDates.map((post, index) => `
-            <div class="flex items-center justify-between py-3 ${index < recentPosts.length - 1 ? 'border-b border-modern-100' : ''}">
+        recentPostsContainer.innerHTML = postsWithDates.map((post, index) => {
+          const statusClass = post.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
+          const statusText = post.status === 'published' ? '已發布' : '草稿';
+          const borderClass = index < recentPosts.length - 1 ? 'border-b border-modern-100' : '';
+          
+          return `
+            <div class="flex items-center justify-between py-3 ${borderClass}">
               <div class="flex-1 min-w-0">
                 <h3 class="font-medium text-modern-900 truncate">${post.title}</h3>
                 <div class="flex items-center gap-2 mt-1">
@@ -184,12 +189,8 @@ async function loadDashboardData() {
                   ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ''}
                 </div>
               </div>
-              <span class="ml-4 px-3 py-1 ${
-                post.status === 'published'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-yellow-100 text-yellow-700'
-              } text-sm rounded-full whitespace-nowrap">
-                ${post.status === 'published' ? '已發布' : '草稿'}
+              <span class="ml-4 px-3 py-1 ${statusClass} text-sm rounded-full whitespace-nowrap">
+                ${statusText}
               </span>
             </div>
           `;

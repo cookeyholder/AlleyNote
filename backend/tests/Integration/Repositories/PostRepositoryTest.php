@@ -89,6 +89,25 @@ class PostRepositoryTest extends TestCase
 
     private function createTestTables(): void
     {
+        // 建立 users 表（用於 JOIN）
+        $this->pdo->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NOT NULL
+            )
+        ');
+
+        // 插入測試用戶
+        $now = date('Y-m-d H:i:s');
+        $this->pdo->exec("
+            INSERT INTO users (id, username, email, password, created_at, updated_at) VALUES
+            (1, 'testuser', 'test@example.com', 'hashed_password', '$now', '$now')
+        ");
+
         // 建立 posts 表
         $this->pdo->exec('
             CREATE TABLE posts (
@@ -136,7 +155,6 @@ class PostRepositoryTest extends TestCase
         ');
 
         // 插入測試標籤數據
-        $now = date('Y-m-d H:i:s');
         $this->pdo->exec("
             INSERT INTO tags (id, name, slug, created_at) VALUES
             (1, '技術', 'tech', '$now'),

@@ -278,6 +278,29 @@ class AttachmentUploadTest extends TestCase
         // 先嘗試刪除已存在的資料表
         $this->db->exec('DROP TABLE IF EXISTS attachments');
         $this->db->exec('DROP TABLE IF EXISTS posts');
+        $this->db->exec('DROP TABLE IF EXISTS users');
+
+        // 建立 users 資料表（用於 JOIN）
+        $this->db->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NOT NULL
+            )
+        ');
+
+        // 插入測試用戶
+        $this->db->exec("INSERT INTO users (id, username, email, password, created_at, updated_at) VALUES (
+            1,
+            'testuser',
+            'test@example.com',
+            'hashed_password',
+            datetime('now'),
+            datetime('now')
+        )");
 
         // 建立 posts 資料表（schema 與主程式一致）
         $this->db->exec('

@@ -1,0 +1,256 @@
+PHPUnit 11.5.34 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.4.13
+Configuration: /var/www/html/phpunit.xml
+
+.......................................SS.S..................   61 / 2190 (  2%)
+.............................................................  122 / 2190 (  5%)
+.............................................................  183 / 2190 (  8%)
+.............................................................  244 / 2190 ( 11%)
+.............................................................  305 / 2190 ( 13%)
+.............................................................  366 / 2190 ( 16%)
+.............................................................  427 / 2190 ( 19%)
+.............................................................  488 / 2190 ( 22%)
+.......................................FF....................  549 / 2190 ( 25%)
+.............................................................  610 / 2190 ( 27%)
+.............................................................  671 / 2190 ( 30%)
+.............................................................  732 / 2190 ( 33%)
+.............................................................  793 / 2190 ( 36%)
+.............................................................  854 / 2190 ( 38%)
+.............................................................  915 / 2190 ( 41%)
+.............................................................  976 / 2190 ( 44%)
+............................................................. 1037 / 2190 ( 47%)
+............................................................. 1098 / 2190 ( 50%)
+............................................................. 1159 / 2190 ( 52%)
+............................................................. 1220 / 2190 ( 55%)
+............................................................. 1281 / 2190 ( 58%)
+............................................................. 1342 / 2190 ( 61%)
+............................................................. 1403 / 2190 ( 64%)
+............................................................. 1464 / 2190 ( 66%)
+............................................................. 1525 / 2190 ( 69%)
+...................................................SS........ 1586 / 2190 ( 72%)
+...E.E.EEEEEEEEEE.E.......................................... 1647 / 2190 ( 75%)
+............................................................. 1708 / 2190 ( 77%)
+............................................................. 1769 / 2190 ( 80%)
+............................................................. 1830 / 2190 ( 83%)
+............................................................. 1891 / 2190 ( 86%)
+................S.....SSSSSSSS.........................EEEEE. 1952 / 2190 ( 89%)
+............................................S................ 2013 / 2190 ( 91%)
+.......
+無索引基準效能 - 來源統計查詢時間: 0.23889541625977 ms
+.
+最佳化索引效能 - 來源統計查詢時間: 0.14019012451172 ms
+.
+狀態統計查詢時間: 0.24104118347168 ms
+.
+熱門文章查詢時間: 0.48494338989258 ms
+.
+使用者文章統計查詢時間: 0.86092948913574 ms
+.
+時間分佈統計查詢時間: 0.9009838104248 ms
+.
+活動摘要查詢時間: 2.208948135376 ms
+.
+=== posts_by_source 執行計劃 ===
+ID: 6, Parent: 0, Detail: SEARCH posts USING COVERING INDEX idx_posts_created_source (created_at>? AND created_at<?)
+ID: 13, Parent: 0, Detail: USE TEMP B-TREE FOR GROUP BY
+
+=== posts_by_status 執行計劃 ===
+ID: 6, Parent: 0, Detail: SEARCH posts USING COVERING INDEX idx_posts_created_status (created_at>? AND created_at<?)
+ID: 13, Parent: 0, Detail: USE TEMP B-TREE FOR GROUP BY
+
+=== popular_posts 執行計劃 ===
+ID: 5, Parent: 0, Detail: SEARCH posts USING INDEX idx_posts_status_created (status=? AND created_at>? AND created_at<?)
+ID: 25, Parent: 0, Detail: USE TEMP B-TREE FOR ORDER BY
+...........................FF....F............. 2074 / 2190 ( 94%)
+.........................S....SSSSS.S.SSSSSSSSSSS..SSSSS..... 2135 / 2190 ( 97%)
+..................................S.........EE.E.......       2190 / 2190 (100%)
+
+Time: 01:43.258, Memory: 53.00 MB
+
+There were 21 errors:
+
+1) Tests\Unit\Repository\PostRepositoryTest::testFindByCreationSource
+PDOException: SQLSTATE[HY000]: General error: 1 ambiguous column name: created_at
+
+/var/www/html/app/Domains/Post/Repositories/PostRepository.php:774
+/var/www/html/tests/Unit/Repository/PostRepositoryTest.php:46
+/var/www/html/vendor/mockery/mockery/library/Mockery/Expectation.php:901
+/var/www/html/vendor/mockery/mockery/library/Mockery/Expectation.php:761
+/var/www/html/vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:87
+/var/www/html/app/Domains/Post/Repositories/PostRepository.php:770
+/var/www/html/tests/Unit/Repository/PostRepositoryTest.php:341
+
+2) Tests\Unit\Repository\PostRepositoryTest::testFindByCreationSourceAndDetail
+PDOException: SQLSTATE[HY000]: General error: 1 ambiguous column name: created_at
+
+/var/www/html/app/Domains/Post/Repositories/PostRepository.php:846
+/var/www/html/tests/Unit/Repository/PostRepositoryTest.php:46
+/var/www/html/vendor/mockery/mockery/library/Mockery/Expectation.php:901
+/var/www/html/vendor/mockery/mockery/library/Mockery/Expectation.php:761
+/var/www/html/vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:87
+/var/www/html/app/Domains/Post/Repositories/PostRepository.php:830
+/var/www/html/tests/Unit/Repository/PostRepositoryTest.php:385
+
+3) Tests\Unit\Repository\PostRepositoryTest::testPaginateByCreationSource
+PDOException: SQLSTATE[HY000]: General error: 1 ambiguous column name: created_at
+
+/var/www/html/app/Domains/Post/Repositories/PostRepository.php:902
+/var/www/html/tests/Unit/Repository/PostRepositoryTest.php:46
+/var/www/html/vendor/mockery/mockery/library/Mockery/Expectation.php:901
+/var/www/html/vendor/mockery/mockery/library/Mockery/Expectation.php:761
+/var/www/html/vendor/mockery/mockery/library/Mockery/ExpectationDirector.php:87
+/var/www/html/app/Domains/Post/Repositories/PostRepository.php:892
+/var/www/html/tests/Unit/Repository/PostRepositoryTest.php:435
+
+4) Tests\Unit\Repository\UserRepositoryTest::createUserSuccessfully
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:62
+
+5) Tests\Unit\Repository\UserRepositoryTest::updateUserSuccessfully
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:75
+
+6) Tests\Unit\Repository\UserRepositoryTest::deleteUserSuccessfully
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:98
+
+7) Tests\Unit\Repository\UserRepositoryTest::findUserByUuid
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:122
+
+8) Tests\Unit\Repository\UserRepositoryTest::findUserByUsername
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:139
+
+9) Tests\Unit\Repository\UserRepositoryTest::findUserByEmail
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:155
+
+10) Tests\Unit\Repository\UserRepositoryTest::preventDuplicateUsername
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:171
+
+11) Tests\Unit\Repository\UserRepositoryTest::preventDuplicateEmail
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:188
+
+12) Tests\Unit\Repository\UserRepositoryTest::findUserById
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:205
+
+13) Tests\Unit\Repository\UserRepositoryTest::updateLastLoginTime
+PDOException: SQLSTATE[23000]: Integrity constraint violation: 19 NOT NULL constraint failed: users.uuid
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:25
+/var/www/html/tests/Unit/Repository/UserRepositoryTest.php:223
+
+14) Tests\Integration\AuthControllerTest::registerUserSuccessfully
+ArgumentCountError: Too few arguments to function App\Application\Controllers\Api\V1\AuthController::__construct(), 5 passed in /var/www/html/tests/Integration/AuthControllerTest.php on line 153 and exactly 7 expected
+
+/var/www/html/app/Application/Controllers/Api/V1/AuthController.php:41
+/var/www/html/tests/Integration/AuthControllerTest.php:153
+/var/www/html/vendor/bin/phpunit:122
+
+15) Tests\Integration\AuthControllerTest::returnValidationErrorsForInvalidRegistrationData
+ArgumentCountError: Too few arguments to function App\Application\Controllers\Api\V1\AuthController::__construct(), 5 passed in /var/www/html/tests/Integration/AuthControllerTest.php on line 200 and exactly 7 expected
+
+/var/www/html/app/Application/Controllers/Api/V1/AuthController.php:41
+/var/www/html/tests/Integration/AuthControllerTest.php:200
+/var/www/html/vendor/bin/phpunit:122
+
+16) Tests\Integration\AuthControllerTest::loginUserSuccessfully
+TypeError: App\Domains\Auth\DTOs\LoginResponseDTO::__construct(): Argument #6 ($sessionId) must be of type ?string, array given, called in /var/www/html/tests/Integration/AuthControllerTest.php on line 254
+
+/var/www/html/app/Domains/Auth/DTOs/LoginResponseDTO.php:16
+/var/www/html/tests/Integration/AuthControllerTest.php:254
+/var/www/html/vendor/bin/phpunit:122
+
+17) Tests\Integration\AuthControllerTest::returnErrorForInvalidLogin
+ArgumentCountError: Too few arguments to function App\Application\Controllers\Api\V1\AuthController::__construct(), 5 passed in /var/www/html/tests/Integration/AuthControllerTest.php on line 300 and exactly 7 expected
+
+/var/www/html/app/Application/Controllers/Api/V1/AuthController.php:41
+/var/www/html/tests/Integration/AuthControllerTest.php:300
+/var/www/html/vendor/bin/phpunit:122
+
+18) Tests\Integration\AuthControllerTest::logoutUserSuccessfully
+ArgumentCountError: Too few arguments to function App\Application\Controllers\Api\V1\AuthController::__construct(), 5 passed in /var/www/html/tests/Integration/AuthControllerTest.php on line 334 and exactly 7 expected
+
+/var/www/html/app/Application/Controllers/Api/V1/AuthController.php:41
+/var/www/html/tests/Integration/AuthControllerTest.php:334
+/var/www/html/vendor/bin/phpunit:122
+
+19) Tests\Security\PasswordHashingTest::shouldHashPasswordUsingArgon2id
+PDOException: SQLSTATE[HY000]: General error: 1 table users has no column named password_hash
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:23
+/var/www/html/app/Domains/Auth/Services/AuthService.php:33
+/var/www/html/tests/Security/PasswordHashingTest.php:122
+/var/www/html/vendor/bin/phpunit:122
+
+20) Tests\Security\PasswordHashingTest::shouldUseAppropriateHashingOptions
+PDOException: SQLSTATE[HY000]: General error: 1 table users has no column named password_hash
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:23
+/var/www/html/app/Domains/Auth/Services/AuthService.php:33
+/var/www/html/tests/Security/PasswordHashingTest.php:174
+/var/www/html/vendor/bin/phpunit:122
+
+21) Tests\Security\PasswordHashingTest::shouldPreventPasswordReuse
+PDOException: SQLSTATE[HY000]: General error: 1 table users has no column named password_hash
+
+/var/www/html/app/Domains/Auth/Repositories/UserRepository.php:23
+/var/www/html/app/Domains/Auth/Services/AuthService.php:33
+/var/www/html/tests/Security/PasswordHashingTest.php:252
+/var/www/html/vendor/bin/phpunit:122
+
+--
+
+There were 5 failures:
+
+1) Tests\Unit\Domains\Auth\Services\JwtTokenServiceTest::test_validateAccessToken_should_return_payload_when_valid_token
+Expectation failed for method name is "parseTokenUnsafe" when invoked 1 time.
+Method was expected to be called 1 time, actually called 0 times.
+
+2) Tests\Unit\Domains\Auth\Services\JwtTokenServiceTest::test_validateAccessToken_should_throw_exception_when_token_blacklisted
+Expectation failed for method name is "parseTokenUnsafe" when invoked 1 time.
+Method was expected to be called 1 time, actually called 0 times.
+
+3) Tests\Integration\Repositories\PostRepositoryTest::testPaginatePosts
+Failed asserting that 0 matches expected 15.
+
+/var/www/html/tests/Integration/Repositories/PostRepositoryTest.php:333
+/var/www/html/vendor/bin/phpunit:122
+
+4) Tests\Integration\Repositories\PostRepositoryTest::testGetPinnedPosts
+Failed asserting that actual size 0 matches expected size 1.
+
+/var/www/html/tests/Integration/Repositories/PostRepositoryTest.php:365
+/var/www/html/vendor/bin/phpunit:122
+
+5) Tests\Integration\Repositories\PostRepositoryTest::testGetPostsByTag
+Failed asserting that 0 matches expected 1.
+
+/var/www/html/tests/Integration/Repositories/PostRepositoryTest.php:475
+/var/www/html/vendor/bin/phpunit:122
+
+ERRORS!
+Tests: 2190, Assertions: 9227, Errors: 21, Failures: 5, PHPUnit Deprecations: 1, Skipped: 39.

@@ -218,7 +218,7 @@ class PostRepository implements PostRepositoryInterface
         $cacheKey = PostCacheKeyService::post($id);
 
         $data = $this->cache->remember($cacheKey, function () use ($id) {
-            $sql = $this->buildSelectQuery('id = ?');
+            $sql = $this->buildSelectQuery('p.id = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -238,7 +238,7 @@ class PostRepository implements PostRepositoryInterface
     public function findWithLock(int $id): ?Post
     {
         // SQLite 不支援 FOR UPDATE，改用事務和 EXCLUSIVE 模式
-        $sql = $this->buildSelectQuery('id = ?');
+        $sql = $this->buildSelectQuery('p.id = ?');
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -255,7 +255,7 @@ class PostRepository implements PostRepositoryInterface
         $cacheKey = PostCacheKeyService::postByUuid($uuid);
 
         $data = $this->cache->remember($cacheKey, function () use ($uuid) {
-            $sql = $this->buildSelectQuery('uuid = ?');
+            $sql = $this->buildSelectQuery('p.uuid = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -626,7 +626,7 @@ class PostRepository implements PostRepositoryInterface
 
         try {
             // 檢查文章是否存在
-            $sql = $this->buildSelectQuery('id = ?');
+            $sql = $this->buildSelectQuery('p.id = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -731,7 +731,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function findByUserId(int $userId): ?Post
     {
-        $sql = $this->buildSelectQuery('user_id = :userId') . ' LIMIT 1';
+        $sql = $this->buildSelectQuery('p.user_id = :userId') . ' LIMIT 1';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();

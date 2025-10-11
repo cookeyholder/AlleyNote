@@ -54,6 +54,26 @@ class SqlInjectionTest extends TestCase
 
     protected function createTestTables(): void
     {
+        // 建立 users 表（用於 JOIN）
+        $this->db->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password_hash VARCHAR(255) NOT NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NOT NULL
+            )
+        ');
+
+        // 插入測試用戶
+        $now = date('Y-m-d H:i:s');
+        $this->db->exec("
+            INSERT INTO users (id, username, email, password_hash, created_at, updated_at) VALUES
+            (1, 'user1', 'user1@example.com', 'hashed_password', '$now', '$now'),
+            (2, 'user2', 'user2@example.com', 'hashed_password', '$now', '$now')
+        ");
+
         $this->db->exec('
             CREATE TABLE posts (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

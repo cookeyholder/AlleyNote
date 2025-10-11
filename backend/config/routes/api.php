@@ -11,6 +11,7 @@ declare(strict_types=1);
 use App\Application\Controllers\PostController;
 use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
+use App\Application\Controllers\Api\V1\SettingController;
 
 return [
     // API 健康檢查
@@ -206,5 +207,45 @@ return [
         'handler' => [RoleController::class, 'permissionsGrouped'],
         'middleware' => ['auth'],
         'name' => 'permissions.grouped'
+    ],
+
+    // ========================================
+    // 系統設定 API
+    // ========================================
+    'settings.index' => [
+        'methods' => ['GET'],
+        'path' => '/api/settings',
+        'handler' => [SettingController::class, 'index'],
+        'name' => 'settings.index'
+    ],
+
+    'settings.show' => [
+        'methods' => ['GET'],
+        'path' => '/api/settings/{key}',
+        'handler' => [SettingController::class, 'show'],
+        'name' => 'settings.show'
+    ],
+
+    'settings.update' => [
+        'methods' => ['PUT'],
+        'path' => '/api/settings',
+        'handler' => [SettingController::class, 'update'],
+        'middleware' => ['auth'],
+        'name' => 'settings.update'
+    ],
+
+    'settings.update_single' => [
+        'methods' => ['PUT'],
+        'path' => '/api/settings/{key}',
+        'handler' => [SettingController::class, 'updateSingle'],
+        'middleware' => ['auth'],
+        'name' => 'settings.update_single'
+    ],
+
+    'settings.timezone_info' => [
+        'methods' => ['GET'],
+        'path' => '/api/settings/timezone/info',
+        'handler' => [SettingController::class, 'getTimezoneInfo'],
+        'name' => 'settings.timezone_info'
     ]
 ];
