@@ -130,8 +130,12 @@ class PostController extends BaseController
             // 建立查詢條件
             $conditions = ['p.id = :id', 'p.deleted_at IS NULL'];
             
-            // 根據 include_future 參數決定是否過濾未來文章
+            // 根據 include_future 參數決定是否過濾
+            // 當 include_future=false（公開訪問）時：
+            // - 只顯示已發布的文章
+            // - 過濾未來的文章
             if (!$includeFuture) {
+                $conditions[] = "p.status = 'published'";
                 $conditions[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
             }
             
