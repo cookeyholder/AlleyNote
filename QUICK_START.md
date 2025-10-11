@@ -77,15 +77,14 @@ docker-compose exec web php vendor/bin/phinx seed:run
 ### 5. 訪問應用
 
 - **前端**：http://localhost:3000
-- **API 文件**：http://localhost:8080/api
+- **API 文件**：http://localhost:8080/api/docs/ui
 - **健康檢查**：http://localhost:8080/api/health
 
 ### 6. 測試帳號
 
-| 角色 | 帳號 | 密碼 |
-|------|------|------|
-| 主管理員 | admin | admin123 |
-| 一般使用者 | user | user123 |
+| 角色 | 電子信箱 | 密碼 |
+|------|----------|------|
+| 管理員 | admin@example.com | password |
 
 ## 開發指令
 
@@ -189,13 +188,13 @@ docker-compose up -d
 **檢查步驟**：
 ```bash
 # 1. 確認容器運行中
-docker-compose ps
+docker compose ps
 
 # 2. 測試 nginx
 curl -I http://localhost:3000
 
 # 3. 查看 nginx 日誌
-docker-compose logs nginx
+docker compose logs nginx
 
 # 4. 確認文件存在
 ls -la frontend/index.html
@@ -206,17 +205,17 @@ ls -la frontend/index.html
 **檢查步驟**：
 ```bash
 # 1. 查看 PHP 錯誤日誌
-docker-compose logs web
+docker compose logs web
 
 # 2. 確認資料庫已初始化
-docker-compose exec web php vendor/bin/phinx status
+docker compose exec web php vendor/bin/phinx status
 
 # 3. 檢查環境變數
-docker-compose exec web env | grep -E "JWT|DATABASE"
+docker compose exec web env | grep -E "JWT|DATABASE"
 
 # 4. 重新執行遷移
-docker-compose exec web php vendor/bin/phinx migrate
-docker-compose exec web php vendor/bin/phinx seed:run
+docker compose exec web php vendor/bin/phinx migrate
+docker compose exec web php vendor/bin/phinx seed:run
 ```
 
 ### 問題 5：無法登入
@@ -225,14 +224,14 @@ docker-compose exec web php vendor/bin/phinx seed:run
 
 1. **種子資料未載入**
    ```bash
-   docker-compose exec web php vendor/bin/phinx seed:run
+   docker compose exec web php vendor/bin/phinx seed:run
    ```
 
 2. **JWT 金鑰未設定**
    ```bash
    # 檢查 backend/.env 檔案
    cat backend/.env | grep JWT_SECRET
-   
+
    # 若未設定，新增隨機金鑰
    echo "JWT_SECRET=$(openssl rand -hex 32)" >> backend/.env
    docker-compose restart web
@@ -242,7 +241,7 @@ docker-compose exec web php vendor/bin/phinx seed:run
    ```bash
    # 清除瀏覽器 localStorage
    # 開啟 DevTools > Application > Local Storage > 清除
-   
+
    # 或重新整理頁面（Ctrl+Shift+R / Cmd+Shift+R）
    ```
 
@@ -268,7 +267,7 @@ chmod 666 backend/database/alleynote.sqlite3
 
 - **文件**：查看 `README.md` 了解專案架構
 - **問題回報**：開啟 GitHub Issue
-- **日誌分析**：`docker-compose logs -f`
+- **日誌分析**：`docker compose logs -f`
 
 ## 下一步
 
