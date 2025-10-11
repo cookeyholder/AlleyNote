@@ -119,6 +119,7 @@ export async function renderPostEditor(postId = null) {
                     hour: '2-digit',
                     minute: '2-digit',
                     second: '2-digit',
+                    hour12: false, // 使用 24 時制
                   })}
                 </div>
                 <p class="text-sm text-modern-500 mt-1">

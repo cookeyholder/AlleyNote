@@ -178,7 +178,8 @@ async function loadDashboardData() {
           });
           const formattedTime = date.toLocaleTimeString('zh-TW', {
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: false // 使用 24 時制
           });
           
           return `
