@@ -42,7 +42,10 @@ export async function renderPostEditor(postId = null) {
   if (postId) {
     loading.show('載入文章中...');
     try {
-      const result = await apiClient.get(`/posts/${postId}`);
+      // 管理員編輯頁面需要能夠訪問未來的文章
+      const result = await apiClient.get(`/posts/${postId}`, { 
+        params: { include_future: true } 
+      });
       post = result.data;
       // 保存原始數據的深拷貝
       originalPostData = JSON.parse(JSON.stringify(post));

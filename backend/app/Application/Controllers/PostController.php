@@ -118,16 +118,30 @@ class PostController extends BaseController
     public function show(ServerRequestInterface $request, ResponseInterface $response, int $id): ResponseInterface
     {
         try {
+            // 獲取查詢參數
+            $queryParams = $request->getQueryParams();
+            $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
             // 建立資料庫連接
             $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
             $pdo = new PDO("sqlite:{$dbPath}");
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+            // 建立查詢條件
+            $conditions = ['p.id = :id', 'p.deleted_at IS NULL'];
+            
+            // 根據 include_future 參數決定是否過濾未來文章
+            if (!$includeFuture) {
+                $conditions[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
+            }
+            
+            $whereClause = implode(' AND ', $conditions);
+
             // 查詢文章
-            $sql = 'SELECT p.*, u.username as author
+            $sql = "SELECT p.*, u.username as author
                     FROM posts p
                     LEFT JOIN users u ON p.user_id = u.id
-                    WHERE p.id = :id AND p.deleted_at IS NULL';
+                    WHERE {$whereClause}";
 
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $id]);
