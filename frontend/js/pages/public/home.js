@@ -231,10 +231,15 @@ function renderPostCard(post) {
   const excerpt = post.excerpt || extractExcerpt(post.content);
   // 優先使用 publish_date，若無則使用 created_at
   const dateString = post.publish_date || post.created_at;
-  const date = new Date(dateString).toLocaleDateString('zh-TW', {
+  const dateObj = new Date(dateString);
+  const date = dateObj.toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+  });
+  const time = dateObj.toLocaleTimeString('zh-TW', {
+    hour: '2-digit',
+    minute: '2-digit',
   });
   
   return `
@@ -251,7 +256,7 @@ function renderPostCard(post) {
       <div class="flex items-center justify-between text-sm text-modern-500">
         <div class="flex items-center gap-2">
           <span>📅</span>
-          <time datetime="${dateString}">${date}</time>
+          <time datetime="${dateString}">${date} ${time}</time>
         </div>
         <div class="flex items-center gap-2">
           <span>👤</span>

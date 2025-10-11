@@ -149,12 +149,26 @@ async function loadPosts() {
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">標題</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">狀態</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">作者</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">建立時間</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">發布時間</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-modern-500 uppercase tracking-wider">操作</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-modern-200">
-          ${posts.map((post) => `
+          ${posts.map((post) => {
+            // 優先使用 publish_date，若無則使用 created_at
+            const dateString = post.publish_date || post.created_at;
+            const dateObj = new Date(dateString);
+            const formattedDate = dateObj.toLocaleDateString('zh-TW', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            });
+            const formattedTime = dateObj.toLocaleTimeString('zh-TW', {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+            
+            return `
             <tr class="hover:bg-modern-50">
               <td class="px-6 py-4">
                 <div class="text-sm font-medium text-modern-900">${post.title}</div>
@@ -169,7 +183,10 @@ async function loadPosts() {
                 </span>
               </td>
               <td class="px-6 py-4 text-sm text-modern-600">${post.author || 'Unknown'}</td>
-              <td class="px-6 py-4 text-sm text-modern-600">${new Date(post.created_at).toLocaleDateString('zh-TW')}</td>
+              <td class="px-6 py-4 text-sm text-modern-600">
+                <div>${formattedDate}</div>
+                <div class="text-xs text-modern-500">${formattedTime}</div>
+              </td>
               <td class="px-6 py-4 text-right text-sm">
                 <div class="flex justify-end gap-2">
                   <button 
@@ -198,7 +215,8 @@ async function loadPosts() {
                 </div>
               </td>
             </tr>
-          `).join('')}
+          `;
+          }).join('')}
         </tbody>
       </table>
       

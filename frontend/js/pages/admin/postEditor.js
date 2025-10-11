@@ -106,6 +106,27 @@ export async function renderPostEditor(postId = null) {
           <h3 class="text-lg font-semibold text-modern-900 mb-4">發布設定</h3>
           
           <div class="space-y-4">
+            ${postId && post?.created_at ? `
+              <div>
+                <label class="block text-sm font-medium text-modern-700 mb-2">
+                  建立時間
+                </label>
+                <div class="px-3 py-2 bg-modern-50 border border-modern-200 rounded-lg text-sm text-modern-700">
+                  ${new Date(post.created_at).toLocaleString('zh-TW', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                  })}
+                </div>
+                <p class="text-sm text-modern-500 mt-1">
+                  此為文章首次建立的時間，無法修改
+                </p>
+              </div>
+            ` : ''}
+            
             <div>
               <label for="status" class="block text-sm font-medium text-modern-700 mb-2">
                 狀態
