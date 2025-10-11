@@ -11,20 +11,20 @@ test.describe('使用者管理功能測試', () => {
   });
 
   test('應該正確顯示使用者管理頁面', async ({ authenticatedPage: page }) => {
-    // 檢查標題
-    await expect(page.locator('h1:has-text("使用者管理")')).toBeVisible();
+    // 檢查標題（只檢查主要內容區的標題）
+    await expect(page.locator('main h1:has-text("使用者管理")')).toBeVisible();
     
     // 檢查新增使用者按鈕
     await expect(page.locator('button:has-text("新增使用者")')).toBeVisible();
   });
 
   test('應該顯示使用者列表', async ({ authenticatedPage: page }) => {
-    // 檢查表頭
-    await expect(page.locator('text=使用者名稱')).toBeVisible();
-    await expect(page.locator('text=電子郵件')).toBeVisible();
-    await expect(page.locator('text=角色')).toBeVisible();
-    await expect(page.locator('text=註冊日期')).toBeVisible();
-    await expect(page.locator('text=操作')).toBeVisible();
+    // 檢查表頭（使用 table th 來精確定位）
+    await expect(page.locator('table th:has-text("使用者名稱")')).toBeVisible();
+    await expect(page.locator('table th:has-text("電子郵件")')).toBeVisible();
+    await expect(page.locator('table th:has-text("角色")')).toBeVisible();
+    await expect(page.locator('table th:has-text("註冊日期")')).toBeVisible();
+    await expect(page.locator('table th:has-text("操作")')).toBeVisible();
     
     // 應該至少有一個使用者（admin）
     const userRows = page.locator('tbody tr');
@@ -39,8 +39,8 @@ test.describe('使用者管理功能測試', () => {
     // 等待 modal 出現
     await page.waitForTimeout(500);
     
-    // 檢查 modal 標題
-    await expect(page.locator('text=新增使用者').first()).toBeVisible();
+    // 檢查 modal 標題（在 modal 內的 h3）
+    await expect(page.locator('.fixed.inset-0 h3:has-text("新增使用者")')).toBeVisible();
     
     // 檢查表單欄位
     await expect(page.locator('input[name="username"]')).toBeVisible();
@@ -49,9 +49,9 @@ test.describe('使用者管理功能測試', () => {
     await expect(page.locator('input[name="password"]')).toBeVisible();
     await expect(page.locator('input[name="password_confirmation"]')).toBeVisible();
     
-    // 檢查按鈕
-    await expect(page.locator('button:has-text("取消")')).toBeVisible();
-    await expect(page.locator('button:has-text("新增使用者")')).toBeVisible();
+    // 檢查按鈕（使用 id 選擇器）
+    await expect(page.locator('#cancelModalBtn')).toBeVisible();
+    await expect(page.locator('button[type="submit"]:has-text("新增使用者")')).toBeVisible();
   });
 
   test('應該能夠取消新增使用者', async ({ authenticatedPage: page }) => {
@@ -59,12 +59,12 @@ test.describe('使用者管理功能測試', () => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
     
-    // 點擊取消
-    await page.locator('button:has-text("取消")').last().click();
+    // 點擊取消（使用 id）
+    await page.click('#cancelModalBtn');
     await page.waitForTimeout(500);
     
-    // Modal 應該關閉
-    await expect(page.locator('text=新增使用者').first()).not.toBeVisible();
+    // Modal 應該關閉（檢查 modal 容器不可見）
+    await expect(page.locator('.fixed.inset-0 h3:has-text("新增使用者")')).not.toBeVisible();
   });
 
   test('新增使用者時應該驗證必填欄位', async ({ authenticatedPage: page }) => {
