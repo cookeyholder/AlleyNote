@@ -39,6 +39,8 @@ class Post implements JsonSerializable
     private ?string $creationSource;
 
     private ?string $creationSourceDetail;
+    
+    private ?string $author; // 作者用戶名（從 users 表 JOIN 得到）
 
     public function __construct(array $data)
     {
@@ -57,6 +59,7 @@ class Post implements JsonSerializable
         $this->updatedAt = (string) ($data['updated_at'] ?? format_datetime());
         $this->creationSource = isset($data['creation_source']) && $data['creation_source'] !== null ? (string) $data['creation_source'] : null;
         $this->creationSourceDetail = isset($data['creation_source_detail']) && $data['creation_source_detail'] !== null ? (string) $data['creation_source_detail'] : null;
+        $this->author = isset($data['author']) && $data['author'] !== null ? (string) $data['author'] : null;
     }
 
     public function getId(): int
@@ -187,6 +190,7 @@ class Post implements JsonSerializable
             'updated_at' => $this->updatedAt,
             'creation_source' => $this->creationSource,
             'creation_source_detail' => $this->creationSourceDetail,
+            'author' => $this->author,
         ];
     }
 
