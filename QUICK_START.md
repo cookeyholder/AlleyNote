@@ -65,22 +65,44 @@ docker-compose logs -f
 
 ## 開發前端
 
-前端採用純 HTML/JS/CSS 架構，無需構建工具：
+前端採用純 HTML/JavaScript/CSS 架構，**無需任何構建工具**：
+
+### 技術棧
+- ✅ 原生 HTML5
+- ✅ 原生 JavaScript（ES6+ Modules）
+- ✅ Tailwind CSS（透過 CDN）
+- ✅ Chart.js、CKEditor 5 等（透過 CDN）
+
+### 開發流程
 
 1. **編輯檔案**
    ```bash
    # 直接編輯 frontend/ 目錄下的檔案
    vim frontend/js/pages/public/home.js
+   vim frontend/css/main.css
+   vim frontend/index.html
    ```
 
 2. **即時生效**
-   - 由於使用 bind mount，修改會立即反映在容器中
+   - 由於使用 Docker volume bind mount，修改會立即反映在容器中
    - 重新整理瀏覽器即可看到變更
+   - **無需重新構建或重啟容器**
 
-3. **除錯**
-   - 使用瀏覽器 DevTools
-   - 查看控制台輸出
-   - 檢查 Network 標籤
+3. **除錯工具**
+   - 使用瀏覽器 DevTools（F12）
+   - Console 標籤：查看 JavaScript 輸出和錯誤
+   - Network 標籤：檢查 API 請求和回應
+   - Elements 標籤：查看和修改 HTML/CSS
+   - Sources 標籤：設置 JavaScript 中斷點
+
+4. **本地開發服務器（可選）**
+   ```bash
+   # 如果不想使用 Docker，可以用 Python 快速啟動
+   cd frontend
+   python3 -m http.server 3000
+   
+   # 注意：本地開發需要配置 CORS 或修改 API URL
+   ```
 
 ## 開發後端
 
@@ -197,19 +219,29 @@ docker-compose exec web php vendor/bin/phinx seed:run
 
 ## 重要提醒
 
-⚠️ **不要啟動 Vite 開發伺服器**
+### ⚠️ 不要啟動 Vite 或 npm 開發伺服器
 
-前端已經改為純 HTML/JS/CSS，不需要也不應該使用 Vite：
+前端已經改為純 HTML/JavaScript/CSS，**不需要也不應該**使用任何構建工具：
 
 ```bash
-# ❌ 錯誤：不要執行這些命令
+# ❌ 錯誤：不要執行這些命令（已移除）
+npm install
 npm run dev
-npm run frontend:dev
+npm run build
 vite
+pnpm dev
 
-# ✅ 正確：使用 Docker
+# ✅ 正確：使用 Docker 提供前端服務
 docker-compose up -d
 ```
+
+### 前端服務說明
+
+- 前端文件位於 `frontend/` 目錄
+- 透過 Docker nginx 容器提供靜態文件服務
+- 訪問地址：http://localhost:3000
+- 修改文件後直接刷新瀏覽器即可看到變更
+- 無需任何編譯或構建步驟
 
 ## 下一步
 

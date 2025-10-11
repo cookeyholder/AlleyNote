@@ -1,7 +1,0 @@
-# 忽略以下檔案的格式化
-node_modules
-dist
-coverage
-.vite
-*.min.js
-package-lock.json

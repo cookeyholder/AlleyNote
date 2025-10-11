@@ -147,7 +147,7 @@ AlleyNote 提供了一個集中化的平台，讓組織能夠：
   - 就像廚房的廚師、食材、烹飪過程
 
 **在 AlleyNote 中：**
-- **前端**使用 Vite + JavaScript，負責：
+- **前端**使用純 HTML/CSS/JavaScript，負責：
   - 顯示公告列表
   - 提供搜尋和篩選功能
   - 文章編輯器界面
@@ -310,7 +310,7 @@ graph TB
 
     subgraph "🐳 Docker 容器化環境（整個系統打包在這裡）"
         subgraph "🎨 前端服務（你看到的網頁）"
-            Frontend[網頁介面<br/>Vite 5 + JavaScript ES6+<br/>Axios HTTP 客戶端]
+            Frontend[網頁介面<br/>HTML/CSS/JavaScript<br/>原生 JavaScript ES6+]
         end
 
         subgraph "🌐 Nginx（交通警察）"
@@ -413,40 +413,44 @@ graph TB
 
 #### 前端技術（Frontend - 瀏覽器端，使用者看到的畫面）
 
-**1. Vite 5.0**
-- **這是什麼？** 現代化的前端建構工具
-- **為什麼選它？**
-  - 啟動速度超快（比 Webpack 快 10-100 倍）
-  - 熱模組替換（Hot Module Replacement）- 改程式碼立刻看到效果
-  - 內建優化，自動產生高效能的產品代碼
+**1. 原生 HTML/CSS/JavaScript**
+- **這是什麼？** 瀏覽器原生支援的三大核心技術
+- **為什麼選擇原生？**
+  - 零構建時間，直接在瀏覽器運行
+  - 不需要複雜的構建工具和配置
+  - 學習曲線平緩，對初學者友善
+  - 載入速度快，不需要框架開銷
+  - 易於部署，不需要編譯步驟
 - **在 AlleyNote 中的角色：**
-  - 開發時提供即時預覽
-  - 打包前端代碼以便部署
-  - 處理 CSS、圖片等資源
+  - HTML：構建頁面結構
+  - CSS：設計視覺樣式和響應式佈局
+  - JavaScript (ES6+)：處理互動邏輯和 API 通訊
 
 **2. 原生 JavaScript（ES6+）**
 - **這是什麼？** 瀏覽器原生支援的程式語言
-- **為什麼不用 TypeScript？**
-  - 專案選擇保持簡單，減少編譯步驟
-  - 原生 JavaScript 執行效率高
-  - 對初學者更友善
-  - 現代 JavaScript 已經很強大（箭頭函式、Promise、async/await 等）
+- **使用的現代特性：**
+  - 模組化（ES Modules）
+  - 箭頭函式和解構賦值
+  - Promise 和 async/await
+  - 類別（Class）和繼承
+  - 模板字串
 - **在 AlleyNote 中的角色：**
   - 處理使用者互動（點擊、輸入等）
   - 與後端 API 溝通
   - 動態更新頁面內容
+  - 表單驗證和資料處理
 
-**3. Axios 1.6.0**
-- **這是什麼？** 一個 HTTP 客戶端函式庫
+**3. Fetch API**
+- **這是什麼？** 瀏覽器內建的 HTTP 請求 API
 - **為什麼選它？**
-  - 比原生 fetch 更容易使用
-  - 自動處理 JSON 轉換
-  - 支援請求/回應攔截器
-  - 自動處理錯誤
+  - 瀏覽器原生支援，不需要額外套件
+  - 基於 Promise，易於使用
+  - 現代瀏覽器全面支援
+  - 輕量級，無額外依賴
 - **在 AlleyNote 中的角色：**
   - 與後端 API 溝通（GET、POST、PUT、DELETE）
-  - 上傳檔案
   - 處理身份驗證 Token
+  - 上傳和下載檔案
 
 **4. 原生 CSS + CSS Variables**
 - **為什麼不用 Tailwind CSS？**
@@ -627,10 +631,33 @@ AlleyNote 專注於 Linux 生產環境，原因：
 
 ```
 AlleyNote/
-├── 🎨 frontend/                    # 前端應用程式（網頁介面）
-│   ├── src/                        # JavaScript 源碼（程式碼）
-│   ├── public/                     # 靜態資源（圖片、CSS 等）
-│   └── package.json               # 前端依賴清單
+├── 🎨 frontend/                    # 前端應用程式（純 HTML/JS/CSS）
+│   ├── index.html                  # 主頁面入口
+│   ├── js/                         # JavaScript ES6 模組
+│   │   ├── main.js                # 應用程式入口
+│   │   ├── api/                   # API 客戶端
+│   │   │   ├── client.js         # HTTP 客戶端
+│   │   │   ├── auth.js           # 認證 API
+│   │   │   ├── posts.js          # 文章 API
+│   │   │   └── ...
+│   │   ├── components/            # UI 組件
+│   │   │   ├── Modal.js          # 對話框
+│   │   │   └── Loading.js        # 載入動畫
+│   │   ├── pages/                 # 頁面模組
+│   │   │   ├── public/           # 公開頁面
+│   │   │   │   ├── home.js       # 首頁
+│   │   │   │   └── login.js      # 登入
+│   │   │   └── admin/            # 管理後台
+│   │   │       └── dashboard.js  # 儀表板
+│   │   └── utils/                 # 工具函式
+│   │       ├── router.js         # 前端路由
+│   │       ├── toast.js          # 通知系統
+│   │       └── validator.js      # 表單驗證
+│   ├── css/                        # 樣式表
+│   │   └── main.css               # 主要樣式
+│   └── assets/                     # 靜態資源
+│       ├── images/                # 圖片
+│       └── icons/                 # 圖示
 │
 ├── ⚡ backend/                     # 後端 API（資料處理）
 │   ├── app/                        # DDD 架構程式碼
@@ -666,8 +693,9 @@ AlleyNote/
 **重要檔案說明**：
 - `docker-compose.yml`：定義整個系統如何啟動
 - `.env`：環境變數設定檔（從 .env.example 複製）
-- `composer.json`：PHP 套件清單
-- `package.json`：前端套件清單
+- `backend/composer.json`：PHP 套件清單
+- `frontend/index.html`：前端入口頁面
+- `frontend/js/main.js`：前端應用程式入口
 
 ---
 
@@ -837,18 +865,10 @@ free -h
 - ✅ Docker 容器裡已經包含！
 - 管理 PHP 套件的工具（類似 npm 對 JavaScript）
 
-**3. Node.js 18.0+**（前端建構用）
-- 用來執行 Vite 建構工具
-- 安裝方法：
-  ```bash
-  # 使用 NodeSource 套件庫
-  curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-  sudo apt install -y nodejs
-  
-  # 驗證安裝
-  node --version
-  npm --version
-  ```
+**3. ~~Node.js 18.0+~~**（不再需要）
+- ❌ 前端已改為純 HTML/JavaScript/CSS，不需要 Node.js
+- ❌ 不需要 npm、Vite 等構建工具
+- ✅ 前端直接透過 nginx 提供靜態檔案服務
 
 **4. 程式碼編輯器（推薦）**：
 
