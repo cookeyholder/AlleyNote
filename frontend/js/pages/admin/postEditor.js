@@ -558,8 +558,8 @@ function renderSelectedTags() {
     tagEl.className = 'inline-flex items-center gap-1 px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-sm';
     tagEl.innerHTML = `
       ${tag.name}
-      <button type="button" class="ml-1 p-1 rounded-full text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors" data-remove-tag="${tagId}" title="移除標籤">
-        <i class="fas fa-times text-sm"></i>
+      <button type="button" class="ml-1 p-1 rounded-full bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-800 transition-colors" data-remove-tag="${tagId}" title="移除標籤">
+        <i class="fas fa-times text-sm font-bold"></i>
       </button>
     `;
     
