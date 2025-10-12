@@ -42,7 +42,7 @@ test.describe('文章標籤管理', () => {
     await page.goto('/admin/posts');
     await page.waitForLoadState('networkidle');
     
-    const createButton = page.locator('a[href="/admin/posts/create"]').first();
+    const createButton = page.locator('#create-post-btn, a[href="/admin/posts/create"]').first();
     await createButton.click();
     await page.waitForLoadState('networkidle');
 

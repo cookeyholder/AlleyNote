@@ -102,7 +102,10 @@ class PostRepositoryTest extends TestCase
         $this->db->exec('
             CREATE TABLE tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name VARCHAR(50) NOT NULL
+                name VARCHAR(50) NOT NULL,
+                usage_count INTEGER DEFAULT 0,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME
             )
         ');
 
@@ -311,8 +314,9 @@ class PostRepositoryTest extends TestCase
             $this->db->rollBack();
         }
 
-        // 建立測試用標籤
-        $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
+        // 建立測試用標籤（包含所有必要欄位）
+        $now = date('Y-m-d H:i:s');
+        $this->db->exec("INSERT INTO tags (id, name, usage_count, created_at, updated_at) VALUES (1, '測試標籤', 0, '{$now}', '{$now}')");
 
         $post = $this->repository->create(PostFactory::make());
         $result = $this->repository->setTags($post->getId(), [1]);

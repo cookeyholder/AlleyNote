@@ -412,6 +412,10 @@ class PostRepository implements PostRepositoryInterface
         foreach ($tagIds as $tagId) {
             $stmt->execute([$postId, $tagId, $now]);
         }
+
+        // 更新標籤的使用次數
+        /** @var array<int> $tagIds */
+        $this->updateTagsUsageCount($tagIds);
     }
 
     public function update(int $id, array $data): Post
@@ -703,6 +707,18 @@ class PostRepository implements PostRepositoryInterface
                 throw new PDOException('部分標籤不存在');
             }
 
+            // 取得舊標籤列表以便後續更新 usage_count
+            $oldTagStmt = $this->db->prepare('SELECT tag_id FROM post_tags WHERE post_id = ?');
+            $oldTagStmt->execute([$id]);
+            $oldTagRows = $oldTagStmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int> $oldTagIds */
+            $oldTagIds = [];
+            foreach ($oldTagRows as $row) {
+                if (is_array($row) && isset($row['tag_id'])) {
+                    $oldTagIds[] = (int) $row['tag_id'];
+                }
+            }
+
             // 移除現有標籤
             $stmt = $this->db->prepare('DELETE FROM post_tags WHERE post_id = ?');
             $stmt->execute([$id]);
@@ -718,6 +734,11 @@ class PostRepository implements PostRepositoryInterface
                 }
             }
 
+            // 更新受影響標籤的 usage_count
+            /** @var array<int> $affectedTagIds */
+            $affectedTagIds = array_unique(array_merge($oldTagIds, $tagIds));
+            $this->updateTagsUsageCount($affectedTagIds);
+
             $this->db->commit();
             $this->invalidateCache($id);
 
@@ -726,6 +747,29 @@ class PostRepository implements PostRepositoryInterface
             $this->db->rollBack();
 
             return false;
+        }
+    }
+
+    /**
+     * 更新標籤的使用次數.
+     *
+     * @param array<int> $tagIds
+     */
+    private function updateTagsUsageCount(array $tagIds): void
+    {
+        if (empty($tagIds)) {
+            return;
+        }
+
+        foreach ($tagIds as $tagId) {
+            // 計算該標籤被使用的次數
+            $countStmt = $this->db->prepare('SELECT COUNT(*) FROM post_tags WHERE tag_id = ?');
+            $countStmt->execute([$tagId]);
+            $count = (int) $countStmt->fetchColumn();
+
+            // 更新標籤的 usage_count
+            $updateStmt = $this->db->prepare('UPDATE tags SET usage_count = ? WHERE id = ?');
+            $updateStmt->execute([$count, $tagId]);
         }
     }
 
@@ -814,8 +858,12 @@ class PostRepository implements PostRepositoryInterface
 
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $source = $row['creation_source'] ?? 'unknown';
-                $result[$source] = (int) $row['count'];
+                if (!is_array($row)) {
+                    continue;
+                }
+                $source = isset($row['creation_source']) && is_string($row['creation_source']) ? $row['creation_source'] : 'unknown';
+                $count = $row['count'] ?? 0;
+                $result[$source] = is_int($count) ? $count : (is_numeric($count) ? (int) $count : 0);
             }
 
             return $result;

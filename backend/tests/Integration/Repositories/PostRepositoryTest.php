@@ -137,6 +137,7 @@ class PostRepositoryTest extends TestCase
                 name VARCHAR(50) NOT NULL UNIQUE,
                 slug VARCHAR(50) NOT NULL UNIQUE,
                 description TEXT,
+                usage_count INTEGER DEFAULT 0,
                 created_at DATETIME NOT NULL,
                 updated_at DATETIME
             )
@@ -156,10 +157,10 @@ class PostRepositoryTest extends TestCase
 
         // 插入測試標籤數據
         $this->pdo->exec("
-            INSERT INTO tags (id, name, slug, created_at) VALUES
-            (1, '技術', 'tech', '$now'),
-            (2, '生活', 'life', '$now'),
-            (3, '旅遊', 'travel', '$now')
+            INSERT INTO tags (id, name, slug, usage_count, created_at) VALUES
+            (1, '技術', 'tech', 0, '$now'),
+            (2, '生活', 'life', 0, '$now'),
+            (3, '旅遊', 'travel', 0, '$now')
         ");
 
         // 建立 post_views 表
@@ -192,7 +193,7 @@ class PostRepositoryTest extends TestCase
             'user_ip' => '127.0.0.1',
             'is_pinned' => false,
             'status' => PostStatus::DRAFT->value,
-            'publish_date' => date('Y-m-d H:i:s'),
+            'publish_date' => null,  // 改為 null 以避免 SQLite 時間比較問題
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];
@@ -455,9 +456,10 @@ class PostRepositoryTest extends TestCase
 
     public function testGetPostsByTag(): void
     {
-        // 建立測試文章
+        // 建立測試文章（設定為已發布，發布時間為 NULL 或使用 SQLite 格式的時間）
         $data = $this->createTestPost([
             'status' => PostStatus::PUBLISHED->value,
+            'publish_date' => null,  // 使用 NULL 避免時間比較問題
         ]);
         $post = $this->repository->create($data);
         $postId = $post->getId();
