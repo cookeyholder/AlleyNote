@@ -22,7 +22,7 @@ export default class TagsPage {
       this.loading = true;
       this.render();
 
-      const result = await apiClient.get('/api/tags');
+      const result = await apiClient.get('/tags');
       
       if (result.success && result.data) {
         this.tags = result.data;
@@ -281,7 +281,7 @@ export default class TagsPage {
         return;
       }
 
-      await apiClient.post('/api/tags', data);
+      await apiClient.post('/tags', data);
       toast.success('標籤建立成功');
       this.modal.hide();
       await this.loadTags();
@@ -305,7 +305,7 @@ export default class TagsPage {
         return;
       }
 
-      await apiClient.put(`/api/tags/${tagId}`, data);
+      await apiClient.put(`/tags/${tagId}`, data);
       toast.success('標籤更新成功');
       this.modal.hide();
       await this.loadTags();
@@ -331,7 +331,7 @@ export default class TagsPage {
     }
 
     try {
-      await apiClient.delete(`/api/tags/${tagId}`);
+      await apiClient.delete(`/tags/${tagId}`);
       toast.success('標籤刪除成功');
       await this.loadTags();
     } catch (error) {

@@ -72,7 +72,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('input[name="name"]')).toBeVisible();
   });
 
-  test.skip('應該能夠成功新增標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠成功新增標籤', async ({ authenticatedPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增標籤")');
     await page.waitForTimeout(500);
@@ -100,7 +100,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator(`text=${tagName}`)).toBeVisible();
   });
 
-  test.skip('應該能夠編輯標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠編輯標籤', async ({ authenticatedPage: page }) => {
     // 先確保有至少一個標籤
     const tagCards = page.locator('.edit-tag-btn');
     const count = await tagCards.count();
@@ -137,7 +137,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('.fixed.inset-0 h3:has-text("編輯標籤")')).not.toBeVisible();
   });
 
-  test.skip('應該能夠刪除標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠刪除標籤', async ({ authenticatedPage: page }) => {
     // 先確保有至少一個可刪除的標籤
     const deleteButtons = page.locator('.delete-tag-btn');
     const count = await deleteButtons.count();

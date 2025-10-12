@@ -9,7 +9,6 @@ use App\Domains\Post\DTOs\CreateTagDTO;
 use App\Domains\Post\DTOs\UpdateTagDTO;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
-use Illuminate\Support\Str;
 
 /**
  * 標籤管理服務.
@@ -81,10 +80,10 @@ class TagManagementService
         }
 
         // 產生 slug
-        $slug = $dto->slug ?? Str::slug($dto->name);
+        $slug = $dto->slug ?? $this->generateSlug($dto->name);
 
         // 檢查 slug 是否重複
-        if (is_string($slug) && $this->tagRepository->findBySlug($slug)) {
+        if ($this->tagRepository->findBySlug($slug)) {
             $errors['slug'] = ['標籤 slug 已存在'];
         }
 
@@ -150,7 +149,7 @@ class TagManagementService
         if ($dto->name !== null) {
             $updateData['name'] = $dto->name;
             if ($dto->slug === null) {
-                $updateData['slug'] = Str::slug($dto->name);
+                $updateData['slug'] = $this->generateSlug($dto->name);
             }
         }
         if ($dto->slug !== null) {
@@ -186,5 +185,28 @@ class TagManagementService
 
         // 刪除標籤
         $this->tagRepository->delete($id);
+    }
+
+    /**
+     * 生成 URL slug.
+     */
+    private function generateSlug(string $text): string
+    {
+        // 轉小寫
+        $slug = mb_strtolower($text, 'UTF-8');
+
+        // 替換空白為連字號
+        $slug = preg_replace('/\s+/', '-', $slug) ?? $slug;
+
+        // 移除特殊字元（保留中文、英文、數字、連字號）
+        $slug = preg_replace('/[^\p{L}\p{N}\-]/u', '', $slug) ?? $slug;
+
+        // 移除多餘的連字號
+        $slug = preg_replace('/-+/', '-', $slug) ?? $slug;
+
+        // 移除頭尾的連字號
+        $slug = trim($slug, '-');
+
+        return $slug !== '' ? $slug : 'tag-' . uniqid();
     }
 }
