@@ -13,6 +13,8 @@ class PasswordValidationService
 {
     /**
      * 驗證密碼並回傳詳細結果.
+     *
+     * @return array{is_valid: bool, score: int, strength: string, errors: list<string>, warnings: list<string>, suggestions: list<string>}
      */
     public function validate(
         string $password,
@@ -112,17 +114,63 @@ class PasswordValidationService
      */
     private function hasSequentialChars(string $password): bool
     {
-        $lower = strtolower($password);
-        $length = strlen($lower);
+        $length = strlen($password);
 
         for ($i = 0; $i < $length - 2; $i++) {
-            $char1 = ord($lower[$i]);
-            $char2 = ord($lower[$i + 1]);
-            $char3 = ord($lower[$i + 2]);
+            $char1 = $password[$i];
+            $char2 = $password[$i + 1];
+            $char3 = $password[$i + 2];
+
+            // 只檢查字母和數字的連續
+            if (!ctype_alnum($char1) || !ctype_alnum($char2) || !ctype_alnum($char3)) {
+                continue;
+            }
+
+            $ord1 = ord($char1);
+            $ord2 = ord($char2);
+            $ord3 = ord($char3);
+
+            // 檢查連續遞增或遞減
+            if (
+                ($ord2 === $ord1 + 1 && $ord3 === $ord2 + 1)
+                || ($ord2 === $ord1 - 1 && $ord3 === $ord2 - 1)
+            ) {
+                return true;
+            }
+        }
+
+        // 也檢查小寫版本的字母序列（處理大小寫混合的情況）
+        $lower = strtolower($password);
+        for ($i = 0; $i < $length - 2; $i++) {
+            $char1 = $lower[$i];
+            $char2 = $lower[$i + 1];
+            $char3 = $lower[$i + 2];
+
+            // 只檢查字母的連續
+            if (!ctype_alpha($char1) || !ctype_alpha($char2) || !ctype_alpha($char3)) {
+                continue;
+            }
+
+            // 如果原始密碼在這個位置也是連續的，跳過（避免重複檢測）
+            if (ctype_alnum($password[$i]) && ctype_alnum($password[$i + 1]) && ctype_alnum($password[$i + 2])) {
+                $origOrd1 = ord($password[$i]);
+                $origOrd2 = ord($password[$i + 1]);
+                $origOrd3 = ord($password[$i + 2]);
+                if (
+                    ($origOrd2 === $origOrd1 + 1 && $origOrd3 === $origOrd2 + 1)
+                    || ($origOrd2 === $origOrd1 - 1 && $origOrd3 === $origOrd2 - 1)
+                ) {
+                    continue;
+                }
+            }
+
+            $ord1 = ord($char1);
+            $ord2 = ord($char2);
+            $ord3 = ord($char3);
 
             if (
-                ($char2 === $char1 + 1 && $char3 === $char2 + 1)
-                || ($char2 === $char1 - 1 && $char3 === $char2 - 1)
+                ($ord2 === $ord1 + 1 && $ord3 === $ord2 + 1)
+                || ($ord2 === $ord1 - 1 && $ord3 === $ord2 - 1)
             ) {
                 return true;
             }
@@ -136,7 +184,7 @@ class PasswordValidationService
      */
     private function hasRepeatingChars(string $password): bool
     {
-        return preg_match('/(.)\1{2,}/', $password) === 1;
+        return preg_match('/(.)\\1{2,}/', $password) === 1;
     }
 
     /**
@@ -217,6 +265,13 @@ class PasswordValidationService
      * @param array<string> $errors
      * @param array<string> $warnings
      * @return array<string>
+     */
+    /**
+     * 根據錯誤和警告生成建議.
+     *
+     * @param list<string> $errors
+     * @param list<string> $warnings
+     * @return list<string>
      */
     private function getSuggestions(array $errors, array $warnings): array
     {
