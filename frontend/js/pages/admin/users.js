@@ -103,7 +103,7 @@ export default class UsersPage {
     `;
 
     const app = document.getElementById("app");
-    renderDashboardLayout(content, { title: "使用者管理" }); bindDashboardLayoutEvents();
+    renderDashboardLayout(content, { title: "使用者管理" });
     bindDashboardLayoutEvents();
     this.attachEventListeners();
   }

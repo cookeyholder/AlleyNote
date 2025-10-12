@@ -81,6 +81,7 @@ export async function renderDashboard() {
   renderDashboardLayout(content, {
     title: '儀表板'
   });
+  bindDashboardLayoutEvents();
   router.updatePageLinks();
   
   // 載入統計資料和最近文章

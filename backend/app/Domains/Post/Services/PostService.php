@@ -145,7 +145,7 @@ class PostService implements PostServiceInterface
      * @param int $id 文章 ID
      * @param array $tagIds 標籤 ID 陣列
      */
-    public function setTags(int $id, array $tagIds): bool
+    public function setTags(int $id, array $tagIds): void
     {
         $post = $this->repository->find($id);
         if (!$post) {
@@ -155,7 +155,7 @@ class PostService implements PostServiceInterface
         // 確保所有標籤 ID 都是整數
         $tagIds = array_map('intval', array_unique($tagIds));
 
-        return $this->repository->setTags($id, $tagIds);
+        $this->repository->setTags($id, $tagIds);
     }
 
     public function recordView(int $id, string $userIp, ?int $userId = null): bool

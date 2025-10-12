@@ -319,9 +319,8 @@ class PostRepositoryTest extends TestCase
         $this->db->exec("INSERT INTO tags (id, name, usage_count, created_at, updated_at) VALUES (1, '測試標籤', 0, '{$now}', '{$now}')");
 
         $post = $this->repository->create(PostFactory::make());
-        $result = $this->repository->setTags($post->getId(), [1]);
+        $this->repository->setTags($post->getId(), [1]);
 
-        $this->assertTrue($result);
         $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
         $this->assertCount(1, $tags);
     }

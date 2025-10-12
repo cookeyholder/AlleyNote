@@ -78,7 +78,7 @@ interface PostServiceInterface
      * @param array $tagIds 標籤 ID 陣列
      * @throws NotFoundException
      */
-    public function setTags(int $id, array $tagIds): bool;
+    public function setTags(int $id, array $tagIds): void;
 
     /**
      * 記錄文章觀看.

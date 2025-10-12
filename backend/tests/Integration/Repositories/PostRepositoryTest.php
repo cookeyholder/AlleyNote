@@ -442,9 +442,7 @@ class PostRepositoryTest extends TestCase
 
         // 設定標籤
         $tagIds = [1, 2, 3];
-        $result = $this->repository->setTags($id, $tagIds);
-
-        $this->assertTrue($result);
+        $this->repository->setTags($id, $tagIds);
 
         // 驗證標籤是否被設定
         $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM post_tags WHERE post_id = ?');
@@ -528,9 +526,8 @@ class PostRepositoryTest extends TestCase
         // 刪除 post_tags 表來模擬資料庫錯誤
         $this->pdo->exec('DROP TABLE post_tags');
 
-        // 嘗試設定標籤應該失敗
-        $result = $this->repository->setTags($postId, [1, 2, 3]);
-
-        $this->assertFalse($result); // 事務失敗應該返回 false
+        // 嘗試設定標籤應該拋出異常
+        $this->expectException(\RuntimeException::class);
+        $this->repository->setTags($postId, [1, 2, 3]);
     }
 }

@@ -71,7 +71,7 @@ export default class RolesPage {
     `;
 
     const app = document.getElementById("app");
-    renderDashboardLayout(content, { title: "角色管理" }); bindDashboardLayoutEvents();
+    renderDashboardLayout(content, { title: "角色管理" });
     bindDashboardLayoutEvents();
     this.attachEventListeners();
   }

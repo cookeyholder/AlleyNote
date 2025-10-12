@@ -697,7 +697,7 @@ class PostRepository implements PostRepositoryInterface
         return $result;
     }
 
-    public function setTags(int $id, array $tagIds): bool
+    public function setTags(int $id, array $tagIds): void
     {
         $this->db->beginTransaction();
 
@@ -741,12 +741,11 @@ class PostRepository implements PostRepositoryInterface
 
             $this->db->commit();
             $this->invalidateCache($id);
-
-            return true;
         } catch (Exception $e) {
             $this->db->rollBack();
-
-            return false;
+            // 記錄錯誤並重新拋出，以便調用方能處理
+            error_log("Failed to set tags for post {$id}: " . $e->getMessage());
+            throw new RuntimeException("無法設定文章標籤: " . $e->getMessage(), 0, $e);
         }
     }
 

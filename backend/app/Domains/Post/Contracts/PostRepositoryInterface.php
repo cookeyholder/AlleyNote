@@ -52,8 +52,9 @@ interface PostRepositoryInterface extends RepositoryInterface
 
     /**
      * 設定文章標籤.
+     * @throws \RuntimeException
      */
-    public function setTags(int $id, array $tagIds): bool;
+    public function setTags(int $id, array $tagIds): void;
 
     /**
      * 依來源類型取得文章列表.

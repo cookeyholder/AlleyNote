@@ -81,8 +81,8 @@ export function renderDashboardLayout(content, options = {}) {
     </div>
   `;
 
-  // 綁定事件
-  bindDashboardEvents();
+  // 移除這裡的 bindDashboardEvents() 呼叫
+  // 改為由頁面明確呼叫 bindDashboardLayoutEvents()
 }
 
 /**
@@ -148,6 +148,9 @@ export function bindDashboardLayoutEvents() {
   bindDashboardEvents();
 }
 
+// 用於追蹤是否已綁定全域事件監聽器
+let globalEventsAttached = false;
+
 /**
  * 綁定管理後台事件（內部使用）
  */
@@ -168,15 +171,9 @@ function bindDashboardEvents() {
   
   if (userMenuBtn && userMenu) {
     userMenuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       userMenu.classList.toggle('hidden');
-    });
-
-    // 點擊外部關閉選單
-    document.addEventListener('click', (e) => {
-      if (!userMenu.contains(e.target) && !userMenuBtn.contains(e.target)) {
-        userMenu.classList.add('hidden');
-      }
     });
   }
 
@@ -193,6 +190,27 @@ function bindDashboardEvents() {
         toast.error('登出失敗');
       }
     });
+  }
+
+  // 只綁定一次全域事件監聽器
+  if (!globalEventsAttached) {
+    // 點擊外部關閉選單（使用事件委派）
+    document.addEventListener('click', (e) => {
+      const userMenu = document.getElementById('user-menu');
+      const userMenuBtn = document.getElementById('user-menu-btn');
+      
+      if (userMenu && !userMenu.classList.contains('hidden')) {
+        // 檢查點擊是否在選單或按鈕內部
+        const clickedInsideMenu = userMenu.contains(e.target);
+        const clickedInsideButton = userMenuBtn && userMenuBtn.contains(e.target);
+        
+        if (!clickedInsideMenu && !clickedInsideButton) {
+          userMenu.classList.add('hidden');
+        }
+      }
+    });
+    
+    globalEventsAttached = true;
   }
 }
 
