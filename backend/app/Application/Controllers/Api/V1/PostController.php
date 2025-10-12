@@ -265,6 +265,14 @@ class PostController extends BaseController
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
 
+            // 處理標籤
+            if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
+                $tagIds = array_values(array_filter(array_map(function ($id) {
+                    return is_numeric($id) ? (int) $id : null;
+                }, $data['tag_ids']), fn($id) => $id !== null));
+                $this->postService->setTags($post->getId(), $tagIds);
+            }
+
             // 記錄成功建立文章的活動
             $this->activityLogger->logSuccess(
                 actionType: ActivityType::POST_CREATED,
@@ -549,14 +557,30 @@ class PostController extends BaseController
             }
 
             $dto = new UpdatePostDTO($this->validator, $data);
-            $post = $this->postService->updatePost($id, $dto);
 
-            // 處理標籤更新
+            // 處理標籤更新（獨立於文章內容更新）
+            $hasTagUpdate = false;
             if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
                 $tagIds = array_values(array_filter(array_map(function ($id) {
                     return is_numeric($id) ? (int) $id : null;
                 }, $data['tag_ids']), fn($id) => $id !== null));
                 $this->postService->setTags($id, $tagIds);
+                $hasTagUpdate = true;
+            }
+
+            // 更新文章內容（如果有變更）
+            if ($dto->hasChanges()) {
+                $post = $this->postService->updatePost($id, $dto);
+            } else {
+                // 如果沒有文章內容更新，但有標籤更新，仍然返回成功
+                if (!$hasTagUpdate) {
+                    $errorResponse = $this->errorResponse('沒有要更新的欄位', 400);
+                    $response->getBody()->write(($errorResponse ?: ''));
+
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                }
+                // 重新取得文章資料
+                $post = $this->postService->findById($id);
             }
 
             // 記錄成功更新文章的活動
