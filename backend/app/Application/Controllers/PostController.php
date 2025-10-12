@@ -275,6 +275,9 @@ class PostController extends BaseController
                             ':post_id' => $postId,
                             ':tag_id' => (int) $tagId,
                         ]);
+
+                        // 更新標籤的使用次數
+                        $this->updateTagUsageCount($pdo, (int) $tagId);
                     }
                 }
             }
@@ -412,10 +415,32 @@ class PostController extends BaseController
             // 處理標籤關聯更新
             $bodyArray = is_array($body) ? $body : [];
             if (isset($bodyArray['tag_ids']) && is_array($bodyArray['tag_ids'])) {
+                // 取得舊的標籤關聯以更新計數
+                $oldTagsSql = 'SELECT tag_id FROM post_tags WHERE post_id = :post_id';
+                $oldTagsStmt = $pdo->prepare($oldTagsSql);
+                $oldTagsStmt->execute([':post_id' => $id]);
+                $oldTagRows = $oldTagsStmt->fetchAll(PDO::FETCH_ASSOC);
+                /** @var list<int> $oldTagIds */
+                $oldTagIds = array_map(
+                    function ($row) {
+                        if (is_array($row) && isset($row['tag_id']) && (is_int($row['tag_id']) || is_string($row['tag_id']))) {
+                            return (int) $row['tag_id'];
+                        }
+
+                        return 0;
+                    },
+                    $oldTagRows,
+                );
+
                 // 先刪除舊的標籤關聯
                 $deleteTagsSql = 'DELETE FROM post_tags WHERE post_id = :post_id';
                 $deleteTagsStmt = $pdo->prepare($deleteTagsSql);
                 $deleteTagsStmt->execute([':post_id' => $id]);
+
+                // 更新被移除標籤的使用次數
+                foreach ($oldTagIds as $oldTagId) {
+                    $this->updateTagUsageCount($pdo, $oldTagId);
+                }
 
                 // 新增新的標籤關聯
                 if (!empty($bodyArray['tag_ids'])) {
@@ -428,6 +453,9 @@ class PostController extends BaseController
                                 ':post_id' => $id,
                                 ':tag_id' => (int) $tagId,
                             ]);
+
+                            // 更新新增標籤的使用次數
+                            $this->updateTagUsageCount($pdo, (int) $tagId);
                         }
                     }
                 }
@@ -490,10 +518,32 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
+            // 取得文章的標籤以更新使用次數
+            $tagsSql = 'SELECT tag_id FROM post_tags WHERE post_id = :post_id';
+            $tagsStmt = $pdo->prepare($tagsSql);
+            $tagsStmt->execute([':post_id' => $id]);
+            $tagRows = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var list<int> $tagIds */
+            $tagIds = array_map(
+                function ($row) {
+                    if (is_array($row) && isset($row['tag_id']) && (is_int($row['tag_id']) || is_string($row['tag_id']))) {
+                        return (int) $row['tag_id'];
+                    }
+
+                    return 0;
+                },
+                $tagRows,
+            );
+
             // 執行軟刪除（設定 deleted_at）
             $sql = "UPDATE posts SET deleted_at = datetime('now') WHERE id = :id";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $id]);
+
+            // 更新受影響標籤的使用次數
+            foreach ($tagIds as $tagId) {
+                $this->updateTagUsageCount($pdo, $tagId);
+            }
 
             $result = [
                 'id' => $id,
@@ -510,5 +560,20 @@ class PostController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    /**
+     * 更新標籤的使用次數.
+     */
+    private function updateTagUsageCount(PDO $pdo, int $tagId): void
+    {
+        $sql = 'UPDATE tags SET usage_count = (
+                    SELECT COUNT(*) 
+                    FROM post_tags pt
+                    INNER JOIN posts p ON pt.post_id = p.id
+                    WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL
+                ) WHERE id = :tag_id';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':tag_id' => $tagId]);
     }
 }

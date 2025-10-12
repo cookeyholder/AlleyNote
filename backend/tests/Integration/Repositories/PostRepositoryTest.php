@@ -13,6 +13,7 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PDO;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 class PostRepositoryTest extends TestCase
 {
@@ -527,7 +528,7 @@ class PostRepositoryTest extends TestCase
         $this->pdo->exec('DROP TABLE post_tags');
 
         // 嘗試設定標籤應該拋出異常
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->repository->setTags($postId, [1, 2, 3]);
     }
 }

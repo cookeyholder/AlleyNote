@@ -473,7 +473,7 @@ class PostServiceTest extends TestCase
             ->with($id, $tagIds);
 
         $this->service->setTags($id, $tagIds);
-        
+
         // 驗證方法被調用且沒有拋出異常
         $this->addToAssertionCount(1);
     }

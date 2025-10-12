@@ -6,6 +6,7 @@ namespace App\Domains\Post\Contracts;
 
 use App\Domains\Post\Models\Post;
 use App\Shared\Contracts\RepositoryInterface;
+use RuntimeException;
 
 interface PostRepositoryInterface extends RepositoryInterface
 {
@@ -52,7 +53,7 @@ interface PostRepositoryInterface extends RepositoryInterface
 
     /**
      * 設定文章標籤.
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function setTags(int $id, array $tagIds): void;
 
