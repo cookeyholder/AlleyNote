@@ -12,6 +12,8 @@ let hasUnsavedChanges = false;
 let autoSaveTimer = null;
 let originalPostData = null; // 保存原始文章數據用於取消操作
 let siteTimezone = 'Asia/Taipei'; // 網站時區快取
+let availableTags = []; // 可用標籤列表
+let selectedTagIds = []; // 選中的標籤 ID
 
 /**
  * 格式化日期時間為 datetime-local 輸入格式
@@ -36,6 +38,9 @@ export async function renderPostEditor(postId = null) {
   // 載入網站時區
   siteTimezone = await timezoneUtils.getSiteTimezone();
   
+  // 載入標籤列表
+  await loadTags();
+  
   // 如果是編輯模式，載入文章
   let formattedPublishDate = '';
   if (postId) {
@@ -48,6 +53,9 @@ export async function renderPostEditor(postId = null) {
       post = result.data;
       // 保存原始數據的深拷貝
       originalPostData = JSON.parse(JSON.stringify(post));
+      
+      // 設定選中的標籤
+      selectedTagIds = (post.tags || []).map(tag => tag.id);
       
       // 格式化發布日期
       if (post.publish_date) {
@@ -62,6 +70,7 @@ export async function renderPostEditor(postId = null) {
     loading.hide();
   } else {
     originalPostData = null;
+    selectedTagIds = [];
   }
   
   const content = `
@@ -174,6 +183,22 @@ export async function renderPostEditor(postId = null) {
                 placeholder="文章摘要，將顯示在列表中..."
               >${post?.excerpt || ''}</textarea>
             </div>
+            
+            <div>
+              <label class="block text-sm font-medium text-modern-700 mb-2">
+                標籤
+              </label>
+              <div id="tags-container" class="flex flex-wrap gap-2 mb-2">
+                <!-- 已選標籤將顯示在這裡 -->
+              </div>
+              <select id="tag-selector" class="input-field">
+                <option value="">選擇標籤...</option>
+                <!-- 標籤選項將動態加載 -->
+              </select>
+              <p class="text-sm text-modern-500 mt-1">
+                選擇文章的分類標籤
+              </p>
+            </div>
           </div>
         </div>
         
@@ -201,6 +226,9 @@ export async function renderPostEditor(postId = null) {
   
   // 初始化 CKEditor
   await initCKEditor(post);
+  
+  // 初始化標籤選擇器
+  initTagSelector();
   
   // 綁定表單事件
   bindFormEvents(postId);
@@ -341,6 +369,8 @@ function cleanupEditor() {
   
   hasUnsavedChanges = false;
   originalPostData = null; // 清除原始數據
+  selectedTagIds = []; // 清除標籤選擇
+  availableTags = []; // 清除標籤列表
 }
 
 /**
@@ -367,6 +397,7 @@ async function savePost(postId, status) {
     content: content,
     status: status || form.status.value,
     excerpt: form.excerpt.value.trim(),
+    tag_ids: selectedTagIds, // 添加標籤 ID
   };
   
   // 添加發布日期時間 - 使用時區工具轉換為 UTC
@@ -443,5 +474,92 @@ function showValidationErrors(errors) {
       errorEl.textContent = Array.isArray(messages) ? messages[0] : messages;
       errorEl.classList.remove('hidden');
     }
+  });
+}
+
+/**
+ * 載入標籤列表
+ */
+async function loadTags() {
+  try {
+    const result = await apiClient.get('/tags');
+    if (result.success && result.data) {
+      availableTags = result.data;
+    }
+  } catch (error) {
+    console.error('[PostEditor] 載入標籤失敗:', error);
+    availableTags = [];
+  }
+}
+
+/**
+ * 初始化標籤選擇器
+ */
+function initTagSelector() {
+  const selector = document.getElementById('tag-selector');
+  const container = document.getElementById('tags-container');
+  
+  if (!selector || !container) return;
+  
+  // 填充標籤選項
+  selector.innerHTML = '<option value="">選擇標籤...</option>';
+  availableTags.forEach(tag => {
+    const option = document.createElement('option');
+    option.value = tag.id;
+    option.textContent = tag.name;
+    selector.appendChild(option);
+  });
+  
+  // 渲染已選標籤
+  renderSelectedTags();
+  
+  // 綁定選擇事件
+  selector.addEventListener('change', (e) => {
+    const tagId = parseInt(e.target.value);
+    if (tagId && !selectedTagIds.includes(tagId)) {
+      selectedTagIds.push(tagId);
+      renderSelectedTags();
+      hasUnsavedChanges = true;
+    }
+    selector.value = '';
+  });
+}
+
+/**
+ * 渲染已選標籤
+ */
+function renderSelectedTags() {
+  const container = document.getElementById('tags-container');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  if (selectedTagIds.length === 0) {
+    container.innerHTML = '<span class="text-sm text-modern-500">尚未選擇標籤</span>';
+    return;
+  }
+  
+  selectedTagIds.forEach(tagId => {
+    const tag = availableTags.find(t => t.id === tagId);
+    if (!tag) return;
+    
+    const tagEl = document.createElement('span');
+    tagEl.className = 'inline-flex items-center gap-1 px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-sm';
+    tagEl.innerHTML = `
+      ${tag.name}
+      <button type="button" class="ml-1 hover:text-accent-900" data-remove-tag="${tagId}">
+        <i class="fas fa-times text-xs"></i>
+      </button>
+    `;
+    
+    // 綁定移除事件
+    const removeBtn = tagEl.querySelector(`[data-remove-tag="${tagId}"]`);
+    removeBtn.addEventListener('click', () => {
+      selectedTagIds = selectedTagIds.filter(id => id !== tagId);
+      renderSelectedTags();
+      hasUnsavedChanges = true;
+    });
+    
+    container.appendChild(tagEl);
   });
 }

@@ -161,6 +161,19 @@ class PostController extends BaseController
             // 確保 author 欄位存在
             $post['author'] ??= 'Unknown';
 
+            // 查詢文章的標籤
+            $tagsSql = 'SELECT t.id, t.name 
+                       FROM tags t
+                       INNER JOIN post_tags pt ON t.id = pt.tag_id
+                       WHERE pt.post_id = :post_id
+                       ORDER BY t.name';
+            $tagsStmt = $pdo->prepare($tagsSql);
+            $tagsStmt->execute([':post_id' => $id]);
+            $tags = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
+            if (is_array($post)) {
+                $post['tags'] = $tags;
+            }
+
             $response->getBody()->write($this->successResponse($post));
 
             return $response->withHeader('Content-Type', 'application/json');
@@ -250,6 +263,22 @@ class PostController extends BaseController
 
             $postId = $pdo->lastInsertId();
 
+            // 處理標籤關聯
+            $bodyArray = is_array($body) ? $body : [];
+            if (isset($bodyArray['tag_ids']) && is_array($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
+                $tagInsertSql = "INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (:post_id, :tag_id, datetime('now'))";
+                $tagStmt = $pdo->prepare($tagInsertSql);
+
+                foreach ($bodyArray['tag_ids'] as $tagId) {
+                    if (is_numeric($tagId)) {
+                        $tagStmt->execute([
+                            ':post_id' => $postId,
+                            ':tag_id' => (int) $tagId,
+                        ]);
+                    }
+                }
+            }
+
             // 回傳新建立的文章
             $post = [
                 'id' => (int) $postId,
@@ -261,7 +290,19 @@ class PostController extends BaseController
                 'status' => $status,
                 'publish_date' => $publishDate,
                 'created_at' => date('c'),
+                'tags' => [],
             ];
+
+            // 查詢並回傳標籤資訊
+            if (isset($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
+                $tagsSql = 'SELECT t.id, t.name 
+                           FROM tags t
+                           INNER JOIN post_tags pt ON t.id = pt.tag_id
+                           WHERE pt.post_id = :post_id';
+                $tagsStmt = $pdo->prepare($tagsSql);
+                $tagsStmt->execute([':post_id' => $postId]);
+                $post['tags'] = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
+            }
 
             $response->getBody()->write($this->successResponse($post, '貼文建立成功'));
 
@@ -368,6 +409,30 @@ class PostController extends BaseController
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
 
+            // 處理標籤關聯更新
+            $bodyArray = is_array($body) ? $body : [];
+            if (isset($bodyArray['tag_ids']) && is_array($bodyArray['tag_ids'])) {
+                // 先刪除舊的標籤關聯
+                $deleteTagsSql = 'DELETE FROM post_tags WHERE post_id = :post_id';
+                $deleteTagsStmt = $pdo->prepare($deleteTagsSql);
+                $deleteTagsStmt->execute([':post_id' => $id]);
+
+                // 新增新的標籤關聯
+                if (!empty($bodyArray['tag_ids'])) {
+                    $tagInsertSql = "INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (:post_id, :tag_id, datetime('now'))";
+                    $tagStmt = $pdo->prepare($tagInsertSql);
+
+                    foreach ($bodyArray['tag_ids'] as $tagId) {
+                        if (is_numeric($tagId)) {
+                            $tagStmt->execute([
+                                ':post_id' => $id,
+                                ':tag_id' => (int) $tagId,
+                            ]);
+                        }
+                    }
+                }
+            }
+
             // 取得更新後的文章
             $getSql = 'SELECT p.*, u.username as author
                        FROM posts p
@@ -376,6 +441,19 @@ class PostController extends BaseController
             $getStmt = $pdo->prepare($getSql);
             $getStmt->execute([':id' => $id]);
             $post = $getStmt->fetch(PDO::FETCH_ASSOC);
+
+            // 查詢文章的標籤
+            $tagsSql = 'SELECT t.id, t.name 
+                       FROM tags t
+                       INNER JOIN post_tags pt ON t.id = pt.tag_id
+                       WHERE pt.post_id = :post_id
+                       ORDER BY t.name';
+            $tagsStmt = $pdo->prepare($tagsSql);
+            $tagsStmt->execute([':post_id' => $id]);
+            $tags = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
+            if (is_array($post)) {
+                $post['tags'] = $tags;
+            }
 
             $response->getBody()->write($this->successResponse($post, '貼文更新成功'));
 
