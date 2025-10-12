@@ -551,6 +551,14 @@ class PostController extends BaseController
             $dto = new UpdatePostDTO($this->validator, $data);
             $post = $this->postService->updatePost($id, $dto);
 
+            // 處理標籤更新
+            if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
+                $tagIds = array_values(array_filter(array_map(function ($id) {
+                    return is_numeric($id) ? (int) $id : null;
+                }, $data['tag_ids']), fn($id) => $id !== null));
+                $this->postService->setTags($id, $tagIds);
+            }
+
             // 記錄成功更新文章的活動
             $this->activityLogger->logSuccess(
                 actionType: ActivityType::POST_UPDATED,

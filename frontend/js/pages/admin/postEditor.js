@@ -523,6 +523,17 @@ function initTagSelector() {
     }
     selector.value = '';
   });
+  
+  // 使用事件委派處理移除標籤按鈕
+  container.addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('[data-remove-tag]');
+    if (removeBtn) {
+      const tagId = parseInt(removeBtn.getAttribute('data-remove-tag'));
+      selectedTagIds = selectedTagIds.filter(id => id !== tagId);
+      renderSelectedTags();
+      hasUnsavedChanges = true;
+    }
+  });
 }
 
 /**
@@ -547,18 +558,10 @@ function renderSelectedTags() {
     tagEl.className = 'inline-flex items-center gap-1 px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-sm';
     tagEl.innerHTML = `
       ${tag.name}
-      <button type="button" class="ml-1 hover:text-accent-900" data-remove-tag="${tagId}">
-        <i class="fas fa-times text-xs"></i>
+      <button type="button" class="ml-1 p-1 rounded-full text-red-500 hover:bg-red-100 hover:text-red-700 transition-colors" data-remove-tag="${tagId}" title="移除標籤">
+        <i class="fas fa-times text-sm"></i>
       </button>
     `;
-    
-    // 綁定移除事件
-    const removeBtn = tagEl.querySelector(`[data-remove-tag="${tagId}"]`);
-    removeBtn.addEventListener('click', () => {
-      selectedTagIds = selectedTagIds.filter(id => id !== tagId);
-      renderSelectedTags();
-      hasUnsavedChanges = true;
-    });
     
     container.appendChild(tagEl);
   });
