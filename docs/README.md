@@ -1,233 +1,315 @@
-# AlleyNote 文件目錄
+# AlleyNote 文件中心
 
-這個目錄包含 AlleyNote 專案的所有技術文件，按照 DDD 領域架構組織。
+> 📚 完整的技術文件、API 規格與使用指南
 
-## 📂 文件結構說明
-
-### 目錄組織原則
-
-文件依照**領域驅動設計（DDD）**的概念組織：
-- **`domains/`** - 按業務領域分類的文件（系統架構和深入說明）
-- **`guides/`** - 按使用者角色分類的指南（實用教學）
-- **`archive/`** - 開發過程文件、TODO、規劃、報告（歷史記錄）
+歡迎來到 AlleyNote 文件中心！這裡包含了所有您需要了解的專案資訊，從快速入門到深入的技術細節。
 
 ---
 
-## 📚 主要目錄
+## 📖 文件導覽
 
-### 🎯 `domains/` - 領域文件（深入理解系統）
+### 🚀 快速開始
 
-按照系統的業務領域組織，每個領域包含該部分的架構設計、技術規格和實作細節。
+| 文件 | 說明 | 適合對象 |
+|------|------|---------|
+| [QUICK_START.md](../QUICK_START.md) | 5 分鐘快速啟動指南 | 所有使用者 |
+| [README.md](../README.md) | 專案總覽與功能介紹 | 所有使用者 |
+| [CHANGELOG.md](../CHANGELOG.md) | 版本更新日誌 | 所有使用者 |
 
-#### **`domains/post/`** - 文章領域
-目前無專門文件（規劃中）
+### 📝 核心功能文件
 
-**涵蓋內容**：
-- 文章的建立、編輯、刪除
-- 文章狀態管理（草稿、已發布、已下架）
-- 分類和標籤系統
-- 置頂和排序功能
+#### 統計分析系統
 
-#### **`domains/auth/`** - 認證與授權領域
-- JWT_AUTHENTICATION_SPECIFICATION.md - JWT 認證機制規格
-- JWT_SETUP_TOOL_GUIDE.md - JWT 設定工具使用指南
-- USER_ACTIVITY_LOGGING_ARCHITECTURE.md - 使用者活動記錄架構
-- USER_ACTIVITY_LOGGING_GUIDE.md - 活動記錄使用指南
-- USER_ACTIVITY_LOGGING_SPEC.md - 活動記錄規格
-- ROUTE_JWT_CONFIGURATION.md - 路由層級的 JWT 配置
+| 文件 | 說明 |
+|------|------|
+| [STATISTICS_API_SPEC.md](STATISTICS_API_SPEC.md) | 統計 API 完整規格（7 個端點） |
+| [STATISTICS_PAGE_README.md](STATISTICS_PAGE_README.md) | 統計頁面使用說明 |
 
-**涵蓋內容**：
-- 使用者註冊、登入、登出
-- JWT Token 管理
-- 角色和權限控制
-- 使用者活動追蹤（21 種活動類型）
-- 異常行為偵測
+#### 安全功能
 
-#### **`domains/security/`** - 安全領域
-目前無專門文件（規劃中）
+| 文件 | 說明 |
+|------|------|
+| [SECURITY_HEADERS.md](SECURITY_HEADERS.md) | HTTP 安全標頭設定 |
 
-**涵蓋內容**：
-- XSS、CSRF、SQL Injection 防護
-- IP 黑白名單
-- 地理位置限制
-- 攻擊偵測和自動封禁
+#### 使用者介面
 
-#### **`domains/attachment/`** - 附件領域
-目前無專門文件（規劃中）
-
-**涵蓋內容**：
-- 檔案上傳和管理
-- 多格式支援（圖片、PDF、文件）
-- 檔案驗證和安全檢查
-- 儲存空間管理
-
-#### **`domains/statistics/`** - 統計領域 ⭐
-- STATISTICS_FEATURE_OVERVIEW.md - 統計功能總覽（從這裡開始！）
-- STATISTICS_FEATURE_SPECIFICATION.md - 詳細功能規格
-- STATISTICS_OPERATIONS_MANUAL.md - 運維操作手冊
-- STATISTICS_DATABASE_MIGRATION_GUIDE.md - 資料庫遷移指南
-- STATISTICS_DOMAIN_ANALYSIS.md - 領域分析
-- STATISTICS_RECALCULATION_GUIDE.md - 資料重算指南
-
-**涵蓋內容**：
-- 多維度統計分析（內容、用戶、行為）
-- 趨勢預測和時間序列分析
-- 統計快照系統（每日/週/月）
-- 視覺化儀表板
-
-#### **`domains/shared/`** - 共享基礎設施
-- ARCHITECTURE_AUDIT.md - 完整架構審查報告
-- DDD_ARCHITECTURE_DESIGN.md - DDD 架構設計文件
-- PHPSTAN_LEVEL_10_ENFORCEMENT.md - PHPStan Level 10 實施
-- CACHE_TAGGING_SYSTEM_GUIDE.md - 快取標籤系統使用指南
-- CACHE_TAGGING_SYSTEM_API_REFERENCE.md - 快取系統 API 參考
-- CACHE_TAGGING_SYSTEM_PERFORMANCE_GUIDE.md - 快取效能指南
-- CACHE_TAGGING_SYSTEM_DEPLOYMENT_GUIDE.md - 快取系統部署指南
-- MULTI_LAYER_CACHE_SYSTEM.md - 多層快取系統
-- ROUTING_SYSTEM_GUIDE.md - 路由系統指南
-- ROUTING_SYSTEM_ARCHITECTURE.md - 路由系統架構
-- ROUTING_IMPLEMENTATION_GUIDE.md - 路由實作指南
-
-**涵蓋內容**：
-- 整體系統架構
-- DI（依賴注入）容器
-- 驗證系統
-- 快取機制
-- 路由系統
-- 共用工具和輔助函式
+| 文件 | 說明 |
+|------|------|
+| [FRONTEND_USER_GUIDE.md](FRONTEND_USER_GUIDE.md) | 前端使用者指南 |
 
 ---
 
-### 📖 `guides/` - 使用指南（實用教學）
+## 🗂️ 文件分類
 
-按照使用者角色組織的實用指南和教學文件。
+### API 文件（`api/`）
 
-#### **`guides/admin/`** - 管理員指南
-- ADMIN_QUICK_START.md - **30分鐘快速入門**（從這裡開始！）⭐
-- ADMIN_MANUAL.md - 完整管理員操作手冊
-- TROUBLESHOOTING_GUIDE.md - 故障排除指南
-- SYSTEM_REQUIREMENTS.md - 系統需求說明
+詳細的 API 端點說明與範例：
 
-**適合對象**：
-- 系統管理員
-- 運維人員
-- 第一次部署的人
+- 認證 API
+- 文章管理 API
+- 使用者管理 API
+- 統計查詢 API
+- 活動記錄 API
 
-**內容**：
-- 如何安裝和部署
-- 日常維護任務
-- 備份和還原
-- 常見問題解決
-- 系統監控
+### 開發指南（`guides/`）
 
-#### **`guides/developer/`** - 開發者指南
-- DEVELOPER_GUIDE.md - **完整開發者指南**（從這裡開始！）⭐
-- API_DOCUMENTATION.md - RESTful API 文件
-- DI_CONTAINER_GUIDE.md - DI 容器使用手冊
-- VALIDATOR_GUIDE.md - 驗證器使用指南（29 種驗證規則）
-- DI_VALIDATION_INTEGRATION.md - DI 與驗證整合
-- ENVIRONMENT_CONFIGURATION_GUIDE.md - 環境配置指南
-- MODERN_DATABASE_INITIALIZATION_GUIDE.md - 資料庫初始化指南
-- NAMING_CONVENTIONS.md - 命名規範
+針對開發者的技術指南：
 
-**適合對象**：
-- PHP 開發者
-- 想要貢獻程式碼的人
-- 學習 DDD 架構的人
+- **開發者指南**：DDD 架構、程式碼規範
+- **部署指南**：Docker 部署、SSL 設定
+- **測試指南**：單元測試、整合測試、E2E 測試
 
-**內容**：
-- 開發環境設置
-- 程式碼規範
-- 測試指南
-- API 使用方式
-- DDD 設計模式
-- 如何擴展功能
+### 領域文件（`domains/`）
 
-#### **`guides/deployment/`** - 部署指南
-- DEPLOYMENT.md - 詳細部署說明
-- SSL_DEPLOYMENT_GUIDE.md - SSL/HTTPS 設定指南
+各個領域的詳細設計文件：
 
-**適合對象**：
-- DevOps 工程師
-- 系統管理員
-- 準備上線的團隊
+- **Auth Domain**：認證與授權
+- **Post Domain**：文章管理
+- **Statistics Domain**：統計分析
+- **Shared**：共享元件與工具
 
-**內容**：
-- 生產環境部署
-- SSL 憑證設定
-- Docker 配置
-- 效能優化
-- 安全加固
+### 歷史文件（`archive/`）
+
+已完成的專案文件與開發記錄：
+
+- **completed/**：專案完成報告
+- **implementation/**：實作計劃與報告
+- **development/**：開發過程記錄
 
 ---
 
-### 🗄️ `archive/` - 歷史文件（開發記錄）
+## 📊 統計分析功能
 
-存放開發過程中的 TODO、規劃文件、完成報告等。這些文件記錄了專案的發展歷程，但不是使用者日常需要的。
+### 核心特性
 
-**包含內容**：
-- TODO 清單和完成報告
-- 開發計劃和時程
-- 技術決策記錄
-- 重構報告
-- 效能測試報告
-- 程式碼品質改善記錄
-- 遷移指南
+AlleyNote 提供完整的統計分析功能，包含：
 
-**適合對象**：
-- 想了解專案歷史的人
-- 研究技術決策的人
-- 核心開發團隊
+- ✅ 多維度數據分析（文章、使用者、來源）
+- ✅ 即時統計儀表板
+- ✅ 資料快照與趨勢分析
+- ✅ 熱門內容排行
+- ✅ 使用者活動追蹤
+- ✅ 圖表視覺化
 
----
+### 統計 API 端點
 
-## 🚀 快速導航
+1. **`GET /api/v1/statistics/overview`** - 統計概覽
+   - 總文章數、活躍使用者、新使用者、總瀏覽量
 
-### 我是**系統管理員**，想要部署系統
-1. 先看 guides/admin/ADMIN_QUICK_START.md
-2. 遇到問題看 guides/admin/TROUBLESHOOTING_GUIDE.md
-3. 需要詳細操作看 guides/admin/ADMIN_MANUAL.md
+2. **`GET /api/v1/statistics/posts`** - 文章統計
+   - 分頁查詢、時間範圍篩選、多種排序
 
-### 我是**開發者**，想要開發功能
-1. 先看 guides/developer/DEVELOPER_GUIDE.md
-2. 了解 API 看 guides/developer/API_DOCUMENTATION.md
-3. 理解架構看 domains/shared/DDD_ARCHITECTURE_DESIGN.md
+3. **`GET /api/v1/statistics/sources`** - 來源分布統計
+   - 各來源的文章數量與百分比
 
-### 我想**了解統計功能**
-1. 先看 domains/statistics/STATISTICS_FEATURE_OVERVIEW.md
-2. 詳細規格看 domains/statistics/STATISTICS_FEATURE_SPECIFICATION.md
-3. 操作手冊看 domains/statistics/STATISTICS_OPERATIONS_MANUAL.md
+4. **`GET /api/v1/statistics/users`** - 使用者統計
+   - 使用者活動指標、分頁查詢
 
-### 我想**深入研究某個領域**
-- **認證授權**：domains/auth/
-- **統計分析**：domains/statistics/
-- **快取系統**：domains/shared/ (快取相關文件)
-- **整體架構**：domains/shared/ (架構文件)
+5. **`GET /api/v1/statistics/popular`** - 熱門內容排行
+   - 依瀏覽量排序的熱門文章
 
----
+6. **`GET /api/v1/statistics/charts/views/timeseries`** - 流量時間序列
+   - 瀏覽量趨勢資料（用於繪製圖表）
 
-## 📝 文件貢獻指南
+7. **`GET /api/v1/activity-logs/login-failures`** - 登入失敗統計
+   - 安全監控、失敗帳號列表、時間趨勢
 
-如果你要新增或修改文件，請遵循以下原則：
+### 效能指標
 
-1. **領域文件** (domains/) - 放技術規格、架構設計、領域分析
-2. **使用指南** (guides/) - 放實用教學、操作手冊、快速入門
-3. **歷史文件** (archive/) - 放 TODO、計劃、報告、開發記錄
+- **資料庫優化**：41 個索引，平均查詢時間 < 1ms
+- **快取機制**：TTL 5分鐘，命中率 70-80%
+- **API 回應**：平均 < 500ms
 
-**命名規範**：
-- 使用大寫加底線：MY_DOCUMENT.md
-- 清楚描述內容：STATISTICS_FEATURE_OVERVIEW.md ✅  stats.md ❌
-- 包含文件類型：_GUIDE.md, _SPECIFICATION.md, _MANUAL.md
+詳細說明請參考 [STATISTICS_API_SPEC.md](STATISTICS_API_SPEC.md)。
 
 ---
 
-## 📊 文件統計
+## 🔒 安全功能
 
-- **領域文件**：30+ 份技術規格和架構文件
-- **使用指南**：15+ 份實用教學和操作手冊
-- **歷史文件**：50+ 份開發過程記錄
-- **總計**：95+ 份完整文件
+### 密碼安全
+
+AlleyNote 實作了企業級密碼安全機制：
+
+- ✅ 強制密碼強度驗證（8+ 字元）
+- ✅ 黑名單密碼檢查（10,000+ 常見弱密碼）
+- ✅ 即時密碼強度指示器
+- ✅ 安全密碼生成器
+- ✅ 密碼複雜度評分
+
+### 安全防護
+
+- **JWT Token 認證**：Access Token + Refresh Token 機制
+- **CSRF 防護**：Token 驗證
+- **XSS 防護**：輸入過濾與輸出編碼
+- **SQL 注入防護**：PDO Prepared Statements
+- **HTTP Security Headers**：CSP、X-Frame-Options、HSTS 等
+- **IP 黑白名單**：限制特定 IP 存取
+- **登入失敗記錄**：異常行為偵測
+
+詳細說明請參考 [SECURITY_HEADERS.md](SECURITY_HEADERS.md)。
 
 ---
 
-*最後更新：2025-10-03*
+## 🏗️ 技術架構
+
+### 領域驅動設計（DDD）
+
+AlleyNote 採用 DDD 架構，劃分為三個主要領域：
+
+```
+AlleyNote/
+├── Auth Domain（認證領域）
+│   ├── User（使用者實體）
+│   ├── Role（角色值物件）
+│   ├── Permission（權限值物件）
+│   ├── JwtToken（JWT Token 服務）
+│   └── ActivityLog（活動記錄）
+│
+├── Post Domain（文章領域）
+│   ├── Post（文章實體）
+│   ├── Tag（標籤實體）
+│   ├── Attachment（附件實體）
+│   ├── PostStatus（狀態值物件）
+│   └── PostRepository（文章倉儲）
+│
+└── Statistics Domain（統計領域）
+    ├── Snapshot（統計快照實體）
+    ├── QueryService（查詢服務）
+    ├── CacheService（快取服務）
+    └── ChartData（圖表資料值物件）
+```
+
+### 技術棧
+
+**後端**
+- PHP 8.4.13
+- Slim Framework 4.x
+- SQLite 3.x
+- JWT Authentication
+- PHPUnit 11.x（測試）
+- PHPStan Level 10（靜態分析）
+
+**前端**
+- HTML5 / CSS3 / JavaScript ES6+
+- TinyMCE 7.x（富文本編輯器）
+- Chart.js 4.x（圖表視覺化）
+- Fetch API（HTTP 請求）
+
+---
+
+## 🧪 測試與品質
+
+### 測試統計
+
+```
+✅ 2,225 個測試全部通過
+✅ 9,255 個斷言驗證
+✅ PHPStan Level 10：0 錯誤
+✅ PHP CS Fixer：555 檔案格式化
+```
+
+### 測試類型
+
+| 類型 | 數量 | 覆蓋率 |
+|------|------|--------|
+| 單元測試 | 1,800+ | 95%+ |
+| 整合測試 | 300+ | 90%+ |
+| E2E 測試 | 100+ | 80%+ |
+| 安全測試 | 25+ | 100% |
+
+### 執行測試
+
+```bash
+# 所有測試
+docker compose exec web composer test
+
+# 單元測試
+docker compose exec web ./vendor/bin/phpunit --testsuite Unit
+
+# 整合測試
+docker compose exec web ./vendor/bin/phpunit --testsuite Integration
+
+# 靜態分析
+docker compose exec web composer analyse
+
+# 完整 CI
+docker compose exec web composer ci
+```
+
+---
+
+## 📂 文件結構
+
+```
+docs/
+├── README.md                      # 本文件
+├── STATISTICS_API_SPEC.md         # 統計 API 規格
+├── STATISTICS_PAGE_README.md      # 統計頁面說明
+├── SECURITY_HEADERS.md            # 安全標頭設定
+├── FRONTEND_USER_GUIDE.md         # 前端使用指南
+│
+├── api/                           # API 文件
+│   ├── authentication.md
+│   ├── posts.md
+│   ├── users.md
+│   └── statistics.md
+│
+├── guides/                        # 指南
+│   ├── developer/                 # 開發者指南
+│   ├── deployment/                # 部署指南
+│   └── admin/                     # 管理員指南
+│
+├── domains/                       # 領域文件
+│   ├── auth/                      # 認證領域
+│   ├── post/                      # 文章領域
+│   ├── statistics/                # 統計領域
+│   └── shared/                    # 共享元件
+│
+└── archive/                       # 歷史文件
+    ├── completed/                 # 完成報告
+    ├── implementation/            # 實作文件
+    └── development/               # 開發記錄
+```
+
+---
+
+## 🔗 相關連結
+
+### 專案資源
+
+- **GitHub Repository**: [cookeyholder/AlleyNote](https://github.com/cookeyholder/AlleyNote)
+- **Issues**: [回報問題](https://github.com/cookeyholder/AlleyNote/issues)
+- **Pull Requests**: [貢獻程式碼](https://github.com/cookeyholder/AlleyNote/pulls)
+
+### 外部參考
+
+- **PHP 官方文件**: https://www.php.net/docs.php
+- **Slim Framework**: https://www.slimframework.com/docs/
+- **PHPUnit**: https://phpunit.de/documentation.html
+- **Chart.js**: https://www.chartjs.org/docs/
+
+---
+
+## 🆘 需要幫助？
+
+如果您在使用過程中遇到問題：
+
+1. 📖 **查閱文件**：先檢查相關文件是否有解答
+2. 🔍 **搜尋 Issues**：查看是否有人遇到類似問題
+3. 💬 **提出問題**：開啟新的 Issue 描述您的問題
+4. 🤝 **參與討論**：在 GitHub Discussions 與社群交流
+
+---
+
+## 📝 文件維護
+
+本文件中心由專案維護團隊持續更新。如發現錯誤或需要補充：
+
+1. Fork 專案
+2. 修正或新增文件
+3. 提交 Pull Request
+4. 等待審核與合併
+
+---
+
+**📚 感謝您閱讀 AlleyNote 文件！祝您使用愉快！**
