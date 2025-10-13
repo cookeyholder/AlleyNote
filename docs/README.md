@@ -191,7 +191,7 @@ AlleyNote/
 
 **前端**
 - HTML5 / CSS3 / JavaScript ES6+
-- TinyMCE 7.x（富文本編輯器）
+- CKEditor 5 v41.4.2（富文本編輯器）
 - Chart.js 4.x（圖表視覺化）
 - Fetch API（HTTP 請求）
 
