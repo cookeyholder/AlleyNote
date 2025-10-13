@@ -546,6 +546,14 @@ class StatisticsController extends BaseController
      */
     private function checkStatisticsReadPermission(ServerRequestInterface $request): void
     {
+        // 檢查角色權限
+        $userRole = $request->getAttribute('role', '');
+
+        // super_admin 角色擁有所有權限
+        if ($userRole === 'super_admin') {
+            return;
+        }
+
         $userPermissions = $request->getAttribute('permissions', []);
 
         if (!is_array($userPermissions)) {

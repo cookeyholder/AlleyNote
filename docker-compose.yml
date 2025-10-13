@@ -40,6 +40,7 @@ services:
         volumes:
             - ./frontend:/usr/share/nginx/html
             - ./docker/nginx/frontend-backend.conf:/etc/nginx/conf.d/default.conf
+            - ./docker/nginx/api-security-headers.conf:/etc/nginx/api-security-headers.conf
             # SSL 設定在開發環境中暫時禁用
             # - ./docker/nginx/ssl.conf:/etc/nginx/conf.d/ssl.conf
             - ./ssl-data:/etc/letsencrypt

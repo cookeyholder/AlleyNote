@@ -179,4 +179,18 @@ interface ActivityLogRepositoryInterface
         ?DateTimeInterface $startTime = null,
         ?DateTimeInterface $endTime = null,
     ): int;
+
+    /**
+     * 取得登入失敗統計資料.
+     *
+     * @param DateTimeInterface $startTime 開始時間
+     * @param DateTimeInterface $endTime 結束時間
+     * @param int $limit 限制筆數
+     * @return array{total: int, accounts: array<array{username: string, email: string|null, count: int, latest_attempt: string|null}>, trend: array<array{date: string, count: int}>}
+     */
+    public function getLoginFailureStatistics(
+        DateTimeInterface $startTime,
+        DateTimeInterface $endTime,
+        int $limit = 10,
+    ): array;
 }

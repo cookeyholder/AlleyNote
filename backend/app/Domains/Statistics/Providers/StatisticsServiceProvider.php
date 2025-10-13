@@ -10,6 +10,7 @@ use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\Services\StatisticsConfigService;
@@ -20,6 +21,7 @@ use App\Infrastructure\Statistics\Repositories\UserStatisticsRepository;
 use App\Infrastructure\Statistics\Services\SlowQueryMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsCacheService;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
+use App\Infrastructure\Statistics\Services\StatisticsVisualizationService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
 use App\Shared\Events\SimpleEventDispatcher;
@@ -129,14 +131,19 @@ class StatisticsServiceProvider
                 $cacheService = $container->get(StatisticsCacheServiceInterface::class);
                 /** @var LoggerInterface $logger */
                 $logger = $container->get(LoggerInterface::class);
+                /** @var PDO $db */
+                $db = $container->get(PDO::class);
 
-                return new StatisticsQueryService($statisticsRepository, $cacheService, $logger);
+                return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
             }),
 
             // 配置服務
             StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
                 return new StatisticsConfigService();
             }),
+
+            // 視覺化服務
+            StatisticsVisualizationServiceInterface::class => \DI\autowire(StatisticsVisualizationService::class),
         ];
     }
 }

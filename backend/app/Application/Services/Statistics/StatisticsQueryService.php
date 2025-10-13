@@ -12,7 +12,9 @@ use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
+use PDO;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 
 /**
  * 統計查詢服務.
@@ -31,6 +33,7 @@ final class StatisticsQueryService
         private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly StatisticsCacheServiceInterface $cacheService,
         private readonly LoggerInterface $logger,
+        private readonly PDO $db,
     ) {}
 
     /**
@@ -319,31 +322,258 @@ final class StatisticsQueryService
      */
     private function buildOverviewFromRepository(StatisticsQueryDTO $query): StatisticsOverviewDTO
     {
-        // 這裡實際會調用 Repository 查詢資料庫
-        // 為了演示，先返回模擬資料
+        // 準備日期範圍
+        $startDate = $query->getStartDate()?->format('Y-m-d H:i:s');
+        $endDate = $query->getEndDate()?->format('Y-m-d H:i:s');
+
+        // 如果沒有指定日期範圍，使用最近30天
+        if (!$startDate || !$endDate) {
+            $endDate = new DateTimeImmutable()->format('Y-m-d 23:59:59');
+            $startDate = new DateTimeImmutable('-30 days')->format('Y-m-d 00:00:00');
+        }
+
+        // 查詢總文章數
+        $totalPosts = $this->queryTotalPosts($startDate, $endDate);
+
+        // 查詢活躍使用者數
+        $activeUsers = $this->queryActiveUsers($startDate, $endDate);
+
+        // 查詢新使用者數
+        $newUsers = $this->queryNewUsers($startDate, $endDate);
+
+        // 查詢總瀏覽量
+        $totalViews = $this->queryTotalViews($startDate, $endDate);
+
         return new StatisticsOverviewDTO(
-            totalPosts: 1000,
-            activeUsers: 200,
-            newUsers: 50,
+            totalPosts: $totalPosts,
+            activeUsers: $activeUsers,
+            newUsers: $newUsers,
             postActivity: [
-                'total_posts' => 1000,
-                'published_posts' => 800,
-                'draft_posts' => 200,
+                'total_posts' => $totalPosts,
+                'published_posts' => $this->queryPublishedPosts($startDate, $endDate),
+                'draft_posts' => $this->queryDraftPosts($startDate, $endDate),
             ],
             userActivity: [
-                'total_users' => 200,
-                'active_users' => 150,
-                'new_users' => 50,
+                'total_users' => $this->queryTotalUsers(),
+                'active_users' => $activeUsers,
+                'new_users' => $newUsers,
             ],
             engagementMetrics: [
-                'posts_per_active_user' => 5.0,
-                'user_growth_rate' => 25.0,
+                'posts_per_active_user' => $activeUsers > 0 ? round($totalPosts / $activeUsers, 2) : 0.0,
+                'user_growth_rate' => $this->calculateUserGrowthRate($startDate, $endDate),
             ],
             periodSummary: [
-                'type' => 'monthly',
-                'duration_days' => 31,
+                'type' => $this->determinePeriodType($startDate, $endDate),
+                'duration_days' => $this->calculateDurationDays($startDate, $endDate),
             ],
         );
+    }
+
+    /**
+     * 查詢指定時間範圍內的總文章數.
+     */
+    private function queryTotalPosts(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL';
+        $params = [];
+
+        if ($startDate && $endDate) {
+            $sql .= ' AND created_at BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢已發布文章數.
+     */
+    private function queryPublishedPosts(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL AND status = \'published\'';
+        $params = [];
+
+        if ($startDate && $endDate) {
+            $sql .= ' AND publish_date BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢草稿文章數.
+     */
+    private function queryDraftPosts(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL AND status = \'draft\'';
+        $params = [];
+
+        if ($startDate && $endDate) {
+            $sql .= ' AND created_at BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢活躍使用者數（在時間範圍內有登入或發文行為）.
+     */
+    private function queryActiveUsers(?string $startDate, ?string $endDate): int
+    {
+        if (!$startDate || !$endDate) {
+            // 如果沒有時間範圍，返回所有使用者
+            return $this->queryTotalUsers();
+        }
+
+        $sql = '
+            SELECT COUNT(DISTINCT user_id) 
+            FROM (
+                SELECT user_id FROM user_activity_logs 
+                WHERE occurred_at BETWEEN :start_date AND :end_date
+                    AND user_id IS NOT NULL
+                UNION
+                SELECT user_id FROM posts 
+                WHERE created_at BETWEEN :start_date AND :end_date
+                    AND user_id IS NOT NULL
+            ) AS active_users
+        ';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢新使用者數.
+     */
+    private function queryNewUsers(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM users WHERE 1=1';
+        $params = [];
+
+        if ($startDate && $endDate) {
+            $sql .= ' AND created_at BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢總使用者數.
+     */
+    private function queryTotalUsers(): int
+    {
+        $stmt = $this->db->query('SELECT COUNT(*) FROM users');
+
+        if ($stmt === false) {
+            throw new RuntimeException('查詢總使用者數失敗');
+        }
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢總瀏覽量.
+     */
+    private function queryTotalViews(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COALESCE(SUM(views), 0) FROM posts WHERE deleted_at IS NULL';
+        $params = [];
+
+        if ($startDate && $endDate) {
+            $sql .= ' AND publish_date BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 計算使用者成長率.
+     */
+    private function calculateUserGrowthRate(?string $startDate, ?string $endDate): float
+    {
+        if (!$startDate || !$endDate) {
+            return 0.0;
+        }
+
+        // 計算前一個週期的使用者數
+        $duration = new DateTimeImmutable($endDate)->diff(new DateTimeImmutable($startDate))->days;
+        $previousStart = new DateTimeImmutable($startDate)->modify("-{$duration} days")->format('Y-m-d H:i:s');
+        $previousEnd = $startDate;
+
+        $currentUsers = $this->queryNewUsers($startDate, $endDate);
+        $previousUsers = $this->queryNewUsers($previousStart, $previousEnd);
+
+        if ($previousUsers === 0) {
+            return $currentUsers > 0 ? 100.0 : 0.0;
+        }
+
+        return round((($currentUsers - $previousUsers) / $previousUsers) * 100, 2);
+    }
+
+    /**
+     * 決定週期類型.
+     */
+    private function determinePeriodType(?string $startDate, ?string $endDate): string
+    {
+        if (!$startDate || !$endDate) {
+            return 'custom';
+        }
+
+        $days = $this->calculateDurationDays($startDate, $endDate);
+
+        if ($days <= 1) {
+            return 'daily';
+        } elseif ($days <= 7) {
+            return 'weekly';
+        } elseif ($days <= 31) {
+            return 'monthly';
+        } else {
+            return 'custom';
+        }
+    }
+
+    /**
+     * 計算持續天數.
+     */
+    private function calculateDurationDays(?string $startDate, ?string $endDate): int
+    {
+        if (!$startDate || !$endDate) {
+            return 0;
+        }
+
+        $start = new DateTimeImmutable($startDate);
+        $end = new DateTimeImmutable($endDate);
+
+        return $start->diff($end)->days + 1;
     }
 
     /**
@@ -430,24 +660,42 @@ final class StatisticsQueryService
      */
     private function buildPopularContentFromRepository(StatisticsQueryDTO $query): array
     {
-        // 模擬資料，實際會根據瀏覽數、讚數等排序
-        return [
-            'most_viewed_posts' => [
-                ['id' => 'post-1', 'title' => 'Popular Post 1', 'views' => 5000],
-                ['id' => 'post-2', 'title' => 'Popular Post 2', 'views' => 4500],
-                ['id' => 'post-3', 'title' => 'Popular Post 3', 'views' => 4000],
-            ],
-            'trending_categories' => [
-                ['name' => 'Technology', 'posts' => 150],
-                ['name' => 'Science', 'posts' => 120],
-                ['name' => 'Programming', 'posts' => 100],
-            ],
-            'active_users' => [
-                ['id' => 'user-1', 'name' => 'Active User 1', 'posts' => 25],
-                ['id' => 'user-2', 'name' => 'Active User 2', 'posts' => 20],
-                ['id' => 'user-3', 'name' => 'Active User 3', 'posts' => 18],
-            ],
-        ];
+        $startDate = $query->getStartDate()?->format('Y-m-d H:i:s');
+        $endDate = $query->getEndDate()?->format('Y-m-d H:i:s');
+        $limit = min($query->getLimit(), 50); // 最多50筆
+
+        // 查詢最熱門的文章 (SQLite 使用 strftime 而非 DATE_FORMAT)
+        $sql = '
+            SELECT 
+                p.id,
+                p.title,
+                p.views,
+                strftime(\'%Y-%m-%d\', p.publish_date) as publish_date
+            FROM posts p
+            WHERE p.deleted_at IS NULL 
+                AND p.status = \'published\'
+        ';
+
+        $params = [];
+
+        if ($startDate && $endDate) {
+            $sql .= ' AND p.publish_date BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+
+        $sql .= ' ORDER BY p.views DESC LIMIT :limit';
+
+        $stmt = $this->db->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     /**

@@ -352,6 +352,11 @@ return function (RouterInterface $router): void {
     $activityLogMe->setName('activity_logs.me');
     $activityLogMe->middleware('jwt.auth');
 
+    // 取得登入失敗統計 (GET /api/v1/activity-logs/login-failures)
+    $activityLoginFailures = $router->get('/api/v1/activity-logs/login-failures', [ActivityLogController::class, 'getLoginFailureStats']);
+    $activityLoginFailures->setName('activity_logs.login_failures');
+    $activityLoginFailures->middleware('jwt.auth');
+
     // =========================================
     // 貼文瀏覽記錄 API 路由
     // =========================================

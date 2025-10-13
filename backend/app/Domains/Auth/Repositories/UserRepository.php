@@ -19,16 +19,32 @@ class UserRepository
 
     public function create(array $data): array
     {
-        $sql = 'INSERT INTO users (username, email, password_hash) VALUES (:username, :email, :password)';
+        // 生成 UUID（如果未提供）
+        $uuid = $data['uuid'] ?? $this->generateUuid();
+
+        $sql = 'INSERT INTO users (uuid, username, email, password_hash) VALUES (:uuid, :username, :email, :password)';
         $stmt = $this->db->prepare($sql);
 
         $stmt->execute([
+            'uuid' => $uuid,
             'username' => $data['username'],
             'email' => $data['email'],
             'password' => $data['password'],  // 密碼已在 Service 中雜湊
         ]);
 
         return $this->findById((int) $this->db->lastInsertId());
+    }
+
+    /**
+     * 生成 UUID v4.
+     */
+    private function generateUuid(): string
+    {
+        $data = random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40); // 設定版本為 4
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80); // 設定變體
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
     public function update(string $id, array $data): array
@@ -133,7 +149,8 @@ class UserRepository
         }
 
         // 檢查新密碼是否與目前密碼相同
-        if (password_verify($newPassword, $user['password'])) {
+        $currentPassword = $user['password_hash'] ?? $user['password'] ?? null;
+        if ($currentPassword && password_verify($newPassword, $currentPassword)) {
             throw new InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
 

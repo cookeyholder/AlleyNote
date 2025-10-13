@@ -247,4 +247,55 @@ class ActivityLogController extends BaseController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
+    #[OA\Get(
+        path: '/api/v1/activity-logs/login-failures',
+        operationId: 'getLoginFailureStats',
+        summary: 'Get login failure statistics',
+        tags: ['Activity Log'],
+        parameters: [
+            new OA\Parameter(name: 'start_date', in: 'query', schema: new OA\Schema(type: 'string', format: 'date-time')),
+            new OA\Parameter(name: 'end_date', in: 'query', schema: new OA\Schema(type: 'string', format: 'date-time')),
+            new OA\Parameter(name: 'limit', in: 'query', schema: new OA\Schema(type: 'integer', default: 10)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Login failure statistics retrieved successfully'),
+            new OA\Response(response: 500, description: 'Internal server error'),
+        ],
+    )]
+    public function getLoginFailureStats(Request $request, Response $response): Response
+    {
+        try {
+            $params = $request->getQueryParams();
+            $startDate = isset($params['start_date']) && is_string($params['start_date'])
+                ? new DateTimeImmutable($params['start_date'])
+                : new DateTimeImmutable('-30 days');
+            $endDate = isset($params['end_date']) && is_string($params['end_date'])
+                ? new DateTimeImmutable($params['end_date'])
+                : new DateTimeImmutable();
+            $limitParam = $params['limit'] ?? 10;
+            $limit = is_numeric($limitParam) ? (int) $limitParam : 10;
+
+            // 使用 repository 的方法取得登入失敗統計
+            $stats = $this->repository->getLoginFailureStatistics($startDate, $endDate, $limit);
+
+            $successResponse = json_encode([
+                'success' => true,
+                'data' => $stats,
+                'message' => 'Login failure statistics retrieved successfully',
+            ]);
+            $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $errorResponse = json_encode([
+                'success' => false,
+                'message' => 'Internal server error: ' . $e->getMessage(),
+                'error_code' => 500,
+            ]);
+            $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
+    }
 }

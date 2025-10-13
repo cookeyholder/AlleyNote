@@ -826,8 +826,8 @@ class PostRepository implements PostRepositoryInterface
         $cacheKey = sprintf('posts:source:%s:limit:%d:offset:%d', $creationSource, $limit, $offset);
 
         return $this->cache->remember($cacheKey, function () use ($creationSource, $limit, $offset) {
-            $sql = $this->buildSelectQuery('creation_source = :creation_source')
-                . ' ORDER BY created_at DESC LIMIT :limit OFFSET :offset';
+            $sql = $this->buildSelectQuery('p.creation_source = :creation_source')
+                . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
@@ -891,14 +891,14 @@ class PostRepository implements PostRepositoryInterface
 
         return $this->cache->remember($cacheKey, function () use ($creationSource, $creationSourceDetail, $limit, $offset) {
             if ($creationSourceDetail === null) {
-                $sql = $this->buildSelectQuery('creation_source = :creation_source AND creation_source_detail IS NULL')
-                    . ' ORDER BY created_at DESC LIMIT :limit OFFSET :offset';
+                $sql = $this->buildSelectQuery('p.creation_source = :creation_source AND p.creation_source_detail IS NULL')
+                    . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
                 $params = [
                     'creation_source' => $creationSource,
                 ];
             } else {
-                $sql = $this->buildSelectQuery('creation_source = :creation_source AND creation_source_detail = :creation_source_detail')
-                    . ' ORDER BY created_at DESC LIMIT :limit OFFSET :offset';
+                $sql = $this->buildSelectQuery('p.creation_source = :creation_source AND p.creation_source_detail = :creation_source_detail')
+                    . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
                 $params = [
                     'creation_source' => $creationSource,
                     'creation_source_detail' => $creationSourceDetail,
@@ -958,8 +958,8 @@ class PostRepository implements PostRepositoryInterface
             $total = $this->countByCreationSource($creationSource);
 
             // 取得分頁資料
-            $sql = $this->buildSelectQuery('creation_source = :creation_source')
-                . ' ORDER BY is_pinned DESC, created_at DESC LIMIT :limit OFFSET :offset';
+            $sql = $this->buildSelectQuery('p.creation_source = :creation_source')
+                . ' ORDER BY p.is_pinned DESC, p.created_at DESC LIMIT :limit OFFSET :offset';
 
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
