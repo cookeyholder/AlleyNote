@@ -67,3 +67,4 @@ ssl-data/
 certbot-data/
 
 .DS_Store
+phpstan-errors.json
