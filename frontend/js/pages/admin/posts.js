@@ -8,7 +8,7 @@ import { timezoneUtils } from '../../utils/timezoneUtils.js';
 
 let currentPage = 1;
 let currentFilters = {};
-let currentState = { posts: [] };
+let currentState = { posts: [], batchMode: false, selectedPosts: new Set() };
 
 /**
  * 渲染文章列表頁面
@@ -18,9 +18,35 @@ export async function renderPostsList() {
     <div>
       <div class="flex items-center justify-between mb-8">
         <h1 class="text-3xl font-bold text-modern-900">文章管理</h1>
-        <button id="create-post-btn" class="btn-primary">
-          ✏️ 新增文章
-        </button>
+        <div class="flex gap-2">
+          <button id="batch-delete-btn" class="btn-secondary">
+            📋 批次刪除
+          </button>
+          <button id="create-post-btn" class="btn-primary">
+            ✏️ 新增文章
+          </button>
+        </div>
+      </div>
+      
+      <!-- 批次操作工具列 -->
+      <div id="batch-toolbar" class="card mb-6 hidden">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <span class="text-modern-700 font-medium">
+              已選擇 <span id="selected-count" class="text-accent-600 font-bold">0</span> 篇文章
+            </span>
+            <button id="select-all-btn" class="text-accent-600 hover:underline text-sm">全選</button>
+            <button id="deselect-all-btn" class="text-modern-600 hover:underline text-sm">取消全選</button>
+          </div>
+          <div class="flex gap-2">
+            <button id="confirm-batch-delete-btn" class="btn-danger">
+              🗑️ 刪除選中的文章
+            </button>
+            <button id="cancel-batch-btn" class="btn-secondary">
+              取消
+            </button>
+          </div>
+        </div>
       </div>
       
       <!-- 搜尋與篩選 -->
@@ -63,6 +89,15 @@ export async function renderPostsList() {
   const app = document.getElementById('app');
   renderDashboardLayout(content, { title: '文章管理' });
   bindDashboardLayoutEvents();
+  
+  // 綁定批次刪除按鈕
+  document.getElementById('batch-delete-btn')?.addEventListener('click', toggleBatchMode);
+  
+  // 綁定批次操作按鈕
+  document.getElementById('select-all-btn')?.addEventListener('click', selectAllPosts);
+  document.getElementById('deselect-all-btn')?.addEventListener('click', deselectAllPosts);
+  document.getElementById('confirm-batch-delete-btn')?.addEventListener('click', confirmBatchDelete);
+  document.getElementById('cancel-batch-btn')?.addEventListener('click', cancelBatchMode);
   
   // 綁定新增文章按鈕
   document.getElementById('create-post-btn')?.addEventListener('click', () => {
@@ -155,16 +190,37 @@ async function loadPosts() {
       <table class="w-full">
         <thead class="bg-modern-50">
           <tr>
+            ${currentState.batchMode ? `
+              <th class="px-6 py-3 text-left" style="width: 50px;">
+                <input 
+                  type="checkbox" 
+                  id="select-all-checkbox"
+                  class="w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
+                />
+              </th>
+            ` : ''}
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">標題</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">狀態</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">作者</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">發布時間</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-modern-500 uppercase tracking-wider">操作</th>
+            ${!currentState.batchMode ? `
+              <th class="px-6 py-3 text-right text-xs font-medium text-modern-500 uppercase tracking-wider">操作</th>
+            ` : ''}
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-modern-200">
           ${postsWithFormattedDates.map((post) => `
-            <tr class="hover:bg-modern-50">
+            <tr class="hover:bg-modern-50 ${currentState.selectedPosts.has(post.id) ? 'bg-accent-50' : ''}">
+              ${currentState.batchMode ? `
+                <td class="px-6 py-4">
+                  <input 
+                    type="checkbox" 
+                    class="post-checkbox w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
+                    data-post-id="${post.id}"
+                    ${currentState.selectedPosts.has(post.id) ? 'checked' : ''}
+                  />
+                </td>
+              ` : ''}
               <td class="px-6 py-4">
                 <div class="text-sm font-medium text-modern-900">${post.title}</div>
               </td>
@@ -181,33 +237,35 @@ async function loadPosts() {
               <td class="px-6 py-4 text-sm text-modern-600">
                 ${post.formattedDateTime}
               </td>
-              <td class="px-6 py-4 text-right text-sm">
-                <div class="flex justify-end gap-2">
-                  <button 
-                    class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors"
-                    data-action="edit"
-                    data-post-id="${post.id}"
-                  >
-                    編輯
-                  </button>
-                  <button 
-                    class="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                    data-action="toggle-status"
-                    data-post-id="${post.id}"
-                    data-current-status="${post.status}"
-                  >
-                    ${post.status === 'published' ? '轉草稿' : '發布'}
-                  </button>
-                  <button 
-                    class="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                    data-action="delete"
-                    data-post-id="${post.id}"
-                    data-post-title="${post.title}"
-                  >
-                    刪除
-                  </button>
-                </div>
-              </td>
+              ${!currentState.batchMode ? `
+                <td class="px-6 py-4 text-right text-sm">
+                  <div class="flex justify-end gap-2">
+                    <button 
+                      class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors"
+                      data-action="edit"
+                      data-post-id="${post.id}"
+                    >
+                      編輯
+                    </button>
+                    <button 
+                      class="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      data-action="toggle-status"
+                      data-post-id="${post.id}"
+                      data-current-status="${post.status}"
+                    >
+                      ${post.status === 'published' ? '轉草稿' : '發布'}
+                    </button>
+                    <button 
+                      class="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
+                      data-action="delete"
+                      data-post-id="${post.id}"
+                      data-post-title="${post.title}"
+                    >
+                      刪除
+                    </button>
+                  </div>
+                </td>
+              ` : ''}
             </tr>
           `).join('')}
         </tbody>
@@ -219,6 +277,9 @@ async function loadPosts() {
     
     // 綁定操作按鈕事件
     bindPostActions(container);
+    
+    // 綁定批次選擇事件
+    bindBatchSelection(container);
     
     // Update Navigo to handle new links
     router.updatePageLinks();
@@ -318,6 +379,175 @@ function renderPagination(pagination) {
         >
           下一頁
         </button>
+      </div>
+    `;
+  }
+  
+  return paginationHtml;
+}
+
+/**
+ * 切換批次模式
+ */
+function toggleBatchMode() {
+  currentState.batchMode = !currentState.batchMode;
+  currentState.selectedPosts.clear();
+  
+  const batchToolbar = document.getElementById('batch-toolbar');
+  const batchBtn = document.getElementById('batch-delete-btn');
+  
+  if (currentState.batchMode) {
+    batchToolbar?.classList.remove('hidden');
+    batchBtn.textContent = '📋 取消批次';
+    batchBtn.classList.remove('btn-secondary');
+    batchBtn.classList.add('btn-primary');
+  } else {
+    batchToolbar?.classList.add('hidden');
+    batchBtn.textContent = '📋 批次刪除';
+    batchBtn.classList.remove('btn-primary');
+    batchBtn.classList.add('btn-secondary');
+  }
+  
+  updateSelectedCount();
+  loadPosts(); // 重新渲染表格
+}
+
+/**
+ * 綁定批次選擇事件
+ */
+function bindBatchSelection(container) {
+  if (!currentState.batchMode) return;
+  
+  // 全選checkbox
+  const selectAllCheckbox = document.getElementById('select-all-checkbox');
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        selectAllPosts();
+      } else {
+        deselectAllPosts();
+      }
+    });
+  }
+  
+  // 個別checkbox
+  const checkboxes = container.querySelectorAll('.post-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', (e) => {
+      const postId = parseInt(e.target.dataset.postId);
+      if (e.target.checked) {
+        currentState.selectedPosts.add(postId);
+      } else {
+        currentState.selectedPosts.delete(postId);
+      }
+      updateSelectedCount();
+      updateSelectAllCheckbox();
+    });
+  });
+}
+
+/**
+ * 全選文章
+ */
+function selectAllPosts() {
+  currentState.posts.forEach(post => {
+    currentState.selectedPosts.add(post.id);
+  });
+  updateSelectedCount();
+  loadPosts(); // 重新渲染以更新checkbox狀態
+}
+
+/**
+ * 取消全選
+ */
+function deselectAllPosts() {
+  currentState.selectedPosts.clear();
+  updateSelectedCount();
+  loadPosts(); // 重新渲染以更新checkbox狀態
+}
+
+/**
+ * 更新選中數量顯示
+ */
+function updateSelectedCount() {
+  const countElement = document.getElementById('selected-count');
+  if (countElement) {
+    countElement.textContent = currentState.selectedPosts.size;
+  }
+}
+
+/**
+ * 更新全選checkbox狀態
+ */
+function updateSelectAllCheckbox() {
+  const selectAllCheckbox = document.getElementById('select-all-checkbox');
+  if (selectAllCheckbox && currentState.posts.length > 0) {
+    const allSelected = currentState.posts.every(post => 
+      currentState.selectedPosts.has(post.id)
+    );
+    selectAllCheckbox.checked = allSelected;
+  }
+}
+
+/**
+ * 確認批次刪除
+ */
+async function confirmBatchDelete() {
+  if (currentState.selectedPosts.size === 0) {
+    toast.error('請至少選擇一篇文章');
+    return;
+  }
+  
+  const count = currentState.selectedPosts.size;
+  const confirmed = await confirmDelete(
+    `確定要刪除選中的 ${count} 篇文章嗎？`,
+    '此操作無法復原'
+  );
+  
+  if (!confirmed) return;
+  
+  loading.show(`正在刪除 ${count} 篇文章...`);
+  
+  try {
+    const deletePromises = Array.from(currentState.selectedPosts).map(postId =>
+      apiClient.delete(`/posts/${postId}`)
+    );
+    
+    await Promise.all(deletePromises);
+    
+    loading.hide();
+    toast.success(`成功刪除 ${count} 篇文章`);
+    
+    // 退出批次模式並重新載入
+    currentState.batchMode = false;
+    currentState.selectedPosts.clear();
+    cancelBatchMode();
+    await loadPosts();
+  } catch (error) {
+    loading.hide();
+    toast.error('批次刪除失敗：' + error.message);
+  }
+}
+
+/**
+ * 取消批次模式
+ */
+function cancelBatchMode() {
+  currentState.batchMode = false;
+  currentState.selectedPosts.clear();
+  
+  const batchToolbar = document.getElementById('batch-toolbar');
+  const batchBtn = document.getElementById('batch-delete-btn');
+  
+  batchToolbar?.classList.add('hidden');
+  if (batchBtn) {
+    batchBtn.textContent = '📋 批次刪除';
+    batchBtn.classList.remove('btn-primary');
+    batchBtn.classList.add('btn-secondary');
+  }
+  
+  loadPosts(); // 重新渲染表格
+}
       </div>
     </div>
   `;
