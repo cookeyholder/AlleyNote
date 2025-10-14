@@ -29,6 +29,7 @@
 
 | 文件 | 說明 |
 |------|------|
+| [PASSWORD_SECURITY.md](PASSWORD_SECURITY.md) | 密碼安全功能完整文件 |
 | [SECURITY_HEADERS.md](SECURITY_HEADERS.md) | HTTP 安全標頭設定 |
 
 #### 使用者介面
