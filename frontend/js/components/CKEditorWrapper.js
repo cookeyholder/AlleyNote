@@ -21,23 +21,45 @@ export async function initCKEditor(elementId, initialContent = '') {
         items: [
           'heading',
           '|',
+          'fontSize',
+          'fontFamily',
+          'fontColor',
+          'fontBackgroundColor',
+          '|',
           'bold',
           'italic',
+          'underline',
+          'strikethrough',
+          'subscript',
+          'superscript',
+          'code',
+          '|',
+          'alignment',
+          '|',
           'link',
           'bulletedList',
           'numberedList',
+          'todoList',
           '|',
           'outdent',
           'indent',
           '|',
-          'imageUpload',
           'blockQuote',
           'insertTable',
           'mediaEmbed',
+          'codeBlock',
+          '|',
+          'horizontalLine',
+          'specialCharacters',
+          '|',
+          'removeFormat',
+          '|',
+          'sourceEditing',
           '|',
           'undo',
           'redo'
-        ]
+        ],
+        shouldNotGroupWhenFull: true
       },
       language: 'zh',
       heading: {
@@ -45,8 +67,46 @@ export async function initCKEditor(elementId, initialContent = '') {
           { model: 'paragraph', title: '段落', class: 'ck-heading_paragraph' },
           { model: 'heading1', view: 'h1', title: '標題 1', class: 'ck-heading_heading1' },
           { model: 'heading2', view: 'h2', title: '標題 2', class: 'ck-heading_heading2' },
-          { model: 'heading3', view: 'h3', title: '標題 3', class: 'ck-heading_heading3' }
+          { model: 'heading3', view: 'h3', title: '標題 3', class: 'ck-heading_heading3' },
+          { model: 'heading4', view: 'h4', title: '標題 4', class: 'ck-heading_heading4' },
+          { model: 'heading5', view: 'h5', title: '標題 5', class: 'ck-heading_heading5' },
+          { model: 'heading6', view: 'h6', title: '標題 6', class: 'ck-heading_heading6' }
         ]
+      },
+      fontSize: {
+        options: [
+          'tiny',
+          'small',
+          'default',
+          'big',
+          'huge'
+        ],
+        supportAllValues: true
+      },
+      fontFamily: {
+        options: [
+          'default',
+          'Arial, Helvetica, sans-serif',
+          'Courier New, Courier, monospace',
+          'Georgia, serif',
+          'Lucida Sans Unicode, Lucida Grande, sans-serif',
+          'Tahoma, Geneva, sans-serif',
+          'Times New Roman, Times, serif',
+          'Trebuchet MS, Helvetica, sans-serif',
+          'Verdana, Geneva, sans-serif',
+          '微軟正黑體, Microsoft JhengHei, sans-serif',
+          '新細明體, PMingLiU, serif',
+          '標楷體, DFKai-SB, serif'
+        ],
+        supportAllValues: true
+      },
+      fontColor: {
+        columns: 5,
+        documentColors: 10
+      },
+      fontBackgroundColor: {
+        columns: 5,
+        documentColors: 10
       },
       link: {
         decorators: {
@@ -58,10 +118,45 @@ export async function initCKEditor(elementId, initialContent = '') {
               rel: 'noopener noreferrer'
             }
           }
-        }
+        },
+        addTargetToExternalLinks: true
       },
       table: {
-        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+        contentToolbar: [
+          'tableColumn',
+          'tableRow',
+          'mergeTableCells',
+          'tableProperties',
+          'tableCellProperties'
+        ]
+      },
+      htmlSupport: {
+        allow: [
+          {
+            name: /.*/,
+            attributes: true,
+            classes: true,
+            styles: true
+          }
+        ]
+      },
+      codeBlock: {
+        languages: [
+          { language: 'plaintext', label: 'Plain text' },
+          { language: 'c', label: 'C' },
+          { language: 'cs', label: 'C#' },
+          { language: 'cpp', label: 'C++' },
+          { language: 'css', label: 'CSS' },
+          { language: 'diff', label: 'Diff' },
+          { language: 'html', label: 'HTML' },
+          { language: 'java', label: 'Java' },
+          { language: 'javascript', label: 'JavaScript' },
+          { language: 'php', label: 'PHP' },
+          { language: 'python', label: 'Python' },
+          { language: 'ruby', label: 'Ruby' },
+          { language: 'typescript', label: 'TypeScript' },
+          { language: 'xml', label: 'XML' }
+        ]
       }
     });
 
