@@ -56,169 +56,112 @@ export default class StatisticsPage {
   }
 
   async loadOverviewFromAPI() {
-    try {
-      // 計算時間範圍
-      const endDate = new Date();
-      const startDate = new Date();
-      
-      if (this.timeRange === 'day') {
-        startDate.setDate(startDate.getDate() - 1);
-      } else if (this.timeRange === 'week') {
-        startDate.setDate(startDate.getDate() - 7);
-      } else {
-        startDate.setDate(startDate.getDate() - 30);
-      }
-
-      const params = new URLSearchParams({
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0]
-      });
-
-      const response = await apiClient.get(`/statistics/overview?${params}`);
-      
-      if (response.success && response.data) {
-        return response.data;
-      }
-      
-      // 如果 API 失敗，返回模擬資料
-      return {
-        total_posts: 30,
-        active_users: 15,
-        new_users: 5,
-        total_views: 1250
-      };
-    } catch (error) {
-      console.error('載入概覽統計失敗:', error);
-      // 返回模擬資料
-      return {
-        total_posts: 30,
-        active_users: 15,
-        new_users: 5,
-        total_views: 1250
-      };
+    // 計算時間範圍
+    const endDate = new Date();
+    const startDate = new Date();
+    
+    if (this.timeRange === 'day') {
+      startDate.setDate(startDate.getDate() - 1);
+    } else if (this.timeRange === 'week') {
+      startDate.setDate(startDate.getDate() - 7);
+    } else {
+      startDate.setDate(startDate.getDate() - 30);
     }
+
+    const params = new URLSearchParams({
+      start_date: startDate.toISOString().split('T')[0],
+      end_date: endDate.toISOString().split('T')[0]
+    });
+
+    const response = await apiClient.get(`/statistics/overview?${params}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    // 如果 API 回傳失敗，拋出錯誤
+    throw new Error(response.error || '無法載入概覽統計');
   }
 
   async loadPopularPosts() {
-    try {
-      // 計算時間範圍
-      const endDate = new Date();
-      const startDate = new Date();
-      
-      if (this.timeRange === 'day') {
-        startDate.setDate(startDate.getDate() - 1);
-      } else if (this.timeRange === 'week') {
-        startDate.setDate(startDate.getDate() - 7);
-      } else {
-        startDate.setDate(startDate.getDate() - 30);
-      }
-
-      const params = new URLSearchParams({
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0],
-        limit: '10'
-      });
-
-      const response = await apiClient.get(`/statistics/popular?${params}`);
-      
-      if (response.success && Array.isArray(response.data)) {
-        return response.data;
-      }
-      
-      return [];
-    } catch (error) {
-      console.error('載入熱門文章失敗:', error);
-      return [];
+    // 計算時間範圍
+    const endDate = new Date();
+    const startDate = new Date();
+    
+    if (this.timeRange === 'day') {
+      startDate.setDate(startDate.getDate() - 1);
+    } else if (this.timeRange === 'week') {
+      startDate.setDate(startDate.getDate() - 7);
+    } else {
+      startDate.setDate(startDate.getDate() - 30);
     }
+
+    const params = new URLSearchParams({
+      start_date: startDate.toISOString().split('T')[0],
+      end_date: endDate.toISOString().split('T')[0],
+      limit: '10'
+    });
+
+    const response = await apiClient.get(`/statistics/popular?${params}`);
+    
+    if (response.success && Array.isArray(response.data)) {
+      return response.data;
+    }
+    
+    // 如果沒有資料，返回空陣列
+    return [];
   }
 
   async loadLoginFailures() {
-    try {
-      // 計算時間範圍
-      const endDate = new Date();
-      const startDate = new Date();
-      
-      if (this.timeRange === 'day') {
-        startDate.setDate(startDate.getDate() - 1);
-      } else if (this.timeRange === 'week') {
-        startDate.setDate(startDate.getDate() - 7);
-      } else {
-        startDate.setDate(startDate.getDate() - 30);
-      }
-
-      const params = new URLSearchParams({
-        start_date: startDate.toISOString(),
-        end_date: endDate.toISOString(),
-        limit: '10'
-      });
-
-      const response = await apiClient.get(`/v1/activity-logs/login-failures?${params}`);
-      
-      if (response.success && response.data) {
-        return response.data;
-      }
-      
-      return { total: 0, accounts: [], trend: [] };
-    } catch (error) {
-      console.error('載入登入失敗統計失敗:', error);
-      return { total: 0, accounts: [], trend: [] };
+    // 計算時間範圍
+    const endDate = new Date();
+    const startDate = new Date();
+    
+    if (this.timeRange === 'day') {
+      startDate.setDate(startDate.getDate() - 1);
+    } else if (this.timeRange === 'week') {
+      startDate.setDate(startDate.getDate() - 7);
+    } else {
+      startDate.setDate(startDate.getDate() - 30);
     }
+
+    const params = new URLSearchParams({
+      start_date: startDate.toISOString(),
+      end_date: endDate.toISOString(),
+      limit: '10'
+    });
+
+    const response = await apiClient.get(`/v1/activity-logs/login-failures?${params}`);
+    
+    if (response.success && response.data) {
+      return response.data;
+    }
+    
+    // 如果沒有資料，返回空結果
+    return { total: 0, accounts: [], trend: [] };
   }
 
   async loadTrafficData() {
-    try {
-      // 計算時間範圍
-      const endDate = new Date();
-      const startDate = new Date();
-      const days = this.timeRange === 'day' ? 1 : this.timeRange === 'week' ? 7 : 30;
-      
-      startDate.setDate(startDate.getDate() - days);
+    // 計算時間範圍
+    const endDate = new Date();
+    const startDate = new Date();
+    const days = this.timeRange === 'day' ? 1 : this.timeRange === 'week' ? 7 : 30;
+    
+    startDate.setDate(startDate.getDate() - days);
 
-      const params = new URLSearchParams({
-        start_date: startDate.toISOString().split('T')[0],
-        end_date: endDate.toISOString().split('T')[0]
-      });
+    const params = new URLSearchParams({
+      start_date: startDate.toISOString().split('T')[0],
+      end_date: endDate.toISOString().split('T')[0]
+    });
 
-      const response = await apiClient.get(`/statistics/charts/views/timeseries?${params}`);
-      
-      if (response.success && Array.isArray(response.data)) {
-        return response.data;
-      }
-      
-      // 如果 API 失敗,使用模擬資料
-      const data = [];
-      const now = new Date();
-      
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-        data.push({
-          date: date.toISOString().split('T')[0],
-          views: Math.floor(Math.random() * 1000) + 500,
-          visitors: Math.floor(Math.random() * 300) + 200
-        });
-      }
-      
-      return data;
-    } catch (error) {
-      console.error('載入流量資料失敗:', error);
-      // 返回模擬資料
-      const days = this.timeRange === 'day' ? 1 : this.timeRange === 'week' ? 7 : 30;
-      const data = [];
-      const now = new Date();
-      
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-        data.push({
-          date: date.toISOString().split('T')[0],
-          views: Math.floor(Math.random() * 1000) + 500,
-          visitors: Math.floor(Math.random() * 300) + 200
-        });
-      }
-      
-      return data;
+    const response = await apiClient.get(`/statistics/charts/views/timeseries?${params}`);
+    
+    if (response.success && Array.isArray(response.data)) {
+      return response.data;
     }
+    
+    // 如果沒有資料，返回空陣列
+    return [];
   }
 
   bindEvents() {
@@ -238,12 +181,45 @@ export default class StatisticsPage {
       });
     });
 
-    // 刷新按鈕
+    // 刷新按鈕 - 呼叫後端刷新 API
     const refreshBtn = document.getElementById('refresh-stats-btn');
     if (refreshBtn) {
       refreshBtn.addEventListener('click', async () => {
-        await this.loadStatistics();
-        toast.success('統計資料已更新');
+        try {
+          // 顯示載入中
+          refreshBtn.disabled = true;
+          refreshBtn.innerHTML = `
+            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            刷新中...
+          `;
+
+          // 呼叫後端刷新 API
+          const response = await apiClient.post('/admin/statistics/refresh', {
+            force_recalculate: true
+          });
+
+          if (response.success) {
+            // 重新載入統計資料
+            await this.loadStatistics();
+            toast.success('統計資料已刷新');
+          } else {
+            toast.error(response.error || '刷新統計資料失敗');
+          }
+        } catch (error) {
+          console.error('刷新統計失敗:', error);
+          toast.error('刷新統計資料失敗：' + (error.message || '未知錯誤'));
+        } finally {
+          // 恢復按鈕狀態
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            刷新
+          `;
+        }
       });
     }
   }
