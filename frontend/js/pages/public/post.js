@@ -1,4 +1,4 @@
-import { postsAPI } from '../../api/modules/posts.js';
+import { postsAPI } from '../../api/modules/posts.js?v=20251014';
 import { router } from '../../utils/router.js';
 import { toast } from '../../utils/toast.js';
 import { loading } from '../../components/Loading.js';

@@ -62,27 +62,6 @@ export async function renderHome() {
           </p>
         </div>
         
-        <!-- 特色卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 animate-slide-up">
-          <div class="card card-hover text-center">
-            <div class="text-4xl mb-4">🚀</div>
-            <h3 class="text-xl font-semibold mb-2">現代化技術</h3>
-            <p class="text-modern-600">Vite + Tailwind CSS + JavaScript</p>
-          </div>
-          
-          <div class="card card-hover text-center">
-            <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="text-xl font-semibold mb-2">安全可靠</h3>
-            <p class="text-modern-600">JWT 認證 + XSS/CSRF 防護</p>
-          </div>
-          
-          <div class="card card-hover text-center">
-            <div class="text-4xl mb-4">⚡</div>
-            <h3 class="text-xl font-semibold mb-2">高效能</h3>
-            <p class="text-modern-600">快速載入 + 響應式設計</p>
-          </div>
-        </div>
-        
         <!-- 搜尋列 (手機版) -->
         <div class="mb-6 md:hidden">
           <div class="relative">
@@ -114,6 +93,27 @@ export async function renderHome() {
         
         <!-- 分頁 -->
         <div id="pagination-container" class="mt-8"></div>
+        
+        <!-- 特色卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 animate-slide-up">
+          <div class="card card-hover text-center">
+            <div class="text-4xl mb-4">🚀</div>
+            <h3 class="text-xl font-semibold mb-2">現代化技術</h3>
+            <p class="text-modern-600">Vite + Tailwind CSS + JavaScript</p>
+          </div>
+          
+          <div class="card card-hover text-center">
+            <div class="text-4xl mb-4">🛡️</div>
+            <h3 class="text-xl font-semibold mb-2">安全可靠</h3>
+            <p class="text-modern-600">JWT 認證 + XSS/CSRF 防護</p>
+          </div>
+          
+          <div class="card card-hover text-center">
+            <div class="text-4xl mb-4">⚡</div>
+            <h3 class="text-xl font-semibold mb-2">高效能</h3>
+            <p class="text-modern-600">快速載入 + 響應式設計</p>
+          </div>
+        </div>
       </main>
       
       <!-- 頁腳 -->
