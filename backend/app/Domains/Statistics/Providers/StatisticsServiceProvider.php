@@ -9,6 +9,7 @@ use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
@@ -136,6 +137,9 @@ class StatisticsServiceProvider
 
                 return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
             }),
+
+            // 綁定介面到實作
+            StatisticsQueryServiceInterface::class => \DI\get(StatisticsQueryService::class),
 
             // 配置服務
             StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
