@@ -433,10 +433,20 @@ function bindBatchSelection(container) {
   checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', (e) => {
       const postId = parseInt(e.target.dataset.postId);
+      const row = e.target.closest('tr');
+      
       if (e.target.checked) {
         currentState.selectedPosts.add(postId);
+        // 添加高亮樣式
+        if (row && !row.classList.contains('bg-accent-50')) {
+          row.classList.add('bg-accent-50');
+        }
       } else {
         currentState.selectedPosts.delete(postId);
+        // 移除高亮樣式
+        if (row) {
+          row.classList.remove('bg-accent-50');
+        }
       }
       updateSelectedCount();
       updateSelectAllCheckbox();
