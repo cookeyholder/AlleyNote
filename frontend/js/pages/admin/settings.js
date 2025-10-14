@@ -158,6 +158,21 @@ export async function renderSettings() {
             </p>
           </div>
           
+          <div>
+            <label class="block text-sm font-medium text-modern-700 mb-2">
+              單篇文章附件數量上限
+            </label>
+            <input
+              type="number"
+              id="max-attachments-per-post"
+              value=""
+              min="1"
+              max="50"
+              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+            <p class="text-sm text-modern-500 mt-1">建議範圍：1-50 個附件</p>
+          </div>
+          
           <div class="bg-info-50 border border-info-200 rounded-lg p-4">
             <div class="flex items-start gap-2">
               <svg class="w-5 h-5 text-info-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +180,7 @@ export async function renderSettings() {
               </svg>
               <div class="text-sm text-info-800">
                 <p class="font-medium mb-1">安全提示</p>
-                <p>建議只允許必要的檔案類型，以降低安全風險。可執行檔案（如 .exe、.bat）已被系統禁止。</p>
+                <p>建議只允許必要的檔案類型，以降低安全風險。可執行檔案（如 .exe、.bat）已被系統禁止。檔案內容會使用 magic numbers 驗證，無法透過修改副檔名繞過檢查。</p>
               </div>
             </div>
           </div>
@@ -231,6 +246,7 @@ async function loadSettings() {
     const enableCommentsInput = document.getElementById('enable-comments');
     const enableRegistrationInput = document.getElementById('enable-registration');
     const maxUploadSizeInput = document.getElementById('max-upload-size');
+    const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
     
     if (siteNameInput) siteNameInput.value = settings.site_name || 'AlleyNote';
     if (siteDescInput) siteDescInput.value = settings.site_description || '';
@@ -243,6 +259,11 @@ async function loadSettings() {
       const sizeInBytes = parseInt(settings.max_upload_size || '10485760');
       const sizeInMB = Math.floor(sizeInBytes / 1048576);
       maxUploadSizeInput.value = sizeInMB.toString();
+    }
+    
+    // 單篇文章附件數量上限
+    if (maxAttachmentsInput) {
+      maxAttachmentsInput.value = settings.max_attachments_per_post || '10';
     }
     
     // 載入檔案類型設定
@@ -265,23 +286,43 @@ async function loadFileTypesSettings(allowedTypes) {
   
   // 所有可能的檔案類型（根據 API 文檔）
   const allFileTypes = [
+    // 圖片
     { value: 'jpg', label: 'JPG 圖片', category: '圖片' },
     { value: 'jpeg', label: 'JPEG 圖片', category: '圖片' },
     { value: 'png', label: 'PNG 圖片', category: '圖片' },
     { value: 'gif', label: 'GIF 動圖', category: '圖片' },
     { value: 'webp', label: 'WebP 圖片', category: '圖片' },
     { value: 'svg', label: 'SVG 向量圖', category: '圖片' },
+    
+    // PDF
     { value: 'pdf', label: 'PDF 文件', category: '文件' },
-    { value: 'doc', label: 'Word 文件 (.doc)', category: '文件' },
-    { value: 'docx', label: 'Word 文件 (.docx)', category: '文件' },
-    { value: 'xls', label: 'Excel 試算表 (.xls)', category: '文件' },
-    { value: 'xlsx', label: 'Excel 試算表 (.xlsx)', category: '文件' },
-    { value: 'ppt', label: 'PowerPoint 簡報 (.ppt)', category: '文件' },
-    { value: 'pptx', label: 'PowerPoint 簡報 (.pptx)', category: '文件' },
+    
+    // Microsoft Office
+    { value: 'doc', label: 'Word (.doc)', category: 'Microsoft Office' },
+    { value: 'docx', label: 'Word (.docx)', category: 'Microsoft Office' },
+    { value: 'xls', label: 'Excel (.xls)', category: 'Microsoft Office' },
+    { value: 'xlsx', label: 'Excel (.xlsx)', category: 'Microsoft Office' },
+    { value: 'ppt', label: 'PowerPoint (.ppt)', category: 'Microsoft Office' },
+    { value: 'pptx', label: 'PowerPoint (.pptx)', category: 'Microsoft Office' },
+    
+    // LibreOffice
+    { value: 'odt', label: 'Writer 文件 (.odt)', category: 'LibreOffice' },
+    { value: 'ott', label: 'Writer 範本 (.ott)', category: 'LibreOffice' },
+    { value: 'ods', label: 'Calc 試算表 (.ods)', category: 'LibreOffice' },
+    { value: 'ots', label: 'Calc 範本 (.ots)', category: 'LibreOffice' },
+    { value: 'odp', label: 'Impress 簡報 (.odp)', category: 'LibreOffice' },
+    { value: 'otp', label: 'Impress 範本 (.otp)', category: 'LibreOffice' },
+    { value: 'odg', label: 'Draw 繪圖 (.odg)', category: 'LibreOffice' },
+    
+    // 純文字
     { value: 'txt', label: '純文字檔', category: '文件' },
+    
+    // 壓縮檔
     { value: 'zip', label: 'ZIP 壓縮檔', category: '壓縮檔' },
     { value: 'rar', label: 'RAR 壓縮檔', category: '壓縮檔' },
     { value: '7z', label: '7Z 壓縮檔', category: '壓縮檔' },
+    
+    // 媒體
     { value: 'mp3', label: 'MP3 音訊', category: '媒體' },
     { value: 'mp4', label: 'MP4 影片', category: '媒體' },
     { value: 'avi', label: 'AVI 影片', category: '媒體' },
@@ -419,6 +460,7 @@ function resetSettings() {
   const enableCommentsInput = document.getElementById('enable-comments');
   const enableRegistrationInput = document.getElementById('enable-registration');
   const maxUploadSizeInput = document.getElementById('max-upload-size');
+  const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
   const timezoneSelect = document.getElementById('site-timezone');
   
   if (siteNameInput) siteNameInput.value = originalSettings.site_name || 'AlleyNote';
@@ -430,6 +472,10 @@ function resetSettings() {
   if (maxUploadSizeInput) {
     const sizeInMB = Math.floor((parseInt(originalSettings.max_upload_size || '10485760')) / 1048576);
     maxUploadSizeInput.value = sizeInMB.toString();
+  }
+  
+  if (maxAttachmentsInput) {
+    maxAttachmentsInput.value = originalSettings.max_attachments_per_post || '10';
   }
   
   if (timezoneSelect && originalSettings.site_timezone) {
@@ -459,6 +505,7 @@ async function saveSettings() {
     const enableCommentsInput = document.getElementById('enable-comments');
     const enableRegistrationInput = document.getElementById('enable-registration');
     const maxUploadSizeInput = document.getElementById('max-upload-size');
+    const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
     const timezoneSelect = document.getElementById('site-timezone');
     
     // 收集設定
@@ -475,6 +522,11 @@ async function saveSettings() {
     if (maxUploadSizeInput?.value) {
       const sizeInBytes = parseInt(maxUploadSizeInput.value) * 1048576;
       settings.max_upload_size = sizeInBytes.toString();
+    }
+    
+    // 單篇文章附件數量上限
+    if (maxAttachmentsInput?.value) {
+      settings.max_attachments_per_post = maxAttachmentsInput.value;
     }
     
     // 收集檔案類型設定

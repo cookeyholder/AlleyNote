@@ -182,7 +182,40 @@ class TimezoneHelper
     }
 
     /**
-     * 獲取常用時區列表.
+     * 獲取所有時區列表（全球 419 個時區）.
+     *
+     * @return array<string, string> 時區 ID => 顯示名稱的陣列
+     */
+    public static function getAllTimezones(): array
+    {
+        $timezones = timezone_identifiers_list();
+        $result = [];
+
+        foreach ($timezones as $timezone) {
+            try {
+                $tz = new DateTimeZone($timezone);
+                $dt = new DateTimeImmutable('now', $tz);
+                $offset = $tz->getOffset($dt);
+
+                $hours = intdiv($offset, 3600);
+                $minutes = abs(intdiv($offset % 3600, 60));
+                $offsetString = sprintf('UTC%+03d:%02d', $hours, $minutes);
+
+                // 格式化顯示名稱
+                $result[$timezone] = "{$timezone} ({$offsetString})";
+            } catch (Exception $e) {
+                // 如果無法取得時區資訊，使用簡單格式
+                $result[$timezone] = $timezone;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * 獲取常用時區列表（向後相容）.
+     *
+     * @deprecated 使用 getAllTimezones() 取得完整時區列表
      */
     public static function getCommonTimezones(): array
     {

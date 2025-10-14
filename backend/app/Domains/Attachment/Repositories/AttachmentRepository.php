@@ -108,6 +108,31 @@ class AttachmentRepository
         });
     }
 
+    /**
+     * 計算指定文章的附件數量.
+     */
+    public function countByPostId(int $postId): int
+    {
+        $sql = '
+            SELECT COUNT(*) as count
+            FROM attachments
+            WHERE post_id = :post_id
+            AND deleted_at IS NULL
+        ';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['post_id' => $postId]);
+
+        /** @var array<string, mixed>|false $result */
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($result) && isset($result['count']) && is_numeric($result['count'])) {
+            return (int) $result['count'];
+        }
+
+        return 0;
+    }
+
     public function delete(int $id): bool
     {
         $sql = '

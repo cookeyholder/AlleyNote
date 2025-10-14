@@ -121,6 +121,12 @@ class AttachmentServiceTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        // 模擬附件數量檢查
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0); // 目前沒有附件
+
         // 模擬檔案上傳
         $file->shouldReceive('moveTo')
             ->andReturnUsing(function ($path) {
@@ -179,6 +185,12 @@ class AttachmentServiceTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        // 模擬附件數量檢查
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
+
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
@@ -214,6 +226,12 @@ class AttachmentServiceTest extends TestCase
             ->once()
             ->with($postId)
             ->andReturn($post);
+
+        // 模擬附件數量檢查
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
 
         // 預期會拋出例外
         $this->expectException(ValidationException::class);

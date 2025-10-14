@@ -393,7 +393,7 @@ class SettingController
         $timezone = TimezoneHelper::getSiteTimezone();
         $offset = TimezoneHelper::getTimezoneOffset();
         $currentTime = TimezoneHelper::nowSiteTimezone();
-        $commonTimezones = TimezoneHelper::getCommonTimezones();
+        $allTimezones = TimezoneHelper::getAllTimezones(); // 使用全球所有時區
 
         $responseData = json_encode([
             'success' => true,
@@ -401,7 +401,7 @@ class SettingController
                 'timezone' => $timezone,
                 'offset' => $offset,
                 'current_time' => $currentTime,
-                'common_timezones' => $commonTimezones,
+                'common_timezones' => $allTimezones, // 返回全部 419 個時區
             ],
         ]);
 
