@@ -8,7 +8,9 @@ let currentPage = 1;
 let currentSearch = '';
 let siteSettings = {
   site_name: 'AlleyNote',
-  site_description: '基於 DDD 架構的企業級應用程式'
+  site_description: '基於 DDD 架構的企業級應用程式',
+  footer_copyright: '© 2024 AlleyNote. All rights reserved.',
+  footer_description: '基於 Domain-Driven Design 的企業級公布欄系統'
 };
 
 /**
@@ -121,10 +123,10 @@ export async function renderHome() {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div class="text-center">
             <p class="text-modern-600 mb-2">
-              © 2024 AlleyNote. All rights reserved.
+              ${siteSettings.footer_copyright}
             </p>
             <p class="text-sm text-modern-500">
-              基於 Domain-Driven Design 的企業級公布欄系統
+              ${siteSettings.footer_description}
             </p>
           </div>
         </div>
@@ -395,6 +397,8 @@ async function loadSiteSettings() {
     
     siteSettings.site_name = extractValue(settingsData.site_name) || 'AlleyNote';
     siteSettings.site_description = extractValue(settingsData.site_description) || '基於 DDD 架構的企業級應用程式';
+    siteSettings.footer_copyright = extractValue(settingsData.footer_copyright) || '© 2024 AlleyNote. All rights reserved.';
+    siteSettings.footer_description = extractValue(settingsData.footer_description) || '基於 Domain-Driven Design 的企業級公布欄系統';
   } catch (error) {
     console.error('載入網站設定失敗:', error);
     // 使用預設值

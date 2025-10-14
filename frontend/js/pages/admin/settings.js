@@ -187,6 +187,40 @@ export async function renderSettings() {
         </div>
       </div>
       
+      <!-- 頁腳設定 -->
+      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
+        <h2 class="text-xl font-semibold text-modern-900 mb-4">頁腳設定</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-modern-700 mb-2">
+              版權文字
+            </label>
+            <input
+              type="text"
+              id="footer-copyright"
+              value=""
+              placeholder="© 2024 AlleyNote. All rights reserved."
+              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+            <p class="text-sm text-modern-500 mt-1">顯示在頁腳的版權聲明</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-modern-700 mb-2">
+              頁腳描述
+            </label>
+            <input
+              type="text"
+              id="footer-description"
+              value=""
+              placeholder="基於 Domain-Driven Design 的企業級公布欄系統"
+              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+            />
+            <p class="text-sm text-modern-500 mt-1">顯示在頁腳的網站描述</p>
+          </div>
+        </div>
+      </div>
+      
       <!-- 儲存按鈕 -->
       <div class="flex justify-end gap-4">
         <button
@@ -247,12 +281,18 @@ async function loadSettings() {
     const enableRegistrationInput = document.getElementById('enable-registration');
     const maxUploadSizeInput = document.getElementById('max-upload-size');
     const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
+    const footerCopyrightInput = document.getElementById('footer-copyright');
+    const footerDescriptionInput = document.getElementById('footer-description');
     
     if (siteNameInput) siteNameInput.value = settings.site_name || 'AlleyNote';
     if (siteDescInput) siteDescInput.value = settings.site_description || '';
     if (postsPerPageInput) postsPerPageInput.value = settings.posts_per_page || '20';
     if (enableCommentsInput) enableCommentsInput.checked = settings.enable_comments === true || settings.enable_comments === 1;
     if (enableRegistrationInput) enableRegistrationInput.checked = settings.enable_registration === true || settings.enable_registration === 1;
+    
+    // Footer 設定
+    if (footerCopyrightInput) footerCopyrightInput.value = settings.footer_copyright || '© 2024 AlleyNote. All rights reserved.';
+    if (footerDescriptionInput) footerDescriptionInput.value = settings.footer_description || '基於 Domain-Driven Design 的企業級公布欄系統';
     
     // 最大上傳檔案大小（轉換為 MB）
     if (maxUploadSizeInput) {
@@ -507,6 +547,8 @@ async function saveSettings() {
     const maxUploadSizeInput = document.getElementById('max-upload-size');
     const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
     const timezoneSelect = document.getElementById('site-timezone');
+    const footerCopyrightInput = document.getElementById('footer-copyright');
+    const footerDescriptionInput = document.getElementById('footer-description');
     
     // 收集設定
     const settings = {};
@@ -517,6 +559,10 @@ async function saveSettings() {
     if (enableCommentsInput !== null) settings.enable_comments = enableCommentsInput.checked ? '1' : '0';
     if (enableRegistrationInput !== null) settings.enable_registration = enableRegistrationInput.checked ? '1' : '0';
     if (timezoneSelect?.value) settings.site_timezone = timezoneSelect.value;
+    
+    // Footer 設定
+    if (footerCopyrightInput?.value !== undefined) settings.footer_copyright = footerCopyrightInput.value;
+    if (footerDescriptionInput?.value !== undefined) settings.footer_description = footerDescriptionInput.value;
     
     // 最大上傳檔案大小（轉換為 bytes）
     if (maxUploadSizeInput?.value) {
