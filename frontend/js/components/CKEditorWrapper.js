@@ -11,50 +11,55 @@
  */
 export async function initCKEditor(elementId, initialContent = '') {
   // 等待 CKEditor 載入
-  if (typeof ClassicEditor === 'undefined') {
+  const { 
+    ClassicEditor, 
+    Essentials,
+    Bold,
+    Italic,
+    Link,
+    List,
+    Paragraph,
+    Heading,
+    BlockQuote,
+    Table,
+    Indent,
+    Undo
+  } = window.CKEDITOR;
+  
+  if (!ClassicEditor) {
     throw new Error('CKEditor 尚未載入');
   }
 
   try {
     const editor = await ClassicEditor.create(document.getElementById(elementId), {
+      plugins: [
+        Essentials,
+        Bold,
+        Italic,
+        Link,
+        List,
+        Paragraph,
+        Heading,
+        BlockQuote,
+        Table,
+        Indent,
+        Undo
+      ],
       toolbar: {
         items: [
           'heading',
           '|',
-          'fontSize',
-          'fontFamily',
-          'fontColor',
-          'fontBackgroundColor',
-          '|',
           'bold',
           'italic',
-          'underline',
-          'strikethrough',
-          'subscript',
-          'superscript',
-          'code',
-          '|',
-          'alignment',
-          '|',
           'link',
           'bulletedList',
           'numberedList',
-          'todoList',
           '|',
           'outdent',
           'indent',
           '|',
           'blockQuote',
           'insertTable',
-          'mediaEmbed',
-          'codeBlock',
-          '|',
-          'horizontalLine',
-          'specialCharacters',
-          '|',
-          'removeFormat',
-          '|',
-          'sourceEditing',
           '|',
           'undo',
           'redo'
@@ -73,41 +78,6 @@ export async function initCKEditor(elementId, initialContent = '') {
           { model: 'heading6', view: 'h6', title: '標題 6', class: 'ck-heading_heading6' }
         ]
       },
-      fontSize: {
-        options: [
-          'tiny',
-          'small',
-          'default',
-          'big',
-          'huge'
-        ],
-        supportAllValues: true
-      },
-      fontFamily: {
-        options: [
-          'default',
-          'Arial, Helvetica, sans-serif',
-          'Courier New, Courier, monospace',
-          'Georgia, serif',
-          'Lucida Sans Unicode, Lucida Grande, sans-serif',
-          'Tahoma, Geneva, sans-serif',
-          'Times New Roman, Times, serif',
-          'Trebuchet MS, Helvetica, sans-serif',
-          'Verdana, Geneva, sans-serif',
-          '微軟正黑體, Microsoft JhengHei, sans-serif',
-          '新細明體, PMingLiU, serif',
-          '標楷體, DFKai-SB, serif'
-        ],
-        supportAllValues: true
-      },
-      fontColor: {
-        columns: 5,
-        documentColors: 10
-      },
-      fontBackgroundColor: {
-        columns: 5,
-        documentColors: 10
-      },
       link: {
         decorators: {
           openInNewTab: {
@@ -125,37 +95,7 @@ export async function initCKEditor(elementId, initialContent = '') {
         contentToolbar: [
           'tableColumn',
           'tableRow',
-          'mergeTableCells',
-          'tableProperties',
-          'tableCellProperties'
-        ]
-      },
-      htmlSupport: {
-        allow: [
-          {
-            name: /.*/,
-            attributes: true,
-            classes: true,
-            styles: true
-          }
-        ]
-      },
-      codeBlock: {
-        languages: [
-          { language: 'plaintext', label: 'Plain text' },
-          { language: 'c', label: 'C' },
-          { language: 'cs', label: 'C#' },
-          { language: 'cpp', label: 'C++' },
-          { language: 'css', label: 'CSS' },
-          { language: 'diff', label: 'Diff' },
-          { language: 'html', label: 'HTML' },
-          { language: 'java', label: 'Java' },
-          { language: 'javascript', label: 'JavaScript' },
-          { language: 'php', label: 'PHP' },
-          { language: 'python', label: 'Python' },
-          { language: 'ruby', label: 'Ruby' },
-          { language: 'typescript', label: 'TypeScript' },
-          { language: 'xml', label: 'XML' }
+          'mergeTableCells'
         ]
       }
     });
