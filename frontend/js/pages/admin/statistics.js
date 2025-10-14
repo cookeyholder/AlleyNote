@@ -132,7 +132,7 @@ export default class StatisticsPage {
     });
 
     try {
-      const response = await apiClient.get(`/activity-logs/login-failures?${params}`);
+      const response = await apiClient.get(`/v1/activity-logs/login-failures?${params}`);
       
       if (response.success && response.data) {
         return response.data;
