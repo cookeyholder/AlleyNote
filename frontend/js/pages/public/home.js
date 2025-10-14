@@ -2,14 +2,22 @@ import { router } from '../../utils/router.js';
 import { postsAPI } from '../../api/modules/posts.js?v=20251011';
 import { loading } from '../../components/Loading.js';
 import { timezoneUtils } from '../../utils/timezoneUtils.js';
+import { apiClient } from '../../api/client.js';
 
 let currentPage = 1;
 let currentSearch = '';
+let siteSettings = {
+  site_name: 'AlleyNote',
+  site_description: '基於 DDD 架構的企業級應用程式'
+};
 
 /**
  * 渲染首頁
  */
 export async function renderHome() {
+  // 載入網站設定
+  await loadSiteSettings();
+  
   const app = document.getElementById('app');
   
   app.innerHTML = `
@@ -19,7 +27,7 @@ export async function renderHome() {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
-              <h1 class="text-2xl font-bold text-accent-600">AlleyNote</h1>
+              <h1 class="text-2xl font-bold text-accent-600">${siteSettings.site_name}</h1>
             </div>
             <div class="flex items-center gap-4">
               <div class="relative hidden md:block">
@@ -47,10 +55,10 @@ export async function renderHome() {
         <!-- Hero Section -->
         <div class="text-center mb-12 animate-fade-in">
           <h2 class="text-4xl md:text-5xl font-bold text-modern-900 mb-4">
-            現代化公布欄系統
+            ${siteSettings.site_name}
           </h2>
           <p class="text-xl text-modern-600 mb-8">
-            基於 DDD 架構的企業級應用程式
+            ${siteSettings.site_description}
           </p>
         </div>
         
@@ -371,4 +379,24 @@ window.clearSearch = function () {
   
   loadPosts();
 };
-
+  
+/**
+ * 載入網站設定
+ */
+async function loadSiteSettings() {
+  try {
+    const response = await apiClient.get('/settings');
+    const settingsData = response.data || {};
+    
+    // 提取設定值
+    const extractValue = (item) => {
+      return item && typeof item === 'object' && 'value' in item ? item.value : item;
+    };
+    
+    siteSettings.site_name = extractValue(settingsData.site_name) || 'AlleyNote';
+    siteSettings.site_description = extractValue(settingsData.site_description) || '基於 DDD 架構的企業級應用程式';
+  } catch (error) {
+    console.error('載入網站設定失敗:', error);
+    // 使用預設值
+  }
+}

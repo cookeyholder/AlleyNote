@@ -10,6 +10,7 @@ class TimezoneUtils {
   constructor() {
     this.siteTimezone = null;
     this.timezoneOffset = null;
+    this.timezoneInfo = null;
   }
 
   /**
@@ -33,6 +34,27 @@ class TimezoneUtils {
     // 預設使用 Asia/Taipei
     this.siteTimezone = 'Asia/Taipei';
     return this.siteTimezone;
+  }
+
+  /**
+   * 獲取時區資訊（包含所有時區列表）
+   */
+  async getTimezoneInfo() {
+    if (this.timezoneInfo) {
+      return this.timezoneInfo;
+    }
+
+    try {
+      const response = await apiClient.get('/settings/timezone/info');
+      if (response.success && response.data) {
+        this.timezoneInfo = response.data;
+        return this.timezoneInfo;
+      }
+    } catch (error) {
+      console.warn('無法獲取時區資訊', error);
+    }
+
+    return null;
   }
 
   /**
@@ -316,6 +338,7 @@ class TimezoneUtils {
   clearCache() {
     this.siteTimezone = null;
     this.timezoneOffset = null;
+    this.timezoneInfo = null;
   }
 }
 

@@ -20,7 +20,21 @@ export async function renderPost(postId) {
     
     // 格式化時間
     const dateString = post.publish_date || post.created_at;
-    const formattedDate = await timezoneUtils.utcToSiteTimezone(dateString, 'date');
+    const formattedDate = await timezoneUtils.utcToSiteTimezone(dateString, 'datetime');
+    const siteTimezone = await timezoneUtils.getSiteTimezone();
+    
+    // 格式化時區顯示名稱
+    let timezoneDisplay = '';
+    try {
+      const timezoneInfo = await timezoneUtils.getTimezoneInfo();
+      if (timezoneInfo && timezoneInfo.common_timezones && timezoneInfo.common_timezones[siteTimezone]) {
+        timezoneDisplay = timezoneInfo.common_timezones[siteTimezone];
+      } else {
+        timezoneDisplay = siteTimezone;
+      }
+    } catch (e) {
+      timezoneDisplay = siteTimezone;
+    }
     
     // 淨化 HTML 內容
     const cleanContent = DOMPurify.sanitize(post.content, {
@@ -72,6 +86,10 @@ export async function renderPost(postId) {
                 <time datetime="${dateString}">
                   ${formattedDate}
                 </time>
+              </div>
+              <div class="flex items-center gap-2">
+                <span>🌏</span>
+                <span title="${siteTimezone}">${timezoneDisplay}</span>
               </div>
               ${post.views ? `
                 <div class="flex items-center gap-2">
