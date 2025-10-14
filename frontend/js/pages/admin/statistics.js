@@ -131,14 +131,20 @@ export default class StatisticsPage {
       limit: '10'
     });
 
-    const response = await apiClient.get(`/v1/activity-logs/login-failures?${params}`);
-    
-    if (response.success && response.data) {
-      return response.data;
+    try {
+      const response = await apiClient.get(`/activity-logs/login-failures?${params}`);
+      
+      if (response.success && response.data) {
+        return response.data;
+      }
+      
+      // 如果沒有資料，返回空結果
+      return { total: 0, accounts: [], trend: [] };
+    } catch (error) {
+      console.warn('載入登入失敗記錄失敗:', error);
+      // 返回空結果，不中斷整個載入流程
+      return { total: 0, accounts: [], trend: [] };
     }
-    
-    // 如果沒有資料，返回空結果
-    return { total: 0, accounts: [], trend: [] };
   }
 
   async loadTrafficData() {

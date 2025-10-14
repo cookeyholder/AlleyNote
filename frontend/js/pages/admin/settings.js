@@ -179,7 +179,14 @@ async function loadSettings() {
     loading.show('載入設定中...');
     
     const response = await apiClient.get('/settings');
-    const settings = response.data || {};
+    const settingsData = response.data || {};
+    
+    // 提取設定值（API 回傳的是 {value, type, description} 結構）
+    const settings = {};
+    Object.keys(settingsData).forEach(key => {
+      const item = settingsData[key];
+      settings[key] = item && typeof item === 'object' && 'value' in item ? item.value : item;
+    });
     
     // 儲存原始設定
     originalSettings = { ...settings };
@@ -196,12 +203,13 @@ async function loadSettings() {
     if (siteNameInput) siteNameInput.value = settings.site_name || 'AlleyNote';
     if (siteDescInput) siteDescInput.value = settings.site_description || '';
     if (postsPerPageInput) postsPerPageInput.value = settings.posts_per_page || '20';
-    if (enableCommentsInput) enableCommentsInput.checked = settings.enable_comments === '1' || settings.enable_comments === true;
-    if (enableRegistrationInput) enableRegistrationInput.checked = settings.enable_registration === '1' || settings.enable_registration === true;
+    if (enableCommentsInput) enableCommentsInput.checked = settings.enable_comments === true || settings.enable_comments === 1;
+    if (enableRegistrationInput) enableRegistrationInput.checked = settings.enable_registration === true || settings.enable_registration === 1;
     
     // 最大上傳檔案大小（轉換為 MB）
     if (maxUploadSizeInput) {
-      const sizeInMB = Math.floor((parseInt(settings.max_upload_size || '10485760')) / 1048576);
+      const sizeInBytes = parseInt(settings.max_upload_size || '10485760');
+      const sizeInMB = Math.floor(sizeInBytes / 1048576);
       maxUploadSizeInput.value = sizeInMB.toString();
     }
     
