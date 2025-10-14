@@ -303,6 +303,50 @@ body {
     background-color: #f8fafc;
 }
 
+/* 頁腳描述編輯器樣式 */
+#footer-description-editor .ck-editor__editable {
+    min-height: 200px;
+    max-height: 400px;
+}
+
+/* CKEditor 內容樣式 */
+.ck-content {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+}
+
+.ck-content h1,
+.ck-content h2,
+.ck-content h3,
+.ck-content h4 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+.ck-content p {
+    margin-bottom: 1em;
+}
+
+.ck-content a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.ck-content ul,
+.ck-content ol {
+    padding-left: 2em;
+    margin-bottom: 1em;
+}
+
+.ck-content blockquote {
+    border-left: 4px solid #cbd5e1;
+    padding-left: 1em;
+    margin: 1em 0;
+    color: #64748b;
+    font-style: italic;
+}
+
 /* Loading Overlay */
 .loading-overlay {
     backdrop-filter: blur(2px);

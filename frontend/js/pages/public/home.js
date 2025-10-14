@@ -125,9 +125,9 @@ export async function renderHome() {
             <p class="text-modern-600 mb-2">
               ${siteSettings.footer_copyright}
             </p>
-            <p class="text-sm text-modern-500">
+            <div id="footer-description" class="text-sm text-modern-500 prose-modern max-w-none">
               ${siteSettings.footer_description}
-            </p>
+            </div>
           </div>
         </div>
       </footer>
@@ -136,6 +136,12 @@ export async function renderHome() {
   
   // 載入文章
   await loadPosts();
+  
+  // 設置頁腳描述（支援 HTML）
+  const footerDescElement = document.getElementById('footer-description');
+  if (footerDescElement && siteSettings.footer_description) {
+    footerDescElement.innerHTML = siteSettings.footer_description;
+  }
   
   // 綁定搜尋事件
   const searchInput = document.getElementById('home-search');

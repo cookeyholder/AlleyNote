@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CKEditor 5 測試</title>
+    
+    <!-- CKEditor 5 -->
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.css">
+    <script src="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.umd.js"></script>
+    
+    <style>
+        body {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            font-family: sans-serif;
+        }
+        
+        #editor {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .ck-editor__editable {
+            min-height: 300px;
+        }
+        
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background: #1d4ed8;
+        }
+        
+        #output {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>CKEditor 5 富文本編輯器測試</h1>
+    
+    <div id="editor">
+        <p>這是一個測試編輯器。您可以在這裡輸入富文本內容。</p>
+    </div>
+    
+    <button onclick="getContent()">獲取內容</button>
+    
+    <div id="output"></div>
+    
+    <script>
+        let editor;
+        
+        const {
+            ClassicEditor,
+            Essentials,
+            Bold,
+            Italic,
+            Underline,
+            Link,
+            Paragraph,
+            Heading,
+            List,
+            Alignment,
+            Font
+        } = CKEDITOR;
+        
+        ClassicEditor
+            .create(document.querySelector('#editor'), {
+                plugins: [
+                    Essentials,
+                    Bold,
+                    Italic,
+                    Underline,
+                    Link,
+                    Paragraph,
+                    Heading,
+                    List,
+                    Alignment,
+                    Font
+                ],
+                toolbar: {
+                    items: [
+                        'heading',
+                        '|',
+                        'bold',
+                        'italic',
+                        'underline',
+                        '|',
+                        'fontSize',
+                        'fontColor',
+                        '|',
+                        'alignment',
+                        '|',
+                        'numberedList',
+                        'bulletedList',
+                        '|',
+                        'link',
+                        '|',
+                        'undo',
+                        'redo'
+                    ]
+                },
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: '段落', class: 'ck-heading_paragraph' },
+                        { model: 'heading1', view: 'h1', title: '標題 1', class: 'ck-heading_heading1' },
+                        { model: 'heading2', view: 'h2', title: '標題 2', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: '標題 3', class: 'ck-heading_heading3' }
+                    ]
+                },
+                language: 'zh'
+            })
+            .then(newEditor => {
+                editor = newEditor;
+                console.log('編輯器已初始化', editor);
+            })
+            .catch(error => {
+                console.error('初始化失敗:', error);
+            });
+        
+        function getContent() {
+            if (editor) {
+                const content = editor.getData();
+                document.getElementById('output').textContent = content;
+                console.log('編輯器內容:', content);
+            }
+        }
+    </script>
+</body>
+</html>

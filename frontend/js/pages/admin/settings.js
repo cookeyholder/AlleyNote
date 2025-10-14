@@ -7,10 +7,12 @@ import { toast } from '../../utils/toast.js';
 import { loading } from '../../components/Loading.js';
 import { timezoneUtils } from '../../utils/timezoneUtils.js';
 import { apiClient } from '../../api/client.js';
+import { initRichTextEditor, destroyRichTextEditor, getRichTextEditorContent } from '../../components/RichTextEditor.js';
 
 // 儲存原始設定值
 let originalSettings = {};
 let currentSettings = {};
+let footerDescriptionEditor = null;
 
 export async function renderSettings() {
   const content = `
@@ -209,14 +211,10 @@ export async function renderSettings() {
             <label class="block text-sm font-medium text-modern-700 mb-2">
               頁腳描述
             </label>
-            <input
-              type="text"
-              id="footer-description"
-              value=""
-              placeholder="基於 Domain-Driven Design 的企業級公布欄系統"
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-            />
-            <p class="text-sm text-modern-500 mt-1">顯示在頁腳的網站描述</p>
+            <div id="footer-description-editor" class="border border-modern-300 rounded-lg overflow-hidden"></div>
+            <p class="text-sm text-modern-500 mt-1">
+              顯示在頁腳的網站描述，支援富文本格式（HTML）
+            </p>
           </div>
         </div>
       </div>
@@ -248,8 +246,58 @@ export async function renderSettings() {
   // 載入時區設定
   await loadTimezoneSettings();
   
+  // 初始化富文本編輯器
+  await initFooterDescriptionEditor();
+  
   // 綁定事件
   bindSettingsEvents();
+}
+
+/**
+ * 初始化頁腳描述富文本編輯器
+ */
+async function initFooterDescriptionEditor() {
+  try {
+    // 先銷毀舊的編輯器實例（如果存在）
+    if (footerDescriptionEditor) {
+      await destroyRichTextEditor('footer-description-editor');
+      footerDescriptionEditor = null;
+    }
+
+    // 創建新的編輯器實例
+    footerDescriptionEditor = await initRichTextEditor('footer-description-editor', {
+      placeholder: '請輸入頁腳描述...',
+      initialValue: originalSettings.footer_description || '基於 Domain-Driven Design 的企業級公布欄系統',
+      config: {
+        toolbar: {
+          items: [
+            'heading',
+            '|',
+            'bold',
+            'italic',
+            'underline',
+            '|',
+            'fontSize',
+            'fontColor',
+            '|',
+            'alignment',
+            '|',
+            'link',
+            'bulletedList',
+            'numberedList',
+            '|',
+            'removeFormat',
+            '|',
+            'undo',
+            'redo'
+          ]
+        }
+      }
+    });
+  } catch (error) {
+    console.error('初始化頁腳描述編輯器失敗:', error);
+    toast.error('初始化編輯器失敗');
+  }
 }
 
 /**
@@ -282,7 +330,6 @@ async function loadSettings() {
     const maxUploadSizeInput = document.getElementById('max-upload-size');
     const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
     const footerCopyrightInput = document.getElementById('footer-copyright');
-    const footerDescriptionInput = document.getElementById('footer-description');
     
     if (siteNameInput) siteNameInput.value = settings.site_name || 'AlleyNote';
     if (siteDescInput) siteDescInput.value = settings.site_description || '';
@@ -292,7 +339,12 @@ async function loadSettings() {
     
     // Footer 設定
     if (footerCopyrightInput) footerCopyrightInput.value = settings.footer_copyright || '© 2024 AlleyNote. All rights reserved.';
-    if (footerDescriptionInput) footerDescriptionInput.value = settings.footer_description || '基於 Domain-Driven Design 的企業級公布欄系統';
+    
+    // 頁腳描述會在編輯器初始化時設置
+    // 但我們需要儲存這個值以供編輯器使用
+    if (settings.footer_description) {
+      originalSettings.footer_description = settings.footer_description;
+    }
     
     // 最大上傳檔案大小（轉換為 MB）
     if (maxUploadSizeInput) {
@@ -529,6 +581,11 @@ function resetSettings() {
     cb.checked = allowedTypes.includes(cb.value);
   });
   
+  // 重置頁腳描述編輯器
+  if (footerDescriptionEditor) {
+    footerDescriptionEditor.setData(originalSettings.footer_description || '基於 Domain-Driven Design 的企業級公布欄系統');
+  }
+  
   toast.info('設定已重置為原始值');
 }
 
@@ -548,7 +605,6 @@ async function saveSettings() {
     const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
     const timezoneSelect = document.getElementById('site-timezone');
     const footerCopyrightInput = document.getElementById('footer-copyright');
-    const footerDescriptionInput = document.getElementById('footer-description');
     
     // 收集設定
     const settings = {};
@@ -562,7 +618,12 @@ async function saveSettings() {
     
     // Footer 設定
     if (footerCopyrightInput?.value !== undefined) settings.footer_copyright = footerCopyrightInput.value;
-    if (footerDescriptionInput?.value !== undefined) settings.footer_description = footerDescriptionInput.value;
+    
+    // 從富文本編輯器獲取頁腳描述
+    const footerDescription = getRichTextEditorContent('footer-description-editor');
+    if (footerDescription !== null) {
+      settings.footer_description = footerDescription;
+    }
     
     // 最大上傳檔案大小（轉換為 bytes）
     if (maxUploadSizeInput?.value) {
