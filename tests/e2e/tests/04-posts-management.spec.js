@@ -10,6 +10,9 @@ test.describe('文章管理功能測試', () => {
   test.beforeEach(async ({ authenticatedPage }) => {
     postsPage = new PostsManagementPage(authenticatedPage);
     await postsPage.goto();
+    // 等待頁面完全載入
+    await authenticatedPage.waitForLoadState('networkidle', { timeout: 10000 });
+    await authenticatedPage.waitForTimeout(1000); // 額外等待確保 JS 執行完成
   });
 
   test.skip('應該正確顯示文章管理頁面', async ({ authenticatedPage: page }) => {
