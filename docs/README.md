@@ -46,36 +46,61 @@
 
 詳細的 API 端點說明與範例：
 
-- 認證 API
-- 文章管理 API
-- 使用者管理 API
-- 統計查詢 API
-- 活動記錄 API
+- **認證 API**：登入、登出、Token 刷新
+- **密碼驗證 API**：即時密碼強度檢查（[password-validation.md](api/password-validation.md)）
+- **文章管理 API**：CRUD 操作、標籤、附件
+- **使用者管理 API**：使用者資訊、權限管理
+- **統計查詢 API**：多維度數據分析（7 個端點）
+- **活動記錄 API**：登入失敗、使用者行為追蹤
 
 ### 開發指南（`guides/`）
 
 針對開發者的技術指南：
 
-- **開發者指南**：DDD 架構、程式碼規範
-- **部署指南**：Docker 部署、SSL 設定
-- **測試指南**：單元測試、整合測試、E2E 測試
+- **前端指南**（`guides/frontend/`）：
+  - API 整合指南
+  - 部署指南
+  - 安全檢查清單
+  - 測試策略
+  - 狀態管理策略
+  - 介面設計規範
+  - 專案總覽
+- **開發者指南**（`guides/developer/`）：DDD 架構、程式碼規範
+- **部署指南**（`guides/deployment/`）：Docker 部署、SSL 設定
+- **管理員指南**（`guides/admin/`）：系統管理、維護操作
 
 ### 領域文件（`domains/`）
 
 各個領域的詳細設計文件：
 
-- **Auth Domain**：認證與授權
-- **Post Domain**：文章管理
-- **Statistics Domain**：統計分析
-- **Shared**：共享元件與工具
+- **Auth Domain**（`domains/auth/`）：認證與授權、密碼安全
+- **Post Domain**（`domains/post/`）：文章管理、標籤系統
+- **Statistics Domain**（`domains/statistics/`）：統計分析、快照管理
+- **Attachment Domain**（`domains/attachment/`）：檔案附件處理
+- **Security Domain**（`domains/security/`）：安全機制與防護
+- **Shared**（`domains/shared/`）：共享元件與工具
+
+### 使用者指南（`user-guide/`）
+
+面向終端使用者的操作指南：
+
+- **password-security.md**：密碼安全使用指南
+  - 為什麼密碼安全很重要
+  - 密碼要求說明
+  - 建立強密碼的方法
+  - 使用密碼生成器
+  - 密碼管理最佳實踐
+  - 常見問題解答
 
 ### 歷史文件（`archive/`）
 
 已完成的專案文件與開發記錄：
 
-- **completed/**：專案完成報告
-- **implementation/**：實作計劃與報告
-- **development/**：開發過程記錄
+- **completed/**：專案完成報告（密碼安全、前端開發等）
+- **implementation/**：實作計劃與分析報告
+- **development/**：開發過程記錄與 TODO 清單
+- **specifications/**：原始規格書
+- **reports/**：各類測試與分析報告
 
 ---
 
@@ -131,21 +156,43 @@ AlleyNote 提供完整的統計分析功能，包含：
 
 AlleyNote 實作了企業級密碼安全機制：
 
-- ✅ 強制密碼強度驗證（8+ 字元）
-- ✅ 黑名單密碼檢查（10,000+ 常見弱密碼）
-- ✅ 即時密碼強度指示器
-- ✅ 安全密碼生成器
-- ✅ 密碼複雜度評分
+**8 項密碼驗證規則**：
+- ✅ 最小長度 8 字元
+- ✅ 必須包含大寫字母
+- ✅ 必須包含小寫字母
+- ✅ 必須包含數字
+- ✅ 不能包含連續字母（abc, xyz）
+- ✅ 不能全部相同字元（aaa, 111）
+- ✅ 不能是常見弱密碼（10,000+ 黑名單）
+- ✅ 不能包含使用者名稱或 email
 
-### 安全防護
+**前端密碼體驗**：
+- ✅ 即時密碼強度指示器
+- ✅ 視覺化要求檢查清單
+- ✅ 智能密碼生成器（16 字元）
+- ✅ 密碼顯示/隱藏切換
+- ✅ 複製到剪貼簿功能
+
+**安全保障**：
+- ✅ 10,000+ 常見弱密碼黑名單
+- ✅ 3,000+ 常見英文單字檢查
+- ✅ 密碼熵值計算
+- ✅ 密碼強度評分（0-100）
+
+**相關文件**：
+- [PASSWORD_SECURITY.md](PASSWORD_SECURITY.md) - 完整技術文件
+- [api/password-validation.md](api/password-validation.md) - API 規格
+- [user-guide/password-security.md](user-guide/password-security.md) - 使用者指南
+
+### HTTP 安全防護
 
 - **JWT Token 認證**：Access Token + Refresh Token 機制
 - **CSRF 防護**：Token 驗證
 - **XSS 防護**：輸入過濾與輸出編碼
 - **SQL 注入防護**：PDO Prepared Statements
-- **HTTP Security Headers**：CSP、X-Frame-Options、HSTS 等
+- **HTTP Security Headers**：CSP、X-Frame-Options、HSTS、X-Content-Type-Options 等
 - **IP 黑白名單**：限制特定 IP 存取
-- **登入失敗記錄**：異常行為偵測
+- **登入失敗記錄**：異常行為偵測與統計
 
 詳細說明請參考 [SECURITY_HEADERS.md](SECURITY_HEADERS.md)。
 
@@ -243,19 +290,30 @@ docker compose exec web composer ci
 
 ```
 docs/
-├── README.md                      # 本文件
+├── README.md                      # 本文件（文件中心導覽）
+├── PASSWORD_SECURITY.md           # 密碼安全功能完整文件 ✨
 ├── STATISTICS_API_SPEC.md         # 統計 API 規格
 ├── STATISTICS_PAGE_README.md      # 統計頁面說明
 ├── SECURITY_HEADERS.md            # 安全標頭設定
 ├── FRONTEND_USER_GUIDE.md         # 前端使用指南
 │
 ├── api/                           # API 文件
-│   ├── authentication.md
-│   ├── posts.md
-│   ├── users.md
-│   └── statistics.md
+│   ├── authentication.md          # 認證 API
+│   ├── password-validation.md     # 密碼驗證 API ✨
+│   ├── posts.md                   # 文章 API
+│   ├── users.md                   # 使用者 API
+│   └── statistics.md              # 統計 API
 │
-├── guides/                        # 指南
+├── guides/                        # 開發指南
+│   ├── frontend/                  # 前端指南 ✨
+│   │   ├── README.md
+│   │   ├── API_INTEGRATION_GUIDE.md
+│   │   ├── DEPLOYMENT_GUIDE.md
+│   │   ├── SECURITY_CHECKLIST.md
+│   │   ├── TESTING_STRATEGY.md
+│   │   ├── STATE_MANAGEMENT_STRATEGY.md
+│   │   ├── FRONTEND_INTERFACE_DESIGN_SPECIFICATION.md
+│   │   └── PROJECT_OVERVIEW.md
 │   ├── developer/                 # 開發者指南
 │   ├── deployment/                # 部署指南
 │   └── admin/                     # 管理員指南
@@ -264,13 +322,30 @@ docs/
 │   ├── auth/                      # 認證領域
 │   ├── post/                      # 文章領域
 │   ├── statistics/                # 統計領域
+│   ├── attachment/                # 附件領域
+│   ├── security/                  # 安全領域
 │   └── shared/                    # 共享元件
 │
+├── user-guide/                    # 使用者指南 ✨
+│   └── password-security.md       # 密碼安全使用指南
+│
 └── archive/                       # 歷史文件
-    ├── completed/                 # 完成報告
-    ├── implementation/            # 實作文件
-    └── development/               # 開發記錄
+    ├── completed/                 # 完成報告 ✨
+    │   ├── PASSWORD_SECURITY_TODO.md
+    │   ├── PASSWORD_SECURITY_COMPLETION_REPORT.md
+    │   ├── PASSWORD_SECURITY_FINAL_REPORT.md
+    │   ├── PASSWORD_SECURITY_SUMMARY.md
+    │   ├── frontend/              # 前端完成報告
+    │   └── ...
+    ├── implementation/            # 實作文件 ✨
+    ├── development/               # 開發記錄 ✨
+    │   ├── frontend/
+    │   └── session-reports-2025-10/
+    ├── specifications/            # 規格書 ✨
+    └── reports/                   # 測試報告
 ```
+
+✨ 標示為最近新增或重組的內容
 
 ---
 
@@ -299,6 +374,17 @@ docs/
 2. 🔍 **搜尋 Issues**：查看是否有人遇到類似問題
 3. 💬 **提出問題**：開啟新的 Issue 描述您的問題
 4. 🤝 **參與討論**：在 GitHub Discussions 與社群交流
+
+### 📚 密碼安全文件導航
+
+根據您的需求選擇合適的文件：
+
+| 我的角色/需求 | 推薦文件 |
+|-------------|---------|
+| **我是使用者，想知道如何設定密碼** | [密碼安全使用指南](user-guide/password-security.md) |
+| **我是開發者，想了解密碼安全功能** | [密碼安全功能文件](PASSWORD_SECURITY.md) |
+| **我要整合密碼驗證 API** | [密碼驗證 API 文件](api/password-validation.md) |
+| **我想了解開發過程** | [密碼安全開發記錄](archive/completed/) |
 
 ---
 

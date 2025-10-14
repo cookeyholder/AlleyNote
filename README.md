@@ -369,6 +369,7 @@ GET    /api/v1/activity-logs/login-failures  # 登入失敗統計
 
 | 文件 | 說明 |
 |------|------|
+| [PASSWORD_SECURITY.md](docs/PASSWORD_SECURITY.md) | 密碼安全功能完整文件 |
 | [STATISTICS_API_SPEC.md](docs/STATISTICS_API_SPEC.md) | 統計 API 完整規格 |
 | [STATISTICS_PAGE_README.md](docs/STATISTICS_PAGE_README.md) | 統計頁面使用說明 |
 | [SECURITY_HEADERS.md](docs/SECURITY_HEADERS.md) | 安全標頭設定 |
@@ -377,10 +378,13 @@ GET    /api/v1/activity-logs/login-failures  # 登入失敗統計
 ### 開發文件
 
 所有開發文件位於 `docs/` 目錄：
-- `docs/api/` - API 文件
-- `docs/guides/` - 開發指南
-- `docs/domains/` - 領域模型文件
+- `docs/api/` - API 文件（認證、文章、統計、密碼驗證等）
+- `docs/guides/` - 開發指南（前端、部署、開發者、管理員）
+- `docs/domains/` - 領域模型文件（Auth、Post、Statistics、Shared）
+- `docs/user-guide/` - 使用者指南（密碼安全使用說明）
 - `docs/archive/` - 歷史文件與完成報告
+
+完整的文件導覽請參考 [docs/README.md](docs/README.md)。
 
 ---
 
