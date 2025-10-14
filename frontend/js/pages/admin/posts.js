@@ -508,8 +508,7 @@ async function confirmBatchDelete() {
   
   const count = currentState.selectedPosts.size;
   const confirmed = await confirmDelete(
-    `確定要刪除選中的 ${count} 篇文章嗎？`,
-    '此操作無法復原'
+    `確定要刪除選中的 ${count} 篇文章嗎？此操作無法復原。`
   );
   
   if (!confirmed) return;
@@ -517,14 +516,30 @@ async function confirmBatchDelete() {
   loading.show(`正在刪除 ${count} 篇文章...`);
   
   try {
-    const deletePromises = Array.from(currentState.selectedPosts).map(postId =>
-      apiClient.delete(`/posts/${postId}`)
-    );
+    // 順序執行刪除，避免 SQLite 資料庫鎖定
+    const postIds = Array.from(currentState.selectedPosts);
+    let deletedCount = 0;
     
-    await Promise.all(deletePromises);
+    for (const postId of postIds) {
+      try {
+        await apiClient.delete(`/posts/${postId}`);
+        deletedCount++;
+      } catch (error) {
+        console.error(`刪除文章 ${postId} 失敗:`, error);
+        // 繼續刪除其他文章
+      }
+    }
     
     loading.hide();
-    toast.success(`成功刪除 ${count} 篇文章`);
+    
+    if (deletedCount === count) {
+      toast.success(`成功刪除 ${count} 篇文章`);
+    } else if (deletedCount > 0) {
+      toast.success(`成功刪除 ${deletedCount} 篇文章，${count - deletedCount} 篇失敗`);
+    } else {
+      toast.error('批次刪除失敗');
+      return; // 不清除選擇，讓用戶可以重試
+    }
     
     // 退出批次模式並重新載入
     currentState.batchMode = false;
