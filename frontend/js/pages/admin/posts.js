@@ -380,10 +380,8 @@ function renderPagination(pagination) {
           下一頁
         </button>
       </div>
-    `;
-  }
-  
-  return paginationHtml;
+    </div>
+  `;
 }
 
 /**
@@ -547,10 +545,6 @@ function cancelBatchMode() {
   }
   
   loadPosts(); // 重新渲染表格
-}
-      </div>
-    </div>
-  `;
 }
 
 /**
