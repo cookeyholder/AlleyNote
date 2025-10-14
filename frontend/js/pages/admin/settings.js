@@ -72,6 +72,7 @@ export async function renderSettings() {
               max="50"
               class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
+            <p class="text-sm text-modern-500 mt-1">建議範圍：5-50 篇</p>
           </div>
         </div>
       </div>
@@ -136,6 +137,37 @@ export async function renderSettings() {
               max="100"
               class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
             />
+            <p class="text-sm text-modern-500 mt-1">建議範圍：1-100 MB</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 檔案上傳設定 -->
+      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
+        <h2 class="text-xl font-semibold text-modern-900 mb-4">檔案上傳設定</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-modern-700 mb-2">
+              允許的檔案類型
+            </label>
+            <div id="file-types-container" class="space-y-2">
+              <!-- 動態生成的 checkbox 會插入這裡 -->
+            </div>
+            <p class="text-sm text-modern-500 mt-2">
+              選擇允許使用者上傳的檔案類型
+            </p>
+          </div>
+          
+          <div class="bg-info-50 border border-info-200 rounded-lg p-4">
+            <div class="flex items-start gap-2">
+              <svg class="w-5 h-5 text-info-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <div class="text-sm text-info-800">
+                <p class="font-medium mb-1">安全提示</p>
+                <p>建議只允許必要的檔案類型，以降低安全風險。可執行檔案（如 .exe、.bat）已被系統禁止。</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -213,6 +245,9 @@ async function loadSettings() {
       maxUploadSizeInput.value = sizeInMB.toString();
     }
     
+    // 載入檔案類型設定
+    await loadFileTypesSettings(settings.allowed_file_types || []);
+    
     loading.hide();
   } catch (error) {
     loading.hide();
@@ -222,15 +257,96 @@ async function loadSettings() {
 }
 
 /**
+ * 載入檔案類型設定
+ */
+async function loadFileTypesSettings(allowedTypes) {
+  const container = document.getElementById('file-types-container');
+  if (!container) return;
+  
+  // 所有可能的檔案類型（根據 API 文檔）
+  const allFileTypes = [
+    { value: 'jpg', label: 'JPG 圖片', category: '圖片' },
+    { value: 'jpeg', label: 'JPEG 圖片', category: '圖片' },
+    { value: 'png', label: 'PNG 圖片', category: '圖片' },
+    { value: 'gif', label: 'GIF 動圖', category: '圖片' },
+    { value: 'webp', label: 'WebP 圖片', category: '圖片' },
+    { value: 'svg', label: 'SVG 向量圖', category: '圖片' },
+    { value: 'pdf', label: 'PDF 文件', category: '文件' },
+    { value: 'doc', label: 'Word 文件 (.doc)', category: '文件' },
+    { value: 'docx', label: 'Word 文件 (.docx)', category: '文件' },
+    { value: 'xls', label: 'Excel 試算表 (.xls)', category: '文件' },
+    { value: 'xlsx', label: 'Excel 試算表 (.xlsx)', category: '文件' },
+    { value: 'ppt', label: 'PowerPoint 簡報 (.ppt)', category: '文件' },
+    { value: 'pptx', label: 'PowerPoint 簡報 (.pptx)', category: '文件' },
+    { value: 'txt', label: '純文字檔', category: '文件' },
+    { value: 'zip', label: 'ZIP 壓縮檔', category: '壓縮檔' },
+    { value: 'rar', label: 'RAR 壓縮檔', category: '壓縮檔' },
+    { value: '7z', label: '7Z 壓縮檔', category: '壓縮檔' },
+    { value: 'mp3', label: 'MP3 音訊', category: '媒體' },
+    { value: 'mp4', label: 'MP4 影片', category: '媒體' },
+    { value: 'avi', label: 'AVI 影片', category: '媒體' },
+    { value: 'mov', label: 'MOV 影片', category: '媒體' }
+  ];
+  
+  // 按類別分組
+  const categories = {};
+  allFileTypes.forEach(type => {
+    if (!categories[type.category]) {
+      categories[type.category] = [];
+    }
+    categories[type.category].push(type);
+  });
+  
+  // 生成 HTML
+  let html = '';
+  Object.entries(categories).forEach(([category, types]) => {
+    html += `
+      <div class="mb-3">
+        <h4 class="text-sm font-medium text-modern-700 mb-2">${category}</h4>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+          ${types.map(type => `
+            <label class="flex items-center gap-2 p-2 border border-modern-200 rounded hover:bg-modern-50 cursor-pointer">
+              <input 
+                type="checkbox" 
+                name="file-type" 
+                value="${type.value}"
+                ${allowedTypes.includes(type.value) ? 'checked' : ''}
+                class="w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
+              />
+              <span class="text-sm text-modern-700">${type.label}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+/**
  * 載入時區設定
  */
 async function loadTimezoneSettings() {
   try {
-    // 載入時區列表
+    // 從 API 載入所有時區列表
+    const response = await apiClient.get('/settings/timezone/info');
+    
     const timezoneSelect = document.getElementById('site-timezone');
-    if (timezoneSelect) {
-      const timezones = timezoneUtils.getCommonTimezones();
-      timezoneSelect.innerHTML = timezones.map(tz => 
+    if (timezoneSelect && response.success && response.data) {
+      const timezones = response.data.common_timezones || {};
+      
+      // 轉換物件為陣列並排序
+      const timezoneArray = Object.entries(timezones).map(([value, label]) => ({
+        value,
+        label
+      }));
+      
+      // 按標籤排序
+      timezoneArray.sort((a, b) => a.label.localeCompare(b.label));
+      
+      // 生成選項
+      timezoneSelect.innerHTML = timezoneArray.map(tz => 
         `<option value="${tz.value}">${tz.label}</option>`
       ).join('');
 
@@ -320,6 +436,13 @@ function resetSettings() {
     timezoneSelect.value = originalSettings.site_timezone;
   }
   
+  // 重置檔案類型
+  const allowedTypes = originalSettings.allowed_file_types || [];
+  const fileTypeCheckboxes = document.querySelectorAll('input[name="file-type"]');
+  fileTypeCheckboxes.forEach(cb => {
+    cb.checked = allowedTypes.includes(cb.value);
+  });
+  
   toast.info('設定已重置為原始值');
 }
 
@@ -354,6 +477,13 @@ async function saveSettings() {
       settings.max_upload_size = sizeInBytes.toString();
     }
     
+    // 收集檔案類型設定
+    const fileTypeCheckboxes = document.querySelectorAll('input[name="file-type"]:checked');
+    const allowedFileTypes = Array.from(fileTypeCheckboxes).map(cb => cb.value);
+    if (allowedFileTypes.length > 0) {
+      settings.allowed_file_types = JSON.stringify(allowedFileTypes);
+    }
+    
     // 批量更新設定
     await apiClient.put('/settings', settings);
     
@@ -361,8 +491,8 @@ async function saveSettings() {
     timezoneUtils.clearCache();
     
     // 更新原始設定
-    originalSettings = { ...settings };
-    currentSettings = { ...settings };
+    originalSettings = { ...settings, allowed_file_types: allowedFileTypes };
+    currentSettings = { ...settings, allowed_file_types: allowedFileTypes };
     
     loading.hide();
     toast.success('設定已儲存');
