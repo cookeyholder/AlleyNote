@@ -7,6 +7,7 @@ namespace App\Domains\Statistics\Providers;
 use App\Application\Services\Statistics\StatisticsQueryService;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
@@ -123,6 +124,9 @@ class StatisticsServiceProvider
                     $eventDispatcher,
                 );
             }),
+
+            // 綁定介面到實作
+            StatisticsAggregationServiceInterface::class => \DI\get(StatisticsAggregationService::class),
 
             // 應用服務
             StatisticsQueryService::class => \DI\factory(function (ContainerInterface $container): StatisticsQueryService {
