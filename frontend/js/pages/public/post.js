@@ -18,6 +18,11 @@ export async function renderPost(postId) {
     const post = response.data; // 從響應中提取 data
     loading.hide();
     
+    // 記錄文章瀏覽（非阻塞式調用）
+    trackPostView(postId).catch(error => {
+      console.error('Failed to track view:', error);
+    });
+    
     // 格式化時間
     const dateString = post.publish_date || post.created_at;
     const formattedDate = await timezoneUtils.utcToSiteTimezone(dateString, 'datetime');
@@ -263,5 +268,18 @@ async function loadPostNavigation(currentPostId, currentPost) {
         載入文章導航失敗
       </div>
     `;
+  }
+}
+
+/**
+ * 追蹤文章瀏覽
+ * 非阻塞式調用，不影響頁面載入
+ */
+async function trackPostView(postId) {
+  try {
+    await postsAPI.recordView(postId);
+  } catch (error) {
+    // 靜默失敗，不影響使用者體驗
+    console.error('Failed to track post view:', error);
   }
 }
