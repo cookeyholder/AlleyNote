@@ -13,6 +13,7 @@ use App\Domains\Post\Exceptions\PostStatusException;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
@@ -32,6 +33,7 @@ class PostController extends BaseController
         private readonly ValidatorInterface $validator,
         private readonly OutputSanitizerInterface $sanitizer,
         private readonly ActivityLoggingServiceInterface $activityLogger,
+        private readonly PostViewStatisticsService $postViewStatsService,
     ) {}
 
     #[OA\Get(
@@ -127,6 +129,22 @@ class PostController extends BaseController
             $items = array_map(function (Post $post) {
                 return $post->toArray();
             }, $postItems);
+
+            // 批量獲取瀏覽統計
+            $postIds = array_map(fn(Post $post) => $post->getId(), $postItems);
+            $viewStats = $this->postViewStatsService->getBatchPostViewStats($postIds);
+
+            // 將瀏覽統計添加到每篇文章
+            foreach ($items as &$item) {
+                if (isset($item['id']) && isset($viewStats[$item['id']])) {
+                    $item['views'] = $viewStats[$item['id']]['views'];
+                    $item['unique_visitors'] = $viewStats[$item['id']]['unique_visitors'];
+                } else {
+                    $item['views'] = 0;
+                    $item['unique_visitors'] = 0;
+                }
+            }
+            unset($item);
 
             $responseData = $this->paginatedResponse(
                 $items,
@@ -410,6 +428,11 @@ class PostController extends BaseController
                     }
                 }
             }
+
+            // 添加瀏覽統計
+            $viewStats = $this->postViewStatsService->getPostViewStats($id);
+            $postData['views'] = $viewStats['views'];
+            $postData['unique_visitors'] = $viewStats['unique_visitors'];
 
             $successResponse = $this->successResponse($postData, '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));

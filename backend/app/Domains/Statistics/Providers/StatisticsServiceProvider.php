@@ -14,6 +14,7 @@ use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Infrastructure\Services\CacheService;
@@ -152,6 +153,14 @@ class StatisticsServiceProvider
 
             // 視覺化服務
             StatisticsVisualizationServiceInterface::class => \DI\autowire(StatisticsVisualizationService::class),
+
+            // 文章瀏覽統計服務
+            PostViewStatisticsService::class => \DI\factory(function (ContainerInterface $container): PostViewStatisticsService {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+
+                return new PostViewStatisticsService($pdo);
+            }),
         ];
     }
 }
