@@ -47,6 +47,7 @@ class AdvancedAnalyticsService
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
+        /** @var array<int, string|null> $userAgents */
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         $deviceStats = [
@@ -57,7 +58,7 @@ class AdvancedAnalyticsService
         ];
 
         foreach ($userAgents as $ua) {
-            $parsed = $this->userAgentParser->parse($ua);
+            $parsed = $this->userAgentParser->parse(is_string($ua) ? $ua : null);
             $deviceType = $parsed['device_type'];
             $deviceStats[$deviceType] = ($deviceStats[$deviceType] ?? 0) + 1;
         }
@@ -92,12 +93,13 @@ class AdvancedAnalyticsService
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
+        /** @var array<int, string|null> $userAgents */
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         $browserStats = [];
 
         foreach ($userAgents as $ua) {
-            $parsed = $this->userAgentParser->parse($ua);
+            $parsed = $this->userAgentParser->parse(is_string($ua) ? $ua : null);
             $browser = $parsed['browser'];
             $browserStats[$browser] = ($browserStats[$browser] ?? 0) + 1;
         }
@@ -134,12 +136,13 @@ class AdvancedAnalyticsService
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
+        /** @var array<int, string|null> $userAgents */
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         $osStats = [];
 
         foreach ($userAgents as $ua) {
-            $parsed = $this->userAgentParser->parse($ua);
+            $parsed = $this->userAgentParser->parse(is_string($ua) ? $ua : null);
             $os = $parsed['os'];
             $osStats[$os] = ($osStats[$os] ?? 0) + 1;
         }
