@@ -10,8 +10,11 @@ module.exports = defineConfig({
   // 測試執行設定
   fullyParallel: false, // 循序執行，避免測試間互相影響
   forbidOnly: !!process.env.CI, // CI 環境禁止 .only
-  retries: process.env.CI ? 2 : 0, // CI 環境重試 2 次
+  retries: process.env.CI ? 1 : 0, // CI 環境重試 1 次（從 2 降為 1）
   workers: process.env.CI ? 1 : 1, // 使用 1 個 worker
+  
+  // 超時設定
+  timeout: 60000, // 每個測試最長 60 秒（新增）
   
   // 報告設定
   reporter: [
@@ -34,9 +37,9 @@ module.exports = defineConfig({
     // 追蹤設定（用於除錯）
     trace: 'retain-on-failure',
     
-    // 逾時設定
-    actionTimeout: 10000,
-    navigationTimeout: 30000,
+    // 逾時設定（增加以減少不必要的 retry）
+    actionTimeout: 15000, // 從 10秒 增加到 15秒
+    navigationTimeout: 40000, // 從 30秒 增加到 40秒
   },
 
   // 測試專案配置
