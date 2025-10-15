@@ -554,8 +554,8 @@ export default class StatisticsPage {
     const failures = this.stats.loginFailures || {};
     const trend = failures.trend || [];
 
-    // 如果沒有趨勢資料，生成模擬資料
-    const chartData = trend.length > 0 ? trend : this.generateMockFailureTrend();
+    // 使用實際的趨勢資料，如果沒有資料則顯示空圖表
+    const chartData = trend.length > 0 ? trend : [];
 
     this.charts.loginFailures = new Chart(ctx, {
       type: 'bar',
@@ -594,45 +594,6 @@ export default class StatisticsPage {
         }
       }
     });
-  }
-
-  generateMockFailureTrend() {
-    let days;
-    if (this.timeRange === 'day') {
-      days = 24;
-    } else if (this.timeRange === 'week') {
-      days = 7;
-    } else if (this.timeRange === 'month') {
-      days = 30;
-    } else if (this.timeRange === 'quarter') {
-      days = 90;
-    } else if (this.timeRange === 'year') {
-      days = 365;
-    } else {
-      days = 7; // 預設值
-    }
-    
-    const data = [];
-    const now = new Date();
-    
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date(now);
-      if (this.timeRange === 'day') {
-        date.setHours(date.getHours() - i);
-        data.push({
-          date: `${date.getHours()}:00`,
-          count: Math.floor(Math.random() * 10)
-        });
-      } else {
-        date.setDate(date.getDate() - i);
-        data.push({
-          date: date.toISOString().split('T')[0],
-          count: Math.floor(Math.random() * 20)
-        });
-      }
-    }
-    
-    return data;
   }
 
   escapeHtml(text) {

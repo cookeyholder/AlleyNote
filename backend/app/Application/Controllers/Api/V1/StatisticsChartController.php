@@ -158,23 +158,23 @@ class StatisticsChartController extends BaseController
         DateTimeImmutable $endDate,
         string $granularity,
     ): array {
-        // 根據粒度決定 DATE_FORMAT
+        // SQLite 使用 strftime 函數
         $dateFormat = match ($granularity) {
             'hour' => '%Y-%m-%d %H:00:00',
             'day' => '%Y-%m-%d',
-            'week' => '%Y-%u',
+            'week' => '%Y-%W',  // SQLite 使用 %W 表示週數
             'month' => '%Y-%m',
             default => '%Y-%m-%d',
         };
 
         $sql = '
             SELECT 
-                DATE_FORMAT(view_date, :date_format) as date,
+                strftime(:date_format, view_date) as date,
                 COUNT(*) as views,
                 COUNT(DISTINCT user_ip) as visitors
             FROM post_views
             WHERE view_date BETWEEN :start_date AND :end_date
-            GROUP BY DATE_FORMAT(view_date, :date_format)
+            GROUP BY strftime(:date_format, view_date)
             ORDER BY date ASC
         ';
 
@@ -185,10 +185,17 @@ class StatisticsChartController extends BaseController
             'end_date' => $endDate->format('Y-m-d 23:59:59'),
         ]);
 
-        /** @var array<int, array{date: string, views: int, visitors: int}> */
+        /** @var array<int, array{date: string, views: string, visitors: string}> */
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $result;
+        // 轉換為整數
+        return array_map(function ($row) {
+            return [
+                'date' => $row['date'],
+                'views' => (int) $row['views'],
+                'visitors' => (int) $row['visitors'],
+            ];
+        }, $result);
     }
 
     /**
