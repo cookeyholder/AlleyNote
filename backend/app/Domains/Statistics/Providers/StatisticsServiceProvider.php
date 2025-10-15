@@ -14,6 +14,7 @@ use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Listeners\PostViewedListener;
 use App\Domains\Statistics\Services\AdvancedAnalyticsService;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
@@ -107,7 +108,13 @@ class StatisticsServiceProvider
                 /** @var LoggerInterface|null $logger */
                 $logger = $container->has(LoggerInterface::class) ? $container->get(LoggerInterface::class) : null;
 
-                return new SimpleEventDispatcher($logger);
+                $dispatcher = new SimpleEventDispatcher($logger);
+
+                // 註冊事件監聽器
+                $postViewedListener = $container->get(PostViewedListener::class);
+                $dispatcher->listen('statistics.post.viewed', $postViewedListener);
+
+                return $dispatcher;
             }),
 
             // 領域服務
