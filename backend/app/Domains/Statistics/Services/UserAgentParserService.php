@@ -72,7 +72,7 @@ class UserAgentParserService
         ];
 
         foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $userAgent, $matches) && isset($matches[1])) {
+            if (preg_match($pattern, $userAgent, $matches) === 1) {
                 return (string) $matches[1];
             }
         }

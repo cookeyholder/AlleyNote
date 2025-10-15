@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Services;
 
 use PDO;
+use RuntimeException;
 
 /**
  * 統計報表匯出服務
@@ -62,10 +63,14 @@ class StatisticsExportService
 
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
+        /** @var array<array<string, mixed>> $rows */
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         // 產生 CSV
         $output = fopen('php://temp', 'r+');
+        if ($output === false) {
+            throw new RuntimeException('無法建立臨時檔案');
+        }
 
         // 寫入標頭
         fputcsv($output, ['ID', '文章ID', '文章標題', '使用者ID', '使用者名稱', 'IP地址', 'User-Agent', '來源', '瀏覽時間']);
@@ -73,21 +78,25 @@ class StatisticsExportService
         // 寫入資料
         foreach ($rows as $row) {
             fputcsv($output, [
-                $row['id'],
-                $row['post_id'],
-                $row['post_title'] ?? '',
-                $row['user_id'] ?? '',
-                $row['username'] ?? '匿名',
-                $row['user_ip'],
-                $row['user_agent'] ?? '',
-                $row['referrer'] ?? '',
-                $row['view_date'],
+                (string) ($row['id'] ?? ''),
+                (string) ($row['post_id'] ?? ''),
+                (string) ($row['post_title'] ?? ''),
+                (string) ($row['user_id'] ?? ''),
+                (string) ($row['username'] ?? '匿名'),
+                (string) ($row['user_ip'] ?? ''),
+                (string) ($row['user_agent'] ?? ''),
+                (string) ($row['referrer'] ?? ''),
+                (string) ($row['view_date'] ?? ''),
             ]);
         }
 
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);
+
+        if ($csv === false) {
+            throw new RuntimeException('無法讀取 CSV 內容');
+        }
 
         return $csv;
     }
@@ -102,6 +111,9 @@ class StatisticsExportService
         $report = $this->analyticsService->getComprehensiveReport($postId, $startDate, $endDate);
 
         $output = fopen('php://temp', 'r+');
+        if ($output === false) {
+            throw new RuntimeException('無法建立臨時檔案');
+        }
 
         // 總覽資訊
         fputcsv($output, ['統計報告']);
@@ -152,6 +164,12 @@ class StatisticsExportService
         $csv = stream_get_contents($output);
         fclose($output);
 
+        if ($csv === false) {
+            throw new RuntimeException('無法讀取 CSV 內容');
+        }
+
+        return $csv;
+
         return $csv;
     }
 
@@ -164,6 +182,11 @@ class StatisticsExportService
     {
         $report = $this->analyticsService->getComprehensiveReport($postId, $startDate, $endDate);
 
-        return json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $json = json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            throw new RuntimeException('無法轉換為 JSON: ' . json_last_error_msg());
+        }
+
+        return $json;
     }
 }
