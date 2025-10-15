@@ -411,76 +411,105 @@ export default class StatisticsPage {
   }
 
   initCharts() {
-    // 銷毀舊圖表
-    if (this.charts.traffic) {
-      this.charts.traffic.destroy();
-    }
-    if (this.charts.loginFailures) {
-      this.charts.loginFailures.destroy();
-    }
-
-    // 初始化流量趨勢圖
-    this.initTrafficChart();
+    console.log('開始初始化圖表...');
     
-    // 初始化登入失敗趨勢圖
-    this.initLoginFailuresChart();
+    // 等待下一個事件循環，確保 DOM 已經渲染
+    setTimeout(() => {
+      // 銷毀舊圖表
+      if (this.charts.traffic) {
+        this.charts.traffic.destroy();
+      }
+      if (this.charts.loginFailures) {
+        this.charts.loginFailures.destroy();
+      }
+
+      // 初始化流量趨勢圖
+      this.initTrafficChart();
+      
+      // 初始化登入失敗趨勢圖
+      this.initLoginFailuresChart();
+    }, 100);
   }
 
   initTrafficChart() {
     const canvas = document.getElementById('trafficChart');
-    if (!canvas) return;
+    if (!canvas) {
+      console.error('找不到 trafficChart canvas 元素');
+      return;
+    }
+
+    // 檢查 Chart.js 是否載入
+    if (typeof Chart === 'undefined') {
+      console.error('Chart.js 尚未載入');
+      return;
+    }
 
     const ctx = canvas.getContext('2d');
     const trafficData = this.stats.trafficData || [];
 
-    this.charts.traffic = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: trafficData.map(d => d.date),
-        datasets: [
-          {
-            label: '瀏覽量',
-            data: trafficData.map(d => d.views),
-            borderColor: '#3b82f6',
-            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-            tension: 0.4,
-            fill: true
-          },
-          {
-            label: '訪客數',
-            data: trafficData.map(d => d.visitors),
-            borderColor: '#10b981',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            tension: 0.4,
-            fill: true
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: false
-          },
-          tooltip: {
-            mode: 'index',
-            intersect: false,
-          }
+    console.log('初始化流量趨勢圖，資料筆數:', trafficData.length);
+    console.log('流量資料:', trafficData);
+
+    // 如果沒有資料，使用空資料集
+    const labels = trafficData.length > 0 ? trafficData.map(d => d.date) : [];
+    const viewsData = trafficData.length > 0 ? trafficData.map(d => d.views || 0) : [];
+    const visitorsData = trafficData.length > 0 ? trafficData.map(d => d.visitors || 0) : [];
+
+    try {
+      this.charts.traffic = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: '瀏覽量',
+              data: viewsData,
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              tension: 0.4,
+              fill: true
+            },
+            {
+              label: '訪客數',
+              data: visitorsData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              tension: 0.4,
+              fill: true
+            }
+          ]
         },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              precision: 0
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            title: {
+              display: trafficData.length === 0,
+              text: trafficData.length === 0 ? '暫無流量資料' : ''
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                precision: 0
+              }
             }
           }
         }
-      }
-    });
+      });
+      
+      console.log('流量趨勢圖初始化成功');
+    } catch (error) {
+      console.error('初始化流量趨勢圖失敗:', error);
+    }
   }
 
   initLoginFailuresChart() {
