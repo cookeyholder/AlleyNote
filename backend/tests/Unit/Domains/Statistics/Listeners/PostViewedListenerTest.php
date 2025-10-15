@@ -7,6 +7,7 @@ namespace Tests\Unit\Domains\Statistics\Listeners;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Events\PostViewed;
 use App\Domains\Statistics\Listeners\PostViewedListener;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Events\AbstractDomainEvent;
 use Mockery;
 use Mockery\MockInterface;
@@ -24,6 +25,9 @@ class PostViewedListenerTest extends TestCase
     /** @var StatisticsMonitoringServiceInterface&MockInterface */
     private $monitoringService;
 
+    /** @var PostViewStatisticsService&MockInterface */
+    private $postViewStatsService;
+
     /** @var LoggerInterface&MockInterface */
     private $logger;
 
@@ -32,8 +36,13 @@ class PostViewedListenerTest extends TestCase
         parent::setUp();
 
         $this->monitoringService = Mockery::mock(StatisticsMonitoringServiceInterface::class);
+        $this->postViewStatsService = Mockery::mock(PostViewStatisticsService::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
-        $this->listener = new PostViewedListener($this->monitoringService, $this->logger);
+        $this->listener = new PostViewedListener(
+            $this->monitoringService,
+            $this->postViewStatsService,
+            $this->logger
+        );
     }
 
     protected function tearDown(): void
@@ -69,6 +78,12 @@ class PostViewedListenerTest extends TestCase
             ->twice()
             ->with(Mockery::type('string'), Mockery::type('array'));
 
+        $this->postViewStatsService
+            ->shouldReceive('recordView')
+            ->once()
+            ->with(123, 456, '192.168.1.1', 'Chrome/91.0', 'https://example.com')
+            ->andReturn(true);
+
         $this->monitoringService
             ->shouldReceive('logStatisticsEvent')
             ->once()
@@ -94,6 +109,12 @@ class PostViewedListenerTest extends TestCase
             ->shouldReceive('info')
             ->twice()
             ->with(Mockery::type('string'), Mockery::type('array'));
+
+        $this->postViewStatsService
+            ->shouldReceive('recordView')
+            ->once()
+            ->with(789, null, '10.0.0.1', 'Safari/14.0', null)
+            ->andReturn(true);
 
         $this->monitoringService
             ->shouldReceive('logStatisticsEvent')
@@ -160,6 +181,11 @@ class PostViewedListenerTest extends TestCase
                 Mockery::type('array'),
             );
 
+        $this->postViewStatsService
+            ->shouldReceive('recordView')
+            ->once()
+            ->andReturn(true);
+
         $this->monitoringService
             ->shouldReceive('logStatisticsEvent')
             ->once()
@@ -190,6 +216,11 @@ class PostViewedListenerTest extends TestCase
                 'Failed to record view event in monitoring service',
                 Mockery::type('array'),
             );
+
+        $this->postViewStatsService
+            ->shouldReceive('recordView')
+            ->once()
+            ->andReturn(true);
 
         $this->monitoringService
             ->shouldReceive('logStatisticsEvent')
@@ -222,6 +253,12 @@ class PostViewedListenerTest extends TestCase
         );
 
         $this->logger->shouldReceive('info')->twice();
+
+        $this->postViewStatsService
+            ->shouldReceive('recordView')
+            ->once()
+            ->with($postId, $userId, $userIp, $userAgent, $referrer)
+            ->andReturn(true);
 
         $this->monitoringService
             ->shouldReceive('logStatisticsEvent')
