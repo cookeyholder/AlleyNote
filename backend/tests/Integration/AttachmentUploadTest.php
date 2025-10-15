@@ -76,8 +76,6 @@ class AttachmentUploadTest extends TestCase
             $this->uploadDir,
         );
 
-        $this->createTestTables();
-
         // 插入一筆 id=1 的測試文章（補齊所有必要欄位）
         $now = date('Y-m-d H:i:s');
         $uuid = 'test-uuid-1';
@@ -336,7 +334,8 @@ class AttachmentUploadTest extends TestCase
                 file_size INTEGER NOT NULL,
                 storage_path VARCHAR(255) NOT NULL,
                 created_at DATETIME,
-                updated_at DATETIME
+                updated_at DATETIME,
+                deleted_at DATETIME NULL
             )
         ');
     }

@@ -107,6 +107,11 @@ class FileUploadSecurityTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
+
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
@@ -143,6 +148,11 @@ class FileUploadSecurityTest extends TestCase
             ->once()
             ->with($postId)
             ->andReturn($post);
+
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
 
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
@@ -181,6 +191,11 @@ class FileUploadSecurityTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
+
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('檔案大小超過限制（10MB）');
@@ -217,6 +232,11 @@ class FileUploadSecurityTest extends TestCase
             ->once()
             ->with($postId)
             ->andReturn($post);
+
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
 
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
@@ -255,6 +275,11 @@ class FileUploadSecurityTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
+
         // 預期會拋出例外
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('不支援的檔案類型');
@@ -290,6 +315,11 @@ class FileUploadSecurityTest extends TestCase
             ->with($postId)
             ->andReturn($post);
 
+        $this->attachmentRepo->shouldReceive('countByPostId')
+            ->once()
+            ->with($postId)
+            ->andReturn(0);
+
         // 模擬成功保存附件
         $this->attachmentRepo->shouldReceive('create')
             ->once()
@@ -309,7 +339,7 @@ class FileUploadSecurityTest extends TestCase
 
         // 執行測試 - 應該成功，但我們的驗證還是會失敗，所以期望拋出異常
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('檔案類型不符合預期');
+        $this->expectExceptionMessage('檔案內容與宣告不符');
 
         $this->service->upload($postId, $file, 1);
     }

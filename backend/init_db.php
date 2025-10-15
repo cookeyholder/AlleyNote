@@ -78,6 +78,167 @@ try {
     ");
     echo "✓ post_tags 表已創建\n";
     
+    // 創建 attachments 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS attachments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid VARCHAR(36) NOT NULL UNIQUE,
+            post_id INTEGER NOT NULL,
+            filename VARCHAR(255) NOT NULL,
+            original_name VARCHAR(255) NOT NULL,
+            mime_type VARCHAR(100) NOT NULL,
+            file_size INTEGER NOT NULL,
+            storage_path VARCHAR(500) NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at DATETIME,
+            FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
+        )
+    ");
+    echo "✓ attachments 表已創建\n";
+    
+    // 創建 refresh_tokens 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS refresh_tokens (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            jti VARCHAR(36) NOT NULL UNIQUE,
+            user_id INTEGER NOT NULL,
+            device_id VARCHAR(255),
+            device_name VARCHAR(255),
+            device_type VARCHAR(50),
+            user_agent TEXT,
+            ip_address VARCHAR(45),
+            platform VARCHAR(50),
+            browser VARCHAR(50),
+            expires_at DATETIME NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            token_hash VARCHAR(255),
+            status VARCHAR(20) NOT NULL DEFAULT 'active',
+            revoked_at DATETIME,
+            revoked_reason TEXT,
+            last_used_at DATETIME,
+            parent_token_jti VARCHAR(36),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    ");
+    echo "✓ refresh_tokens 表已創建\n";
+    
+    // 創建 ip_lists 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS ip_lists (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid VARCHAR(36) NOT NULL UNIQUE,
+            ip_address VARCHAR(45) NOT NULL,
+            type INTEGER NOT NULL DEFAULT 0,
+            unit_id INTEGER,
+            description TEXT,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    ");
+    echo "✓ ip_lists 表已創建\n";
+    
+    // 創建 user_activity_logs 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS user_activity_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid VARCHAR(36) NOT NULL UNIQUE,
+            user_id INTEGER,
+            activity_type VARCHAR(50) NOT NULL,
+            ip_address VARCHAR(45),
+            user_agent TEXT,
+            request_method VARCHAR(10),
+            request_uri TEXT,
+            request_data TEXT,
+            response_status INTEGER,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        )
+    ");
+    echo "✓ user_activity_logs 表已創建\n";
+    
+    // 創建 comments 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid VARCHAR(36) NOT NULL UNIQUE,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER,
+            parent_id INTEGER,
+            content TEXT NOT NULL,
+            user_ip VARCHAR(45),
+            status INTEGER NOT NULL DEFAULT 1,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            deleted_at DATETIME,
+            FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+            FOREIGN KEY (parent_id) REFERENCES comments(id) ON DELETE CASCADE
+        )
+    ");
+    echo "✓ comments 表已創建\n";
+    
+    // 創建 post_views 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS post_views (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            post_id INTEGER NOT NULL,
+            user_id INTEGER,
+            ip_address VARCHAR(45),
+            user_agent TEXT,
+            referer TEXT,
+            viewed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        )
+    ");
+    echo "✓ post_views 表已創建\n";
+    
+    // 創建 statistics_snapshots 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS statistics_snapshots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid VARCHAR(36) NOT NULL UNIQUE,
+            period_type VARCHAR(20) NOT NULL,
+            period_start DATETIME NOT NULL,
+            period_end DATETIME NOT NULL,
+            snapshot_data TEXT NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    ");
+    echo "✓ statistics_snapshots 表已創建\n";
+    
+    // 創建 token_blacklist 表
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS token_blacklist (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            jti VARCHAR(36) NOT NULL UNIQUE,
+            user_id INTEGER NOT NULL,
+            token_type VARCHAR(20) NOT NULL,
+            expires_at DATETIME NOT NULL,
+            blacklisted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            reason VARCHAR(255),
+            ip_address VARCHAR(45),
+            user_agent TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    ");
+    echo "✓ token_blacklist 表已創建\n";
+    
+    // 創建索引
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_published ON posts(published_at)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_attachments_post ON attachments(post_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_jti ON refresh_tokens(jti)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_post_views_post ON post_views(post_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_token_blacklist_jti ON token_blacklist(jti)");
+    echo "✓ 索引已創建\n";
+    
     // 檢查是否已有使用者
     $stmt = $pdo->query("SELECT COUNT(*) FROM users");
     $userCount = $stmt->fetchColumn();
