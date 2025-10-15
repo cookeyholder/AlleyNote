@@ -2,7 +2,7 @@ import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/
 import { apiClient } from '../../api/client.js';
 import { router } from '../../utils/router.js';
 import { toast } from '../../utils/toast.js';
-import { CKEditorWrapper } from '../../components/CKEditorWrapper.js';
+import { initRichTextEditor, destroyRichTextEditor, getRichTextEditorContent } from '../../components/RichTextEditor.js';
 import { confirmDiscard } from '../../components/ConfirmationDialog.js';
 import { loading } from '../../components/Loading.js';
 import { timezoneUtils } from '../../utils/timezoneUtils.js';
@@ -241,23 +241,26 @@ export async function renderPostEditor(postId = null) {
 }
 
 /**
- * 初始化 CKEditor
+ * 初始化富文本編輯器
  */
 async function initCKEditor(post) {
   try {
-    editorInstance = new CKEditorWrapper();
-    await editorInstance.init('content', post?.content || '');
+    editorInstance = await initRichTextEditor('content', {
+      placeholder: '開始撰寫文章內容...',
+      initialValue: post?.content || '',
+      minHeight: '400px'
+    });
     
     // 監聽內容變化
-    if (editorInstance.editor) {
-      editorInstance.editor.model.document.on('change:data', () => {
+    if (editorInstance) {
+      editorInstance.model.document.on('change:data', () => {
         hasUnsavedChanges = true;
       });
     }
     
-    console.log('[PostEditor] CKEditor 已初始化');
+    console.log('[PostEditor] 富文本編輯器已初始化');
   } catch (error) {
-    console.error('[PostEditor] CKEditor 初始化失敗:', error);
+    console.error('[PostEditor] 編輯器初始化失敗:', error);
     toast.error('編輯器初始化失敗，請重新整理頁面');
   }
 }
@@ -300,8 +303,8 @@ function bindFormEvents(postId) {
       form.publish_date.value = originalPostData.publish_date ? await formatDateTimeLocal(originalPostData.publish_date) : '';
       
       // 恢復編輯器內容
-      if (editorInstance && editorInstance.editor) {
-        editorInstance.editor.setData(originalPostData.content || '');
+      if (editorInstance) {
+        editorInstance.setData(originalPostData.content || '');
       }
       
       hasUnsavedChanges = false;
@@ -325,9 +328,10 @@ function startAutoSave(postId) {
     
     try {
       const form = document.getElementById('post-form');
+      const content = getRichTextEditorContent('content');
       const data = {
         title: form.title.value,
-        content: editorInstance.getData(),
+        content: content || '',
         status: form.status.value,
         excerpt: form.excerpt.value,
       };
@@ -356,9 +360,9 @@ function setupBeforeUnload() {
 /**
  * 清理編輯器
  */
-function cleanupEditor() {
+async function cleanupEditor() {
   if (editorInstance) {
-    editorInstance.destroy();
+    await destroyRichTextEditor('content');
     editorInstance = null;
   }
   
@@ -381,10 +385,7 @@ async function savePost(postId, status) {
   const submitBtn = document.getElementById('submit-btn');
   
   // 取得編輯器內容
-  let content = '';
-  if (editorInstance && editorInstance.editor) {
-    content = editorInstance.editor.getData();
-  }
+  const content = getRichTextEditorContent('content') || '';
   
   console.log('[PostEditor] 儲存文章:', {
     title: form.title.value,
