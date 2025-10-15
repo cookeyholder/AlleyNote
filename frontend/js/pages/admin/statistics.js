@@ -14,7 +14,7 @@ export default class StatisticsPage {
       traffic: null,
       loginFailures: null
     };
-    this.timeRange = 'week'; // day, week, month
+    this.timeRange = 'week'; // day, week, month, quarter, year
   }
 
   async init() {
@@ -64,8 +64,14 @@ export default class StatisticsPage {
       startDate.setDate(startDate.getDate() - 1);
     } else if (this.timeRange === 'week') {
       startDate.setDate(startDate.getDate() - 7);
-    } else {
+    } else if (this.timeRange === 'month') {
       startDate.setDate(startDate.getDate() - 30);
+    } else if (this.timeRange === 'quarter') {
+      // 本季：過去 90 天
+      startDate.setDate(startDate.getDate() - 90);
+    } else if (this.timeRange === 'year') {
+      // 本年：過去 365 天
+      startDate.setDate(startDate.getDate() - 365);
     }
 
     const params = new URLSearchParams({
@@ -92,8 +98,12 @@ export default class StatisticsPage {
       startDate.setDate(startDate.getDate() - 1);
     } else if (this.timeRange === 'week') {
       startDate.setDate(startDate.getDate() - 7);
-    } else {
+    } else if (this.timeRange === 'month') {
       startDate.setDate(startDate.getDate() - 30);
+    } else if (this.timeRange === 'quarter') {
+      startDate.setDate(startDate.getDate() - 90);
+    } else if (this.timeRange === 'year') {
+      startDate.setDate(startDate.getDate() - 365);
     }
 
     const params = new URLSearchParams({
@@ -121,8 +131,12 @@ export default class StatisticsPage {
       startDate.setDate(startDate.getDate() - 1);
     } else if (this.timeRange === 'week') {
       startDate.setDate(startDate.getDate() - 7);
-    } else {
+    } else if (this.timeRange === 'month') {
       startDate.setDate(startDate.getDate() - 30);
+    } else if (this.timeRange === 'quarter') {
+      startDate.setDate(startDate.getDate() - 90);
+    } else if (this.timeRange === 'year') {
+      startDate.setDate(startDate.getDate() - 365);
     }
 
     const params = new URLSearchParams({
@@ -151,7 +165,21 @@ export default class StatisticsPage {
     // 計算時間範圍
     const endDate = new Date();
     const startDate = new Date();
-    const days = this.timeRange === 'day' ? 1 : this.timeRange === 'week' ? 7 : 30;
+    let days;
+    
+    if (this.timeRange === 'day') {
+      days = 1;
+    } else if (this.timeRange === 'week') {
+      days = 7;
+    } else if (this.timeRange === 'month') {
+      days = 30;
+    } else if (this.timeRange === 'quarter') {
+      days = 90;
+    } else if (this.timeRange === 'year') {
+      days = 365;
+    } else {
+      days = 7; // 預設值
+    }
     
     startDate.setDate(startDate.getDate() - days);
 
@@ -262,7 +290,7 @@ export default class StatisticsPage {
       <div class="max-w-7xl mx-auto">
         <!-- 工具列 -->
         <div class="flex justify-between items-center mb-6">
-          <div class="flex gap-2">
+          <div class="flex gap-2 flex-wrap">
             <button data-range="day" class="time-range-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors ${this.timeRange === 'day' ? 'bg-accent-600 text-white active' : 'bg-white text-modern-700 border border-modern-200 hover:bg-modern-50'}">
               今日
             </button>
@@ -271,6 +299,12 @@ export default class StatisticsPage {
             </button>
             <button data-range="month" class="time-range-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors ${this.timeRange === 'month' ? 'bg-accent-600 text-white active' : 'bg-white text-modern-700 border border-modern-200 hover:bg-modern-50'}">
               本月
+            </button>
+            <button data-range="quarter" class="time-range-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors ${this.timeRange === 'quarter' ? 'bg-accent-600 text-white active' : 'bg-white text-modern-700 border border-modern-200 hover:bg-modern-50'}">
+              本季
+            </button>
+            <button data-range="year" class="time-range-btn px-4 py-2 rounded-lg text-sm font-medium transition-colors ${this.timeRange === 'year' ? 'bg-accent-600 text-white active' : 'bg-white text-modern-700 border border-modern-200 hover:bg-modern-50'}">
+              本年
             </button>
           </div>
           <button id="refresh-stats-btn" class="px-4 py-2 bg-white border border-modern-200 rounded-lg text-sm font-medium text-modern-700 hover:bg-modern-50 transition-colors flex items-center gap-2">
@@ -563,7 +597,21 @@ export default class StatisticsPage {
   }
 
   generateMockFailureTrend() {
-    const days = this.timeRange === 'day' ? 24 : this.timeRange === 'week' ? 7 : 30;
+    let days;
+    if (this.timeRange === 'day') {
+      days = 24;
+    } else if (this.timeRange === 'week') {
+      days = 7;
+    } else if (this.timeRange === 'month') {
+      days = 30;
+    } else if (this.timeRange === 'quarter') {
+      days = 90;
+    } else if (this.timeRange === 'year') {
+      days = 365;
+    } else {
+      days = 7; // 預設值
+    }
+    
     const data = [];
     const now = new Date();
     
