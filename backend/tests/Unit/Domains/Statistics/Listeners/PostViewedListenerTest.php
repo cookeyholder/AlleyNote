@@ -41,7 +41,7 @@ class PostViewedListenerTest extends TestCase
         $this->listener = new PostViewedListener(
             $this->monitoringService,
             $this->postViewStatsService,
-            $this->logger
+            $this->logger,
         );
     }
 

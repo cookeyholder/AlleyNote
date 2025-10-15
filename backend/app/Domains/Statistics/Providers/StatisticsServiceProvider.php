@@ -14,9 +14,11 @@ use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Services\AdvancedAnalyticsService;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\Services\StatisticsConfigService;
+use App\Domains\Statistics\Services\UserAgentParserService;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use App\Infrastructure\Statistics\Repositories\StatisticsRepository;
@@ -160,6 +162,21 @@ class StatisticsServiceProvider
                 $pdo = $container->get(PDO::class);
 
                 return new PostViewStatisticsService($pdo);
+            }),
+
+            // User-Agent 解析服務
+            UserAgentParserService::class => \DI\factory(function (): UserAgentParserService {
+                return new UserAgentParserService();
+            }),
+
+            // 進階分析服務
+            AdvancedAnalyticsService::class => \DI\factory(function (ContainerInterface $container): AdvancedAnalyticsService {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                /** @var UserAgentParserService $userAgentParser */
+                $userAgentParser = $container->get(UserAgentParserService::class);
+
+                return new AdvancedAnalyticsService($pdo, $userAgentParser);
             }),
         ];
     }

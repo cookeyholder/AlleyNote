@@ -12,6 +12,7 @@ use App\Application\Controllers\Api\V1\StatisticsController;
 use App\Application\Controllers\Api\V1\StatisticsAdminController;
 use App\Application\Controllers\Api\V1\StatisticsChartController;
 use App\Application\Controllers\Api\V1\PostViewController;
+use App\Application\Controllers\Api\V1\AdvancedAnalyticsController;
 
 return [
     // =========================================
@@ -153,6 +154,64 @@ return [
         'path' => '/api/statistics/charts/sources/distribution',
         'handler' => [StatisticsChartController::class, 'getSourcesDistribution'],
         'name' => 'statistics.charts.sources.distribution',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // =========================================
+    // 進階分析 API 路由 (需要認證)
+    // =========================================
+
+    // 取得裝置類型統計
+    'statistics.analytics.device_types' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/analytics/device-types',
+        'handler' => [AdvancedAnalyticsController::class, 'getDeviceTypes'],
+        'name' => 'statistics.analytics.device_types',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得瀏覽器統計
+    'statistics.analytics.browsers' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/analytics/browsers',
+        'handler' => [AdvancedAnalyticsController::class, 'getBrowsers'],
+        'name' => 'statistics.analytics.browsers',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得操作系統統計
+    'statistics.analytics.os' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/analytics/operating-systems',
+        'handler' => [AdvancedAnalyticsController::class, 'getOperatingSystems'],
+        'name' => 'statistics.analytics.os',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得來源統計
+    'statistics.analytics.referrers' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/analytics/referrers',
+        'handler' => [AdvancedAnalyticsController::class, 'getReferrers'],
+        'name' => 'statistics.analytics.referrers',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得時段分布統計
+    'statistics.analytics.hourly' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/analytics/hourly-distribution',
+        'handler' => [AdvancedAnalyticsController::class, 'getHourlyDistribution'],
+        'name' => 'statistics.analytics.hourly',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 取得綜合分析報告
+    'statistics.analytics.comprehensive' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/analytics/comprehensive',
+        'handler' => [AdvancedAnalyticsController::class, 'getComprehensiveReport'],
+        'name' => 'statistics.analytics.comprehensive',
         'middleware' => ['jwt.auth']
     ]
 ];
