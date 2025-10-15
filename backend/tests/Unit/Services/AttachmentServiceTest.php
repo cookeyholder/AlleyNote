@@ -278,7 +278,7 @@ class AttachmentServiceTest extends TestCase
             // 對於其他類型，建立簡單的文字檔案
             $content = 'test content';
         }
-        
+
         $stream = Mockery::mock('Psr\Http\Message\StreamInterface');
         $stream->shouldReceive('getContents')->andReturn($content);
         $stream->shouldReceive('rewind')->andReturnNull();

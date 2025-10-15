@@ -116,7 +116,7 @@ class AttachmentUploadTest extends TestCase
             // 對於其他類型，建立文字檔案
             $content = str_repeat('x', $size);
         }
-        
+
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')
             ->andReturn($filename);
@@ -138,7 +138,7 @@ class AttachmentUploadTest extends TestCase
                 if (!is_dir($directory)) {
                     mkdir($directory, 0o755, true);
                 }
-                
+
                 file_put_contents($path, $content);
 
                 return true;
@@ -212,9 +212,9 @@ class AttachmentUploadTest extends TestCase
             } catch (ValidationException $e) {
                 // 可能是「不支援的檔案類型」或「檔案類型驗證失敗：檔案內容與宣告不符」
                 $this->assertTrue(
-                    str_contains($e->getMessage(), '不支援的檔案類型') ||
-                    str_contains($e->getMessage(), '檔案類型驗證失敗'),
-                    "錯誤訊息應包含檔案類型驗證相關錯誤，實際為: {$e->getMessage()}"
+                    str_contains($e->getMessage(), '不支援的檔案類型')
+                    || str_contains($e->getMessage(), '檔案類型驗證失敗'),
+                    "錯誤訊息應包含檔案類型驗證相關錯誤，實際為: {$e->getMessage()}",
                 );
             }
         }
