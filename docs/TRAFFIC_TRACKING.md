@@ -200,20 +200,14 @@ GET /api/admin/statistics/health
 ## 📝 待實作項目
 
 ### 前端整合
-目前前端**尚未實作**自動調用流量追蹤 API。需要在以下位置添加：
+- ✅ **文章詳情頁**（`frontend/js/pages/public/post.js`）：已實作
+  - 在 `renderPost` 函數中加入非阻塞式的瀏覽追蹤
+  - 使用 `postsAPI.recordView(postId)` 記錄瀏覽
+  - 採用靜默失敗機制，不影響使用者體驗
 
-1. **文章詳情頁**（`frontend/js/pages/public/post.js`）：
-   ```javascript
-   // 在 renderPost 函數中添加
-   async function renderPost(postId) {
-     // ... 載入文章內容
-     
-     // 記錄瀏覽
-     trackPostView(postId);
-   }
-   ```
-
-2. **首頁文章卡片點擊**（可選）
+- ⚪ **首頁文章卡片點擊**（可選，暫不實作）
+  - 註：使用者點擊文章卡片後會跳轉到文章詳情頁
+  - 詳情頁已實作追蹤功能，因此無需在首頁重複追蹤
 
 ### 統計功能增強
 
@@ -271,4 +265,4 @@ AlleyNote 的流量追蹤系統：
 - ✅ 高效能設計（< 100ms 回應時間）
 - ✅ 完整的 IP 和來源追蹤
 - ✅ 靈活的統計查詢 API
-- ⚠️ **前端尚未整合**（需要添加 API 調用）
+- ✅ **前端已完成整合**（文章詳情頁自動追蹤瀏覽）
