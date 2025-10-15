@@ -18,6 +18,7 @@ use App\Domains\Statistics\Services\AdvancedAnalyticsService;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\Services\StatisticsConfigService;
+use App\Domains\Statistics\Services\StatisticsExportService;
 use App\Domains\Statistics\Services\UserAgentParserService;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
@@ -177,6 +178,16 @@ class StatisticsServiceProvider
                 $userAgentParser = $container->get(UserAgentParserService::class);
 
                 return new AdvancedAnalyticsService($pdo, $userAgentParser);
+            }),
+
+            // 統計報表匯出服務
+            StatisticsExportService::class => \DI\factory(function (ContainerInterface $container): StatisticsExportService {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                /** @var AdvancedAnalyticsService $analyticsService */
+                $analyticsService = $container->get(AdvancedAnalyticsService::class);
+
+                return new StatisticsExportService($pdo, $analyticsService);
             }),
         ];
     }

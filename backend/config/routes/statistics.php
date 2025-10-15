@@ -13,6 +13,7 @@ use App\Application\Controllers\Api\V1\StatisticsAdminController;
 use App\Application\Controllers\Api\V1\StatisticsChartController;
 use App\Application\Controllers\Api\V1\PostViewController;
 use App\Application\Controllers\Api\V1\AdvancedAnalyticsController;
+use App\Application\Controllers\Api\V1\StatisticsExportController;
 
 return [
     // =========================================
@@ -212,6 +213,37 @@ return [
         'path' => '/api/statistics/analytics/comprehensive',
         'handler' => [AdvancedAnalyticsController::class, 'getComprehensiveReport'],
         'name' => 'statistics.analytics.comprehensive',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // =========================================
+    // 報表匯出 API 路由 (需要認證)
+    // =========================================
+
+    // 匯出文章瀏覽統計為 CSV
+    'statistics.export.views_csv' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/export/views/csv',
+        'handler' => [StatisticsExportController::class, 'exportViewsCSV'],
+        'name' => 'statistics.export.views_csv',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 匯出綜合報告為 CSV
+    'statistics.export.comprehensive_csv' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/export/comprehensive/csv',
+        'handler' => [StatisticsExportController::class, 'exportComprehensiveCSV'],
+        'name' => 'statistics.export.comprehensive_csv',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 匯出綜合報告為 JSON
+    'statistics.export.comprehensive_json' => [
+        'methods' => ['GET'],
+        'path' => '/api/statistics/export/comprehensive/json',
+        'handler' => [StatisticsExportController::class, 'exportJSON'],
+        'name' => 'statistics.export.comprehensive_json',
         'middleware' => ['jwt.auth']
     ]
 ];
