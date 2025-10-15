@@ -117,7 +117,7 @@ export async function renderPost(postId) {
             <div class="mt-8 flex flex-wrap gap-2">
               ${post.tags.map(tag => `
                 <span class="px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-sm">
-                  #${tag}
+                  #${typeof tag === 'object' ? tag.name : tag}
                 </span>
               `).join('')}
             </div>

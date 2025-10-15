@@ -932,17 +932,17 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         DateTimeInterface $endTime,
         int $limit = 10,
     ): array {
-        // 取得登入失敗帳號統計
+        // 取得登入失敗帳號統計（使用標準 SQL json_extract 函數）
         $accountSql = '
             SELECT
-                metadata->>"$.email" as email,
-                metadata->>"$.username" as username,
+                json_extract(metadata, "$.email") as email,
+                json_extract(metadata, "$.username") as username,
                 COUNT(*) as count,
                 MAX(occurred_at) as latest_attempt
             FROM ' . self::TABLE_NAME . "
             WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
                 AND occurred_at BETWEEN :start_time AND :end_time
-            GROUP BY COALESCE(metadata->\"$.email\", metadata->\"$.username\")
+            GROUP BY COALESCE(json_extract(metadata, '$.email'), json_extract(metadata, '$.username'))
             ORDER BY count DESC
             LIMIT :limit
         ";
