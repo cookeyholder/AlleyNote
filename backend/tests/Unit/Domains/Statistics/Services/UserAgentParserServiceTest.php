@@ -8,7 +8,7 @@ use App\Domains\Statistics\Services\UserAgentParserService;
 use PHPUnit\Framework\TestCase;
 
 /**
- * UserAgentParserService 單元測試
+ * UserAgentParserService 單元測試.
  */
 class UserAgentParserServiceTest extends TestCase
 {
