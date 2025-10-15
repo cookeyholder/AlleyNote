@@ -96,7 +96,7 @@ export async function renderPost(postId) {
                 <span>🌏</span>
                 <span title="${siteTimezone}">${timezoneDisplay}</span>
               </div>
-              ${post.views ? `
+              ${typeof post.views === 'number' ? `
                 <div class="flex items-center gap-2">
                   <span>👁️</span>
                   <span>${post.views} 次瀏覽</span>
