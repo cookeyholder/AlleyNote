@@ -49,15 +49,19 @@ export async function renderHome() {
                 <span class="absolute left-3 top-2.5 text-modern-400">🔍</span>
               </div>
               ${isAuthenticated ? `
-                <a 
-                  href="/admin/dashboard"
-                  data-navigo
-                  class="btn-primary flex items-center gap-2"
-                >
-                  <span>👤</span>
-                  <span class="hidden sm:inline">${user?.username || '管理後台'}</span>
-                  <span class="sm:hidden">後台</span>
-                </a>
+                <div class="flex items-center gap-3">
+                  <a 
+                    href="/admin/dashboard"
+                    data-navigo
+                    class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-accent-600 to-accent-700 text-white rounded-lg hover:from-accent-700 hover:to-accent-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span class="hidden sm:inline font-medium">${user?.username || '管理後台'}</span>
+                    <span class="sm:hidden font-medium">後台</span>
+                  </a>
+                </div>
               ` : `
                 <a 
                   href="/login"
