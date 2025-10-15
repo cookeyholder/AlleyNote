@@ -348,6 +348,7 @@ final class StatisticsQueryService
             totalPosts: $totalPosts,
             activeUsers: $activeUsers,
             newUsers: $newUsers,
+            totalViews: $totalViews,
             postActivity: [
                 'total_posts' => $totalPosts,
                 'published_posts' => $this->queryPublishedPosts($startDate, $endDate),
