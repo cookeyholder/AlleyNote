@@ -3,6 +3,7 @@ import { postsAPI } from '../../api/modules/posts.js?v=20251011';
 import { loading } from '../../components/Loading.js';
 import { timezoneUtils } from '../../utils/timezoneUtils.js';
 import { apiClient } from '../../api/client.js';
+import { globalGetters } from '../../store/globalStore.js';
 
 let currentPage = 1;
 let currentSearch = '';
@@ -20,6 +21,10 @@ export async function renderHome() {
   // 載入網站設定
   await loadSiteSettings();
   
+  // 檢查使用者登入狀態
+  const isAuthenticated = globalGetters.isAuthenticated();
+  const user = globalGetters.getUser();
+  
   const app = document.getElementById('app');
   
   app.innerHTML = `
@@ -29,7 +34,9 @@ export async function renderHome() {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
-              <h1 class="text-2xl font-bold text-accent-600">${siteSettings.site_name}</h1>
+              <a href="/" data-navigo class="text-2xl font-bold text-accent-600 hover:text-accent-700 transition-colors">
+                ${siteSettings.site_name}
+              </a>
             </div>
             <div class="flex items-center gap-4">
               <div class="relative hidden md:block">
@@ -41,12 +48,25 @@ export async function renderHome() {
                 />
                 <span class="absolute left-3 top-2.5 text-modern-400">🔍</span>
               </div>
-              <button 
-                onclick="window.location.href='/login'"
-                class="btn-primary"
-              >
-                登入
-              </button>
+              ${isAuthenticated ? `
+                <a 
+                  href="/admin/dashboard"
+                  data-navigo
+                  class="btn-primary flex items-center gap-2"
+                >
+                  <span>👤</span>
+                  <span class="hidden sm:inline">${user?.username || '管理後台'}</span>
+                  <span class="sm:hidden">後台</span>
+                </a>
+              ` : `
+                <a 
+                  href="/login"
+                  data-navigo
+                  class="btn-primary"
+                >
+                  登入
+                </a>
+              `}
             </div>
           </div>
         </div>
