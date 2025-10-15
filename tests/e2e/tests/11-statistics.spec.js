@@ -6,7 +6,7 @@ test.describe('系統統計頁面', () => {
     await page.goto('http://localhost:3000');
     await page.click('text=登入');
     await page.fill('input[type="email"]', 'admin@example.com');
-    await page.fill('input[type="password"]', 'admin123');
+    await page.fill('input[type="password"]', 'password');
     await page.click('button[type="submit"]:has-text("登入")');
     await page.waitForURL('**/admin/dashboard');
     
