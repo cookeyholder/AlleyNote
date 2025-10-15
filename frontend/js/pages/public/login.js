@@ -76,13 +76,6 @@ export function renderLogin() {
           </button>
         </form>
         
-        <div class="mt-6 text-center">
-          <p class="text-sm text-modern-600 mb-2">測試帳號：</p>
-          <div class="bg-modern-50 p-3 rounded-lg text-sm">
-            <p class="font-mono">admin@example.com / password</p>
-          </div>
-        </div>
-        
         <div class="mt-6 text-center text-xs text-modern-500">
           <p>登入即表示您同意我們的服務條款和隱私政策</p>
         </div>
