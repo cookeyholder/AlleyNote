@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Services;
 
 use PDO;
+use Throwable;
 
 /**
  * 文章瀏覽統計服務.
@@ -94,20 +95,45 @@ class PostViewStatisticsService
     {
         $uuid = $this->generateUuid();
 
-        $stmt = $this->pdo->prepare('
-            INSERT INTO post_views (uuid, post_id, user_id, user_ip, user_agent, referrer, view_date)
-            VALUES (:uuid, :post_id, :user_id, :user_ip, :user_agent, :referrer, :view_date)
-        ');
+        // 開始交易
+        $this->pdo->beginTransaction();
 
-        return $stmt->execute([
-            'uuid' => $uuid,
-            'post_id' => $postId,
-            'user_id' => $userId,
-            'user_ip' => $userIp,
-            'user_agent' => $userAgent,
-            'referrer' => $referrer,
-            'view_date' => date('Y-m-d H:i:s'),
-        ]);
+        try {
+            // 1. 記錄瀏覽事件到 post_views 表
+            $stmt = $this->pdo->prepare('
+                INSERT INTO post_views (uuid, post_id, user_id, user_ip, user_agent, referrer, view_date)
+                VALUES (:uuid, :post_id, :user_id, :user_ip, :user_agent, :referrer, :view_date)
+            ');
+
+            $stmt->execute([
+                'uuid' => $uuid,
+                'post_id' => $postId,
+                'user_id' => $userId,
+                'user_ip' => $userIp,
+                'user_agent' => $userAgent,
+                'referrer' => $referrer,
+                'view_date' => date('Y-m-d H:i:s'),
+            ]);
+
+            // 2. 更新文章的瀏覽次數
+            $updateStmt = $this->pdo->prepare('
+                UPDATE posts
+                SET views = views + 1
+                WHERE id = :post_id
+            ');
+
+            $updateStmt->execute(['post_id' => $postId]);
+
+            // 提交交易
+            $this->pdo->commit();
+
+            return true;
+        } catch (Throwable $e) {
+            // 發生錯誤時回滾
+            $this->pdo->rollBack();
+
+            throw $e;
+        }
     }
 
     /**
