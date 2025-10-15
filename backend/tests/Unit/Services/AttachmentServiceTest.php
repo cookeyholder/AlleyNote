@@ -127,16 +127,6 @@ class AttachmentServiceTest extends TestCase
             ->with($postId)
             ->andReturn(0); // 目前沒有附件
 
-        // 模擬檔案上傳
-        $file->shouldReceive('moveTo')
-            ->andReturnUsing(function ($path) {
-                // 實際建立檔案並設定權限
-                file_put_contents($path, 'test content');
-                chmod($path, 0o644);
-
-                return null;
-            });
-
         // 模擬附件建立
         $this->attachmentRepo->shouldReceive('create')
             ->once()
@@ -279,8 +269,18 @@ class AttachmentServiceTest extends TestCase
         int $size,
         int $error,
     ): UploadedFileInterface {
+        // 根據 MIME 類型建立適當的檔案內容
+        $content = '';
+        if ($mimeType === 'image/jpeg') {
+            // 建立一個有效的最小 JPEG 檔案 (1x1 像素)
+            $content = base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAPwA/wA==');
+        } else {
+            // 對於其他類型，建立簡單的文字檔案
+            $content = 'test content';
+        }
+        
         $stream = Mockery::mock('Psr\Http\Message\StreamInterface');
-        $stream->shouldReceive('getContents')->andReturn('test content');
+        $stream->shouldReceive('getContents')->andReturn($content);
         $stream->shouldReceive('rewind')->andReturnNull();
 
         $file = Mockery::mock(UploadedFileInterface::class);
@@ -288,16 +288,9 @@ class AttachmentServiceTest extends TestCase
         $file->shouldReceive('getClientMediaType')->andReturn($mimeType);
         $file->shouldReceive('getSize')->andReturn($size);
         $file->shouldReceive('getError')->andReturn($error);
-        $file->shouldReceive('moveTo')->andReturnUsing(function ($path) use ($mimeType) {
+        $file->shouldReceive('moveTo')->andReturnUsing(function ($path) use ($content) {
             // 建立實際檔案以便 finfo 可以檢測 MIME 類型
-            if ($mimeType === 'image/jpeg') {
-                // 建立一個有效的最小 JPEG 檔案 (1x1 像素)
-                $validJpegData = base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAPwA/wA==');
-                file_put_contents($path, $validJpegData);
-            } else {
-                // 對於其他類型，建立簡單的文字檔案
-                file_put_contents($path, 'test content');
-            }
+            file_put_contents($path, $content);
             chmod($path, 0o644);
 
             return null;
