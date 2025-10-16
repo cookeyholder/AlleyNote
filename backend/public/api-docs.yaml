@@ -1,10 +1,344 @@
 openapi: 3.0.0
 info:
   title: 'AlleyNote API'
-  description: 'AlleyNote 公布欄系統 API 文件'
+  description: "\nAlleyNote 公布欄系統 API 文件\n\n這是一個現代化的公布欄系統 API，提供完整的貼文管理、使用者認證、檔案上傳等功能。\n\n## 認證方式\n- **JWT Bearer Token**: 使用 JWT Token 進行 API 認證\n- **Session Auth**: 傳統 Session 認證 (向下相容)\n\n## 主要功能\n- 📝 **貼文管理**: 建立、編輯、刪除、查看貼文\n- 👤 **使用者認證**: 登入、登出、註冊、密碼管理\n- 📎 **檔案上傳**: 支援附件上傳和管理\n- 🔐 **權限控制**: 基於角色的存取控制\n\n## API 版本\n當前版本: v1.0.0\n支援的回應格式: JSON\n字元編碼: UTF-8\n\n## 錯誤處理\n所有錯誤回應都遵循統一格式：\n```json\n{\n  \"success\": false,\n  \"error\": \"錯誤訊息\",\n  \"errors\": {\n    \"field\": [\"具體錯誤說明\"]\n  }\n}\n```\n\n## 聯絡資訊\n如有問題或建議，請聯繫開發團隊。\n    "
   version: 1.0.0
+servers:
+  -
+    url: 'http://localhost'
+    description: 開發環境伺服器
+  -
+    url: 'https://api.alleynote.example.com'
+    description: 正式環境伺服器
 paths:
-  '/posts/{post_id}/attachments':
+  /api/v1/activity-logs:
+    get:
+      tags:
+        - 'Activity Log'
+      summary: 'Get activity logs'
+      operationId: getActivityLogs
+      parameters:
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        -
+          name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 'Activity logs retrieved successfully'
+        '500':
+          description: 'Internal server error'
+    post:
+      tags:
+        - 'Activity Log'
+      summary: 'Log a new activity'
+      operationId: storeActivityLog
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                action_type:
+                  type: string
+                user_id:
+                  type: integer
+                metadata:
+                  type: object
+              type: object
+            example:
+              action_type: USER_LOGIN
+              user_id: 1
+              metadata:
+                ip: 127.0.0.1
+      responses:
+        '201':
+          description: 'Activity logged successfully'
+        '400':
+          description: 'Invalid request'
+        '422':
+          description: 'Validation failed'
+  /api/v1/activity-logs/stats:
+    get:
+      tags:
+        - 'Activity Log'
+      summary: 'Get activity log statistics'
+      operationId: getActivityLogStats
+      parameters:
+        -
+          name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        -
+          name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: 'Activity log statistics retrieved successfully'
+        '500':
+          description: 'Internal server error'
+  /api/v1/activity-logs/me:
+    get:
+      tags:
+        - 'Activity Log'
+      summary: 'Get current user activity logs'
+      operationId: getCurrentUserActivityLogs
+      parameters:
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        -
+          name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 'Current user activity logs retrieved successfully'
+        '401':
+          description: Unauthorized
+        '500':
+          description: 'Internal server error'
+  /api/v1/activity-logs/login-failures:
+    get:
+      tags:
+        - 'Activity Log'
+      summary: 'Get login failure statistics'
+      operationId: getLoginFailureStats
+      parameters:
+        -
+          name: start_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        -
+          name: end_date
+          in: query
+          schema:
+            type: string
+            format: date-time
+        -
+          name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: 'Login failure statistics retrieved successfully'
+        '500':
+          description: 'Internal server error'
+  /api/statistics/analytics/device-types:
+    get:
+      tags:
+        - statistics
+      summary: 獲取裝置類型統計
+      description: "獲取裝置類型統計.\n\nGET /api/statistics/analytics/device-types"
+      operationId: dd959784d83cafd1ce8225a87cbdf016
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功
+  /api/statistics/analytics/browsers:
+    get:
+      tags:
+        - statistics
+      summary: 獲取瀏覽器統計
+      description: "獲取瀏覽器統計.\n\nGET /api/statistics/analytics/browsers"
+      operationId: a811125c5ed898ff3ebaefd3b9ca9a07
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功
+  /api/statistics/analytics/operating-systems:
+    get:
+      tags:
+        - statistics
+      summary: 獲取操作系統統計
+      description: "獲取操作系統統計.\n\nGET /api/statistics/analytics/operating-systems"
+      operationId: e5ab3e3026c07ecf876f3d7039125cc9
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功
+  /api/statistics/analytics/referrers:
+    get:
+      tags:
+        - statistics
+      summary: 獲取來源統計
+      description: "獲取來源統計.\n\nGET /api/statistics/analytics/referrers"
+      operationId: a98f26a69d23200b36d553bd73f7a3d2
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: 成功
+  /api/statistics/analytics/hourly-distribution:
+    get:
+      tags:
+        - statistics
+      summary: 獲取時段分布統計
+      description: "獲取時段分布統計.\n\nGET /api/statistics/analytics/hourly-distribution"
+      operationId: d15af0b0922d7fb0dea53129c7f30bbf
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功
+  /api/statistics/analytics/comprehensive:
+    get:
+      tags:
+        - statistics
+      summary: 獲取綜合分析報告
+      description: "獲取綜合分析報告.\n\nGET /api/statistics/analytics/comprehensive"
+      operationId: 4caeb993fc89ed37ad2146fc73377021
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功
+  '/api/posts/{post_id}/attachments':
     get:
       tags:
         - attachments
@@ -108,7 +442,7 @@ paths:
           bearerAuth: []
         -
           sessionAuth: []
-  '/attachments/{id}/download':
+  '/api/attachments/{id}/download':
     get:
       tags:
         - attachments
@@ -174,7 +508,7 @@ paths:
                 properties:
                   error: { type: string, example: 檔案已被刪除或移動 }
                 type: object
-  '/attachments/{id}':
+  '/api/attachments/{id}':
     delete:
       tags:
         - attachments
@@ -226,7 +560,7 @@ paths:
           bearerAuth: []
         -
           sessionAuth: []
-  /auth/register:
+  /api/auth/register:
     post:
       tags:
         - auth
@@ -307,7 +641,7 @@ paths:
                   success: { type: boolean, example: false }
                   error: { type: string, example: 系統發生錯誤 }
                 type: object
-  /auth/login:
+  /api/auth/login:
     post:
       tags:
         - auth
@@ -365,7 +699,7 @@ paths:
                   success: { type: boolean, example: false }
                   error: { type: string, example: 系統發生錯誤 }
                 type: object
-  /auth/logout:
+  /api/auth/logout:
     post:
       tags:
         - auth
@@ -393,7 +727,7 @@ paths:
           bearerAuth: []
         -
           sessionAuth: []
-  /auth/me:
+  /api/auth/me:
     get:
       tags:
         - auth
@@ -421,7 +755,7 @@ paths:
           bearerAuth: []
         -
           sessionAuth: []
-  /auth/refresh:
+  /api/auth/refresh:
     post:
       tags:
         - auth
@@ -474,7 +808,281 @@ paths:
                   success: { type: boolean, example: false }
                   error: { type: string, example: 'Refresh token 無效或已過期' }
                 type: object
-  /posts:
+  /api/auth/forgot-password:
+    post:
+      tags:
+        - auth
+      summary: 請求密碼重設
+      description: 根據電子郵件產生密碼重設憑證並傳送通知。無論電子郵件是否存在都會回傳成功訊息。
+      operationId: forgotPassword
+      requestBody:
+        description: 忘記密碼請求資料
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - email
+              properties:
+                email:
+                  description: 註冊時使用的電子郵件
+                  type: string
+                  format: email
+                  example: user@example.com
+              type: object
+      responses:
+        '200':
+          description: 已回應密碼重設請求
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 如果帳號存在，我們已寄送密碼重設資訊。 }
+                  expires_at: { type: string, format: date-time, example: '2025-01-15T11:30:00Z' }
+                  debug_token: { type: string, example: abcdef0123456789 }
+                type: object
+        '400':
+          description: 請求資料格式錯誤
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 無效的請求資料格式 }
+                type: object
+  /api/auth/reset-password:
+    post:
+      tags:
+        - auth
+      summary: 提交密碼重設
+      description: 使用有效的密碼重設憑證設定新的密碼。
+      operationId: resetPassword
+      requestBody:
+        description: 密碼重設資料
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - token
+                - password
+                - password_confirmation
+              properties:
+                token:
+                  description: 密碼重設憑證
+                  type: string
+                  example: abcdef0123456789
+                password:
+                  description: '新密碼，至少 8 個字元'
+                  type: string
+                  format: password
+                  example: NewPassw0rd!
+                password_confirmation:
+                  description: 再次確認新密碼
+                  type: string
+                  format: password
+                  example: NewPassw0rd!
+              type: object
+      responses:
+        '200':
+          description: 密碼重設成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 密碼已成功重設。 }
+                type: object
+        '400':
+          description: 資料驗證失敗或憑證無效
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 密碼重設連結無效或已過期 }
+                type: object
+  /api/auth/profile:
+    put:
+      tags:
+        - auth
+      summary: 更新個人資料
+      description: 更新當前登入使用者的個人資料
+      operationId: updateProfile
+      requestBody:
+        description: 個人資料
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  description: 使用者名稱
+                  type: string
+                  example: johndoe
+                email:
+                  description: 電子郵件地址
+                  type: string
+                  format: email
+                  example: john@example.com
+                name:
+                  description: 顯示名稱
+                  type: string
+                  example: 'John Doe'
+              type: object
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 個人資料更新成功 }
+                  data: { properties: { id: { type: integer, example: 1 }, username: { type: string, example: johndoe }, email: { type: string, example: john@example.com }, name: { type: string, example: 'John Doe' } }, type: object }
+                type: object
+        '401':
+          description: 未授權
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 未授權存取 }
+                type: object
+        '422':
+          description: 驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+      security:
+        -
+          bearerAuth: []
+  /api/auth/change-password:
+    post:
+      tags:
+        - auth
+      summary: 變更密碼
+      description: 變更當前登入使用者的密碼
+      operationId: changePassword
+      requestBody:
+        description: 密碼資料
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - current_password
+                - new_password
+                - new_password_confirmation
+              properties:
+                current_password:
+                  description: 當前密碼
+                  type: string
+                  format: password
+                  example: oldpassword123
+                new_password:
+                  description: 新密碼，至少6個字元
+                  type: string
+                  format: password
+                  minLength: 6
+                  example: newpassword123
+                new_password_confirmation:
+                  description: 確認新密碼，必須與新密碼相同
+                  type: string
+                  format: password
+                  example: newpassword123
+              type: object
+      responses:
+        '200':
+          description: 密碼變更成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 密碼變更成功 }
+                type: object
+        '401':
+          description: 未授權
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { type: string, example: 未授權存取 }
+                type: object
+        '422':
+          description: 驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+      security:
+        -
+          bearerAuth: []
+  /api/permissions:
+    get:
+      tags:
+        - Permissions
+      summary: 取得權限列表
+      description: 取得系統中所有可用的權限
+      operationId: getPermissions
+      responses:
+        '200':
+          description: 成功取得權限列表
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: posts.create }, display_name: { type: string, example: 建立文章 }, resource: { type: string, example: posts }, action: { type: string, example: create }, description: { type: string, example: 允許建立新文章 } }, type: object } }
+                type: object
+  '/api/permissions/{id}':
+    get:
+      tags:
+        - Permissions
+      summary: 取得單一權限
+      description: '根據權限 ID 取得權限詳細資訊'
+      operationId: getPermissionById
+      parameters:
+        -
+          name: id
+          in: path
+          description: '權限 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功取得權限資訊
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: posts.create }, display_name: { type: string, example: 建立文章 }, resource: { type: string, example: posts }, action: { type: string, example: create }, description: { type: string, example: 允許建立新文章 }, created_at: { type: string, format: date-time } }, type: object }
+                type: object
+        '404':
+          description: 權限不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 權限不存在 }
+                type: object
+  /api/posts:
     get:
       tags:
         - posts
@@ -587,7 +1195,7 @@ paths:
       security:
         -
           csrfToken: []
-  '/posts/{id}':
+  '/api/posts/{id}':
     get:
       tags:
         - posts
@@ -717,7 +1325,40 @@ paths:
       security:
         -
           csrfToken: []
-  '/posts/{id}/pin':
+  '/api/posts/{id}/pin':
+    delete:
+      tags:
+        - posts
+      summary: 取消置頂貼文
+      description: 取消貼文的置頂狀態
+      operationId: unpinPost
+      parameters:
+        -
+          name: id
+          in: path
+          description: '貼文 ID'
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 取消置頂成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 已取消置頂 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 貼文不存在
+        '500':
+          description: 伺服器錯誤
+      security:
+        -
+          bearerAuth: []
     patch:
       tags:
         - posts
@@ -785,12 +1426,1569 @@ paths:
       security:
         -
           csrfToken: []
-  /health:
+  '/api/posts/{id}/publish':
+    post:
+      tags:
+        - posts
+      summary: 發布貼文
+      description: 將草稿貼文發布為公開狀態
+      operationId: publishPost
+      parameters:
+        -
+          name: id
+          in: path
+          description: '貼文 ID'
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 發布成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 貼文已發布 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 貼文不存在
+        '500':
+          description: 伺服器錯誤
+      security:
+        -
+          bearerAuth: []
+  '/api/posts/{id}/unpublish':
+    post:
+      tags:
+        - posts
+      summary: 取消發布貼文
+      description: 將已發布的貼文改為草稿狀態
+      operationId: unpublishPost
+      parameters:
+        -
+          name: id
+          in: path
+          description: '貼文 ID'
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: 取消發布成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 貼文已取消發布 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 貼文不存在
+        '500':
+          description: 伺服器錯誤
+      security:
+        -
+          bearerAuth: []
+  '/api/posts/{id}/view':
+    post:
+      tags:
+        - posts
+      summary: 記錄文章瀏覽
+      description: 記錄使用者瀏覽文章的行為，觸發相關統計事件。此端點針對高頻呼叫進行最佳化。
+      operationId: recordPostView
+      parameters:
+        -
+          name: id
+          in: path
+          description: '文章 ID'
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            example: 123
+      requestBody:
+        description: 瀏覽資訊（可選）
+        required: false
+        content:
+          application/json:
+            schema:
+              properties:
+                referrer:
+                  description: '來源頁面 URL'
+                  type: string
+                  format: uri
+                  example: 'https://example.com/home'
+                  nullable: true
+              type: object
+      responses:
+        '200':
+          description: 成功記錄瀏覽
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 已記錄瀏覽 }
+                  data: { properties: { post_id: { type: integer, example: 123 }, viewed_at: { type: string, format: date-time, example: '2025-09-25T10:30:00Z' }, is_authenticated: { type: boolean, example: true } }, type: object }
+                type: object
+        '400':
+          description: '無效的文章 ID'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/BadRequest'
+        '404':
+          description: 文章不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/NotFound'
+        '429':
+          description: 請求過於頻繁
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  error: { properties: { message: { type: string, example: 請求過於頻繁，請稍後再試 }, retry_after: { type: integer, example: 60 } }, type: object }
+                type: object
+        '500':
+          description: 內部伺服器錯誤
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/InternalServerError'
+      security: []
+  /api/roles:
+    get:
+      tags:
+        - Roles
+      summary: 取得角色列表
+      description: 取得系統中所有角色的列表
+      operationId: listRoles
+      responses:
+        '200':
+          description: 成功取得角色列表
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: admin }, display_name: { type: string, example: 管理員 }, description: { type: string, example: 系統管理員角色 }, created_at: { type: string, format: date-time } }, type: object } }
+                type: object
+    post:
+      tags:
+        - Roles
+      summary: 建立角色
+      description: 建立新的角色，可同時指定該角色的權限
+      operationId: createRole
+      requestBody:
+        description: 角色資料
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+                - display_name
+              properties:
+                name:
+                  description: 角色名稱（唯一識別碼）
+                  type: string
+                  example: editor
+                display_name:
+                  description: 顯示名稱
+                  type: string
+                  example: 編輯者
+                description:
+                  description: 角色描述
+                  type: string
+                  example: 可以編輯內容的使用者
+                  nullable: true
+                permission_ids:
+                  description: '權限 ID 陣列'
+                  type: array
+                  items: { type: integer }
+                  example: [1, 2, 3]
+              type: object
+      responses:
+        '201':
+          description: 角色建立成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 角色建立成功 }
+                  data: { type: object }
+                type: object
+        '422':
+          description: 資料驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+  '/api/roles/{id}':
+    get:
+      tags:
+        - Roles
+      summary: 取得單一角色
+      description: '根據角色 ID 取得角色詳細資訊，包含該角色擁有的權限列表'
+      operationId: getRoleById
+      parameters:
+        -
+          name: id
+          in: path
+          description: '角色 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功取得角色資訊
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { properties: { id: { type: integer, example: 1 }, name: { type: string, example: admin }, display_name: { type: string, example: 管理員 }, description: { type: string, example: 系統管理員角色 }, permissions: { type: array, items: { properties: { id: { type: integer }, name: { type: string }, display_name: { type: string } }, type: object } } }, type: object }
+                type: object
+        '404':
+          description: 角色不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 角色不存在 }
+                type: object
+    put:
+      tags:
+        - Roles
+      summary: 更新角色
+      description: 更新角色的顯示名稱和描述
+      operationId: updateRole
+      parameters:
+        -
+          name: id
+          in: path
+          description: '角色 ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 更新資料
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                display_name:
+                  description: 顯示名稱
+                  type: string
+                  example: 編輯者
+                description:
+                  description: 角色描述
+                  type: string
+                  example: 可以編輯內容的使用者
+                  nullable: true
+              type: object
+      responses:
+        '200':
+          description: 角色更新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 角色更新成功 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 角色不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 角色不存在 }
+                type: object
+    delete:
+      tags:
+        - Roles
+      summary: 刪除角色
+      description: 刪除指定的角色，若該角色仍有使用者則無法刪除
+      operationId: deleteRole
+      parameters:
+        -
+          name: id
+          in: path
+          description: '角色 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 角色刪除成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 角色刪除成功 }
+                type: object
+        '404':
+          description: 角色不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 角色不存在 }
+                type: object
+        '422':
+          description: 角色仍被使用中，無法刪除
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 角色仍被使用中，無法刪除 }
+                  errors: { type: object }
+                type: object
+  '/api/roles/{id}/permissions':
+    put:
+      tags:
+        - Roles
+      summary: 更新角色的權限
+      description: 設定角色擁有的權限列表，會覆蓋原有的權限設定
+      operationId: updateRolePermissions
+      parameters:
+        -
+          name: id
+          in: path
+          description: '角色 ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: '權限 ID 列表'
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - permission_ids
+              properties:
+                permission_ids:
+                  description: '權限 ID 陣列'
+                  type: array
+                  items: { type: integer }
+                  example: [1, 2, 3]
+              type: object
+      responses:
+        '200':
+          description: 權限更新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 權限更新成功 }
+                type: object
+        '404':
+          description: 角色不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 角色不存在 }
+                type: object
+  /api/permissions/grouped:
+    get:
+      tags:
+        - Permissions
+      summary: 取得所有權限（按資源分組）
+      description: 取得系統中所有權限，並依照資源類型分組顯示
+      operationId: listPermissionsGrouped
+      responses:
+        '200':
+          description: 成功取得分組權限列表
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: object, example: { posts: [{ id: 1, name: posts.create, display_name: 建立文章 }, { id: 2, name: posts.update, display_name: 更新文章 }], users: [{ id: 10, name: users.create, display_name: 建立使用者 }] }, additionalProperties: { type: array, items: { properties: { id: { type: integer }, name: { type: string }, display_name: { type: string }, resource: { type: string }, action: { type: string } }, type: object } } }
+                type: object
+  /api/settings:
+    get:
+      tags:
+        - Settings
+      summary: 取得系統設定列表
+      description: 取得所有系統設定項目及其值
+      operationId: listSettings
+      responses:
+        '200':
+          description: 成功取得設定列表
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: object, example: { site_name: AlleyNote, site_timezone: Asia/Taipei, maintenance_mode: 'false' }, additionalProperties: { type: string } }
+                type: object
+    put:
+      tags:
+        - Settings
+      summary: 批量更新系統設定
+      description: 一次更新多個系統設定項目
+      operationId: updateSettings
+      requestBody:
+        description: 設定鍵值對
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+            example:
+              site_name: 'My Site'
+              site_timezone: Asia/Tokyo
+              maintenance_mode: 'false'
+      responses:
+        '200':
+          description: 設定更新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 系統設定更新成功 }
+                  data: { type: object }
+                type: object
+        '422':
+          description: 資料驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+  '/api/settings/{key}':
+    get:
+      tags:
+        - Settings
+      summary: 取得單一設定
+      description: 根據設定鍵取得特定設定值
+      operationId: getSettingByKey
+      parameters:
+        -
+          name: key
+          in: path
+          description: 設定鍵名
+          required: true
+          schema:
+            type: string
+            example: site_name
+      responses:
+        '200':
+          description: 成功取得設定
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { properties: { key: { type: string, example: site_name }, value: { type: string, example: AlleyNote } }, type: object }
+                type: object
+        '404':
+          description: 設定不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 設定不存在 }
+                type: object
+    put:
+      tags:
+        - Settings
+      summary: 更新單一設定
+      description: 更新指定的系統設定值
+      operationId: updateSingleSetting
+      parameters:
+        -
+          name: key
+          in: path
+          description: 設定鍵名
+          required: true
+          schema:
+            type: string
+            example: site_name
+      requestBody:
+        description: 設定值
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - value
+              properties:
+                value:
+                  description: 新的設定值
+                  type: string
+                  example: 'My New Site Name'
+              type: object
+      responses:
+        '200':
+          description: 設定更新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 設定更新成功 }
+                  data: { properties: { key: { type: string, example: site_name }, value: { type: string, example: 'My New Site Name' } }, type: object }
+                type: object
+        '404':
+          description: 設定不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 設定不存在 }
+                type: object
+        '422':
+          description: 資料驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+  /api/settings/timezone/info:
+    get:
+      tags:
+        - Settings
+      summary: 取得時區資訊
+      description: 取得系統時區設定及常用時區列表
+      operationId: getTimezoneInfo
+      responses:
+        '200':
+          description: 成功取得時區資訊
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { properties: { timezone: { type: string, example: Asia/Taipei }, offset: { type: string, example: '+08:00' }, current_time: { type: string, format: date-time }, common_timezones: { type: array, items: { type: string }, example: [Asia/Taipei, Asia/Tokyo, America/New_York] } }, type: object }
+                type: object
+  /api/admin/statistics/refresh:
+    post:
+      tags:
+        - statistics-admin
+      summary: 手動刷新統計資料
+      description: 立即重新計算並更新統計資料，包括快取預熱
+      operationId: 28d260e7186adee355d6233a77b6e031
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              properties:
+                types:
+                  description: 要刷新的統計類型，不指定則刷新全部
+                  type: array
+                  items: { type: string, enum: [overview, posts, users, popular, sources] }
+                  example: [overview, posts]
+                force_recalculate:
+                  description: 是否強制重新計算，否則僅清除快取
+                  type: boolean
+                  example: true
+              type: object
+      responses:
+        '200':
+          description: 刷新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 統計資料刷新成功 }
+                  data: { properties: { refreshed_types: { type: array, items: { type: string } }, cache_cleared: { type: boolean }, snapshots_created: { type: integer }, execution_time: { type: number }, timestamp: { type: string, format: date-time } }, type: object }
+                type: object
+        '400':
+          description: 請求參數錯誤
+        '401':
+          description: 未授權訪問
+        '403':
+          description: 權限不足
+        '500':
+          description: 刷新失敗
+      security:
+        -
+          Bearer: []
+  /api/admin/statistics/cache:
+    delete:
+      tags:
+        - statistics-admin
+      summary: 清除統計快取
+      description: 清除指定標籤的統計快取資料
+      operationId: ad966da30959d1be56776da0256d8864
+      parameters:
+        -
+          name: tags
+          in: query
+          description: 要清除的快取標籤，多個標籤用逗號分隔
+          required: false
+          schema:
+            type: string
+            example: 'overview,posts,users'
+        -
+          name: all
+          in: query
+          description: 是否清除所有統計快取
+          required: false
+          schema:
+            type: boolean
+            example: false
+      responses:
+        '200':
+          description: 快取清除成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 快取清除成功 }
+                  data: { properties: { cleared_tags: { type: array, items: { type: string } }, all_cache_cleared: { type: boolean }, timestamp: { type: string, format: date-time } }, type: object }
+                type: object
+        '400':
+          description: 請求參數錯誤
+        '401':
+          description: 未授權訪問
+        '403':
+          description: 權限不足
+        '500':
+          description: 快取清除失敗
+      security:
+        -
+          Bearer: []
+  /api/admin/statistics/health:
+    get:
+      tags:
+        - statistics-admin
+      summary: 統計系統健康檢查
+      description: 檢查統計系統的運行狀態，包括快取狀態、資料庫連接、服務可用性等
+      operationId: 9e470511c3c7d093e9687182f7384d69
+      responses:
+        '200':
+          description: 健康檢查成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 系統狀態正常 }
+                  data: { properties: { overall_status: { type: string, enum: [healthy, warning, critical], example: healthy }, cache: { properties: { status: { type: string }, hits: { type: integer }, misses: { type: integer }, hit_rate: { type: number } }, type: object }, database: { properties: { status: { type: string }, connection_time: { type: number } }, type: object }, services: { properties: { statistics_application_service: { type: string }, statistics_query_service: { type: string }, cache_service: { type: string } }, type: object }, timestamp: { type: string, format: date-time } }, type: object }
+                type: object
+        '401':
+          description: 未授權訪問
+        '403':
+          description: 權限不足
+        '500':
+          description: 健康檢查失敗
+      security:
+        -
+          Bearer: []
+  /api/v1/statistics/overview:
+    get:
+      tags:
+        - statistics
+      summary: 取得統計概覽
+      description: 取得系統整體統計概覽資訊，包含文章、使用者、活動等綜合指標
+      operationId: getStatisticsOverview
+      parameters:
+        -
+          name: start_date
+          in: query
+          description: '開始日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-09-01'
+        -
+          name: end_date
+          in: query
+          description: '結束日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-09-25'
+      responses:
+        '200':
+          description: 成功取得統計概覽
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { properties: { total_posts: { type: integer, example: 1250 }, active_users: { type: integer, example: 328 }, new_users: { type: integer, example: 42 }, total_views: { type: integer, example: 15620 }, post_activity: { type: object }, user_activity: { type: object }, engagement_metrics: { type: object }, period_summary: { type: object }, generated_at: { type: string, format: date-time } }, type: object }
+                  meta: { properties: { start_date: { type: string }, end_date: { type: string }, cache_hit: { type: boolean } }, type: object }
+                type: object
+        '400':
+          description: 請求參數錯誤
+        '401':
+          description: 未授權訪問
+        '403':
+          description: 權限不足
+        '500':
+          description: 伺服器內部錯誤
+      security:
+        -
+          bearerAuth: []
+  /api/v1/statistics/posts:
+    get:
+      tags:
+        - statistics
+      summary: 取得文章統計
+      description: 取得文章相關統計資料，支援分頁查詢
+      operationId: getPostStatistics
+      parameters:
+        -
+          name: page
+          in: query
+          description: 頁碼
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        -
+          name: limit
+          in: query
+          description: 每頁筆數
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            example: 20
+        -
+          name: start_date
+          in: query
+          description: '開始日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-09-01'
+        -
+          name: end_date
+          in: query
+          description: '結束日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+            example: '2025-09-25'
+      responses:
+        '200':
+          description: 成功取得文章統計
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { type: object } }
+                  pagination: { properties: { current_page: { type: integer }, per_page: { type: integer }, total: { type: integer }, last_page: { type: integer } }, type: object }
+                type: object
+      security:
+        -
+          bearerAuth: []
+  /api/v1/statistics/sources:
+    get:
+      tags:
+        - statistics
+      summary: 取得來源分布統計
+      description: 取得文章來源分布統計資料
+      operationId: getSourceStatistics
+      parameters:
+        -
+          name: start_date
+          in: query
+          description: '開始日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          description: '結束日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功取得來源分布統計
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { properties: { source: { type: string, example: web }, count: { type: integer, example: 125 }, percentage: { type: number, format: float, example: 65.5 } }, type: object } }
+                type: object
+  /api/v1/statistics/users:
+    get:
+      tags:
+        - statistics
+      summary: 取得使用者統計
+      description: 取得使用者活動統計資料，支援分頁查詢
+      operationId: getUserStatistics
+      parameters:
+        -
+          name: page
+          in: query
+          description: 頁碼
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            example: 1
+        -
+          name: limit
+          in: query
+          description: 每頁筆數
+          required: false
+          schema:
+            type: integer
+            maximum: 100
+            minimum: 1
+            example: 20
+        -
+          name: start_date
+          in: query
+          description: '開始日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          description: '結束日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功取得使用者統計
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { type: object } }
+                  pagination: { properties: { current_page: { type: integer }, per_page: { type: integer }, total: { type: integer }, last_page: { type: integer } }, type: object }
+                type: object
+  /api/v1/statistics/popular:
+    get:
+      tags:
+        - statistics
+      summary: 取得熱門內容統計
+      description: 取得熱門內容排行榜資料
+      operationId: getPopularContent
+      parameters:
+        -
+          name: limit
+          in: query
+          description: 限制筆數
+          required: false
+          schema:
+            type: integer
+            maximum: 50
+            minimum: 1
+            example: 10
+        -
+          name: start_date
+          in: query
+          description: '開始日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          description: '結束日期 (YYYY-MM-DD)'
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 成功取得熱門內容統計
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { properties: { title: { type: string, example: 熱門文章標題 }, views: { type: integer, example: 1250 }, engagement_score: { type: number, format: float } }, type: object } }
+                type: object
+  /api/statistics/export/views/csv:
+    get:
+      tags:
+        - statistics
+      summary: '匯出文章瀏覽統計為 CSV'
+      description: "匯出文章瀏覽統計為 CSV.\n\nGET /api/statistics/export/views/csv"
+      operationId: 5f37e502987491a5994544c24ba921f9
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 'CSV 文件'
+  /api/statistics/export/comprehensive/csv:
+    get:
+      tags:
+        - statistics
+      summary: '匯出綜合分析報告為 CSV'
+      description: "匯出綜合分析報告為 CSV.\n\nGET /api/statistics/export/comprehensive/csv"
+      operationId: cfb140be1f6b4e7c69af1a4f2cf6dd9d
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 'CSV 文件'
+  /api/statistics/export/comprehensive/json:
+    get:
+      tags:
+        - statistics
+      summary: '匯出綜合分析報告為 JSON'
+      description: "匯出為 JSON.\n\nGET /api/statistics/export/comprehensive/json"
+      operationId: 12b80f8c9d0f63101971dcec97a59d4d
+      parameters:
+        -
+          name: post_id
+          in: query
+          required: false
+          schema:
+            type: integer
+        -
+          name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        -
+          name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: 'JSON 文件'
+  /api/tags:
+    get:
+      tags:
+        - Tags
+      summary: 'Get list of tags'
+      description: "取得標籤列表.\n\nGET /api/tags"
+      operationId: getTags
+      parameters:
+        -
+          name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        -
+          name: per_page
+          in: query
+          schema:
+            type: integer
+            default: 20
+        -
+          name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 'Tags retrieved successfully'
+        '500':
+          description: 'Internal server error'
+    post:
+      tags:
+        - Tags
+      summary: 'Create a new tag'
+      description: "建立標籤.\n\nPOST /api/tags"
+      operationId: createTag
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                slug:
+                  type: string
+                description:
+                  type: string
+                color:
+                  type: string
+              type: object
+      responses:
+        '201':
+          description: 'Tag created successfully'
+        '422':
+          description: 'Validation failed'
+  '/api/tags/{id}':
+    get:
+      tags:
+        - Tags
+      summary: 'Get a single tag'
+      description: "取得單一標籤.\n\nGET /api/tags/{id}"
+      operationId: getTag
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Tag retrieved successfully'
+        '404':
+          description: 'Tag not found'
+    put:
+      tags:
+        - Tags
+      summary: 'Update a tag'
+      description: "更新標籤.\n\nPUT /api/tags/{id}"
+      operationId: updateTag
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                name:
+                  type: string
+                  maxLength: 50
+                slug:
+                  type: string
+                description:
+                  type: string
+                color:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: 'Tag updated successfully'
+        '404':
+          description: 'Tag not found'
+        '422':
+          description: 'Validation failed'
+    delete:
+      tags:
+        - Tags
+      summary: 'Delete a tag'
+      description: "刪除標籤.\n\nDELETE /api/tags/{id}"
+      operationId: deleteTag
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'Tag deleted successfully'
+        '404':
+          description: 'Tag not found'
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: 取得使用者列表
+      description: 取得系統中所有使用者的分頁列表，支援搜尋功能
+      operationId: listUsers
+      parameters:
+        -
+          name: page
+          in: query
+          description: 頁碼
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        -
+          name: per_page
+          in: query
+          description: 每頁筆數
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+            minimum: 1
+        -
+          name: search
+          in: query
+          description: 搜尋關鍵字（用於搜尋使用者名稱或電子郵件）
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功取得使用者列表
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { type: array, items: { properties: { id: { type: integer, example: 1 }, username: { type: string, example: johndoe }, email: { type: string, example: john@example.com }, status: { type: string, example: active }, created_at: { type: string, format: date-time } }, type: object } }
+                  pagination: { properties: { total: { type: integer, example: 100 }, page: { type: integer, example: 1 }, per_page: { type: integer, example: 10 }, last_page: { type: integer, example: 10 } }, type: object }
+                type: object
+    post:
+      tags:
+        - Users
+      summary: 建立使用者
+      description: 建立新的使用者帳號
+      operationId: createUser
+      requestBody:
+        description: 使用者資料
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  description: 使用者名稱
+                  type: string
+                  example: johndoe
+                email:
+                  description: 電子郵件
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  description: 密碼
+                  type: string
+                  format: password
+                  example: password123
+              type: object
+      responses:
+        '201':
+          description: 使用者建立成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 使用者建立成功 }
+                  data: { properties: { id: { type: integer, example: 1 }, username: { type: string, example: johndoe }, email: { type: string, example: john@example.com } }, type: object }
+                type: object
+        '422':
+          description: 資料驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+  '/api/users/{id}':
+    get:
+      tags:
+        - Users
+      summary: 取得單一使用者
+      description: '根據使用者 ID 取得使用者詳細資訊'
+      operationId: getUserById
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 成功取得使用者資訊
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  data: { properties: { id: { type: integer, example: 1 }, username: { type: string, example: johndoe }, email: { type: string, example: john@example.com }, status: { type: string, example: active }, created_at: { type: string, format: date-time } }, type: object }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+    put:
+      tags:
+        - Users
+      summary: 更新使用者
+      description: 更新使用者資訊
+      operationId: updateUser
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 更新資料
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  description: 使用者名稱
+                  type: string
+                  example: johndoe
+                email:
+                  description: 電子郵件
+                  type: string
+                  format: email
+                  example: john@example.com
+              type: object
+      responses:
+        '200':
+          description: 使用者更新成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 使用者更新成功 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+        '422':
+          description: 資料驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+    delete:
+      tags:
+        - Users
+      summary: 刪除使用者
+      description: 刪除指定的使用者
+      operationId: deleteUser
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 使用者刪除成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 使用者刪除成功 }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+  '/api/users/{id}/roles':
+    put:
+      tags:
+        - Users
+      summary: 分配角色給使用者
+      description: 為指定使用者分配一或多個角色
+      operationId: assignRolesToUser
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: '角色 ID 列表'
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - role_ids
+              properties:
+                role_ids:
+                  description: '角色 ID 陣列'
+                  type: array
+                  items: { type: integer }
+                  example: [1, 2, 3]
+              type: object
+      responses:
+        '200':
+          description: 角色分配成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 角色分配成功 }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+  '/api/admin/users/{id}/activate':
+    post:
+      tags:
+        - Users
+      summary: 啟用使用者
+      description: 啟用已停用的使用者帳號
+      operationId: activateUser
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 使用者已啟用
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 使用者已啟用 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+  '/api/admin/users/{id}/deactivate':
+    post:
+      tags:
+        - Users
+      summary: 停用使用者
+      description: 停用使用者帳號，使其無法登入系統
+      operationId: deactivateUser
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 使用者已停用
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 使用者已停用 }
+                  data: { type: object }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+  '/api/admin/users/{id}/reset-password':
+    post:
+      tags:
+        - Users
+      summary: 重設使用者密碼
+      description: 管理員重設使用者的密碼
+      operationId: resetUserPassword
+      parameters:
+        -
+          name: id
+          in: path
+          description: '使用者 ID'
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: 新密碼
+        required: true
+        content:
+          application/json:
+            schema:
+              required:
+                - password
+              properties:
+                password:
+                  description: 新密碼
+                  type: string
+                  format: password
+                  minLength: 8
+                  example: newpassword123
+              type: object
+      responses:
+        '200':
+          description: 密碼重設成功
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string, example: 密碼重設成功 }
+                type: object
+        '404':
+          description: 使用者不存在
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 使用者不存在 }
+                type: object
+        '422':
+          description: 資料驗證失敗
+          content:
+            application/json:
+              schema:
+                properties:
+                  success: { type: boolean, example: false }
+                  message: { type: string, example: 資料驗證失敗 }
+                  errors: { type: object }
+                type: object
+  /api/health:
     get:
       tags:
         - health
       summary: 健康檢查端點
-      operationId: 158a1389adf0d693d528c07a8f30136f
+      operationId: 56af7cc22dc5315032f62f2ef88b3304
       responses:
         '200':
           description: 系統正常運行
@@ -907,10 +3105,11 @@ components:
           type: string
           default: normal
           enum:
-            - low
-            - normal
-            - high
-            - urgent
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
           example: high
         expires_at:
           description: '過期時間（ISO 8601 格式），過期後貼文將自動隱藏'
@@ -989,10 +3188,11 @@ components:
           description: 更新優先級
           type: string
           enum:
-            - low
-            - normal
-            - high
-            - urgent
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
           example: urgent
         expires_at:
           description: 更新過期時間
@@ -1339,10 +3539,11 @@ components:
           description: 優先級
           type: string
           enum:
-            - low
-            - normal
-            - high
-            - urgent
+            - 1
+            - 2
+            - 3
+            - 4
+            - 5
           example: normal
         author_id:
           description: 作者ID
@@ -1365,16 +3566,113 @@ components:
           example: '2025-12-31T23:59:59Z'
           nullable: true
       type: object
+  responses:
+    Unauthorized:
+      description: 未授權存取
+      content:
+        application/json:
+          schema:
+            properties:
+              success:
+                description: "OpenAPI 規格配置.\n\n此檔案定義 AlleyNote API 的基本 OpenAPI 規格資訊"
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: 未授權存取
+            type: object
+    Forbidden:
+      description: 權限不足
+      content:
+        application/json:
+          schema:
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: 權限不足
+            type: object
+    NotFound:
+      description: 資源不存在
+      content:
+        application/json:
+          schema:
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: 資源不存在
+            type: object
+    ValidationError:
+      description: 資料驗證失敗
+      content:
+        application/json:
+          schema:
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: 資料驗證失敗
+              errors:
+                type: object
+                example:
+                  email: [電子郵件格式不正確]
+                  password: [密碼長度不足]
+                additionalProperties:
+                  type: array
+                  items: { type: string }
+            type: object
+  securitySchemes:
+    bearerAuth:
+      type: http
+      name: Authorization
+      in: header
+      bearerFormat: JWT
+      scheme: bearer
+    sessionAuth:
+      type: apiKey
+      name: PHPSESSID
+      in: cookie
 tags:
   -
-    name: attachments
-    description: attachments
+    name: 'Activity Log'
+    description: 'Activity logging and retrieval endpoints'
   -
-    name: auth
-    description: auth
+    name: Permissions
+    description: 'Permission management endpoints'
   -
     name: posts
-    description: posts
+    description: '貼文管理 API - CRUD 操作、置頂、搜尋'
+  -
+    name: Roles
+    description: 'Role management endpoints'
+  -
+    name: Settings
+    description: 'System settings management endpoints'
+  -
+    name: statistics-admin
+    description: '統計管理 API (管理員專用)'
+  -
+    name: statistics
+    description: '統計查詢 API'
+  -
+    name: Tags
+    description: 'Tag management endpoints'
+  -
+    name: Users
+    description: 'User management endpoints'
+  -
+    name: auth
+    description: '認證相關 API - 登入、登出、註冊、Token 管理'
+  -
+    name: attachments
+    description: '附件管理 API - 檔案上傳、下載、刪除'
   -
     name: health
     description: health
