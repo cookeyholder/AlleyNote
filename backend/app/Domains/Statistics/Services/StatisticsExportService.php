@@ -6,6 +6,7 @@ namespace App\Domains\Statistics\Services;
 
 use PDO;
 use RuntimeException;
+use Stringable;
 
 /**
  * 統計報表匯出服務
@@ -26,7 +27,7 @@ class StatisticsExportService
     public function exportViewsToCSV(?int $postId = null, ?string $startDate = null, ?string $endDate = null): string
     {
         $query = '
-            SELECT 
+            SELECT
                 pv.id,
                 pv.post_id,
                 p.title as post_title,
@@ -77,16 +78,20 @@ class StatisticsExportService
 
         // 寫入資料
         foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
             fputcsv($output, [
-                (string) ($row['id'] ?? ''),
-                (string) ($row['post_id'] ?? ''),
-                (string) ($row['post_title'] ?? ''),
-                (string) ($row['user_id'] ?? ''),
-                (string) ($row['username'] ?? '匿名'),
-                (string) ($row['user_ip'] ?? ''),
-                (string) ($row['user_agent'] ?? ''),
-                (string) ($row['referrer'] ?? ''),
-                (string) ($row['view_date'] ?? ''),
+                $this->toString($row['id'] ?? null),
+                $this->toString($row['post_id'] ?? null),
+                $this->toString($row['post_title'] ?? null),
+                $this->toString($row['user_id'] ?? null),
+                $this->toString($row['username'] ?? '匿名'),
+                $this->toString($row['user_ip'] ?? null),
+                $this->toString($row['user_agent'] ?? null),
+                $this->toString($row['referrer'] ?? null),
+                $this->toString($row['view_date'] ?? null),
             ]);
         }
 
@@ -169,8 +174,6 @@ class StatisticsExportService
         }
 
         return $csv;
-
-        return $csv;
     }
 
     /**
@@ -188,5 +191,18 @@ class StatisticsExportService
         }
 
         return $json;
+    }
+
+    private function toString(mixed $value): string
+    {
+        if (is_string($value) || $value instanceof Stringable) {
+            return (string) $value;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return '';
     }
 }

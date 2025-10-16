@@ -24,19 +24,22 @@ class PostViewStatisticsService
     public function getPostViewStats(int $postId): array
     {
         $stmt = $this->pdo->prepare('
-            SELECT 
+            SELECT
                 COUNT(*) as views,
                 COUNT(DISTINCT user_ip) as unique_visitors
-            FROM post_views 
+            FROM post_views
             WHERE post_id = :post_id
         ');
 
         $stmt->execute(['post_id' => $postId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!is_array($result)) {
+            $result = [];
+        }
 
         return [
-            'views' => (int) ($result['views'] ?? 0),
-            'unique_visitors' => (int) ($result['unique_visitors'] ?? 0),
+            'views' => $this->toInt($result['views'] ?? 0),
+            'unique_visitors' => $this->toInt($result['unique_visitors'] ?? 0),
         ];
     }
 
@@ -55,23 +58,32 @@ class PostViewStatisticsService
         $placeholders = implode(',', array_fill(0, count($postIds), '?'));
 
         $stmt = $this->pdo->prepare("
-            SELECT 
+            SELECT
                 post_id,
                 COUNT(*) as views,
                 COUNT(DISTINCT user_ip) as unique_visitors
-            FROM post_views 
+            FROM post_views
             WHERE post_id IN ({$placeholders})
             GROUP BY post_id
         ");
 
         $stmt->execute($postIds);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($results)) {
+            $results = [];
+        }
 
         $stats = [];
         foreach ($results as $row) {
-            $stats[(int) $row['post_id']] = [
-                'views' => (int) $row['views'],
-                'unique_visitors' => (int) $row['unique_visitors'],
+            if (!is_array($row) || !isset($row['post_id'])) {
+                continue;
+            }
+
+            $postId = $this->toInt($row['post_id']);
+
+            $stats[$postId] = [
+                'views' => $this->toInt($row['views'] ?? 0),
+                'unique_visitors' => $this->toInt($row['unique_visitors'] ?? 0),
             ];
         }
 
@@ -152,5 +164,18 @@ class PostViewStatisticsService
             mt_rand(0, 0xffff),
             mt_rand(0, 0xffff),
         );
+    }
+
+    private function toInt(mixed $value): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_float($value) || (is_string($value) && is_numeric($value))) {
+            return (int) $value;
+        }
+
+        return 0;
     }
 }

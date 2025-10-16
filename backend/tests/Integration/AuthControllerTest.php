@@ -7,10 +7,13 @@ namespace Tests\Integration;
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\PasswordResetTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\Services\PasswordManagementService;
+use App\Domains\Auth\Services\PasswordResetService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -46,6 +49,12 @@ class AuthControllerTest extends TestCase
 
     private UserManagementService|MockInterface $userManagementService;
 
+    private PasswordResetTokenRepositoryInterface|MockInterface $passwordResetTokenRepository;
+
+    private PasswordManagementService|MockInterface $passwordManagementService;
+
+    private PasswordResetService $passwordResetService;
+
     private OutputSanitizerInterface|MockInterface $sanitizer;
 
     private ServerRequestInterface|MockInterface $request;
@@ -64,6 +73,8 @@ class AuthControllerTest extends TestCase
         $this->activityLoggingService->shouldReceive('log')->byDefault()->andReturn(true);
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
         $this->userManagementService = Mockery::mock(UserManagementService::class);
+        $this->passwordResetTokenRepository = Mockery::mock(PasswordResetTokenRepositoryInterface::class);
+        $this->passwordManagementService = Mockery::mock(PasswordManagementService::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
         $this->validator->shouldReceive('validateOrFail')->byDefault();
         $this->validator->shouldReceive('addRule')->byDefault()->andReturn(null);
@@ -109,6 +120,13 @@ class AuthControllerTest extends TestCase
                 return $responseContent;
             });
         $this->response->shouldReceive('getBody')->andReturn($stream);
+
+        $this->passwordResetService = new PasswordResetService(
+            $this->userRepository,
+            $this->passwordResetTokenRepository,
+            $this->passwordManagementService,
+            $this->activityLoggingService,
+        );
     }
 
     protected function tearDown(): void
@@ -159,7 +177,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $this->passwordResetService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -207,7 +225,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $this->passwordResetService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -283,7 +301,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $this->passwordResetService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -311,7 +329,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $this->passwordResetService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -346,7 +364,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $this->passwordResetService);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應

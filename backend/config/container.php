@@ -9,11 +9,13 @@ declare(strict_types=1);
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Repositories\RoleRepository;
 use App\Domains\Auth\Repositories\PermissionRepository;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\Services\RoleManagementService;
+use App\Domains\Auth\Services\PasswordManagementService;
 use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
@@ -265,7 +267,7 @@ return array_merge(
         // ========================================
         // 使用者管理模組
         // ========================================
-        
+
         // Repositories
         RoleRepository::class => \DI\autowire(RoleRepository::class)
             ->constructorParameter('db', \DI\get(\PDO::class)),
@@ -279,6 +281,10 @@ return array_merge(
         // Services
         UserManagementService::class => \DI\autowire(UserManagementService::class)
             ->constructorParameter('userRepository', \DI\get(UserRepository::class)),
+
+        PasswordManagementService::class => \DI\autowire(PasswordManagementService::class)
+            ->constructorParameter('userRepository', \DI\get(UserRepository::class))
+            ->constructorParameter('passwordService', \DI\get(PasswordSecurityServiceInterface::class)),
 
         RoleManagementService::class => \DI\autowire(RoleManagementService::class)
             ->constructorParameter('roleRepository', \DI\get(RoleRepository::class))

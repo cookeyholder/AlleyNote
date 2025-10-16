@@ -188,6 +188,9 @@ class AdvancedAnalyticsService
 
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($results)) {
+            $results = [];
+        }
 
         // 計算總數以計算百分比
         $totalQuery = 'SELECT COUNT(*) FROM post_views WHERE referrer IS NOT NULL AND referrer != ""';
@@ -210,14 +213,22 @@ class AdvancedAnalyticsService
 
         $totalStmt = $this->pdo->prepare($totalQuery);
         $totalStmt->execute($totalParams);
-        $total = (int) $totalStmt->fetchColumn();
+        $totalRaw = $totalStmt->fetchColumn();
+        $total = $totalRaw !== false ? $this->toInt($totalRaw) : 0;
 
         $stats = [];
         foreach ($results as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $referrer = isset($row['referrer']) && is_string($row['referrer']) ? $row['referrer'] : 'Unknown';
+            $count = $this->toInt($row['count'] ?? 0);
+
             $stats[] = [
-                'referrer' => $row['referrer'],
-                'count' => (int) $row['count'],
-                'percentage' => $total > 0 ? round(((int) $row['count'] / $total) * 100, 2) : 0.0,
+                'referrer' => $referrer,
+                'count' => $count,
+                'percentage' => $total > 0 ? round(($count / $total) * 100, 2) : 0.0,
             ];
         }
 
@@ -232,7 +243,7 @@ class AdvancedAnalyticsService
     public function getHourlyDistribution(?int $postId = null, ?string $startDate = null, ?string $endDate = null): array
     {
         $query = "
-            SELECT 
+            SELECT
                 CAST(strftime('%H', view_date) AS INTEGER) as hour,
                 COUNT(*) as count
             FROM post_views
@@ -260,12 +271,24 @@ class AdvancedAnalyticsService
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($results)) {
+            $results = [];
+        }
 
         // 初始化所有小時為0
         $distribution = array_fill(0, 24, 0);
 
         foreach ($results as $row) {
-            $distribution[(int) $row['hour']] = (int) $row['count'];
+            if (!is_array($row) || !isset($row['hour'])) {
+                continue;
+            }
+
+            $hour = $this->toInt($row['hour'] ?? null);
+            if ($hour < 0 || $hour > 23) {
+                continue;
+            }
+
+            $distribution[$hour] = $this->toInt($row['count'] ?? 0);
         }
 
         return $distribution;
@@ -308,6 +331,9 @@ class AdvancedAnalyticsService
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $totals = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!is_array($totals)) {
+            $totals = [];
+        }
 
         return [
             'device_types' => $this->getDeviceTypeStats($postId, $startDate, $endDate),
@@ -315,8 +341,21 @@ class AdvancedAnalyticsService
             'operating_systems' => $this->getOSStats($postId, $startDate, $endDate),
             'top_referrers' => $this->getReferrerStats($postId, $startDate, $endDate, 10),
             'hourly_distribution' => $this->getHourlyDistribution($postId, $startDate, $endDate),
-            'total_views' => (int) ($totals['total_views'] ?? 0),
-            'unique_visitors' => (int) ($totals['unique_visitors'] ?? 0),
+            'total_views' => $this->toInt($totals['total_views'] ?? 0),
+            'unique_visitors' => $this->toInt($totals['unique_visitors'] ?? 0),
         ];
+    }
+
+    private function toInt(mixed $value): int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_float($value) || (is_string($value) && is_numeric($value))) {
+            return (int) $value;
+        }
+
+        return 0;
     }
 }

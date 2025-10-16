@@ -8,16 +8,21 @@ use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\PasswordResetTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\Repositories\PasswordResetTokenRepository;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Repositories\UserRepositoryAdapter;
 use App\Domains\Auth\Services\AuthenticationService;
 use App\Domains\Auth\Services\JwtTokenService;
+use App\Domains\Auth\Services\PasswordManagementService;
+use App\Domains\Auth\Services\PasswordResetService;
 use App\Domains\Auth\Services\PasswordSecurityService;
 use App\Domains\Auth\Services\TokenBlacklistService;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Infrastructure\Auth\Repositories\RefreshTokenRepository;
 use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
@@ -46,6 +51,7 @@ class SimpleAuthServiceProvider
             RefreshTokenRepositoryInterface::class => \DI\factory([self::class, 'createRefreshTokenRepository']),
             TokenBlacklistRepositoryInterface::class => \DI\factory([self::class, 'createTokenBlacklistRepository']),
             UserRepositoryInterface::class => \DI\factory([self::class, 'createUserRepository']),
+            PasswordResetTokenRepositoryInterface::class => \DI\factory([self::class, 'createPasswordResetTokenRepository']),
 
             // Password Security Service
             PasswordSecurityServiceInterface::class => \DI\autowire(PasswordSecurityService::class),
@@ -58,6 +64,9 @@ class SimpleAuthServiceProvider
 
             // Blacklist Service
             TokenBlacklistService::class => \DI\factory([self::class, 'createTokenBlacklistService']),
+
+            // Password Reset Service
+            PasswordResetService::class => \DI\factory([self::class, 'createPasswordResetService']),
 
             // Middleware - 主要目標
             JwtAuthenticationMiddleware::class => \DI\factory([self::class, 'createJwtAuthenticationMiddleware']),
@@ -98,6 +107,17 @@ class SimpleAuthServiceProvider
     }
 
     /**
+     * 建立 PasswordResetToken Repository 實例.
+     */
+    public static function createPasswordResetTokenRepository(ContainerInterface $container): PasswordResetTokenRepository
+    {
+        /** @var PDO $pdo */
+        $pdo = $container->get(PDO::class);
+
+        return new PasswordResetTokenRepository($pdo);
+    }
+
+    /**
      * 建立 Firebase JWT Provider 實例.
      */
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
@@ -128,6 +148,23 @@ class SimpleAuthServiceProvider
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
 
         return new TokenBlacklistService($blacklistRepository);
+    }
+
+    /**
+     * 建立 PasswordResetService 實例.
+     */
+    public static function createPasswordResetService(ContainerInterface $container): PasswordResetService
+    {
+        /** @var UserRepositoryInterface $userRepository */
+        $userRepository = $container->get(UserRepositoryInterface::class);
+        /** @var PasswordResetTokenRepositoryInterface $tokenRepository */
+        $tokenRepository = $container->get(PasswordResetTokenRepositoryInterface::class);
+        /** @var PasswordManagementService $passwordManagementService */
+        $passwordManagementService = $container->get(PasswordManagementService::class);
+        /** @var ActivityLoggingServiceInterface $activityLoggingService */
+        $activityLoggingService = $container->get(ActivityLoggingServiceInterface::class);
+
+        return new PasswordResetService($userRepository, $tokenRepository, $passwordManagementService, $activityLoggingService);
     }
 
     /**

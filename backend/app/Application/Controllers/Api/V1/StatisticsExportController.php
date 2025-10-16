@@ -39,10 +39,10 @@ class StatisticsExportController extends BaseController
     )]
     public function exportViewsCSV(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $csv = $this->exportService->exportViewsToCSV($postId, $startDate, $endDate);
 
@@ -76,10 +76,10 @@ class StatisticsExportController extends BaseController
     )]
     public function exportComprehensiveCSV(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $csv = $this->exportService->exportComprehensiveReportToCSV($postId, $startDate, $endDate);
 
@@ -113,10 +113,10 @@ class StatisticsExportController extends BaseController
     )]
     public function exportJSON(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $json = $this->exportService->exportToJSON($postId, $startDate, $endDate);
 
@@ -128,5 +128,56 @@ class StatisticsExportController extends BaseController
             ->withHeader('Content-Type', 'application/json; charset=utf-8')
             ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->withHeader('Cache-Control', 'max-age=0');
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sanitizeQueryParams(mixed $rawParams): array
+    {
+        if (!is_array($rawParams)) {
+            return [];
+        }
+
+        $sanitized = [];
+        foreach ($rawParams as $key => $value) {
+            if (is_string($key)) {
+                $sanitized[$key] = $value;
+            }
+        }
+
+        return $sanitized;
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function getIntParam(array $params, string $key, ?int $default = null): ?int
+    {
+        if (!array_key_exists($key, $params)) {
+            return $default;
+        }
+
+        $value = $params[$key];
+
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_string($value) && $value !== '' && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function getStringParam(array $params, string $key): ?string
+    {
+        $value = $params[$key] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 }

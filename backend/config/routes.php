@@ -72,6 +72,14 @@ return function (RouterInterface $router): void {
     $authRefresh = $router->post('/api/auth/refresh', [AuthController::class, 'refresh']);
     $authRefresh->setName('auth.refresh');
 
+    // 忘記密碼 (公開)
+    $authForgotPassword = $router->post('/api/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+    $authForgotPassword->setName('auth.forgot-password');
+
+    // 密碼重設提交 (公開)
+    $authResetPassword = $router->post('/api/auth/reset-password', [AuthController::class, 'resetPassword']);
+    $authResetPassword->setName('auth.reset-password');
+
     // =========================================
     // JWT 認證路由 (需要有效的 JWT token)
     // =========================================
@@ -325,7 +333,7 @@ return function (RouterInterface $router): void {
     $settingsUpdateSingle->middleware(['jwt.auth', 'jwt.authorize']);
 
     // 取得時區資訊（公開 API）
-    $timezoneInfo = $router->get('/api/timezone-info', [SettingController::class, 'getTimezoneInfo']);
+    $timezoneInfo = $router->get('/api/settings/timezone/info', [SettingController::class, 'getTimezoneInfo']);
     $timezoneInfo->setName('timezone.info');
 
     // =========================================

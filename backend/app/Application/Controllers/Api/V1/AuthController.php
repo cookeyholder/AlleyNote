@@ -8,11 +8,14 @@ use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\DTOs\ForgotPasswordRequestDTO;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
+use App\Domains\Auth\DTOs\ResetPasswordDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\Services\PasswordResetService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -46,6 +49,7 @@ class AuthController extends BaseController
         private ActivityLoggingServiceInterface $activityLoggingService,
         private UserRepositoryInterface $userRepository,
         private UserManagementService $userManagementService,
+        private PasswordResetService $passwordResetService,
     ) {}
 
     /**
@@ -897,6 +901,227 @@ class AuthController extends BaseController
             $responseData = [
                 'success' => false,
                 'error' => $e->getMessage(),
+            ];
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
+            ];
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    #[OA\Post(
+        path: '/api/auth/forgot-password',
+        summary: '請求密碼重設',
+        description: '根據電子郵件產生密碼重設憑證並傳送通知。無論電子郵件是否存在都會回傳成功訊息。',
+        operationId: 'forgotPassword',
+        tags: ['auth'],
+        requestBody: new OA\RequestBody(
+            description: '忘記密碼請求資料',
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(
+                        property: 'email',
+                        type: 'string',
+                        format: 'email',
+                        description: '註冊時使用的電子郵件',
+                        example: 'user@example.com',
+                    ),
+                ],
+                required: ['email'],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '已回應密碼重設請求',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '如果帳號存在，我們已寄送密碼重設資訊。'),
+                        new OA\Property(property: 'expires_at', type: 'string', format: 'date-time', example: '2025-01-15T11:30:00Z'),
+                        new OA\Property(property: 'debug_token', type: 'string', example: 'abcdef0123456789'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 400,
+                description: '請求資料格式錯誤',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: '無效的請求資料格式'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function forgotPassword(Request $request, Response $response): Response
+    {
+        try {
+            $data = $request->getParsedBody();
+            if (!is_array($data)) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '無效的請求資料格式',
+                ];
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            /** @var array<string, mixed> $data */
+
+            $dto = new ForgotPasswordRequestDTO($this->validator, $data);
+
+            $clientIp = $this->getClientIpAddress($request);
+            $userAgent = $request->getHeaderLine('User-Agent') ?: 'Unknown';
+
+            $result = $this->passwordResetService->requestReset(
+                $dto->email,
+                $clientIp,
+                $userAgent,
+            );
+
+            $responseData = [
+                'success' => true,
+                'message' => '如果帳號存在，我們已寄送密碼重設資訊。',
+            ];
+
+            $plainToken = $result->getPlainToken();
+            $expiresAt = $result->getExpiresAt();
+            if ($plainToken !== null && $expiresAt !== null) {
+                $responseData['expires_at'] = $expiresAt->format(DATE_ATOM);
+
+                $appEnv = getenv('APP_ENV') ?: 'development';
+                if (strtolower($appEnv) !== 'production') {
+                    $responseData['debug_token'] = $plainToken;
+                }
+            }
+
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'errors' => $e->getErrors(),
+            ];
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
+            ];
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    #[OA\Post(
+        path: '/api/auth/reset-password',
+        summary: '提交密碼重設',
+        description: '使用有效的密碼重設憑證設定新的密碼。',
+        operationId: 'resetPassword',
+        tags: ['auth'],
+        requestBody: new OA\RequestBody(
+            description: '密碼重設資料',
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'token', type: 'string', description: '密碼重設憑證', example: 'abcdef0123456789'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', description: '新密碼，至少 8 個字元', example: 'NewPassw0rd!'),
+                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', description: '再次確認新密碼', example: 'NewPassw0rd!'),
+                ],
+                required: ['token', 'password', 'password_confirmation'],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '密碼重設成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '密碼已成功重設。'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 400,
+                description: '資料驗證失敗或憑證無效',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: '密碼重設連結無效或已過期'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function resetPassword(Request $request, Response $response): Response
+    {
+        try {
+            $data = $request->getParsedBody();
+            if (!is_array($data)) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '無效的請求資料格式',
+                ];
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            /** @var array<string, mixed> $data */
+
+            $dto = new ResetPasswordDTO($this->validator, $data);
+
+            $clientIp = $this->getClientIpAddress($request);
+            $userAgent = $request->getHeaderLine('User-Agent') ?: 'Unknown';
+
+            $this->passwordResetService->resetPassword($dto, $clientIp, $userAgent);
+
+            $responseData = [
+                'success' => true,
+                'message' => '密碼已成功重設。',
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'errors' => $e->getErrors(),
             ];
             $response->getBody()->write((json_encode($responseData) ?: '{}'));
 

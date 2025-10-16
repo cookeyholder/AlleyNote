@@ -31,6 +31,7 @@ use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsVisualizationService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
+use App\Shared\Events\Contracts\EventListenerInterface;
 use App\Shared\Events\SimpleEventDispatcher;
 use PDO;
 use Psr\Container\ContainerInterface;
@@ -111,6 +112,7 @@ class StatisticsServiceProvider
                 $dispatcher = new SimpleEventDispatcher($logger);
 
                 // 註冊事件監聽器
+                /** @var EventListenerInterface $postViewedListener */
                 $postViewedListener = $container->get(PostViewedListener::class);
                 $dispatcher->listen('statistics.post.viewed', $postViewedListener);
 

@@ -39,10 +39,10 @@ class AdvancedAnalyticsController extends BaseController
     )]
     public function getDeviceTypes(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $stats = $this->analyticsService->getDeviceTypeStats($postId, $startDate, $endDate);
 
@@ -72,10 +72,10 @@ class AdvancedAnalyticsController extends BaseController
     )]
     public function getBrowsers(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $stats = $this->analyticsService->getBrowserStats($postId, $startDate, $endDate);
 
@@ -105,10 +105,10 @@ class AdvancedAnalyticsController extends BaseController
     )]
     public function getOperatingSystems(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $stats = $this->analyticsService->getOSStats($postId, $startDate, $endDate);
 
@@ -139,11 +139,11 @@ class AdvancedAnalyticsController extends BaseController
     )]
     public function getReferrers(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
-        $limit = isset($params['limit']) ? (int) $params['limit'] : 10;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
+        $limit = $this->getIntParam($params, 'limit', 10) ?? 10;
 
         $stats = $this->analyticsService->getReferrerStats($postId, $startDate, $endDate, $limit);
 
@@ -173,10 +173,10 @@ class AdvancedAnalyticsController extends BaseController
     )]
     public function getHourlyDistribution(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $stats = $this->analyticsService->getHourlyDistribution($postId, $startDate, $endDate);
 
@@ -206,10 +206,10 @@ class AdvancedAnalyticsController extends BaseController
     )]
     public function getComprehensiveReport(ServerRequestInterface $request, ResponseInterface $response): ResponseInterface
     {
-        $params = $request->getQueryParams();
-        $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
-        $startDate = $params['start_date'] ?? null;
-        $endDate = $params['end_date'] ?? null;
+        $params = $this->sanitizeQueryParams($request->getQueryParams());
+        $postId = $this->getIntParam($params, 'post_id');
+        $startDate = $this->getStringParam($params, 'start_date');
+        $endDate = $this->getStringParam($params, 'end_date');
 
         $report = $this->analyticsService->getComprehensiveReport($postId, $startDate, $endDate);
 
@@ -217,5 +217,56 @@ class AdvancedAnalyticsController extends BaseController
             'success' => true,
             'data' => $report,
         ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function sanitizeQueryParams(mixed $rawParams): array
+    {
+        if (!is_array($rawParams)) {
+            return [];
+        }
+
+        $sanitized = [];
+        foreach ($rawParams as $key => $value) {
+            if (is_string($key)) {
+                $sanitized[$key] = $value;
+            }
+        }
+
+        return $sanitized;
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function getIntParam(array $params, string $key, ?int $default = null): ?int
+    {
+        if (!array_key_exists($key, $params)) {
+            return $default;
+        }
+
+        $value = $params[$key];
+
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_string($value) && $value !== '' && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        return $default;
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function getStringParam(array $params, string $key): ?string
+    {
+        $value = $params[$key] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 }
