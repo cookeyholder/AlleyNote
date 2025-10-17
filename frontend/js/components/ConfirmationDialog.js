@@ -3,7 +3,7 @@
  * 用於刪除操作等需要用戶確認的場景
  */
 
-import { modal } from './Modal.js';
+import { modal } from "./Modal.js";
 
 /**
  * 顯示刪除確認對話框
@@ -13,23 +13,19 @@ import { modal } from './Modal.js';
  * @returns {Object} Modal 實例
  */
 export function confirmDelete(itemName, onConfirm, options = {}) {
-  const {
-    title = '確認刪除',
-    message = null,
-    type = '項目',
-  } = options;
+    const { title = "確認刪除", message = null, type = "項目" } = options;
 
-  const defaultMessage = `確定要刪除「${itemName}」嗎？此操作無法復原。`;
-  const finalMessage = message || defaultMessage;
+    const defaultMessage = `確定要刪除「${itemName}」嗎？此操作無法復原。`;
+    const finalMessage = message || defaultMessage;
 
-  return modal.confirm(
-    title,
-    `<div class="text-modern-700">
+    return modal.confirm(
+        title,
+        `<div class="text-modern-700">
       <p class="mb-2">${finalMessage}</p>
       <p class="text-sm text-red-600">⚠️ 此操作無法復原</p>
     </div>`,
-    onConfirm
-  );
+        onConfirm
+    );
 }
 
 /**
@@ -41,7 +37,7 @@ export function confirmDelete(itemName, onConfirm, options = {}) {
  * @returns {Object} Modal 實例
  */
 export function confirm(title, message, onConfirm, onCancel = null) {
-  return modal.confirm(title, message, onConfirm, onCancel);
+    return modal.confirm(title, message, onConfirm, onCancel);
 }
 
 /**
@@ -52,7 +48,7 @@ export function confirm(title, message, onConfirm, onCancel = null) {
  * @returns {Object} Modal 實例
  */
 export function alert(title, message, onClose = null) {
-  return modal.alert(title, message, onClose);
+    return modal.alert(title, message, onClose);
 }
 
 /**
@@ -63,21 +59,18 @@ export function alert(title, message, onClose = null) {
  * @returns {Object} Modal 實例
  */
 export function confirmBatchDelete(count, onConfirm, options = {}) {
-  const {
-    title = '確認批量刪除',
-    type = '項目',
-  } = options;
+    const { title = "確認批量刪除", type = "項目" } = options;
 
-  const message = `確定要刪除選中的 ${count} 個${type}嗎？此操作無法復原。`;
+    const message = `確定要刪除選中的 ${count} 個${type}嗎？此操作無法復原。`;
 
-  return modal.confirm(
-    title,
-    `<div class="text-modern-700">
+    return modal.confirm(
+        title,
+        `<div class="text-modern-700">
       <p class="mb-2">${message}</p>
       <p class="text-sm text-red-600">⚠️ 此操作無法復原</p>
     </div>`,
-    onConfirm
-  );
+        onConfirm
+    );
 }
 
 /**
@@ -87,17 +80,17 @@ export function confirmBatchDelete(count, onConfirm, options = {}) {
  * @returns {Object} Modal 實例
  */
 export function confirmDiscard(onConfirm, options = {}) {
-  const {
-    title = '確認放棄變更',
-    message = '您有未保存的變更。確定要放棄這些變更嗎？',
-  } = options;
+    const {
+        title = "確認放棄變更",
+        message = "您有未保存的變更。確定要放棄這些變更嗎？",
+    } = options;
 
-  return modal.confirm(
-    title,
-    `<div class="text-modern-700">
+    return modal.confirm(
+        title,
+        `<div class="text-modern-700">
       <p class="mb-2">${message}</p>
       <p class="text-sm text-orange-600">⚠️ 未保存的變更將會遺失</p>
     </div>`,
-    onConfirm
-  );
+        onConfirm
+    );
 }

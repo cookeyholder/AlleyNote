@@ -5,7 +5,7 @@ import {
     renderDashboardLayout,
     bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
-import { globalGetters } from "../../store/globalStore.js";
+import { globalActions } from "../../store/globalStore.js";
 import { toast } from "../../utils/toast.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
@@ -15,15 +15,25 @@ import {
     destroyRichTextEditor,
     getRichTextEditorContent,
 } from "../../components/RichTextEditor.js";
+import {
+    applySiteBranding,
+    normalizeSettingsFromApi,
+    normalizeSettingsFromForm,
+} from "../../utils/siteSettings.js";
 
 // 儲存原始設定值
 let originalSettings = {};
 let currentSettings = {};
 let footerDescriptionEditor = null;
+const FOOTER_EDITOR_EDITABLE_ID = "footer-description-editor-editable";
 
 export async function renderSettings() {
     const content = `
     <div class="max-w-4xl mx-auto">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-modern-900">系統設定</h1>
+        <p class="text-modern-600 mt-1">調整網站品牌、內容與權限等核心設定</p>
+      </div>
       <!-- 基本設定 -->
       <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
         <h2 class="text-xl font-semibold text-modern-900 mb-4">基本設定</h2>
@@ -218,7 +228,9 @@ export async function renderSettings() {
             <label class="block text-sm font-medium text-modern-700 mb-2">
               頁腳描述
             </label>
-            <div id="footer-description-editor" class="border border-modern-300 rounded-lg overflow-hidden"></div>
+            <div id="footer-description-editor" class="border border-modern-300 rounded-lg overflow-hidden">
+              <div id="${FOOTER_EDITOR_EDITABLE_ID}" class="min-h-[200px]"></div>
+            </div>
             <p class="text-sm text-modern-500 mt-1">
               顯示在頁腳的網站描述，支援富文本格式（HTML）
             </p>
@@ -267,13 +279,13 @@ async function initFooterDescriptionEditor() {
     try {
         // 先銷毀舊的編輯器實例（如果存在）
         if (footerDescriptionEditor) {
-            await destroyRichTextEditor("footer-description-editor");
+            await destroyRichTextEditor(FOOTER_EDITOR_EDITABLE_ID);
             footerDescriptionEditor = null;
         }
 
         // 創建新的編輯器實例
         footerDescriptionEditor = await initRichTextEditor(
-            "footer-description-editor",
+            FOOTER_EDITOR_EDITABLE_ID,
             {
                 placeholder: "請輸入頁腳描述...",
                 initialValue:
@@ -321,6 +333,9 @@ async function loadSettings() {
 
         const response = await apiClient.get("/settings");
         const settingsData = response.data || {};
+        const normalizedSettings = normalizeSettingsFromApi(settingsData);
+        globalActions.setSettings(normalizedSettings);
+        applySiteBranding(normalizedSettings);
 
         // 提取設定值（API 回傳的是 {value, type, description} 結構）
         const settings = {};
@@ -704,7 +719,7 @@ async function saveSettings() {
 
         // 從富文本編輯器獲取頁腳描述
         const footerDescription = getRichTextEditorContent(
-            "footer-description-editor"
+            FOOTER_EDITOR_EDITABLE_ID
         );
         if (footerDescription !== null) {
             settings.footer_description = footerDescription;
@@ -740,13 +755,27 @@ async function saveSettings() {
 
         // 更新原始設定
         originalSettings = {
+            ...originalSettings,
             ...settings,
             allowed_file_types: allowedFileTypes,
         };
-        currentSettings = { ...settings, allowed_file_types: allowedFileTypes };
+        currentSettings = {
+            ...currentSettings,
+            ...settings,
+            allowed_file_types: allowedFileTypes,
+        };
+
+        const normalized = normalizeSettingsFromForm(originalSettings, {
+            footerDescription,
+        });
+        globalActions.setSettings(normalized);
+        applySiteBranding(normalized);
+        window.dispatchEvent(
+            new CustomEvent("settings:updated", { detail: normalized })
+        );
 
         loading.hide();
-        toast.success("設定已儲存");
+        toast.success("網站設定已儲存成功");
     } catch (error) {
         loading.hide();
         console.error("儲存設定失敗:", error);

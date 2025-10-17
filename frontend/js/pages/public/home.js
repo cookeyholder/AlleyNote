@@ -1,18 +1,18 @@
 import { router } from "../../utils/router.js";
 import { postsAPI } from "../../api/modules/posts.js?v=20251011";
-import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
 import { apiClient } from "../../api/client.js";
-import { globalGetters } from "../../store/globalStore.js";
+import { globalActions, globalGetters } from "../../store/globalStore.js";
+import {
+    applySiteBranding,
+    getDefaultSiteSettings,
+    loadCachedSiteSettings,
+    normalizeSettingsFromApi,
+} from "../../utils/siteSettings.js";
 
 let currentPage = 1;
 let currentSearch = "";
-let siteSettings = {
-    site_name: "AlleyNote",
-    site_description: "基於 DDD 架構的企業級應用程式",
-    footer_copyright: "© 2024 AlleyNote. All rights reserved.",
-    footer_description: "基於 Domain-Driven Design 的企業級公布欄系統",
-};
+let siteSettings = loadCachedSiteSettings();
 
 /**
  * 渲染首頁
@@ -34,9 +34,11 @@ export async function renderHome() {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
-              <a href="/" data-navigo class="text-2xl font-bold text-accent-600 hover:text-accent-700 transition-colors">
-                ${siteSettings.site_name}
-              </a>
+              <h1 class="text-2xl font-bold text-accent-600 hover:text-accent-700 transition-colors" data-site-name>
+                <a href="/" data-navigo class="hover:text-accent-700 transition-colors">
+                  ${siteSettings.siteName}
+                </a>
+              </h1>
             </div>
             <div class="flex items-center gap-4">
               <div class="relative hidden md:block">
@@ -68,13 +70,13 @@ export async function renderHome() {
                 </div>
               `
                       : `
-                <a
-                  href="/login"
-                  data-navigo
+                <button
+                  type="button"
+                  id="home-login-button"
                   class="btn-primary"
                 >
                   登入
-                </a>
+                </button>
               `
               }
             </div>
@@ -86,11 +88,14 @@ export async function renderHome() {
       <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <!-- Hero Section -->
         <div class="text-center mb-12 animate-fade-in">
-          <h1 class="text-4xl md:text-5xl font-bold text-modern-900 mb-4">
-            ${siteSettings.site_name}
-          </h1>
-          <p class="text-xl text-modern-600 mb-8">
-            ${siteSettings.site_description}
+          <p class="text-4xl md:text-5xl font-bold text-modern-900 mb-4" data-site-name>
+            ${siteSettings.siteName}
+          </p>
+          <h2 class="text-2xl md:text-3xl font-semibold text-modern-700 mb-3" data-site-tagline>
+            ${siteSettings.heroTitle}
+          </h2>
+          <p class="text-xl text-modern-600 mb-8" data-site-description>
+            ${siteSettings.siteDescription}
           </p>
         </div>
 
@@ -153,10 +158,10 @@ export async function renderHome() {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div class="text-center">
             <p class="text-modern-600 mb-2">
-              ${siteSettings.footer_copyright}
+              ${siteSettings.footerCopyright}
             </p>
             <div id="footer-description" class="text-sm text-modern-500 prose-modern max-w-none">
-              ${siteSettings.footer_description}
+              ${siteSettings.footerDescription}
             </div>
           </div>
         </div>
@@ -164,13 +169,23 @@ export async function renderHome() {
     </div>
   `;
 
+    applySiteBranding(siteSettings);
+
     // 載入文章
     await loadPosts();
 
     // 設置頁腳描述（支援 HTML）
     const footerDescElement = document.getElementById("footer-description");
-    if (footerDescElement && siteSettings.footer_description) {
-        footerDescElement.innerHTML = siteSettings.footer_description;
+    if (footerDescElement && siteSettings.footerDescription) {
+        footerDescElement.innerHTML = siteSettings.footerDescription;
+    }
+
+    const loginButton = document.getElementById("home-login-button");
+    if (loginButton) {
+        loginButton.addEventListener("click", (event) => {
+            event.preventDefault();
+            router.navigate("/login");
+        });
     }
 
     // 綁定搜尋事件
@@ -448,27 +463,15 @@ async function loadSiteSettings() {
     try {
         const response = await apiClient.get("/settings");
         const settingsData = response.data || {};
+        const normalized = normalizeSettingsFromApi(settingsData);
 
-        // 提取設定值
-        const extractValue = (item) => {
-            return item && typeof item === "object" && "value" in item
-                ? item.value
-                : item;
-        };
-
-        siteSettings.site_name =
-            extractValue(settingsData.site_name) || "AlleyNote";
-        siteSettings.site_description =
-            extractValue(settingsData.site_description) ||
-            "基於 DDD 架構的企業級應用程式";
-        siteSettings.footer_copyright =
-            extractValue(settingsData.footer_copyright) ||
-            "© 2024 AlleyNote. All rights reserved.";
-        siteSettings.footer_description =
-            extractValue(settingsData.footer_description) ||
-            "基於 Domain-Driven Design 的企業級公布欄系統";
+        siteSettings = normalized;
+        globalActions.setSettings(normalized);
+        applySiteBranding(normalized);
     } catch (error) {
         console.error("載入網站設定失敗:", error);
-        // 使用預設值
+        // 使用已載入或預設值
+        siteSettings = globalGetters.getSettings() || getDefaultSiteSettings();
+        applySiteBranding(siteSettings);
     }
 }
