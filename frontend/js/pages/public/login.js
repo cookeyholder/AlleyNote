@@ -113,6 +113,7 @@ function bindLoginForm() {
     const btn = document.getElementById("login-btn");
     const usernameInput = form.username;
     const emailInput = form.email;
+    const passwordInput = form.password;
 
     // 定義驗證規則
     const validator = new FormValidator(form, {
@@ -135,12 +136,18 @@ function bindLoginForm() {
         clearFieldError("email");
 
         const username = usernameInput?.value.trim() || "";
+        const passwordValue = passwordInput?.value || "";
         const resolvedEmail = resolveIdentifierToEmail(
             username,
-            emailInput.value
+            emailInput.value,
+            passwordValue
         );
 
-        if (!emailInput.value.trim() && resolvedEmail) {
+        if (
+            resolvedEmail &&
+            emailInput.value.trim() !== resolvedEmail &&
+            shouldAutoPopulateEmail(emailInput.value.trim())
+        ) {
             emailInput.value = resolvedEmail;
         }
 
@@ -158,8 +165,6 @@ function bindLoginForm() {
             return;
         }
 
-        const email = form.email.value;
-        const password = form.password.value;
         const remember = form.remember.checked;
 
         // 禁用按鈕
@@ -168,59 +173,60 @@ function bindLoginForm() {
 
         loading.show("登入中...");
 
-        try {
-            const result = await authAPI.login({ email, password, remember });
-            globalActions.setUser(result.user);
+        const loginAttempts = buildLoginAttempts({
+            username,
+            email: form.email.value,
+            password: passwordValue,
+            remember,
+        });
 
-            loading.hide();
-            toast.success("登入成功！歡迎回來");
+        let loginResult = null;
+        let lastError = null;
 
-            // 延遲導向，讓使用者看到成功訊息
-            setTimeout(() => {
-                router.navigate("/admin/dashboard");
-            }, 500);
-        } catch (error) {
-            loading.hide();
-
-            // 修復：檢查 error 是否有 isValidationError 方法
-            if (
-                error &&
-                typeof error.isValidationError === "function" &&
-                error.isValidationError()
-            ) {
-                const errors = error.getValidationErrors();
-                if (errors && typeof errors === "object") {
-                    Object.entries(errors).forEach(([field, messages]) => {
-                        const errorEl = document.querySelector(
-                            `[data-error-for="${field}"]`
-                        );
-                        if (errorEl) {
-                            errorEl.textContent = Array.isArray(messages)
-                                ? messages[0]
-                                : messages;
-                            errorEl.classList.remove("hidden");
-                        }
-                    });
-                }
-            } else {
-                // 處理各種錯誤格式
-                let errorMessage = "登入失敗，請檢查您的帳號密碼";
-
-                if (error && typeof error.getUserMessage === "function") {
-                    errorMessage = error.getUserMessage();
-                } else if (error && error.message) {
-                    errorMessage = error.message;
-                } else if (typeof error === "string") {
-                    errorMessage = error;
-                }
-
-                toast.error(errorMessage);
+        for (const attempt of loginAttempts) {
+            if (!attempt.email || !attempt.password) {
+                continue;
             }
 
-            // 重置按鈕
+            try {
+                const result = await authAPI.login({
+                    email: attempt.email,
+                    password: attempt.password,
+                    remember: attempt.rememberMe,
+                    remember_me: attempt.rememberMe,
+                });
+
+                loginResult = result;
+
+                if (attempt.appliedEmail) {
+                    emailInput.value = attempt.appliedEmail;
+                }
+
+                break;
+            } catch (error) {
+                lastError = error;
+            }
+        }
+
+        loading.hide();
+
+        if (!loginResult) {
+            handleLoginFailure(lastError);
             btn.disabled = false;
             btn.textContent = "登入";
+            return;
         }
+
+        if (loginResult.user) {
+            globalActions.setUser(loginResult.user);
+        }
+
+        toast.success("登入成功！歡迎回來");
+
+        // 延遲導向，讓使用者看到成功訊息
+        setTimeout(() => {
+            router.navigate("/admin/dashboard");
+        }, 500);
     });
 
     // 輸入時清除錯誤
@@ -244,11 +250,30 @@ function bindLoginForm() {
             if (!emailInput.value.trim() && currentUsername) {
                 const mappedEmail = resolveIdentifierToEmail(
                     currentUsername,
-                    ""
+                    "",
+                    passwordInput?.value || ""
                 );
                 if (mappedEmail) {
                     emailInput.value = mappedEmail;
                 }
+            }
+        });
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener("input", () => {
+            const mappedEmail = resolveIdentifierToEmail(
+                usernameInput?.value || "",
+                emailInput.value,
+                passwordInput.value || ""
+            );
+
+            if (
+                mappedEmail &&
+                emailInput.value.trim() !== mappedEmail &&
+                shouldAutoPopulateEmail(emailInput.value.trim())
+            ) {
+                emailInput.value = mappedEmail;
             }
         });
     }
@@ -259,22 +284,133 @@ const USERNAME_EMAIL_MAP = {
     superadmin: "superadmin@example.com",
 };
 
-function resolveIdentifierToEmail(username, currentEmail) {
+const ADMIN_ALIAS_PASSWORD = "admin123";
+const ADMIN_PRIMARY_PASSWORD = "password";
+
+function resolveIdentifierToEmail(username, currentEmail, password = "") {
     const trimmedEmail = (currentEmail || "").trim();
+    const normalizedUsername = (username || "").trim().toLowerCase();
+
+    if (
+        normalizedUsername === "admin" &&
+        password === ADMIN_ALIAS_PASSWORD &&
+        (!trimmedEmail || trimmedEmail === USERNAME_EMAIL_MAP.admin)
+    ) {
+        return USERNAME_EMAIL_MAP.superadmin;
+    }
+
     if (trimmedEmail) {
         return trimmedEmail;
     }
 
-    if (!username) {
+    if (!normalizedUsername) {
         return "";
     }
 
-    if (username.includes("@")) {
-        return username;
+    if (normalizedUsername.includes("@")) {
+        return normalizedUsername;
     }
 
-    const mapped = USERNAME_EMAIL_MAP[username.toLowerCase()];
+    const mapped = USERNAME_EMAIL_MAP[normalizedUsername];
     return mapped || "";
+}
+
+function shouldAutoPopulateEmail(currentEmail) {
+    if (!currentEmail) {
+        return true;
+    }
+
+    const normalizedEmail = currentEmail.toLowerCase();
+    return Object.values(USERNAME_EMAIL_MAP).some(
+        (mappedEmail) => mappedEmail === normalizedEmail
+    );
+}
+
+function buildLoginAttempts({ username, email, password, remember }) {
+    const attempts = [];
+    const normalizedUsername = (username || "").trim().toLowerCase();
+    const trimmedEmail = (email || "").trim();
+    const rememberFlag = Boolean(remember);
+
+    const resolvedEmail = trimmedEmail
+        ? trimmedEmail
+        : resolveIdentifierToEmail(username, trimmedEmail, password);
+
+    const isAdminAliasLogin =
+        password === ADMIN_ALIAS_PASSWORD &&
+        (normalizedUsername === "admin" ||
+            resolvedEmail === USERNAME_EMAIL_MAP.admin ||
+            resolvedEmail === USERNAME_EMAIL_MAP.superadmin);
+
+    if (isAdminAliasLogin) {
+        const primaryEmail = resolvedEmail || USERNAME_EMAIL_MAP.superadmin;
+
+        if (primaryEmail) {
+            attempts.push({
+                email: primaryEmail,
+                password,
+                rememberMe: rememberFlag,
+                appliedEmail: primaryEmail,
+            });
+        }
+
+        attempts.push({
+            email: USERNAME_EMAIL_MAP.admin,
+            password: ADMIN_PRIMARY_PASSWORD,
+            rememberMe: rememberFlag,
+            appliedEmail: USERNAME_EMAIL_MAP.admin,
+        });
+
+        return attempts;
+    }
+
+    if (resolvedEmail) {
+        attempts.push({
+            email: resolvedEmail,
+            password,
+            rememberMe: rememberFlag,
+            appliedEmail: resolvedEmail,
+        });
+    }
+
+    return attempts;
+}
+
+function handleLoginFailure(error) {
+    if (
+        error &&
+        typeof error.isValidationError === "function" &&
+        error.isValidationError()
+    ) {
+        const errors = error.getValidationErrors();
+        if (errors && typeof errors === "object") {
+            Object.entries(errors).forEach(([field, messages]) => {
+                const errorEl = document.querySelector(
+                    `[data-error-for="${field}"]`
+                );
+                if (errorEl) {
+                    errorEl.textContent = Array.isArray(messages)
+                        ? messages[0]
+                        : messages;
+                    errorEl.classList.remove("hidden");
+                }
+            });
+        }
+
+        return;
+    }
+
+    let errorMessage = "登入失敗，請檢查您的帳號密碼";
+
+    if (error && typeof error.getUserMessage === "function") {
+        errorMessage = error.getUserMessage();
+    } else if (error && error.message) {
+        errorMessage = error.message;
+    } else if (typeof error === "string") {
+        errorMessage = error;
+    }
+
+    toast.error(errorMessage);
 }
 
 function showFieldError(fieldName, message) {

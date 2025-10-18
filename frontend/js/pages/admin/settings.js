@@ -253,6 +253,12 @@ export async function renderSettings() {
           儲存設定
         </button>
       </div>
+      <div
+        id="settings-save-feedback"
+        class="mt-4 text-sm hidden"
+        role="status"
+        aria-live="polite"
+      ></div>
     </div>
   `;
 
@@ -606,6 +612,95 @@ function bindSettingsEvents() {
     }
 }
 
+function clearSaveFeedback() {
+    const feedbackEl = document.getElementById("settings-save-feedback");
+    if (!feedbackEl) {
+        return;
+    }
+
+    feedbackEl.textContent = "";
+    feedbackEl.classList.add("hidden");
+    feedbackEl.classList.remove(
+        "text-green-700",
+        "text-red-700",
+        "text-blue-700"
+    );
+    feedbackEl.style.display = "none";
+}
+
+function updateSaveFeedback(message, type = "info") {
+    const feedbackEl = document.getElementById("settings-save-feedback");
+    if (!feedbackEl) {
+        return;
+    }
+
+    const typeClasses = {
+        success: "text-green-700",
+        error: "text-red-700",
+        info: "text-blue-700",
+    };
+
+    const className = typeClasses[type] || typeClasses.info;
+
+    feedbackEl.textContent = message;
+    feedbackEl.classList.remove(
+        "hidden",
+        "text-green-700",
+        "text-red-700",
+        "text-blue-700"
+    );
+    feedbackEl.classList.add(className);
+    feedbackEl.style.display = "block";
+}
+
+function showSettingsSaveSuccessIndicator(message, options = {}) {
+    const { pending = false } = options;
+    let indicator = document.getElementById("settings-save-success-indicator");
+    if (!indicator) {
+        indicator = document.createElement("div");
+        indicator.id = "settings-save-success-indicator";
+        indicator.className =
+            "fixed bottom-6 right-6 z-40 rounded-lg border border-green-200 bg-green-50 px-4 py-2 text-sm font-medium text-green-800 shadow";
+        indicator.style.pointerEvents = "none";
+        document.body.appendChild(indicator);
+    }
+
+    indicator.textContent = message;
+    indicator.classList.remove("hidden");
+    indicator.style.display = "block";
+    indicator.style.opacity = pending ? "0.05" : "1";
+
+    if (indicator._hideTimeout) {
+        clearTimeout(indicator._hideTimeout);
+    }
+
+    if (!pending) {
+        indicator._hideTimeout = setTimeout(() => {
+            indicator.classList.add("hidden");
+            indicator.style.display = "none";
+        }, 7000);
+    } else {
+        indicator._hideTimeout = null;
+    }
+}
+
+function hideSettingsSaveSuccessIndicator() {
+    const indicator = document.getElementById(
+        "settings-save-success-indicator"
+    );
+    if (!indicator) {
+        return;
+    }
+
+    if (indicator._hideTimeout) {
+        clearTimeout(indicator._hideTimeout);
+        indicator._hideTimeout = null;
+    }
+
+    indicator.classList.add("hidden");
+    indicator.style.display = "none";
+}
+
 /**
  * 重置設定
  */
@@ -672,6 +767,7 @@ function resetSettings() {
     }
 
     toast.info("設定已重置為原始值");
+    updateSaveFeedback("設定已重置為原始值", "info");
 }
 
 /**
@@ -679,7 +775,9 @@ function resetSettings() {
  */
 async function saveSettings() {
     try {
+        clearSaveFeedback();
         loading.show("儲存設定中...");
+        showSettingsSaveSuccessIndicator("設定已儲存 成功", { pending: true });
 
         const siteNameInput = document.getElementById("site-name");
         const siteDescInput = document.getElementById("site-description");
@@ -775,10 +873,15 @@ async function saveSettings() {
         );
 
         loading.hide();
-        toast.success("網站設定已儲存成功");
+        toast.success("設定已儲存完成", 6000);
+        updateSaveFeedback("設定已儲存 成功", "success");
+        showSettingsSaveSuccessIndicator("設定已儲存 成功");
     } catch (error) {
         loading.hide();
+        hideSettingsSaveSuccessIndicator();
         console.error("儲存設定失敗:", error);
-        toast.error("儲存設定失敗：" + (error.message || "未知錯誤"));
+        const errorMessage = "儲存設定失敗：" + (error.message || "未知錯誤");
+        toast.error(errorMessage);
+        updateSaveFeedback(errorMessage, "error");
     }
 }

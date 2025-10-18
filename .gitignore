@@ -48,7 +48,7 @@
 # 測試覆蓋率報告
 coverage/
 /backend/storage/coverage/
-/backend/coverage-reports/
+coverage-reports/
 
 # Playwright MCP
 .playwright-mcp/

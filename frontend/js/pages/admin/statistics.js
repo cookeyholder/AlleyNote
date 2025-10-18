@@ -285,7 +285,7 @@ export default class StatisticsPage {
         return `
             <div class="max-w-7xl mx-auto">
                 <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-modern-900">系統統計</h1>
+                    <h1 class="text-2xl font-bold text-modern-900">系統統計</h1>
                     <p class="text-modern-600 mt-1">載入統計資料中，請稍候...</p>
                 </div>
             <div class="flex items-center justify-center min-h-64">
@@ -303,7 +303,7 @@ export default class StatisticsPage {
             return `
                 <div class="max-w-7xl mx-auto">
                     <div class="mb-8">
-                        <h1 class="text-3xl font-bold text-modern-900">系統統計</h1>
+                        <h1 class="text-2xl font-bold text-modern-900">系統統計</h1>
                         <p class="text-modern-600 mt-1">目前沒有可顯示的統計資料</p>
                     </div>
                     <div class="text-center py-12">
@@ -318,7 +318,7 @@ export default class StatisticsPage {
         return `
       <div class="max-w-7xl mx-auto">
                 <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-modern-900">系統統計</h1>
+                    <h1 class="text-2xl font-bold text-modern-900">系統統計</h1>
                     <p class="text-modern-600 mt-1">掌握網站的流量與互動狀態</p>
                 </div>
         <!-- 工具列 -->

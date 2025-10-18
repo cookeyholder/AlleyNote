@@ -43,10 +43,7 @@ async function fetchSiteSettings(page) {
         );
         const heroTitle = extractValue(
             apiData.hero_title,
-            extractValue(
-                apiData.site_tagline,
-                DEFAULT_SITE_SETTINGS.heroTitle
-            )
+            extractValue(apiData.site_tagline, DEFAULT_SITE_SETTINGS.heroTitle)
         );
 
         const normalized = {
