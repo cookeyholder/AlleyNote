@@ -40,12 +40,18 @@ class RegisterUserDTO extends BaseDTO
         // 驗證資料
         $validatedData = $this->validate($data);
 
-        // 設定屬性
-        $this->username = trim($validatedData['username']);
-        $this->email = trim(strtolower($validatedData['email']));
-        $this->password = $validatedData['password'];
-        $this->confirmPassword = $validatedData['confirm_password'];
-        $this->userIp = $validatedData['user_ip'];
+        // 設定屬性 - 確保型別安全
+        $username = $validatedData['username'] ?? '';
+        $email = $validatedData['email'] ?? '';
+        $password = $validatedData['password'] ?? '';
+        $confirmPassword = $validatedData['confirm_password'] ?? '';
+        $userIp = $validatedData['user_ip'] ?? '';
+
+        $this->username = is_string($username) ? trim($username) : '';
+        $this->email = is_string($email) ? trim(strtolower($email)) : '';
+        $this->password = is_string($password) ? $password : '';
+        $this->confirmPassword = is_string($confirmPassword) ? $confirmPassword : '';
+        $this->userIp = is_string($userIp) ? $userIp : '';
     }
 
     /**
@@ -202,7 +208,11 @@ class RegisterUserDTO extends BaseDTO
                 'throwaway.email',
             ];
 
-            $domain = substr(strrchr($email, '@'), 1);
+            $atPart = strrchr($email, '@');
+            if ($atPart === false) {
+                return false;
+            }
+            $domain = substr($atPart, 1);
             if (in_array($domain, $disposableEmailDomains, true)) {
                 return false;
             }
@@ -343,7 +353,11 @@ class RegisterUserDTO extends BaseDTO
      */
     public function getEmailDomain(): string
     {
-        return substr(strrchr($this->email, '@'), 1);
+        $atPart = strrchr($this->email, '@');
+        if ($atPart === false) {
+            return '';
+        }
+        return substr($atPart, 1);
     }
 
     /**

@@ -23,11 +23,16 @@ final readonly class LogoutRequestDTO
      */
     public static function fromArray(array $data): self
     {
+        $accessToken = $data['access_token'] ?? '';
+        $refreshToken = $data['refresh_token'] ?? null;
+        $revokeAllTokens = $data['revoke_all_tokens'] ?? false;
+        $sessionId = $data['session_id'] ?? null;
+
         return new self(
-            accessToken: $data['access_token'] ?? '',
-            refreshToken: $data['refresh_token'] ?? null,
-            revokeAllTokens: $data['revoke_all_tokens'] ?? false,
-            sessionId: $data['session_id'] ?? null,
+            accessToken: is_string($accessToken) ? $accessToken : '',
+            refreshToken: is_string($refreshToken) ? $refreshToken : null,
+            revokeAllTokens: is_bool($revokeAllTokens) ? $revokeAllTokens : false,
+            sessionId: is_string($sessionId) ? $sessionId : null,
         );
     }
 

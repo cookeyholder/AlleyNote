@@ -21,9 +21,12 @@ final readonly class RefreshRequestDTO
      */
     public static function fromArray(array $data): self
     {
+        $refreshToken = $data['refresh_token'] ?? '';
+        $scopes = $data['scopes'] ?? null;
+
         return new self(
-            refreshToken: $data['refresh_token'] ?? '',
-            scopes: $data['scopes'] ?? null,
+            refreshToken: is_string($refreshToken) ? $refreshToken : '',
+            scopes: is_array($scopes) ? $scopes : null,
         );
     }
 
