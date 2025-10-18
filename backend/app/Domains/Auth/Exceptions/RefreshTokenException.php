@@ -141,7 +141,8 @@ class RefreshTokenException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::REASON_NOT_FOUND;
+        $reason = $this->context['reason'] ?? self::REASON_NOT_FOUND;
+        return is_string($reason) ? $reason : self::REASON_NOT_FOUND;
     }
 
     /**
@@ -149,7 +150,8 @@ class RefreshTokenException extends JwtException
      */
     public function getOperationId(): ?string
     {
-        return $this->context['operation_id'] ?? null;
+        $operationId = $this->context['operation_id'] ?? null;
+        return is_string($operationId) ? $operationId : null;
     }
 
     /**
@@ -157,7 +159,8 @@ class RefreshTokenException extends JwtException
      */
     public function getUserId(): ?int
     {
-        return $this->context['user_id'] ?? null;
+        $userId = $this->context['user_id'] ?? null;
+        return is_int($userId) ? $userId : null;
     }
 
     /**
@@ -165,7 +168,8 @@ class RefreshTokenException extends JwtException
      */
     public function getTokenId(): ?string
     {
-        return $this->context['token_id'] ?? null;
+        $tokenId = $this->context['token_id'] ?? null;
+        return is_string($tokenId) ? $tokenId : null;
     }
 
     /**
@@ -175,7 +179,20 @@ class RefreshTokenException extends JwtException
      */
     public function getDeviceInfo(): ?array
     {
-        return $this->context['device_info'] ?? null;
+        $deviceInfo = $this->context['device_info'] ?? null;
+        if (!is_array($deviceInfo)) {
+            return null;
+        }
+
+        // 確保陣列鍵值是字串
+        $result = [];
+        foreach ($deviceInfo as $key => $value) {
+            if (is_string($key)) {
+                $result[$key] = $value;
+            }
+        }
+
+        return empty($result) ? null : $result;
     }
 
     /**

@@ -149,7 +149,8 @@ class TokenExpiredException extends JwtException
      */
     public function getTokenType(): string
     {
-        return $this->context['token_type'] ?? self::ACCESS_TOKEN;
+        $tokenType = $this->context['token_type'] ?? self::ACCESS_TOKEN;
+        return is_string($tokenType) ? $tokenType : self::ACCESS_TOKEN;
     }
 
     /**
@@ -157,7 +158,8 @@ class TokenExpiredException extends JwtException
      */
     public function getExpiredAt(): ?int
     {
-        return $this->context['expired_at'] ?? null;
+        $expiredAt = $this->context['expired_at'] ?? null;
+        return is_int($expiredAt) ? $expiredAt : null;
     }
 
     /**
@@ -165,7 +167,8 @@ class TokenExpiredException extends JwtException
      */
     public function getExpiredDuration(): ?int
     {
-        return $this->context['expired_duration'] ?? null;
+        $expiredDuration = $this->context['expired_duration'] ?? null;
+        return is_int($expiredDuration) ? $expiredDuration : null;
     }
 
     /**

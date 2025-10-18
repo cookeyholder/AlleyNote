@@ -57,7 +57,9 @@ class TokenValidationException extends JwtException
             'timestamp' => time(),
         ], $additionalContext);
 
-        parent::__construct($message, self::ERROR_CODE, $previous, $context);
+        // Throwable 可以安全地傳遞給 Exception
+        $exceptionPrevious = $previous instanceof \Exception ? $previous : null;
+        parent::__construct($message, self::ERROR_CODE, $exceptionPrevious, $context);
     }
 
     /**
@@ -65,7 +67,8 @@ class TokenValidationException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::VALIDATION_FAILED;
+        $reason = $this->context['reason'] ?? self::VALIDATION_FAILED;
+        return is_string($reason) ? $reason : self::VALIDATION_FAILED;
     }
 
     /**

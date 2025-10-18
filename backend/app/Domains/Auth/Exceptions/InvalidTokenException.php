@@ -131,7 +131,8 @@ class InvalidTokenException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::REASON_DECODE_FAILED;
+        $reason = $this->context['reason'] ?? self::REASON_DECODE_FAILED;
+        return is_string($reason) ? $reason : self::REASON_DECODE_FAILED;
     }
 
     /**
@@ -139,7 +140,8 @@ class InvalidTokenException extends JwtException
      */
     public function getTokenType(): string
     {
-        return $this->context['token_type'] ?? self::ACCESS_TOKEN;
+        $tokenType = $this->context['token_type'] ?? self::ACCESS_TOKEN;
+        return is_string($tokenType) ? $tokenType : self::ACCESS_TOKEN;
     }
 
     /**

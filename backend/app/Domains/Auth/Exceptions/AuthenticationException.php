@@ -132,7 +132,8 @@ class AuthenticationException extends JwtException
      */
     public function getReason(): string
     {
-        return $this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS;
+        $reason = $this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS;
+        return is_string($reason) ? $reason : self::REASON_INVALID_CREDENTIALS;
     }
 
     /**
@@ -140,7 +141,8 @@ class AuthenticationException extends JwtException
      */
     public function getAttemptId(): ?string
     {
-        return $this->context['attempt_id'] ?? null;
+        $attemptId = $this->context['attempt_id'] ?? null;
+        return is_string($attemptId) ? $attemptId : null;
     }
 
     /**
@@ -148,7 +150,8 @@ class AuthenticationException extends JwtException
      */
     public function getUserId(): ?int
     {
-        return $this->context['user_id'] ?? null;
+        $userId = $this->context['user_id'] ?? null;
+        return is_int($userId) ? $userId : null;
     }
 
     /**
@@ -156,7 +159,8 @@ class AuthenticationException extends JwtException
      */
     public function getUsername(): ?string
     {
-        return $this->context['username'] ?? null;
+        $username = $this->context['username'] ?? null;
+        return is_string($username) ? $username : null;
     }
 
     /**
@@ -164,7 +168,8 @@ class AuthenticationException extends JwtException
      */
     public function getIpAddress(): ?string
     {
-        return $this->context['ip_address'] ?? null;
+        $ipAddress = $this->context['ip_address'] ?? null;
+        return is_string($ipAddress) ? $ipAddress : null;
     }
 
     /**
@@ -172,7 +177,8 @@ class AuthenticationException extends JwtException
      */
     public function getAttemptCount(): ?int
     {
-        return $this->context['attempt_count'] ?? null;
+        $attemptCount = $this->context['attempt_count'] ?? null;
+        return is_int($attemptCount) ? $attemptCount : null;
     }
 
     /**
@@ -180,7 +186,8 @@ class AuthenticationException extends JwtException
      */
     public function getLockoutUntil(): ?int
     {
-        return $this->context['lockout_until'] ?? null;
+        $lockoutUntil = $this->context['lockout_until'] ?? null;
+        return is_int($lockoutUntil) ? $lockoutUntil : null;
     }
 
     /**
