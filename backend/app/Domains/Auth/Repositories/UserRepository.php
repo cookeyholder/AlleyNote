@@ -32,7 +32,12 @@ class UserRepository
             'password' => $data['password'],  // 密碼已在 Service 中雜湊
         ]);
 
-        return $this->findById((int) $this->db->lastInsertId());
+        $user = $this->findById((int) $this->db->lastInsertId());
+        if ($user === null) {
+            throw new Exception('建立使用者後無法查詢到該使用者');
+        }
+
+        return $user;
     }
 
     /**
@@ -56,6 +61,9 @@ class UserRepository
             if (in_array($key, ['username', 'email', 'status', 'password'])) {
                 // 如果是 password 欄位，要對應到資料庫的 password_hash
                 if ($key === 'password') {
+                    if (!is_string($value)) {
+                        continue;
+                    }
                     $fields[] = 'password_hash = :password_hash';
                     $params['password_hash'] = password_hash($value, PASSWORD_ARGON2ID);
                 } else {
@@ -65,8 +73,17 @@ class UserRepository
             }
         }
 
+        $numericId = is_numeric($id) ? (int) $id : null;
+        if ($numericId === null) {
+            throw new InvalidArgumentException('無效的使用者 ID');
+        }
+
         if (empty($fields)) {
-            return $this->findById($id);
+            $user = $this->findById($numericId);
+            if ($user === null) {
+                throw new Exception('找不到指定的使用者');
+            }
+            return $user;
         }
 
         $fields[] = 'updated_at = CURRENT_TIMESTAMP';
@@ -75,7 +92,12 @@ class UserRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
 
-        return $this->findById((int) $id);
+        $user = $this->findById($numericId);
+        if ($user === null) {
+            throw new Exception('更新後無法查詢到該使用者');
+        }
+
+        return $user;
     }
 
     public function delete(string $id): bool
@@ -93,7 +115,7 @@ class UserRepository
 
         $result = $stmt->fetch();
 
-        return $result ?: null;
+        return is_array($result) ? $result : null;
     }
 
     public function findByUuid(string $uuid): ?array
@@ -103,7 +125,7 @@ class UserRepository
 
         $result = $stmt->fetch();
 
-        return $result ?: null;
+        return is_array($result) ? $result : null;
     }
 
     public function findByUsername(string $username): ?array
@@ -113,7 +135,7 @@ class UserRepository
 
         $result = $stmt->fetch();
 
-        return $result ?: null;
+        return is_array($result) ? $result : null;
     }
 
     public function findByEmail(string $email): ?array
@@ -123,7 +145,7 @@ class UserRepository
 
         $result = $stmt->fetch();
 
-        return $result ?: null;
+        return is_array($result) ? $result : null;
     }
 
     public function updateLastLogin(string $id): bool
@@ -150,7 +172,7 @@ class UserRepository
 
         // 檢查新密碼是否與目前密碼相同
         $currentPassword = $user['password_hash'] ?? $user['password'] ?? null;
-        if ($currentPassword && password_verify($newPassword, $currentPassword)) {
+        if (is_string($currentPassword) && password_verify($newPassword, $currentPassword)) {
             throw new InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
 
@@ -194,7 +216,7 @@ class UserRepository
         $total = (int) $countStmt->fetchColumn();
 
         // 取得資料
-        $sql = 'SELECT u.*, 
+        $sql = 'SELECT u.*,
                 GROUP_CONCAT(r.id) as role_ids,
                 GROUP_CONCAT(r.name) as role_names,
                 GROUP_CONCAT(r.display_name) as role_display_names
@@ -275,7 +297,7 @@ class UserRepository
 
             // 新增新的角色
             if (!empty($roleIds)) {
-                $insertSql = 'INSERT INTO user_roles (user_id, role_id, created_at) 
+                $insertSql = 'INSERT INTO user_roles (user_id, role_id, created_at)
                               VALUES (:user_id, :role_id, datetime(\'now\'))';
                 $insertStmt = $this->db->prepare($insertSql);
 
