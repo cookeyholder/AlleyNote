@@ -98,13 +98,49 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             }
         }
 
+        // 驗證並轉換 expires_at
         $expiresAt = $data['expires_at'] instanceof DateTimeImmutable
             ? $data['expires_at']
-            : new DateTimeImmutable($data['expires_at']);
+            : (is_string($data['expires_at']) ? new DateTimeImmutable($data['expires_at']) : throw new InvalidArgumentException('expires_at must be DateTimeImmutable or string'));
 
+        // 驗證並轉換 blacklisted_at
         $blacklistedAt = $data['blacklisted_at'] instanceof DateTimeImmutable
             ? $data['blacklisted_at']
-            : new DateTimeImmutable($data['blacklisted_at']);
+            : (is_string($data['blacklisted_at']) ? new DateTimeImmutable($data['blacklisted_at']) : throw new InvalidArgumentException('blacklisted_at must be DateTimeImmutable or string'));
+
+        // 驗證必要欄位的型別
+        if (!is_string($data['jti'])) {
+            throw new InvalidArgumentException('jti must be string');
+        }
+        if (!is_string($data['token_type'])) {
+            throw new InvalidArgumentException('token_type must be string');
+        }
+        if (!is_string($data['reason'])) {
+            throw new InvalidArgumentException('reason must be string');
+        }
+
+        // 驗證可選欄位的型別
+        $userId = null;
+        if (isset($data['user_id'])) {
+            if (is_int($data['user_id'])) {
+                $userId = $data['user_id'];
+            } elseif (is_numeric($data['user_id'])) {
+                $userId = (int) $data['user_id'];
+            }
+        }
+
+        $deviceId = isset($data['device_id']) && is_string($data['device_id']) ? $data['device_id'] : null;
+
+        // 確保 metadata 是 array<string, mixed>
+        /** @var array<string, mixed> $metadata */
+        $metadata = [];
+        if (isset($data['metadata']) && is_array($data['metadata'])) {
+            foreach ($data['metadata'] as $key => $value) {
+                if (is_string($key)) {
+                    $metadata[$key] = $value;
+                }
+            }
+        }
 
         return new self(
             jti: $data['jti'],
@@ -112,9 +148,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             expiresAt: $expiresAt,
             blacklistedAt: $blacklistedAt,
             reason: $data['reason'],
-            userId: $data['user_id'] ?? null,
-            deviceId: $data['device_id'] ?? null,
-            metadata: $data['metadata'] ?? [],
+            userId: $userId,
+            deviceId: $deviceId,
+            metadata: $metadata,
         );
     }
 
@@ -670,7 +706,11 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         }
 
         // 限制元資料大小
-        $serializedSize = strlen(json_encode($metadata));
+        $serialized = json_encode($metadata);
+        if ($serialized === false) {
+            throw new InvalidArgumentException('Failed to serialize metadata');
+        }
+        $serializedSize = strlen($serialized);
         if ($serializedSize > 65535) { // 64KB limit
             throw new InvalidArgumentException('Metadata size cannot exceed 64KB');
         }

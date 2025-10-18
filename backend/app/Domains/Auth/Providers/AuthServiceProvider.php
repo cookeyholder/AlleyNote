@@ -81,6 +81,7 @@ class AuthServiceProvider
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new FirebaseJwtProvider($config);
     }
@@ -91,9 +92,16 @@ class AuthServiceProvider
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
         $jwtProvider = $container->get(FirebaseJwtProvider::class);
+        assert($jwtProvider instanceof \App\Domains\Auth\Contracts\JwtProviderInterface);
+
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
+
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
@@ -104,11 +112,15 @@ class AuthServiceProvider
     public static function createAuthenticationService(ContainerInterface $container): AuthenticationService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $refreshTokenService = $container->get(RefreshTokenService::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
-        // 注意：這裡需要 UserRepository，但由於還沒有實作，暫時傳 null
-        // 實際實作時需要從容器中取得 UserRepository
-        return new AuthenticationService($jwtTokenService, $refreshTokenService, null);
+        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
+        $userRepository = $container->get(\App\Domains\Auth\Contracts\UserRepositoryInterface::class);
+        assert($userRepository instanceof \App\Domains\Auth\Contracts\UserRepositoryInterface);
+
+        return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);
     }
 
     /**
@@ -117,10 +129,15 @@ class AuthServiceProvider
     public static function createRefreshTokenService(ContainerInterface $container): RefreshTokenService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
-        $blacklistService = $container->get(TokenBlacklistService::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
-        return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistService);
+        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
+        $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
+
+        return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistRepository);
     }
 
     /**
@@ -129,6 +146,7 @@ class AuthServiceProvider
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
 
         return new TokenBlacklistService($blacklistRepository);
     }
@@ -139,6 +157,7 @@ class AuthServiceProvider
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
         return new JwtAuthenticationMiddleware($jwtTokenService);
     }

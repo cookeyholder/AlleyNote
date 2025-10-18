@@ -141,8 +141,9 @@ interface UserRepositoryInterface
      * 搜尋使用者.
      *
      * @param string $keyword 關鍵字
-     * @param array<string, mixed> $fields 搜尋欄位
+     * @param array<int, string>|array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
+     * @return array<int, mixed>
      */
     public function search(string $keyword, array $fields = ['username', 'email'], int $limit = 10): array;
 

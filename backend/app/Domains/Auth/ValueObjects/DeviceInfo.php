@@ -81,13 +81,13 @@ final readonly class DeviceInfo implements JsonSerializable
             deviceName: $deviceName,
             userAgent: $userAgent,
             ipAddress: $ipAddress,
-            platform: $parsedInfo['platform'],
-            browser: $parsedInfo['browser'],
-            browserVersion: $parsedInfo['browserVersion'],
-            osVersion: $parsedInfo['osVersion'],
-            isMobile: $parsedInfo['isMobile'],
-            isTablet: $parsedInfo['isTablet'],
-            isDesktop: $parsedInfo['isDesktop'],
+            platform: is_string($parsedInfo['platform']) ? $parsedInfo['platform'] : null,
+            browser: is_string($parsedInfo['browser']) ? $parsedInfo['browser'] : null,
+            browserVersion: is_string($parsedInfo['browserVersion']) ? $parsedInfo['browserVersion'] : null,
+            osVersion: is_string($parsedInfo['osVersion']) ? $parsedInfo['osVersion'] : null,
+            isMobile: is_bool($parsedInfo['isMobile']) ? $parsedInfo['isMobile'] : false,
+            isTablet: is_bool($parsedInfo['isTablet']) ? $parsedInfo['isTablet'] : false,
+            isDesktop: is_bool($parsedInfo['isDesktop']) ? $parsedInfo['isDesktop'] : true,
         );
     }
 
@@ -106,18 +106,22 @@ final readonly class DeviceInfo implements JsonSerializable
             }
         }
 
+        if (!is_string($data['device_id']) || !is_string($data['device_name']) || !is_string($data['user_agent']) || !is_string($data['ip_address'])) {
+            throw new InvalidArgumentException('Required fields must be strings');
+        }
+
         return new self(
             deviceId: $data['device_id'],
             deviceName: $data['device_name'],
             userAgent: $data['user_agent'],
             ipAddress: $data['ip_address'],
-            platform: $data['platform'] ?? null,
-            browser: $data['browser'] ?? null,
-            browserVersion: $data['browser_version'] ?? null,
-            osVersion: $data['os_version'] ?? null,
-            isMobile: $data['is_mobile'] ?? false,
-            isTablet: $data['is_tablet'] ?? false,
-            isDesktop: $data['is_desktop'] ?? true,
+            platform: isset($data['platform']) && is_string($data['platform']) ? $data['platform'] : null,
+            browser: isset($data['browser']) && is_string($data['browser']) ? $data['browser'] : null,
+            browserVersion: isset($data['browser_version']) && is_string($data['browser_version']) ? $data['browser_version'] : null,
+            osVersion: isset($data['os_version']) && is_string($data['os_version']) ? $data['os_version'] : null,
+            isMobile: isset($data['is_mobile']) && is_bool($data['is_mobile']) ? $data['is_mobile'] : false,
+            isTablet: isset($data['is_tablet']) && is_bool($data['is_tablet']) ? $data['is_tablet'] : false,
+            isDesktop: isset($data['is_desktop']) && is_bool($data['is_desktop']) ? $data['is_desktop'] : true,
         );
     }
 
@@ -432,9 +436,11 @@ final readonly class DeviceInfo implements JsonSerializable
      */
     private static function generateDeviceName(array $parsedInfo): string
     {
-        $platform = $parsedInfo['platform'] ?? 'Unknown';
-        $browser = $parsedInfo['browser'] ?? 'Browser';
-        $deviceType = $parsedInfo['isMobile'] ? 'Mobile' : ($parsedInfo['isTablet'] ? 'Tablet' : 'Desktop');
+        $platform = isset($parsedInfo['platform']) && is_string($parsedInfo['platform']) ? $parsedInfo['platform'] : 'Unknown';
+        $browser = isset($parsedInfo['browser']) && is_string($parsedInfo['browser']) ? $parsedInfo['browser'] : 'Browser';
+        $isMobile = isset($parsedInfo['isMobile']) && is_bool($parsedInfo['isMobile']) ? $parsedInfo['isMobile'] : false;
+        $isTablet = isset($parsedInfo['isTablet']) && is_bool($parsedInfo['isTablet']) ? $parsedInfo['isTablet'] : false;
+        $deviceType = $isMobile ? 'Mobile' : ($isTablet ? 'Tablet' : 'Desktop');
 
         return "{$platform} {$deviceType} ({$browser})";
     }

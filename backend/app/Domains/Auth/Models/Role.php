@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Models;
 
+use InvalidArgumentException;
+
 class Role
 {
     private int $id;
@@ -78,13 +80,24 @@ class Role
 
     public static function fromArray(array $data): self
     {
+        $id = is_int($data['id']) ? $data['id'] : (is_numeric($data['id']) ? (int) $data['id'] : throw new InvalidArgumentException('id must be numeric'));
+
+        if (!is_string($data['name'])) {
+            throw new InvalidArgumentException('name must be string');
+        }
+
+        $displayName = isset($data['display_name']) && is_string($data['display_name']) ? $data['display_name'] : '';
+        $description = isset($data['description']) && is_string($data['description']) ? $data['description'] : null;
+        $createdAt = isset($data['created_at']) && is_string($data['created_at']) ? $data['created_at'] : '';
+        $updatedAt = isset($data['updated_at']) && is_string($data['updated_at']) ? $data['updated_at'] : '';
+
         return new self(
-            (int) $data['id'],
+            $id,
             $data['name'],
-            $data['display_name'] ?? '',
-            $data['description'] ?? null,
-            $data['created_at'] ?? '',
-            $data['updated_at'] ?? '',
+            $displayName,
+            $description,
+            $createdAt,
+            $updatedAt,
         );
     }
 }

@@ -92,6 +92,7 @@ class SimpleAuthServiceProvider
     public static function createRefreshTokenRepository(ContainerInterface $container): RefreshTokenRepository
     {
         $pdo = $container->get(PDO::class);
+        assert($pdo instanceof PDO);
 
         return new RefreshTokenRepository($pdo);
     }
@@ -102,6 +103,7 @@ class SimpleAuthServiceProvider
     public static function createTokenBlacklistRepository(ContainerInterface $container): TokenBlacklistRepository
     {
         $pdo = $container->get(PDO::class);
+        assert($pdo instanceof PDO);
 
         return new TokenBlacklistRepository($pdo);
     }
@@ -123,6 +125,7 @@ class SimpleAuthServiceProvider
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new FirebaseJwtProvider($config);
     }
@@ -133,9 +136,16 @@ class SimpleAuthServiceProvider
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
         $jwtProvider = $container->get(FirebaseJwtProvider::class);
+        assert($jwtProvider instanceof \App\Domains\Auth\Contracts\JwtProviderInterface);
+
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
+
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
@@ -146,6 +156,7 @@ class SimpleAuthServiceProvider
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
 
         return new TokenBlacklistService($blacklistRepository);
     }
@@ -203,6 +214,7 @@ class SimpleAuthServiceProvider
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
 
         return new JwtAuthenticationMiddleware($jwtTokenService);
     }
