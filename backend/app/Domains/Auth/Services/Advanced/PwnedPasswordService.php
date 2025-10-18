@@ -131,13 +131,36 @@ class PwnedPasswordService
      */
     private function isInCache(string $key): bool
     {
-        return isset($this->cache[$key])
-            && time() - $this->cache[$key]['timestamp'] < self::CACHE_TTL;
+        if (!isset($this->cache[$key])) {
+            return false;
+        }
+
+        $cacheEntry = $this->cache[$key];
+        if (!is_array($cacheEntry)) {
+            return false;
+        }
+
+        $timestamp = $cacheEntry['timestamp'] ?? null;
+        if (!is_int($timestamp)) {
+            return false;
+        }
+
+        return time() - $timestamp < self::CACHE_TTL;
     }
 
     private function getFromCache(string $key): ?string
     {
-        return $this->cache[$key]['data'] ?? null;
+        if (!isset($this->cache[$key])) {
+            return null;
+        }
+
+        $cacheEntry = $this->cache[$key];
+        if (!is_array($cacheEntry)) {
+            return null;
+        }
+
+        $data = $cacheEntry['data'] ?? null;
+        return is_string($data) ? $data : null;
     }
 
     private function setCache(string $key, string $data): void
@@ -184,6 +207,11 @@ class PwnedPasswordService
         $results = [];
 
         foreach ($passwords as $index => $password) {
+            if (!is_string($password)) {
+                $results[$index] = false;
+                continue;
+            }
+
             $results[$index] = $this->isPasswordPwned($password);
 
             // 加入小延遲避免 API 限制
