@@ -217,7 +217,7 @@ class AuthController extends BaseController
             $data = $request->getParsedBody();
 
             // 確保 $data 是陣列
-            if (!is_array($data)) {
+            if ($data === null || !is_array($data)) {
                 $errorResponse = json_encode([
                     'success' => false,
                     'message' => 'Invalid request data format',
@@ -234,9 +234,7 @@ class AuthController extends BaseController
             $dto = new RegisterUserDTO($this->validator, $payload);
             $registrationResult = $this->authService->register($dto);
 
-            $normalizedResult = is_array($registrationResult)
-                ? $this->filterStringKeys($registrationResult)
-                : [];
+            $normalizedResult = $this->filterStringKeys($registrationResult);
             $userData = $this->extractUserData($registrationResult);
             $userId = $this->toIntOrNull($userData['id'] ?? ($normalizedResult['id'] ?? null));
             $metadata = $this->buildRegistrationMetadata($userData);
@@ -379,11 +377,9 @@ class AuthController extends BaseController
     )]
     public function login(Request $request, Response $response): Response
     {
-        $emailForLogging = null;
+        $credentials = $request->getParsedBody();
 
         try {
-            $credentials = $request->getParsedBody();
-
             if (!is_array($credentials)) {
                 $responseData = [
                     'success' => false,
@@ -395,6 +391,8 @@ class AuthController extends BaseController
                     ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
             }
+
+            /** @var array<mixed, mixed> $credentials */
 
             $payload = $this->filterStringKeys($credentials);
             $email = $this->toStringOrNull($payload['email'] ?? null);
@@ -412,7 +410,7 @@ class AuthController extends BaseController
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            $emailForLogging = $email;
+            // 此時 $email 保證是 non-empty-string
 
             // 建立登入請求 DTO
             $loginRequest = LoginRequestDTO::fromArray([
@@ -459,9 +457,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             // 記錄登入失敗 - 驗證錯誤
-            if ($emailForLogging !== null) {
-                $this->logLoginFailure($request, $emailForLogging, $e->getMessage());
-            }
+            // $credentials 在此必定為 array，因為前面已驗證，PHPStan 自動推斷型別
+            $this->logLoginFailureIfPossible($request, $credentials, $e->getMessage());
 
             $responseData = [
                 'success' => false,
@@ -474,9 +471,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
             // 記錄登入失敗 - 使用者不存在
-            if ($emailForLogging !== null) {
-                $this->logLoginFailure($request, $emailForLogging, '使用者名稱或密碼錯誤');
-            }
+            // $credentials 在此必定為 array，因為前面已驗證，PHPStan 自動推斷型別
+            $this->logLoginFailureIfPossible($request, $credentials, '使用者名稱或密碼錯誤');
 
             $responseData = [
                 'success' => false,
@@ -489,9 +485,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
             // 記錄登入失敗 - 密碼錯誤或其他驗證失敗
-            if ($emailForLogging !== null) {
-                $this->logLoginFailure($request, $emailForLogging, '使用者名稱或密碼錯誤');
-            }
+            // $credentials 在此必定為 array，因為前面已驗證，PHPStan 自動推斷型別
+            $this->logLoginFailureIfPossible($request, $credentials, '使用者名稱或密碼錯誤');
 
             $responseData = [
                 'success' => false,
@@ -504,9 +499,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             // 記錄登入失敗 - 系統錯誤
-            if ($emailForLogging !== null) {
-                $this->logLoginFailure($request, $emailForLogging, '系統發生錯誤');
-            }
+            // $credentials 在此必定為 array，因為前面已驗證，PHPStan 自動推斷型別
+            $this->logLoginFailureIfPossible($request, $credentials, '系統發生錯誤');
 
             $responseData = [
                 'success' => false,
@@ -559,13 +553,15 @@ class AuthController extends BaseController
             // 從 Authorization header 或 request body 取得 access token
             $authHeader = $request->getHeaderLine('Authorization');
             $accessToken = null;
-            if ($authHeader !== '' && str_starts_with($authHeader, 'Bearer ')) {
-                $accessToken = substr($authHeader, 7);
+            if ($authHeader !== '') {
+                if (str_starts_with($authHeader, 'Bearer ')) {
+                    $accessToken = substr($authHeader, 7);
+                }
             }
 
             $payload = is_array($requestData) ? $this->filterStringKeys($requestData) : [];
             $bodyAccessToken = $this->toStringOrNull($payload['access_token'] ?? null);
-            if ($bodyAccessToken !== null && $bodyAccessToken !== '') {
+            if ($bodyAccessToken !== null) {
                 $accessToken = $bodyAccessToken;
             }
 
@@ -1214,6 +1210,25 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             // 記錄活動失敗不應該影響主要流程，只記錄錯誤
             error_log('Failed to log login failure activity: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 從 credentials 陣列提取 email 並記錄登入失敗活動。
+     *
+     * @param array<mixed, mixed>|object|null $credentials
+     */
+    private function logLoginFailureIfPossible(Request $request, array|object|null $credentials, string $errorMessage): void
+    {
+        if (!is_array($credentials)) {
+            return;
+        }
+
+        $payload = $this->filterStringKeys($credentials);
+        $email = $this->toStringOrNull($payload['email'] ?? null);
+
+        if ($email !== null && $email !== '') {
+            $this->logLoginFailure($request, $email, $errorMessage);
         }
     }
 
