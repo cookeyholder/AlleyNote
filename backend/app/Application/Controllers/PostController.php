@@ -78,8 +78,8 @@ class PostController extends BaseController
                            u.username as author
                     FROM posts p
                     LEFT JOIN users u ON p.user_id = u.id
-                    WHERE {$whereClause} 
-                    ORDER BY COALESCE(p.publish_date, p.created_at) DESC 
+                    WHERE {$whereClause}
+                    ORDER BY COALESCE(p.publish_date, p.created_at) DESC
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $pdo->prepare($sql);
@@ -162,7 +162,7 @@ class PostController extends BaseController
             $post['author'] ??= 'Unknown';
 
             // 查詢文章的標籤
-            $tagsSql = 'SELECT t.id, t.name 
+            $tagsSql = 'SELECT t.id, t.name
                        FROM tags t
                        INNER JOIN post_tags pt ON t.id = pt.tag_id
                        WHERE pt.post_id = :post_id
@@ -192,6 +192,13 @@ class PostController extends BaseController
     {
         try {
             $body = $request->getParsedBody();
+
+            if (!is_array($body)) {
+                $errorResponse = $this->errorResponse('Invalid request data', 400);
+                $response->getBody()->write($errorResponse);
+
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
 
             // 驗證必要欄位
             $title = $body['title'] ?? null;
@@ -247,7 +254,7 @@ class PostController extends BaseController
             $seqNumber = ($maxSeq ?? 0) + 1;
 
             // 插入新文章
-            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, publish_date, created_at) 
+            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, publish_date, created_at)
                     VALUES (:uuid, :seq_number, :title, :content, :user_id, :status, 0, 0, :publish_date, datetime('now'))";
 
             $stmt = $pdo->prepare($sql);
@@ -263,13 +270,12 @@ class PostController extends BaseController
 
             $postId = $pdo->lastInsertId();
 
-            // 處理標籤關聯
-            $bodyArray = is_array($body) ? $body : [];
-            if (isset($bodyArray['tag_ids']) && is_array($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
+            // 處理標籤關聯 ($body 已在前面驗證為 array)
+            if (isset($body['tag_ids']) && is_array($body['tag_ids']) && !empty($body['tag_ids'])) {
                 $tagInsertSql = "INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (:post_id, :tag_id, datetime('now'))";
                 $tagStmt = $pdo->prepare($tagInsertSql);
 
-                foreach ($bodyArray['tag_ids'] as $tagId) {
+                foreach ($body['tag_ids'] as $tagId) {
                     if (is_numeric($tagId)) {
                         $tagStmt->execute([
                             ':post_id' => $postId,
@@ -297,8 +303,8 @@ class PostController extends BaseController
             ];
 
             // 查詢並回傳標籤資訊
-            if (isset($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
-                $tagsSql = 'SELECT t.id, t.name 
+            if (isset($body['tag_ids']) && !empty($body['tag_ids'])) {
+                $tagsSql = 'SELECT t.id, t.name
                            FROM tags t
                            INNER JOIN post_tags pt ON t.id = pt.tag_id
                            WHERE pt.post_id = :post_id';
@@ -358,6 +364,13 @@ class PostController extends BaseController
             }
 
             // 準備更新的欄位
+            if (!is_array($body)) {
+                $errorResponse = $this->errorResponse('Invalid request data', 400);
+                $response->getBody()->write($errorResponse);
+
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+            }
+
             $updateFields = [];
             $params = [':id' => $id];
 
@@ -412,9 +425,8 @@ class PostController extends BaseController
             $stmt = $pdo->prepare($sql);
             $stmt->execute($params);
 
-            // 處理標籤關聯更新
-            $bodyArray = is_array($body) ? $body : [];
-            if (isset($bodyArray['tag_ids']) && is_array($bodyArray['tag_ids'])) {
+            // 處理標籤關聯更新 ($body 已在前面驗證為 array)
+            if (isset($body['tag_ids']) && is_array($body['tag_ids'])) {
                 // 取得舊的標籤關聯以更新計數
                 $oldTagsSql = 'SELECT tag_id FROM post_tags WHERE post_id = :post_id';
                 $oldTagsStmt = $pdo->prepare($oldTagsSql);
@@ -443,11 +455,11 @@ class PostController extends BaseController
                 }
 
                 // 新增新的標籤關聯
-                if (!empty($bodyArray['tag_ids'])) {
+                if (!empty($body['tag_ids'])) {
                     $tagInsertSql = "INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (:post_id, :tag_id, datetime('now'))";
                     $tagStmt = $pdo->prepare($tagInsertSql);
 
-                    foreach ($bodyArray['tag_ids'] as $tagId) {
+                    foreach ($body['tag_ids'] as $tagId) {
                         if (is_numeric($tagId)) {
                             $tagStmt->execute([
                                 ':post_id' => $id,
@@ -471,7 +483,7 @@ class PostController extends BaseController
             $post = $getStmt->fetch(PDO::FETCH_ASSOC);
 
             // 查詢文章的標籤
-            $tagsSql = 'SELECT t.id, t.name 
+            $tagsSql = 'SELECT t.id, t.name
                        FROM tags t
                        INNER JOIN post_tags pt ON t.id = pt.tag_id
                        WHERE pt.post_id = :post_id
@@ -568,7 +580,7 @@ class PostController extends BaseController
     private function updateTagUsageCount(PDO $pdo, int $tagId): void
     {
         $sql = 'UPDATE tags SET usage_count = (
-                    SELECT COUNT(*) 
+                    SELECT COUNT(*)
                     FROM post_tags pt
                     INNER JOIN posts p ON pt.post_id = p.id
                     WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL
