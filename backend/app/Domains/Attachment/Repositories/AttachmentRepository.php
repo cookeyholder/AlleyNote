@@ -51,7 +51,7 @@ class AttachmentRepository
 
     public function find(int $id): ?Attachment
     {
-        return $this->cache->remember("attachment:{$id}", function () use ($id) {
+        $result = $this->cache->remember("attachment:{$id}", function () use ($id) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -63,13 +63,15 @@ class AttachmentRepository
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            return is_array($data) ? new Attachment($data) : null;
         });
+        
+        return $result instanceof Attachment ? $result : null;
     }
 
     public function findByUuid(string $uuid): ?Attachment
     {
-        return $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
+        $result = $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -81,13 +83,15 @@ class AttachmentRepository
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            return is_array($data) ? new Attachment($data) : null;
         });
+        
+        return $result instanceof Attachment ? $result : null;
     }
 
     public function getByPostId(int $postId): array
     {
-        return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
+        $result = $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -101,11 +105,15 @@ class AttachmentRepository
 
             $attachments = [];
             while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $attachments[] = new Attachment($data);
+                if (is_array($data)) {
+                    $attachments[] = new Attachment($data);
+                }
             }
 
             return $attachments;
         });
+        
+        return is_array($result) ? $result : [];
     }
 
     /**

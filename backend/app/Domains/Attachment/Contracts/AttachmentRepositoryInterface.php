@@ -158,8 +158,9 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 搜尋附件.
      *
      * @param string $keyword 關鍵字
-     * @param array<string, mixed> $fields 搜尋欄位
+     * @param array<int, string>|array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
+     * @return array<int, mixed>
      */
     public function search(string $keyword, array $fields = ['original_name'], int $limit = 10): array;
 }

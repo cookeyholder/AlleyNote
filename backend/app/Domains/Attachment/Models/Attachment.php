@@ -30,17 +30,47 @@ class Attachment
 
     public function __construct(array $attributes = [])
     {
-        $this->id = $attributes['id'] ?? null;
-        $this->uuid = $attributes['uuid'] ?? null;
-        $this->postId = $attributes['post_id'];
+        // 驗證並設定 id
+        $this->id = isset($attributes['id']) && (is_int($attributes['id']) || is_numeric($attributes['id'])) ? (is_int($attributes['id']) ? $attributes['id'] : (int) $attributes['id']) : null;
+        
+        // 驗證並設定 uuid
+        $this->uuid = isset($attributes['uuid']) && is_string($attributes['uuid']) ? $attributes['uuid'] : null;
+        
+        // 驗證並設定必要欄位
+        if (!isset($attributes['post_id']) || (!is_int($attributes['post_id']) && !is_numeric($attributes['post_id']))) {
+            throw new \InvalidArgumentException('post_id is required and must be numeric');
+        }
+        $this->postId = is_int($attributes['post_id']) ? $attributes['post_id'] : (int) $attributes['post_id'];
+        
+        if (!isset($attributes['filename']) || !is_string($attributes['filename'])) {
+            throw new \InvalidArgumentException('filename is required and must be string');
+        }
         $this->filename = $attributes['filename'];
+        
+        if (!isset($attributes['original_name']) || !is_string($attributes['original_name'])) {
+            throw new \InvalidArgumentException('original_name is required and must be string');
+        }
         $this->originalName = $attributes['original_name'];
+        
+        if (!isset($attributes['mime_type']) || !is_string($attributes['mime_type'])) {
+            throw new \InvalidArgumentException('mime_type is required and must be string');
+        }
         $this->mimeType = $attributes['mime_type'];
-        $this->fileSize = $attributes['file_size'];
+        
+        if (!isset($attributes['file_size']) || (!is_int($attributes['file_size']) && !is_numeric($attributes['file_size']))) {
+            throw new \InvalidArgumentException('file_size is required and must be numeric');
+        }
+        $this->fileSize = is_int($attributes['file_size']) ? $attributes['file_size'] : (int) $attributes['file_size'];
+        
+        if (!isset($attributes['storage_path']) || !is_string($attributes['storage_path'])) {
+            throw new \InvalidArgumentException('storage_path is required and must be string');
+        }
         $this->storagePath = $attributes['storage_path'];
-        $this->createdAt = $attributes['created_at'] ?? null;
-        $this->updatedAt = $attributes['updated_at'] ?? null;
-        $this->deletedAt = $attributes['deleted_at'] ?? null;
+        
+        // 驗證並設定可選欄位
+        $this->createdAt = isset($attributes['created_at']) && is_string($attributes['created_at']) ? $attributes['created_at'] : null;
+        $this->updatedAt = isset($attributes['updated_at']) && is_string($attributes['updated_at']) ? $attributes['updated_at'] : null;
+        $this->deletedAt = isset($attributes['deleted_at']) && is_string($attributes['deleted_at']) ? $attributes['deleted_at'] : null;
     }
 
     public function getId(): ?int
