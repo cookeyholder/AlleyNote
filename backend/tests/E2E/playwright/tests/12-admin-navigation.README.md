@@ -87,11 +87,11 @@
 
 ```bash
 # 運行所有管理員導航測試
-cd tests/e2e
-npm test -- 12-admin-navigation.spec.js
+cd backend/tests/E2E/playwright
+npm test -- tests/12-admin-navigation.spec.js
 
 # 只運行特定測試
-npm test -- 12-admin-navigation.spec.js --grep "應該能訪問.*頁面且不被導回登入頁"
+npm test -- tests/12-admin-navigation.spec.js --grep "應該能訪問.*頁面且不被導回登入頁"
 
 # 查看測試報告
 npx playwright show-report
@@ -100,10 +100,13 @@ npx playwright show-report
 ## 測試架構
 
 ```
-tests/e2e/tests/
-├── fixtures/
-│   └── page-objects.js        # 共用的頁面物件和測試工具
-└── 12-admin-navigation.spec.js # 管理員導航測試
+backend/tests/E2E/playwright/
+├── tests/
+│   ├── fixtures/
+│   │   └── page-objects.js        # 共用的頁面物件和測試工具
+│   └── 12-admin-navigation.spec.js # 管理員導航測試
+├── package.json
+└── playwright.config.js
 ```
 
 ## 依賴
