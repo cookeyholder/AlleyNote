@@ -43,7 +43,7 @@ class CSPReportController
             $body = $request->getBody()->getContents();
             $report = json_decode($body, true);
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($report)) {
                 return $response->withStatus(400);
             }
 
@@ -73,7 +73,7 @@ class CSPReportController
     private function isValidCSPReport(array $report): bool
     {
         // 檢查必要的欄位
-        if (!isset($report['csp-report'])) {
+        if (!isset($report['csp-report']) || !is_array($report['csp-report'])) {
             return false;
         }
 
@@ -95,12 +95,17 @@ class CSPReportController
      */
     private function logViolation(array $report, Request $request): void
     {
+        $cspReport = $report['csp-report'] ?? [];
+        if (!is_array($cspReport)) {
+            return;
+        }
+
         $logData = [
             'client_ip' => $this->getClientIP($request),
             'user_agent_hash' => hash('sha256', $request->getHeaderLine('User-Agent')),
             'referer' => $request->getHeaderLine('Referer'),
-            'csp_report' => $report['csp-report'],
-            'severity' => $this->calculateSeverity($report['csp-report']),
+            'csp_report' => $cspReport,
+            'severity' => $this->calculateSeverity($cspReport),
         ];
 
         // 使用安全日誌服務記錄 CSP 違規
@@ -134,7 +139,7 @@ class CSPReportController
         ];
 
         foreach ($headers as $header) {
-            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
+            if (isset($serverParams[$header]) && is_string($serverParams[$header]) && $serverParams[$header] !== '') {
                 $ip = $serverParams[$header];
 
                 // X-Forwarded-For 可能包含多個 IP
@@ -148,7 +153,8 @@ class CSPReportController
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? 'unknown';
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? null;
+        return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 
     /**
@@ -156,8 +162,11 @@ class CSPReportController
      */
     private function calculateSeverity(array $cspReport): ActivitySeverity
     {
-        $blockedUri = $cspReport['blocked-uri'] ?? '';
-        $violatedDirective = $cspReport['violated-directive'] ?? '';
+        $blockedUriRaw = $cspReport['blocked-uri'] ?? null;
+        $violatedDirectiveRaw = $cspReport['violated-directive'] ?? null;
+
+        $blockedUri = is_string($blockedUriRaw) ? $blockedUriRaw : '';
+        $violatedDirective = is_string($violatedDirectiveRaw) ? $violatedDirectiveRaw : '';
 
         // 高風險情況
         if (strpos($violatedDirective, 'script-src') !== false) {
@@ -189,12 +198,16 @@ class CSPReportController
     private function checkForAlert(array $logData): void
     {
         // 如果在短時間內有大量違規，可能是攻擊
-        $recentViolations = $this->getRecentViolations($logData['ip'], 300); // 5分鐘內
+        $ip = $logData['client_ip'] ?? 'unknown';
+        if (!is_string($ip)) {
+            return;
+        }
+        $recentViolations = $this->getRecentViolations($ip, 300); // 5分鐘內
 
         if (count($recentViolations) > 10) {
             $this->sendAlert([
                 'type' => 'multiple_csp_violations',
-                'ip' => $logData['ip'],
+                'ip' => $ip,
                 'count' => count($recentViolations),
                 'timeframe' => '5 minutes',
                 'latest_violation' => $logData,
@@ -213,21 +226,33 @@ class CSPReportController
         }
 
         $lines = file($logFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if ($lines === false) {
+            return [];
+        }
+
         $recentViolations = [];
         $cutoffTime = time() - $seconds;
 
         foreach (array_reverse($lines) as $line) {
+            if (!is_string($line)) {
+                continue;
+            }
             $data = json_decode($line, true);
-            if (!$data) {
+            if (!is_array($data)) {
                 continue;
             }
 
-            $timestamp = strtotime($data['timestamp']);
-            if ($timestamp < $cutoffTime) {
+            $timestampRaw = $data['timestamp'] ?? null;
+            if (!is_string($timestampRaw)) {
+                continue;
+            }
+            $timestamp = strtotime($timestampRaw);
+            if ($timestamp === false || $timestamp < $cutoffTime) {
                 break; // 已經超過時間範圍
             }
 
-            if ($data['ip'] === $ip) {
+            $dataIp = $data['ip'] ?? null;
+            if (is_string($dataIp) && $dataIp === $ip) {
                 $recentViolations[] = $data;
             }
         }
@@ -243,14 +268,19 @@ class CSPReportController
         // 這裡可以整合不同的警報系統
         // 例如：Email、Slack、Discord、PagerDuty 等
 
+        $count = is_int($alertData['count'] ?? null) ? $alertData['count'] : 0;
+        $ip = is_string($alertData['ip'] ?? null) ? $alertData['ip'] : 'unknown';
+        $timeframe = is_string($alertData['timeframe'] ?? null) ? $alertData['timeframe'] : 'unknown';
+
         $message = sprintf(
             'CSP Alert: %d violations from IP %s in %s',
-            $alertData['count'],
-            $alertData['ip'],
-            $alertData['timeframe'],
+            $count,
+            $ip,
+            $timeframe,
         );
 
-        error_log('CSP ALERT: ' . (json_encode($alertData) ?? ''));
+        $jsonAlert = json_encode($alertData);
+        error_log('CSP ALERT: ' . ($jsonAlert !== false ? $jsonAlert : '{}'));
 
         // 可以在這裡添加其他警報機制
         // $this->sendSlackAlert($message, $alertData);
