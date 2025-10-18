@@ -56,15 +56,18 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             // 刪除 Session cookie
             if (ini_get('session.use_cookies')) {
                 $params = session_get_cookie_params();
-                setcookie(
-                    session_name(),
-                    '',
-                    time() - 42000,
-                    $params['path'],
-                    $params['domain'],
-                    $params['secure'],
-                    $params['httponly'],
-                );
+                $sessionName = session_name();
+                if (is_string($sessionName)) {
+                    setcookie(
+                        $sessionName,
+                        '',
+                        time() - 42000,
+                        $params['path'],
+                        $params['domain'],
+                        $params['secure'],
+                        $params['httponly'],
+                    );
+                }
             }
 
             // 銷毀 Session
@@ -90,6 +93,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         $maxIdleTime = 7200; // 2 hours
         if (
             isset($_SESSION['last_activity'])
+            && is_int($_SESSION['last_activity'])
             && (time() - $_SESSION['last_activity']) > $maxIdleTime
         ) {
             return false;
@@ -97,7 +101,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
 
         // 檢查 Session 是否超過最大生命週期 (8 小時)
         $maxLifetime = 28800; // 8 hours
-        if ((time() - $_SESSION['session_created_at']) > $maxLifetime) {
+        if (
+            is_int($_SESSION['session_created_at'])
+            && (time() - $_SESSION['session_created_at']) > $maxLifetime
+        ) {
             return false;
         }
 
@@ -190,7 +197,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
      */
     public function isIpVerificationExpired(): bool
     {
-        if (!isset($_SESSION['ip_change_detected_at'])) {
+        if (!isset($_SESSION['ip_change_detected_at']) || !is_int($_SESSION['ip_change_detected_at'])) {
             return false;
         }
 

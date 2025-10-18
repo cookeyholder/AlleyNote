@@ -59,7 +59,14 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 );
             }
 
-            $userId = (int) $user['id'];
+            $userIdRaw = $user['id'] ?? null;
+            if (!is_int($userIdRaw) && !is_numeric($userIdRaw)) {
+                throw new AuthenticationException(
+                    AuthenticationException::REASON_INVALID_CREDENTIALS,
+                    'Invalid user ID',
+                );
+            }
+            $userId = is_int($userIdRaw) ? $userIdRaw : (int) $userIdRaw;
             $userEmail = $user['email'] ?? $request->email;
             $userName = $user['username'] ?? null;
 
@@ -71,8 +78,11 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
                 // 撤銷最舊的活躍 token 來騰出空間
                 $oldestToken = reset($userTokens);
-                if ($oldestToken !== false) {
-                    $this->refreshTokenRepository->revoke($oldestToken['jti'], 'max_tokens_exceeded');
+                if ($oldestToken !== false && is_array($oldestToken)) {
+                    $jti = $oldestToken['jti'] ?? null;
+                    if (is_string($jti)) {
+                        $this->refreshTokenRepository->revoke($jti, 'max_tokens_exceeded');
+                    }
                 }
             }
 
@@ -98,10 +108,12 @@ final class AuthenticationService implements AuthenticationServiceInterface
             // 8. 建立回應
             $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
 
+            $emailForResponse = is_string($userEmail) ? $userEmail : '';
+
             return new LoginResponseDTO(
                 tokens: $tokenPair,
                 userId: $userId,
-                userEmail: $userEmail,
+                userEmail: $emailForResponse,
                 expiresAt: $payload->getExpiresAt()->getTimestamp(),
                 userName: $userName,
                 sessionId: $payload->getJti(),
@@ -228,7 +240,15 @@ final class AuthenticationService implements AuthenticationServiceInterface
     public function getUserTokenStats(int $userId): array
     {
         try {
-            return $this->refreshTokenRepository->getUserTokenStats($userId);
+            $stats = $this->refreshTokenRepository->getUserTokenStats($userId);
+
+            // 確保所有值都是 int
+            return [
+                'total' => is_int($stats['total'] ?? null) ? $stats['total'] : 0,
+                'active' => is_int($stats['active'] ?? null) ? $stats['active'] : 0,
+                'expired' => is_int($stats['expired'] ?? null) ? $stats['expired'] : 0,
+                'revoked' => is_int($stats['revoked'] ?? null) ? $stats['revoked'] : 0,
+            ];
         } catch (Throwable) {
             return [
                 'total' => 0,

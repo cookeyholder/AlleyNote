@@ -67,7 +67,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $refreshTokenData = $this->jwtProvider->parseTokenUnsafe($refreshToken);
             $jti = $refreshTokenData['jti'] ?? null;
 
-            if (!$jti) {
+            if (!$jti || !is_string($jti)) {
                 throw new TokenGenerationException(
                     TokenGenerationException::REASON_CLAIMS_INVALID,
                     TokenGenerationException::REFRESH_TOKEN,
@@ -188,9 +188,12 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $payload = $this->extractPayload($token);
 
             // 將 token 加入黑名單
+            $tokenType = $payload->getCustomClaim('type');
+            $tokenType = is_string($tokenType) ? $tokenType : 'unknown';
+
             $blacklistEntry = new TokenBlacklistEntry(
                 jti: $payload->getJti(),
-                tokenType: $payload->getCustomClaim('type') ?? 'unknown',
+                tokenType: $tokenType,
                 expiresAt: $payload->getExpiresAt(),
                 blacklistedAt: new DateTimeImmutable(),
                 reason: $reason,
@@ -311,30 +314,57 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 }
             }
 
-            // 安全地建立 DateTimeImmutable 物件
-            $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
-            if ($iat === false) {
-                throw new InvalidArgumentException("Invalid iat timestamp: {$payload['iat']}");
+            // 驗證並轉換 payload 欄位型別
+            if (!is_string($payload['jti']) && !is_numeric($payload['jti'])) {
+                throw new InvalidArgumentException("Invalid jti type");
+            }
+            $jti = is_string($payload['jti']) ? $payload['jti'] : (string) $payload['jti'];
+
+            if (!is_string($payload['sub']) && !is_numeric($payload['sub'])) {
+                throw new InvalidArgumentException("Invalid sub type");
+            }
+            $sub = is_string($payload['sub']) ? $payload['sub'] : (string) $payload['sub'];
+
+            if (!is_string($payload['iss']) && !is_numeric($payload['iss'])) {
+                throw new InvalidArgumentException("Invalid iss type");
+            }
+            $iss = is_string($payload['iss']) ? $payload['iss'] : (string) $payload['iss'];
+
+            // 處理 aud（可能是字串或陣列）
+            $aud = [];
+            if (is_array($payload['aud'])) {
+                $aud = array_filter($payload['aud'], fn($item) => is_string($item));
+            } elseif (is_string($payload['aud'])) {
+                $aud = [$payload['aud']];
             }
 
-            $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
+            // 安全地建立 DateTimeImmutable 物件
+            $iatStr = is_int($payload['iat']) ? (string) $payload['iat'] : (is_string($payload['iat']) ? $payload['iat'] : '');
+            $iat = DateTimeImmutable::createFromFormat('U', $iatStr);
+            if ($iat === false) {
+                throw new InvalidArgumentException("Invalid iat timestamp: {$iatStr}");
+            }
+
+            $expStr = is_int($payload['exp']) ? (string) $payload['exp'] : (is_string($payload['exp']) ? $payload['exp'] : '');
+            $exp = DateTimeImmutable::createFromFormat('U', $expStr);
             if ($exp === false) {
-                throw new InvalidArgumentException("Invalid exp timestamp: {$payload['exp']}");
+                throw new InvalidArgumentException("Invalid exp timestamp: {$expStr}");
             }
 
             $nbf = null;
             if (isset($payload['nbf'])) {
-                $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);
+                $nbfStr = is_int($payload['nbf']) ? (string) $payload['nbf'] : (is_string($payload['nbf']) ? $payload['nbf'] : '');
+                $nbf = DateTimeImmutable::createFromFormat('U', $nbfStr);
                 if ($nbf === false) {
-                    throw new InvalidArgumentException("Invalid nbf timestamp: {$payload['nbf']}");
+                    throw new InvalidArgumentException("Invalid nbf timestamp: {$nbfStr}");
                 }
             }
 
             return new JwtPayload(
-                jti: $payload['jti'],
-                sub: $payload['sub'],
-                iss: $payload['iss'],
-                aud: [$payload['aud']],
+                jti: $jti,
+                sub: $sub,
+                iss: $iss,
+                aud: $aud,
                 iat: $iat,
                 exp: $exp,
                 nbf: $nbf,

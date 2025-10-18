@@ -43,11 +43,11 @@ class RateLimitMiddleware implements MiddlewareInterface
         $userId = $this->getUserId($request);
 
         // 檢查速率限制
-        $maxRequests = isset($this->config['max_requests']) && is_int($this->config['max_requests']) 
-            ? $this->config['max_requests'] 
+        $maxRequests = isset($this->config['max_requests']) && is_int($this->config['max_requests'])
+            ? $this->config['max_requests']
             : 60;
-        $timeWindow = isset($this->config['time_window']) && is_int($this->config['time_window']) 
-            ? $this->config['time_window'] 
+        $timeWindow = isset($this->config['time_window']) && is_int($this->config['time_window'])
+            ? $this->config['time_window']
             : 60;
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 

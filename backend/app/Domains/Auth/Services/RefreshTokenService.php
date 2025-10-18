@@ -110,8 +110,9 @@ final class RefreshTokenService
                 $expiresAt,
                 $deviceInfo,
                 RefreshToken::STATUS_ACTIVE,
-                null, // 未撤銷
                 null, // 撤銷原因
+                null, // 未撤銷
+                null, // lastUsedAt
                 $parentTokenJti,
                 null, // created_at (由資料庫生成)
                 null, // updated_at (由資料庫生成)
@@ -177,8 +178,16 @@ final class RefreshTokenService
             }
 
             // 5. 產生新的 access token
+            $userId = is_int($tokenData['user_id']) ? $tokenData['user_id'] : (is_numeric($tokenData['user_id']) ? (int) $tokenData['user_id'] : null);
+            if ($userId === null) {
+                throw new AuthenticationException(
+                    AuthenticationException::REASON_INVALID_TOKEN,
+                    'Invalid user ID in token data',
+                );
+            }
+
             $newTokenPair = $this->jwtTokenService->generateTokenPair(
-                (int) $tokenData['user_id'],
+                $userId,
                 $deviceInfo,
             );
 
@@ -187,7 +196,14 @@ final class RefreshTokenService
                 $this->performTokenRotationFromData($tokenData, $deviceInfo);
             } else {
                 // 不輪轉時，更新使用時間
-                $this->refreshTokenRepository->updateLastUsed($tokenData['jti']);
+                if (!is_string($tokenData['jti']) && !is_numeric($tokenData['jti'])) {
+                    throw new RefreshTokenException(
+                        RefreshTokenException::REASON_ROTATION_FAILED,
+                        'Invalid JTI type in token data',
+                    );
+                }
+                $jti = is_string($tokenData['jti']) ? $tokenData['jti'] : (string) $tokenData['jti'];
+                $this->refreshTokenRepository->updateLastUsed($jti);
             }
 
             $this->logger?->info('Access token refreshed successfully', [
@@ -271,7 +287,12 @@ final class RefreshTokenService
                     continue;
                 }
 
-                if ($this->refreshTokenRepository->revoke($tokenData['jti'], $reason)) {
+                if (!is_string($tokenData['jti']) && !is_numeric($tokenData['jti'])) {
+                    continue; // 跳過無效的 JTI
+                }
+
+                $jti = is_string($tokenData['jti']) ? $tokenData['jti'] : (string) $tokenData['jti'];
+                if ($this->refreshTokenRepository->revoke($jti, $reason)) {
                     $revokedCount++;
                 }
             }
@@ -427,7 +448,11 @@ final class RefreshTokenService
         if (count($activeTokens) >= self::MAX_TOKENS_PER_USER) {
             // 撤銷最舊的 token
             $oldestTokenData = $activeTokens[0]; // 假設已按時間排序
-            $this->revokeToken($oldestTokenData['jti'], RefreshToken::REVOKE_REASON_MANUAL);
+            if (!is_string($oldestTokenData['jti']) && !is_numeric($oldestTokenData['jti'])) {
+                return; // 無法處理無效的 JTI
+            }
+            $jti = is_string($oldestTokenData['jti']) ? $oldestTokenData['jti'] : (string) $oldestTokenData['jti'];
+            $this->revokeToken($jti, RefreshToken::REVOKE_REASON_MANUAL);
 
             $this->logger?->info('Token limit enforced, oldest token revoked', [
                 'user_id' => $userId,
@@ -452,15 +477,38 @@ final class RefreshTokenService
     {
         try {
             // 1. 建立新的 refresh token
+            $userId = is_int($tokenData['user_id']) ? $tokenData['user_id'] : (is_numeric($tokenData['user_id']) ? (int) $tokenData['user_id'] : null);
+            if ($userId === null) {
+                throw new RefreshTokenException(
+                    RefreshTokenException::REASON_ROTATION_FAILED,
+                    'Invalid user ID in token data',
+                );
+            }
+
+            if (!is_string($tokenData['jti']) && !is_numeric($tokenData['jti'])) {
+                throw new RefreshTokenException(
+                    RefreshTokenException::REASON_ROTATION_FAILED,
+                    'Invalid JTI type in token data',
+                );
+            }
+            $parentJti = is_string($tokenData['jti']) ? $tokenData['jti'] : (string) $tokenData['jti'];
+
             $newToken = $this->createRefreshToken(
-                (int) $tokenData['user_id'],
+                $userId,
                 $deviceInfo,
-                $tokenData['jti'], // 設定父 token JTI
+                $parentJti, // 設定父 token JTI
             );
 
             // 2. 撤銷舊的 token（但給予寬限期）
+            if (!is_string($tokenData['jti']) && !is_numeric($tokenData['jti'])) {
+                throw new RefreshTokenException(
+                    RefreshTokenException::REASON_ROTATION_FAILED,
+                    'Invalid JTI type in revoke operation',
+                );
+            }
+            $jti = is_string($tokenData['jti']) ? $tokenData['jti'] : (string) $tokenData['jti'];
             $this->refreshTokenRepository->revoke(
-                $tokenData['jti'],
+                $jti,
                 RefreshToken::REVOKE_REASON_TOKEN_ROTATION,
             );
 

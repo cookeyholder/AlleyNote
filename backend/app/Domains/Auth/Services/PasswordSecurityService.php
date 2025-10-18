@@ -235,7 +235,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $score -= 30;
             $source = $commonPasswordResult['source'] ?? '';
             $breachCount = $commonPasswordResult['breach_count'] ?? 0;
-            
+
             if ($source === 'hibp_api' && is_int($breachCount)) {
                 $feedback[] = sprintf('此密碼已在 %d 次資料外洩中被發現', $breachCount);
             } else {
@@ -316,7 +316,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             if ($pwnedResult['is_leaked']) {
                 $count = $pwnedResult['count'] ?? 0;
                 $displayCount = is_int($count) ? $count : 0;
-                
+
                 return [
                     'is_common' => true,
                     'message' => sprintf(

@@ -31,6 +31,10 @@ class AuthorizationService implements AuthorizationServiceInterface
             return $this->getUserPermissions($userId);
         }, self::CACHE_TTL);
 
+        if (!is_array($permissions)) {
+            return false;
+        }
+
         return in_array($permission, $permissions, true);
     }
 
@@ -41,6 +45,10 @@ class AuthorizationService implements AuthorizationServiceInterface
         $roles = $this->cache->remember($cacheKey, function () use ($userId) {
             return $this->getUserRoles($userId);
         }, self::CACHE_TTL);
+
+        if (!is_array($roles)) {
+            return false;
+        }
 
         return in_array($roleName, array_column($roles, 'name'), true);
     }
@@ -66,7 +74,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt->execute([$roleName]);
             $role = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$role) {
+            if (!is_array($role) || !isset($role['id'])) {
                 return false;
             }
 
@@ -121,7 +129,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt->execute([$permission]);
             $perm = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if (!$perm) {
+            if (!is_array($perm) || !isset($perm['id'])) {
                 return false;
             }
 
@@ -242,7 +250,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt->execute([$postId]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $post && (int) $post['user_id'] === $userId;
+            if (!is_array($post) || !isset($post['user_id'])) {
+                return false;
+            }
+
+            $postUserId = is_int($post['user_id']) ? $post['user_id'] : (is_numeric($post['user_id']) ? (int) $post['user_id'] : null);
+
+            return $postUserId !== null && $postUserId === $userId;
         } catch (Exception $e) {
             return false;
         }
@@ -260,7 +274,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt->execute([$attachmentUuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result && (int) $result['user_id'] === $userId;
+            if (!is_array($result) || !isset($result['user_id'])) {
+                return false;
+            }
+
+            $resultUserId = is_int($result['user_id']) ? $result['user_id'] : (is_numeric($result['user_id']) ? (int) $result['user_id'] : null);
+
+            return $resultUserId !== null && $resultUserId === $userId;
         } catch (Exception $e) {
             return false;
         }
