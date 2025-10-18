@@ -28,7 +28,8 @@ class RateLimitMiddleware implements MiddlewareInterface
         $uri = $request->getUri()->getPath();
 
         // 檢查是否需要跳過速率限制
-        if (in_array($uri, $this->config['skip_paths'], true)) {
+        $skipPaths = $this->config['skip_paths'] ?? [];
+        if (is_array($skipPaths) && in_array($uri, $skipPaths, true)) {
             return $handler->handle($request);
         }
 
@@ -42,8 +43,12 @@ class RateLimitMiddleware implements MiddlewareInterface
         $userId = $this->getUserId($request);
 
         // 檢查速率限制
-        $maxRequests = $this->config['max_requests'] ?? 60;
-        $timeWindow = $this->config['time_window'] ?? 60;
+        $maxRequests = isset($this->config['max_requests']) && is_int($this->config['max_requests']) 
+            ? $this->config['max_requests'] 
+            : 60;
+        $timeWindow = isset($this->config['time_window']) && is_int($this->config['time_window']) 
+            ? $this->config['time_window'] 
+            : 60;
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
 
         if (!$result['allowed']) {
@@ -99,7 +104,14 @@ class RateLimitMiddleware implements MiddlewareInterface
         // 從 request attributes 中取得使用者 ID
         $userId = $request->getAttribute('user_id');
 
-        return $userId ? (int) $userId : null;
+        if (is_int($userId)) {
+            return $userId;
+        }
+        if (is_numeric($userId)) {
+            return (int) $userId;
+        }
+
+        return null;
     }
 
     /**
@@ -112,15 +124,23 @@ class RateLimitMiddleware implements MiddlewareInterface
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
             || strpos($request->getUri()->getPath(), '/api/') === 0;
 
+        $limit = is_int($result['limit'] ?? null) ? $result['limit'] : 0;
+        $remaining = is_int($result['remaining'] ?? null) ? $result['remaining'] : 0;
+        $reset = is_int($result['reset'] ?? null) ? $result['reset'] : time();
+        $retryAfter = $reset - time();
+
         if ($isJsonRequest) {
             $body = json_encode([
                 'error' => 'Rate limit exceeded',
                 'message' => '請求過於頻繁，請稍後再試',
-                'limit' => $result['limit'],
-                'remaining' => $result['remaining'],
-                'reset' => $result['reset'],
-                'retry_after' => $result['reset'] - time(),
-            ]) ?: '';
+                'limit' => $limit,
+                'remaining' => $remaining,
+                'reset' => $reset,
+                'retry_after' => $retryAfter,
+            ]);
+            if ($body === false) {
+                $body = '{"error": "JSON encoding failed"}';
+            }
 
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {
@@ -129,10 +149,10 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         return $response
-            ->withHeader('Retry-After', (string) ($result['reset'] - time()))
-            ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
+            ->withHeader('Retry-After', (string) $retryAfter)
+            ->withHeader('X-RateLimit-Limit', (string) $limit)
             ->withHeader('X-RateLimit-Remaining', '0')
-            ->withHeader('X-RateLimit-Reset', (string) $result['reset']);
+            ->withHeader('X-RateLimit-Reset', (string) $reset);
     }
 
     /**
@@ -140,10 +160,14 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function addRateLimitHeaders(ResponseInterface $response, array $result): ResponseInterface
     {
+        $limit = is_int($result['limit'] ?? null) ? (string) $result['limit'] : '0';
+        $remaining = is_int($result['remaining'] ?? null) ? (string) $result['remaining'] : '0';
+        $reset = is_int($result['reset'] ?? null) ? (string) $result['reset'] : (string) time();
+
         return $response
-            ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
-            ->withHeader('X-RateLimit-Remaining', (string) $result['remaining'])
-            ->withHeader('X-RateLimit-Reset', (string) $result['reset']);
+            ->withHeader('X-RateLimit-Limit', $limit)
+            ->withHeader('X-RateLimit-Remaining', $remaining)
+            ->withHeader('X-RateLimit-Reset', $reset);
     }
 
     /**
@@ -151,8 +175,11 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function generateRateLimitHtml(array $result): string
     {
-        $retryAfter = $result['reset'] - time();
-        $retryTime = date('H:i:s', $result['reset']);
+        $limit = is_int($result['limit'] ?? null) ? $result['limit'] : 0;
+        $remaining = is_int($result['remaining'] ?? null) ? $result['remaining'] : 0;
+        $reset = is_int($result['reset'] ?? null) ? $result['reset'] : time();
+        $retryAfter = $reset - time();
+        $retryTime = date('H:i:s', $reset);
 
         return <<<HTML
             <!DOCTYPE html>
@@ -185,8 +212,8 @@ class RateLimitMiddleware implements MiddlewareInterface
                     </div>
                     <div class="info">
                         <strong>限制資訊：</strong><br>
-                        • 每分鐘最多 {$result['limit']} 次請求<br>
-                        • 剩餘配額：{$result['remaining']} 次<br>
+                        • 每分鐘最多 {$limit} 次請求<br>
+                        • 剩餘配額：{$remaining} 次<br>
                         • 重置時間：{$retryTime}
                     </div>
                     <div class="retry-info">
@@ -241,7 +268,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         ];
 
         foreach ($headers as $header) {
-            if (!empty($serverParams[$header])) {
+            if (isset($serverParams[$header]) && is_string($serverParams[$header]) && $serverParams[$header] !== '') {
                 $ips = explode(',', $serverParams[$header]);
                 $ip = trim($ips[0]);
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
@@ -250,7 +277,8 @@ class RateLimitMiddleware implements MiddlewareInterface
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? null;
+        return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';
     }
 
     public function getPriority(): int
@@ -268,6 +296,10 @@ class RateLimitMiddleware implements MiddlewareInterface
         $uri = $request->getUri()->getPath();
 
         // 檢查是否需要跳過速率限制
-        return !in_array($uri, $this->config['skip_paths'], true);
+        $skipPaths = $this->config['skip_paths'] ?? [];
+        if (!is_array($skipPaths)) {
+            return true;
+        }
+        return !in_array($uri, $skipPaths, true);
     }
 }
