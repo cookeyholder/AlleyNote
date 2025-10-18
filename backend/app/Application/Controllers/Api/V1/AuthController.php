@@ -229,18 +229,23 @@ class AuthController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            $dto = new RegisterUserDTO($this->validator, $data);
-            $user = $this->authService->register($dto);
+            $payload = $this->filterStringKeys($data);
+
+            $dto = new RegisterUserDTO($this->validator, $payload);
+            $registrationResult = $this->authService->register($dto);
+
+            $normalizedResult = is_array($registrationResult)
+                ? $this->filterStringKeys($registrationResult)
+                : [];
+            $userData = $this->extractUserData($registrationResult);
+            $userId = $this->toIntOrNull($userData['id'] ?? ($normalizedResult['id'] ?? null));
+            $metadata = $this->buildRegistrationMetadata($userData);
 
             // 記錄成功註冊活動
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::USER_REGISTERED,
-                userId: $user['id'],
-                metadata: [
-                    'email' => $user['email'],
-                    'username' => $user['username'],
-                    'registration_timestamp' => date('c'),
-                ],
+                userId: $userId,
+                metadata: $metadata,
             )->withNetworkInfo(
                 $this->getClientIpAddress($request),
                 $request->getHeaderLine('User-Agent') ?: 'Unknown',
@@ -249,12 +254,16 @@ class AuthController extends BaseController
             $this->activityLoggingService->log($activityDto);
 
             $responseData = [
-                'success' => true,
-                'message' => '註冊成功',
-                'data' => $user,
+                'success' => (bool) ($normalizedResult['success'] ?? true),
+                'message' => $this->toStringOrNull($normalizedResult['message'] ?? null) ?? '註冊成功',
+                'data' => $userData,
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+            if (isset($normalizedResult['tokens']) && is_array($normalizedResult['tokens'])) {
+                $responseData['tokens'] = $normalizedResult['tokens'];
+            }
+
+            $response->getBody()->write(json_encode($responseData) ?: '{}');
 
             return $response
                 ->withStatus(201)
@@ -370,30 +379,54 @@ class AuthController extends BaseController
     )]
     public function login(Request $request, Response $response): Response
     {
+        $emailForLogging = null;
+
         try {
             $credentials = $request->getParsedBody();
 
-            // 驗證輸入資料
-            if (!is_array($credentials) || !isset($credentials['email'], $credentials['password'])) {
+            if (!is_array($credentials)) {
                 $responseData = [
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+                $response->getBody()->write(json_encode($responseData) ?: '{}');
 
                 return $response
                     ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
             }
 
+            $payload = $this->filterStringKeys($credentials);
+            $email = $this->toStringOrNull($payload['email'] ?? null);
+            $password = $this->toStringOrNull($payload['password'] ?? null);
+
+            if ($email === null || $password === null || $email === '' || $password === '') {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少必要的登入資料',
+                ];
+                $response->getBody()->write(json_encode($responseData) ?: '{}');
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $emailForLogging = $email;
+
             // 建立登入請求 DTO
-            $loginRequest = LoginRequestDTO::fromArray($credentials);
+            $loginRequest = LoginRequestDTO::fromArray([
+                'email' => $email,
+                'password' => $password,
+                'remember_me' => $this->toBool($payload['remember_me'] ?? false),
+                'scopes' => $this->extractScopes($payload['scopes'] ?? null),
+            ]);
 
             // 建立裝置資訊
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: $this->getClientIpAddress($request),
-                deviceName: $credentials['device_name'] ?? null,
+                deviceName: $this->toStringOrNull($payload['device_name'] ?? null),
             );
 
             // 執行 JWT 認證登入
@@ -419,15 +452,15 @@ class AuthController extends BaseController
                 ...$loginResponse->toArray(),
             ];
 
-            $response->getBody()->write((json_encode($result) ?? ''));
+            $response->getBody()->write(json_encode($result) ?: '{}');
 
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json');
         } catch (InvalidArgumentException $e) {
             // 記錄登入失敗 - 驗證錯誤
-            if (isset($credentials['email'])) {
-                $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
+            if ($emailForLogging !== null) {
+                $this->logLoginFailure($request, $emailForLogging, $e->getMessage());
             }
 
             $responseData = [
@@ -441,8 +474,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (NotFoundException $e) {
             // 記錄登入失敗 - 使用者不存在
-            if (isset($credentials['email'])) {
-                $this->logLoginFailure($request, $credentials['email'], '使用者名稱或密碼錯誤');
+            if ($emailForLogging !== null) {
+                $this->logLoginFailure($request, $emailForLogging, '使用者名稱或密碼錯誤');
             }
 
             $responseData = [
@@ -456,8 +489,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (ValidationException $e) {
             // 記錄登入失敗 - 密碼錯誤或其他驗證失敗
-            if (isset($credentials['email'])) {
-                $this->logLoginFailure($request, $credentials['email'], '使用者名稱或密碼錯誤');
+            if ($emailForLogging !== null) {
+                $this->logLoginFailure($request, $emailForLogging, '使用者名稱或密碼錯誤');
             }
 
             $responseData = [
@@ -471,8 +504,8 @@ class AuthController extends BaseController
                 ->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
             // 記錄登入失敗 - 系統錯誤
-            if (isset($credentials['email'])) {
-                $this->logLoginFailure($request, $credentials['email'], '系統發生錯誤');
+            if ($emailForLogging !== null) {
+                $this->logLoginFailure($request, $emailForLogging, '系統發生錯誤');
             }
 
             $responseData = [
@@ -524,33 +557,33 @@ class AuthController extends BaseController
             $requestData = $request->getParsedBody();
 
             // 從 Authorization header 或 request body 取得 access token
-            $accessToken = null;
-            $refreshToken = null;
-
-            // 先檢查 Authorization header
             $authHeader = $request->getHeaderLine('Authorization');
-            if (!empty($authHeader) && str_starts_with($authHeader, 'Bearer ')) {
+            $accessToken = null;
+            if ($authHeader !== '' && str_starts_with($authHeader, 'Bearer ')) {
                 $accessToken = substr($authHeader, 7);
             }
 
-            // 如果在 body 中有提供 tokens，優先使用
-            if (is_array($requestData)) {
-                $accessToken = $requestData['access_token'] ?? $accessToken;
-                $refreshToken = $requestData['refresh_token'] ?? null;
+            $payload = is_array($requestData) ? $this->filterStringKeys($requestData) : [];
+            $bodyAccessToken = $this->toStringOrNull($payload['access_token'] ?? null);
+            if ($bodyAccessToken !== null && $bodyAccessToken !== '') {
+                $accessToken = $bodyAccessToken;
             }
+
+            $refreshToken = $this->toStringOrNull($payload['refresh_token'] ?? null);
+            $logoutAllDevices = $this->toBool($payload['logout_all_devices'] ?? false);
 
             // 建立登出請求 DTO
             $logoutRequest = LogoutRequestDTO::fromArray([
-                'access_token' => $accessToken,
+                'access_token' => $accessToken ?? '',
                 'refresh_token' => $refreshToken,
-                'revoke_all_tokens' => $requestData['logout_all_devices'] ?? false,
+                'revoke_all_tokens' => $logoutAllDevices,
             ]);
 
             // 建立裝置資訊
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: $this->getClientIpAddress($request),
-                deviceName: $requestData['device_name'] ?? null,
+                deviceName: $this->toStringOrNull($payload['device_name'] ?? null),
             );
 
             // 執行登出
@@ -564,7 +597,7 @@ class AuthController extends BaseController
                 description: '使用者登出',
                 metadata: [
                     'logout_timestamp' => date('c'),
-                    'logout_all_devices' => $requestData['logout_all_devices'] ?? false,
+                    'logout_all_devices' => $logoutAllDevices,
                 ],
             )->withNetworkInfo(
                 $this->getClientIpAddress($request),
@@ -578,7 +611,7 @@ class AuthController extends BaseController
                 'message' => '登出成功',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+            $response->getBody()->write(json_encode($responseData) ?: '{}');
 
             return $response
                 ->withStatus(200)
@@ -840,13 +873,27 @@ class AuthController extends BaseController
         try {
             $requestData = $request->getParsedBody();
 
-            // 驗證輸入資料
-            if (!is_array($requestData) || !isset($requestData['refresh_token'])) {
+            if (!is_array($requestData)) {
                 $responseData = [
                     'success' => false,
                     'error' => '缺少必要的 refresh_token',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+                $response->getBody()->write(json_encode($responseData) ?: '{}');
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $payload = $this->filterStringKeys($requestData);
+            $refreshToken = $this->toStringOrNull($payload['refresh_token'] ?? null);
+
+            if ($refreshToken === null || $refreshToken === '') {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少必要的 refresh_token',
+                ];
+                $response->getBody()->write(json_encode($responseData) ?: '{}');
 
                 return $response
                     ->withStatus(400)
@@ -854,13 +901,16 @@ class AuthController extends BaseController
             }
 
             // 建立刷新請求 DTO
-            $refreshRequest = RefreshRequestDTO::fromArray($requestData);
+            $refreshRequest = RefreshRequestDTO::fromArray([
+                'refresh_token' => $refreshToken,
+                'scopes' => $this->extractScopes($payload['scopes'] ?? null),
+            ]);
 
             // 建立裝置資訊
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: $this->getClientIpAddress($request),
-                deviceName: $requestData['device_name'] ?? null,
+                deviceName: $this->toStringOrNull($payload['device_name'] ?? null),
             );
 
             // 執行 JWT token 刷新
@@ -872,7 +922,7 @@ class AuthController extends BaseController
                 ...$refreshResponse->toArray(),
             ];
 
-            $response->getBody()->write((json_encode($result) ?? ''));
+            $response->getBody()->write(json_encode($result) ?: '{}');
 
             return $response
                 ->withStatus(200)
@@ -1532,5 +1582,163 @@ class AuthController extends BaseController
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json');
         }
+    }
+
+    /**
+     * 過濾陣列，只保留字串鍵的元素。
+     *
+     * @param array<mixed, mixed> $data
+     * @return array<string, mixed>
+     */
+    private function filterStringKeys(array $data): array
+    {
+        $filtered = [];
+
+        foreach ($data as $key => $value) {
+            if (is_string($key)) {
+                $filtered[$key] = $value;
+            }
+        }
+
+        return $filtered;
+    }
+
+    /**
+     * 轉換輸入值為字串，若不可轉換則回傳 null。
+     */
+    private function toStringOrNull(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $trimmed = trim($value);
+
+            return $trimmed === '' ? null : $trimmed;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return null;
+    }
+
+    /**
+     * 將輸入值轉換為布林值。
+     */
+    private function toBool(mixed $value, bool $default = false): bool
+    {
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        if (is_string($value)) {
+            $normalized = strtolower(trim($value));
+            if (in_array($normalized, ['1', 'true', 'yes', 'on'], true)) {
+                return true;
+            }
+            if (in_array($normalized, ['0', 'false', 'no', 'off'], true)) {
+                return false;
+            }
+        }
+
+        if (is_int($value)) {
+            return $value !== 0;
+        }
+
+        return $default;
+    }
+
+    /**
+     * 嘗試將輸入值轉為整數。
+     */
+    private function toIntOrNull(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_string($value) && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        if (is_float($value)) {
+            return (int) $value;
+        }
+
+        return null;
+    }
+
+    /**
+     * 擷取註冊回傳中的使用者資料。
+     *
+     * @return array<string, mixed>
+     */
+    private function extractUserData(mixed $registrationResult): array
+    {
+        if (is_array($registrationResult)) {
+            if (isset($registrationResult['user']) && is_array($registrationResult['user'])) {
+                return $this->filterStringKeys($registrationResult['user']);
+            }
+
+            if (isset($registrationResult['id']) || isset($registrationResult['email']) || isset($registrationResult['username'])) {
+                return $this->filterStringKeys($registrationResult);
+            }
+        }
+
+        if (is_object($registrationResult)) {
+            return $this->filterStringKeys(get_object_vars($registrationResult));
+        }
+
+        return [];
+    }
+
+    /**
+     * 建立註冊活動需要的 metadata。
+     *
+     * @param array<string, mixed> $userData
+     * @return array<string, mixed>
+     */
+    private function buildRegistrationMetadata(array $userData): array
+    {
+        $metadata = [
+            'registration_timestamp' => date('c'),
+        ];
+
+        $email = $this->toStringOrNull($userData['email'] ?? null);
+        if ($email !== null) {
+            $metadata['email'] = $email;
+        }
+
+        $username = $this->toStringOrNull($userData['username'] ?? null);
+        if ($username !== null) {
+            $metadata['username'] = $username;
+        }
+
+        return $metadata;
+    }
+
+    /**
+     * 過濾 scopes 參數為字串陣列。
+     *
+     * @return array<int, string>|null
+     */
+    private function extractScopes(mixed $scopes): ?array
+    {
+        if (!is_array($scopes)) {
+            return null;
+        }
+
+        $normalized = [];
+        foreach ($scopes as $scope) {
+            $scopeString = $this->toStringOrNull($scope);
+            if ($scopeString !== null) {
+                $normalized[] = $scopeString;
+            }
+        }
+
+        return $normalized === [] ? null : $normalized;
     }
 }

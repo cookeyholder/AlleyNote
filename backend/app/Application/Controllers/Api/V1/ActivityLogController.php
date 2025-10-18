@@ -11,6 +11,7 @@ use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
 use Exception;
+use ValueError;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -68,11 +69,39 @@ class ActivityLogController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            $dto = new CreateActivityLogDTO(
-                actionType: ActivityType::from($data['action_type'] ?? ''),
-                userId: (int) ($data['user_id'] ?? 0),
-                metadata: $data['metadata'] ?? [],
-            );
+            $actionTypeValue = $data['action_type'] ?? null;
+            if (!is_string($actionTypeValue) && !is_int($actionTypeValue)) {
+                return $this->validationError($response, 'action_type must be a valid string or integer value.');
+            }
+
+            $userIdValue = $data['user_id'] ?? null;
+            if (!is_int($userIdValue) && !(is_string($userIdValue) && ctype_digit($userIdValue))) {
+                return $this->validationError($response, 'user_id must be a numeric value.');
+            }
+
+            $metadataValue = $data['metadata'] ?? null;
+            if ($metadataValue !== null && !is_array($metadataValue)) {
+                return $this->validationError($response, 'metadata must be an object or null.');
+            }
+
+            if (is_array($metadataValue)) {
+                foreach (array_keys($metadataValue) as $key) {
+                    if (!is_string($key)) {
+                        return $this->validationError($response, 'metadata keys must be strings.');
+                    }
+                }
+                /** @var array<string, mixed> $metadataValue */
+            }
+
+            try {
+                $dto = new CreateActivityLogDTO(
+                    actionType: ActivityType::from($actionTypeValue),
+                    userId: (int) $userIdValue,
+                    metadata: $metadataValue,
+                );
+            } catch (ValueError $exception) {
+                return $this->validationError($response, $exception->getMessage());
+            }
 
             $result = $this->loggingService->log($dto);
 
@@ -94,6 +123,20 @@ class ActivityLogController extends BaseController
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
+    }
+
+    private function validationError(Response $response, string $message): Response
+    {
+        $errorResponse = json_encode([
+            'success' => false,
+            'message' => $message,
+            'error_code' => 422,
+        ]);
+        $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus(422);
     }
 
     #[OA\Get(

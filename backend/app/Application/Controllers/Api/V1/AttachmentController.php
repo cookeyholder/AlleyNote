@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentController
 {
@@ -23,13 +25,32 @@ class AttachmentController
      */
     private function getCurrentUserId(Request $request): int
     {
-        // 從 request attributes 或 session 中取得使用者 ID
         $userId = $request->getAttribute('user_id');
-        if ($userId === null) {
-            throw ValidationException::fromSingleError('user_id', '使用者未登入');
+
+        if (is_int($userId)) {
+            return $userId;
         }
 
-        return (int) $userId;
+        if (is_string($userId) && ctype_digit($userId)) {
+            return (int) $userId;
+        }
+
+        throw ValidationException::fromSingleError('user_id', '使用者未登入');
+    }
+
+    private function getPostId(Request $request): int
+    {
+        $postId = $request->getAttribute('post_id');
+
+        if (is_int($postId)) {
+            return $postId;
+        }
+
+        if (is_string($postId) && ctype_digit($postId)) {
+            return (int) $postId;
+        }
+
+        throw ValidationException::fromSingleError('post_id', '無效的貼文識別碼');
     }
 
     #[OA\Post(
@@ -132,10 +153,11 @@ class AttachmentController
     {
         try {
             $currentUserId = $this->getCurrentUserId($request);
-            $postId = (int) $request->getAttribute('post_id');
+            $postId = $this->getPostId($request);
             $files = $request->getUploadedFiles();
+            $uploadedFile = $this->extractUploadedFile($files['file'] ?? null);
 
-            if (!isset($files['file'])) {
+            if ($uploadedFile === null) {
                 $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
                 ]) ?: ''));
@@ -145,7 +167,8 @@ class AttachmentController
                     ->withHeader('Content-Type', 'application/json');
             }
 
-            $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
+            /** @var Attachment $attachment */
+            $attachment = $this->attachmentService->upload($postId, $uploadedFile, $currentUserId);
 
             $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
@@ -351,12 +374,13 @@ class AttachmentController
     )]
     public function list(Request $request, Response $response): Response
     {
-        $postId = (int) $request->getAttribute('post_id');
+        $postId = $this->getPostId($request);
+        /** @var array<int, Attachment> $attachments */
         $attachments = $this->attachmentService->getByPostId($postId);
 
         $response->getBody()->write((json_encode([
             'data' => array_map(
-                fn($attachment) => $attachment->toArray(),
+                static fn(Attachment $attachment) => $attachment->toArray(),
                 $attachments,
             ),
         ]) ?: '{"error": "JSON encoding failed"}'));
@@ -452,5 +476,25 @@ class AttachmentController
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
         }
+    }
+
+    /**
+     * @param mixed $file
+     */
+    private function extractUploadedFile(mixed $file): ?UploadedFileInterface
+    {
+        if ($file instanceof UploadedFileInterface) {
+            return $file;
+        }
+
+        if (is_array($file)) {
+            foreach ($file as $candidate) {
+                if ($candidate instanceof UploadedFileInterface) {
+                    return $candidate;
+                }
+            }
+        }
+
+        return null;
     }
 }
