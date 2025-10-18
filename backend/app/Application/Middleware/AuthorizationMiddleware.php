@@ -25,10 +25,11 @@ class AuthorizationMiddleware
         if (!$this->checkPermission($userId, $resource, $action)) {
             http_response_code(403);
             header('Content-Type: application/json');
-            echo json_encode([
+            $jsonOutput = json_encode([
                 'error' => '您沒有權限執行此操作',
                 'code' => 'FORBIDDEN',
-            ]) ?? '';
+            ]);
+            echo $jsonOutput !== false ? $jsonOutput : '{"error": "JSON encoding failed"}';
             exit;
         }
     }
@@ -38,10 +39,11 @@ class AuthorizationMiddleware
         if (!$this->authorizationService->hasRole($userId, $roleName)) {
             http_response_code(403);
             header('Content-Type: application/json');
-            echo json_encode([
+            $jsonOutput = json_encode([
                 'error' => '需要特定角色才能執行此操作',
                 'code' => 'FORBIDDEN',
-            ]) ?? '';
+            ]);
+            echo $jsonOutput !== false ? $jsonOutput : '{"error": "JSON encoding failed"}';
             exit;
         }
     }
