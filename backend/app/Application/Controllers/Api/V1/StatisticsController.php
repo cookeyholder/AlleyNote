@@ -102,9 +102,6 @@ class StatisticsController extends BaseController
         ResponseInterface $response,
     ): ResponseInterface {
         try {
-            // 檢查權限
-            $this->checkStatisticsReadPermission($request);
-
             $queryParams = $request->getQueryParams();
 
             // 解析查詢參數
@@ -542,33 +539,6 @@ class StatisticsController extends BaseController
     }
 
     /**
-     * 檢查使用者是否有統計查詢權限.
-     */
-    private function checkStatisticsReadPermission(ServerRequestInterface $request): void
-    {
-        // 檢查角色權限
-        $userRole = $request->getAttribute('role', '');
-
-        // super_admin 角色擁有所有權限
-        if ($userRole === 'super_admin') {
-            return;
-        }
-
-        $userPermissions = $request->getAttribute('permissions', []);
-
-        if (!is_array($userPermissions)) {
-            throw ValidationException::fromSingleError('permission', '權限資訊格式錯誤');
-        }
-
-        $hasPermission = in_array('*', $userPermissions)
-                        || in_array('statistics.*', $userPermissions)
-                        || in_array('statistics.read', $userPermissions);
-
-        if (!$hasPermission) {
-            throw ValidationException::fromSingleError('permission', '沒有統計查詢權限');
-        }
-    }
-
     /**
      * 建構統計查詢 DTO.
      *

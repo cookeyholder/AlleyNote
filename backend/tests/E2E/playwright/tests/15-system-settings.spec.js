@@ -251,13 +251,27 @@ test.describe("系統設定頁面測試", () => {
         const testName = `重載測試 ${Date.now()}`;
         await siteName.clear();
         await siteName.fill(testName);
-        await saveBtn.click();
-        await page.waitForTimeout(2000);
+
+        // 等待保存完成
+        await Promise.all([
+            page.waitForResponse(
+                (resp) =>
+                    resp.url().includes("/api/settings") &&
+                    resp.request().method() === "PUT"
+            ),
+            page.waitForResponse(
+                (resp) =>
+                    resp.url().includes("/api/settings") &&
+                    resp.request().method() === "GET"
+            ),
+            saveBtn.click(),
+        ]);
+        await page.waitForTimeout(500);
 
         // 重新載入頁面
         await page.reload();
         await page.waitForLoadState("networkidle");
-        await page.waitForTimeout(2000);
+        await page.waitForTimeout(1000);
 
         // 確認設定保留
         const loadedValue = await page.locator("#site-name").inputValue();

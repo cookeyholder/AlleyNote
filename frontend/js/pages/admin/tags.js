@@ -322,7 +322,7 @@ export default class TagsPage {
             }
 
             await apiClient.post("/tags", data);
-            toast.success("標籤建立成功");
+            toast.success("標籤建立成功", 5000);
             this.modal.hide();
             await this.loadTags();
         } catch (error) {

@@ -851,15 +851,25 @@ async function saveSettings() {
         // 清除時區快取
         timezoneUtils.clearCache();
 
+        // 重新載入設定以確保資料一致性
+        const refreshResponse = await apiClient.get("/settings");
+        const refreshedSettingsData = refreshResponse.data || {};
+        const refreshedSettings = {};
+        Object.keys(refreshedSettingsData).forEach((key) => {
+            const item = refreshedSettingsData[key];
+            refreshedSettings[key] =
+                item && typeof item === "object" && "value" in item
+                    ? item.value
+                    : item;
+        });
+
         // 更新原始設定
         originalSettings = {
-            ...originalSettings,
-            ...settings,
+            ...refreshedSettings,
             allowed_file_types: allowedFileTypes,
         };
         currentSettings = {
-            ...currentSettings,
-            ...settings,
+            ...refreshedSettings,
             allowed_file_types: allowedFileTypes,
         };
 

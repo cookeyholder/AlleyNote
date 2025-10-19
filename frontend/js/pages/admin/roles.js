@@ -310,6 +310,8 @@ export default class RolesPage {
         try {
             await rolesAPI.updatePermissions(roleId, permissionIds);
             toast.success("權限已更新");
+            // 重新載入角色資料以確保顯示最新的權限狀態
+            await this.selectRole(roleId);
         } catch (error) {
             console.error("更新權限失敗:", error);
             toast.error("更新權限失敗");
@@ -471,7 +473,7 @@ export default class RolesPage {
             };
 
             await rolesAPI.create(data);
-            toast.success("角色建立成功");
+            toast.success("角色建立成功", 5000);
             await this.loadRolesAndPermissions();
         } catch (error) {
             console.error("建立角色失敗:", error);
@@ -503,7 +505,7 @@ export default class RolesPage {
 
         try {
             await rolesAPI.delete(id);
-            toast.success("角色已刪除");
+            toast.success("角色已刪除", 5000);
             await this.loadRolesAndPermissions();
             this.selectedRole = null;
         } catch (error) {
