@@ -69,7 +69,7 @@ class RedisRouteCache implements RouteCacheInterface
 
                 return null;
             }
-            
+
             $data = unserialize($content);
             if (!$data instanceof RouteCollectionInterface) {
                 $this->stats['misses']++;
