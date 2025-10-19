@@ -9,76 +9,130 @@ use Exception;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
+    /**
+     * @var array<string, mixed>
+     */
     private array $config;
 
     private ?string $currentNonce = null;
 
+    /**
+     * @param array<string, mixed> $config
+     */
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
 
+    /**
+     * 安全地取得 config 值
+     *
+     * @param string $key
+     * @return mixed
+     */
+    private function getConfig(string $key): mixed
+    {
+        $keys = explode('.', $key);
+        $value = $this->config;
+
+        foreach ($keys as $k) {
+            if (!is_array($value) || !isset($value[$k])) {
+                return null;
+            }
+            $value = $value[$k];
+        }
+
+        return $value;
+    }
+
+    /**
+     * 檢查 config 布林值
+     */
+    private function isConfigEnabled(string $key): bool
+    {
+        $value = $this->getConfig($key);
+        return is_bool($value) && $value;
+    }
+
+    /**
+     * 取得 config 字串值
+     */
+    private function getConfigString(string $key, string $default = ''): string
+    {
+        $value = $this->getConfig($key);
+        return is_string($value) ? $value : $default;
+    }
+
+    /**
+     * 取得 config 整數值
+     */
+    private function getConfigInt(string $key, int $default = 0): int
+    {
+        $value = $this->getConfig($key);
+        return is_int($value) ? $value : $default;
+    }
+
     public function setSecurityHeaders(): void
     {
         // Content Security Policy
-        if ($this->config['csp']['enabled']) {
+        if ($this->isConfigEnabled('csp.enabled')) {
             header('Content-Security-Policy: ' . $this->buildCSP());
         }
 
         // Strict Transport Security (僅在 HTTPS 下啟用)
-        if ($this->config['hsts']['enabled'] && $this->isHTTPS()) {
+        if ($this->isConfigEnabled('hsts.enabled') && $this->isHTTPS()) {
             $hstsValue = sprintf(
                 'max-age=%d%s%s',
-                $this->config['hsts']['max_age'],
-                $this->config['hsts']['include_subdomains'] ? '; includeSubDomains' : '',
-                $this->config['hsts']['preload'] ? '; preload' : '',
+                $this->getConfigInt('hsts.max_age', 31536000),
+                $this->isConfigEnabled('hsts.include_subdomains') ? '; includeSubDomains' : '',
+                $this->isConfigEnabled('hsts.preload') ? '; preload' : '',
             );
             header('Strict-Transport-Security: ' . $hstsValue);
         }
 
         // X-Frame-Options
-        if ($this->config['frame_options']['enabled']) {
-            header('X-Frame-Options: ' . $this->config['frame_options']['value']);
+        if ($this->isConfigEnabled('frame_options.enabled')) {
+            header('X-Frame-Options: ' . $this->getConfigString('frame_options.value', 'SAMEORIGIN'));
         }
 
         // X-Content-Type-Options
-        if ($this->config['content_type_options']['enabled']) {
+        if ($this->isConfigEnabled('content_type_options.enabled')) {
             header('X-Content-Type-Options: nosniff');
         }
 
         // X-XSS-Protection (雖然現代瀏覽器已棄用，但為了向後相容)
-        if ($this->config['xss_protection']['enabled']) {
+        if ($this->isConfigEnabled('xss_protection.enabled')) {
             header('X-XSS-Protection: 1; mode=block');
         }
 
         // Referrer Policy
-        if ($this->config['referrer_policy']['enabled']) {
-            header('Referrer-Policy: ' . $this->config['referrer_policy']['value']);
+        if ($this->isConfigEnabled('referrer_policy.enabled')) {
+            header('Referrer-Policy: ' . $this->getConfigString('referrer_policy.value', 'strict-origin-when-cross-origin'));
         }
 
         // Permissions Policy
-        if ($this->config['permissions_policy']['enabled']) {
+        if ($this->isConfigEnabled('permissions_policy.enabled')) {
             header('Permissions-Policy: ' . $this->buildPermissionsPolicy());
         }
 
         // Cross-Origin Embedder Policy
-        if ($this->config['coep']['enabled']) {
-            header('Cross-Origin-Embedder-Policy: ' . $this->config['coep']['value']);
+        if ($this->isConfigEnabled('coep.enabled')) {
+            header('Cross-Origin-Embedder-Policy: ' . $this->getConfigString('coep.value', 'require-corp'));
         }
 
         // Cross-Origin Opener Policy
-        if ($this->config['coop']['enabled']) {
-            header('Cross-Origin-Opener-Policy: ' . $this->config['coop']['value']);
+        if ($this->isConfigEnabled('coop.enabled')) {
+            header('Cross-Origin-Opener-Policy: ' . $this->getConfigString('coop.value', 'same-origin'));
         }
 
         // Cross-Origin Resource Policy
-        if ($this->config['corp']['enabled']) {
-            header('Cross-Origin-Resource-Policy: ' . $this->config['corp']['value']);
+        if ($this->isConfigEnabled('corp.enabled')) {
+            header('Cross-Origin-Resource-Policy: ' . $this->getConfigString('corp.value', 'same-origin'));
         }
 
         // Cache Control for sensitive pages
-        if ($this->config['cache_control']['enabled']) {
-            header('Cache-Control: ' . $this->config['cache_control']['value']);
+        if ($this->isConfigEnabled('cache_control.enabled')) {
+            header('Cache-Control: ' . $this->getConfigString('cache_control.value', 'no-store, no-cache, must-revalidate'));
         }
     }
 
@@ -107,7 +161,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
      */
     public function handleCSPReport(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        $requestMethod = $_SERVER['REQUEST_METHOD'] ?? '';
+        if ($requestMethod !== 'POST') {
             http_response_code(405);
 
             return;
@@ -115,8 +170,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (
-            strpos($contentType, 'application/csp-report') === false
-            && strpos($contentType, 'application/json') === false
+            !is_string($contentType)
+            || (strpos($contentType, 'application/csp-report') === false
+            && strpos($contentType, 'application/json') === false)
         ) {
             http_response_code(400);
 
@@ -124,9 +180,13 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         }
 
         $input = file_get_contents('php://input');
+        if ($input === false) {
+            http_response_code(400);
+            return;
+        }
         $report = json_decode($input, true);
 
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($report)) {
             http_response_code(400);
 
             return;
@@ -151,10 +211,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         ];
 
         // 記錄到日誌檔案
-        error_log('CSP Violation: ' . (json_encode($logData) ?? ''));
+        error_log('CSP Violation: ' . json_encode($logData));
 
         // 如果設定了監控服務，也可以發送到那裡
-        if (isset($this->config['csp']['monitoring_endpoint'])) {
+        $monitoringEndpoint = $this->getConfigString('csp.monitoring_endpoint');
+        if ($monitoringEndpoint !== '') {
             $this->sendToMonitoring($logData);
         }
     }
@@ -164,19 +225,22 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
      */
     private function sendToMonitoring(array $data): void
     {
-        // 這裡可以整合 Sentry、DataDog 等監控服務
-        // 目前僅作為範例實作
         try {
-            $context = stream_context_create([
+            $monitoringEndpoint = $this->getConfigString('csp.monitoring_endpoint');
+            if ($monitoringEndpoint === '') {
+                return;
+            }
+
+            $content = file_get_contents($monitoringEndpoint, false, stream_context_create([
                 'http' => [
                     'method' => 'POST',
                     'header' => 'Content-Type: application/json',
-                    'content' => (json_encode($data) ?? ''),
-                    'timeout' => 5,
+                    'content' => json_encode($data),
+                    'timeout' => 2,
                 ],
-            ]);
+            ]));
 
-            file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
+            // 忽略結果，因為它是非同步的
         } catch (Exception $e) {
             error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
         }
@@ -189,8 +253,9 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         header_remove('X-Powered-By');
 
         // 設定通用的伺服器標識（可選）
-        if ($this->config['server_signature']['enabled']) {
-            header('Server: ' . $this->config['server_signature']['value']);
+        if ($this->isConfigEnabled('server_signature.enabled')) {
+            $serverValue = $this->getConfigString('server_signature.value', 'AlleyNote/1.0');
+            header('Server: ' . $serverValue);
         }
     }
 
@@ -199,8 +264,17 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         $directives = [];
         $nonce = $this->generateNonce();
 
-        foreach ($this->config['csp']['directives'] as $directive => $sources) {
-            if (!empty($sources)) {
+        $cspDirectives = $this->getConfig('csp.directives');
+        if (!is_array($cspDirectives)) {
+            $cspDirectives = [];
+        }
+
+        foreach ($cspDirectives as $directive => $sources) {
+            if (!is_string($directive)) {
+                continue;
+            }
+
+            if (!empty($sources) && is_array($sources)) {
                 // 對於 script-src 和 style-src，添加 nonce 支援
                 if (($directive === 'script-src' || $directive === 'style-src') && $nonce) {
                     // 移除 unsafe-inline 並添加 nonce
@@ -209,14 +283,15 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 }
 
                 $directives[] = $directive . ' ' . implode(' ', $sources);
-            } else {
+            } elseif (empty($sources)) {
                 $directives[] = $directive;
             }
         }
 
         // 添加 CSP 違規報告
-        if (isset($this->config['csp']['report_uri'])) {
-            $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
+        $reportUri = $this->getConfigString('csp.report_uri');
+        if ($reportUri !== '') {
+            $directives[] = 'report-uri ' . $reportUri;
         }
 
         return implode('; ', $directives);
@@ -226,10 +301,19 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         $policies = [];
 
-        foreach ($this->config['permissions_policy']['directives'] as $feature => $allowlist) {
+        $permissionsDirectives = $this->getConfig('permissions_policy.directives');
+        if (!is_array($permissionsDirectives)) {
+            $permissionsDirectives = [];
+        }
+
+        foreach ($permissionsDirectives as $feature => $allowlist) {
+            if (!is_string($feature)) {
+                continue;
+            }
+
             if (is_array($allowlist)) {
                 $policies[] = $feature . '=(' . implode(' ', $allowlist) . ')';
-            } else {
+            } elseif (is_string($allowlist)) {
                 $policies[] = $feature . '=' . $allowlist;
             }
         }
@@ -239,11 +323,19 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private function isHTTPS(): bool
     {
-        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || $_SERVER['SERVER_PORT'] == 443
-            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+        $https = $_SERVER['HTTPS'] ?? '';
+        $serverPort = $_SERVER['SERVER_PORT'] ?? '';
+        $forwardedProto = $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '';
+
+        return (!empty($https) && is_string($https) && $https !== 'off')
+            || (is_string($serverPort) && $serverPort == '443')
+            || (is_int($serverPort) && $serverPort === 443)
+            || (!empty($forwardedProto) && is_string($forwardedProto) && $forwardedProto === 'https');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getDefaultConfig(): array
     {
         return [

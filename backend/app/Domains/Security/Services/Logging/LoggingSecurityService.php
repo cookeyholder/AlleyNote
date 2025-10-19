@@ -134,8 +134,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
 
         // 也處理輪轉的日誌檔案
         $rotatedFiles = glob($logsDir . '/*.log-*');
-        foreach ($rotatedFiles as $file) {
-            chmod($file, 0o640);
+        if (is_array($rotatedFiles)) {
+            foreach ($rotatedFiles as $file) {
+                chmod($file, 0o640);
+            }
         }
     }
 
@@ -306,8 +308,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $context['server_time'] = date('Y-m-d H:i:s');
 
         // 如果有 User-Agent，轉換為雜湊值
-        if (isset($_SERVER['HTTP_USER_AGENT'])) {
-            $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
+        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+        if (is_string($userAgent)) {
+            $context['user_agent_hash'] = hash('sha256', $userAgent);
         }
 
         return $context;
@@ -326,6 +329,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         }
 
         $logFiles = glob($logsDir . '/*.log*');
+        if (!is_array($logFiles)) {
+            $logFiles = [];
+        }
 
         foreach ($logFiles as $file) {
             $perms = fileperms($file) & 0o777;
@@ -363,12 +369,16 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         ];
 
         $logFiles = glob($logsDir . '/*.log*');
+        if (!is_array($logFiles)) {
+            $logFiles = [];
+        }
 
         foreach ($logFiles as $file) {
+            $modifiedTime = filemtime($file);
             $stats['files'][basename($file)] = [
                 'size' => filesize($file),
                 'permissions' => sprintf('%o', fileperms($file) & 0o777),
-                'last_modified' => date('Y-m-d H:i:s', filemtime($file)),
+                'last_modified' => $modifiedTime !== false ? date('Y-m-d H:i:s', $modifiedTime) : 'unknown',
             ];
         }
 

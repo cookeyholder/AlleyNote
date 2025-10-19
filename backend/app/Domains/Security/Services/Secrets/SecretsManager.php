@@ -48,17 +48,17 @@ class SecretsManager implements SecretsManagerInterface
         }
 
         // 使用 $_ENV
-        if (isset($_ENV[$key])) {
+        if (isset($_ENV[$key]) && is_string($_ENV[$key])) {
             return $this->parseValue($_ENV[$key]);
         }
 
         // 使用 $_SERVER
-        if (isset($_SERVER[$key])) {
+        if (isset($_SERVER[$key]) && is_string($_SERVER[$key])) {
             return $this->parseValue($_SERVER[$key]);
         }
 
         // 使用載入的秘密
-        if (isset($this->secrets[$key])) {
+        if (isset($this->secrets[$key]) && is_string($this->secrets[$key])) {
             return $this->parseValue($this->secrets[$key]);
         }
 
@@ -85,7 +85,11 @@ class SecretsManager implements SecretsManagerInterface
         $value = $this->get($key);
 
         if ($value === null || $value === '') {
-            throw new ValidationException("必需的環境變數 '{$key}' 未設定");
+            throw new \RuntimeException("必需的環境變數 '{$key}' 未設定");
+        }
+
+        if (!is_scalar($value)) {
+            throw new \RuntimeException("環境變數 '{$key}' 不是字串");
         }
 
         return (string) $value;
@@ -96,13 +100,13 @@ class SecretsManager implements SecretsManagerInterface
         $missing = [];
 
         foreach ($requiredKeys as $key) {
-            if (!$this->has($key) || $this->get($key) === '') {
+            if (is_string($key) && (!$this->has($key) || $this->get($key) === '')) {
                 $missing[] = $key;
             }
         }
 
         if (!empty($missing)) {
-            throw new ValidationException(
+            throw new \RuntimeException(
                 '缺少必需的環境變數: ' . implode(', ', $missing),
             );
         }
@@ -110,12 +114,14 @@ class SecretsManager implements SecretsManagerInterface
 
     public function isProduction(): bool
     {
-        return strtolower($this->get('APP_ENV', 'production')) === 'production';
+        $env = $this->get('APP_ENV', 'production');
+        return is_string($env) && strtolower($env) === 'production';
     }
 
     public function isDevelopment(): bool
     {
-        return strtolower($this->get('APP_ENV', 'production')) === 'development';
+        $env = $this->get('APP_ENV', 'production');
+        return is_string($env) && strtolower($env) === 'development';
     }
 
     public function getSecretsSummary(): array
@@ -149,7 +155,7 @@ class SecretsManager implements SecretsManagerInterface
 
             $summary[$key] = [
                 'set' => $this->has($key),
-                'length' => strlen((string) $this->get($key)),
+                'length' => is_scalar($this->get($key)) ? strlen((string) $this->get($key)) : 0,
                 'sensitive' => $isSensitive,
                 'value' => $isSensitive ? '[REDACTED]' : $this->get($key),
             ];
@@ -160,6 +166,9 @@ class SecretsManager implements SecretsManagerInterface
 
     public function generateSecret(int $length = 32): string
     {
+        if ($length < 1) {
+            $length = 32;
+        }
         return bin2hex(random_bytes($length));
     }
 
@@ -182,6 +191,10 @@ class SecretsManager implements SecretsManagerInterface
 
         // 檢查檔案內容
         $content = file_get_contents($filePath);
+        if ($content === false) {
+            $issues[] = '無法讀取 .env 檔案';
+            return $issues;
+        }
         $lines = explode("\n", $content);
 
         foreach ($lines as $lineNumber => $line) {
@@ -237,10 +250,13 @@ class SecretsManager implements SecretsManagerInterface
     private function loadFromFile(string $filePath): void
     {
         if (!is_readable($filePath)) {
-            throw new ValidationException("無法讀取環境設定檔案: {$filePath}");
+            throw new \RuntimeException("無法讀取環境設定檔案: {$filePath}");
         }
 
         $content = file_get_contents($filePath);
+        if ($content === false) {
+            throw new \RuntimeException("無法讀取檔案內容: {$filePath}");
+        }
         $lines = explode("\n", $content);
 
         foreach ($lines as $line) {
@@ -270,7 +286,7 @@ class SecretsManager implements SecretsManagerInterface
         }
     }
 
-    private function parseValue(string $value)
+    private function parseValue(string $value): mixed
     {
         // 處理布林值
         if (in_array(strtolower($value), ['true', 'false'])) {
