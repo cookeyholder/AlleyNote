@@ -266,7 +266,7 @@ class CacheKeys
      * 建立模式匹配的快取鍵（用於刪除相關快取）.
      * @param mixed ...$parts
      */
-    private static function pattern(...$parts): string
+    public static function pattern(...$parts): string
     {
         $pattern = self::buildKey(...$parts);
 
