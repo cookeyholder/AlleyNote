@@ -26,11 +26,11 @@ class ClosureRequestHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $response = ($this->handler)($request);
-        
+
         if (!$response instanceof ResponseInterface) {
             throw new \RuntimeException('Closure must return an instance of ResponseInterface');
         }
-        
+
         return $response;
     }
 }
