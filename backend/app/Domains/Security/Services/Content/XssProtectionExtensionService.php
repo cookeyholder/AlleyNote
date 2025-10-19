@@ -153,12 +153,8 @@ class XssProtectionExtensionService
         // 先進行內容審核
         $moderationResult = $this->contentModerator->moderateContent($input, $options);
 
-        if (!is_array($moderationResult)) {
-            $moderationResult = ['status' => 'approved', 'issues' => []];
-        }
-
         $status = $moderationResult['status'] ?? 'approved';
-        $issues = isset($moderationResult['issues']) && is_array($moderationResult['issues']) ? $moderationResult['issues'] : [];
+        $issues = isset($moderationResult['issues']) ? (array) $moderationResult['issues'] : [];
 
         if ($status === 'rejected') {
             return [
@@ -174,12 +170,10 @@ class XssProtectionExtensionService
         // 進行富文本處理
         $processResult = $this->richTextProcessor->processContent($input, $userLevel);
 
-        if (!is_array($processResult)) {
-            $processResult = ['content' => $input, 'warnings' => []];
-        }
+        $processResult = is_array($processResult) ? $processResult : ['content' => $input, 'warnings' => []];
 
         $content = $processResult['content'] ?? $input;
-        $warnings = isset($processResult['warnings']) && is_array($processResult['warnings']) ? $processResult['warnings'] : [];
+        $warnings = isset($processResult['warnings']) ? (array) $processResult['warnings'] : [];
 
         return [
             'protected_content' => is_string($content) ? $content : $input,
@@ -202,8 +196,12 @@ class XssProtectionExtensionService
         $cleaned = $this->baseXssProtection->cleanHtml($cleaned);
 
         // 長度限制
-        if (strlen($cleaned) > $this->config['max_comment_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_comment_length']) . '...';
+        $maxLength = $this->config['max_comment_length'] ?? 1000;
+        if (!is_int($maxLength)) {
+            $maxLength = 1000;
+        }
+        if (strlen($cleaned) > $maxLength) {
+            $cleaned = mb_substr($cleaned, 0, $maxLength) . '...';
         }
 
         return [
@@ -228,8 +226,15 @@ class XssProtectionExtensionService
         $cleaned = preg_replace('/[<>"\']/', '', $cleaned);
 
         // 長度限制
-        if (strlen($cleaned) > $this->config['max_search_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_search_length']);
+        $maxSearchLength = $this->config['max_search_length'] ?? 200;
+        if (!is_int($maxSearchLength)) {
+            $maxSearchLength = 200;
+        }
+        if ($cleaned !== null && strlen($cleaned) > $maxSearchLength) {
+            $cleaned = mb_substr($cleaned, 0, $maxSearchLength);
+        }
+        if ($cleaned === null) {
+            $cleaned = '';
         }
 
         return [
@@ -281,13 +286,18 @@ class XssProtectionExtensionService
         // 遞迴清理 JSON 資料
         $cleaned = $this->cleanJsonRecursively($decoded);
 
+        $encodedCleaned = json_encode($cleaned, JSON_UNESCAPED_UNICODE);
+        $protectedContent = is_string($encodedCleaned) ? $encodedCleaned : '';
+        $securityContent = json_encode($cleaned);
+        $securityContentStr = is_string($securityContent) ? $securityContent : '';
+
         return [
-            'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?? ''),
+            'protected_content' => $protectedContent,
             'context' => 'json_data',
             'protection_level' => 'enhanced',
             'modifications' => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
             'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
+            'security_score' => $this->calculateSecurityScore($input, $securityContentStr),
         ];
     }
 
@@ -297,10 +307,17 @@ class XssProtectionExtensionService
     private function protectFileUpload(string $input, array $options): array
     {
         $filename = $options['filename'] ?? 'unknown';
+        if (!is_string($filename)) {
+            $filename = 'unknown';
+        }
         $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         // 檢查檔案擴展名
-        if (!in_array($fileExtension, $this->config['allowed_file_extensions'], true)) {
+        $allowedExtensions = $this->config['allowed_file_extensions'] ?? [];
+        if (!is_array($allowedExtensions)) {
+            $allowedExtensions = [];
+        }
+        if (!in_array($fileExtension, $allowedExtensions, true)) {
             return [
                 'protected_content' => '',
                 'context' => 'file_upload',
@@ -344,7 +361,7 @@ class XssProtectionExtensionService
     /**
      * 遞迴清理 JSON 資料.
      */
-    private function cleanJsonRecursively(mixed $data)
+    private function cleanJsonRecursively(mixed $data): mixed
     {
         if (is_array($data)) {
             return array_map([$this, 'cleanJsonRecursively'], $data);
@@ -364,6 +381,9 @@ class XssProtectionExtensionService
     {
         // 移除危險字元
         $cleaned = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $filename);
+        if ($cleaned === null) {
+            $cleaned = 'file_' . time();
+        }
 
         // 防止目錄遍歷
         $cleaned = str_replace(['../', '..\\', '../'], '', $cleaned);

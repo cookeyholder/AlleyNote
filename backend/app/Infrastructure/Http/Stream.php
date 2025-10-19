@@ -21,10 +21,17 @@ class Stream implements StreamInterface
 
     private bool $writable;
 
-    public function __construct($body = '')
+    /**
+     * @param string|resource $body
+     */
+    public function __construct(mixed $body = '')
     {
         if (is_string($body)) {
-            $this->stream = fopen('php://temp', 'r+');
+            $resource = fopen('php://temp', 'r+');
+            if (!is_resource($resource)) {
+                throw new RuntimeException('Failed to open temporary stream');
+            }
+            $this->stream = $resource;
             fwrite($this->stream, $body);
             rewind($this->stream);
         } elseif (is_resource($body)) {
@@ -33,9 +40,13 @@ class Stream implements StreamInterface
             throw new InvalidArgumentException('Body must be a string or resource');
         }
 
-        $this->seekable = $this->getMetadata('seekable') ?? false;
+        $seekable = $this->getMetadata('seekable');
+        $this->seekable = is_bool($seekable) ? $seekable : false;
 
-        $mode = $this->getMetadata('mode') ?? '';
+        $mode = $this->getMetadata('mode');
+        if (!is_string($mode)) {
+            $mode = '';
+        }
         $this->readable = str_contains($mode, 'r') || str_contains($mode, '+');
         $this->writable = str_contains($mode, 'w') || str_contains($mode, 'a') || str_contains($mode, 'x') || str_contains($mode, 'c') || str_contains($mode, '+');
     }
@@ -51,13 +62,16 @@ class Stream implements StreamInterface
 
     public function close(): void
     {
-        if (isset($this->stream)) {
+        if (isset($this->stream) && is_resource($this->stream)) {
             fclose($this->stream);
         }
 
         $this->detach();
     }
 
+    /**
+     * @return resource|null
+     */
     public function detach()
     {
         $stream = $this->stream;
@@ -66,12 +80,12 @@ class Stream implements StreamInterface
         $this->writable = false;
         $this->seekable = false;
 
-        return $stream;
+        return is_resource($stream) ? $stream : null;
     }
 
     public function getSize(): ?int
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             return null;
         }
 
@@ -85,7 +99,7 @@ class Stream implements StreamInterface
 
     public function tell(): int
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
 
@@ -99,7 +113,7 @@ class Stream implements StreamInterface
 
     public function eof(): bool
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             return true;
         }
 
@@ -113,7 +127,7 @@ class Stream implements StreamInterface
 
     public function seek(int $offset, int $whence = SEEK_SET): void
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
 
@@ -138,7 +152,7 @@ class Stream implements StreamInterface
 
     public function write(string $string): int
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
 
@@ -161,12 +175,16 @@ class Stream implements StreamInterface
 
     public function read(int $length): string
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
 
         if (!$this->readable) {
             throw new RuntimeException('Stream is not readable');
+        }
+
+        if ($length < 1) {
+            throw new InvalidArgumentException('Length must be a positive integer');
         }
 
         $result = fread($this->stream, $length);
@@ -179,7 +197,7 @@ class Stream implements StreamInterface
 
     public function getContents(): string
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
 
@@ -197,7 +215,7 @@ class Stream implements StreamInterface
 
     public function getMetadata(?string $key = null)
     {
-        if (!isset($this->stream)) {
+        if (!isset($this->stream) || !is_resource($this->stream)) {
             return $key ? null : [];
         }
 

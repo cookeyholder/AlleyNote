@@ -59,6 +59,9 @@ class RoutingServiceProvider
     public static function createRouteLoader(ContainerInterface $container): RouteLoader
     {
         $validator = $container->get(RouteValidator::class);
+        if (!($validator instanceof RouteValidator)) {
+            $validator = null;
+        }
 
         return new RouteLoader($validator);
     }
@@ -88,6 +91,16 @@ class RoutingServiceProvider
         $controllerResolver = $container->get(ControllerResolver::class);
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
         $middlewareResolver = $container->get(MiddlewareResolver::class);
+
+        if (!($router instanceof RouterInterface)) {
+            throw new \RuntimeException('RouterInterface not found in container');
+        }
+        if (!($controllerResolver instanceof ControllerResolver)) {
+            throw new \RuntimeException('ControllerResolver not found in container');
+        }
+        if (!($middlewareDispatcher instanceof MiddlewareDispatcher)) {
+            throw new \RuntimeException('MiddlewareDispatcher not found in container');
+        }
 
         return new RouteDispatcher(
             $router,
@@ -120,10 +133,15 @@ class RoutingServiceProvider
         $routeLoader = $container->get(RouteLoader::class);
         $router = $container->get(RouterInterface::class);
 
+        if (!($routeLoader instanceof RouteLoader) || !($router instanceof RouterInterface)) {
+            error_log('路由元件無效');
+            return;
+        }
+
         try {
             // 載入各種路由配置檔案
             foreach (self::getRouteFiles() as $group => $filePath) {
-                if (file_exists($filePath)) {
+                if (is_string($filePath) && file_exists($filePath)) {
                     $routeLoader->addRouteFile($filePath, $group);
                 }
             }
@@ -152,6 +170,14 @@ class RoutingServiceProvider
     {
         try {
             $routeLoader = $container->get(RouteLoader::class);
+            if (!($routeLoader instanceof RouteLoader)) {
+                return [
+                    'error' => 'RouteLoader not found',
+                    'total_routes' => 0,
+                    'files_loaded' => 0,
+                    'groups' => [],
+                ];
+            }
 
             return $routeLoader->getRouteStats();
         } catch (Throwable $e) {

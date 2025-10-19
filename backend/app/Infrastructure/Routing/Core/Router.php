@@ -68,20 +68,23 @@ class Router implements RouterInterface
     public function map(array $methods, string $pattern, $handler): RouteInterface
     {
         // 套用群組前綴
-        if (!empty($this->currentGroupAttributes['prefix'])) {
-            $pattern = $this->applyPrefix($this->currentGroupAttributes['prefix'], $pattern);
+        $prefix = $this->currentGroupAttributes['prefix'] ?? null;
+        if (!empty($prefix) && is_string($prefix)) {
+            $pattern = $this->applyPrefix($prefix, $pattern);
         }
 
         // 套用命名空間到處理器
-        if (!empty($this->currentGroupAttributes['namespace']) && is_array($handler)) {
-            $handler[0] = $this->currentGroupAttributes['namespace'] . '\\' . $handler[0];
+        $namespace = $this->currentGroupAttributes['namespace'] ?? null;
+        if (!empty($namespace) && is_string($namespace) && is_array($handler) && isset($handler[0]) && is_string($handler[0])) {
+            $handler[0] = $namespace . '\\' . $handler[0];
         }
 
         $route = new Route($methods, $pattern, $handler);
 
         // 套用群組中間件
-        if (!empty($this->currentGroupAttributes['middleware'])) {
-            $route->middleware($this->currentGroupAttributes['middleware']);
+        $middleware = $this->currentGroupAttributes['middleware'] ?? null;
+        if (!empty($middleware) && (is_string($middleware) || is_array($middleware))) {
+            $route->middleware($middleware);
         }
 
         $this->routes->add($route);
@@ -148,7 +151,9 @@ class Router implements RouterInterface
 
         // 替換路徑參數
         foreach ($parameters as $key => $value) {
-            $url = str_replace('{' . $key . '}', (string) $value, $url);
+            if (is_scalar($value)) {
+                $url = str_replace('{' . $key . '}', (string) $value, $url);
+            }
         }
 
         // 檢查是否還有未替換的參數
@@ -236,21 +241,30 @@ class Router implements RouterInterface
         $merged = $previous;
 
         // 合併前綴
-        if (!empty($new['prefix'])) {
+        if (!empty($new['prefix']) && is_string($new['prefix'])) {
             $existingPrefix = $merged['prefix'] ?? '';
+            if (!is_string($existingPrefix)) {
+                $existingPrefix = '';
+            }
             $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix']);
         }
 
         // 合併中間件
         if (!empty($new['middleware'])) {
             $existingMiddleware = $merged['middleware'] ?? [];
+            if (!is_array($existingMiddleware)) {
+                $existingMiddleware = [];
+            }
             $newMiddleware = is_array($new['middleware']) ? $new['middleware'] : [$new['middleware']];
             $merged['middleware'] = array_merge($existingMiddleware, $newMiddleware);
         }
 
         // 合併命名空間
-        if (!empty($new['namespace'])) {
+        if (!empty($new['namespace']) && is_string($new['namespace'])) {
             $existingNamespace = $merged['namespace'] ?? '';
+            if (!is_string($existingNamespace)) {
+                $existingNamespace = '';
+            }
             $merged['namespace'] = empty($existingNamespace)
                 ? $new['namespace']
                 : $existingNamespace . '\\' . $new['namespace'];

@@ -16,6 +16,7 @@ class ServerRequest implements ServerRequestInterface
 
     private UriInterface $uri;
 
+    /** @var array<string, array<string>> */
     private array $headers = [];
 
     private array $serverParams = [];
@@ -24,14 +25,19 @@ class ServerRequest implements ServerRequestInterface
 
     private array $queryParams = [];
 
-    private array $parsedBody = [];
+    /** @var array<mixed>|object|null */
+    private $parsedBody = [];
 
     private array $attributes = [];
 
     private string $protocolVersion = '1.1';
 
+    /** @var mixed */
     private $body;
 
+    /**
+     * @param mixed $body
+     */
     public function __construct(
         string $method,
         UriInterface $uri,
@@ -42,7 +48,20 @@ class ServerRequest implements ServerRequestInterface
     ) {
         $this->method = $method;
         $this->uri = $uri;
-        $this->headers = $headers;
+
+        // 驗證並轉換 headers
+        foreach ($headers as $name => $value) {
+            if (is_string($name)) {
+                $normalizedName = strtolower($name);
+                if (is_array($value)) {
+                    /** @var array<string> $value */
+                    $this->headers[$normalizedName] = $value;
+                } elseif (is_string($value)) {
+                    $this->headers[$normalizedName] = [$value];
+                }
+            }
+        }
+
         $this->body = $body;
         $this->protocolVersion = $version;
         $this->serverParams = $serverParams;
@@ -138,7 +157,10 @@ class ServerRequest implements ServerRequestInterface
     public function withParsedBody(mixed $data): self
     {
         $new = clone $this;
-        $new->parsedBody = $data;
+
+        if (is_array($data) || is_object($data) || $data === null) {
+            $new->parsedBody = $data;
+        }
 
         return $new;
     }
@@ -215,10 +237,10 @@ class ServerRequest implements ServerRequestInterface
     {
         $new = clone $this;
         $name = strtolower($name);
-        $new->headers[$name] = array_merge(
-            $this->headers[$name] ?? [],
-            is_array($value) ? $value : [$value],
-        );
+        $existingValues = $this->headers[$name] ?? [];
+        $newValues = is_array($value) ? $value : [$value];
+        /** @var array<string> $newValues */
+        $new->headers[$name] = array_merge($existingValues, $newValues);
 
         return $new;
     }
@@ -233,7 +255,12 @@ class ServerRequest implements ServerRequestInterface
 
     public function getBody()
     {
-        return $this->body;
+        if ($this->body instanceof \Psr\Http\Message\StreamInterface) {
+            return $this->body;
+        }
+
+        // 如果 body 不是 StreamInterface，建立一個空的 Stream
+        return new Stream('');
     }
 
     public function withBody(mixed $body): self

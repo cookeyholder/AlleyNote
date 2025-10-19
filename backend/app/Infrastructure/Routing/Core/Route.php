@@ -55,6 +55,9 @@ class Route implements RouteInterface
         return $this->name;
     }
 
+    /**
+     * @return callable|string|array
+     */
     public function getHandler(): callable|string|array
     {
         return $this->handler;
@@ -81,9 +84,18 @@ class Route implements RouteInterface
         return $this;
     }
 
+    /**
+     * @return array<MiddlewareInterface>
+     */
     public function getMiddlewares(): array
     {
-        return $this->middlewares;
+        $result = [];
+        foreach ($this->middlewares as $middleware) {
+            if ($middleware instanceof MiddlewareInterface) {
+                $result[] = $middleware;
+            }
+        }
+        return $result;
     }
 
     public function matchesMethod(string $method): bool
@@ -102,7 +114,10 @@ class Route implements RouteInterface
             // 建立參數陣列
             $parameters = [];
             foreach ($this->parameterNames as $index => $name) {
-                $parameters[$name] = $matches[$index] ?? null;
+                $value = $matches[$index] ?? null;
+                if (is_string($value)) {
+                    $parameters[$name] = $value;
+                }
             }
 
             return new RouteMatchResult(true, $this, $parameters);
@@ -158,13 +173,17 @@ class Route implements RouteInterface
     {
         $clone = clone $this;
 
-        if (isset($attributes['name'])) {
+        if (isset($attributes['name']) && is_string($attributes['name'])) {
             $clone->name = $attributes['name'];
         }
 
         if (isset($attributes['middlewares']) && is_array($attributes['middlewares'])) {
             $clone->middlewares = [];
-            $clone->addMiddlewares($attributes['middlewares']);
+            /** @var array<MiddlewareInterface> $middlewares */
+            $middlewares = array_filter($attributes['middlewares'], function ($mw) {
+                return $mw instanceof MiddlewareInterface;
+            });
+            $clone->addMiddlewares($middlewares);
         }
 
         return $clone;
@@ -191,7 +210,11 @@ class Route implements RouteInterface
             // 支援字串別名
             $this->middlewares[] = $middleware;
         } elseif (is_array($middleware)) {
-            $this->addMiddlewares($middleware);
+            /** @var array<MiddlewareInterface> $filtered */
+            $filtered = array_filter($middleware, function ($mw) {
+                return $mw instanceof MiddlewareInterface;
+            });
+            $this->addMiddlewares($filtered);
         }
 
         return $this;
@@ -217,6 +240,9 @@ class Route implements RouteInterface
 
         // 先將參數佔位符替換為特殊標記
         $pattern = preg_replace('/\{([^}]+)\}/', 'ROUTEPARAM', $pattern);
+        if (!is_string($pattern)) {
+            $pattern = $this->pattern;
+        }
 
         // 轉義特殊字符
         $pattern = preg_quote($pattern, '/');
@@ -274,6 +300,9 @@ class Route implements RouteInterface
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
 
+    /**
+     * @param string[] $methods
+     */
     public static function match(array $methods, string $pattern, callable|string $handler): self
     {
         return new self($methods, $pattern, $handler);

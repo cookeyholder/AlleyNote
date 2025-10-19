@@ -14,9 +14,15 @@ class ServerRequestFactory
     public static function fromGlobals(): ServerRequestInterface
     {
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+        if (!is_string($method)) {
+            $method = 'GET';
+        }
         $uri = self::createUriFromGlobals();
         $headers = self::parseHeaders();
         $body = file_get_contents('php://input');
+        if ($body === false) {
+            $body = '';
+        }
 
         $request = new ServerRequest($method, $uri, $headers, $body, '1.1', $_SERVER);
 
@@ -35,7 +41,7 @@ class ServerRequestFactory
             $request = $request->withParsedBody($_POST);
         } elseif ($method === 'POST' && strpos($request->getHeaderLine('Content-Type'), 'application/json') === 0) {
             $jsonData = json_decode($body, true);
-            if ($jsonData !== null) {
+            if (is_array($jsonData) || is_object($jsonData)) {
                 $request = $request->withParsedBody($jsonData);
             }
         }
@@ -47,8 +53,17 @@ class ServerRequestFactory
     {
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
-        $port = isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : null;
+        if (!is_string($host)) {
+            $host = 'localhost';
+        }
+        $port = null;
+        if (isset($_SERVER['SERVER_PORT']) && is_scalar($_SERVER['SERVER_PORT'])) {
+            $port = (int) $_SERVER['SERVER_PORT'];
+        }
         $path = $_SERVER['REQUEST_URI'] ?? '/';
+        if (!is_string($path)) {
+            $path = '/';
+        }
 
         // 移除查詢字串
         if (($pos = strpos($path, '?')) !== false) {
@@ -64,7 +79,7 @@ class ServerRequestFactory
             $uri = $uri->withPort($port);
         }
 
-        if (!empty($_SERVER['QUERY_STRING'])) {
+        if (!empty($_SERVER['QUERY_STRING']) && is_string($_SERVER['QUERY_STRING'])) {
             $uri = $uri->withQuery($_SERVER['QUERY_STRING']);
         }
 

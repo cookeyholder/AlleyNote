@@ -18,8 +18,10 @@ class Response implements ResponseInterface
 
     private string $reasonPhrase = '';
 
+    /** @var array<string, array<string>> */
     private array $headers = [];
 
+    /** @var array<string, string> */
     private array $headerNames = [];
 
     private StreamInterface $body;
@@ -42,7 +44,19 @@ class Response implements ResponseInterface
         }
 
         foreach ($headers as $name => $value) {
-            $this->withHeader($name, $value);
+            if (is_string($name)) {
+                $normalizedName = strtolower($name);
+                $this->headerNames[$normalizedName] = $name;
+
+                if (is_array($value)) {
+                    /** @var array<string> $value */
+                    $this->headers[$name] = $value;
+                } elseif (is_string($value)) {
+                    $this->headers[$name] = [$value];
+                } elseif (is_scalar($value)) {
+                    $this->headers[$name] = [(string) $value];
+                }
+            }
         }
     }
 
@@ -89,7 +103,17 @@ class Response implements ResponseInterface
         $clone = clone $this;
         $normalizedName = strtolower($name);
         $clone->headerNames[$normalizedName] = $name;
-        $clone->headers[$name] = is_array($value) ? $value : [$value];
+
+        if (is_array($value)) {
+            /** @var array<string> $value */
+            $clone->headers[$name] = $value;
+        } elseif (is_string($value)) {
+            $clone->headers[$name] = [$value];
+        } elseif (is_scalar($value)) {
+            $clone->headers[$name] = [(string) $value];
+        } else {
+            $clone->headers[$name] = [];
+        }
 
         return $clone;
     }
@@ -101,10 +125,33 @@ class Response implements ResponseInterface
 
         if (isset($clone->headerNames[$normalizedName])) {
             $name = $clone->headerNames[$normalizedName];
-            $clone->headers[$name] = array_merge($clone->headers[$name], is_array($value) ? $value : [$value]);
+            $existingValues = $clone->headers[$name] ?? [];
+
+            if (is_array($value)) {
+                /** @var array<string> $value */
+                $newValues = $value;
+            } elseif (is_string($value)) {
+                $newValues = [$value];
+            } elseif (is_scalar($value)) {
+                $newValues = [(string) $value];
+            } else {
+                $newValues = [];
+            }
+
+            $clone->headers[$name] = array_merge($existingValues, $newValues);
         } else {
             $clone->headerNames[$normalizedName] = $name;
-            $clone->headers[$name] = is_array($value) ? $value : [$value];
+
+            if (is_array($value)) {
+                /** @var array<string> $value */
+                $clone->headers[$name] = $value;
+            } elseif (is_string($value)) {
+                $clone->headers[$name] = [$value];
+            } elseif (is_scalar($value)) {
+                $clone->headers[$name] = [(string) $value];
+            } else {
+                $clone->headers[$name] = [];
+            }
         }
 
         return $clone;
