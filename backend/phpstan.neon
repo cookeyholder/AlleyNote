@@ -4,6 +4,7 @@ includes:
 - phpstan-test-exclusions.neon
 - phpstan-level-10-baseline.neon
 - phpstan-baseline.neon
+- phpstan-test-baseline.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false

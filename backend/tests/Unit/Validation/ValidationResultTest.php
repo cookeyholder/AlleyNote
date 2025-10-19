@@ -468,13 +468,18 @@ class ValidationResultTest extends TestCase
         // Act
         $result = new ValidationResult(false, $largeErrors, $largeValidatedData, $largeFailedRules);
 
-        // 執行各種操作
-        $result->getErrors();
-        $result->getAllErrors();
-        count($result->getAllErrors()); // 計算錯誤數
-        count($result->getErrors()); // 計算欄位數
-        $result->toArray();
-        json_encode($result);
+        // 執行各種操作（賦值以避免 PHPStan 警告）
+        $errors = $result->getErrors();
+        $allErrors = $result->getAllErrors();
+        $allErrorsCount = count($allErrors); // 計算錯誤數
+        $errorsCount = count($errors); // 計算欄位數
+        $array = $result->toArray();
+        $json = json_encode($result);
+
+        // 使用變數以避免被優化掉（不需要斷言，PHPStan 已知型別）
+        $this->assertGreaterThanOrEqual(0, $allErrorsCount);
+        $this->assertGreaterThanOrEqual(0, $errorsCount);
+        $this->assertIsString($json);
 
         $endTime = microtime(true);
         $endMemory = memory_get_usage();

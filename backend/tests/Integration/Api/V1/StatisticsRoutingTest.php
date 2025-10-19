@@ -235,7 +235,7 @@ class StatisticsRoutingTest extends TestCase
                 $this->assertContains(
                     $statusCode,
                     [200, 400, 401, 403, 500],
-                    "路由 {$route} 狀態碼應為 200 (配置問題), 400, 401, 403 或 500，實際得到: {$statusCode}"
+                    "路由 {$route} 狀態碼應為 200 (配置問題), 400, 401, 403 或 500，實際得到: {$statusCode}",
                 );
             } catch (Exception $e) {
                 $this->fail("路由認證測試失敗 [{$route}]: " . $e->getMessage());
