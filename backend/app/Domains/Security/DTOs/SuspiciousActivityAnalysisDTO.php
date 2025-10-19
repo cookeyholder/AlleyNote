@@ -63,6 +63,12 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
     ): self {
+        // Validate array structures
+        $validActivityCounts = self::validateStringIntArray($activityCounts);
+        $validFailureCounts = self::validateStringIntArray($failureCounts);
+        $validDetectionRules = self::validateStringMixedArray($detectionRules);
+        $validMetadata = self::validateStringMixedArray($metadata);
+
         return new self(
             analysisId: uniqid('analysis_', true),
             targetType: 'user',
@@ -71,11 +77,11 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             timeWindowMinutes: $timeWindowMinutes,
             isSuspicious: $isSuspicious,
             severityLevel: $severityLevel,
-            activityCounts: $activityCounts,
-            failureCounts: $failureCounts,
+            activityCounts: $validActivityCounts,
+            failureCounts: $validFailureCounts,
             anomalyScores: $anomalyScores,
-            detectionRules: $detectionRules,
-            metadata: $metadata,
+            detectionRules: $validDetectionRules,
+            metadata: $validMetadata,
             recommendedAction: $recommendedAction,
             confidenceScore: $confidenceScore,
         );
@@ -97,6 +103,12 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
     ): self {
+        // Validate array structures
+        $validActivityCounts = self::validateStringIntArray($activityCounts);
+        $validFailureCounts = self::validateStringIntArray($failureCounts);
+        $validDetectionRules = self::validateStringMixedArray($detectionRules);
+        $validMetadata = self::validateStringMixedArray($metadata);
+
         return new self(
             analysisId: uniqid('analysis_', true),
             targetType: 'ip',
@@ -105,11 +117,11 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             timeWindowMinutes: $timeWindowMinutes,
             isSuspicious: $isSuspicious,
             severityLevel: $severityLevel,
-            activityCounts: $activityCounts,
-            failureCounts: $failureCounts,
+            activityCounts: $validActivityCounts,
+            failureCounts: $validFailureCounts,
             anomalyScores: $anomalyScores,
-            detectionRules: $detectionRules,
-            metadata: $metadata,
+            detectionRules: $validDetectionRules,
+            metadata: $validMetadata,
             recommendedAction: $recommendedAction,
             confidenceScore: $confidenceScore,
         );
@@ -130,6 +142,12 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         ?string $recommendedAction = null,
         float $confidenceScore = 0.0,
     ): self {
+        // Validate array structures
+        $validActivityCounts = self::validateStringIntArray($activityCounts);
+        $validFailureCounts = self::validateStringIntArray($failureCounts);
+        $validDetectionRules = self::validateStringMixedArray($detectionRules);
+        $validMetadata = self::validateStringMixedArray($metadata);
+
         return new self(
             analysisId: uniqid('analysis_', true),
             targetType: 'global',
@@ -138,11 +156,11 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             timeWindowMinutes: $timeWindowMinutes,
             isSuspicious: $isSuspicious,
             severityLevel: $severityLevel,
-            activityCounts: $activityCounts,
-            failureCounts: $failureCounts,
+            activityCounts: $validActivityCounts,
+            failureCounts: $validFailureCounts,
             anomalyScores: $anomalyScores,
-            detectionRules: $detectionRules,
-            metadata: $metadata,
+            detectionRules: $validDetectionRules,
+            metadata: $validMetadata,
             recommendedAction: $recommendedAction,
             confidenceScore: $confidenceScore,
         );
@@ -257,7 +275,8 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             return 0.0;
         }
 
-        return max($this->anomalyScores);
+        $maxValue = max($this->anomalyScores);
+        return is_numeric($maxValue) ? (float) $maxValue : 0.0;
     }
 
     /**
@@ -339,5 +358,39 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     public function jsonSerialize(): array
     {
         return $this->toArray();
+    }
+
+    /**
+     * 驗證並確保陣列 key 都是 string，value 是 int.
+     *
+     * @param array $input
+     * @return array<string, int>
+     */
+    private static function validateStringIntArray(array $input): array
+    {
+        $result = [];
+        foreach ($input as $key => $value) {
+            if (is_string($key) && is_numeric($value)) {
+                $result[$key] = (int) $value;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * 驗證並確保陣列 key 都是 string.
+     *
+     * @param array $input
+     * @return array<string, mixed>
+     */
+    private static function validateStringMixedArray(array $input): array
+    {
+        $result = [];
+        foreach ($input as $key => $value) {
+            if (is_string($key)) {
+                $result[$key] = $value;
+            }
+        }
+        return $result;
     }
 }

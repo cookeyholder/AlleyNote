@@ -157,8 +157,9 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 準備資料庫查詢結果為 Post 物件的資料.
+     * @return array<string, mixed>
      */
-    private function preparePostData(array $result): mixed
+    private function preparePostData(array $result): array
     {
         // 格式化 publish_date 為 RFC3339
         $publishDate = $result['publish_date'] ?? null;
@@ -173,14 +174,14 @@ class PostRepository implements PostRepositoryInterface
         }
 
         return [
-            'id' => (int) ($result['id'] ?? 0),
-            'uuid' => $result['uuid'] ?? '',
-            'seq_number' => (string) ($result['seq_number'] ?? ''),
-            'title' => $result['title'] ?? '',
-            'content' => $result['content'] ?? '',
-            'user_id' => (int) ($result['user_id'] ?? 0),
+            'id' => isset($result['id']) && is_numeric($result['id']) ? (int) $result['id'] : 0,
+            'uuid' => isset($result['uuid']) && is_string($result['uuid']) ? $result['uuid'] : '',
+            'seq_number' => isset($result['seq_number']) && is_string($result['seq_number']) ? $result['seq_number'] : '',
+            'title' => isset($result['title']) && is_string($result['title']) ? $result['title'] : '',
+            'content' => isset($result['content']) && is_string($result['content']) ? $result['content'] : '',
+            'user_id' => isset($result['user_id']) && is_numeric($result['user_id']) ? (int) $result['user_id'] : 0,
             'user_ip' => $result['user_ip'] ?? null,
-            'views' => (int) ($result['views'] ?? 0),
+            'views' => isset($result['views']) && is_numeric($result['views']) ? (int) $result['views'] : 0,
             'is_pinned' => (bool) ($result['is_pinned'] ?? false),
             'status' => $result['status'] ?? 'draft',
             'publish_date' => $publishDate,
@@ -195,7 +196,10 @@ class PostRepository implements PostRepositoryInterface
     /**
      * 準備新文章的資料.
      */
-    private function prepareNewPostData(array $data): mixed
+    /**
+     * @return array<string, mixed>
+     */
+    private function prepareNewPostData(array $data): array
     {
         $now = format_datetime();
 
@@ -224,6 +228,10 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+        if (!is_array($result) || !isset($result['next_seq']) || !is_numeric($result['next_seq'])) {
+            return 1;
+        }
+
         return (int) $result['next_seq'];
     }
 
@@ -236,14 +244,14 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$result) {
+            if (!is_array($result)) {
                 return null;
             }
 
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
-        return $data ? Post::fromArray($data) : null;
+        return (is_array($data)) ? Post::fromArray($data) : null;
     }
 
     /**
@@ -257,7 +265,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute([$id]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$result) {
+        if (!is_array($result)) {
             return null;
         }
 
@@ -273,14 +281,14 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$uuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$result) {
+            if (!is_array($result)) {
                 return null;
             }
 
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
-        return $data ? Post::fromArray($data) : null;
+        return (is_array($data)) ? Post::fromArray($data) : null;
     }
 
     public function findBySeqNumber(int $seqNumber): ?Post
@@ -289,7 +297,7 @@ class PostRepository implements PostRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$result) {
+        if (!is_array($result)) {
             return null;
         }
 
@@ -371,8 +379,10 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare(self::SQL_INSERT_POST);
             if (!$stmt->execute($data)) {
                 $errorInfo = $stmt->errorInfo();
-
-                throw new PDOException('Failed to insert post: ' . $errorInfo[2]);
+                $errorMessage = is_array($errorInfo) && isset($errorInfo[2]) && is_string($errorInfo[2])
+                    ? $errorInfo[2]
+                    : 'Unknown error';
+                throw new PDOException('Failed to insert post: ' . $errorMessage);
             }
             $postId = (int) $this->db->lastInsertId();
 
@@ -467,7 +477,12 @@ class PostRepository implements PostRepositoryInterface
         // 清除快取
         $this->invalidateCache($id);
 
-        return $this->find($id);
+        $updatedPost = $this->find($id);
+        if ($updatedPost === null) {
+            throw new RuntimeException('Failed to retrieve updated post');
+        }
+
+        return $updatedPost;
     }
 
     public function delete(int $id): bool
@@ -485,21 +500,20 @@ class PostRepository implements PostRepositoryInterface
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
             $cacheKey = PostCacheKeyService::postList($page, 'published');
-            // } elseif (isset($data ? $conditions->status : null)))) { // isset 語法錯誤已註解
-            // $cacheKey = PostCacheKeyService::postList($page, (is_array($conditions) && isset($data ? $conditions->status : null)))) ? $data ? $conditions->status : null)) : null); // isset 語法錯誤已註解
-            // } elseif (isset($data ? $conditions->category : null)))) { // isset 語法錯誤已註解
-            // $cacheKey = PostCacheKeyService::postsByCategory((is_array($conditions) && isset($data ? $conditions->category : null)))) ? $data ? $conditions->category : null)) : null, $page); // isset 語法錯誤已註解
         } else {
             // 複雜查詢使用舊的方式
+            $jsonConditions = json_encode($conditions);
+            $conditionHash = is_string($jsonConditions) ? md5($jsonConditions) : md5('{}');
             $cacheKey = sprintf(
                 'posts:page:%d:per:%d:%s',
                 $page,
                 $perPage,
-                md5((json_encode($conditions) ?? '')),
+                $conditionHash,
             );
         }
 
-        return $this->cache->remember($cacheKey, function () use ($page, $perPage, $conditions) {
+        /** @var array{items: Post[], total: int, page: int, perPage: int, lastPage: int} $result */
+        $result = $this->cache->remember($cacheKey, function () use ($page, $perPage, $conditions) {
             $offset = ($page - 1) * $perPage;
 
             // 建立查詢條件 - 只允許安全的欄位
@@ -549,26 +563,33 @@ class PostRepository implements PostRepositoryInterface
             }
 
             $stmt->execute();
-            $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = [];
+
+            foreach ($results as $row) {
+                if (is_array($row)) {
+                    $items[] = Post::fromArray($this->preparePostData($row));
+                }
+            }
 
             return [
                 'items' => $items,
                 'total' => $total,
                 'page' => $page,
                 'perPage' => $perPage,
-                'lastPage' => ceil($total / $perPage),
+                'lastPage' => (int) ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
-        return $this->cache->remember($cacheKey, function () use ($limit) {
+        /** @var Post[] $result */
+        $result = $this->cache->remember($cacheKey, function () use ($limit) {
             $sql = $this->buildSelectQuery("is_pinned = 1 AND (status != 'published' OR publish_date IS NULL OR publish_date <= datetime('now'))")
                 . ' ORDER BY publish_date DESC LIMIT :limit';
 
@@ -576,18 +597,27 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
-            return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = [];
+
+            foreach ($results as $row) {
+                if (is_array($row)) {
+                    $items[] = Post::fromArray($this->preparePostData($row));
+                }
+            }
+
+            return $items;
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
-        return $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
+        /** @var array{items: Post[], total: int, page: int, perPage: int, lastPage: int} $result */
+        $result = $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
 
             // 計算總筆數
@@ -613,19 +643,25 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
             $stmt->execute();
 
-            $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = [];
+
+            foreach ($results as $row) {
+                if (is_array($row)) {
+                    $items[] = Post::fromArray($this->preparePostData($row));
+                }
+            }
 
             return [
                 'items' => $items,
                 'total' => $total,
                 'page' => $page,
                 'perPage' => $perPage,
-                'lastPage' => ceil($total / $perPage),
+                'lastPage' => (int) ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function incrementViews(int $id, string $userIp, ?int $userId = null): bool
@@ -714,7 +750,7 @@ class PostRepository implements PostRepositoryInterface
             /** @var array<int> $oldTagIds */
             $oldTagIds = [];
             foreach ($oldTagRows as $row) {
-                if (is_array($row) && isset($row['tag_id'])) {
+                if (is_array($row) && isset($row['tag_id']) && is_numeric($row['tag_id'])) {
                     $oldTagIds[] = (int) $row['tag_id'];
                 }
             }
@@ -773,7 +809,10 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
-    public function searchByTitle(string $title): mixed
+    /**
+     * @return Post[]
+     */
+    public function searchByTitle(string $title): array
     {
         $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts WHERE title LIKE :title AND deleted_at IS NULL';
         $stmt = $this->db->prepare($sql);
@@ -781,10 +820,16 @@ class PostRepository implements PostRepositoryInterface
         $stmt->bindValue(':title', $title, PDO::PARAM_STR);
         $stmt->execute();
 
-        return array_map(
-            fn($row) => Post::fromArray($this->preparePostData($row)),
-            $stmt->fetchAll(PDO::FETCH_ASSOC),
-        );
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+
+        foreach ($results as $row) {
+            if (is_array($row)) {
+                $items[] = Post::fromArray($this->preparePostData($row));
+            }
+        }
+
+        return $items;
     }
 
     public function findByUserId(int $userId): ?Post
@@ -795,14 +840,17 @@ class PostRepository implements PostRepositoryInterface
         $stmt->execute();
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$result) {
+        if (!is_array($result)) {
             return null;
         }
 
         return Post::fromArray($this->preparePostData($result));
     }
 
-    public function search(string $keyword): mixed
+    /**
+     * @return Post[]
+     */
+    public function search(string $keyword): array
     {
         $sql = $this->buildSelectQuery('title LIKE :keyword OR content LIKE :keyword');
         $stmt = $this->db->prepare($sql);
@@ -810,10 +858,16 @@ class PostRepository implements PostRepositoryInterface
         $stmt->bindValue(':keyword', $keyword, PDO::PARAM_STR);
         $stmt->execute();
 
-        return array_map(
-            fn($row) => Post::fromArray($this->preparePostData($row)),
-            $stmt->fetchAll(PDO::FETCH_ASSOC),
-        );
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $items = [];
+
+        foreach ($results as $row) {
+            if (is_array($row)) {
+                $items[] = Post::fromArray($this->preparePostData($row));
+            }
+        }
+
+        return $items;
     }
 
     /**
@@ -825,7 +879,8 @@ class PostRepository implements PostRepositoryInterface
     {
         $cacheKey = sprintf('posts:source:%s:limit:%d:offset:%d', $creationSource, $limit, $offset);
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource, $limit, $offset) {
+        /** @var Post[] $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource, $limit, $offset) {
             $sql = $this->buildSelectQuery('p.creation_source = :creation_source')
                 . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
 
@@ -835,11 +890,19 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
-            return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = [];
+
+            foreach ($results as $row) {
+                if (is_array($row)) {
+                    $items[] = Post::fromArray($this->preparePostData($row));
+                }
+            }
+
+            return $items;
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     /**
@@ -851,7 +914,8 @@ class PostRepository implements PostRepositoryInterface
     {
         $cacheKey = 'posts:source_distribution';
 
-        return $this->cache->remember($cacheKey, function () {
+        /** @var array<string, int> $result */
+        $result = $this->cache->remember($cacheKey, function () {
             $sql = 'SELECT creation_source, COUNT(*) as count FROM posts WHERE deleted_at IS NULL GROUP BY creation_source ORDER BY count DESC';
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
@@ -868,6 +932,8 @@ class PostRepository implements PostRepositoryInterface
 
             return $result;
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     /**
@@ -889,7 +955,8 @@ class PostRepository implements PostRepositoryInterface
             $offset,
         );
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource, $creationSourceDetail, $limit, $offset) {
+        /** @var Post[] $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource, $creationSourceDetail, $limit, $offset) {
             if ($creationSourceDetail === null) {
                 $sql = $this->buildSelectQuery('p.creation_source = :creation_source AND p.creation_source_detail IS NULL')
                     . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
@@ -915,11 +982,19 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
-            return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = [];
+
+            foreach ($results as $row) {
+                if (is_array($row)) {
+                    $items[] = Post::fromArray($this->preparePostData($row));
+                }
+            }
+
+            return $items;
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     /**
@@ -929,14 +1004,19 @@ class PostRepository implements PostRepositoryInterface
     {
         $cacheKey = sprintf('posts:count:source:%s', $creationSource);
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource) {
+        /** @var int $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource) {
             $sql = 'SELECT COUNT(*) FROM posts WHERE creation_source = :creation_source AND deleted_at IS NULL';
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
             $stmt->execute();
 
-            return (int) $stmt->fetchColumn();
+
+            $count = $stmt->fetchColumn();
+            return is_numeric($count) ? (int) $count : 0;
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     /**
@@ -951,7 +1031,8 @@ class PostRepository implements PostRepositoryInterface
     ): array {
         $cacheKey = sprintf('posts:paginate:source:%s:page:%d:per:%d', $creationSource, $page, $perPage);
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource, $page, $perPage) {
+        /** @var array{items: Post[], total: int, page: int, perPage: int, lastPage: int} $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
 
             // 計算總筆數
@@ -967,18 +1048,24 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
-            $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = [];
+
+            foreach ($results as $row) {
+                if (is_array($row)) {
+                    $items[] = Post::fromArray($this->preparePostData($row));
+                }
+            }
 
             return [
                 'items' => $items,
                 'total' => $total,
                 'page' => $page,
                 'perPage' => $perPage,
-                'lastPage' => ceil($total / $perPage),
+                'lastPage' => (int) ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
+
+        return $result;
     }
 }

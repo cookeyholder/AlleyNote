@@ -45,22 +45,58 @@ final class CreateActivityLogDTO implements JsonSerializable
      */
     public static function fromArray(array $data): self
     {
+        $actionTypeValue = $data['action_type'] ?? null;
+        if (!is_string($actionTypeValue) && !is_int($actionTypeValue)) {
+            throw new \InvalidArgumentException('action_type must be a string or integer');
+        }
+        $actionType = ActivityType::from($actionTypeValue);        $userId = isset($data['user_id']) && is_numeric($data['user_id']) ? (int) $data['user_id'] : null;
+        $sessionId = isset($data['session_id']) && is_string($data['session_id']) ? $data['session_id'] : null;
+
+        $statusValue = $data['status'] ?? null;
+        $status = (is_string($statusValue) || is_int($statusValue))
+            ? ActivityStatus::from($statusValue)
+            : ActivityStatus::SUCCESS;
+
+        $targetType = isset($data['target_type']) && is_string($data['target_type']) ? $data['target_type'] : null;
+        $targetId = isset($data['target_id']) && is_string($data['target_id']) ? $data['target_id'] : null;
+        $description = isset($data['description']) && is_string($data['description']) ? $data['description'] : null;
+
+        // Validate metadata structure
+        $metadata = null;
+        if (isset($data['metadata']) && is_array($data['metadata'])) {
+            $validMetadata = [];
+            foreach ($data['metadata'] as $key => $value) {
+                if (is_string($key)) {
+                    $validMetadata[$key] = $value;
+                }
+            }
+            $metadata = $validMetadata !== [] ? $validMetadata : null;
+        }
+
+        $ipAddress = isset($data['ip_address']) && is_string($data['ip_address']) ? $data['ip_address'] : null;
+        $userAgent = isset($data['user_agent']) && is_string($data['user_agent']) ? $data['user_agent'] : null;
+        $requestMethod = isset($data['request_method']) && is_string($data['request_method']) ? $data['request_method'] : null;
+        $requestPath = isset($data['request_path']) && is_string($data['request_path']) ? $data['request_path'] : null;
+
+        $occurredAtValue = $data['occurred_at'] ?? null;
+        $occurredAt = is_string($occurredAtValue)
+            ? new DateTimeImmutable($occurredAtValue)
+            : new DateTimeImmutable();
+
         return new self(
-            actionType: ActivityType::from($data['action_type']),
-            userId: $data['user_id'] ?? null,
-            sessionId: $data['session_id'] ?? null,
-            status: isset($data['status']) ? ActivityStatus::from($data['status']) : ActivityStatus::SUCCESS,
-            targetType: $data['target_type'] ?? null,
-            targetId: $data['target_id'] ?? null,
-            description: $data['description'] ?? null,
-            metadata: $data['metadata'] ?? null,
-            ipAddress: $data['ip_address'] ?? null,
-            userAgent: $data['user_agent'] ?? null,
-            requestMethod: $data['request_method'] ?? null,
-            requestPath: $data['request_path'] ?? null,
-            occurredAt: isset($data['occurred_at'])
-                ? new DateTimeImmutable($data['occurred_at'])
-                : new DateTimeImmutable(),
+            actionType: $actionType,
+            userId: $userId,
+            sessionId: $sessionId,
+            status: $status,
+            targetType: $targetType,
+            targetId: $targetId,
+            description: $description,
+            metadata: $metadata,
+            ipAddress: $ipAddress,
+            userAgent: $userAgent,
+            requestMethod: $requestMethod,
+            requestPath: $requestPath,
+            occurredAt: $occurredAt,
         );
     }
 
@@ -255,7 +291,9 @@ final class CreateActivityLogDTO implements JsonSerializable
     public function addMetadata(string $key, mixed $value): self
     {
         $new = clone $this;
-        $new->metadata ??= [];
+        if ($new->metadata === null) {
+            $new->metadata = [];
+        }
         $new->metadata[$key] = $value;
         $this->validateMetadata($new->metadata);
 
@@ -278,7 +316,7 @@ final class CreateActivityLogDTO implements JsonSerializable
             'target_type' => $this->targetType,
             'target_id' => $this->targetId,
             'description' => $this->description ?? $this->actionType->getDescription(),
-            'metadata' => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '') : null,
+            'metadata' => $this->metadata !== null ? json_encode($this->metadata, JSON_UNESCAPED_UNICODE) : null,
             'ip_address' => $this->ipAddress,
             'user_agent' => $this->userAgent,
             'request_method' => $this->requestMethod,
@@ -304,7 +342,7 @@ final class CreateActivityLogDTO implements JsonSerializable
     private function validateMetadata(array $metadata): void
     {
         try {
-            (json_encode($metadata, JSON_THROW_ON_ERROR) ?? '');
+            json_encode($metadata, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new InvalidArgumentException(
                 'Metadata must be JSON serializable: ' . $e->getMessage(),
@@ -312,8 +350,11 @@ final class CreateActivityLogDTO implements JsonSerializable
         }
 
         // 檢查 metadata 大小不超過 64KB（文字欄位限制）
-        $json = (json_encode($metadata) ?? '') ?: '';
-        $jsonSize = $json !== false ? strlen($json) : 0;
+        $json = json_encode($metadata);
+        if ($json === false) {
+            throw new InvalidArgumentException('Failed to encode metadata to JSON');
+        }
+        $jsonSize = strlen($json);
         if ($jsonSize > 65535) {
             throw new InvalidArgumentException(
                 "Metadata size ({$jsonSize} bytes) exceeds maximum limit (65535 bytes)",

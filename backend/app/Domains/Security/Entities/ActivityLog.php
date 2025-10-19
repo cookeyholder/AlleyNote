@@ -20,7 +20,8 @@ use ReflectionObject;
  */
 class ActivityLog
 {
-    private ?int $id = null;
+    /** @phpstan-ignore-next-line property.onlyRead */
+    private ?int $id;
 
     private string $uuid;
 
@@ -81,7 +82,12 @@ class ActivityLog
         $this->targetType = $targetType;
         $this->targetId = $targetId;
         $this->description = $description ?? $actionType->getDescription();
-        $this->metadata = $metadata ? (json_encode($metadata, JSON_UNESCAPED_UNICODE) ?? '') : null;
+        if ($metadata !== null) {
+            $encoded = json_encode($metadata, JSON_UNESCAPED_UNICODE);
+            $this->metadata = $encoded !== false ? $encoded : null;
+        } else {
+            $this->metadata = null;
+        }
         $this->ipAddress = $ipAddress;
         $this->userAgent = $userAgent;
         $this->requestMethod = $requestMethod;
@@ -305,20 +311,63 @@ class ActivityLog
      */
     public static function fromDatabaseRow(array $data): self
     {
+        // Validate and extract action_type
+        $actionTypeValue = $data['action_type'] ?? null;
+        if (!is_string($actionTypeValue) && !is_int($actionTypeValue)) {
+            throw new \InvalidArgumentException('action_type must be a string or integer');
+        }
+
+        // Validate user_id
+        $userId = null;
+        if (isset($data['user_id']) && is_numeric($data['user_id'])) {
+            $userId = (int) $data['user_id'];
+        }
+
+        // Validate session_id
+        $sessionId = isset($data['session_id']) && is_string($data['session_id']) ? $data['session_id'] : null;
+
+        // Validate status
+        $statusValue = $data['status'] ?? null;
+        if (!is_string($statusValue) && !is_int($statusValue)) {
+            $statusValue = ActivityStatus::SUCCESS->value;
+        }
+
+        // Validate nullable string fields
+        $targetType = isset($data['target_type']) && is_string($data['target_type']) ? $data['target_type'] : null;
+        $targetId = isset($data['target_id']) && is_string($data['target_id']) ? $data['target_id'] : null;
+        $description = isset($data['description']) && is_string($data['description']) ? $data['description'] : null;
+
+        // Validate metadata
+        $metadata = null;
+        if (isset($data['metadata']) && is_string($data['metadata']) && $data['metadata'] !== '') {
+            $decoded = json_decode($data['metadata'], true);
+            $metadata = is_array($decoded) ? $decoded : null;
+        }
+
+        // Validate request-related fields
+        $ipAddress = isset($data['ip_address']) && is_string($data['ip_address']) ? $data['ip_address'] : null;
+        $userAgent = isset($data['user_agent']) && is_string($data['user_agent']) ? $data['user_agent'] : null;
+        $requestMethod = isset($data['request_method']) && is_string($data['request_method']) ? $data['request_method'] : null;
+        $requestPath = isset($data['request_path']) && is_string($data['request_path']) ? $data['request_path'] : null;
+
+        // Validate occurredAt
+        $occurredAtValue = $data['occurred_at'] ?? null;
+        $occurredAt = is_string($occurredAtValue) ? new DateTimeImmutable($occurredAtValue) : new DateTimeImmutable();
+
         $entity = new self(
-            actionType: ActivityType::from($data['action_type']),
-            userId: $data['user_id'] !== null ? (int) $data['user_id'] : null,
-            sessionId: $data['session_id'],
-            status: ActivityStatus::from($data['status']),
-            targetType: $data['target_type'],
-            targetId: $data['target_id'],
-            description: $data['description'],
-            metadata: $data['metadata'] ? json_decode($data['metadata'], true) : null,
-            ipAddress: $data['ip_address'],
-            userAgent: $data['user_agent'],
-            requestMethod: $data['request_method'],
-            requestPath: $data['request_path'],
-            occurredAt: new DateTimeImmutable($data['occurred_at']),
+            actionType: ActivityType::from($actionTypeValue),
+            userId: $userId,
+            sessionId: $sessionId,
+            status: ActivityStatus::from($statusValue),
+            targetType: $targetType,
+            targetId: $targetId,
+            description: $description,
+            metadata: $metadata,
+            ipAddress: $ipAddress,
+            userAgent: $userAgent,
+            requestMethod: $requestMethod,
+            requestPath: $requestPath,
+            occurredAt: $occurredAt,
         );
 
         // 設定從資料庫來的資料
@@ -326,7 +375,8 @@ class ActivityLog
 
         $idProperty = $reflection->getProperty('id');
         $idProperty->setAccessible(true);
-        $idProperty->setValue($entity, $data['id'] !== null ? (int) $data['id'] : null);
+        $idValue = isset($data['id']) && is_numeric($data['id']) ? (int) $data['id'] : null;
+        $idProperty->setValue($entity, $idValue);
 
         $uuidProperty = $reflection->getProperty('uuid');
         $uuidProperty->setAccessible(true);
@@ -334,7 +384,9 @@ class ActivityLog
 
         $createdAtProperty = $reflection->getProperty('createdAt');
         $createdAtProperty->setAccessible(true);
-        $createdAtProperty->setValue($entity, new DateTimeImmutable($data['created_at']));
+        $createdAtValue = $data['created_at'] ?? null;
+        $createdAt = is_string($createdAtValue) ? new DateTimeImmutable($createdAtValue) : new DateTimeImmutable();
+        $createdAtProperty->setValue($entity, $createdAt);
 
         return $entity;
     }

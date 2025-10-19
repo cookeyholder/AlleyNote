@@ -71,6 +71,9 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByJti(string $jti): ?array
     {
         try {
@@ -80,7 +83,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ?: null;
+            /** @var array<string, mixed>|false $result */
+            return is_array($result) ? $result : null;
         } catch (PDOException $e) {
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
@@ -89,6 +93,9 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByTokenHash(string $tokenHash): ?array
     {
         try {
@@ -98,7 +105,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result ?: null;
+            /** @var array<string, mixed>|false $result */
+            return is_array($result) ? $result : null;
         } catch (PDOException $e) {
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
@@ -107,6 +115,9 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findByUserId(int $userId, bool $includeExpired = false): array
     {
         try {
@@ -123,7 +134,9 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array<string, mixed>> $results */
+            return is_array($results) ? $results : [];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
@@ -132,18 +145,23 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findByUserIdAndDevice(int $userId, string $deviceId): array
     {
         try {
             $sql = '
-                SELECT * FROM ' . self::TABLE_NAME . ' 
-                WHERE user_id = ? AND device_id = ? 
+                SELECT * FROM ' . self::TABLE_NAME . '
+                WHERE user_id = ? AND device_id = ?
                 ORDER BY created_at DESC
             ';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$userId, $deviceId]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array<string, mixed>> $results */
+            return is_array($results) ? $results : [];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
@@ -176,8 +194,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE jti = ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -202,8 +220,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE user_id = ? AND status = ?
             ';
             $params = [
@@ -236,8 +254,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE user_id = ? AND device_id = ? AND status = ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -304,7 +322,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$jti]);
 
             $expiresAt = $stmt->fetchColumn();
-            if ($expiresAt === false) {
+            if ($expiresAt === false || !is_string($expiresAt)) {
                 return true; // Token not found, consider expired
             }
 
@@ -344,7 +362,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             $cutoffDate = new DateTime("-{$days} days");
             $sql = '
-                DELETE FROM ' . self::TABLE_NAME . ' 
+                DELETE FROM ' . self::TABLE_NAME . '
                 WHERE status = ? AND revoked_at <= ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -366,12 +384,12 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total,
                     SUM(CASE WHEN status = ? AND expires_at > ? THEN 1 ELSE 0 END) as active,
                     SUM(CASE WHEN expires_at <= ? THEN 1 ELSE 0 END) as expired,
                     SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as revoked
-                FROM ' . self::TABLE_NAME . ' 
+                FROM ' . self::TABLE_NAME . '
                 WHERE user_id = ?
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -387,11 +405,20 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            if (!is_array($result)) {
+                return [
+                    'total' => 0,
+                    'active' => 0,
+                    'expired' => 0,
+                    'revoked' => 0,
+                ];
+            }
+
             return [
-                'total' => (int) $result['total'],
-                'active' => (int) $result['active'],
-                'expired' => (int) $result['expired'],
-                'revoked' => (int) $result['revoked'],
+                'total' => isset($result['total']) && is_numeric($result['total']) ? (int) $result['total'] : 0,
+                'active' => isset($result['active']) && is_numeric($result['active']) ? (int) $result['active'] : 0,
+                'expired' => isset($result['expired']) && is_numeric($result['expired']) ? (int) $result['expired'] : 0,
+                'revoked' => isset($result['revoked']) && is_numeric($result['revoked']) ? (int) $result['revoked'] : 0,
             ];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
@@ -401,37 +428,18 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
-    public function getTokenFamily(string $rootJti): array
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function getTokenFamily(string $parentJti): array
     {
-        try {
-            // 使用遞迴查詢找出整個 token 家族
-            $sql = '
-                WITH RECURSIVE token_family AS (
-                    SELECT jti, parent_token_jti, 1 as level
-                    FROM ' . self::TABLE_NAME . '
-                    WHERE jti = ? OR parent_token_jti = ?
-                    
-                    UNION ALL
-                    
-                    SELECT t.jti, t.parent_token_jti, tf.level + 1
-                    FROM ' . self::TABLE_NAME . ' t
-                    INNER JOIN token_family tf ON t.parent_token_jti = tf.jti
-                    WHERE tf.level < 100  -- 防止無限遞迴
-                )
-                SELECT DISTINCT rt.* 
-                FROM token_family tf
-                JOIN ' . self::TABLE_NAME . ' rt ON rt.jti = tf.jti
-                ORDER BY rt.created_at
-            ';
+        $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE parent_token_jti = ? ORDER BY created_at ASC';
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$parentJti]);
 
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$rootJti, $rootJti]);
-
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            // SQLite 可能不支援 CTE，使用簡化版本
-            return $this->getTokenFamilySimple($rootJti);
-        }
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        /** @var array<int, array<string, mixed>> $results */
+        return is_array($results) ? $results : [];
     }
 
     public function revokeTokenFamily(string $rootJti, string $reason = 'family_revocation'): int
@@ -446,8 +454,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $placeholders = implode(',', array_fill(0, count($jtis), '?'));
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE jti IN (' . $placeholders . ')
             ';
 
@@ -478,13 +486,28 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $createdCount = 0;
 
             foreach ($tokens as $token) {
+                if (!is_array($token)) {
+                    continue;
+                }
+
+                $jti = isset($token['jti']) && is_string($token['jti']) ? $token['jti'] : '';
+                $userId = isset($token['user_id']) && is_numeric($token['user_id']) ? (int) $token['user_id'] : 0;
+                $tokenHash = isset($token['token_hash']) && is_string($token['token_hash']) ? $token['token_hash'] : '';
+                $expiresAtStr = isset($token['expires_at']) && is_string($token['expires_at']) ? $token['expires_at'] : '';
+                $deviceInfo = isset($token['device_info']) && $token['device_info'] instanceof DeviceInfo ? $token['device_info'] : null;
+                $parentJti = isset($token['parent_token_jti']) && is_string($token['parent_token_jti']) ? $token['parent_token_jti'] : null;
+
+                if ($jti === '' || $userId === 0 || $tokenHash === '' || $expiresAtStr === '' || $deviceInfo === null) {
+                    continue;
+                }
+
                 $success = $this->create(
-                    $token['jti'],
-                    $token['user_id'],
-                    $token['token_hash'],
-                    new DateTime($token['expires_at']),
-                    $token['device_info'],
-                    $token['parent_token_jti'] ?? null,
+                    $jti,
+                    $userId,
+                    $tokenHash,
+                    new DateTime($expiresAtStr),
+                    $deviceInfo,
+                    $parentJti,
                 );
 
                 if ($success) {
@@ -514,8 +537,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $placeholders = implode(',', array_fill(0, count($jtis), '?'));
             $sql = '
-                UPDATE ' . self::TABLE_NAME . ' 
-                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
+                UPDATE ' . self::TABLE_NAME . '
+                SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ?
                 WHERE jti IN (' . $placeholders . ')
             ';
 
@@ -539,12 +562,15 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         }
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getTokensNearExpiry(int $thresholdHours = 24): array
     {
         try {
             $thresholdDate = new DateTime("+{$thresholdHours} hours");
             $sql = '
-                SELECT * FROM ' . self::TABLE_NAME . ' 
+                SELECT * FROM ' . self::TABLE_NAME . '
                 WHERE expires_at <= ? AND expires_at > ? AND status = ?
                 ORDER BY expires_at ASC
             ';
@@ -556,7 +582,9 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 RefreshToken::STATUS_ACTIVE,
             ]);
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            /** @var array<int, array<string, mixed>> $results */
+            return is_array($results) ? $results : [];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_DATABASE_ERROR,
@@ -569,7 +597,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_tokens,
                     SUM(CASE WHEN status = ? AND expires_at > ? THEN 1 ELSE 0 END) as active_tokens,
                     SUM(CASE WHEN expires_at <= ? THEN 1 ELSE 0 END) as expired_tokens,
@@ -591,13 +619,24 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            if (!is_array($result)) {
+                return [
+                    'total_tokens' => 0,
+                    'active_tokens' => 0,
+                    'expired_tokens' => 0,
+                    'revoked_tokens' => 0,
+                    'unique_users' => 0,
+                    'unique_devices' => 0,
+                ];
+            }
+
             return [
-                'total_tokens' => (int) $result['total_tokens'],
-                'active_tokens' => (int) $result['active_tokens'],
-                'expired_tokens' => (int) $result['expired_tokens'],
-                'revoked_tokens' => (int) $result['revoked_tokens'],
-                'unique_users' => (int) $result['unique_users'],
-                'unique_devices' => (int) $result['unique_devices'],
+                'total_tokens' => isset($result['total_tokens']) && is_numeric($result['total_tokens']) ? (int) $result['total_tokens'] : 0,
+                'active_tokens' => isset($result['active_tokens']) && is_numeric($result['active_tokens']) ? (int) $result['active_tokens'] : 0,
+                'expired_tokens' => isset($result['expired_tokens']) && is_numeric($result['expired_tokens']) ? (int) $result['expired_tokens'] : 0,
+                'revoked_tokens' => isset($result['revoked_tokens']) && is_numeric($result['revoked_tokens']) ? (int) $result['revoked_tokens'] : 0,
+                'unique_users' => isset($result['unique_users']) && is_numeric($result['unique_users']) ? (int) $result['unique_users'] : 0,
+                'unique_devices' => isset($result['unique_devices']) && is_numeric($result['unique_devices']) ? (int) $result['unique_devices'] : 0,
             ];
         } catch (PDOException $e) {
             throw new RefreshTokenException(
@@ -609,13 +648,15 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 
     /**
      * 簡化版的 Token 家族查詢（不使用 CTE）.
+     *
+     * @phpstan-ignore method.unused
      */
     private function getTokenFamilySimple(string $rootJti): array
     {
         try {
             // 先找出直接相關的 token
             $sql = '
-                SELECT * FROM ' . self::TABLE_NAME . ' 
+                SELECT * FROM ' . self::TABLE_NAME . '
                 WHERE jti = ? OR parent_token_jti = ?
                 ORDER BY created_at
             ';

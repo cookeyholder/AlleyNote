@@ -52,8 +52,11 @@ class RouteValidator
 
         foreach ($required as $field) {
             if (!array_key_exists($field, $routeConfig)) {
+                $routeName = isset($routeConfig['name']) && is_string($routeConfig['name'])
+                    ? $routeConfig['name']
+                    : '未命名路由';
                 throw RouteConfigurationException::invalidRouteDefinition(
-                    $routeConfig['name'] ?? '未命名路由',
+                    $routeName,
                     "缺少必要欄位: {$field}",
                 );
             }
@@ -66,7 +69,9 @@ class RouteValidator
     private function validateHttpMethods(array $routeConfig): void
     {
         $methods = (array) $routeConfig['methods'];
-        $routeName = $routeConfig['name'] ?? '未命名路由';
+        $routeName = isset($routeConfig['name']) && is_string($routeConfig['name'])
+            ? $routeConfig['name']
+            : '未命名路由';
 
         if (empty($methods)) {
             throw RouteConfigurationException::invalidRouteDefinition(
@@ -99,7 +104,9 @@ class RouteValidator
     private function validatePath(array $routeConfig): void
     {
         $path = $routeConfig['path'];
-        $routeName = $routeConfig['name'] ?? '未命名路由';
+        $routeName = isset($routeConfig['name']) && is_string($routeConfig['name'])
+            ? $routeConfig['name']
+            : '未命名路由';
 
         if (!is_string($path)) {
             throw RouteConfigurationException::invalidRouteDefinition(
@@ -134,7 +141,9 @@ class RouteValidator
     private function validateHandler(array $routeConfig): void
     {
         $handler = $routeConfig['handler'];
-        $routeName = $routeConfig['name'] ?? '未命名路由';
+        $routeName = isset($routeConfig['name']) && is_string($routeConfig['name'])
+            ? $routeConfig['name']
+            : '未命名路由';
 
         // 允許的處理器格式：
         // 1. 閉包 (Closure)
@@ -180,12 +189,20 @@ class RouteValidator
         $methods = (array) $routeConfig['methods'];
         $path = $routeConfig['path'];
 
+        if (!is_string($path)) {
+            return;
+        }
+
         foreach ($methods as $method) {
-            $method = strtoupper(trim($method));
-            $key = "{$method}:{$path}";
+            if (!is_string($method)) {
+                continue;
+            }
+
+            $methodStr = strtoupper(trim($method));
+            $key = "{$methodStr}:{$path}";
 
             if (isset($this->registeredRoutes[$key])) {
-                throw RouteConfigurationException::duplicateRoute($method, $path);
+                throw RouteConfigurationException::duplicateRoute($methodStr, $path);
             }
 
             $this->registeredRoutes[$key] = true;

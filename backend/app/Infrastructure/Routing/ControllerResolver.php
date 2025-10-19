@@ -348,8 +348,11 @@ class ControllerResolver
         };
 
         // 將資料編碼為 JSON
-        $json = (json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? '') ?: '';
-        $response->getBody()->write($json ?: '{}');
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        if ($json === false) {
+            $json = '{}';
+        }
+        $response->getBody()->write($json);
 
         return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
     }
@@ -375,6 +378,10 @@ class ControllerResolver
     {
         [$controllerClass, $method] = $handler;
 
+        if (!is_string($controllerClass) || !is_string($method)) {
+            throw new RuntimeException('處理器格式錯誤：控制器類別和方法名稱必須是字串');
+        }
+
         // 解析控制器類別
         $controller = $this->resolveController($controllerClass);
 
@@ -387,7 +394,13 @@ class ControllerResolver
         $methodArgs = $this->resolveMethodArguments($controller, $method, $request, $parameters);
 
         // 呼叫控制器方法
-        return $controller->{$method}(...$methodArgs);
+        $result = $controller->{$method}(...$methodArgs);
+
+        if (!$result instanceof ResponseInterface) {
+            throw new RuntimeException("控制器方法必須返回 ResponseInterface 實例");
+        }
+
+        return $result;
     }
 
     /**
@@ -407,7 +420,11 @@ class ControllerResolver
 
         // 從 DI 容器中取得控制器實例
         if ($this->container->has($controllerClass)) {
-            return $this->container->get($controllerClass);
+            $instance = $this->container->get($controllerClass);
+            if (!is_object($instance)) {
+                throw new RuntimeException("容器返回的不是物件實例: {$controllerClass}");
+            }
+            return $instance;
         }
 
         // 如果容器中沒有，嘗試建立實例
@@ -508,7 +525,11 @@ class ControllerResolver
 
             // 處理路由參數
             if (isset($routeParameters[$paramName])) {
-                $args[] = $this->convertParameter($routeParameters[$paramName], $type);
+                $paramValue = $routeParameters[$paramName];
+                $convertedValue = is_string($paramValue)
+                    ? $this->convertParameter($paramValue, $type)
+                    : $paramValue;
+                $args[] = $convertedValue;
                 continue;
             }
 

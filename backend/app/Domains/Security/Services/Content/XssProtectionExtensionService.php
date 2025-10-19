@@ -60,23 +60,33 @@ class XssProtectionExtensionService
     private function protectRichTextEditor(string $input, array $options): array
     {
         $userLevel = $options['user_level'] ?? 'basic';
+        if (!is_string($userLevel)) {
+            $userLevel = 'basic';
+        }
         $processResult = $this->richTextProcessor->processCKEditorContent($input, $userLevel);
 
+        if (!is_array($processResult)) {
+            $processResult = ['content' => $input, 'warnings' => []];
+        }
+
+        $content = $processResult['content'] ?? $input;
+        $warnings = isset($processResult['warnings']) && is_array($processResult['warnings']) ? $processResult['warnings'] : [];
+
         $result = [
-            'protected_content' => $processResult['content'],
+            'protected_content' => is_string($content) ? $content : $input,
             'context' => 'rich_text_editor',
             'protection_level' => 'enhanced',
             'modifications' => [],
-            'warnings' => $processResult['warnings'],
-            'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
+            'warnings' => $warnings,
+            'security_score' => $this->calculateSecurityScore($input, is_string($content) ? $content : $input),
         ];
 
-        if ($input !== $processResult['content']) {
+        if (is_string($content) && $input !== $content) {
             $result['modifications'][] = [
                 'type' => 'html_sanitization',
                 'description' => 'HTML 內容已經過安全過濾',
                 'original_length' => strlen($input),
-                'filtered_length' => strlen($processResult['content']),
+                'filtered_length' => strlen($content),
             ];
         }
 
@@ -112,8 +122,12 @@ class XssProtectionExtensionService
         $cleaned = $this->baseXssProtection->strictClean($input);
 
         // 長度限制
-        if (strlen($cleaned) > $this->config['max_title_length']) {
-            $cleaned = mb_substr($cleaned, 0, $this->config['max_title_length']);
+        $maxLength = $this->config['max_title_length'] ?? 200;
+        if (!is_int($maxLength)) {
+            $maxLength = 200;
+        }
+        if (strlen($cleaned) > $maxLength) {
+            $cleaned = mb_substr($cleaned, 0, $maxLength);
         }
 
         return [
@@ -132,11 +146,21 @@ class XssProtectionExtensionService
     private function protectPostContent(string $input, array $options): array
     {
         $userLevel = $options['user_level'] ?? 'basic';
+        if (!is_string($userLevel)) {
+            $userLevel = 'basic';
+        }
 
         // 先進行內容審核
         $moderationResult = $this->contentModerator->moderateContent($input, $options);
 
-        if ($moderationResult['status'] === 'rejected') {
+        if (!is_array($moderationResult)) {
+            $moderationResult = ['status' => 'approved', 'issues' => []];
+        }
+
+        $status = $moderationResult['status'] ?? 'approved';
+        $issues = isset($moderationResult['issues']) && is_array($moderationResult['issues']) ? $moderationResult['issues'] : [];
+
+        if ($status === 'rejected') {
             return [
                 'protected_content' => '',
                 'context' => 'post_content',
@@ -150,13 +174,20 @@ class XssProtectionExtensionService
         // 進行富文本處理
         $processResult = $this->richTextProcessor->processContent($input, $userLevel);
 
+        if (!is_array($processResult)) {
+            $processResult = ['content' => $input, 'warnings' => []];
+        }
+
+        $content = $processResult['content'] ?? $input;
+        $warnings = isset($processResult['warnings']) && is_array($processResult['warnings']) ? $processResult['warnings'] : [];
+
         return [
-            'protected_content' => $processResult['content'],
+            'protected_content' => is_string($content) ? $content : $input,
             'context' => 'post_content',
             'protection_level' => 'enhanced',
-            'modifications' => $processResult['warnings'],
-            'warnings' => array_merge($moderationResult['issues'], $processResult['warnings']),
-            'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
+            'modifications' => $warnings,
+            'warnings' => array_merge($issues, $warnings),
+            'security_score' => $this->calculateSecurityScore($input, is_string($content) ? $content : $input),
         ];
     }
 

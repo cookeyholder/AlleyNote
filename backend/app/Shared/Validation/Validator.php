@@ -73,14 +73,27 @@ class Validator implements ValidatorInterface
             $fieldErrors = [];
             $fieldFailedRules = [];
 
+            if (!is_array($ruleSet)) {
+                continue;
+            }
+
             foreach ($ruleSet as $rule) {
+                if (!is_string($rule)) {
+                    continue;
+                }
+
                 $ruleName = $rule;
+                /** @var array<string, mixed> $parameters */
                 $parameters = [];
 
                 // 解析帶參數的規則 (例如: min:5, between:1,10)
                 if (strpos($rule, ':') !== false) {
-                    [$ruleName, $paramString] = explode(':', $rule, 2);
-                    $parameters = explode(',', $paramString);
+                    $parts = explode(':', $rule, 2);
+                    if (count($parts) === 2) {
+                        $ruleName = $parts[0];
+                        /** @var array<string, mixed> $parameters */
+                        $parameters = array_map('trim', explode(',', $parts[1]));
+                    }
                 }
 
                 // 檢查規則
@@ -128,7 +141,12 @@ class Validator implements ValidatorInterface
     {
         // 檢查自訂規則
         if (isset($this->customRules[$rule])) {
-            return call_user_func($this->customRules[$rule], $value, $parameters, $allData);
+            $callback = $this->customRules[$rule];
+            if (!is_callable($callback)) {
+                return false;
+            }
+            $result = call_user_func($callback, $value, $parameters, $allData);
+            return is_bool($result) ? $result : false;
         }
 
         // 內建規則
@@ -305,18 +323,18 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $min = (float) $parameters[0];
+        $minValue = is_numeric($parameters[0] ?? null) ? (float) $parameters[0] : 0.0;
 
         if (is_numeric($value)) {
-            return (float) $value >= $min;
+            return (float) $value >= $minValue;
         }
 
         if (is_string($value)) {
-            return mb_strlen($value) >= $min;
+            return mb_strlen($value) >= $minValue;
         }
 
         if (is_array($value)) {
-            return count($value) >= $min;
+            return count($value) >= $minValue;
         }
 
         return true;
@@ -328,18 +346,18 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $max = (float) $parameters[0];
+        $maxValue = is_numeric($parameters[0] ?? null) ? (float) $parameters[0] : 0.0;
 
         if (is_numeric($value)) {
-            return (float) $value <= $max;
+            return (float) $value <= $maxValue;
         }
 
         if (is_string($value)) {
-            return mb_strlen($value) <= $max;
+            return mb_strlen($value) <= $maxValue;
         }
 
         if (is_array($value)) {
-            return count($value) <= $max;
+            return count($value) <= $maxValue;
         }
 
         return true;
@@ -351,7 +369,7 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $minLength = (int) $parameters[0];
+        $minLength = is_numeric($parameters[0] ?? null) ? (int) $parameters[0] : 0;
 
         return mb_strlen($value) >= $minLength;
     }
@@ -362,7 +380,7 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $maxLength = (int) $parameters[0];
+        $maxLength = is_numeric($parameters[0] ?? null) ? (int) $parameters[0] : 0;
 
         return mb_strlen($value) <= $maxLength;
     }
@@ -373,7 +391,7 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $length = (int) $parameters[0];
+        $length = is_numeric($parameters[0] ?? null) ? (int) $parameters[0] : 0;
 
         return mb_strlen($value) === $length;
     }
@@ -384,8 +402,8 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $min = (float) $parameters[0];
-        $max = (float) $parameters[1];
+        $min = is_numeric($parameters[0] ?? null) ? (float) $parameters[0] : 0.0;
+        $max = is_numeric($parameters[1] ?? null) ? (float) $parameters[1] : 0.0;
 
         if (is_numeric($value)) {
             $numValue = (float) $value;
@@ -420,11 +438,11 @@ class Validator implements ValidatorInterface
 
     private function validateRegex(mixed $value, array $parameters): bool
     {
-        if (empty($parameters) || !is_string($value)) {
-            return true;
-        }
+        $pattern = $parameters[0] ?? null;
 
-        $pattern = $parameters[0];
+        if (!is_string($value) || !is_string($pattern)) {
+            return false;
+        }
 
         return preg_match($pattern, $value) === 1;
     }
@@ -508,16 +526,17 @@ class Validator implements ValidatorInterface
     {
         // 檢查自訂訊息
         $customKey = "{$field}.{$rule}";
-        if (isset($this->customMessages[$customKey])) {
+        if (isset($this->customMessages[$customKey]) && is_string($this->customMessages[$customKey])) {
             return $this->replacePlaceholders($this->customMessages[$customKey], $field, $parameters, $value);
         }
 
-        if (isset($this->customMessages[$rule])) {
+        if (isset($this->customMessages[$rule]) && is_string($this->customMessages[$rule])) {
             return $this->replacePlaceholders($this->customMessages[$rule], $field, $parameters, $value);
         }
 
         // 使用預設訊息
-        $message = $this->defaultMessages[$rule] ?? "欄位 {$field} 驗證失敗";
+        $defaultMessage = $this->defaultMessages[$rule] ?? null;
+        $message = is_string($defaultMessage) ? $defaultMessage : "欄位 {$field} 驗證失敗";
 
         return $this->replacePlaceholders($message, $field, $parameters, $value);
     }
@@ -540,6 +559,15 @@ class Validator implements ValidatorInterface
             $replacements[':other'] = $parameters[0] ?? '';
         }
 
-        return str_replace(array_keys($replacements), array_values($replacements), $message);
+        /** @var array<string> $keys */
+        $keys = array_keys($replacements);
+        /** @var array<string> $values */
+        $values = array_map(
+            /** @param mixed $value */
+            fn($value): string => is_scalar($value) || (is_object($value) && method_exists($value, '__toString')) ? (string) $value : '',
+            array_values($replacements)
+        );
+
+        return str_replace($keys, $values, $message);
     }
 }

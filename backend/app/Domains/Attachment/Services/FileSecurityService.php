@@ -108,10 +108,11 @@ class FileSecurityService implements FileSecurityServiceInterface
     {
         // 移除路徑分隔符號和其他危險字元
         $fileName = basename($fileName);
-        $fileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName);
+        // basename 可能返回空字串，但不會返回 null
+        $fileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName) ?? $fileName;
 
         // 移除多個連續的點號（防止路徑遍歷）
-        $fileName = preg_replace('/\.{2,}/', '.', $fileName);
+        $fileName = preg_replace('/\.{2,}/', '.', $fileName) ?? $fileName;
 
         // 確保不以點號開始（隱藏檔案）
         $fileName = ltrim($fileName, '.');
@@ -196,6 +197,9 @@ class FileSecurityService implements FileSecurityServiceInterface
 
         // 驗證副檔名與 MIME 類型是否匹配
         $fileName = $file->getClientFilename();
+        if ($fileName === null) {
+            throw ValidationException::fromSingleError('file', '檔案名稱不可為空');
+        }
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
         if (!in_array($extension, self::ALLOWED_MIME_TYPES[$clientMimeType], true)) {
@@ -214,7 +218,11 @@ class FileSecurityService implements FileSecurityServiceInterface
         }
 
         // 檢查檔案簽名（魔術數字）
-        if (!$this->validateFileSignature($content, $file->getClientMediaType())) {
+        $clientMediaType = $file->getClientMediaType();
+        if ($clientMediaType === null) {
+            throw ValidationException::fromSingleError('file', 'MIME 類型不可為空');
+        }
+        if (!$this->validateFileSignature($content, $clientMediaType)) {
             throw ValidationException::fromSingleError('file', '檔案格式驗證失敗');
         }
     }

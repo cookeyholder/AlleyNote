@@ -207,13 +207,18 @@ class CacheKeys
 
     /**
      * 建立快取鍵的通用方法.
+     * @param mixed ...$parts
      */
     private static function buildKey(...$parts): string
     {
         // 過濾空值並轉換為字串
         $cleanParts = array_filter(
-            array_map('strval', $parts),
-            fn($part) => $part !== '',
+            array_map(
+                /** @param mixed $part */
+                fn($part): string => is_scalar($part) || (is_object($part) && method_exists($part, '__toString')) ? (string) $part : '',
+                $parts
+            ),
+            fn(string $part): bool => $part !== '',
         );
 
         return self::PREFIX . self::SEPARATOR . implode(self::SEPARATOR, $cleanParts);
@@ -259,8 +264,9 @@ class CacheKeys
 
     /**
      * 建立模式匹配的快取鍵（用於刪除相關快取）.
+     * @param mixed ...$parts
      */
-    public static function pattern(...$parts): string
+    private static function pattern(...$parts): string
     {
         $pattern = self::buildKey(...$parts);
 

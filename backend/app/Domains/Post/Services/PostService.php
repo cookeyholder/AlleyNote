@@ -32,7 +32,13 @@ class PostService implements PostServiceInterface
         // 設定建立時間
         // // $data ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
-        return $this->repository->create($data);
+        $post = $this->repository->create($data);
+
+        if (!$post instanceof Post) {
+            throw new RuntimeException('Failed to create post');
+        }
+
+        return $post;
     }
 
     public function updatePost(int $id, UpdatePostDTO $dto): Post
@@ -40,6 +46,10 @@ class PostService implements PostServiceInterface
         $post = $this->repository->find($id);
         if (!$post) {
             throw new NotFoundException('找不到指定的文章');
+        }
+
+        if (!$post instanceof Post) {
+            throw new RuntimeException('Invalid post object from repository');
         }
 
         // 檢查是否有資料要更新
@@ -70,7 +80,13 @@ class PostService implements PostServiceInterface
         // 設定更新時間
         // // $data ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
-        return $this->repository->update($id, $data);
+        $updatedPost = $this->repository->update($id, $data);
+
+        if (!$updatedPost instanceof Post) {
+            throw new RuntimeException('Failed to update post');
+        }
+
+        return $updatedPost;
     }
 
     public function deletePost(int $id): bool
@@ -93,6 +109,10 @@ class PostService implements PostServiceInterface
             throw new NotFoundException('找不到指定的文章');
         }
 
+        if (!$post instanceof Post) {
+            throw new RuntimeException('Invalid post object');
+        }
+
         return $post;
     }
 
@@ -100,20 +120,27 @@ class PostService implements PostServiceInterface
      * 取得文章列表.
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
-     * @return array<mixed>{items: Post[], total: int, page: int, per_page: int, last_page: int}
+     * @param array<string, mixed> $filters 篩選條件
+     * @return array{items: Post[], total: int, page: int, per_page: int, last_page: int}
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         $result = $this->repository->paginate($page, $perPage, $filters);
 
         // 確保回傳格式符合介面要求
+        /** @var array<int|string, Post> $items */
+        $items = is_array($result['items'] ?? null) ? $result['items'] : [];
+        $total = is_int($result['total'] ?? null) ? $result['total'] : 0;
+        $pageNum = is_int($result['page'] ?? null) ? $result['page'] : $page;
+        $perPageNum = is_int($result['perPage'] ?? null) ? $result['perPage'] : $perPage;
+        $lastPageNum = is_int($result['lastPage'] ?? null) ? $result['lastPage'] : 1;
+
         return [
-            'items' => $result['items'] ?? [],
-            'total' => $result['total'] ?? 0,
-            'page' => $result['page'] ?? $page,
-            'per_page' => $result['perPage'] ?? $perPage,
-            'last_page' => $result['lastPage'] ?? 1,
+            'items' => $items,
+            'total' => $total,
+            'page' => $pageNum,
+            'per_page' => $perPageNum,
+            'last_page' => $lastPageNum,
         ];
     }
 
@@ -153,7 +180,12 @@ class PostService implements PostServiceInterface
         }
 
         // 確保所有標籤 ID 都是整數
-        $tagIds = array_map('intval', array_unique($tagIds));
+        /** @var array<int> */
+        $tagIds = array_map(
+            /** @param mixed $id */
+            fn($id): int => is_numeric($id) ? (int) $id : 0,
+            array_unique($tagIds)
+        );
 
         $this->repository->setTags($id, $tagIds);
     }
@@ -189,10 +221,13 @@ class PostService implements PostServiceInterface
         }
 
         // 更新狀態
-        $this->repository->update($id, ['status' => $status]);
+        $updated = $this->repository->update($id, ['status' => $status]);
 
-        // 重新取得更新後的貼文
-        return $this->findById($id);
+        if (!$updated instanceof Post) {
+            throw new RuntimeException('Failed to update post status');
+        }
+
+        return $updated;
     }
 
     /**

@@ -74,7 +74,8 @@ class CacheService implements CacheServiceInterface
             'data' => $value,
         ];
 
-        $result = file_put_contents($filename, (json_encode($cacheData) ?? '')) !== false;
+        $encoded = json_encode($cacheData);
+        $result = $encoded !== false && file_put_contents($filename, $encoded) !== false;
         if ($result) {
             $this->updateCacheSize();
         }
@@ -170,7 +171,9 @@ class CacheService implements CacheServiceInterface
     {
         $result = [];
         foreach ($keys as $key) {
-            $result[$key] = $this->get($key);
+            if (is_string($key)) {
+                $result[$key] = $this->get($key);
+            }
         }
 
         return $result;
@@ -192,7 +195,7 @@ class CacheService implements CacheServiceInterface
     {
         $success = true;
         foreach ($keys as $key) {
-            if (!$this->delete($key)) {
+            if (is_string($key) && !$this->delete($key)) {
                 $success = false;
             }
         }

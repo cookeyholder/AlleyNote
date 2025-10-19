@@ -43,6 +43,10 @@ class RouteDispatcher
         }
 
         $route = $matchResult->getRoute();
+        if ($route === null) {
+            return $this->handleNotFound($request);
+        }
+
         $parameters = $matchResult->getParameters();
 
         // 2. 準備中間件鏈（解析字串別名）
@@ -84,18 +88,35 @@ class RouteDispatcher
         if ($this->container->has('app.handlers.not_found')) {
             $handler = $this->container->get('app.handlers.not_found');
 
-            return $handler($request);
+            if (is_callable($handler)) {
+                $result = $handler($request);
+                if ($result instanceof ResponseInterface) {
+                    return $result;
+                }
+            }
         }
 
         // 預設 404 回應
         $response = $this->container->get(ResponseInterface::class);
-        $response->getBody()->write(json_encode([
+
+        if (!$response instanceof ResponseInterface) {
+            throw new \RuntimeException('Container must provide a valid ResponseInterface instance');
+        }
+
+        $body = $response->getBody();
+        $jsonContent = json_encode([
             'error' => 'Not Found',
             'message' => '請求的路由不存在',
             'path' => $request->getUri()->getPath(),
             'method' => $request->getMethod(),
             'timestamp' => date('c'),
-        ], JSON_UNESCAPED_UNICODE));
+        ], JSON_UNESCAPED_UNICODE);
+
+        if ($jsonContent === false) {
+            $jsonContent = '{"error":"Not Found","message":"請求的路由不存在"}';
+        }
+
+        $body->write($jsonContent);
 
         return $response
             ->withStatus(404)
@@ -108,8 +129,16 @@ class RouteDispatcher
     public static function create(ContainerInterface $container): self
     {
         $router = $container->get(RouterInterface::class);
+        if (!$router instanceof RouterInterface) {
+            throw new \RuntimeException('Container must provide a valid RouterInterface instance');
+        }
+
         $controllerResolver = new ControllerResolver($container);
+
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
+        if (!$middlewareDispatcher instanceof MiddlewareDispatcher) {
+            throw new \RuntimeException('Container must provide a valid MiddlewareDispatcher instance');
+        }
 
         return new self($router, $controllerResolver, $middlewareDispatcher, $container);
     }

@@ -46,14 +46,8 @@ interface PostServiceInterface
      * 取得文章列表（含分頁）.
      * @param int $page 頁碼
      * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
-     * @return array<mixed>{
-     *     items: Post[],
-     *     total: int,
-     *     page: int,
-     *     per_page: int,
-     *     last_page: int
-     * }
+     * @param array<string, mixed> $filters 篩選條件
+     * @return array{items: Post[], total: int, page: int, per_page: int, last_page: int}
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array;
 

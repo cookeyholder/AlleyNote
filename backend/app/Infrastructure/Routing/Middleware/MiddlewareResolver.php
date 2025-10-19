@@ -124,7 +124,8 @@ class MiddlewareResolver
      */
     private function resolveAlias(string $alias): string
     {
-        return self::$middlewareAliases[$alias] ?? $alias;
+        $resolved = self::$middlewareAliases[$alias] ?? $alias;
+        return is_string($resolved) ? $resolved : $alias;
     }
 
     /**
@@ -134,7 +135,13 @@ class MiddlewareResolver
      */
     public function getAliases(): array
     {
-        return self::$middlewareAliases;
+        $aliases = [];
+        foreach (self::$middlewareAliases as $key => $value) {
+            if (is_string($key) && is_string($value)) {
+                $aliases[$key] = $value;
+            }
+        }
+        return $aliases;
     }
 
     /**

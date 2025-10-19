@@ -54,7 +54,9 @@ abstract class BaseDTO implements JsonSerializable
      */
     protected function validate(array $data): array
     {
-        return $this->validator->validateOrFail($data, $this->getValidationRules());
+        /** @var array<string, mixed> $rules */
+        $rules = $this->getValidationRules();
+        return $this->validator->validateOrFail($data, $rules);
     }
 
     /**
@@ -72,7 +74,13 @@ abstract class BaseDTO implements JsonSerializable
     {
         $value = $this->getValue($data, $key, $default);
 
-        return $value !== null ? trim((string) $value) : null;
+        if ($value === null) {
+            return null;
+        }
+
+        return is_scalar($value) || (is_object($value) && method_exists($value, '__toString'))
+            ? trim((string) $value)
+            : ($default ?? null);
     }
 
     /**
@@ -82,7 +90,11 @@ abstract class BaseDTO implements JsonSerializable
     {
         $value = $this->getValue($data, $key, $default);
 
-        return $value !== null ? (int) $value : null;
+        if ($value === null) {
+            return null;
+        }
+
+        return is_numeric($value) ? (int) $value : ($default ?? null);
     }
 
     /**

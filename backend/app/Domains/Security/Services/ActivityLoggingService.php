@@ -177,12 +177,26 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             return false;
         }
 
+        // Validate metadata structure
+        $validMetadata = null;
+        if ($metadata !== null) {
+            $validMetadata = [];
+            foreach ($metadata as $key => $value) {
+                if (is_string($key)) {
+                    $validMetadata[$key] = $value;
+                }
+            }
+            if (empty($validMetadata)) {
+                $validMetadata = null;
+            }
+        }
+
         $dto = CreateActivityLogDTO::success(
             actionType: $actionType,
             userId: $userId,
             targetType: $targetType,
             targetId: $targetId,
-            metadata: $metadata,
+            metadata: $validMetadata,
         );
 
         return $this->log($dto);
@@ -225,11 +239,25 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         string $reason = '',
         ?array $metadata = null,
     ): bool {
+        // Validate metadata structure
+        $validMetadata = null;
+        if ($metadata !== null) {
+            $validMetadata = [];
+            foreach ($metadata as $key => $value) {
+                if (is_string($key)) {
+                    $validMetadata[$key] = $value;
+                }
+            }
+            if (empty($validMetadata)) {
+                $validMetadata = null;
+            }
+        }
+
         $dto = CreateActivityLogDTO::failure(
             actionType: $actionType,
             userId: $userId,
             description: $reason ?: $actionType->getDescription(),
-            metadata: $metadata,
+            metadata: $validMetadata,
         );
 
         return $this->log($dto);
@@ -278,11 +306,25 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         string $description,
         ?array $metadata = null,
     ): bool {
+        // Validate metadata structure
+        $validMetadata = null;
+        if ($metadata !== null) {
+            $validMetadata = [];
+            foreach ($metadata as $key => $value) {
+                if (is_string($key)) {
+                    $validMetadata[$key] = $value;
+                }
+            }
+            if (empty($validMetadata)) {
+                $validMetadata = null;
+            }
+        }
+
         $dto = new CreateActivityLogDTO(
             actionType: $actionType,
             status: $this->determineSecurityEventStatus($actionType),
             description: $description,
-            metadata: $metadata,
+            metadata: $validMetadata,
         );
 
         return $this->log($dto);

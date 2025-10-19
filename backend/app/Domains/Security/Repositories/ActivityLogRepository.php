@@ -267,13 +267,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$data) {
-            return null;
-        }
-
-        $entity = ActivityLog::fromDatabaseRow($data);
-
-        return $entity->toArray();
+        return $this->mapDataToArray($data);
     }
 
     /**
@@ -288,13 +282,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$data) {
-            return null;
-        }
-
-        $entity = ActivityLog::fromDatabaseRow($data);
-
-        return $entity->toArray();
+        return $this->mapDataToArray($data);
     }
 
     /**
@@ -315,11 +303,19 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return array_map(function (array $row): array {
-                $entity = ActivityLog::fromDatabaseRow($row);
+            if (!is_array($results)) {
+                return [];
+            }
 
-                return $entity->toArray();
-            }, $results);
+            $mapped = [];
+            foreach ($results as $row) {
+                $result = $this->mapDataToArray($row);
+                if ($result !== null) {
+                    $mapped[] = $result;
+                }
+            }
+
+            return $mapped;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 sprintf('Failed to retrieve activity logs: %s', $e->getMessage()),
@@ -368,13 +364,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -414,13 +404,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -455,13 +439,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -502,13 +480,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -729,13 +701,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -866,13 +832,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -900,13 +860,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -914,7 +868,16 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     private function mapToArray(array $data): array
     {
-        $entity = ActivityLog::fromDatabaseRow($data);
+        // Ensure all keys are strings
+        /** @var array<string, mixed> $validData */
+        $validData = [];
+        foreach ($data as $key => $value) {
+            if (is_string($key)) {
+                $validData[$key] = $value;
+            }
+        }
+
+        $entity = ActivityLog::fromDatabaseRow($validData);
 
         return $entity->toArray();
     }
@@ -1021,5 +984,52 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 ];
             }, $trend),
         ];
+    }
+
+    /**
+     * 從 PDO fetch 結果建立 ActivityLog 並轉為陣列.
+     *
+     * @param mixed $data
+     * @return array<string, mixed>|null
+     */
+    private function mapDataToArray($data): ?array
+    {
+        if (!is_array($data) || empty($data)) {
+            return null;
+        }
+
+        // Ensure all keys are strings
+        /** @var array<string, mixed> $validData */
+        $validData = [];
+        foreach ($data as $key => $value) {
+            if (is_string($key)) {
+                $validData[$key] = $value;
+            }
+        }
+
+        if (empty($validData)) {
+            return null;
+        }
+
+        $entity = ActivityLog::fromDatabaseRow($validData);
+        return $entity->toArray();
+    }
+
+    /**
+     * 從 PDOStatement 的 fetch 迴圈建立 ActivityLog 陣列.
+     *
+     * @param \PDOStatement $stmt
+     * @return array<array<string, mixed>>
+     */
+    private function fetchAllToArray(\PDOStatement $stmt): array
+    {
+        $results = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $mapped = $this->mapDataToArray($data);
+            if ($mapped !== null) {
+                $results[] = $mapped;
+            }
+        }
+        return $results;
     }
 }

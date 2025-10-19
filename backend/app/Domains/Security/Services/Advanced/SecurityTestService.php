@@ -543,16 +543,34 @@ class SecurityTestService implements SecurityTestInterface
         $criticalIssues = [];
 
         foreach ($allResults as $category => $results) {
-            $totalTests += $results['passed'] + $results['failed'];
-            $totalPassed += $results['passed'];
-            $totalFailed += $results['failed'];
+            if (!is_array($results)) {
+                continue;
+            }
 
-            foreach ($results['tests'] as $test) {
-                if ($test['status'] === 'FAIL') {
+            $passed = isset($results['passed']) && is_numeric($results['passed']) ? (int) $results['passed'] : 0;
+            $failed = isset($results['failed']) && is_numeric($results['failed']) ? (int) $results['failed'] : 0;
+
+            $totalTests += $passed + $failed;
+            $totalPassed += $passed;
+            $totalFailed += $failed;
+
+            $tests = isset($results['tests']) && is_array($results['tests']) ? $results['tests'] : [];
+
+            foreach ($tests as $test) {
+                if (!is_array($test)) {
+                    continue;
+                }
+
+                $status = $test['status'] ?? '';
+                if ($status === 'FAIL') {
+                    $testName = isset($results['test_name']) && is_string($results['test_name']) ? $results['test_name'] : (string) $category;
+                    $name = isset($test['name']) && is_string($test['name']) ? $test['name'] : 'unknown';
+                    $message = isset($test['message']) && is_string($test['message']) ? $test['message'] : 'no message';
+
                     $criticalIssues[] = [
-                        'category' => $results['test_name'],
-                        'test' => $test['name'],
-                        'message' => $test['message'],
+                        'category' => $testName,
+                        'test' => $name,
+                        'message' => $message,
                     ];
                 }
             }
@@ -574,7 +592,7 @@ class SecurityTestService implements SecurityTestInterface
         ];
     }
 
-    private function createMockUploadedFile()
+    private function createMockUploadedFile(): object
     {
         // 建立簡單的模擬檔案物件
         return new class {
@@ -628,7 +646,14 @@ class SecurityTestService implements SecurityTestInterface
             $recommendations[] = '發現 ' . count($criticalIssues) . ' 個安全問題，建議立即處理';
 
             foreach ($criticalIssues as $issue) {
-                $recommendations[] = "{$issue['category']}: {$issue['message']}";
+                if (!is_array($issue)) {
+                    continue;
+                }
+
+                $category = isset($issue['category']) && is_string($issue['category']) ? $issue['category'] : '';
+                $message = isset($issue['message']) && is_string($issue['message']) ? $issue['message'] : '';
+
+                $recommendations[] = "{$category}: {$message}";
             }
         }
 

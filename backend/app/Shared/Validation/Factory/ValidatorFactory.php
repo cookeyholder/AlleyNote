@@ -40,15 +40,19 @@ class ValidatorFactory
         $validator = $this->create();
 
         // 應用自訂配置
-        if (isset($config['messages'])) {
+        if (isset($config['messages']) && is_array($config['messages'])) {
             foreach ($config['messages'] as $rule => $message) {
-                $validator->addMessage($rule, $message);
+                if (is_string($rule) && is_string($message)) {
+                    $validator->addMessage($rule, $message);
+                }
             }
         }
 
-        if (isset($config['rules'])) {
+        if (isset($config['rules']) && is_array($config['rules'])) {
             foreach ($config['rules'] as $name => $callback) {
-                $validator->addRule($name, $callback);
+                if (is_string($name) && is_callable($callback)) {
+                    $validator->addRule($name, $callback);
+                }
             }
         }
 
@@ -108,8 +112,8 @@ class ValidatorFactory
             }
 
             $username = trim($value);
-            $minLength = (int) ($parameters[0] ?? 3);
-            $maxLength = (int) ($parameters[1] ?? 50);
+            $minLength = is_numeric($parameters[0] ?? null) ? (int) $parameters[0] : 3;
+            $maxLength = is_numeric($parameters[1] ?? null) ? (int) $parameters[1] : 50;
 
             // 檢查長度
             $length = mb_strlen($username, 'UTF-8');
@@ -137,7 +141,7 @@ class ValidatorFactory
             }
 
             $password = $value;
-            $minLength = (int) ($parameters[0] ?? 8);
+            $minLength = is_numeric($parameters[0] ?? null) ? (int) $parameters[0] : 8;
 
             // 檢查最小長度
             if (strlen($password) < $minLength) {
@@ -250,7 +254,7 @@ class ValidatorFactory
             }
 
             $filename = trim($value);
-            $maxLength = (int) ($parameters[0] ?? 255);
+            $maxLength = is_numeric($parameters[0] ?? null) ? (int) $parameters[0] : 255;
 
             // 檢查長度
             if (mb_strlen($filename, 'UTF-8') > $maxLength) {

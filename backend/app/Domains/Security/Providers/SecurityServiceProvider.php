@@ -103,9 +103,14 @@ class SecurityServiceProvider
 
             public function log($level, Stringable|string $message, array $context = []): void
             {
-                error_log("[$level] $message");
+                $levelStr = is_scalar($level) ? (string) $level : 'unknown';
+                error_log("[{$levelStr}] {$message}");
             }
         };
+
+        if (!($repository instanceof ActivityLogRepositoryInterface)) {
+            throw new \RuntimeException('Invalid repository type');
+        }
 
         return new ActivityLoggingService($repository, $logger);
     }

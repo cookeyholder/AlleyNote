@@ -91,7 +91,8 @@ class ValidationResult implements JsonSerializable
      */
     public function getFieldErrors(string $field): array
     {
-        return $this->errors[$field] ?? [];
+        $fieldErrors = $this->errors[$field] ?? [];
+        return is_array($fieldErrors) ? $fieldErrors : [];
     }
 
     /**
@@ -110,7 +111,7 @@ class ValidationResult implements JsonSerializable
     public function getFirstError(): ?string
     {
         foreach ($this->errors as $fieldErrors) {
-            if (!empty($fieldErrors)) {
+            if (is_array($fieldErrors) && !empty($fieldErrors) && isset($fieldErrors[0]) && is_string($fieldErrors[0])) {
                 return $fieldErrors[0];
             }
         }
@@ -127,7 +128,7 @@ class ValidationResult implements JsonSerializable
     {
         $fieldErrors = $this->getFieldErrors($field);
 
-        return !empty($fieldErrors) ? $fieldErrors[0] : null;
+        return !empty($fieldErrors) && isset($fieldErrors[0]) && is_string($fieldErrors[0]) ? $fieldErrors[0] : null;
     }
 
     /**
@@ -137,7 +138,9 @@ class ValidationResult implements JsonSerializable
     {
         $allErrors = [];
         foreach ($this->errors as $fieldErrors) {
-            $allErrors = array_merge($allErrors, $fieldErrors);
+            if (is_array($fieldErrors)) {
+                $allErrors = array_merge($allErrors, $fieldErrors);
+            }
         }
 
         return $allErrors;
@@ -177,7 +180,20 @@ class ValidationResult implements JsonSerializable
      */
     public function getFieldFailedRules(string $field): array
     {
-        return $this->failedRules[$field] ?? [];
+        $fieldRules = $this->failedRules[$field] ?? [];
+        return is_array($fieldRules) ? $fieldRules : [];
+    }
+
+    /**
+     * 檢查特定欄位是否有特定錯誤.
+     *
+     * @param string $field 欄位名稱
+     * @param string $error 錯誤訊息
+     */
+    public function hasError(string $field, string $error): bool
+    {
+        $fieldErrors = $this->errors[$field] ?? null;
+        return is_array($fieldErrors) && in_array($error, $fieldErrors, true);
     }
 
     /**
@@ -188,7 +204,7 @@ class ValidationResult implements JsonSerializable
      */
     public function addError(string $field, string $error): self
     {
-        if (!isset($this->errors[$field])) {
+        if (!isset($this->errors[$field]) || !is_array($this->errors[$field])) {
             $this->errors[$field] = [];
         }
         $this->errors[$field][] = $error;
@@ -205,7 +221,7 @@ class ValidationResult implements JsonSerializable
      */
     public function addFailedRule(string $field, string $rule): self
     {
-        if (!isset($this->failedRules[$field])) {
+        if (!isset($this->failedRules[$field]) || !is_array($this->failedRules[$field])) {
             $this->failedRules[$field] = [];
         }
         $this->failedRules[$field][] = $rule;
@@ -222,15 +238,25 @@ class ValidationResult implements JsonSerializable
     {
         $this->isValid = $this->isValid && $other->isValid();
 
-        foreach ($other->getErrors() as $field => $errors) {
-            foreach ($errors as $error) {
-                $this->addError($field, $error);
+        $otherErrors = $other->getErrors();
+        foreach ($otherErrors as $field => $errors) {
+            if (is_array($errors)) {
+                foreach ($errors as $error) {
+                    if (is_string($error)) {
+                        $this->addError($field, $error);
+                    }
+                }
             }
         }
 
-        foreach ($other->getFailedRules() as $field => $rules) {
-            foreach ($rules as $rule) {
-                $this->addFailedRule($field, $rule);
+        $otherFailedRules = $other->getFailedRules();
+        foreach ($otherFailedRules as $field => $rules) {
+            if (is_array($rules)) {
+                foreach ($rules as $rule) {
+                    if (is_string($rule)) {
+                        $this->addFailedRule($field, $rule);
+                    }
+                }
             }
         }
 
@@ -263,7 +289,7 @@ class ValidationResult implements JsonSerializable
     public function hasFailedRule(string $rule): bool
     {
         foreach ($this->failedRules as $fieldRules) {
-            if (in_array($rule, $fieldRules, true)) {
+            if (is_array($fieldRules) && in_array($rule, $fieldRules, true)) {
                 return true;
             }
         }
@@ -279,7 +305,8 @@ class ValidationResult implements JsonSerializable
      */
     public function hasFieldFailedRule(string $field, string $rule): bool
     {
-        return isset($this->failedRules[$field]) && in_array($rule, $this->failedRules[$field], true);
+        $fieldRules = $this->failedRules[$field] ?? null;
+        return is_array($fieldRules) && in_array($rule, $fieldRules, true);
     }
 
     /**

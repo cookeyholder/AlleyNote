@@ -39,10 +39,17 @@ class CreateIpRuleDTO extends BaseDTO
         $validatedData = $this->validate($data);
 
         // 設定屬性
-        $this->ipAddress = trim($validatedData['ip_address']);
-        $this->action = strtolower(trim($validatedData['action']));
-        $this->reason = isset($validatedData['reason']) ? trim($validatedData['reason']) : null;
-        $this->createdBy = (int) $validatedData['created_by'];
+        $ipAddressValue = $validatedData['ip_address'] ?? '';
+        $this->ipAddress = is_string($ipAddressValue) ? trim($ipAddressValue) : '';
+
+        $actionValue = $validatedData['action'] ?? '';
+        $this->action = is_string($actionValue) ? strtolower(trim($actionValue)) : '';
+
+        $reasonValue = $validatedData['reason'] ?? null;
+        $this->reason = (isset($reasonValue) && is_string($reasonValue)) ? trim($reasonValue) : null;
+
+        $createdByValue = $validatedData['created_by'] ?? 0;
+        $this->createdBy = is_numeric($createdByValue) ? (int) $createdByValue : 0;
     }
 
     /**

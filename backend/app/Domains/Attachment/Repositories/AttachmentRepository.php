@@ -65,7 +65,7 @@ class AttachmentRepository
 
             return is_array($data) ? new Attachment($data) : null;
         });
-        
+
         return $result instanceof Attachment ? $result : null;
     }
 
@@ -85,7 +85,7 @@ class AttachmentRepository
 
             return is_array($data) ? new Attachment($data) : null;
         });
-        
+
         return $result instanceof Attachment ? $result : null;
     }
 
@@ -112,7 +112,7 @@ class AttachmentRepository
 
             return $attachments;
         });
-        
+
         return is_array($result) ? $result : [];
     }
 

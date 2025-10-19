@@ -17,9 +17,17 @@ class RateLimitService
         $key = "rate_limit:{$ip}";
 
         try {
-            $data = $this->cache->get($key);
-            if ($data === null) {
+            $cachedData = $this->cache->get($key);
+
+            if ($cachedData === null || !is_array($cachedData)) {
+                /** @var array{count: int, reset: int} */
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
+            } else {
+                /** @var array{count: int, reset: int} */
+                $data = [
+                    'count' => is_int($cachedData['count'] ?? null) ? $cachedData['count'] : 0,
+                    'reset' => is_int($cachedData['reset'] ?? null) ? $cachedData['reset'] : time() + $timeWindow,
+                ];
             }
 
             // 檢查是否需要重置計數器
@@ -66,6 +74,6 @@ class RateLimitService
     {
         $result = $this->checkLimit($ip, $maxRequests, $timeWindow);
 
-        return $result['allowed'];
+        return is_bool($result['allowed'] ?? null) ? $result['allowed'] : false;
     }
 }

@@ -57,7 +57,16 @@ class RouteLoader
         $this->loadedRoutes = [];
 
         foreach ($this->routeFiles as $routeFile) {
-            $this->loadRouteFile($router, $routeFile['path'], $routeFile['group']);
+            if (!is_array($routeFile)) {
+                continue;
+            }
+
+            $path = isset($routeFile['path']) && is_string($routeFile['path']) ? $routeFile['path'] : '';
+            $group = isset($routeFile['group']) && is_string($routeFile['group']) ? $routeFile['group'] : 'default';
+
+            if ($path !== '') {
+                $this->loadRouteFile($router, $path, $group);
+            }
         }
     }
 
@@ -141,20 +150,28 @@ class RouteLoader
      */
     private function registerRoute(RouterInterface $router, array $routeConfig): void
     {
-        $methods = (array) $routeConfig['methods'];
-        $path = $routeConfig['path'];
-        $handler = $routeConfig['handler'];
+        $methods = isset($routeConfig['methods']) ? (array) $routeConfig['methods'] : ['GET'];
+        $path = isset($routeConfig['path']) && is_string($routeConfig['path']) ? $routeConfig['path'] : '/';
+        $handler = $routeConfig['handler'] ?? '';
+
+        // 驗證 handler 型別
+        if (!is_string($handler) && !is_array($handler) && !is_callable($handler)) {
+            $handler = '';
+        }
 
         // 正規化 HTTP 方法
         $normalizedMethods = array_map(function ($method) {
-            return strtoupper(trim($method));
+            if (!is_scalar($method)) {
+                return 'GET';
+            }
+            return strtoupper(trim((string) $method));
         }, $methods);
 
         // 使用 map 方法註冊路由
         $route = $router->map($normalizedMethods, $path, $handler);
 
         // 設定路由名稱（如果有提供）
-        if (isset($routeConfig['name'])) {
+        if (isset($routeConfig['name']) && is_string($routeConfig['name'])) {
             $route->setName($routeConfig['name']);
         }
 
@@ -162,7 +179,9 @@ class RouteLoader
         if (isset($routeConfig['middleware'])) {
             $middlewares = (array) $routeConfig['middleware'];
             foreach ($middlewares as $middleware) {
-                $route->middleware($middleware);
+                if (is_string($middleware)) {
+                    $route->middleware($middleware);
+                }
             }
         }
     }
@@ -188,7 +207,11 @@ class RouteLoader
 
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {
-            $group = $route['group'] ?? 'default';
+            if (!is_array($route)) {
+                continue;
+            }
+
+            $group = isset($route['group']) && is_string($route['group']) ? $route['group'] : 'default';
             if (!isset($stats['groups'][$group])) {
                 $stats['groups'][$group] = 0;
             }
@@ -214,7 +237,11 @@ class RouteLoader
     public function getRoutesByGroup(string $group): array
     {
         return array_filter($this->loadedRoutes, function ($route) use ($group) {
-            return ($route['group'] ?? 'default') === $group;
+            if (!is_array($route)) {
+                return false;
+            }
+            $routeGroup = isset($route['group']) && is_string($route['group']) ? $route['group'] : 'default';
+            return $routeGroup === $group;
         });
     }
 

@@ -74,7 +74,10 @@ class UpdatePostDTO extends BaseDTO
 
         // 處理狀態
         if (isset($validatedData['status'])) {
-            $this->status = PostStatus::from($validatedData['status']);
+            $statusValue = $validatedData['status'];
+            $this->status = (is_string($statusValue) || is_int($statusValue))
+                ? PostStatus::from($statusValue)
+                : null;
         } else {
             $this->status = null;
         }
@@ -237,7 +240,11 @@ class UpdatePostDTO extends BaseDTO
             return $data;
         }
 
-        return $this->validator->validateOrFail($data, $rules);
+        /** @var array<string, mixed> $validRules */
+        $validRules = $rules;
+        /** @var array<string, mixed> $typedData */
+        $typedData = $data;
+        return $this->validator->validateOrFail($typedData, $validRules);
     }
 
     /**
@@ -294,28 +301,9 @@ class UpdatePostDTO extends BaseDTO
      */
     public function hasUpdatedField(string $field): bool
     {
-        return in_array($field, $this->getUpdatedFields(), true);
+        $updatedFields = $this->getUpdatedFields();
+        return is_array($updatedFields) && in_array($field, $updatedFields, true);
     }
 
-    /**
-     * 正確轉換布林值
-     */
-    private function convertToBoolean(mixed $value): bool
-    {
-        if (is_bool($value)) {
-            return $value;
-        }
 
-        if (is_string($value)) {
-            $value = strtolower(trim($value));
-
-            return in_array($value, ['1', 'true', 'on', 'yes'], true);
-        }
-
-        if (is_numeric($value)) {
-            return (int) $value === 1;
-        }
-
-        return false;
-    }
 }

@@ -118,22 +118,30 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
             $payload = (array) $decoded;
 
+            // 驗證 payload 是 array<string, mixed>
+            $validatedPayload = [];
+            foreach ($payload as $key => $value) {
+                if (is_string($key)) {
+                    $validatedPayload[$key] = $value;
+                }
+            }
+
             file_put_contents('php://stderr', "[JWT] Token 解碼成功\n");
 
             // 驗證必要欄位
-            $this->validateRequiredFields($payload);
+            $this->validateRequiredFields($validatedPayload);
 
             // 驗證 token 類型
             if ($expectedType !== null) {
-                $this->validateTokenType($payload, $expectedType);
+                $this->validateTokenType($validatedPayload, $expectedType);
             }
 
             // 驗證 issuer 和 audience
-            $this->validateIssuerAndAudience($payload);
+            $this->validateIssuerAndAudience($validatedPayload);
 
             file_put_contents('php://stderr', "[JWT] 所有驗證通過\n");
 
-            return $payload;
+            return $validatedPayload;
         } catch (ExpiredException $e) {
             file_put_contents('php://stderr', "[JWT] Token 已過期\n");
             // 嘗試從過期的 token 中取得過期時間
@@ -141,7 +149,8 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
             try {
                 $unsafePayload = $this->parseTokenUnsafe($token);
-                $expiredAt = $unsafePayload['exp'] ?? null;
+                $expValue = $unsafePayload['exp'] ?? null;
+                $expiredAt = is_int($expValue) ? $expValue : null;
             } catch (Throwable) {
                 // 忽略解析錯誤
             }
@@ -205,8 +214,17 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
             // 解碼 payload（第二部分）
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($parts[1]));
+            $arrayPayload = (array) $payload;
 
-            return (array) $payload;
+            // 驗證所有 key 都是 string
+            $validatedPayload = [];
+            foreach ($arrayPayload as $key => $value) {
+                if (is_string($key)) {
+                    $validatedPayload[$key] = $value;
+                }
+            }
+
+            return $validatedPayload;
         } catch (Throwable $e) {
             if ($e instanceof TokenParsingException) {
                 throw $e;
@@ -317,14 +335,22 @@ final class FirebaseJwtProvider implements JwtProviderInterface
      *
      * @return bool true 如果匹配，false 如果不匹配
      */
-    private function keysMatch($privateKey, $publicKey): bool
+    private function keysMatch(mixed $privateKey, mixed $publicKey): bool
     {
+        // 驗證參數型別
+        if (!is_string($privateKey) && !($privateKey instanceof \OpenSSLAsymmetricKey)) {
+            return false;
+        }
+        if (!is_string($publicKey) && !($publicKey instanceof \OpenSSLAsymmetricKey)) {
+            return false;
+        }
+
         $testData = 'test-data-for-key-verification';
 
         // 使用私鑰簽名
         $signature = '';
         $signResult = openssl_sign($testData, $signature, $privateKey, OPENSSL_ALGO_SHA256);
-        if (!$signResult) {
+        if (!$signResult || !is_string($signature)) {
             return false;
         }
 
@@ -381,7 +407,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         // 使用更精確的微秒時間戳和更多隨機位元組來確保唯一性
         $timestamp = number_format(microtime(true) * 1000000, 0, '', ''); // 精確到微秒
         $randomBytes = bin2hex(random_bytes(16)); // 增加隨機位元組
-        $processId = getmypid(); // 加入進程 ID
+        $processId = (string) getmypid(); // 加入進程 ID
         $uniqid = uniqid('', true); // 加入 PHP 的 uniqid
 
         return $timestamp . $processId . $randomBytes . $uniqid;
@@ -420,10 +446,13 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     private function validateTokenType(array $payload, string $expectedType): void
     {
         if (!isset($payload['type']) || $payload['type'] !== $expectedType) {
+            $actualType = isset($payload['type']) && is_scalar($payload['type'])
+                ? (string) $payload['type']
+                : 'unknown';
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::ACCESS_TOKEN,
-                "Token 類型錯誤，預期: {$expectedType}，實際: " . ($payload['type'] ?? 'unknown'),
+                "Token 類型錯誤，預期: {$expectedType}，實際: {$actualType}",
             );
         }
     }

@@ -20,7 +20,7 @@ class CacheManager
     /**
      * 取得快取值
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         if (!$this->has($key)) {
             return $default;
@@ -32,7 +32,7 @@ class CacheManager
     /**
      * 設定快取值
      */
-    public function set(string $key, $value, ?int $ttl = null): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         $ttl ??= $this->defaultTtl;
 
@@ -84,7 +84,7 @@ class CacheManager
     /**
      * 記憶化取得（如果不存在則執行回調並快取結果）.
      */
-    public function remember(string $key, callable $callback, ?int $ttl = null)
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
         if ($this->has($key)) {
             return $this->get($key);
@@ -97,9 +97,9 @@ class CacheManager
     }
 
     /**
-     * 永久記憶化取得（直到手動刪除）.
+     * 永久記憶化取得（無過期時間）.
      */
-    public function rememberForever(string $key, callable $callback)
+    public function rememberForever(string $key, callable $callback): mixed
     {
         if ($this->has($key)) {
             return $this->get($key);
@@ -119,7 +119,9 @@ class CacheManager
     {
         $result = [];
         foreach ($keys as $key) {
-            $result[$key] = $this->get($key);
+            if (is_string($key)) {
+                $result[$key] = $this->get($key);
+            }
         }
 
         return $result;
@@ -163,7 +165,8 @@ class CacheManager
      */
     public function increment(string $key, int $value = 1): int
     {
-        $current = (int) $this->get($key, 0);
+        $currentValue = $this->get($key, 0);
+        $current = is_numeric($currentValue) ? (int) $currentValue : 0;
         $new = $current + $value;
         $this->set($key, $new);
 

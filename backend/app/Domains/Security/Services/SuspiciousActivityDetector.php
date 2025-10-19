@@ -205,7 +205,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
             // 記錄檢測活動
             foreach ($patterns as $pattern) {
-                $this->logDetectionActivity(null, 'global', $pattern);
+                if ($pattern instanceof SuspiciousActivityAnalysisDTO) {
+                    $this->logDetectionActivity(null, 'global', $pattern);
+                }
             }
 
             return $patterns;
@@ -236,13 +238,20 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            if (!is_array($activity)) {
+                continue;
+            }
+
+            $actionType = isset($activity['action_type']) && is_string($activity['action_type'])
+                ? $activity['action_type']
+                : 'unknown';
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
 
             // 統計失敗數
-            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true)) {
+            $status = isset($activity['status']) && is_string($activity['status']) ? $activity['status'] : '';
+            if (in_array($status, ['failed', 'error', 'blocked'], true)) {
                 $failureCounts[$actionType] = ($failureCounts[$actionType] ?? 0) + 1;
             }
         }
@@ -256,39 +265,83 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         if ($this->isDetectionEnabled('failure_rate')) {
             $result = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($result['suspicious']) {
+            if (isset($result['suspicious']) && $result['suspicious'] === true) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules = array_merge($detectionRules, $result['rules']);
-                $anomalyScores = array_merge($anomalyScores, $result['scores']);
-                $confidence = max($confidence, $result['confidence']);
+
+                $resultSeverity = isset($result['severity']) && $result['severity'] instanceof ActivitySeverity
+                    ? $result['severity']
+                    : ActivitySeverity::LOW;
+                $severityLevel = $this->escalateSeverity($severityLevel, $resultSeverity);
+
+                $resultRules = isset($result['rules']) && is_array($result['rules']) ? $result['rules'] : [];
+                $detectionRules = array_merge($detectionRules, $resultRules);
+
+                $resultScores = isset($result['scores']) && is_array($result['scores']) ? $result['scores'] : [];
+                $anomalyScores = array_merge($anomalyScores, $resultScores);
+
+                $resultConfidence = isset($result['confidence']) && is_numeric($result['confidence'])
+                    ? (float) $result['confidence']
+                    : 0.0;
+                $confidence = max($confidence, $resultConfidence);
             }
         }
 
         if ($this->isDetectionEnabled('frequency_anomaly')) {
             $result = $this->detectFrequencyAnomalies($activityCounts, $timeWindowMinutes);
-            if ($result['suspicious']) {
+            if (isset($result['suspicious']) && $result['suspicious'] === true) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['frequency'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+
+                $resultSeverity = isset($result['severity']) && $result['severity'] instanceof ActivitySeverity
+                    ? $result['severity']
+                    : ActivitySeverity::LOW;
+                $severityLevel = $this->escalateSeverity($severityLevel, $resultSeverity);
+
+                if (isset($result['rule'])) {
+                    $detectionRules[] = $result['rule'];
+                }
+
+                if (isset($result['score'])) {
+                    $anomalyScores['frequency'] = $result['score'];
+                }
+
+                $resultConfidence = isset($result['confidence']) && is_numeric($result['confidence'])
+                    ? (float) $result['confidence']
+                    : 0.0;
+                $confidence = max($confidence, $resultConfidence);
             }
         }
 
         if ($this->isDetectionEnabled('pattern_analysis')) {
             $result = $this->detectPatternAnomalies($activities);
-            if ($result['suspicious']) {
+            if (isset($result['suspicious']) && $result['suspicious'] === true) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['pattern'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+
+                $resultSeverity = isset($result['severity']) && $result['severity'] instanceof ActivitySeverity
+                    ? $result['severity']
+                    : ActivitySeverity::LOW;
+                $severityLevel = $this->escalateSeverity($severityLevel, $resultSeverity);
+
+                if (isset($result['rule'])) {
+                    $detectionRules[] = $result['rule'];
+                }
+
+                if (isset($result['score'])) {
+                    $anomalyScores['pattern'] = $result['score'];
+                }
+
+                $resultConfidence = isset($result['confidence']) && is_numeric($result['confidence'])
+                    ? (float) $result['confidence']
+                    : 0.0;
+                $confidence = max($confidence, $resultConfidence);
             }
         }
 
         // 取得使用者ID
-        $userId = $activities[0]['user_id'] ?? 0;
+        $firstActivity = $activities[0] ?? null;
+        $userId = 0;
+        if (is_array($firstActivity) && isset($firstActivity['user_id']) && is_numeric($firstActivity['user_id'])) {
+            $userId = (int) $firstActivity['user_id'];
+        }
 
         // 產生建議動作
         $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRules);
@@ -327,19 +380,26 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            if (!is_array($activity)) {
+                continue;
+            }
+
+            $actionType = isset($activity['action_type']) && is_string($activity['action_type'])
+                ? $activity['action_type']
+                : 'unknown';
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
 
             // 統計失敗數
-            if (in_array($activity['status'], ['failed', 'error', 'blocked'], true)) {
+            $status = isset($activity['status']) && is_string($activity['status']) ? $activity['status'] : '';
+            if (in_array($status, ['failed', 'error', 'blocked'], true)) {
                 $failureCounts[$actionType] = ($failureCounts[$actionType] ?? 0) + 1;
             }
 
             // 記錄使用者
-            if ($activity['user_id']) {
-                $uniqueUsers[$activity['user_id']] = true;
+            if (isset($activity['user_id']) && is_numeric($activity['user_id']) && $activity['user_id'] > 0) {
+                $uniqueUsers[(int) $activity['user_id']] = true;
             }
         }
 
@@ -351,23 +411,49 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         // 檢測失敗率異常（使用相同的邏輯）
         if ($this->isDetectionEnabled('failure_rate')) {
             $failureResult = $this->detectFailureRateAnomalies($activityCounts, $failureCounts, $timeWindowMinutes);
-            if ($failureResult['suspicious']) {
+            if (isset($failureResult['suspicious']) && $failureResult['suspicious'] === true) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $failureResult['severity']);
-                $detectionRules = array_merge($detectionRules, $failureResult['rules']);
-                $anomalyScores = array_merge($anomalyScores, $failureResult['scores']);
-                $confidence = max($confidence, $failureResult['confidence']);
+
+                $resultSeverity = isset($failureResult['severity']) && $failureResult['severity'] instanceof ActivitySeverity
+                    ? $failureResult['severity']
+                    : ActivitySeverity::LOW;
+                $severityLevel = $this->escalateSeverity($severityLevel, $resultSeverity);
+
+                $resultRules = isset($failureResult['rules']) && is_array($failureResult['rules']) ? $failureResult['rules'] : [];
+                $detectionRules = array_merge($detectionRules, $resultRules);
+
+                $resultScores = isset($failureResult['scores']) && is_array($failureResult['scores']) ? $failureResult['scores'] : [];
+                $anomalyScores = array_merge($anomalyScores, $resultScores);
+
+                $resultConfidence = isset($failureResult['confidence']) && is_numeric($failureResult['confidence'])
+                    ? (float) $failureResult['confidence']
+                    : 0.0;
+                $confidence = max($confidence, $resultConfidence);
             }
         }
 
         if ($this->isDetectionEnabled('ip_reputation')) {
             $result = $this->detectIpReputationIssues($activities, $ipAddress);
-            if ($result['suspicious']) {
+            if (isset($result['suspicious']) && $result['suspicious'] === true) {
                 $isSuspicious = true;
-                $severityLevel = $this->escalateSeverity($severityLevel, $result['severity']);
-                $detectionRules[] = $result['rule'];
-                $anomalyScores['ip_reputation'] = $result['score'];
-                $confidence = max($confidence, $result['confidence']);
+
+                $resultSeverity = isset($result['severity']) && $result['severity'] instanceof ActivitySeverity
+                    ? $result['severity']
+                    : ActivitySeverity::LOW;
+                $severityLevel = $this->escalateSeverity($severityLevel, $resultSeverity);
+
+                if (isset($result['rule'])) {
+                    $detectionRules[] = $result['rule'];
+                }
+
+                if (isset($result['score'])) {
+                    $anomalyScores['ip_reputation'] = $result['score'];
+                }
+
+                $resultConfidence = isset($result['confidence']) && is_numeric($result['confidence'])
+                    ? (float) $result['confidence']
+                    : 0.0;
+                $confidence = max($confidence, $resultConfidence);
             }
         }
 
@@ -410,6 +496,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /**
      * 分析全域模式.
+     *
+     * @return array<SuspiciousActivityAnalysisDTO>
      */
     private function analyzeGlobalPatterns(array $statistics, int $timeWindowMinutes): array
     {
@@ -456,12 +544,24 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     private function detectFailureRateAnomalies(array $activityCounts, array $failureCounts, int $timeWindowMinutes): array
     {
         foreach ($this->failureThresholds as $actionType => $config) {
-            if ($config['timeWindow'] !== $timeWindowMinutes) {
+            if (!is_array($config) || !isset($config['timeWindow'], $config['threshold'])) {
+                continue;
+            }
+
+            $configTimeWindow = is_int($config['timeWindow']) ? $config['timeWindow'] : 0;
+            if ($configTimeWindow !== $timeWindowMinutes) {
                 continue; // 時間窗口不匹配
             }
 
             $failures = $failureCounts[$actionType] ?? 0;
-            $threshold = $config['threshold'];
+            if (!is_int($failures)) {
+                $failures = 0;
+            }
+
+            $threshold = is_int($config['threshold']) ? $config['threshold'] : 1;
+            if ($threshold <= 0) {
+                $threshold = 1;
+            }
 
             if ($failures >= $threshold) {
                 return [
@@ -494,12 +594,24 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     private function detectFrequencyAnomalies(array $activityCounts, int $timeWindowMinutes): array
     {
         foreach ($this->frequencyThresholds as $actionType => $config) {
-            if ($config['timeWindow'] !== $timeWindowMinutes) {
+            if (!is_array($config) || !isset($config['timeWindow'], $config['threshold'])) {
+                continue;
+            }
+
+            $configTimeWindow = is_int($config['timeWindow']) ? $config['timeWindow'] : 0;
+            if ($configTimeWindow !== $timeWindowMinutes) {
                 continue; // 時間窗口不匹配
             }
 
             $count = $activityCounts[$actionType] ?? 0;
-            $threshold = $config['threshold'];
+            if (!is_int($count)) {
+                $count = 0;
+            }
+
+            $threshold = is_int($config['threshold']) ? $config['threshold'] : 1;
+            if ($threshold <= 0) {
+                $threshold = 1;
+            }
 
             if ($count >= $threshold) {
                 return [
@@ -529,8 +641,18 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         // 檢測短時間內的密集活動
         $timeSlots = [];
         foreach ($activities as $activity) {
-            $timeSlot = substr($activity['occurred_at'], 0, 16); // 精確到分鐘
-            $timeSlots[$timeSlot] = ($timeSlots[$timeSlot] ?? 0) + 1;
+            if (!is_array($activity)) {
+                continue;
+            }
+
+            $occurredAt = isset($activity['occurred_at']) && is_string($activity['occurred_at'])
+                ? $activity['occurred_at']
+                : '';
+
+            if (strlen($occurredAt) >= 16) {
+                $timeSlot = substr($occurredAt, 0, 16); // 精確到分鐘
+                $timeSlots[$timeSlot] = ($timeSlots[$timeSlot] ?? 0) + 1;
+            }
         }
 
         // 找出最密集的時間段
@@ -668,10 +790,17 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 根據檢測規則細化動作
         foreach ($rules as $rule) {
-            if ($rule['type'] === 'failure_rate_threshold' && str_contains($rule['action_type'], 'login')) {
+            if (!is_array($rule)) {
+                continue;
+            }
+
+            $ruleType = isset($rule['type']) && is_string($rule['type']) ? $rule['type'] : '';
+            $actionType = isset($rule['action_type']) && is_string($rule['action_type']) ? $rule['action_type'] : '';
+
+            if ($ruleType === 'failure_rate_threshold' && str_contains($actionType, 'login')) {
                 $actions = 'temporary_account_lock';
                 break;
-            } elseif ($rule['type'] === 'suspicious_ip_range') {
+            } elseif ($ruleType === 'suspicious_ip_range') {
                 $actions = 'block_ip_address';
                 break;
             }
@@ -748,6 +877,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         ]);
     }
 
+    /**
+     * 取得閾值配置.
+     *
+     * @return array{failure_thresholds: array<string, array<string, int>>, frequency_thresholds: array<string, array<string, int>>}
+     */
     public function getThresholdConfiguration(): array
     {
         return [

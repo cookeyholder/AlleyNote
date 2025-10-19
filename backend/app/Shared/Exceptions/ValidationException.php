@@ -29,16 +29,20 @@ class ValidationException extends Exception
         return $this->validationResult;
     }
 
-    // Static factory method for creating from an array of errors
+    /**
+     * @param array<string, mixed> $errors
+     * @param array<string, mixed>|string $failedRulesOrMessage
+     */
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
         // Handle overloaded parameters
         if (is_array($failedRulesOrMessage)) {
+            /** @var array<string, mixed> $failedRules */
             $failedRules = $failedRulesOrMessage;
             $validationResult = ValidationResult::failure($errors, $failedRules);
         } else {
             $message = $failedRulesOrMessage;
-            $validationResult = ValidationResult::failure($errors);
+            $validationResult = ValidationResult::failure($errors, []);
         }
 
         return new self($validationResult, $message);
