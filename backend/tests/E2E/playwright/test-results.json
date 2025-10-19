@@ -1,0 +1,748 @@
+{
+  "config": {
+    "configFile": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/playwright.config.js",
+    "rootDir": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "11-statistics.spec.js",
+      "file": "11-statistics.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "系統統計頁面",
+          "file": "11-statistics.spec.js",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "應該顯示統計頁面標題",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3697,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:57:57.054Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-04dd9ae93e56a5f26074",
+              "file": "11-statistics.spec.js",
+              "line": 18,
+              "column": 3
+            },
+            {
+              "title": "應該顯示統計卡片",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8300,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=總文章數').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=總文章數').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=總文章數').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=總文章數').first()\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:26:28",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 28,
+                          "line": 26
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m     \u001b[90m// 檢查統計卡片是否存在\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m postCard \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=總文章數'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m expect(postCard)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m     \n \u001b[90m 28 |\u001b[39m     \u001b[36mconst\u001b[39m userCard \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=活躍使用者'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m expect(userCard)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 28,
+                            "line": 26
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('text=總文章數').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('text=總文章數').first()\u001b[22m\n\n\n\u001b[0m \u001b[90m 24 |\u001b[39m     \u001b[90m// 檢查統計卡片是否存在\u001b[39m\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m postCard \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=總文章數'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m expect(postCard)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m     \n \u001b[90m 28 |\u001b[39m     \u001b[36mconst\u001b[39m userCard \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=活躍使用者'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 29 |\u001b[39m     \u001b[36mawait\u001b[39m expect(userCard)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:26:28\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:58:01.487Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示統計卡片-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示統計卡片-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示統計卡片-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示統計卡片-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 28,
+                        "line": 26
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-184fe44e8357b5111857",
+              "file": "11-statistics.spec.js",
+              "line": 23,
+              "column": 3
+            },
+            {
+              "title": "應該顯示流量趨勢圖表",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8555,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"流量趨勢\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"流量趨勢\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"流量趨勢\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"流量趨勢\")')\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:40:30",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 30,
+                          "line": 40
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 38 |\u001b[39m   test(\u001b[32m'應該顯示流量趨勢圖表'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 39 |\u001b[39m     \u001b[36mconst\u001b[39m chartTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"流量趨勢\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 40 |\u001b[39m     \u001b[36mawait\u001b[39m expect(chartTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 41 |\u001b[39m     \n \u001b[90m 42 |\u001b[39m     \u001b[90m// 檢查 canvas 元素（Chart.js 使用 canvas）\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[36mconst\u001b[39m canvas \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'#trafficChart'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 30,
+                            "line": 40
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"流量趨勢\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"流量趨勢\")')\u001b[22m\n\n\n\u001b[0m \u001b[90m 38 |\u001b[39m   test(\u001b[32m'應該顯示流量趨勢圖表'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 39 |\u001b[39m     \u001b[36mconst\u001b[39m chartTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"流量趨勢\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 40 |\u001b[39m     \u001b[36mawait\u001b[39m expect(chartTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 41 |\u001b[39m     \n \u001b[90m 42 |\u001b[39m     \u001b[90m// 檢查 canvas 元素（Chart.js 使用 canvas）\u001b[39m\n \u001b[90m 43 |\u001b[39m     \u001b[36mconst\u001b[39m canvas \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'#trafficChart'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:40:30\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:58:10.226Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示流量趨勢圖表-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示流量趨勢圖表-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示流量趨勢圖表-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示流量趨勢圖表-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 30,
+                        "line": 40
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-49018a9cd5fc4ce029a9",
+              "file": "11-statistics.spec.js",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "應該顯示熱門文章列表",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8314,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"熱門文章\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"熱門文章\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"熱門文章\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"熱門文章\")')\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:49:32",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 32,
+                          "line": 49
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 47 |\u001b[39m   test(\u001b[32m'應該顯示熱門文章列表'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 48 |\u001b[39m     \u001b[36mconst\u001b[39m popularTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"熱門文章\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(popularTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 51 |\u001b[39m\n \u001b[90m 52 |\u001b[39m   test(\u001b[32m'應該顯示登入失敗統計'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 32,
+                            "line": 49
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"熱門文章\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"熱門文章\")')\u001b[22m\n\n\n\u001b[0m \u001b[90m 47 |\u001b[39m   test(\u001b[32m'應該顯示熱門文章列表'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 48 |\u001b[39m     \u001b[36mconst\u001b[39m popularTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"熱門文章\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 49 |\u001b[39m     \u001b[36mawait\u001b[39m expect(popularTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 50 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 51 |\u001b[39m\n \u001b[90m 52 |\u001b[39m   test(\u001b[32m'應該顯示登入失敗統計'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:49:32\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:58:19.437Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示熱門文章列表-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示熱門文章列表-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示熱門文章列表-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示熱門文章列表-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 32,
+                        "line": 49
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-68047605d0466852cb84",
+              "file": "11-statistics.spec.js",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "應該顯示登入失敗統計",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8621,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"登入失敗統計\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"登入失敗統計\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"登入失敗統計\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"登入失敗統計\")')\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:54:37",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 37,
+                          "line": 54
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 52 |\u001b[39m   test(\u001b[32m'應該顯示登入失敗統計'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 53 |\u001b[39m     \u001b[36mconst\u001b[39m loginFailureTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"登入失敗統計\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 54 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loginFailureTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 55 |\u001b[39m     \n \u001b[90m 56 |\u001b[39m     \u001b[90m// 檢查總失敗次數顯示\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[36mconst\u001b[39m totalFailures \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=總失敗次數'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 37,
+                            "line": 54
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"登入失敗統計\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"登入失敗統計\")')\u001b[22m\n\n\n\u001b[0m \u001b[90m 52 |\u001b[39m   test(\u001b[32m'應該顯示登入失敗統計'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 53 |\u001b[39m     \u001b[36mconst\u001b[39m loginFailureTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"登入失敗統計\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 54 |\u001b[39m     \u001b[36mawait\u001b[39m expect(loginFailureTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 55 |\u001b[39m     \n \u001b[90m 56 |\u001b[39m     \u001b[90m// 檢查總失敗次數顯示\u001b[39m\n \u001b[90m 57 |\u001b[39m     \u001b[36mconst\u001b[39m totalFailures \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=總失敗次數'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:54:37\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:58:28.386Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗統計-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗統計-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗統計-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗統計-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 37,
+                        "line": 54
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-fff65eb5096463966aaa",
+              "file": "11-statistics.spec.js",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "應該顯示登入失敗趨勢圖表",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8488,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"登入失敗趨勢\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"登入失敗趨勢\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"登入失敗趨勢\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"登入失敗趨勢\")')\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:63:30",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 30,
+                          "line": 63
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 61 |\u001b[39m   test(\u001b[32m'應該顯示登入失敗趨勢圖表'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 62 |\u001b[39m     \u001b[36mconst\u001b[39m trendTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"登入失敗趨勢\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 63 |\u001b[39m     \u001b[36mawait\u001b[39m expect(trendTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 64 |\u001b[39m     \n \u001b[90m 65 |\u001b[39m     \u001b[90m// 檢查 canvas 元素\u001b[39m\n \u001b[90m 66 |\u001b[39m     \u001b[36mconst\u001b[39m canvas \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'#loginFailuresChart'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 30,
+                            "line": 63
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('h2:has-text(\"登入失敗趨勢\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('h2:has-text(\"登入失敗趨勢\")')\u001b[22m\n\n\n\u001b[0m \u001b[90m 61 |\u001b[39m   test(\u001b[32m'應該顯示登入失敗趨勢圖表'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 62 |\u001b[39m     \u001b[36mconst\u001b[39m trendTitle \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'h2:has-text(\"登入失敗趨勢\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 63 |\u001b[39m     \u001b[36mawait\u001b[39m expect(trendTitle)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 64 |\u001b[39m     \n \u001b[90m 65 |\u001b[39m     \u001b[90m// 檢查 canvas 元素\u001b[39m\n \u001b[90m 66 |\u001b[39m     \u001b[36mconst\u001b[39m canvas \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'#loginFailuresChart'\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:63:30\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:58:37.661Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗趨勢圖表-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗趨勢圖表-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗趨勢圖表-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該顯示登入失敗趨勢圖表-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 30,
+                        "line": 63
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-3f308658a76504799427",
+              "file": "11-statistics.spec.js",
+              "line": 61,
+              "column": 3
+            },
+            {
+              "title": "應該能切換時間範圍",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 18765,
+                      "error": {
+                        "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"本週\")')\u001b[22m\n",
+                        "stack": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"本週\")')\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:72:16",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 16,
+                          "line": 72
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 70 |\u001b[39m   test(\u001b[32m'應該能切換時間範圍'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 71 |\u001b[39m     \u001b[90m// 點擊「本週」按鈕\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 72 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"本週\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m500\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// 驗證按鈕狀態\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 16,
+                            "line": 72
+                          },
+                          "message": "TimeoutError: page.click: Timeout 15000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button:has-text(\"本週\")')\u001b[22m\n\n\n\u001b[0m \u001b[90m 70 |\u001b[39m   test(\u001b[32m'應該能切換時間範圍'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 71 |\u001b[39m     \u001b[90m// 點擊「本週」按鈕\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 72 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mclick(\u001b[32m'button:has-text(\"本週\")'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 73 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForTimeout(\u001b[35m500\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 74 |\u001b[39m     \n \u001b[90m 75 |\u001b[39m     \u001b[90m// 驗證按鈕狀態\u001b[39m\u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:72:16\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:58:46.813Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能切換時間範圍-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能切換時間範圍-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能切換時間範圍-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能切換時間範圍-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 16,
+                        "line": 72
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-22599ae543c3c3718331",
+              "file": "11-statistics.spec.js",
+              "line": 70,
+              "column": 3
+            },
+            {
+              "title": "應該能刷新統計資料",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 8254,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('button:has-text(\"刷新\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('button:has-text(\"刷新\")')\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('button:has-text(\"刷新\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('button:has-text(\"刷新\")')\u001b[22m\n\n    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:91:33",
+                        "location": {
+                          "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                          "column": 33,
+                          "line": 91
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 89 |\u001b[39m     \u001b[90m// 找到並點擊刷新按鈕\u001b[39m\n \u001b[90m 90 |\u001b[39m     \u001b[36mconst\u001b[39m refreshButton \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"刷新\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 91 |\u001b[39m     \u001b[36mawait\u001b[39m expect(refreshButton)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 92 |\u001b[39m     \n \u001b[90m 93 |\u001b[39m     \u001b[36mawait\u001b[39m refreshButton\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                            "column": 33,
+                            "line": 91
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('button:has-text(\"刷新\")')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('button:has-text(\"刷新\")')\u001b[22m\n\n\n\u001b[0m \u001b[90m 89 |\u001b[39m     \u001b[90m// 找到並點擊刷新按鈕\u001b[39m\n \u001b[90m 90 |\u001b[39m     \u001b[36mconst\u001b[39m refreshButton \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'button:has-text(\"刷新\")'\u001b[39m)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 91 |\u001b[39m     \u001b[36mawait\u001b[39m expect(refreshButton)\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                 \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 92 |\u001b[39m     \n \u001b[90m 93 |\u001b[39m     \u001b[36mawait\u001b[39m refreshButton\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n \u001b[90m 94 |\u001b[39m     \u001b[0m\n\u001b[2m    at /Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js:91:33\u001b[22m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:59:06.266Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能刷新統計資料-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能刷新統計資料-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能刷新統計資料-chromium/error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/test-results/11-statistics-系統統計頁面-應該能刷新統計資料-chromium/trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/cookeyholder/projects/AlleyNote/backend/tests/E2E/playwright/tests/11-statistics.spec.js",
+                        "column": 33,
+                        "line": 91
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-70e9998824f9d1ff304c",
+              "file": "11-statistics.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "統計數據應該是數字",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3379,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:59:15.201Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-d90e614232ac8b82b028",
+              "file": "11-statistics.spec.js",
+              "line": 105,
+              "column": 3
+            },
+            {
+              "title": "熱門文章應該按瀏覽量排序",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3810,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-19T10:59:18.821Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a5c56bee3acd6e5cd3c5-97cdb5a4d81c6d0599ab",
+              "file": "11-statistics.spec.js",
+              "line": 117,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-19T10:57:56.785Z",
+    "duration": 85965.554,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 7,
+    "flaky": 0
+  }
+}

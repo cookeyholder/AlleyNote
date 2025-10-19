@@ -91,14 +91,19 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $roles = $userWithRoles['roles'] ?? [];
             $userRole = null;
             if (is_array($roles) && !empty($roles) && isset($roles[0]) && is_array($roles[0])) {
-                $userRole = $roles[0]['name'] ?? null;
+                $userRoleRaw = $roles[0]['name'] ?? null;
+                $userRole = is_string($userRoleRaw) ? $userRoleRaw : null;
             }
+
+            // 根據角色自動賦予權限
+            $permissions = $this->getPermissionsForRole($userRole);
 
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
                 'email' => $userEmail,
                 'username' => $userName,
                 'role' => $userRole,
+                'permissions' => $permissions,  // 使用 permissions 而不是 scopes
                 'scopes' => $request->scopes ?? [],
             ]);
 
@@ -313,5 +318,21 @@ final class AuthenticationService implements AuthenticationServiceInterface
         } catch (Throwable) {
             return null;
         }
+    }
+
+    /**
+     * 根據角色取得預設權限.
+     *
+     * @return string[]
+     */
+    private function getPermissionsForRole(?string $role): array
+    {
+        // 如果是 super_admin 或 admin,賦予所有統計權限
+        if ($role === 'super_admin' || $role === 'admin') {
+            return ['*'];  // 全權限
+        }
+
+        // 一般角色沒有權限
+        return [];
     }
 }
