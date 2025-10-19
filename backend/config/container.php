@@ -255,7 +255,8 @@ return array_merge(
             ->constructorParameter('db', \DI\get(\PDO::class)),
 
         TagManagementService::class => \DI\autowire(TagManagementService::class)
-            ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class)),
+            ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class))
+            ->constructorParameter('logger', \DI\get(LoggerInterface::class)),
 
         RateLimitService::class => \DI\autowire(RateLimitService::class)
             ->constructorParameter('cache', \DI\get(CacheService::class)),

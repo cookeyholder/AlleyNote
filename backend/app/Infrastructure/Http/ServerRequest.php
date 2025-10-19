@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -33,17 +34,13 @@ class ServerRequest implements ServerRequestInterface
 
     private string $protocolVersion = '1.1';
 
-    /** @var mixed */
-    private $body;
+    private StreamInterface $body;
 
-    /**
-     * @param mixed $body
-     */
     public function __construct(
         string $method,
         UriInterface $uri,
         array $headers = [],
-        $body = null,
+        mixed $body = null,
         string $version = '1.1',
         array $serverParams = [],
     ) {
@@ -63,7 +60,7 @@ class ServerRequest implements ServerRequestInterface
             }
         }
 
-        $this->body = $body;
+        $this->body = $this->createBodyStream($body);
         $this->protocolVersion = $version;
         $this->serverParams = $serverParams;
     }
@@ -192,7 +189,6 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    // ResponseInterface methods
     public function getProtocolVersion(): string
     {
         return $this->protocolVersion;
@@ -254,21 +250,29 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getBody()
+    public function getBody(): StreamInterface
     {
-        if ($this->body instanceof StreamInterface) {
-            return $this->body;
-        }
-
-        // 如果 body 不是 StreamInterface，建立一個空的 Stream
-        return new Stream('');
+        return $this->body;
     }
 
-    public function withBody(mixed $body): self
+    public function withBody(StreamInterface $body): self
     {
         $new = clone $this;
         $new->body = $body;
 
         return $new;
+    }
+
+    private function createBodyStream(mixed $body): StreamInterface
+    {
+        if ($body instanceof StreamInterface) {
+            return $body;
+        }
+
+        if (is_string($body) || is_resource($body) || $body === null) {
+            return new Stream($body ?? '');
+        }
+
+        throw new InvalidArgumentException('Request body must be a string, resource, StreamInterface or null');
     }
 }

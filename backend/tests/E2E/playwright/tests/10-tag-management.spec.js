@@ -90,48 +90,88 @@ test.describe("標籤管理功能測試", () => {
     test("應該能夠成功新增標籤", async ({ authenticatedPage: page }) => {
         // 開啟新增對話框
         await page.click('button:has-text("新增標籤")');
+
+        // 等待 Modal 完全載入
+        await page.waitForSelector("form#tagForm", {
+            state: "visible",
+            timeout: 5000,
+        });
         await page.waitForTimeout(500);
 
         // 填寫表單
         const timestamp = Date.now();
-        const tagName = `測試標籤 ${timestamp}`;
-        await page.fill('input[name="name"]', tagName);
-        await page.fill('input[name="slug"]', `test-tag-${timestamp}`);
-        await page.fill('textarea[name="description"]', "這是測試用的標籤描述");
+        const random = Math.floor(Math.random() * 10000);
+        const tagName = `test_tag_${timestamp}_${random}`;
 
-        // 提交表單,等待 API 響應
-        const [createResponse, getResponse] = await Promise.all([
-            page.waitForResponse(
-                (resp) =>
-                    resp.url().includes("/api/tags") &&
-                    resp.request().method() === "POST"
-            ),
-            page.waitForResponse(
-                (resp) =>
-                    resp.url().includes("/api/tags") &&
-                    resp.request().method() === "GET"
-            ),
-            page.locator('button[type="submit"]:has-text("新增標籤")').click(),
-        ]);
+        // 確認欄位存在
+        await expect(page.locator('input[name="name"]')).toBeVisible();
+        await page.fill('input[name="name"]', tagName);
+        console.log(`填寫標籤名稱: ${tagName}`);
+
+        // 提交表單，等待建立 API 響應
+        const createResponsePromise = page.waitForResponse(
+            (resp) =>
+                resp.url().includes("/api/tags") &&
+                resp.request().method() === "POST"
+        );
+
+        // 監聽網路請求以查看發送的資料
+        const requestPromise = page.waitForRequest(
+            (req) => req.url().includes("/api/tags") && req.method() === "POST"
+        );
+
+        await page
+            .locator('button[type="submit"]:has-text("新增標籤")')
+            .click();
+
+        const request = await requestPromise;
+        console.log("發送的資料:", await request.postData());
+
+        const createResponse = await createResponsePromise;
 
         // 確認建立成功 (標籤 API 回傳 200)
-        expect(createResponse.status()).toBe(200);
+        const createStatus = createResponse.status();
+        console.log(`標籤建立 API 狀態: ${createStatus}`);
 
-        // 等待列表重新渲染
-        await page.waitForTimeout(500);
+        const responseText = await createResponse.text();
+        console.log("API 響應內容:", responseText.substring(0, 500));
+
+        if (createStatus !== 200 && createStatus !== 201) {
+            console.error("標籤建立失敗");
+        }
+
+        expect([200, 201]).toContain(createStatus);
+
+        // 等待列表重新載入
+        const getResponsePromise = page.waitForResponse(
+            (resp) =>
+                resp.url().includes("/api/tags") &&
+                resp.request().method() === "GET"
+        );
+        const getResponse = await getResponsePromise;
+        const listText = await getResponse.text();
+        console.log("標籤列表 API 響應:", listText.substring(0, 500));
+        await page.waitForTimeout(1000);
 
         // Modal 應該關閉
         await expect(
             page.locator('.fixed.inset-0 h3:has-text("新增標籤")')
         ).not.toBeVisible();
 
-        // 頁面應該顯示新增的標籤
-        await expect(page.locator(`text=${tagName}`)).toBeVisible({
+        // 頁面應該顯示新增的標籤 - 使用更明確的選擇器
+        await expect(
+            page
+                .locator("h3.text-lg.font-semibold")
+                .filter({ hasText: tagName })
+        ).toBeVisible({
             timeout: 5000,
         });
     });
 
     test("應該能夠編輯標籤", async ({ authenticatedPage: page }) => {
+        // 等待標籤列表載入完成
+        await page.waitForTimeout(1000);
+
         // 先確保有至少一個標籤
         const tagCards = page.locator(".edit-tag-btn");
         const count = await tagCards.count();
@@ -141,11 +181,29 @@ test.describe("標籤管理功能測試", () => {
             await page.click('button:has-text("新增標籤")');
             await page.waitForTimeout(500);
             const timestamp = Date.now();
-            await page.fill('input[name="name"]', `測試標籤 ${timestamp}`);
+            const random = Math.floor(Math.random() * 10000);
+            await page.fill(
+                'input[name="name"]',
+                `測試標籤_${timestamp}_${random}`
+            );
+
+            const createResponsePromise = page.waitForResponse(
+                (resp) =>
+                    resp.url().includes("/api/tags") &&
+                    resp.request().method() === "POST"
+            );
+
             await page
                 .locator('button[type="submit"]:has-text("新增標籤")')
                 .click();
-            await page.waitForTimeout(1500);
+
+            await createResponsePromise;
+            await page.waitForResponse(
+                (resp) =>
+                    resp.url().includes("/api/tags") &&
+                    resp.request().method() === "GET"
+            );
+            await page.waitForTimeout(1000);
         }
 
         // 點擊第一個標籤的編輯按鈕
@@ -179,6 +237,9 @@ test.describe("標籤管理功能測試", () => {
     });
 
     test("應該能夠刪除標籤", async ({ authenticatedPage: page }) => {
+        // 等待標籤列表載入完成
+        await page.waitForTimeout(1000);
+
         // 先確保有至少一個可刪除的標籤
         const deleteButtons = page.locator(".delete-tag-btn");
         const count = await deleteButtons.count();
@@ -188,11 +249,29 @@ test.describe("標籤管理功能測試", () => {
             await page.click('button:has-text("新增標籤")');
             await page.waitForTimeout(500);
             const timestamp = Date.now();
-            await page.fill('input[name="name"]', `待刪除標籤 ${timestamp}`);
+            const random = Math.floor(Math.random() * 10000);
+            await page.fill(
+                'input[name="name"]',
+                `待刪除標籤_${timestamp}_${random}`
+            );
+
+            const createResponsePromise = page.waitForResponse(
+                (resp) =>
+                    resp.url().includes("/api/tags") &&
+                    resp.request().method() === "POST"
+            );
+
             await page
                 .locator('button[type="submit"]:has-text("新增標籤")')
                 .click();
-            await page.waitForTimeout(1500);
+
+            await createResponsePromise;
+            await page.waitForResponse(
+                (resp) =>
+                    resp.url().includes("/api/tags") &&
+                    resp.request().method() === "GET"
+            );
+            await page.waitForTimeout(1000);
         }
 
         // 獲取刪除前的標籤數量

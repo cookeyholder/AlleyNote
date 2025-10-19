@@ -51,12 +51,12 @@ test.describe("角色管理頁面", () => {
     });
 
     test("應該成功新增角色", async ({ page }) => {
+        // 使用更大的隨機數範圍來避免衝突
         const timestamp = Date.now();
-        const roleName = `test_role_${timestamp}`;
-        const displayName = `測試角色 ${timestamp}`;
-        const description = "這是一個測試用的角色";
-
-        // 點擊新增角色按鈕
+        const random = Math.floor(Math.random() * 1000000);
+        const roleName = `test_role_${timestamp}_${random}`;
+        const displayName = `測試角色 ${timestamp}-${random}`;
+        const description = "這是一個測試用的角色"; // 點擊新增角色按鈕
         await page.click('button:has-text("新增角色")');
 
         // 等待 Modal 出現
@@ -73,21 +73,29 @@ test.describe("角色管理頁面", () => {
                 resp.url().includes("/api/roles") &&
                 resp.request().method() === "POST"
         );
-
-        await page.click('button[type="submit"]:has-text("新增角色")');
-
-        const createResponse = await createResponsePromise;
-        expect(createResponse.status()).toBe(201);
-
-        // 等待 Modal 關閉
-        await expect(page.locator('h3:has-text("新增角色")')).not.toBeVisible();
-
-        // 等待角色列表重新載入完成
-        await page.waitForResponse(
+        const reloadResponsePromise = page.waitForResponse(
             (resp) =>
                 resp.url().includes("/api/roles") &&
                 resp.request().method() === "GET"
         );
+
+        await page.click('button[type="submit"]:has-text("新增角色")');
+
+        const createResponse = await createResponsePromise;
+
+        // 如果是 422，可能是角色名稱已存在，記錄錯誤
+        if (createResponse.status() === 422) {
+            const errorData = await createResponse.json();
+            console.error("角色建立失敗 (422):", errorData);
+        }
+
+        expect(createResponse.status()).toBe(201);
+
+        // 等待 Modal 關閉與列表重新載入
+        await expect(page.locator('h3:has-text("新增角色")')).not.toBeVisible();
+
+        const reloadResponse = await reloadResponsePromise;
+        expect(reloadResponse.status()).toBe(200);
         await page.waitForTimeout(1000);
 
         // 檢查新角色是否出現在列表中
@@ -98,12 +106,16 @@ test.describe("角色管理頁面", () => {
         );
 
         // 清理：刪除測試角色
+        page.on("dialog", (dialog) => dialog.accept());
+
         await page
             .locator(
                 `.role-item:has-text("${displayName}") button:has-text("刪除")`
             )
             .click();
-        await page.waitForTimeout(500); // 等待 confirm dialog
+
+        await page.waitForTimeout(1000);
+        page.removeAllListeners("dialog");
     });
 
     test("應該能選擇角色並顯示權限設定", async ({ page }) => {
@@ -219,9 +231,11 @@ test.describe("角色管理頁面", () => {
     });
 
     test("應該能刪除角色", async ({ page }) => {
+        // 使用更大的隨機數範圍來避免衝突
         const timestamp = Date.now();
-        const roleName = `temp_role_${timestamp}`;
-        const displayName = `臨時角色 ${timestamp}`;
+        const random = Math.floor(Math.random() * 1000000);
+        const roleName = `temp_role_${timestamp}_${random}`;
+        const displayName = `臨時角色 ${timestamp}-${random}`;
 
         // 先建立一個測試角色,等待 API 響應
         await page.click('button:has-text("新增角色")');
@@ -233,21 +247,29 @@ test.describe("角色管理頁面", () => {
                 resp.url().includes("/api/roles") &&
                 resp.request().method() === "POST"
         );
+        const reloadAfterCreatePromise = page.waitForResponse(
+            (resp) =>
+                resp.url().includes("/api/roles") &&
+                resp.request().method() === "GET"
+        );
 
         await page.click('button[type="submit"]:has-text("新增角色")');
 
         const createResponse = await createResponsePromise;
+
+        // 如果是 422，可能是角色名稱已存在，記錄錯誤
+        if (createResponse.status() === 422) {
+            const errorData = await createResponse.json();
+            console.error("角色建立失敗 (422) - 刪除測試:", errorData);
+        }
+
         expect(createResponse.status()).toBe(201);
 
         // 等待 Modal 關閉
         await expect(page.locator('h3:has-text("新增角色")')).not.toBeVisible();
 
-        // 等待角色列表重新載入
-        await page.waitForResponse(
-            (resp) =>
-                resp.url().includes("/api/roles") &&
-                resp.request().method() === "GET"
-        );
+        const reloadAfterCreate = await reloadAfterCreatePromise;
+        expect(reloadAfterCreate.status()).toBe(200);
         await page.waitForTimeout(1000);
 
         // 確認角色已建立
@@ -266,6 +288,11 @@ test.describe("角色管理頁面", () => {
                 resp.url().includes("/api/roles") &&
                 resp.request().method() === "DELETE"
         );
+        const reloadAfterDeletePromise = page.waitForResponse(
+            (resp) =>
+                resp.url().includes("/api/roles") &&
+                resp.request().method() === "GET"
+        );
 
         await page
             .locator(
@@ -277,11 +304,8 @@ test.describe("角色管理頁面", () => {
         expect(deleteResponse.status()).toBe(200);
 
         // 等待列表重新載入
-        await page.waitForResponse(
-            (resp) =>
-                resp.url().includes("/api/roles") &&
-                resp.request().method() === "GET"
-        );
+        const reloadAfterDelete = await reloadAfterDeletePromise;
+        expect(reloadAfterDelete.status()).toBe(200);
         await page.waitForTimeout(1000);
 
         // 檢查角色是否從列表中移除

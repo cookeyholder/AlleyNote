@@ -9,15 +9,22 @@ use App\Domains\Post\DTOs\CreateTagDTO;
 use App\Domains\Post\DTOs\UpdateTagDTO;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * 標籤管理服務.
  */
 class TagManagementService
 {
+    private LoggerInterface $logger;
+
     public function __construct(
         private readonly TagRepositoryInterface $tagRepository,
-    ) {}
+        ?LoggerInterface $logger = null,
+    ) {
+        $this->logger = $logger ?? new NullLogger();
+    }
 
     /**
      * 取得標籤列表.
@@ -65,33 +72,37 @@ class TagManagementService
      */
     public function createTag(CreateTagDTO $dto): array
     {
-        // 驗證
+        $this->logger->debug('TagManagementService::createTag received payload', [
+            'payload' => $dto->toArray(),
+        ]);
+
         $errors = [];
 
-        if (empty($dto->name)) {
+        if ($dto->name === '') {
             $errors['name'] = ['標籤名稱為必填'];
         } elseif (mb_strlen($dto->name) > 50) {
             $errors['name'] = ['標籤名稱不可超過 50 字元'];
         }
 
-        // 檢查名稱是否重複
-        if (!empty($dto->name) && $this->tagRepository->findByName($dto->name)) {
+        if ($dto->name !== '' && $this->tagRepository->findByName($dto->name)) {
             $errors['name'] = ['標籤名稱已存在'];
         }
 
-        // 產生 slug
         $slug = $dto->slug ?? $this->generateSlug($dto->name);
 
-        // 檢查 slug 是否重複
         if ($this->tagRepository->findBySlug($slug)) {
             $errors['slug'] = ['標籤 slug 已存在'];
         }
 
         if (!empty($errors)) {
-            throw new ValidationException('標籤資料驗證失敗', $errors);
+            $this->logger->notice('TagManagementService::createTag validation failed', [
+                'payload' => $dto->toArray(),
+                'errors' => $errors,
+            ]);
+
+            throw ValidationException::fromMultipleErrors($errors, '標籤資料驗證失敗');
         }
 
-        // 建立標籤
         $tag = $this->tagRepository->create([
             'name' => $dto->name,
             'slug' => $slug,
@@ -100,7 +111,12 @@ class TagManagementService
             'usage_count' => 0,
         ]);
 
-        return $tag->toArray();
+        $created = $tag->toArray();
+        $this->logger->info('TagManagementService::createTag succeeded', [
+            'tag' => $created,
+        ]);
+
+        return $created;
     }
 
     /**
@@ -111,17 +127,24 @@ class TagManagementService
      */
     public function updateTag(UpdateTagDTO $dto): array
     {
+        $this->logger->debug('TagManagementService::updateTag received payload', [
+            'payload' => $dto->toArray(),
+        ]);
+
         $tag = $this->tagRepository->findById($dto->id);
 
         if (!$tag) {
+            $this->logger->warning('TagManagementService::updateTag target not found', [
+                'tagId' => $dto->id,
+            ]);
+
             throw new NotFoundException("標籤不存在 (ID: {$dto->id})");
         }
 
-        // 驗證
         $errors = [];
 
         if ($dto->name !== null) {
-            if (empty($dto->name)) {
+            if ($dto->name === '') {
                 $errors['name'] = ['標籤名稱為必填'];
             } elseif (mb_strlen($dto->name) > 50) {
                 $errors['name'] = ['標籤名稱不可超過 50 字元'];
@@ -141,10 +164,14 @@ class TagManagementService
         }
 
         if (!empty($errors)) {
-            throw new ValidationException('標籤資料驗證失敗', $errors);
+            $this->logger->notice('TagManagementService::updateTag validation failed', [
+                'payload' => $dto->toArray(),
+                'errors' => $errors,
+            ]);
+
+            throw ValidationException::fromMultipleErrors($errors, '標籤資料驗證失敗');
         }
 
-        // 更新標籤
         $updateData = [];
         if ($dto->name !== null) {
             $updateData['name'] = $dto->name;
@@ -164,7 +191,12 @@ class TagManagementService
 
         $updatedTag = $this->tagRepository->update($dto->id, $updateData);
 
-        return $updatedTag->toArray();
+        $updated = $updatedTag->toArray();
+        $this->logger->info('TagManagementService::updateTag succeeded', [
+            'tag' => $updated,
+        ]);
+
+        return $updated;
     }
 
     /**
@@ -180,10 +212,7 @@ class TagManagementService
             throw new NotFoundException("標籤不存在 (ID: {$id})");
         }
 
-        // 解除與文章的關聯
         $this->tagRepository->detachFromAllPosts($id);
-
-        // 刪除標籤
         $this->tagRepository->delete($id);
     }
 
@@ -192,19 +221,10 @@ class TagManagementService
      */
     private function generateSlug(string $text): string
     {
-        // 轉小寫
         $slug = mb_strtolower($text, 'UTF-8');
-
-        // 替換空白為連字號
         $slug = preg_replace('/\s+/', '-', $slug) ?? $slug;
-
-        // 移除特殊字元（保留中文、英文、數字、連字號）
         $slug = preg_replace('/[^\p{L}\p{N}\-]/u', '', $slug) ?? $slug;
-
-        // 移除多餘的連字號
         $slug = preg_replace('/-+/', '-', $slug) ?? $slug;
-
-        // 移除頭尾的連字號
         $slug = trim($slug, '-');
 
         return $slug !== '' ? $slug : 'tag-' . uniqid();

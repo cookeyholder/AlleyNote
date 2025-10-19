@@ -142,6 +142,28 @@ function setupGlobalListeners() {
         console.error("未處理的 Promise 拒絕:", event.reason);
     });
 
+    window.addEventListener("settings:updated", (event) => {
+        const updated = event.detail;
+        if (updated) {
+            globalActions.setSettings(updated);
+            applySiteBranding(updated);
+        }
+    });
+
+    window.addEventListener("storage", (event) => {
+        if (event.key === "alleynote_site_settings" && event.newValue) {
+            try {
+                const parsed = JSON.parse(event.newValue);
+                if (parsed && typeof parsed === "object") {
+                    globalActions.setSettings(parsed);
+                    applySiteBranding(parsed);
+                }
+            } catch (error) {
+                console.warn("同步站台設定時解析失敗:", error);
+            }
+        }
+    });
+
     console.log("✅ 全域事件監聽已設定");
 }
 

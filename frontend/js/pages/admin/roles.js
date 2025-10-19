@@ -396,15 +396,14 @@ export default class RolesPage {
         if (roleForm) {
             roleForm.addEventListener("submit", async (e) => {
                 e.preventDefault();
-                if (isEdit) {
-                    await this.handleUpdateRole(
-                        role.id,
-                        new FormData(roleForm)
-                    );
-                } else {
-                    await this.handleCreateRole(new FormData(roleForm));
+                const formData = new FormData(roleForm);
+                const isSuccess = isEdit
+                    ? await this.handleUpdateRole(role.id, formData)
+                    : await this.handleCreateRole(formData);
+
+                if (isSuccess) {
+                    this.closeModal();
                 }
-                this.closeModal();
             });
         }
 
@@ -475,9 +474,11 @@ export default class RolesPage {
             await rolesAPI.create(data);
             toast.success("角色建立成功", 5000);
             await this.loadRolesAndPermissions();
+            return true;
         } catch (error) {
             console.error("建立角色失敗:", error);
             toast.error(error.message || "建立角色失敗");
+            return false;
         }
     }
 
@@ -492,9 +493,11 @@ export default class RolesPage {
             await rolesAPI.update(roleId, data);
             toast.success("角色更新成功");
             await this.loadRolesAndPermissions();
+            return true;
         } catch (error) {
             console.error("更新角色失敗:", error);
             toast.error(error.message || "更新角色失敗");
+            return false;
         }
     }
 
