@@ -22,6 +22,7 @@ class RedisRouteCache implements RouteCacheInterface
 
     private int $ttl = 3600; // 預設 1 小時
 
+    /** @var array{hits: int, misses: int, size: int, created_at: int, last_used: int} */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -62,6 +63,13 @@ class RedisRouteCache implements RouteCacheInterface
                 return null;
             }
 
+            if (!is_string($content)) {
+                $this->stats['misses']++;
+                $this->saveStats();
+
+                return null;
+            }
+            
             $data = unserialize($content);
             if (!$data instanceof RouteCollectionInterface) {
                 $this->stats['misses']++;
@@ -149,6 +157,9 @@ class RedisRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
+    /**
+     * @return array{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     */
     public function getStats(): array
     {
         return $this->stats;
@@ -189,10 +200,25 @@ class RedisRouteCache implements RouteCacheInterface
     {
         try {
             $content = $this->redis->get(self::STATS_KEY);
-            if ($content !== false) {
+            if ($content !== false && is_string($content)) {
                 $stats = json_decode($content, true);
                 if (is_array($stats)) {
-                    $this->stats = array_merge($this->stats, $stats);
+                    // 確保只更新存在的鍵，並保持型別
+                    if (isset($stats['hits']) && is_int($stats['hits'])) {
+                        $this->stats['hits'] = $stats['hits'];
+                    }
+                    if (isset($stats['misses']) && is_int($stats['misses'])) {
+                        $this->stats['misses'] = $stats['misses'];
+                    }
+                    if (isset($stats['size']) && is_int($stats['size'])) {
+                        $this->stats['size'] = $stats['size'];
+                    }
+                    if (isset($stats['created_at']) && is_int($stats['created_at'])) {
+                        $this->stats['created_at'] = $stats['created_at'];
+                    }
+                    if (isset($stats['last_used']) && is_int($stats['last_used'])) {
+                        $this->stats['last_used'] = $stats['last_used'];
+                    }
                 }
             }
         } catch (RedisException) {
@@ -206,7 +232,10 @@ class RedisRouteCache implements RouteCacheInterface
     private function saveStats(): void
     {
         try {
-            $content = (json_encode($this->stats) ?? '') ?: '';
+            $content = json_encode($this->stats);
+            if ($content === false) {
+                $content = '{}';
+            }
             $this->redis->set(self::STATS_KEY, $content);
         } catch (RedisException) {
             // 忽略儲存錯誤

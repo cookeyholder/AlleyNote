@@ -16,6 +16,7 @@ class FileRouteCache implements RouteCacheInterface
 {
     private int $ttl = 3600; // 預設 1 小時
 
+    /** @var array{hits: int, misses: int, size: int, created_at: int, last_used: int} */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -139,6 +140,9 @@ class FileRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
+    /**
+     * @return array{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     */
     public function getStats(): array
     {
         return $this->stats;
@@ -181,7 +185,22 @@ class FileRouteCache implements RouteCacheInterface
             if ($content !== false) {
                 $stats = json_decode($content, true);
                 if (is_array($stats)) {
-                    $this->stats = array_merge($this->stats, $stats);
+                    // 確保只更新存在的鍵，並保持型別
+                    if (isset($stats['hits']) && is_int($stats['hits'])) {
+                        $this->stats['hits'] = $stats['hits'];
+                    }
+                    if (isset($stats['misses']) && is_int($stats['misses'])) {
+                        $this->stats['misses'] = $stats['misses'];
+                    }
+                    if (isset($stats['size']) && is_int($stats['size'])) {
+                        $this->stats['size'] = $stats['size'];
+                    }
+                    if (isset($stats['created_at']) && is_int($stats['created_at'])) {
+                        $this->stats['created_at'] = $stats['created_at'];
+                    }
+                    if (isset($stats['last_used']) && is_int($stats['last_used'])) {
+                        $this->stats['last_used'] = $stats['last_used'];
+                    }
                 }
             }
         }
@@ -192,7 +211,10 @@ class FileRouteCache implements RouteCacheInterface
      */
     private function saveStats(): void
     {
-        $content = (json_encode($this->stats, JSON_PRETTY_PRINT) ?? '') ?: '';
+        $content = json_encode($this->stats, JSON_PRETTY_PRINT);
+        if ($content === false) {
+            $content = '{}';
+        }
         file_put_contents($this->getStatsFile(), $content, LOCK_EX);
     }
 }
