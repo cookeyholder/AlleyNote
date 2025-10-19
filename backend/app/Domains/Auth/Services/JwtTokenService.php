@@ -316,17 +316,17 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             // 驗證並轉換 payload 欄位型別
             if (!is_string($payload['jti']) && !is_numeric($payload['jti'])) {
-                throw new InvalidArgumentException("Invalid jti type");
+                throw new InvalidArgumentException('Invalid jti type');
             }
             $jti = is_string($payload['jti']) ? $payload['jti'] : (string) $payload['jti'];
 
             if (!is_string($payload['sub']) && !is_numeric($payload['sub'])) {
-                throw new InvalidArgumentException("Invalid sub type");
+                throw new InvalidArgumentException('Invalid sub type');
             }
             $sub = is_string($payload['sub']) ? $payload['sub'] : (string) $payload['sub'];
 
             if (!is_string($payload['iss']) && !is_numeric($payload['iss'])) {
-                throw new InvalidArgumentException("Invalid iss type");
+                throw new InvalidArgumentException('Invalid iss type');
             }
             $iss = is_string($payload['iss']) ? $payload['iss'] : (string) $payload['iss'];
 

@@ -11,6 +11,7 @@ use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use Exception;
+use InvalidArgumentException;
 
 class AuthService
 {
@@ -30,7 +31,7 @@ class AuthService
         $data = $dto->toArray();
         $password = $data['password'] ?? '';
         if (!is_string($password)) {
-            throw new \InvalidArgumentException('無效的密碼格式');
+            throw new InvalidArgumentException('無效的密碼格式');
         }
         $data['password'] = $this->passwordService->hashPassword($password);
 
@@ -41,7 +42,7 @@ class AuthService
             try {
                 $userId = $user['id'] ?? null;
                 if (!is_int($userId) && !is_numeric($userId)) {
-                    throw new \InvalidArgumentException('無效的使用者 ID');
+                    throw new InvalidArgumentException('無效的使用者 ID');
                 }
                 $numericUserId = is_int($userId) ? $userId : (int) $userId;
 
@@ -142,7 +143,7 @@ class AuthService
             try {
                 $loginUserId = $user['id'] ?? null;
                 if (!is_int($loginUserId) && !is_numeric($loginUserId)) {
-                    throw new \InvalidArgumentException('無效的使用者 ID');
+                    throw new InvalidArgumentException('無效的使用者 ID');
                 }
                 $numericLoginUserId = is_int($loginUserId) ? $loginUserId : (int) $loginUserId;
 

@@ -382,6 +382,7 @@ class PostRepository implements PostRepositoryInterface
                 $errorMessage = is_array($errorInfo) && isset($errorInfo[2]) && is_string($errorInfo[2])
                     ? $errorInfo[2]
                     : 'Unknown error';
+
                 throw new PDOException('Failed to insert post: ' . $errorMessage);
             }
             $postId = (int) $this->db->lastInsertId();
@@ -1011,8 +1012,8 @@ class PostRepository implements PostRepositoryInterface
             $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
             $stmt->execute();
 
-
             $count = $stmt->fetchColumn();
+
             return is_numeric($count) ? (int) $count : 0;
         }, self::CACHE_TTL);
 

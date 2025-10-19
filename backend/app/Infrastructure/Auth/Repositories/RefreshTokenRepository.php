@@ -135,6 +135,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute($params);
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             /** @var array<int, array<string, mixed>> $results */
             return is_array($results) ? $results : [];
         } catch (PDOException $e) {
@@ -160,6 +161,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $stmt->execute([$userId, $deviceId]);
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             /** @var array<int, array<string, mixed>> $results */
             return is_array($results) ? $results : [];
         } catch (PDOException $e) {
@@ -438,6 +440,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         $stmt->execute([$parentJti]);
 
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         /** @var array<int, array<string, mixed>> $results */
         return is_array($results) ? $results : [];
     }
@@ -583,6 +586,7 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             ]);
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             /** @var array<int, array<string, mixed>> $results */
             return is_array($results) ? $results : [];
         } catch (PDOException $e) {

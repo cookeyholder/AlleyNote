@@ -357,6 +357,7 @@ class RegisterUserDTO extends BaseDTO
         if ($atPart === false) {
             return '';
         }
+
         return substr($atPart, 1);
     }
 

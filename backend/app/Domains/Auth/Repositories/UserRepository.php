@@ -83,6 +83,7 @@ class UserRepository
             if ($user === null) {
                 throw new Exception('找不到指定的使用者');
             }
+
             return $user;
         }
 

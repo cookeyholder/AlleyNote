@@ -7,6 +7,7 @@ namespace App\Domains\Attachment\DTOs;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
+use InvalidArgumentException;
 
 /**
  * 建立附件的資料傳輸物件.
@@ -45,13 +46,13 @@ class CreateAttachmentDTO extends BaseDTO
         $validatedData = $this->validate($data);
 
         // 設定屬性
-        $this->postId = is_int($validatedData['post_id']) ? $validatedData['post_id'] : (is_numeric($validatedData['post_id']) ? (int) $validatedData['post_id'] : throw new \InvalidArgumentException('post_id must be numeric'));
-        $this->filename = is_string($validatedData['filename']) ? trim($validatedData['filename']) : throw new \InvalidArgumentException('filename must be string');
-        $this->originalName = is_string($validatedData['original_name']) ? trim($validatedData['original_name']) : throw new \InvalidArgumentException('original_name must be string');
-        $this->mimeType = is_string($validatedData['mime_type']) ? trim($validatedData['mime_type']) : throw new \InvalidArgumentException('mime_type must be string');
-        $this->fileSize = is_int($validatedData['file_size']) ? $validatedData['file_size'] : (is_numeric($validatedData['file_size']) ? (int) $validatedData['file_size'] : throw new \InvalidArgumentException('file_size must be numeric'));
-        $this->storagePath = is_string($validatedData['storage_path']) ? trim($validatedData['storage_path']) : throw new \InvalidArgumentException('storage_path must be string');
-        $this->uploadedBy = is_int($validatedData['uploaded_by']) ? $validatedData['uploaded_by'] : (is_numeric($validatedData['uploaded_by']) ? (int) $validatedData['uploaded_by'] : throw new \InvalidArgumentException('uploaded_by must be numeric'));
+        $this->postId = is_int($validatedData['post_id']) ? $validatedData['post_id'] : (is_numeric($validatedData['post_id']) ? (int) $validatedData['post_id'] : throw new InvalidArgumentException('post_id must be numeric'));
+        $this->filename = is_string($validatedData['filename']) ? trim($validatedData['filename']) : throw new InvalidArgumentException('filename must be string');
+        $this->originalName = is_string($validatedData['original_name']) ? trim($validatedData['original_name']) : throw new InvalidArgumentException('original_name must be string');
+        $this->mimeType = is_string($validatedData['mime_type']) ? trim($validatedData['mime_type']) : throw new InvalidArgumentException('mime_type must be string');
+        $this->fileSize = is_int($validatedData['file_size']) ? $validatedData['file_size'] : (is_numeric($validatedData['file_size']) ? (int) $validatedData['file_size'] : throw new InvalidArgumentException('file_size must be numeric'));
+        $this->storagePath = is_string($validatedData['storage_path']) ? trim($validatedData['storage_path']) : throw new InvalidArgumentException('storage_path must be string');
+        $this->uploadedBy = is_int($validatedData['uploaded_by']) ? $validatedData['uploaded_by'] : (is_numeric($validatedData['uploaded_by']) ? (int) $validatedData['uploaded_by'] : throw new InvalidArgumentException('uploaded_by must be numeric'));
     }
 
     /**

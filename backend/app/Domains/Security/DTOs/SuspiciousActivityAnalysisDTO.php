@@ -276,6 +276,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         }
 
         $maxValue = max($this->anomalyScores);
+
         return is_numeric($maxValue) ? (float) $maxValue : 0.0;
     }
 
@@ -363,7 +364,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     /**
      * 驗證並確保陣列 key 都是 string，value 是 int.
      *
-     * @param array $input
      * @return array<string, int>
      */
     private static function validateStringIntArray(array $input): array
@@ -374,13 +374,13 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
                 $result[$key] = (int) $value;
             }
         }
+
         return $result;
     }
 
     /**
      * 驗證並確保陣列 key 都是 string.
      *
-     * @param array $input
      * @return array<string, mixed>
      */
     private static function validateStringMixedArray(array $input): array
@@ -391,6 +391,7 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
 }

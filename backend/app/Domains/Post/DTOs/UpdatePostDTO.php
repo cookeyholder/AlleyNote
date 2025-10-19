@@ -244,6 +244,7 @@ class UpdatePostDTO extends BaseDTO
         $validRules = $rules;
         /** @var array<string, mixed> $typedData */
         $typedData = $data;
+
         return $this->validator->validateOrFail($typedData, $validRules);
     }
 
@@ -302,8 +303,7 @@ class UpdatePostDTO extends BaseDTO
     public function hasUpdatedField(string $field): bool
     {
         $updatedFields = $this->getUpdatedFields();
+
         return is_array($updatedFields) && in_array($field, $updatedFields, true);
     }
-
-
 }

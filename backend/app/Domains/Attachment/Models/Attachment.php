@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\Models;
 
+use InvalidArgumentException;
+
 class Attachment
 {
     private ?int $id = null;
@@ -38,32 +40,32 @@ class Attachment
 
         // 驗證並設定必要欄位
         if (!isset($attributes['post_id']) || (!is_int($attributes['post_id']) && !is_numeric($attributes['post_id']))) {
-            throw new \InvalidArgumentException('post_id is required and must be numeric');
+            throw new InvalidArgumentException('post_id is required and must be numeric');
         }
         $this->postId = is_int($attributes['post_id']) ? $attributes['post_id'] : (int) $attributes['post_id'];
 
         if (!isset($attributes['filename']) || !is_string($attributes['filename'])) {
-            throw new \InvalidArgumentException('filename is required and must be string');
+            throw new InvalidArgumentException('filename is required and must be string');
         }
         $this->filename = $attributes['filename'];
 
         if (!isset($attributes['original_name']) || !is_string($attributes['original_name'])) {
-            throw new \InvalidArgumentException('original_name is required and must be string');
+            throw new InvalidArgumentException('original_name is required and must be string');
         }
         $this->originalName = $attributes['original_name'];
 
         if (!isset($attributes['mime_type']) || !is_string($attributes['mime_type'])) {
-            throw new \InvalidArgumentException('mime_type is required and must be string');
+            throw new InvalidArgumentException('mime_type is required and must be string');
         }
         $this->mimeType = $attributes['mime_type'];
 
         if (!isset($attributes['file_size']) || (!is_int($attributes['file_size']) && !is_numeric($attributes['file_size']))) {
-            throw new \InvalidArgumentException('file_size is required and must be numeric');
+            throw new InvalidArgumentException('file_size is required and must be numeric');
         }
         $this->fileSize = is_int($attributes['file_size']) ? $attributes['file_size'] : (int) $attributes['file_size'];
 
         if (!isset($attributes['storage_path']) || !is_string($attributes['storage_path'])) {
-            throw new \InvalidArgumentException('storage_path is required and must be string');
+            throw new InvalidArgumentException('storage_path is required and must be string');
         }
         $this->storagePath = $attributes['storage_path'];
 

@@ -27,16 +27,20 @@ class Route implements RouteInterface
     /** @var string[] */
     private array $parameterNames = [];
 
+    /** @var callable|string|array<int|string, mixed> */
+    private readonly mixed $handler;
+
     /**
      * @param string[] $methods HTTP 方法列表
      * @param string $pattern 路由路徑模式 (如 '/posts/{id}')
-     * @param callable|string|array $handler 路由處理器
+     * @param callable|string|array<string|int, mixed> $handler 路由處理器
      */
     public function __construct(
         private readonly array $methods,
         private readonly string $pattern,
-        private readonly mixed $handler,
+        callable|string|array $handler,
     ) {
+        $this->handler = $handler;
         $this->parameterNames = $this->extractParameterNames($pattern);
     }
 
@@ -56,7 +60,7 @@ class Route implements RouteInterface
     }
 
     /**
-     * @return callable|string|array
+     * @return callable|string|array<int|string, mixed>
      */
     public function getHandler(): callable|string|array
     {
@@ -95,6 +99,7 @@ class Route implements RouteInterface
                 $result[] = $middleware;
             }
         }
+
         return $result;
     }
 

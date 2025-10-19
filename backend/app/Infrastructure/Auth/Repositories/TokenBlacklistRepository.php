@@ -10,6 +10,7 @@ use DateTime;
 use DateTimeImmutable;
 use PDO;
 use PDOException;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -1162,11 +1163,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         }
 
         // 驗證必要欄位
-        $jti = isset($row['jti']) && is_string($row['jti']) ? $row['jti'] : throw new \RuntimeException('Missing or invalid jti');
-        $tokenType = isset($row['token_type']) && is_string($row['token_type']) ? $row['token_type'] : throw new \RuntimeException('Missing or invalid token_type');
-        $expiresAt = isset($row['expires_at']) && is_string($row['expires_at']) ? $row['expires_at'] : throw new \RuntimeException('Missing or invalid expires_at');
-        $blacklistedAt = isset($row['blacklisted_at']) && is_string($row['blacklisted_at']) ? $row['blacklisted_at'] : throw new \RuntimeException('Missing or invalid blacklisted_at');
-        $reason = isset($row['reason']) && is_string($row['reason']) ? $row['reason'] : throw new \RuntimeException('Missing or invalid reason');
+        $jti = isset($row['jti']) && is_string($row['jti']) ? $row['jti'] : throw new RuntimeException('Missing or invalid jti');
+        $tokenType = isset($row['token_type']) && is_string($row['token_type']) ? $row['token_type'] : throw new RuntimeException('Missing or invalid token_type');
+        $expiresAt = isset($row['expires_at']) && is_string($row['expires_at']) ? $row['expires_at'] : throw new RuntimeException('Missing or invalid expires_at');
+        $blacklistedAt = isset($row['blacklisted_at']) && is_string($row['blacklisted_at']) ? $row['blacklisted_at'] : throw new RuntimeException('Missing or invalid blacklisted_at');
+        $reason = isset($row['reason']) && is_string($row['reason']) ? $row['reason'] : throw new RuntimeException('Missing or invalid reason');
 
         $userId = null;
         if (isset($row['user_id'])) {

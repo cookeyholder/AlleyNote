@@ -11,6 +11,7 @@ use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 /**
  * 路由分派器.
@@ -100,7 +101,7 @@ class RouteDispatcher
         $response = $this->container->get(ResponseInterface::class);
 
         if (!$response instanceof ResponseInterface) {
-            throw new \RuntimeException('Container must provide a valid ResponseInterface instance');
+            throw new RuntimeException('Container must provide a valid ResponseInterface instance');
         }
 
         $body = $response->getBody();
@@ -130,14 +131,14 @@ class RouteDispatcher
     {
         $router = $container->get(RouterInterface::class);
         if (!$router instanceof RouterInterface) {
-            throw new \RuntimeException('Container must provide a valid RouterInterface instance');
+            throw new RuntimeException('Container must provide a valid RouterInterface instance');
         }
 
         $controllerResolver = new ControllerResolver($container);
 
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
         if (!$middlewareDispatcher instanceof MiddlewareDispatcher) {
-            throw new \RuntimeException('Container must provide a valid MiddlewareDispatcher instance');
+            throw new RuntimeException('Container must provide a valid MiddlewareDispatcher instance');
         }
 
         return new self($router, $controllerResolver, $middlewareDispatcher, $container);

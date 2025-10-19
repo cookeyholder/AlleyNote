@@ -26,9 +26,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     /**
      * 安全地取得 config 值
-     *
-     * @param string $key
-     * @return mixed
      */
     private function getConfig(string $key): mixed
     {
@@ -51,6 +48,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function isConfigEnabled(string $key): bool
     {
         $value = $this->getConfig($key);
+
         return is_bool($value) && $value;
     }
 
@@ -60,6 +58,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function getConfigString(string $key, string $default = ''): string
     {
         $value = $this->getConfig($key);
+
         return is_string($value) ? $value : $default;
     }
 
@@ -69,6 +68,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function getConfigInt(string $key, int $default = 0): int
     {
         $value = $this->getConfig($key);
+
         return is_int($value) ? $value : $default;
     }
 
@@ -182,6 +182,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         $input = file_get_contents('php://input');
         if ($input === false) {
             http_response_code(400);
+
             return;
         }
         $report = json_decode($input, true);

@@ -55,6 +55,7 @@ class RouteValidator
                 $routeName = isset($routeConfig['name']) && is_string($routeConfig['name'])
                     ? $routeConfig['name']
                     : '未命名路由';
+
                 throw RouteConfigurationException::invalidRouteDefinition(
                     $routeName,
                     "缺少必要欄位: {$field}",

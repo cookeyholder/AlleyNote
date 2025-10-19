@@ -154,6 +154,7 @@ class CSPReportController
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? null;
+
         return is_string($remoteAddr) ? $remoteAddr : 'unknown';
     }
 

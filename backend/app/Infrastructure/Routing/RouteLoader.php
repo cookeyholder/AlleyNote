@@ -164,6 +164,7 @@ class RouteLoader
             if (!is_scalar($method)) {
                 return 'GET';
             }
+
             return strtoupper(trim((string) $method));
         }, $methods);
 
@@ -241,6 +242,7 @@ class RouteLoader
                 return false;
             }
             $routeGroup = isset($route['group']) && is_string($route['group']) ? $route['group'] : 'default';
+
             return $routeGroup === $group;
         });
     }

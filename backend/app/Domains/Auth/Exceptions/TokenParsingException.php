@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
+use Exception;
 use Throwable;
 
 /**
@@ -56,7 +57,7 @@ class TokenParsingException extends JwtException
         ], $additionalContext);
 
         // Throwable 可以安全地傳遞給 Exception
-        $exceptionPrevious = $previous instanceof \Exception ? $previous : null;
+        $exceptionPrevious = $previous instanceof Exception ? $previous : null;
         parent::__construct($message, self::ERROR_CODE, $exceptionPrevious, $context);
     }
 
@@ -66,6 +67,7 @@ class TokenParsingException extends JwtException
     public function getReason(): string
     {
         $reason = $this->context['reason'] ?? self::PARSING_FAILED;
+
         return is_string($reason) ? $reason : self::PARSING_FAILED;
     }
 

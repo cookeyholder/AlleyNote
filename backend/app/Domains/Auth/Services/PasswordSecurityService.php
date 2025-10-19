@@ -137,6 +137,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if ($commonPasswordResult['is_common']) {
             $message = $commonPasswordResult['message'] ?? '這是常見的弱密碼';
             $errorMessage = is_string($message) ? $message : '這是常見的弱密碼';
+
             throw ValidationException::fromSingleError('password', $errorMessage);
         }
 

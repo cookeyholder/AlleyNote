@@ -56,6 +56,7 @@ abstract class BaseDTO implements JsonSerializable
     {
         /** @var array<string, mixed> $rules */
         $rules = $this->getValidationRules();
+
         return $this->validator->validateOrFail($data, $rules);
     }
 

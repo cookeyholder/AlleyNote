@@ -17,6 +17,7 @@ use App\Domains\Security\Services\Core\XssProtectionService;
 use App\Domains\Security\Services\IpService;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Stringable;
 
 /**
@@ -109,7 +110,7 @@ class SecurityServiceProvider
         };
 
         if (!($repository instanceof ActivityLogRepositoryInterface)) {
-            throw new \RuntimeException('Invalid repository type');
+            throw new RuntimeException('Invalid repository type');
         }
 
         return new ActivityLoggingService($repository, $logger);

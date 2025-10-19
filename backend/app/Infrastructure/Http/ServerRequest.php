@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -255,7 +256,7 @@ class ServerRequest implements ServerRequestInterface
 
     public function getBody()
     {
-        if ($this->body instanceof \Psr\Http\Message\StreamInterface) {
+        if ($this->body instanceof StreamInterface) {
             return $this->body;
         }
 

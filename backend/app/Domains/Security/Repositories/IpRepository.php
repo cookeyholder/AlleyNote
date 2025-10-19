@@ -43,6 +43,7 @@ class IpRepository implements IpRepositoryInterface
     private function getCacheKey(string $type, mixed $identifier): string
     {
         $id = is_scalar($identifier) ? (string) $identifier : 'unknown';
+
         return "ip_list:{$type}:{$id}";
     }
 
@@ -245,6 +246,7 @@ class IpRepository implements IpRepositoryInterface
             if ($result === null) {
                 throw new InvalidArgumentException("IpList with id {$id} not found");
             }
+
             return $result;
         }
 
@@ -265,6 +267,7 @@ class IpRepository implements IpRepositoryInterface
         if ($result === null) {
             throw new InvalidArgumentException("Failed to retrieve updated IpList with id {$id}");
         }
+
         return $result;
     }
 

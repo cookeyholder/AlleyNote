@@ -184,7 +184,7 @@ class PostService implements PostServiceInterface
         $tagIds = array_map(
             /** @param mixed $id */
             fn($id): int => is_numeric($id) ? (int) $id : 0,
-            array_unique($tagIds)
+            array_unique($tagIds),
         );
 
         $this->repository->setTags($id, $tagIds);

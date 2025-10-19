@@ -47,9 +47,10 @@ final class CreateActivityLogDTO implements JsonSerializable
     {
         $actionTypeValue = $data['action_type'] ?? null;
         if (!is_string($actionTypeValue) && !is_int($actionTypeValue)) {
-            throw new \InvalidArgumentException('action_type must be a string or integer');
+            throw new InvalidArgumentException('action_type must be a string or integer');
         }
-        $actionType = ActivityType::from($actionTypeValue);        $userId = isset($data['user_id']) && is_numeric($data['user_id']) ? (int) $data['user_id'] : null;
+        $actionType = ActivityType::from($actionTypeValue);
+        $userId = isset($data['user_id']) && is_numeric($data['user_id']) ? (int) $data['user_id'] : null;
         $sessionId = isset($data['session_id']) && is_string($data['session_id']) ? $data['session_id'] : null;
 
         $statusValue = $data['status'] ?? null;

@@ -133,6 +133,7 @@ class AuthenticationException extends JwtException
     public function getReason(): string
     {
         $reason = $this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS;
+
         return is_string($reason) ? $reason : self::REASON_INVALID_CREDENTIALS;
     }
 
@@ -142,6 +143,7 @@ class AuthenticationException extends JwtException
     public function getAttemptId(): ?string
     {
         $attemptId = $this->context['attempt_id'] ?? null;
+
         return is_string($attemptId) ? $attemptId : null;
     }
 
@@ -151,6 +153,7 @@ class AuthenticationException extends JwtException
     public function getUserId(): ?int
     {
         $userId = $this->context['user_id'] ?? null;
+
         return is_int($userId) ? $userId : null;
     }
 
@@ -160,6 +163,7 @@ class AuthenticationException extends JwtException
     public function getUsername(): ?string
     {
         $username = $this->context['username'] ?? null;
+
         return is_string($username) ? $username : null;
     }
 
@@ -169,6 +173,7 @@ class AuthenticationException extends JwtException
     public function getIpAddress(): ?string
     {
         $ipAddress = $this->context['ip_address'] ?? null;
+
         return is_string($ipAddress) ? $ipAddress : null;
     }
 
@@ -178,6 +183,7 @@ class AuthenticationException extends JwtException
     public function getAttemptCount(): ?int
     {
         $attemptCount = $this->context['attempt_count'] ?? null;
+
         return is_int($attemptCount) ? $attemptCount : null;
     }
 
@@ -187,6 +193,7 @@ class AuthenticationException extends JwtException
     public function getLockoutUntil(): ?int
     {
         $lockoutUntil = $this->context['lockout_until'] ?? null;
+
         return is_int($lockoutUntil) ? $lockoutUntil : null;
     }
 

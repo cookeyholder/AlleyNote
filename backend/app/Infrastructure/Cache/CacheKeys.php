@@ -216,7 +216,7 @@ class CacheKeys
             array_map(
                 /** @param mixed $part */
                 fn($part): string => is_scalar($part) || (is_object($part) && method_exists($part, '__toString')) ? (string) $part : '',
-                $parts
+                $parts,
             ),
             fn(string $part): bool => $part !== '',
         );

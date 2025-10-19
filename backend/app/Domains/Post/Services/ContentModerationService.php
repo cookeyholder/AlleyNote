@@ -259,14 +259,17 @@ class ContentModerationService
     {
         $issues = isset($result['issues']) && is_array($result['issues']) ? $result['issues'] : [];
 
-        $criticalIssues = array_filter($issues, fn($issue) =>
-            is_array($issue) && isset($issue['severity']) && $issue['severity'] === ActivitySeverity::CRITICAL
+        $criticalIssues = array_filter(
+            $issues,
+            fn($issue) => is_array($issue) && isset($issue['severity']) && $issue['severity'] === ActivitySeverity::CRITICAL,
         );
-        $highIssues = array_filter($issues, fn($issue) =>
-            is_array($issue) && isset($issue['severity']) && $issue['severity'] === ActivitySeverity::HIGH
+        $highIssues = array_filter(
+            $issues,
+            fn($issue) => is_array($issue) && isset($issue['severity']) && $issue['severity'] === ActivitySeverity::HIGH,
         );
-        $mediumIssues = array_filter($issues, fn($issue) =>
-            is_array($issue) && isset($issue['severity']) && $issue['severity'] === ActivitySeverity::MEDIUM
+        $mediumIssues = array_filter(
+            $issues,
+            fn($issue) => is_array($issue) && isset($issue['severity']) && $issue['severity'] === ActivitySeverity::MEDIUM,
         );
 
         if (count($criticalIssues) > 0) {

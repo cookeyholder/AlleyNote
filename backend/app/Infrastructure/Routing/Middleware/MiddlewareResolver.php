@@ -125,6 +125,7 @@ class MiddlewareResolver
     private function resolveAlias(string $alias): string
     {
         $resolved = self::$middlewareAliases[$alias] ?? $alias;
+
         return is_string($resolved) ? $resolved : $alias;
     }
 
@@ -141,6 +142,7 @@ class MiddlewareResolver
                 $aliases[$key] = $value;
             }
         }
+
         return $aliases;
     }
 

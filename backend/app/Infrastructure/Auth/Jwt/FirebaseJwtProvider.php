@@ -17,6 +17,7 @@ use Firebase\JWT\ExpiredException;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
+use OpenSSLAsymmetricKey;
 use Throwable;
 use UnexpectedValueException;
 
@@ -338,10 +339,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     private function keysMatch(mixed $privateKey, mixed $publicKey): bool
     {
         // 驗證參數型別
-        if (!is_string($privateKey) && !($privateKey instanceof \OpenSSLAsymmetricKey)) {
+        if (!is_string($privateKey) && !($privateKey instanceof OpenSSLAsymmetricKey)) {
             return false;
         }
-        if (!is_string($publicKey) && !($publicKey instanceof \OpenSSLAsymmetricKey)) {
+        if (!is_string($publicKey) && !($publicKey instanceof OpenSSLAsymmetricKey)) {
             return false;
         }
 
@@ -449,6 +450,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             $actualType = isset($payload['type']) && is_scalar($payload['type'])
                 ? (string) $payload['type']
                 : 'unknown';
+
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
                 InvalidTokenException::ACCESS_TOKEN,

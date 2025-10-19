@@ -142,6 +142,7 @@ class RefreshTokenException extends JwtException
     public function getReason(): string
     {
         $reason = $this->context['reason'] ?? self::REASON_NOT_FOUND;
+
         return is_string($reason) ? $reason : self::REASON_NOT_FOUND;
     }
 
@@ -151,6 +152,7 @@ class RefreshTokenException extends JwtException
     public function getOperationId(): ?string
     {
         $operationId = $this->context['operation_id'] ?? null;
+
         return is_string($operationId) ? $operationId : null;
     }
 
@@ -160,6 +162,7 @@ class RefreshTokenException extends JwtException
     public function getUserId(): ?int
     {
         $userId = $this->context['user_id'] ?? null;
+
         return is_int($userId) ? $userId : null;
     }
 
@@ -169,6 +172,7 @@ class RefreshTokenException extends JwtException
     public function getTokenId(): ?string
     {
         $tokenId = $this->context['token_id'] ?? null;
+
         return is_string($tokenId) ? $tokenId : null;
     }
 

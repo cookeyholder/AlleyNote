@@ -278,6 +278,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
 
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? null;
+
         return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';
     }
 
@@ -300,6 +301,7 @@ class RateLimitMiddleware implements MiddlewareInterface
         if (!is_array($skipPaths)) {
             return true;
         }
+
         return !in_array($uri, $skipPaths, true);
     }
 }

@@ -92,6 +92,7 @@ class ValidationResult implements JsonSerializable
     public function getFieldErrors(string $field): array
     {
         $fieldErrors = $this->errors[$field] ?? [];
+
         return is_array($fieldErrors) ? $fieldErrors : [];
     }
 
@@ -181,6 +182,7 @@ class ValidationResult implements JsonSerializable
     public function getFieldFailedRules(string $field): array
     {
         $fieldRules = $this->failedRules[$field] ?? [];
+
         return is_array($fieldRules) ? $fieldRules : [];
     }
 
@@ -193,6 +195,7 @@ class ValidationResult implements JsonSerializable
     public function hasError(string $field, string $error): bool
     {
         $fieldErrors = $this->errors[$field] ?? null;
+
         return is_array($fieldErrors) && in_array($error, $fieldErrors, true);
     }
 
@@ -306,6 +309,7 @@ class ValidationResult implements JsonSerializable
     public function hasFieldFailedRule(string $field, string $rule): bool
     {
         $fieldRules = $this->failedRules[$field] ?? null;
+
         return is_array($fieldRules) && in_array($rule, $fieldRules, true);
     }
 

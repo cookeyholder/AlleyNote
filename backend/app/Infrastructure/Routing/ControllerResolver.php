@@ -397,7 +397,7 @@ class ControllerResolver
         $result = $controller->{$method}(...$methodArgs);
 
         if (!$result instanceof ResponseInterface) {
-            throw new RuntimeException("控制器方法必須返回 ResponseInterface 實例");
+            throw new RuntimeException('控制器方法必須返回 ResponseInterface 實例');
         }
 
         return $result;
@@ -424,6 +424,7 @@ class ControllerResolver
             if (!is_object($instance)) {
                 throw new RuntimeException("容器返回的不是物件實例: {$controllerClass}");
             }
+
             return $instance;
         }
 

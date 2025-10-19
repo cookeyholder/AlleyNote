@@ -461,7 +461,7 @@ class AttachmentService implements AttachmentServiceInterface
                 imagesavealpha($cleanImage, true);
                 $transparent = imagecolorallocatealpha($cleanImage, 255, 255, 255, 127);
                 if ($transparent === false) {
-                    throw new \RuntimeException('無法分配透明顏色');
+                    throw new RuntimeException('無法分配透明顏色');
                 }
                 imagefill($cleanImage, 0, 0, $transparent);
                 imagealphablending($cleanImage, true);
@@ -674,7 +674,7 @@ class AttachmentService implements AttachmentServiceInterface
         } catch (ValidationException $e) {
             // 記錄不同類型的驗證失敗
             $errors = $e->getErrors();
-            $error = isset($errors[0]) ? $errors[0] : null;
+            $error = $errors[0] ?? null;
             $errorMessage = (is_array($error) && isset($error['message']) && is_string($error['message']))
                 ? $error['message']
                 : $e->getMessage();
@@ -858,7 +858,7 @@ class AttachmentService implements AttachmentServiceInterface
 
         $attachmentId = $attachment->getId();
         if ($attachmentId === null) {
-            throw new \RuntimeException('附件 ID 不可為空');
+            throw new RuntimeException('附件 ID 不可為空');
         }
 
         $this->attachmentRepo->delete($attachmentId);

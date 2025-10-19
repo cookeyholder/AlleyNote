@@ -16,6 +16,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 /**
  * 應用程式核心類別.
@@ -106,7 +107,7 @@ class Application
     {
         $router = $this->container->get(RouterInterface::class);
         if (!$router instanceof RouterInterface) {
-            throw new \RuntimeException('Failed to resolve RouterInterface from container');
+            throw new RuntimeException('Failed to resolve RouterInterface from container');
         }
         $this->router = $router;
     }
@@ -118,7 +119,7 @@ class Application
     {
         $dispatcher = $this->container->get(RouteDispatcher::class);
         if (!$dispatcher instanceof RouteDispatcher) {
-            throw new \RuntimeException('Failed to resolve RouteDispatcher from container');
+            throw new RuntimeException('Failed to resolve RouteDispatcher from container');
         }
         $this->routeDispatcher = $dispatcher;
     }

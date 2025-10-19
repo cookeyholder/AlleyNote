@@ -146,6 +146,7 @@ class Validator implements ValidatorInterface
                 return false;
             }
             $result = call_user_func($callback, $value, $parameters, $allData);
+
             return is_bool($result) ? $result : false;
         }
 
@@ -565,7 +566,7 @@ class Validator implements ValidatorInterface
         $values = array_map(
             /** @param mixed $value */
             fn($value): string => is_scalar($value) || (is_object($value) && method_exists($value, '__toString')) ? (string) $value : '',
-            array_values($replacements)
+            array_values($replacements),
         );
 
         return str_replace($keys, $values, $message);

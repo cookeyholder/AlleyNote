@@ -13,6 +13,7 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
+use PDOStatement;
 use RuntimeException;
 
 /**
@@ -1012,16 +1013,16 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         }
 
         $entity = ActivityLog::fromDatabaseRow($validData);
+
         return $entity->toArray();
     }
 
     /**
      * 從 PDOStatement 的 fetch 迴圈建立 ActivityLog 陣列.
      *
-     * @param \PDOStatement $stmt
      * @return array<array<string, mixed>>
      */
-    private function fetchAllToArray(\PDOStatement $stmt): array
+    private function fetchAllToArray(PDOStatement $stmt): array
     {
         $results = [];
         while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -1030,6 +1031,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 $results[] = $mapped;
             }
         }
+
         return $results;
     }
 }

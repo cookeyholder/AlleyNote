@@ -478,9 +478,6 @@ class AttachmentController
         }
     }
 
-    /**
-     * @param mixed $file
-     */
     private function extractUploadedFile(mixed $file): ?UploadedFileInterface
     {
         if ($file instanceof UploadedFileInterface) {

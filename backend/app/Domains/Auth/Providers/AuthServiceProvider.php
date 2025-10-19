@@ -7,9 +7,11 @@ namespace App\Domains\Auth\Providers;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\Services\AuthenticationService;
 use App\Domains\Auth\Services\JwtTokenService;
 use App\Domains\Auth\Services\RefreshTokenService;
@@ -92,7 +94,7 @@ class AuthServiceProvider
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
         $jwtProvider = $container->get(FirebaseJwtProvider::class);
-        assert($jwtProvider instanceof \App\Domains\Auth\Contracts\JwtProviderInterface);
+        assert($jwtProvider instanceof JwtProviderInterface);
 
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
         assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
@@ -117,8 +119,8 @@ class AuthServiceProvider
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
         assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
 
-        $userRepository = $container->get(\App\Domains\Auth\Contracts\UserRepositoryInterface::class);
-        assert($userRepository instanceof \App\Domains\Auth\Contracts\UserRepositoryInterface);
+        $userRepository = $container->get(UserRepositoryInterface::class);
+        assert($userRepository instanceof UserRepositoryInterface);
 
         return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);
     }

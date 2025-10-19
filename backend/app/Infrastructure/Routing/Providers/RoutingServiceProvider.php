@@ -13,6 +13,7 @@ use App\Infrastructure\Routing\RouteDispatcher;
 use App\Infrastructure\Routing\RouteLoader;
 use App\Infrastructure\Routing\RouteValidator;
 use Psr\Container\ContainerInterface;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -93,13 +94,13 @@ class RoutingServiceProvider
         $middlewareResolver = $container->get(MiddlewareResolver::class);
 
         if (!($router instanceof RouterInterface)) {
-            throw new \RuntimeException('RouterInterface not found in container');
+            throw new RuntimeException('RouterInterface not found in container');
         }
         if (!($controllerResolver instanceof ControllerResolver)) {
-            throw new \RuntimeException('ControllerResolver not found in container');
+            throw new RuntimeException('ControllerResolver not found in container');
         }
         if (!($middlewareDispatcher instanceof MiddlewareDispatcher)) {
-            throw new \RuntimeException('MiddlewareDispatcher not found in container');
+            throw new RuntimeException('MiddlewareDispatcher not found in container');
         }
 
         return new RouteDispatcher(
@@ -135,6 +136,7 @@ class RoutingServiceProvider
 
         if (!($routeLoader instanceof RouteLoader) || !($router instanceof RouterInterface)) {
             error_log('路由元件無效');
+
             return;
         }
 

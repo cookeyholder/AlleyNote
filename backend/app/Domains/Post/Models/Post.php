@@ -9,6 +9,7 @@ use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class Post implements JsonSerializable
@@ -49,7 +50,7 @@ class Post implements JsonSerializable
     {
         // 驗證並設定 ID
         if (!isset($data['id']) || !is_numeric($data['id'])) {
-            throw new \InvalidArgumentException('Post ID must be a valid number');
+            throw new InvalidArgumentException('Post ID must be a valid number');
         }
         $this->id = (int) $data['id'];
 
@@ -66,19 +67,19 @@ class Post implements JsonSerializable
 
         // 驗證並設定標題
         if (!isset($data['title']) || !is_string($data['title'])) {
-            throw new \InvalidArgumentException('Post title must be a string');
+            throw new InvalidArgumentException('Post title must be a string');
         }
         $this->title = $data['title'];
 
         // 驗證並設定內容
         if (!isset($data['content']) || !is_string($data['content'])) {
-            throw new \InvalidArgumentException('Post content must be a string');
+            throw new InvalidArgumentException('Post content must be a string');
         }
         $this->content = $data['content'];
 
         // 驗證並設定使用者 ID
         if (!isset($data['user_id']) || !is_numeric($data['user_id'])) {
-            throw new \InvalidArgumentException('User ID must be a valid number');
+            throw new InvalidArgumentException('User ID must be a valid number');
         }
         $this->userId = (int) $data['user_id'];
 

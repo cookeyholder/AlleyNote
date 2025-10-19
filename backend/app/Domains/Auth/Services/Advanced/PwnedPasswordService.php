@@ -160,6 +160,7 @@ class PwnedPasswordService
         }
 
         $data = $cacheEntry['data'] ?? null;
+
         return is_string($data) ? $data : null;
     }
 

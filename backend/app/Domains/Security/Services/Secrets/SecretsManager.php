@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Secrets;
 
 use App\Domains\Security\Contracts\SecretsManagerInterface;
-use App\Shared\Exceptions\ValidationException;
+use RuntimeException;
 
 class SecretsManager implements SecretsManagerInterface
 {
@@ -85,11 +85,11 @@ class SecretsManager implements SecretsManagerInterface
         $value = $this->get($key);
 
         if ($value === null || $value === '') {
-            throw new \RuntimeException("必需的環境變數 '{$key}' 未設定");
+            throw new RuntimeException("必需的環境變數 '{$key}' 未設定");
         }
 
         if (!is_scalar($value)) {
-            throw new \RuntimeException("環境變數 '{$key}' 不是字串");
+            throw new RuntimeException("環境變數 '{$key}' 不是字串");
         }
 
         return (string) $value;
@@ -106,7 +106,7 @@ class SecretsManager implements SecretsManagerInterface
         }
 
         if (!empty($missing)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 '缺少必需的環境變數: ' . implode(', ', $missing),
             );
         }
@@ -115,12 +115,14 @@ class SecretsManager implements SecretsManagerInterface
     public function isProduction(): bool
     {
         $env = $this->get('APP_ENV', 'production');
+
         return is_string($env) && strtolower($env) === 'production';
     }
 
     public function isDevelopment(): bool
     {
         $env = $this->get('APP_ENV', 'production');
+
         return is_string($env) && strtolower($env) === 'development';
     }
 
@@ -169,6 +171,7 @@ class SecretsManager implements SecretsManagerInterface
         if ($length < 1) {
             $length = 32;
         }
+
         return bin2hex(random_bytes($length));
     }
 
@@ -193,6 +196,7 @@ class SecretsManager implements SecretsManagerInterface
         $content = file_get_contents($filePath);
         if ($content === false) {
             $issues[] = '無法讀取 .env 檔案';
+
             return $issues;
         }
         $lines = explode("\n", $content);
@@ -250,12 +254,12 @@ class SecretsManager implements SecretsManagerInterface
     private function loadFromFile(string $filePath): void
     {
         if (!is_readable($filePath)) {
-            throw new \RuntimeException("無法讀取環境設定檔案: {$filePath}");
+            throw new RuntimeException("無法讀取環境設定檔案: {$filePath}");
         }
 
         $content = file_get_contents($filePath);
         if ($content === false) {
-            throw new \RuntimeException("無法讀取檔案內容: {$filePath}");
+            throw new RuntimeException("無法讀取檔案內容: {$filePath}");
         }
         $lines = explode("\n", $content);
 

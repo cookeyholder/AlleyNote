@@ -7,6 +7,7 @@ namespace App\Domains\Auth\Providers;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\PasswordResetTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
@@ -136,7 +137,7 @@ class SimpleAuthServiceProvider
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
         $jwtProvider = $container->get(FirebaseJwtProvider::class);
-        assert($jwtProvider instanceof \App\Domains\Auth\Contracts\JwtProviderInterface);
+        assert($jwtProvider instanceof JwtProviderInterface);
 
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
         assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);

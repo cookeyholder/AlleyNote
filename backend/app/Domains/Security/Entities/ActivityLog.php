@@ -10,6 +10,7 @@ use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTime;
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 use ReflectionObject;
 
@@ -314,7 +315,7 @@ class ActivityLog
         // Validate and extract action_type
         $actionTypeValue = $data['action_type'] ?? null;
         if (!is_string($actionTypeValue) && !is_int($actionTypeValue)) {
-            throw new \InvalidArgumentException('action_type must be a string or integer');
+            throw new InvalidArgumentException('action_type must be a string or integer');
         }
 
         // Validate user_id
