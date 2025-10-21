@@ -1,0 +1,7 @@
+{
+    "name": "alleynote-frontend",
+    "private": true,
+    "type": "module",
+    "description": "Tooling metadata for the AlleyNote static frontend. Provides module semantics for Node-based checks without introducing runtime dependencies.",
+    "license": "MIT"
+}

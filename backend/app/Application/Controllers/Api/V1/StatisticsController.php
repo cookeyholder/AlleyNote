@@ -11,6 +11,7 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
 use Exception;
+use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -129,6 +130,15 @@ class StatisticsController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
+        } catch (InvalidArgumentException $e) {
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'type' => 'validation_error',
+                    'message' => $e->getMessage(),
+                    'details' => [],
+                ],
+            ], 422);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,
@@ -237,6 +247,15 @@ class StatisticsController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
+        } catch (InvalidArgumentException $e) {
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'type' => 'validation_error',
+                    'message' => $e->getMessage(),
+                    'details' => [],
+                ],
+            ], 422);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,
@@ -325,6 +344,15 @@ class StatisticsController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
+        } catch (InvalidArgumentException $e) {
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'type' => 'validation_error',
+                    'message' => $e->getMessage(),
+                    'details' => [],
+                ],
+            ], 422);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,
@@ -432,6 +460,15 @@ class StatisticsController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
+        } catch (InvalidArgumentException $e) {
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'type' => 'validation_error',
+                    'message' => $e->getMessage(),
+                    'details' => [],
+                ],
+            ], 422);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,
@@ -527,6 +564,15 @@ class StatisticsController extends BaseController
                     'details' => $e->getErrors(),
                 ],
             ], 400);
+        } catch (InvalidArgumentException $e) {
+            return $this->json($response, [
+                'success' => false,
+                'error' => [
+                    'type' => 'validation_error',
+                    'message' => $e->getMessage(),
+                    'details' => [],
+                ],
+            ], 422);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,

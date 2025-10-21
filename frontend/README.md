@@ -1,6 +1,6 @@
 # AlleyNote 前端
 
-純 HTML + JavaScript + CSS 架構，無需構建工具。
+純 HTML + JavaScript + CSS 架構，運行時無需構建工具。
 
 ## 目錄結構
 
@@ -52,6 +52,18 @@ frontend/
 - ✅ 表單驗證工具
 
 ## 開發
+
+### 程式碼檢查與測試
+
+CI 會使用 Node.js 18 提供的內建工具與少量一次性下載的依賴來執行下列檢查：
+
+- `eslint`：靜態程式碼分析（使用 `frontend/eslint.config.js`）
+- `prettier`：格式檢查
+- `node --test`：針對工具模組的單元測試（測試檔位於 `frontend/tests`）
+- `c8`：覆蓋率報告（輸出至 `frontend/coverage/`）
+- `node frontend/scripts/build.mjs`：產生靜態 `dist/` 成品供部署工作流程使用
+
+> 這些步驟僅在 CI 或需要檢查時執行，並不改變「零構建依賴」的執行模型。
 
 ### Docker 部署（推薦）
 
@@ -113,6 +125,7 @@ getBaseURL() {
 2. 使用 CDN 資源（需要網路連線）
 3. CORS 需要正確配置
 4. 本地開發需要使用本地伺服器（不能直接開啟 HTML 檔案）
+5. `frontend/package.json` 僅用於告訴 Node.js 以 ES Modules 解析程式碼，沒有新增任何執行期相依套件
 
 ## 移除的內容
 
