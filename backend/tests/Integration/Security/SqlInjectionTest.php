@@ -4,25 +4,26 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Security;
 
-use Tests\Support\IntegrationTestCase;
 use App\Domains\Post\Repositories\PostRepository;
-use App\Shared\Contracts\CacheServiceInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
-use PDO;
+use App\Shared\Contracts\CacheServiceInterface;
 use Mockery;
+use PDO;
+use Tests\Support\IntegrationTestCase;
 
 class SqlInjectionTest extends IntegrationTestCase
 {
     private PostRepository $repository;
+
     private PDO $pdo;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->pdo = new PDO('sqlite::memory:');
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
+
         $this->pdo->exec("CREATE TABLE posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             uuid VARCHAR(36) NOT NULL,
@@ -59,9 +60,9 @@ class SqlInjectionTest extends IntegrationTestCase
     {
         // SQL Injection payload attempting to return all rows
         $maliciousPayload = "NonExistent' OR '1'='1";
-        
+
         $results = $this->repository->search($maliciousPayload);
-        
+
         $this->assertEmpty($results, 'SQL Injection vulnerability detected: Malicious payload was executed as SQL.');
     }
 }

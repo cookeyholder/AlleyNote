@@ -4,27 +4,29 @@ declare(strict_types=1);
 
 namespace Tests\Performance;
 
-use Tests\Support\IntegrationTestCase;
+use App\Application;
 use App\Domains\Post\Repositories\PostRepository;
-use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Domains\Statistics\ValueObjects\PeriodType;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use DateTimeImmutable;
+use Tests\Support\IntegrationTestCase;
 
 class ApiPerformanceTest extends IntegrationTestCase
 {
     private PostRepository $postRepository;
+
     private PostStatisticsRepository $statsRepository;
 
-    private function getApp(): \App\Application
+    private function getApp(): Application
     {
-        return new \App\Application();
+        return new Application();
     }
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $container = $this->getApp()->getContainer();
         $this->postRepository = $container->get(PostRepository::class);
         $this->statsRepository = $container->get(PostStatisticsRepository::class);
@@ -46,32 +48,32 @@ class ApiPerformanceTest extends IntegrationTestCase
     public function test_post_listing_performance_is_within_limit(): void
     {
         $startTime = microtime(true);
-        
+
         $this->postRepository->paginate(1, 20);
-        
+
         $durationMs = (microtime(true) - $startTime) * 1000;
-        
+
         $this->assertLessThan(500, $durationMs, "Post listing took too long: {$durationMs}ms (Limit: 500ms)");
     }
 
     public function test_popular_posts_statistics_performance_is_within_limit(): void
     {
         $startTime = microtime(true);
-        
+
         $startTimeObj = new DateTimeImmutable('today');
         $endTimeObj = $startTimeObj->modify('+1 day');
-        
+
         $period = new StatisticsPeriod(
             PeriodType::DAILY,
             $startTimeObj,
             $endTimeObj,
-            'UTC'
+            'UTC',
         );
-        
+
         $this->statsRepository->getPopularPosts($period, 10);
-        
+
         $durationMs = (microtime(true) - $startTime) * 1000;
-        
+
         $this->assertLessThan(500, $durationMs, "Popular posts statistics took too long: {$durationMs}ms (Limit: 500ms)");
     }
 }
