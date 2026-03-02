@@ -26,7 +26,7 @@
     "seed": "cd backend && php vendor/bin/phinx seed:run"
   },
   "devDependencies": {
-    "concurrently": "^8.2.0"
+    "concurrently": "^9.2.1"
   },
   "keywords": [
     "alleynote",
