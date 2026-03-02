@@ -5,9 +5,9 @@
 
 ## Requirements
 
-### Requirement: Docker-in-Docker 整合
-開發環境 SHALL 支援 Docker-in-Docker (DinD)，允許開發者在容器內部執行 Docker 指令。
+### Requirement: 完全隔離的 Docker-in-Docker 環境
+開發環境 SHALL 支援完全隔離的 Docker-in-Docker (DinD)，允許開發者在容器內部執行獨立於宿主機的 Docker 引擎。
 
-#### Scenario: 驗證 Docker 指令
-- **WHEN** 使用者在開發容器終端機輸入 'docker ps'
-- **THEN** 系統應正確顯示主機或子容器中的進程列表
+#### Scenario: 驗證資源隔離性
+- **WHEN** 使用者在開發容器內部執行 'docker images' 或 'docker ps'
+- **THEN** 系統 SHALL 只顯示在容器內部創建的資源，而不應顯示宿主機上的任何 Docker 資源（映像或容器）

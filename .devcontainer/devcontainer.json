@@ -1,16 +1,16 @@
 {
     "name": "AlleyNote Dev Environment (Isolated)",
-    "image": "mcr.microsoft.com/devcontainers/php:8.4",
+    "image": "mcr.microsoft.com/devcontainers/php:1-8.4-bookworm",
     "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
             "version": "latest",
             "enableNonRootDocker": "true",
-            "moby": "false"
+            "moby": "true"
         },
-        "ghcr.io/devcontainers/features/node:1": {
+        "ghcr.io/devcontainers/features/node:1.7.1": {
             "version": "24"
         },
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+        "ghcr.io/devcontainers/features/github-cli:1.0.10": {}
     },
     "appPort": [8080],
     "mounts": [
@@ -37,5 +37,5 @@
         }
     },
     "remoteUser": "vscode",
-    "postCreateCommand": "npm install && cd frontend && npm install"
+    "postCreateCommand": "npm install"
 }
