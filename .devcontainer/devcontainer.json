@@ -1,11 +1,14 @@
 {
-    "name": "AlleyNote Dev Environment (Isolated)",
-    "image": "mcr.microsoft.com/devcontainers/php:1-8.4-bookworm",
+    "name": "AlleyNote Dev Environment (Trixie)",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": "."
+    },
     "features": {
         "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
             "version": "latest",
             "enableNonRootDocker": "true",
-            "moby": "true"
+            "moby": "false"
         },
         "ghcr.io/devcontainers/features/node:1.7.1": {
             "version": "24"
