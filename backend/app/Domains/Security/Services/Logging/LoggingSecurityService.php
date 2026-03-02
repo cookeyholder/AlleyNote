@@ -368,7 +368,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             $stats['files'][basename($file)] = [
                 'size' => filesize($file),
                 'permissions' => sprintf('%o', fileperms($file) & 0o777),
-                'last_modified' => date('Y-m-d H:i:s', filemtime($file)),
+                'last_modified' => date('Y-m-d H:i:s', (int) filemtime($file)),
             ];
         }
 
