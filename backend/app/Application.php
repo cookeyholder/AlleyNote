@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Infrastructure\Http\Response;
+use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
@@ -15,7 +17,6 @@ use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * 應用程式核心類別.
@@ -159,12 +160,12 @@ class Application
         ];
 
         $json = json_encode($errorData, JSON_UNESCAPED_UNICODE) ?: '{"error": "Internal Server Error"}';
-        $stream = new \App\Infrastructure\Http\Stream($json);
+        $stream = new Stream($json);
 
-        return new \App\Infrastructure\Http\Response(
+        return new Response(
             500,
             ['Content-Type' => 'application/json'],
-            $stream
+            $stream,
         );
     }
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
+use App\Infrastructure\Http\Response;
+use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Contracts\RouteInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -80,7 +82,7 @@ class ControllerResolver
      */
     private function createResponse(): ResponseInterface
     {
-        return new \App\Infrastructure\Http\Response();
+        return new Response();
     }
 
     /**
@@ -89,12 +91,12 @@ class ControllerResolver
     private function createJsonResponse(mixed $data, int $status = 200): ResponseInterface
     {
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '{}';
-        $stream = new \App\Infrastructure\Http\Stream($json);
+        $stream = new Stream($json);
 
-        return new \App\Infrastructure\Http\Response(
+        return new Response(
             $status,
             ['Content-Type' => 'application/json'],
-            $stream
+            $stream,
         );
     }
 
