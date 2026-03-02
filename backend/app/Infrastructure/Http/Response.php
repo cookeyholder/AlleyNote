@@ -51,7 +51,7 @@ class Response implements ResponseInterface
         return $this->protocolVersion;
     }
 
-    public function withProtocolVersion(string $version): ResponseInterface
+    public function withProtocolVersion(string $version): self
     {
         $clone = clone $this;
         $clone->protocolVersion = $version;
@@ -84,7 +84,7 @@ class Response implements ResponseInterface
         return implode(', ', $this->getHeader($name));
     }
 
-    public function withHeader(string $name, $value): ResponseInterface
+    public function withHeader(string $name, mixed $value): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
@@ -94,7 +94,7 @@ class Response implements ResponseInterface
         return $clone;
     }
 
-    public function withAddedHeader(string $name, $value): ResponseInterface
+    public function withAddedHeader(string $name, mixed $value): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
@@ -110,7 +110,7 @@ class Response implements ResponseInterface
         return $clone;
     }
 
-    public function withoutHeader(string $name): ResponseInterface
+    public function withoutHeader(string $name): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
@@ -130,7 +130,7 @@ class Response implements ResponseInterface
         return $this->body;
     }
 
-    public function withBody(StreamInterface $body): ResponseInterface
+    public function withBody(StreamInterface $body): self
     {
         $clone = clone $this;
         $clone->body = $body;
@@ -143,7 +143,7 @@ class Response implements ResponseInterface
         return $this->statusCode;
     }
 
-    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): self
     {
         $clone = clone $this;
         $clone->statusCode = $code;
