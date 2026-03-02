@@ -76,7 +76,10 @@ class Response implements ResponseInterface
             return [];
         }
 
-        $originalName = (string) $this->headerNames[$name];
+        $originalName = $this->headerNames[$name];
+        if (!is_string($originalName)) {
+            return [];
+        }
 
         return $this->headers[$originalName] ?? [];
     }
@@ -102,8 +105,10 @@ class Response implements ResponseInterface
         $normalizedName = strtolower($name);
 
         if (isset($clone->headerNames[$normalizedName])) {
-            $actualName = (string) $clone->headerNames[$normalizedName];
-            $clone->headers[$actualName] = array_merge($clone->headers[$actualName], is_array($value) ? $value : [$value]);
+            $actualName = $clone->headerNames[$normalizedName];
+            if (is_string($actualName)) {
+                $clone->headers[$actualName] = array_merge($clone->headers[$actualName], is_array($value) ? $value : [$value]);
+            }
         } else {
             $clone->headerNames[$normalizedName] = $name;
             $clone->headers[$name] = is_array($value) ? $value : [$value];
@@ -121,8 +126,10 @@ class Response implements ResponseInterface
             return $clone;
         }
 
-        $originalName = (string) $clone->headerNames[$normalizedName];
-        unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);
+        $originalName = $clone->headerNames[$normalizedName];
+        if (is_string($originalName)) {
+            unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);
+        }
 
         return $clone;
     }

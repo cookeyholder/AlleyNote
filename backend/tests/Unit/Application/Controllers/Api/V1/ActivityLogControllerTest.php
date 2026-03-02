@@ -106,8 +106,8 @@ class ActivityLogControllerTest extends TestCase
             ->andReturn($stream);
 
         $stream->shouldReceive('write')
-            ->andReturnUsing(function ($string) {
-                return strlen($string);
+            ->andReturnUsing(function (mixed $string) {
+                return is_string($string) ? strlen($string) : 0;
             });
 
         $response->shouldReceive('withHeader')
