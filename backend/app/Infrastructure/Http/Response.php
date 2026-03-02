@@ -42,7 +42,9 @@ class Response implements ResponseInterface
         }
 
         foreach ($headers as $name => $value) {
-            $this->withHeader($name, $value);
+            $normalizedName = strtolower($name);
+            $this->headerNames[$normalizedName] = $name;
+            $this->headers[$name] = is_array($value) ? $value : [$value];
         }
     }
 

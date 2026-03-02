@@ -71,9 +71,9 @@ class XssPreventionTest extends TestCase
             ->andReturn($this->stream);
         $this->stream->shouldReceive('write')
             ->andReturnUsing(function ($content) {
-                $this->lastWrittenContent = $content;
+                $this->lastWrittenContent = (string) $content;
 
-                return strlen($content);
+                return strlen((string) $content);
             });
 
         // 設定預設的 user_id 屬性

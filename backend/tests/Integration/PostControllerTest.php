@@ -529,10 +529,10 @@ class PostControllerTest extends TestCase
         $stream = Mockery::mock(StreamInterface::class);
         $this->currentResponseData = null;
         $stream->shouldReceive('write')
-            ->andReturnUsing(function ($content) use ($stream) {
-                $this->currentResponseData = json_decode($content, true);
+            ->andReturnUsing(function ($content) {
+                $this->currentResponseData = json_decode((string) $content, true);
 
-                return $stream;
+                return strlen((string) $content);
             });
         $stream->shouldReceive('getContents')
             ->andReturnUsing(function () {

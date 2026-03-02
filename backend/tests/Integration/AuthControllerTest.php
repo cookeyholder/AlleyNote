@@ -92,9 +92,9 @@ class AuthControllerTest extends TestCase
         $responseContent = '';
         $stream->shouldReceive('write')
             ->andReturnUsing(function ($content) use (&$responseContent) {
-                $responseContent = $content;
+                $responseContent .= (string) $content;
 
-                return $this;
+                return strlen((string) $content);
             });
         $stream->shouldReceive('__toString')
             ->andReturnUsing(function () use (&$responseContent) {

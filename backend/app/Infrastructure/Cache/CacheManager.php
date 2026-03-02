@@ -119,7 +119,8 @@ class CacheManager
     {
         $result = [];
         foreach ($keys as $key) {
-            $result[$key] = $this->get($key);
+            $keyStr = (string) $key;
+            $result[$keyStr] = $this->get($keyStr);
         }
 
         return $result;

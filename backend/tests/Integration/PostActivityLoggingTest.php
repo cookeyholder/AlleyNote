@@ -74,7 +74,9 @@ class PostActivityLoggingTest extends TestCase
             ->byDefault();
 
         $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('write')->andReturnSelf()->byDefault();
+        $stream->shouldReceive('write')
+            ->andReturnUsing(fn($string) => strlen((string) $string))
+            ->byDefault();
         $stream->shouldReceive('__toString')->andReturn('{"success": true}')->byDefault();
         $this->response->shouldReceive('getBody')->andReturn($stream)->byDefault();
     }
