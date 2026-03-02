@@ -46,4 +46,3 @@ class SqlInjectionTest extends DatabaseTestCase
         $this->assertEmpty($results, '檢測到 SQL 注入漏洞：惡意 Payload 被當作 SQL 語法執行了。');
     }
 }
-
