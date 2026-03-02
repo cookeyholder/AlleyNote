@@ -326,7 +326,7 @@ class TrendAnalysisProcessor
         sort($sortedData);
 
         if ($n % 2 === 0) {
-            $median = ($sortedData[$n / 2 - 1] + $sortedData[$n / 2]) / 2;
+            $median = ($sortedData[(int) ($n / 2) - 1] + $sortedData[(int) ($n / 2)]) / 2;
         } else {
             $median = $sortedData[(int) floor($n / 2)];
         }

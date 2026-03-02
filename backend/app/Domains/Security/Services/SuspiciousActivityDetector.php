@@ -636,17 +636,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
      */
     private function escalateSeverity(ActivitySeverity $current, ActivitySeverity $new): ActivitySeverity
     {
-        $levels = [
-            ActivitySeverity::LOW->value => 1,
-            ActivitySeverity::MEDIUM->value => 2,
-            ActivitySeverity::HIGH->value => 3,
-            ActivitySeverity::CRITICAL->value => 4,
-        ];
-
-        $currentLevel = $levels[$current->value];
-        $newLevel = $levels[$new->value];
-
-        return $newLevel > $currentLevel ? $new : $current;
+        return $new->isAtLeast($current) ? $new : $current;
     }
 
     /**
