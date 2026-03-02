@@ -504,10 +504,9 @@ export class StatisticsDashboard {
             .map(
                 (item) => `
                 <tr class="hover:bg-modern-50 transition">
-                    <td class="px-4 py-3 font-medium text-modern-800">${
+                    <td class="px-4 py-3 font-medium text-modern-800">${this.escapeHTML(
                         item.source ?? "N/A"
-                    }</td>
-                    <td class="px-4 py-3 text-right tabular-nums">${this.formatNumber(
+                    )}</td>                    <td class="px-4 py-3 text-right tabular-nums">${this.formatNumber(
                         item.count ?? 0
                     )}</td>
                     <td class="px-4 py-3 text-right tabular-nums">${(
@@ -536,8 +535,7 @@ export class StatisticsDashboard {
                               <div>
                                   <p class="font-medium text-modern-800">${
                                       index + 1
-                                  }. ${post.title ?? "未命名文章"}</p>
-                                  <p class="text-xs text-modern-500">文章 ID：${
+                                  }. ${this.escapeHTML(post.title ?? "未命名文章")}</p>                                  <p class="text-xs text-modern-500">文章 ID：${
                                       post.id ?? "-"
                                   }</p>
                               </div>
@@ -557,10 +555,9 @@ export class StatisticsDashboard {
                       .map(
                           (category) => `
                           <li class="flex items-center justify-between rounded-lg bg-modern-50 px-4 py-2">
-                              <span class="font-medium text-modern-700">${
+                              <span class="font-medium text-modern-700">${this.escapeHTML(
                                   category.name ?? "未命名分類"
-                              }</span>
-                              <span class="text-sm font-semibold text-modern-600 tabular-nums">${this.formatNumber(
+                              )}</span>                              <span class="text-sm font-semibold text-modern-600 tabular-nums">${this.formatNumber(
                                   category.posts ?? 0
                               )} 篇</span>
                           </li>
@@ -592,10 +589,9 @@ export class StatisticsDashboard {
             .map(
                 (user) => `
                 <tr class="hover:bg-modern-50 transition">
-                    <td class="px-4 py-3 font-medium text-modern-800">${
+                    <td class="px-4 py-3 font-medium text-modern-800">${this.escapeHTML(
                         user.username ?? user.id ?? "未知使用者"
-                    }</td>
-                    <td class="px-4 py-3 text-right tabular-nums">${this.formatNumber(
+                    )}</td>                    <td class="px-4 py-3 text-right tabular-nums">${this.formatNumber(
                         user.post_count ?? 0
                     )}</td>
                     <td class="px-4 py-3 text-right tabular-nums">${this.formatNumber(
@@ -680,6 +676,18 @@ export class StatisticsDashboard {
         return Number.isFinite(Number(value))
             ? Number(value).toLocaleString("zh-TW")
             : "0";
+    }
+
+    /**
+     * 轉義 HTML 避免 XSS
+     * @param {string} str 
+     * @returns {string}
+     */
+    escapeHTML(str) {
+        if (!str) return "";
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
     }
 
     formatDateTime(value) {

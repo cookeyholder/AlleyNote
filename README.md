@@ -2,6 +2,8 @@
 
 [![持續整合](https://github.com/cookeyholder/AlleyNote/workflows/Continuous%20Integration/badge.svg)](https://github.com/cookeyholder/AlleyNote/actions)
 [![安全審計](https://github.com/cookeyholder/AlleyNote/workflows/Security%20Audit/badge.svg)](https://github.com/cookeyholder/AlleyNote/actions)
+[![PHPStan Level](https://img.shields.io/badge/PHPStan-Level%208-brightgreen.svg)](docs/guides/developer/DEVELOPER_GUIDE.md#程式碼品質)
+[![Performance](https://img.shields.io/badge/Performance-<500ms-blue.svg)](docs/guides/developer/DEVELOPER_GUIDE.md#效能基準規範)
 [![PHP Version](https://img.shields.io/badge/PHP-8.4.12-blue.svg)](https://www.php.net)
 [![Node Version](https://img.shields.io/badge/Node-18.0+-green.svg)](https://nodejs.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -13,11 +15,12 @@
 > 
 > 這是一個基於 **DDD（領域驅動設計）架構** 的現代化公告系統。如果你是初學者，別擔心！這個系統雖然使用了先進的技術，但我們會在文件中用淺顯易懂的方式說明一切。
 >
-> **主要特色**：
-> - 📝 完整的內容管理（發布公告、上傳附件）
-> - 👥 用戶權限控制（管理員、一般用戶）
-> - 🔒 安全防護（防止駭客攻擊）
-> - 📊 數據分析（了解誰看了你的公告）
+**主要特色**：
+- 📝 完整的內容管理（發布公告、上傳附件）
+- 👥 用戶權限控制（管理員、一般用戶）
+- 🔒 **資安先行 (Security-First)**：強制執行資安 TDD 流程，防止 XSS、SQLi 等攻擊
+- ⚡ **高效能表現**：API 回應時間嚴格控制在 500ms 內，內建效能基準測試
+- 📊 數據分析（了解誰看了你的公告）
 
 ---
 

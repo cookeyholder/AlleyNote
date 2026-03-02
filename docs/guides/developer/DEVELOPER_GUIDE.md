@@ -1464,7 +1464,34 @@ docker compose exec -T web ./vendor/bin/phpunit --testdox --verbose
 
 ---
 
-## 除錯與故障排除
+## 🔒 資安與效能 TDD 開發規範
+
+為了確保 AlleyNote 的高品質與安全性，本專案強制執行「測試驅動開發 (TDD)」與「資安先行」的開發策略。
+
+### 1. 資安 TDD 流程 (Security-First TDD)
+
+針對任何涉及使用者輸入或敏感資料的變更，必須遵循以下流程：
+
+1.  **撰寫失敗測試 (Red) 🔴**: 撰寫一個會失敗的測試案例，模擬潛在的攻擊向量（例如 SQL 注入、XSS 攻擊、未授權存取）。
+2.  **實作安全性修復 (Green) 🟢**: 修改程式碼（例如使用 Prepared Statements、導入 `HTMLPurifier` 過濾、強化身份驗證檢查）直到測試通過。
+3.  **重構與驗證 (Refactor) 🔵**: 在不破壞安全性的前提下優化程式碼，並執行完整測試套件確保無退化 (Regression)。
+
+### 2. 效能基準規範 (Performance Benchmarking)
+
+關鍵路徑（API 列表、搜尋、統計計算）必須符合效能基準：
+
+-   **API 回應時間**: 標準查詢應在 **500ms** 內完成。
+-   **效能測試 (Performance Tests)**: 在 `tests/Performance/` 目錄中撰寫自動化效能測試，斷言執行時間。
+-   **優化策略**: 優先使用資料庫索引與多層快取，僅在有失敗效能測試佐證時才引入複雜的優化邏輯。
+
+### 3. 高頻提交與追蹤 (Atomic Commits)
+
+-   **一任務一提交 (Commit per Task)**: 每個獨立的修復或優化任務應獨立提交。
+-   **語意化提交訊息**: 使用 Conventional Commits 格式，如 `fix(security): ...` 或 `perf(api): ...`。
+
+---
+
+## 🐛 除錯與故障排除
 
 ### 🛠️ 基本除錯工具
 
