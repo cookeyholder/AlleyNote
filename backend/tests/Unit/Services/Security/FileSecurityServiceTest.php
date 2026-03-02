@@ -258,8 +258,7 @@ class FileSecurityServiceTest extends TestCase
         $stream = $this->createMock(StreamInterface::class);
         $stream->method('read')
             ->willReturn($content);
-        $stream->method('rewind')
-            ->willReturn(null);
+        // rewind() has void return type, so we don't specify a return value
 
         $uploadedFile = $this->createMock(UploadedFileInterface::class);
         $uploadedFile->method('getStream')
