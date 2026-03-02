@@ -208,7 +208,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     $sources[] = "'nonce-{$nonce}'";
                 }
 
-                $directives[] = $directive . ' ' . implode(' ', $sources);
+                $directives[] = $directive . ' ' . implode(' ', (array) $sources);
             } else {
                 $directives[] = $directive;
             }

@@ -76,7 +76,9 @@ class Response implements ResponseInterface
             return [];
         }
 
-        return $this->headers[$this->headerNames[$name]];
+        $originalName = (string) $this->headerNames[$name];
+
+        return $this->headers[$originalName] ?? [];
     }
 
     public function getHeaderLine(string $name): string
@@ -100,8 +102,8 @@ class Response implements ResponseInterface
         $normalizedName = strtolower($name);
 
         if (isset($clone->headerNames[$normalizedName])) {
-            $name = $clone->headerNames[$normalizedName];
-            $clone->headers[$name] = array_merge($clone->headers[$name], is_array($value) ? $value : [$value]);
+            $actualName = (string) $clone->headerNames[$normalizedName];
+            $clone->headers[$actualName] = array_merge($clone->headers[$actualName], is_array($value) ? $value : [$value]);
         } else {
             $clone->headerNames[$normalizedName] = $name;
             $clone->headers[$name] = is_array($value) ? $value : [$value];
@@ -119,7 +121,7 @@ class Response implements ResponseInterface
             return $clone;
         }
 
-        $originalName = $clone->headerNames[$normalizedName];
+        $originalName = (string) $clone->headerNames[$normalizedName];
         unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);
 
         return $clone;

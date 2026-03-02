@@ -229,6 +229,7 @@ class PostControllerTest extends TestCase
         $requestBody = json_encode($postData);
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $requestStream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
@@ -264,6 +265,7 @@ class PostControllerTest extends TestCase
         $requestBody = json_encode($invalidData);
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $requestStream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定驗證器拋出異常（DTO 建立時就會失敗）
@@ -309,6 +311,7 @@ class PostControllerTest extends TestCase
         $requestBody = json_encode($updateData);
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $requestStream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
@@ -345,6 +348,7 @@ class PostControllerTest extends TestCase
         $requestBody = json_encode($updateData);
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $requestStream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
@@ -427,6 +431,7 @@ class PostControllerTest extends TestCase
         $requestBody = json_encode($pinData);
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $requestStream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
@@ -465,6 +470,7 @@ class PostControllerTest extends TestCase
         $requestBody = json_encode($pinData);
         $requestStream = Mockery::mock(StreamInterface::class);
         $requestStream->shouldReceive('getContents')->andReturn($requestBody);
+        $requestStream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($requestStream);
 
         // 設定服務層期望行為
