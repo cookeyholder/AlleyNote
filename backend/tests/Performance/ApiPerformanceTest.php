@@ -10,9 +10,9 @@ use App\Domains\Statistics\ValueObjects\PeriodType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use DateTimeImmutable;
-use Tests\Support\IntegrationTestCase;
+use Tests\Support\DatabaseTestCase;
 
-class ApiPerformanceTest extends IntegrationTestCase
+class ApiPerformanceTest extends DatabaseTestCase
 {
     private PostRepository $postRepository;
 
@@ -31,18 +31,20 @@ class ApiPerformanceTest extends IntegrationTestCase
         $this->postRepository = $container->get(PostRepository::class);
         $this->statsRepository = $container->get(PostStatisticsRepository::class);
 
-        // Seed some data for performance testing
+        // 使用內建方法 Seed 測試資料
         $this->seedTestData(100);
     }
 
     private function seedTestData(int $count): void
     {
-        $this->db->beginTransaction();
         for ($i = 1; $i <= $count; $i++) {
-            $this->db->exec("INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, created_at, updated_at) 
-                            VALUES ('uuid-$i', $i, 'Title $i', 'Content for post $i', 1, '127.0.0.1', 0, 'published', datetime('now'), datetime('now'), datetime('now'))");
+            $this->insertTestPost([
+                'uuid' => "uuid-$i",
+                'seq_number' => $i,
+                'title' => "Title $i",
+                'content' => "Content for post $i",
+            ]);
         }
-        $this->db->commit();
     }
 
     public function test_post_listing_performance_is_within_limit(): void

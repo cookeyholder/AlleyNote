@@ -8,43 +8,22 @@ use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
 use Mockery;
-use PDO;
-use Tests\Support\IntegrationTestCase;
+use Tests\Support\DatabaseTestCase;
 
-class SqlInjectionTest extends IntegrationTestCase
+class SqlInjectionTest extends DatabaseTestCase
 {
     private PostRepository $repository;
-
-    private PDO $pdo;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->pdo = new PDO('sqlite::memory:');
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $this->pdo->exec("CREATE TABLE posts (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            uuid VARCHAR(36) NOT NULL,
-            seq_number INTEGER NOT NULL,
-            title VARCHAR(255) NOT NULL,
-            content TEXT NOT NULL,
-            user_id INTEGER NOT NULL,
-            user_ip VARCHAR(45) NOT NULL,
-            is_pinned BOOLEAN DEFAULT 0,
-            status VARCHAR(20) DEFAULT 'published',
-            publish_date DATETIME NULL,
-            views INTEGER DEFAULT 0,
-            creation_source VARCHAR(50) DEFAULT 'web',
-            creation_source_detail VARCHAR(255) NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            deleted_at DATETIME NULL
-        )");
-
-        $this->pdo->exec("INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, created_at, updated_at) 
-                        VALUES ('test-uuid', 1, 'Safe Title', 'Safe Content', 1, '127.0.0.1', 0, 'published', datetime('now'), datetime('now'))");
+        // 使用 insertTestPost 方法插入測試資料
+        $this->insertTestPost([
+            'uuid' => 'test-uuid',
+            'title' => 'Safe Title',
+            'content' => 'Safe Content',
+        ]);
 
         $cache = Mockery::mock(CacheServiceInterface::class);
         $cache->shouldReceive('get')->andReturn(null);
@@ -53,7 +32,7 @@ class SqlInjectionTest extends IntegrationTestCase
         $logger = Mockery::mock(LoggingSecurityServiceInterface::class);
         $logger->shouldReceive('logSecurityEvent')->andReturn(true);
 
-        $this->repository = new PostRepository($this->pdo, $cache, $logger);
+        $this->repository = new PostRepository($this->db, $cache, $logger);
     }
 
     public function test_sql_injection_on_search_is_prevented(): void
@@ -63,6 +42,8 @@ class SqlInjectionTest extends IntegrationTestCase
 
         $results = $this->repository->search($maliciousPayload);
 
-        $this->assertEmpty($results, 'SQL Injection vulnerability detected: Malicious payload was executed as SQL.');
+        // 因為使用了 Prepared Statements，它會將 Payload 視為純字串，因此搜尋不到任何結果
+        $this->assertEmpty($results, '檢測到 SQL 注入漏洞：惡意 Payload 被當作 SQL 語法執行了。');
     }
 }
+
