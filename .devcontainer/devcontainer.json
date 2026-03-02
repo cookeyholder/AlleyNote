@@ -1,0 +1,41 @@
+{
+    "name": "AlleyNote Dev Environment (Isolated)",
+    "image": "mcr.microsoft.com/devcontainers/php:8.4",
+    "features": {
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {
+            "version": "latest",
+            "enableNonRootDocker": "true",
+            "moby": "false"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "24"
+        },
+        "ghcr.io/devcontainers/features/github-cli:1": {}
+    },
+    "appPort": [8080],
+    "mounts": [
+        "source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
+    ],
+    "runArgs": [
+        "--privileged"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "bmewburn.vscode-intelephense-client",
+                "dbaeumer.vscode-eslint",
+                "bradlc.vscode-tailwindcss",
+                "esbenp.prettier-vscode",
+                "xdebug.php-debug",
+                "mhutchie.git-graph"
+            ],
+            "settings": {
+                "php.suggest.basic": false,
+                "editor.formatOnSave": true,
+                "editor.defaultFormatter": "esbenp.prettier-vscode"
+            }
+        }
+    },
+    "remoteUser": "vscode",
+    "postCreateCommand": "npm install && cd frontend && npm install"
+}
