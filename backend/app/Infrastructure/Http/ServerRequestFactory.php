@@ -16,7 +16,8 @@ class ServerRequestFactory
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         $uri = self::createUriFromGlobals();
         $headers = self::parseHeaders();
-        $body = file_get_contents('php://input');
+        $bodyContent = file_get_contents('php://input') ?: '';
+        $body = new Stream($bodyContent);
 
         $request = new ServerRequest($method, $uri, $headers, $body, '1.1', $_SERVER);
 
@@ -34,7 +35,7 @@ class ServerRequestFactory
         if ($method === 'POST' && !empty($_POST)) {
             $request = $request->withParsedBody($_POST);
         } elseif ($method === 'POST' && strpos($request->getHeaderLine('Content-Type'), 'application/json') === 0) {
-            $jsonData = json_decode($body, true);
+            $jsonData = json_decode((string) $body, true);
             if ($jsonData !== null) {
                 $request = $request->withParsedBody($jsonData);
             }

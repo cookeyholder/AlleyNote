@@ -9,10 +9,14 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libzip-dev \
     libicu-dev \
     libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libwebp-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 安裝 PHP 常用擴展
-RUN docker-php-ext-install zip intl pdo_mysql gd
+# 安裝 PHP 常用擴展並配置 GD
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+    && docker-php-ext-install zip intl pdo_mysql gd
 
 # 從官方映像複製 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

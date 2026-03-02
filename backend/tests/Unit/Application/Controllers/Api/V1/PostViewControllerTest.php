@@ -270,8 +270,10 @@ class PostViewControllerTest extends TestCase
             ->with('Referer')
             ->andReturn('');
 
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('__toString')->andReturn('{}');
         $this->request->shouldReceive('getBody')
-            ->andReturn('{}');
+            ->andReturn($stream);
 
         $serverParams = ['REMOTE_ADDR' => $userIp];
         $this->request->shouldReceive('getServerParams')
@@ -296,8 +298,10 @@ class PostViewControllerTest extends TestCase
             ->andReturn('');
 
         $bodyData = json_encode(['referrer' => $referrer]);
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('__toString')->andReturn($bodyData ?: '{}');
         $this->request->shouldReceive('getBody')
-            ->andReturn($bodyData);
+            ->andReturn($stream);
 
         $serverParams = ['REMOTE_ADDR' => $userIp];
         $this->request->shouldReceive('getServerParams')
@@ -321,8 +325,10 @@ class PostViewControllerTest extends TestCase
             ->with('Referer')
             ->andReturn('');
 
+        $stream = Mockery::mock(StreamInterface::class);
+        $stream->shouldReceive('__toString')->andReturn('{}');
         $this->request->shouldReceive('getBody')
-            ->andReturn('{}');
+            ->andReturn($stream);
 
         $serverParams = [
             'REMOTE_ADDR' => '127.0.0.1',
