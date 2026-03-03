@@ -67,6 +67,11 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $this->handler);
 
         $this->assertEquals(401, $response->getStatusCode());
+        
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
+        $this->assertFalse($body['success']);
+        $this->assertEquals('缺少有效的認證 Token', $body['error']);
     }
 
     public function testShouldPassWhenTokenValid(): void
@@ -88,9 +93,13 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
         $token = 'expired-token';
         $request = new ServerRequest('GET', new Uri('http://localhost/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
-        $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->andThrow(new TokenExpiredException('Expired'));
+        $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->andThrow(new TokenExpiredException('Token 已過期'));
 
         $response = $this->middleware->process($request, $this->handler);
         $this->assertEquals(401, $response->getStatusCode());
+
+        $response->getBody()->rewind();
+        $body = json_decode($response->getBody()->getContents(), true);
+        $this->assertEquals('Token 已過期', $body['error']);
     }
 }
