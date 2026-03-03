@@ -162,20 +162,17 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
     /**
      * 取得客戶端真實 IP 位址.
+     *
+     * 注意：為了安全，預設優先使用 REMOTE_ADDR。
+     * 只有在確定專案部署於信任的代理伺服器（如 Nginx, Cloudflare）後方時，才應考慮啟用 X-Forwarded-For 解析。
      */
     private function getClientIpAddress(ServerRequestInterface $request): string
     {
-        $headers = [
-            'HTTP_X_FORWARDED_FOR',
-            'REMOTE_ADDR',
-        ];
-
         $serverParams = $request->getServerParams();
 
-        foreach ($headers as $header) {
-            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
-                return trim(explode(',', (string) $serverParams[$header])[0]);
-            }
+        // 在本地開發與標準部署中，REMOTE_ADDR 是最可靠的來源
+        if (!empty($serverParams['REMOTE_ADDR'])) {
+            return (string) $serverParams['REMOTE_ADDR'];
         }
 
         return '127.0.0.1';
