@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Http;
 
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -30,20 +31,22 @@ class ServerRequest implements ServerRequestInterface
 
     private string $protocolVersion = '1.1';
 
-    private $body;
+    private StreamInterface $body;
 
     public function __construct(
         string $method,
         UriInterface $uri,
         array $headers = [],
-        $body = null,
+        ?StreamInterface $body = null,
         string $version = '1.1',
         array $serverParams = [],
     ) {
         $this->method = $method;
         $this->uri = $uri;
         $this->headers = $headers;
-        $this->body = $body;
+        if ($body) {
+            $this->body = $body;
+        }
         $this->protocolVersion = $version;
         $this->serverParams = $serverParams;
     }
@@ -53,7 +56,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->uri->getPath();
     }
 
-    public function withRequestTarget(mixed $requestTarget): self
+    public function withRequestTarget(string $requestTarget): self
     {
         $new = clone $this;
         $new->uri = $this->uri->withPath($requestTarget);
@@ -66,7 +69,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->method;
     }
 
-    public function withMethod(mixed $method): self
+    public function withMethod(string $method): self
     {
         $new = clone $this;
         $new->method = $method;
@@ -79,7 +82,7 @@ class ServerRequest implements ServerRequestInterface
         return $this->uri;
     }
 
-    public function withUri(UriInterface $uri, mixed $preserveHost = false): self
+    public function withUri(UriInterface $uri, bool $preserveHost = false): self
     {
         $new = clone $this;
         $new->uri = $uri;
@@ -130,7 +133,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getParsedBody()
+    public function getParsedBody(): ?array
     {
         return $this->parsedBody;
     }
@@ -148,12 +151,12 @@ class ServerRequest implements ServerRequestInterface
         return $this->attributes;
     }
 
-    public function getAttribute($name, mixed $default = null)
+    public function getAttribute(string $name, mixed $default = null): mixed
     {
         return $this->attributes[$name] ?? $default;
     }
 
-    public function withAttribute($name, mixed $value): self
+    public function withAttribute(string $name, mixed $value): self
     {
         $new = clone $this;
         $new->attributes[$name] = $value;
@@ -161,7 +164,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function withoutAttribute(mixed $name): self
+    public function withoutAttribute(string $name): self
     {
         $new = clone $this;
         unset($new->attributes[$name]);
@@ -169,13 +172,13 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    // ResponseInterface methods
+    // MessageInterface methods
     public function getProtocolVersion(): string
     {
         return $this->protocolVersion;
     }
 
-    public function withProtocolVersion(mixed $version): self
+    public function withProtocolVersion(string $version): self
     {
         $new = clone $this;
         $new->protocolVersion = $version;
@@ -188,22 +191,22 @@ class ServerRequest implements ServerRequestInterface
         return $this->headers;
     }
 
-    public function hasHeader(mixed $name): bool
+    public function hasHeader(string $name): bool
     {
         return isset($this->headers[strtolower($name)]);
     }
 
-    public function getHeader(mixed $name): array
+    public function getHeader(string $name): array
     {
         return $this->headers[strtolower($name)] ?? [];
     }
 
-    public function getHeaderLine(mixed $name): string
+    public function getHeaderLine(string $name): string
     {
         return implode(', ', $this->getHeader($name));
     }
 
-    public function withHeader($name, mixed $value): self
+    public function withHeader(string $name, mixed $value): self
     {
         $new = clone $this;
         $new->headers[strtolower($name)] = is_array($value) ? $value : [$value];
@@ -211,7 +214,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function withAddedHeader($name, mixed $value): self
+    public function withAddedHeader(string $name, mixed $value): self
     {
         $new = clone $this;
         $name = strtolower($name);
@@ -223,7 +226,7 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function withoutHeader(mixed $name): self
+    public function withoutHeader(string $name): self
     {
         $new = clone $this;
         unset($new->headers[strtolower($name)]);
@@ -231,12 +234,12 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getBody()
+    public function getBody(): StreamInterface
     {
         return $this->body;
     }
 
-    public function withBody(mixed $body): self
+    public function withBody(StreamInterface $body): self
     {
         $new = clone $this;
         $new->body = $body;

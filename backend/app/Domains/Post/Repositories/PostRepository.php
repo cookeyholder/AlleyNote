@@ -796,7 +796,7 @@ class PostRepository implements PostRepositoryInterface
 
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $source = $row['creation_source'] ?? 'unknown';
+                $source = (string) ($row['creation_source'] ?? 'unknown');
                 $result[$source] = (int) $row['count'];
             }
 

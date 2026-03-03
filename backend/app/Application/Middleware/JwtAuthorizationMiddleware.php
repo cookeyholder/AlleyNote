@@ -851,6 +851,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if (!empty($requiredParams)) {
             $queryParams = $request->getQueryParams();
             foreach ($requiredParams as $param) {
+                if (!is_string($param)) {
+                    continue;
+                }
                 if (!isset($queryParams[$param])) {
                     return new AuthorizationResult(
                         allowed: false,

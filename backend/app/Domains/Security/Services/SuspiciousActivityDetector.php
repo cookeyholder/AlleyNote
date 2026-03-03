@@ -236,7 +236,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            $actionTypeVal = $activity['action_type'] ?? 'unknown';
+            $actionType = is_scalar($actionTypeVal) ? (string) $actionTypeVal : 'unknown';
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
@@ -327,7 +328,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         // 分析每個活動
         foreach ($activities as $activity) {
-            $actionType = $activity['action_type'];
+            $actionTypeVal = $activity['action_type'] ?? 'unknown';
+            $actionType = is_scalar($actionTypeVal) ? (string) $actionTypeVal : 'unknown';
 
             // 統計總數
             $activityCounts[$actionType] = ($activityCounts[$actionType] ?? 0) + 1;
@@ -338,8 +340,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             }
 
             // 記錄使用者
-            if ($activity['user_id']) {
-                $uniqueUsers[$activity['user_id']] = true;
+            if (!empty($activity['user_id'])) {
+                $uniqueUserId = (int) $activity['user_id'];
+                $uniqueUsers[$uniqueUserId] = true;
             }
         }
 

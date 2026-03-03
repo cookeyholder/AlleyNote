@@ -135,7 +135,7 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
         }
 
         // 確保所有行有相同的欄位
-        return $this->normalizeRows($flattened);
+        return $this->normalizeRows((array) $flattened);
     }
 
     /**

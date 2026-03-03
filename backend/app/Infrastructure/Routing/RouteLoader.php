@@ -188,7 +188,7 @@ class RouteLoader
 
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {
-            $group = $route['group'] ?? 'default';
+            $group = (string) ($route['group'] ?? 'default');
             if (!isset($stats['groups'][$group])) {
                 $stats['groups'][$group] = 0;
             }

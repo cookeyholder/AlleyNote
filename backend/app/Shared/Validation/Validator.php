@@ -463,7 +463,7 @@ class Validator implements ValidatorInterface
 
         // 如果有提供參數，使用參數作為確認欄位名稱
         if (!empty($parameters)) {
-            $confirmationField = $parameters[0];
+            $confirmationField = (string) $parameters[0];
         }
 
         // 檢查確認欄位是否存在且值相等
@@ -480,7 +480,7 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $otherField = $parameters[0];
+        $otherField = (string) $parameters[0];
         if (!isset($allData[$otherField])) {
             return true;
         }
@@ -494,7 +494,7 @@ class Validator implements ValidatorInterface
             return true;
         }
 
-        $otherField = $parameters[0];
+        $otherField = (string) $parameters[0];
         if (!isset($allData[$otherField])) {
             return false;
         }
