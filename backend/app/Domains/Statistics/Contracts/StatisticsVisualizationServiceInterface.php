@@ -162,4 +162,17 @@ interface StatisticsVisualizationServiceInterface
         array $metrics = ['response_time', 'error_rate', 'throughput'],
         string $granularity = 'hour',
     ): ChartData;
+
+    /**
+     * 取得瀏覽量時間序列統計.
+     *
+     * @param DateTimeInterface $startDate 開始日期
+     * @param DateTimeInterface $endDate 結束日期
+     * @param string $granularity 時間粒度
+     */
+    public function getViewsTimeSeriesData(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity = 'day',
+    ): array;
 }
