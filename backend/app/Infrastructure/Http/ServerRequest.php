@@ -44,14 +44,21 @@ class ServerRequest implements ServerRequestInterface
         $this->method = $method;
         $this->uri = $uri;
         
-        // 統一 Header 鍵值為小寫
+        // 統一 Header 鍵值為小寫並合併同名標頭
         foreach ($headers as $name => $value) {
-            $this->headers[strtolower((string) $name)] = is_array($value) ? $value : [$value];
+            $normalizedName = strtolower((string) $name);
+            $newValues = is_array($value) ? $value : [$value];
+            
+            if (isset($this->headers[$normalizedName])) {
+                $this->headers[$normalizedName] = array_merge($this->headers[$normalizedName], $newValues);
+            } else {
+                $this->headers[$normalizedName] = $newValues;
+            }
         }
 
-        if ($body) {
-            $this->body = $body;
-        }
+        // 確保 body 始終被初始化，即使傳入的是 null
+        $this->body = $body ?? new \App\Infrastructure\Http\Stream(fopen('php://temp', 'r+'));
+        
         $this->protocolVersion = $version;
         $this->serverParams = $serverParams;
     }
