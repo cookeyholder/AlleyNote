@@ -385,7 +385,7 @@ const MONITORING_METRICS = [
 ## 技術架構圖
 
 ```
-Frontend (Vite + TypeScript)
+Frontend (原生 HTML/JavaScript/CSS)
     ↓ HTTP/REST API
 Statistics Controller
     ↓ Service Layer

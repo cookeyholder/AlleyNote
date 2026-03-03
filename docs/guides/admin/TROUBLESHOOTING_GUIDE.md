@@ -281,29 +281,29 @@ docker compose up -d --build
 #### 診斷步驟
 ```bash
 # 1. 檢查資料庫檔案
-ls -la database/alleynote.db
+ls -la database/alleynote.sqlite3
 
 # 2. 檢查檔案權限
-docker compose exec web ls -la database/alleynote.db
+docker compose exec web ls -la database/alleynote.sqlite3
 
 # 3. 測試資料庫連線
-docker compose exec web sqlite3 database/alleynote.db "SELECT 1;"
+docker compose exec web sqlite3 database/alleynote.sqlite3 "SELECT 1;"
 
 # 4. 檢查資料庫鎖定
-lsof database/alleynote.db
+lsof database/alleynote.sqlite3
 ```
 
 #### 修復方法
 ```bash
 # 1. 修復檔案權限
-docker compose exec web chown www-data:www-data database/alleynote.db
-docker compose exec web chmod 664 database/alleynote.db
+docker compose exec web chown www-data:www-data database/alleynote.sqlite3
+docker compose exec web chmod 664 database/alleynote.sqlite3
 
 # 2. 檢查並修復資料庫
-docker compose exec web sqlite3 database/alleynote.db "PRAGMA integrity_check;"
+docker compose exec web sqlite3 database/alleynote.sqlite3 "PRAGMA integrity_check;"
 
 # 3. 重建資料庫索引
-docker compose exec web sqlite3 database/alleynote.db "REINDEX;"
+docker compose exec web sqlite3 database/alleynote.sqlite3 "REINDEX;"
 
 # 4. 如果資料庫損壞，恢復備份
 ./scripts/restore_sqlite.sh database/backups/latest_backup.db
@@ -376,7 +376,7 @@ check_memory() {
 
 # 檢查資料庫
 check_database() {
-    if ! docker compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
+    if ! docker compose exec -T web sqlite3 database/alleynote.sqlite3 "SELECT 1;" > /dev/null 2>&1; then
         send_alert "資料庫連線失敗"
         return 1
     fi
@@ -505,8 +505,8 @@ docker volume prune -f
 
 # 3. 優化資料庫
 echo "3. 優化資料庫..."
-docker compose exec web sqlite3 database/alleynote.db "VACUUM;"
-docker compose exec web sqlite3 database/alleynote.db "ANALYZE;"
+docker compose exec web sqlite3 database/alleynote.sqlite3 "VACUUM;"
+docker compose exec web sqlite3 database/alleynote.sqlite3 "ANALYZE;"
 
 # 4. 備份驗證
 echo "4. 驗證備份完整性..."
@@ -616,7 +616,7 @@ gzip_types text/plain text/css application/json application/javascript;
 client_max_body_size 10M;
 
 # 4. 資料庫索引優化
-docker compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.sqlite3 "
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at);
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
@@ -667,7 +667,7 @@ gc_collect_cycles();
 #### 監控指標
 ```bash
 # 1. 檢查失敗登入
-docker compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.sqlite3 "
 SELECT ip_address, COUNT(*) as attempts, MAX(created_at) as last_attempt
 FROM failed_login_attempts
 WHERE created_at > datetime('now', '-24 hours')
@@ -680,7 +680,7 @@ ORDER BY attempts DESC;
 tail -1000 logs/access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head -20
 
 # 3. 檢查大量檔案上傳
-docker compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.sqlite3 "
 SELECT user_id, COUNT(*) as uploads, SUM(file_size) as total_size
 FROM attachments
 WHERE created_at > datetime('now', '-24 hours')
@@ -708,7 +708,7 @@ awk '{print $1}' logs/access.log | sort | uniq -c | sort -nr | while read count 
             echo "$(date): 封鎖 IP $ip (請求數: $count)" >> $LOG_FILE
 
             # 記錄到資料庫
-            docker compose exec web sqlite3 database/alleynote.db "
+            docker compose exec web sqlite3 database/alleynote.sqlite3 "
             INSERT INTO ip_lists (ip_address, type, description, created_by, created_at)
             VALUES ('$ip', 'blacklist', '自動封鎖 - 請求數過多 ($count)', 0, datetime('now'));
             "
@@ -772,20 +772,20 @@ docker compose down
 
 # 2. 備份當前資料庫
 echo "備份當前資料庫..."
-cp database/alleynote.db database/alleynote_before_restore_$(date +%Y%m%d_%H%M%S).db
+cp database/alleynote.sqlite3 database/alleynote_before_restore_$(date +%Y%m%d_%H%M%S).db
 
 # 3. 恢復資料庫
 echo "恢復資料庫..."
-cp "$RESTORE_POINT" database/alleynote.db
+cp "$RESTORE_POINT" database/alleynote.sqlite3
 
 # 4. 檢查資料庫完整性
 echo "檢查資料庫完整性..."
-sqlite3 database/alleynote.db "PRAGMA integrity_check;"
+sqlite3 database/alleynote.sqlite3 "PRAGMA integrity_check;"
 
 # 5. 修復權限
 echo "修復權限..."
-chown www-data:www-data database/alleynote.db
-chmod 664 database/alleynote.db
+chown www-data:www-data database/alleynote.sqlite3
+chmod 664 database/alleynote.sqlite3
 
 # 6. 重啟服務
 echo "重啟服務..."
@@ -911,9 +911,9 @@ echo
 
 # 資料庫狀態
 echo "💾 資料庫狀態："
-if docker compose exec -T web sqlite3 database/alleynote.db "SELECT 1;" > /dev/null 2>&1; then
+if docker compose exec -T web sqlite3 database/alleynote.sqlite3 "SELECT 1;" > /dev/null 2>&1; then
     echo "✅ 資料庫正常"
-    echo "大小: $(ls -lh database/alleynote.db | awk '{print $5}')"
+    echo "大小: $(ls -lh database/alleynote.sqlite3 | awk '{print $5}')"
 else
     echo "❌ 資料庫異常"
 fi

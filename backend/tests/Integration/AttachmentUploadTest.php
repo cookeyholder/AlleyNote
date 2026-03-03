@@ -76,8 +76,6 @@ class AttachmentUploadTest extends TestCase
             $this->uploadDir,
         );
 
-        $this->createTestTables();
-
         // 插入一筆 id=1 的測試文章（補齊所有必要欄位）
         $now = date('Y-m-d H:i:s');
         $uuid = 'test-uuid-1';
@@ -103,6 +101,22 @@ class AttachmentUploadTest extends TestCase
 
     protected function createUploadedFileMock(string $filename, string $mimeType, int $size): UploadedFileInterface
     {
+        // 根據 MIME 類型建立適當的檔案內容
+        $content = '';
+        if ($mimeType === 'image/jpeg' || strpos($mimeType, 'image/') === 0) {
+            // 建立一個有效的最小 JPEG 檔案 (1x1 像素)
+            $validJpegData = base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAPwA/wA==');
+            // 如果需要更大的檔案，在 JPEG 後面填充無害的資料
+            if ($size > strlen($validJpegData)) {
+                $content = $validJpegData . str_repeat("\0", $size - strlen($validJpegData));
+            } else {
+                $content = $validJpegData;
+            }
+        } else {
+            // 對於其他類型，建立文字檔案
+            $content = str_repeat('x', $size);
+        }
+
         $file = Mockery::mock(UploadedFileInterface::class);
         $file->shouldReceive('getClientFilename')
             ->andReturn($filename);
@@ -112,19 +126,20 @@ class AttachmentUploadTest extends TestCase
             ->andReturn($size);
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
-            ->andReturn(str_repeat('x', $size));
+            ->andReturn($content);
         $stream->shouldReceive('rewind')
             ->andReturn(true);
 
         $file->shouldReceive('getStream')
             ->andReturn($stream);
         $file->shouldReceive('moveTo')
-            ->andReturnUsing(function ($path) use ($size) {
+            ->andReturnUsing(function ($path) use ($content) {
                 $directory = dirname($path);
                 if (!is_dir($directory)) {
                     mkdir($directory, 0o755, true);
                 }
-                file_put_contents($path, str_repeat('x', $size));
+
+                file_put_contents($path, $content);
 
                 return true;
             });
@@ -173,7 +188,8 @@ class AttachmentUploadTest extends TestCase
         $attachment = $this->attachmentService->upload($postId, $file, 1);
 
         $this->assertInstanceOf(Attachment::class, $attachment);
-        $this->assertEquals($fileSize, $attachment->getFileSize());
+        // 經過圖片重新渲染後，檔案大小可能會改變，只要確保大於 0
+        $this->assertGreaterThan(0, $attachment->getFileSize());
     }
 
     #[Test]
@@ -194,7 +210,12 @@ class AttachmentUploadTest extends TestCase
                 $this->attachmentService->upload($postId, $file, 1);
                 $this->fail("應該拒絕 {$mimeType} 類型的檔案");
             } catch (ValidationException $e) {
-                $this->assertStringContainsString('不支援的檔案類型', $e->getMessage());
+                // 可能是「不支援的檔案類型」或「檔案類型驗證失敗：檔案內容與宣告不符」
+                $this->assertTrue(
+                    str_contains($e->getMessage(), '不支援的檔案類型')
+                    || str_contains($e->getMessage(), '檔案類型驗證失敗'),
+                    "錯誤訊息應包含檔案類型驗證相關錯誤，實際為: {$e->getMessage()}",
+                );
             }
         }
     }
@@ -278,6 +299,29 @@ class AttachmentUploadTest extends TestCase
         // 先嘗試刪除已存在的資料表
         $this->db->exec('DROP TABLE IF EXISTS attachments');
         $this->db->exec('DROP TABLE IF EXISTS posts');
+        $this->db->exec('DROP TABLE IF EXISTS users');
+
+        // 建立 users 資料表（用於 JOIN）
+        $this->db->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NOT NULL
+            )
+        ');
+
+        // 插入測試用戶
+        $this->db->exec("INSERT INTO users (id, username, email, password, created_at, updated_at) VALUES (
+            1,
+            'testuser',
+            'test@example.com',
+            'hashed_password',
+            datetime('now'),
+            datetime('now')
+        )");
 
         // 建立 posts 資料表（schema 與主程式一致）
         $this->db->exec('
@@ -313,7 +357,8 @@ class AttachmentUploadTest extends TestCase
                 file_size INTEGER NOT NULL,
                 storage_path VARCHAR(255) NOT NULL,
                 created_at DATETIME,
-                updated_at DATETIME
+                updated_at DATETIME,
+                deleted_at DATETIME NULL
             )
         ');
     }

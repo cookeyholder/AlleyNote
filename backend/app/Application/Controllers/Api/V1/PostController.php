@@ -10,13 +10,17 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Exceptions\PostStatusException;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
 use App\Shared\Exceptions\ValidationException;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -29,10 +33,11 @@ class PostController extends BaseController
         private readonly ValidatorInterface $validator,
         private readonly OutputSanitizerInterface $sanitizer,
         private readonly ActivityLoggingServiceInterface $activityLogger,
+        private readonly PostViewStatisticsService $postViewStatsService,
     ) {}
 
     #[OA\Get(
-        path: '/posts',
+        path: '/api/posts',
         summary: '取得所有貼文',
         description: '取得分頁的貼文列表，支援搜尋和篩選',
         operationId: 'getPosts',
@@ -118,8 +123,31 @@ class PostController extends BaseController
 
             $result = $this->postService->listPosts($page, $limit, $filters);
 
+            // 將 Post 對象正確序列化為數組
+            /** @var array<int, Post> $postItems */
+            $postItems = $result['items'];
+            $items = array_map(function (Post $post) {
+                return $post->toArray();
+            }, $postItems);
+
+            // 批量獲取瀏覽統計
+            $postIds = array_map(fn(Post $post) => $post->getId(), $postItems);
+            $viewStats = $this->postViewStatsService->getBatchPostViewStats($postIds);
+
+            // 將瀏覽統計添加到每篇文章
+            foreach ($items as &$item) {
+                if (isset($item['id']) && isset($viewStats[$item['id']])) {
+                    $item['views'] = $viewStats[$item['id']]['views'];
+                    $item['unique_visitors'] = $viewStats[$item['id']]['unique_visitors'];
+                } else {
+                    $item['views'] = 0;
+                    $item['unique_visitors'] = 0;
+                }
+            }
+            unset($item);
+
             $responseData = $this->paginatedResponse(
-                (array) $result['items'],
+                $items,
                 $result['total'],
                 $result['page'],
                 $result['per_page'],
@@ -178,7 +206,7 @@ class PostController extends BaseController
     }
 
     #[OA\Post(
-        path: '/posts',
+        path: '/api/posts',
         summary: '建立新貼文',
         description: '建立一篇新的貼文，需要 CSRF Token 驗證',
         operationId: 'createPost',
@@ -255,6 +283,14 @@ class PostController extends BaseController
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
 
+            // 處理標籤
+            if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
+                $tagIds = array_values(array_filter(array_map(function ($id) {
+                    return is_numeric($id) ? (int) $id : null;
+                }, $data['tag_ids']), fn($id) => $id !== null));
+                $this->postService->setTags($post->getId(), $tagIds);
+            }
+
             // 記錄成功建立文章的活動
             $this->activityLogger->logSuccess(
                 actionType: ActivityType::POST_CREATED,
@@ -305,7 +341,7 @@ class PostController extends BaseController
     }
 
     #[OA\Get(
-        path: '/posts/{id}',
+        path: '/api/posts/{id}',
         summary: '取得單一貼文',
         description: '根據 ID 取得貼文詳細資訊，並記錄瀏覽次數',
         operationId: 'getPostById',
@@ -379,7 +415,26 @@ class PostController extends BaseController
                 ],
             );
 
-            $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '成功取得貼文');
+            $postData = $post->toSafeArray($this->sanitizer);
+
+            // 確保 publish_date 是 RFC3339 格式
+            if (isset($postData['publish_date']) && is_string($postData['publish_date'])) {
+                if (strpos($postData['publish_date'], 'T') === false) {
+                    try {
+                        $dt = new DateTime($postData['publish_date'], new DateTimeZone('UTC'));
+                        $postData['publish_date'] = $dt->format(DateTime::ATOM);
+                    } catch (Exception $e) {
+                        // 保持原值
+                    }
+                }
+            }
+
+            // 添加瀏覽統計
+            $viewStats = $this->postViewStatsService->getPostViewStats($id);
+            $postData['views'] = $viewStats['views'];
+            $postData['unique_visitors'] = $viewStats['unique_visitors'];
+
+            $successResponse = $this->successResponse($postData, '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -419,7 +474,7 @@ class PostController extends BaseController
     }
 
     #[OA\Put(
-        path: '/posts/{id}',
+        path: '/api/posts/{id}',
         summary: '更新貼文',
         description: '更新指定 ID 的貼文，需要 CSRF Token 驗證',
         operationId: 'updatePost',
@@ -525,7 +580,31 @@ class PostController extends BaseController
             }
 
             $dto = new UpdatePostDTO($this->validator, $data);
-            $post = $this->postService->updatePost($id, $dto);
+
+            // 處理標籤更新（獨立於文章內容更新）
+            $hasTagUpdate = false;
+            if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
+                $tagIds = array_values(array_filter(array_map(function ($id) {
+                    return is_numeric($id) ? (int) $id : null;
+                }, $data['tag_ids']), fn($id) => $id !== null));
+                $this->postService->setTags($id, $tagIds);
+                $hasTagUpdate = true;
+            }
+
+            // 更新文章內容（如果有變更）
+            if ($dto->hasChanges()) {
+                $post = $this->postService->updatePost($id, $dto);
+            } else {
+                // 如果沒有文章內容更新，但有標籤更新，仍然返回成功
+                if (!$hasTagUpdate) {
+                    $errorResponse = $this->errorResponse('沒有要更新的欄位', 400);
+                    $response->getBody()->write(($errorResponse ?: ''));
+
+                    return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+                }
+                // 重新取得文章資料
+                $post = $this->postService->findById($id);
+            }
 
             // 記錄成功更新文章的活動
             $this->activityLogger->logSuccess(
@@ -598,7 +677,7 @@ class PostController extends BaseController
     }
 
     #[OA\Delete(
-        path: '/posts/{id}',
+        path: '/api/posts/{id}',
         summary: '刪除貼文',
         description: '刪除指定 ID 的貼文，需要 CSRF Token 驗證',
         operationId: 'deletePost',
@@ -755,7 +834,7 @@ class PostController extends BaseController
     }
 
     #[OA\Patch(
-        path: '/posts/{id}/pin',
+        path: '/api/posts/{id}/pin',
         summary: '更新貼文置頂狀態',
         description: '設定或取消貼文的置頂狀態，需要 CSRF Token 驗證',
         operationId: 'togglePostPin',
@@ -1016,6 +1095,204 @@ class PostController extends BaseController
             $responseData = [
                 'success' => false,
                 'error' => '刪除貼文失敗: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 發布貼文.
+     *
+     * POST /api/posts/{id}/publish
+     */
+    #[OA\Post(
+        path: '/api/posts/{id}/publish',
+        summary: '發布貼文',
+        description: '將草稿貼文發布為公開狀態',
+        operationId: 'publishPost',
+        tags: ['posts'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: '貼文 ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '發布成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '貼文已發布'),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: '貼文不存在'),
+            new OA\Response(response: 500, description: '伺服器錯誤'),
+        ],
+    )]
+    public function publish(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $postId = (int) $args['id'];
+
+            // 更新貼文狀態為 published
+            $post = $this->postService->updatePostStatus($postId, 'published');
+
+            $responseData = [
+                'success' => true,
+                'message' => '貼文已發布',
+                'data' => $post,
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '發布貼文失敗: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 取消發布貼文.
+     *
+     * POST /api/posts/{id}/unpublish
+     */
+    #[OA\Post(
+        path: '/api/posts/{id}/unpublish',
+        summary: '取消發布貼文',
+        description: '將已發布的貼文改為草稿狀態',
+        operationId: 'unpublishPost',
+        tags: ['posts'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: '貼文 ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '取消發布成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '貼文已取消發布'),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: '貼文不存在'),
+            new OA\Response(response: 500, description: '伺服器錯誤'),
+        ],
+    )]
+    public function unpublish(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $postId = (int) $args['id'];
+
+            // 更新貼文狀態為 draft
+            $post = $this->postService->updatePostStatus($postId, 'draft');
+
+            $responseData = [
+                'success' => true,
+                'message' => '貼文已取消發布',
+                'data' => $post,
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '取消發布失敗: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 取消置頂貼文.
+     *
+     * DELETE /api/posts/{id}/pin
+     */
+    #[OA\Delete(
+        path: '/api/posts/{id}/pin',
+        summary: '取消置頂貼文',
+        description: '取消貼文的置頂狀態',
+        operationId: 'unpinPost',
+        tags: ['posts'],
+        security: [['bearerAuth' => []]],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: '貼文 ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer', example: 1),
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '取消置頂成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '已取消置頂'),
+                        new OA\Property(property: 'data', type: 'object'),
+                    ],
+                ),
+            ),
+            new OA\Response(response: 404, description: '貼文不存在'),
+            new OA\Response(response: 500, description: '伺服器錯誤'),
+        ],
+    )]
+    public function unpin(Request $request, Response $response, array $args): Response
+    {
+        try {
+            $postId = (int) $args['id'];
+
+            // 取消置頂
+            $post = $this->postService->unpinPost($postId);
+
+            $responseData = [
+                'success' => true,
+                'message' => '已取消置頂',
+                'data' => $post,
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+
+            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '取消置頂失敗: ' . $e->getMessage(),
             ];
 
             $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));

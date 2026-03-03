@@ -1,0 +1,21 @@
+{
+  "name": "alleynote-e2e-tests",
+  "version": "1.0.0",
+  "description": "AlleyNote 前端端對端測試",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:codegen": "playwright codegen http://localhost:3000"
+  },
+  "keywords": ["e2e", "playwright", "testing"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.10.0"
+  }
+}

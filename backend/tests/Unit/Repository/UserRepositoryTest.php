@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Repository;
 
 use App\Domains\Auth\Repositories\UserRepository;
-use App\Domains\Auth\Services\AuthService;
 use DateTime;
 use PDO;
 use PDOException;
@@ -42,7 +41,7 @@ class UserRepositoryTest extends TestCase
                 uuid TEXT NOT NULL UNIQUE,
                 username TEXT NOT NULL UNIQUE,
                 email TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
+                password_hash TEXT NOT NULL,
                 status INTEGER DEFAULT 1,
                 last_login DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -66,7 +65,7 @@ class UserRepositoryTest extends TestCase
         $this->assertNotNull($result['uuid']);
         $this->assertEquals($userData['username'], $result['username']);
         $this->assertEquals($userData['email'], $result['email']);
-        $this->assertEquals($userData['password'], $result['password']); // Repository 不負責密碼雜湊，由 AuthService 處理
+        $this->assertEquals($userData['password'], $result['password_hash']); // Repository 使用 password_hash 欄位
         $this->assertEquals(1, $result['status']);
     }
 
