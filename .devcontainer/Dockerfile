@@ -5,6 +5,7 @@ FROM php:8.4-cli-trixie
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     git \
+    openssh-client \
     unzip \
     libzip-dev \
     libicu-dev \
