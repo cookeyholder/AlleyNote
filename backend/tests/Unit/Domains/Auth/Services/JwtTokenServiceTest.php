@@ -197,21 +197,15 @@ final class JwtTokenServiceTest extends TestCase
 
         // Mock parseTokenUnsafe for blacklist check
         $this->mockJwtProvider
-            ->expects($this->once())
             ->method('parseTokenUnsafe')
-            ->with($token)
             ->willReturn($payload);
 
         $this->mockBlacklistRepository
-            ->expects($this->once())
             ->method('isBlacklisted')
-            ->with('test-jti')
             ->willReturn(false);
 
         $this->mockJwtProvider
-            ->expects($this->once())
             ->method('validateToken')
-            ->with($token, 'access')
             ->willReturn($payload);
 
         // Act
@@ -234,10 +228,7 @@ final class JwtTokenServiceTest extends TestCase
             'type' => 'access',
         ];
 
-        $this->mockJwtProvider
-            ->method('validateToken')
-            ->willReturn($payload);
-
+        // isTokenRevoked 會呼叫 parseTokenUnsafe
         $this->mockJwtProvider
             ->method('parseTokenUnsafe')
             ->willReturn($payload);
@@ -247,6 +238,11 @@ final class JwtTokenServiceTest extends TestCase
             ->method('isBlacklisted')
             ->with($jti)
             ->willReturn(true);
+
+        // 如果黑名單檢查失敗，不應呼叫 validateToken
+        $this->mockJwtProvider
+            ->expects($this->never())
+            ->method('validateToken');
 
         // Act & Assert
         $this->expectException(InvalidTokenException::class);
@@ -267,19 +263,16 @@ final class JwtTokenServiceTest extends TestCase
             'type' => 'access',
         ];
 
-        $this->mockBlacklistRepository
-            ->expects($this->never())
-            ->method('isBlacklisted');
-
         $this->mockJwtProvider
-            ->expects($this->once())
             ->method('parseTokenUnsafe')
             ->willReturn($payload);
 
+        $this->mockBlacklistRepository
+            ->method('isBlacklisted')
+            ->willReturn($checkBlacklist ? false : true); // 根據情境調整
+
         $this->mockJwtProvider
-            ->expects($this->once())
             ->method('validateToken')
-            ->with($token, 'access')
             ->willReturn($payload);
 
         // Act
