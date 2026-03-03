@@ -9,6 +9,7 @@ declare(strict_types=1);
  */
 
 use App\Application\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Auth\PasswordValidationController;
 
 return [
     // 登入
@@ -53,6 +54,14 @@ return [
         'name' => 'auth.refresh'
     ],
 
+    // 密碼驗證
+    'auth.password.validate' => [
+        'methods' => ['POST'],
+        'path' => '/api/auth/validate-password',
+        'handler' => [PasswordValidationController::class, 'validate'],
+        'name' => 'auth.password.validate'
+    ],
+
     // 密碼重設請求 (TODO: 實作)
     'auth.password.reset.request' => [
         'methods' => ['POST'],
@@ -91,5 +100,23 @@ return [
         },
         'name' => 'auth.password.update',
         'middleware' => ['auth'] // 需要認證的中間件
+    ],
+
+    // 更新個人資料
+    'auth.profile.update' => [
+        'methods' => ['PUT'],
+        'path' => '/api/auth/profile',
+        'handler' => [AuthController::class, 'updateProfile'],
+        'name' => 'auth.profile.update',
+        'middleware' => ['auth']
+    ],
+
+    // 變更密碼
+    'auth.change-password' => [
+        'methods' => ['POST'],
+        'path' => '/api/auth/change-password',
+        'handler' => [AuthController::class, 'changePassword'],
+        'name' => 'auth.change-password',
+        'middleware' => ['auth']
     ]
 ];

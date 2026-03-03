@@ -6,6 +6,7 @@ namespace App\Domains\Statistics\Listeners;
 
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Events\PostViewed;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Events\Contracts\DomainEventInterface;
 use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
@@ -20,6 +21,7 @@ class PostViewedListener implements EventListenerInterface
 {
     public function __construct(
         private readonly StatisticsMonitoringServiceInterface $monitoringService,
+        private readonly PostViewStatisticsService $postViewStatsService,
         private readonly ?LoggerInterface $logger = null,
     ) {}
 
@@ -73,6 +75,23 @@ class PostViewedListener implements EventListenerInterface
             'is_authenticated' => $event->isAuthenticatedUser(),
             'user_agent' => $event->getUserAgent(),
         ]);
+
+        // 記錄瀏覽到資料庫
+        try {
+            $this->postViewStatsService->recordView(
+                postId: $postId,
+                userId: $userId,
+                userIp: $userIp,
+                userAgent: $event->getUserAgent(),
+                referrer: $event->getReferrer(),
+            );
+        } catch (Throwable $e) {
+            $this->logger?->error('Failed to record view in database', [
+                'event_id' => $event->getEventId(),
+                'post_id' => $postId,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // 記錄統計事件到監控服務
         $this->recordViewEvent($event);

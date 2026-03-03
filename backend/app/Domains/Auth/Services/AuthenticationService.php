@@ -61,6 +61,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
             $userId = (int) $user['id'];
             $userEmail = $user['email'] ?? $request->email;
+            $userName = $user['username'] ?? null;
 
             // 3. 清理該使用者過期的 refresh token
             $this->refreshTokenRepository->cleanup();
@@ -75,16 +76,26 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 }
             }
 
-            // 5. 產生 JWT token 對（包含儲存 refresh token）
+            // 5. 取得使用者角色資訊
+            $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
+            $roles = $userWithRoles['roles'] ?? [];
+            $userRole = null;
+            if (is_array($roles) && !empty($roles) && isset($roles[0]) && is_array($roles[0])) {
+                $userRole = $roles[0]['name'] ?? null;
+            }
+
+            // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
                 'email' => $userEmail,
+                'username' => $userName,
+                'role' => $userRole,
                 'scopes' => $request->scopes ?? [],
             ]);
 
-            // 6. 更新使用者最後登入時間
+            // 7. 更新使用者最後登入時間
             $this->userRepository->updateLastLogin($userId);
 
-            // 7. 建立回應
+            // 8. 建立回應
             $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
 
             return new LoginResponseDTO(
@@ -92,8 +103,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 userId: $userId,
                 userEmail: $userEmail,
                 expiresAt: $payload->getExpiresAt()->getTimestamp(),
+                userName: $userName,
                 sessionId: $payload->getJti(),
                 permissions: $request->scopes,
+                roles: $roles,
             );
         } catch (AuthenticationException $e) {
             throw $e;

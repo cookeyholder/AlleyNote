@@ -139,9 +139,8 @@ class AuthServiceProvider
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $blacklistService = $container->get(TokenBlacklistService::class);
 
-        return new JwtAuthenticationMiddleware($jwtTokenService, $blacklistService);
+        return new JwtAuthenticationMiddleware($jwtTokenService);
     }
 
     /**

@@ -473,7 +473,7 @@ docker compose up -d
 
 ### 重要檔案位置
 - **設定檔**：`.env`
-- **資料庫**：`database/alleynote.db`
+- **資料庫**：`database/alleynote.sqlite3`
 - **日誌**：`logs/`
 - **備份**：`database/backups/`
 - **SSL 憑證**：`ssl-data/`

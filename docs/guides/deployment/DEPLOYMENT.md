@@ -3,7 +3,7 @@
 **版本**: v4.0
 **更新日期**: 2025-01-20
 **適用環境**: 生產環境、預備環境
-**架構**: 前後端分離 (Vite + JavaScript + PHP 8.4.12 DDD 後端)
+**架構**: 前後端分離 (原生 HTML/JavaScript/CSS + PHP 8.4.12 DDD 後端)
 
 ## 1. 系統需求
 
@@ -16,7 +16,7 @@
 ### 1.2 軟體需求
 - **作業系統**: Debian 12 (強烈推薦) / Ubuntu 24.04 LTS
 - **後端**: PHP 8.4.12+ (Docker 容器內自動提供)
-- **前端**: Vite + JavaScript + Node.js 20.x LTS
+- **前端**: 原生 HTML/JavaScript/CSS + Node.js 20.x LTS
 - **資料庫**: SQLite3 (預設推薦) / PostgreSQL 16+ (大型部署)
 - **Web Server**: NGINX (Docker 容器內自動提供)
 - **容器平台**: Docker 28.3.3+ & Docker Compose v2.39.2+
@@ -89,7 +89,7 @@ docker compose exec web php -r "opcache_reset();"
 # 前端建構和部署
 cd ../frontend
 npm ci
-npm run build
+無需構建（已移除）
 ```
 
 ### 2.3 驗證部署
@@ -128,7 +128,7 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | crontab -
 
 ### 3.1 NGINX 設定 (前後端分離)
 ```nginx
-# 前端 (Vite + JavaScript)
+# 前端 (原生 HTML/JavaScript/CSS)
 server {
     listen 80;
     server_name your-domain.com;
@@ -288,10 +288,10 @@ docker compose run --rm web ./vendor/bin/phinx migrate
 docker compose run --rm web php -r "opcache_reset();"
 
 # 前端部署
-echo "部署前端 (Vite + JavaScript)..."
+echo "部署前端 (原生 HTML/JavaScript/CSS)..."
 cd ../frontend
 npm ci --production
-npm run build
+無需構建（已移除）
 npm run test:unit  # 執行前端測試
 
 # 啟動服務
@@ -338,7 +338,7 @@ echo "回滾前端..."
 cd ../frontend
 git checkout HEAD^
 npm ci --production
-npm run build
+無需構建（已移除）
 
 # 還原資料庫 (如需要)
 echo "還原資料庫..."
@@ -482,7 +482,7 @@ echo '資料庫優化完成\\n';
 
 # 3. 前端資產優化
 cd frontend
-npm run build:optimize
+無需構建（已移除）:optimize
 
 echo "✅ 效能優化完成"
 ```

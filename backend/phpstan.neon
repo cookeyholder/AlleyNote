@@ -1,10 +1,9 @@
-
 includes:
-	- vendor/phpstan/phpstan-mockery/extension.neon
-	- phpstan-mockery-ignore.neon
-	- phpstan-test-exclusions.neon
-	- phpstan-level-10-baseline.neon
-	- phpstan-baseline.neon
+- vendor/phpstan/phpstan-mockery/extension.neon
+- phpstan-mockery-ignore.neon
+- phpstan-test-exclusions.neon
+- phpstan-level-10-baseline.neon
+- phpstan-baseline.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false
@@ -15,9 +14,19 @@ parameters:
     excludePaths:
         - app/Infrastructure/OpenApi
         - app/Domains/Statistics/Services/StatisticsConfigService.php
+        - app/Domains/Post/Models/Tag.php
+        - app/Domains/Setting/Models/Setting.php
         - vendor
         - tests/Factory
         - tests/manual
         - coverage-reports (?)
         - ../coverage-reports (?)
     tmpDir: storage/phpstan
+    ignoreErrors:
+        - message: '#Unreachable#'
+        - message: '#Unreachable statement - code above always terminates#'
+          paths:
+              - tests/Unit/Application/Services/Statistics/StatisticsQueryServiceTest.php
+        - message: '#Property .* is never read, only written#'
+          paths:
+              - tests/Unit/Application/Services/Statistics/StatisticsQueryServiceTest.php

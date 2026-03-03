@@ -2,7 +2,7 @@
 
 **版本**: v4.0
 **更新日期**: 2025-09-03
-**架構**: 前後端分離 (Vite + TypeScript + PHP 8.4.12 DDD)
+**架構**: 前後端分離 (原生 HTML/JavaScript/CSS + PHP 8.4.12 DDD)
 **系統版本**: Docker 28.3.3, Docker Compose v2.39.2
 
 AlleyNote 專案已整合 Swagger UI 來提供完整的 API 文件，專為前後端分離架構設計。
@@ -11,11 +11,11 @@ AlleyNote 專案已整合 Swagger UI 來提供完整的 API 文件，專為前�
 
 - ✅ **OpenAPI 3.1 規格** (最新版本)
 - ✅ **互動式 API 文件** (支援前後端分離測試)
-- ✅ **自動程式碼產生支援** (Vite + TypeScript + PHP 8.4.12)
+- ✅ **自動程式碼產生支援** (原生 HTML/JavaScript/CSS + PHP 8.4.12)
 - ✅ **多語言 Schema 註解** (繁體中文)
 - ✅ **JWT Bearer 授權支援** (API 認證)
 - ✅ **CORS 預檢請求支援** (前後端通訊)
-- ✅ **Vite + TypeScript 整合範例** (Composition API)
+- ✅ **原生 HTML/JavaScript/CSS 整合範例** (Composition API)
 - ✅ **PHP 8.4.12 屬性註解** (現代化 PHP 語法)
 
 ## 檔案結構 (前後端分離)
@@ -41,7 +41,7 @@ backend/                         # PHP 8.4.12 後端
     ├── api-docs.json           # 產生的 JSON 文件
     └── api-docs.yaml           # 產生的 YAML 文件
 
-frontend/                        # Vite + TypeScript 前端
+frontend/                        # 原生 HTML/JavaScript/CSS 前端
 ├── src/
 │   ├── api/
 │   │   ├── swagger-client.js   # 自動產生的 API 客戶端
@@ -63,7 +63,7 @@ docker compose exec web composer install
 
 # 前端依賴安裝
 cd ../frontend
-npm install @openapitools/openapi-generator-cli
+docker-compose up -d @openapitools/openapi-generator-cli
 ```
 
 ### 2. 設定 API 路由 (後端)

@@ -108,6 +108,7 @@ class RoutingServiceProvider
             'auth' => __DIR__ . '/../../../../config/routes/auth.php',
             'admin' => __DIR__ . '/../../../../config/routes/admin.php',
             'statistics' => __DIR__ . '/../../../../config/routes/statistics.php',
+            'activity-logs' => __DIR__ . '/../../../../config/routes/activity-logs.php',
         ];
     }
 
