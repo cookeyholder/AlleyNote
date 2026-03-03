@@ -7,8 +7,8 @@ namespace Tests\Unit\Domains\Auth\Contracts;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
-use Tests\Support\UnitTestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
 /**
  * Token Blacklist Repository 介面測試.

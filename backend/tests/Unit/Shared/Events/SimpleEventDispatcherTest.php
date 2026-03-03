@@ -9,9 +9,9 @@ use App\Shared\Events\Contracts\EventListenerInterface;
 use App\Shared\Events\SimpleEventDispatcher;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * SimpleEventDispatcher 單元測試.

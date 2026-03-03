@@ -237,7 +237,7 @@ class Post implements JsonSerializable
 
         // 清理標題（純文字）
         $data['title'] = $sanitizer->sanitizeHtml((string) $data['title']);
-        
+
         // 清理內容（富文本）
         $data['content'] = $sanitizer->sanitizeRichText((string) $data['content']);
 

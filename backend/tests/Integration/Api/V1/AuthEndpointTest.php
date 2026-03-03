@@ -8,8 +8,8 @@ use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
 use Exception;
 use PHPUnit\Framework\Attributes\Group;
-use Tests\Support\IntegrationTestCase;
 use Psr\Http\Message\ResponseInterface;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * JWT 認證 API 端點整合測試.

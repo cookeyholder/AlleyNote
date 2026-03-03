@@ -10,8 +10,8 @@ use App\Domains\Security\Repositories\ActivityLogRepository;
 use App\Domains\Security\Services\ActivityLoggingService;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\SecureDDDTestCase;
 use Psr\Log\NullLogger;
+use Tests\SecureDDDTestCase;
 
 /**
  * 附件管理系統活動記錄功能測試.

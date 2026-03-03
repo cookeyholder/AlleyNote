@@ -6,9 +6,9 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Attachment\Services\FileSecurityService;
 use App\Shared\Exceptions\ValidationException;
-use Tests\Support\UnitTestCase;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
+use Tests\Support\UnitTestCase;
 
 class FileSecurityServiceTest extends UnitTestCase
 {

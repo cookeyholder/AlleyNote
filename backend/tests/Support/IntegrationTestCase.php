@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
-use Tests\SecureDDDTestCase;
-
 use Mockery;
+use Tests\SecureDDDTestCase;
 use Tests\Support\Traits\CacheTestTrait;
 use Tests\Support\Traits\DatabaseSnapshotTrait;
 use Tests\Support\Traits\DatabaseTestTrait;
-use Tests\Support\Traits\HttpResponseTestTrait;
 
 /**
  * 整合測試基底類別.

@@ -111,13 +111,13 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
     {
         $config = HTMLPurifier_Config::createDefault();
         $config->set('Core.Encoding', $this->encoding);
-        
+
         // 允許常用的富文本標籤，對應前端 DOMPurify 的設定
         $config->set('HTML.Allowed', 'h1[class|id],h2[class|id],h3[class|id],h4[class|id],h5[class|id],h6[class|id],p[class|id],br,strong,em,u,s,a[href|target|rel|class|id],img[src|alt|title|class|id],ul[class|id],ol[class|id],li[class|id],blockquote[class|id],pre[class|id],code[class|id],table[class|id],thead[class|id],tbody[class|id],tr[class|id],th[class|id],td[class|id],div[class|id],span[class|id]');
         $config->set('Attr.AllowedFrameTargets', ['_blank']);
         $config->set('HTML.TargetBlank', true);
         $config->set('AutoFormat.RemoveEmpty', false); // 保留空標籤（如 CKEditor 產生的）
-        
+
         return new HTMLPurifier($config);
     }
 }

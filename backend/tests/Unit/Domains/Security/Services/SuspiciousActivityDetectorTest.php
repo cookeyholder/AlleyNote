@@ -15,8 +15,8 @@ use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 /**
  * SuspiciousActivityDetector 測試.

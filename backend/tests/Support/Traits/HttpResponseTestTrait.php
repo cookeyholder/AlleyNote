@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Support\Traits;
 
+use App\Infrastructure\Http\Response;
+use App\Infrastructure\Http\Stream;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -21,24 +23,23 @@ trait HttpResponseTestTrait
      *
      * @param array<string, mixed> $data 欲編碼的資料
      * @param int $statusCode HTTP 狀態碼
-     * @return ResponseInterface
      */
     protected function createJsonResponse(array $data, int $statusCode = 200): ResponseInterface
     {
         $json = json_encode($data, JSON_UNESCAPED_UNICODE);
-        $stream = new \App\Infrastructure\Http\Stream(fopen('php://temp', 'r+'));
+        $stream = new Stream(fopen('php://temp', 'r+'));
         $stream->write($json ?: '');
 
-        return new \App\Infrastructure\Http\Response(
+        return new Response(
             statusCode: $statusCode,
             headers: ['Content-Type' => 'application/json'],
-            body: $stream
+            body: $stream,
         );
     }
 
     /**
      * 斷言 JSON 回應符合預期的部分結構與內容.
-     * 
+     *
      * @param ResponseInterface $response 回應實體
      * @param array $expected 預期的部分資料結構
      */
@@ -51,7 +52,7 @@ trait HttpResponseTestTrait
             $this->fail("無法解析回應主體為 JSON：{$body}");
         }
 
-        $this->assertArraySubsetRecursive($expected, $actual, "JSON 回應內容不符合預期結構。");
+        $this->assertArraySubsetRecursive($expected, $actual, 'JSON 回應內容不符合預期結構。');
     }
 
     /**

@@ -14,8 +14,8 @@ use Exception;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 class RefreshTokenServiceTest extends UnitTestCase
 {

@@ -11,9 +11,7 @@ use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use PDO;
 use Tests\Support\IntegrationTestCase;
-use RuntimeException;
 
 class PostRepositoryTest extends IntegrationTestCase
 {
@@ -50,7 +48,7 @@ class PostRepositoryTest extends IntegrationTestCase
         $this->logger->shouldReceive('logSecurityEvent')
             ->zeroOrMoreTimes()
             ->andReturn(true);
-            
+
         $this->cacheService->shouldReceive('delete')->andReturn(true);
         $this->cacheService->shouldReceive('deletePattern')->andReturn(true);
 
@@ -95,7 +93,7 @@ class PostRepositoryTest extends IntegrationTestCase
     {
         $data = $this->createTestPostData();
         $post = $this->repository->create($data);
-        
+
         $foundPost = $this->repository->find($post->getId());
 
         $this->assertInstanceOf(Post::class, $foundPost);

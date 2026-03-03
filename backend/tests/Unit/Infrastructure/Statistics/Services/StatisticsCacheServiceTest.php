@@ -7,9 +7,9 @@ namespace Tests\Unit\Infrastructure\Statistics\Services;
 use App\Infrastructure\Statistics\Services\StatisticsCacheService;
 use App\Shared\Contracts\CacheServiceInterface;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsCacheService 簡化單元測試.

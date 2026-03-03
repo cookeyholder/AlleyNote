@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
-use Tests\Support\UnitTestCase;
 use Tests\Factory\PostFactory;
+use Tests\Support\UnitTestCase;
 
 class PostFactoryTest extends UnitTestCase
 {

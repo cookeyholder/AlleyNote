@@ -9,13 +9,10 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
-use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
+use App\Infrastructure\Http\Response;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Infrastructure\Http\Response;
-use App\Infrastructure\Http\ServerRequest;
-use App\Infrastructure\Http\Stream;
 use App\Shared\Validation\Validator;
 use Mockery;
 use Mockery\MockInterface;
@@ -30,13 +27,21 @@ use Tests\SecureDDDTestCase;
 class CsrfProtectionTest extends SecureDDDTestCase
 {
     private PostController $controller;
+
     private PostServiceInterface&MockInterface $postService;
+
     private ValidatorInterface $validator;
+
     private OutputSanitizerInterface&MockInterface $sanitizer;
+
     private ActivityLoggingServiceInterface&MockInterface $activityLogger;
+
     private CsrfProtectionServiceInterface&MockInterface $csrfProtection;
+
     private ServerRequestInterface&MockInterface $request;
+
     private Response $response;
+
     private StreamInterface&MockInterface $stream;
 
     protected function setUp(): void
@@ -64,7 +69,7 @@ class CsrfProtectionTest extends SecureDDDTestCase
         $this->request->shouldReceive('getBody')->andReturn($this->stream)->zeroOrMoreTimes();
         $this->request->shouldReceive('getMethod')->andReturn('POST')->zeroOrMoreTimes();
         $this->request->shouldReceive('getUri->getPath')->andReturn('/api/posts')->zeroOrMoreTimes();
-        
+
         $this->response = new Response();
 
         $this->controller = new PostController(
@@ -72,7 +77,7 @@ class CsrfProtectionTest extends SecureDDDTestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
     }
 

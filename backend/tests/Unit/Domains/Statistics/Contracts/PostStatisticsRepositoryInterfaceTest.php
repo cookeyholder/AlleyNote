@@ -7,8 +7,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use Tests\Support\UnitTestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
 class PostStatisticsRepositoryInterfaceTest extends UnitTestCase
 {

@@ -13,7 +13,7 @@ class PostFactory
     public static function make(array $attributes = []): array
     {
         $now = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        
+
         return array_merge([
             'uuid' => sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535)),
             'seq_number' => (string) mt_rand(100000, 999999),
@@ -43,7 +43,7 @@ class PostFactory
         $stmt->execute(array_values($data));
 
         $data['id'] = (int) $db->lastInsertId();
-        
+
         return $data;
     }
 }

@@ -47,7 +47,7 @@ class UserFactory
         $stmt->execute(array_values($data));
 
         $data['id'] = (int) $db->lastInsertId();
-        
+
         return $data;
     }
 }

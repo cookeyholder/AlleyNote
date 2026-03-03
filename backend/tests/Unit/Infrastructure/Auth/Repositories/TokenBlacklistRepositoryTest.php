@@ -12,8 +12,8 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use ReflectionProperty;
+use Tests\Support\UnitTestCase;
 
 /**
  * TokenBlacklistRepository 單元測試.

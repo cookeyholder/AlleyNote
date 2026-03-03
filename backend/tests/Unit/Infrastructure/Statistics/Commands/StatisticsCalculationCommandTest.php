@@ -13,9 +13,9 @@ use App\Infrastructure\Statistics\Commands\StatisticsCalculationCommand;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsCalculationCommand 單元測試.

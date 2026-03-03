@@ -8,8 +8,8 @@ use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Domains\Auth\ValueObjects\TokenPair;
-use Tests\Support\UnitTestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
 /**
  * JWT Token Service 介面測試.

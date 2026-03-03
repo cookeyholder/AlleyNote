@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Monitoring;
 
 use App\Shared\Monitoring\Services\CacheMonitor;
-use Tests\Support\UnitTestCase;
 use Psr\Log\NullLogger;
+use Tests\Support\UnitTestCase;
 
 class CacheMonitorTest extends UnitTestCase
 {

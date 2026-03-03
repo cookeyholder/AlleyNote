@@ -8,9 +8,9 @@ use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\ValueObjects\JwtPayload;
+use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use DateTimeImmutable;
-use App\Infrastructure\Http\Response;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\Support\UnitTestCase;
@@ -56,14 +56,14 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
     public function testShouldReturn401WhenNoToken(): void
     {
         $request = $this->createRequest('GET', '/api/posts');
-        
+
         $response = $this->middleware->process($request, $this->handler);
 
         // 使用新工具進行斷言
         $this->assertResponseStatus($response, 401);
         $this->assertJsonResponseMatches($response, [
             'success' => false,
-            'error' => '缺少有效的認證 Token'
+            'error' => '缺少有效的認證 Token',
         ]);
     }
 
@@ -72,7 +72,7 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
         $token = 'valid-token';
         $request = $this->createRequest('GET', '/api/posts');
         $request = $this->withJwtAuth($request, $token);
-        
+
         $payload = new JwtPayload('jti', '123', 'iss', ['alleynote-client'], new DateTimeImmutable(), new DateTimeImmutable('+1 hour'));
 
         $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->with($token)->andReturn($payload);
@@ -93,11 +93,11 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
             ->andThrow(new TokenExpiredException(TokenExpiredException::ACCESS_TOKEN, null, null, 'Token 已過期'));
 
         $response = $this->middleware->process($request, $this->handler);
-        
+
         $this->assertResponseStatus($response, 401);
         $this->assertJsonResponseMatches($response, [
             'success' => false,
-            'error' => 'Token 已過期'
+            'error' => 'Token 已過期',
         ]);
     }
 }

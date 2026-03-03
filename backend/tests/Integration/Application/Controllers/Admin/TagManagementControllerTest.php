@@ -9,12 +9,12 @@ use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Services\CacheGroupManager;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\IntegrationTestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * TagManagementController 整合測試.

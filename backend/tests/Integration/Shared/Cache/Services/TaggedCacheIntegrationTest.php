@@ -15,8 +15,8 @@ use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\TaggedCacheManager;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use InvalidArgumentException;
-use Tests\Support\IntegrationTestCase;
 use Psr\Log\NullLogger;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * TaggedCacheInterface 實作整合測試.

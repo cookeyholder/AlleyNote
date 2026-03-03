@@ -6,7 +6,6 @@ namespace Tests\Integration\Http;
 
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
-use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Contracts\OutputSanitizerInterface;
@@ -22,14 +21,21 @@ use Tests\Support\IntegrationTestCase;
 class PostControllerTest extends IntegrationTestCase
 {
     private PostServiceInterface|MockInterface $postService;
+
     private ValidatorInterface|MockInterface $validator;
+
     private OutputSanitizerInterface|MockInterface $sanitizer;
+
     private ActivityLoggingServiceInterface|MockInterface $activityLogger;
+
     private PostViewStatisticsService|MockInterface $postViewStatsService;
 
     private mixed $request;
+
     private mixed $response;
+
     private mixed $stream;
+
     private mixed $currentResponseData;
 
     protected function setUp(): void
@@ -45,7 +51,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->activityLogger->shouldReceive('logSuccess')->zeroOrMoreTimes();
         $this->activityLogger->shouldReceive('logFailure')->zeroOrMoreTimes();
         $this->activityLogger->shouldReceive('log')->zeroOrMoreTimes();
-        
+
         $this->validator->shouldReceive('validateOrFail')
             ->andReturnUsing(fn($data) => $data)
             ->byDefault();
@@ -61,7 +67,7 @@ class PostControllerTest extends IntegrationTestCase
         // Arrange
         $this->request->shouldReceive('getQueryParams')->once()->andReturn(['page' => 1]);
         $this->postService->shouldReceive('listPosts')->once()->andReturn([
-            'items' => [], 'total' => 0, 'page' => 1, 'per_page' => 10
+            'items' => [], 'total' => 0, 'page' => 1, 'per_page' => 10,
         ]);
         $this->postViewStatsService->shouldReceive('getBatchPostViewStats')->once()->andReturn([]);
 
@@ -81,6 +87,7 @@ class PostControllerTest extends IntegrationTestCase
         $request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->byDefault();
         $request->shouldReceive('getBody')->andReturn($this->stream)->byDefault();
         $request->shouldReceive('getHeaderLine')->andReturn('')->zeroOrMoreTimes();
+
         return $request;
     }
 
@@ -89,8 +96,10 @@ class PostControllerTest extends IntegrationTestCase
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('write')->andReturnUsing(function ($content) {
             $this->currentResponseData = json_decode((string) $content, true);
+
             return strlen((string) $content);
         });
+
         return $stream;
     }
 
@@ -100,9 +109,11 @@ class PostControllerTest extends IntegrationTestCase
         $response->shouldReceive('withHeader')->andReturnSelf();
         $response->shouldReceive('withStatus')->andReturnUsing(function ($status) use ($response) {
             $response->shouldReceive('getStatusCode')->andReturn($status);
+
             return $response;
         });
         $response->shouldReceive('getBody')->andReturn($this->stream);
+
         return $response;
     }
 }

@@ -6,8 +6,8 @@ namespace Tests\Unit\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Services\ErrorTrackerService;
 use Exception;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 /**
  * ErrorTrackerService 測試類別。

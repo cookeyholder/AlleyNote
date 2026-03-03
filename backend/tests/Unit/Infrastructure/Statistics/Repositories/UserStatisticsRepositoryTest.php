@@ -14,8 +14,8 @@ use PDOException;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(UserStatisticsRepository::class)]
 class UserStatisticsRepositoryTest extends UnitTestCase

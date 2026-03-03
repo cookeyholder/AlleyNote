@@ -7,8 +7,8 @@ namespace Tests\Unit\Shared\Cache\Services;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Services\CacheGroupManager;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 /**
  * CacheGroupManager 測試（修正版）.

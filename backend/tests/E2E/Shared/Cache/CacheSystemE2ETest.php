@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\E2E\Shared\Cache;
 
 use Exception;
-use Tests\SecureDDDTestCase;
 use Predis\Client;
+use Tests\SecureDDDTestCase;
 
 /**
  * End-to-End 快取系統測試.

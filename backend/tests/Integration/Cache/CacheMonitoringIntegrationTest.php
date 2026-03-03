@@ -8,8 +8,8 @@ use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Strategies\DefaultCacheStrategy;
 use App\Shared\Monitoring\Services\CacheMonitor;
-use Tests\Support\IntegrationTestCase;
 use Psr\Log\NullLogger;
+use Tests\Support\IntegrationTestCase;
 
 class CacheMonitoringIntegrationTest extends IntegrationTestCase
 {

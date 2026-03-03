@@ -15,8 +15,8 @@ use PDOException;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsRepository 單元測試.

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Support\Traits;
 
 use App\Infrastructure\Http\Response;
+use PHPUnit\Framework\AssertionFailedError;
 use Tests\Support\Traits\HttpResponseTestTrait;
 use Tests\Support\UnitTestCase;
 
@@ -20,7 +21,7 @@ class HttpResponseTestTraitTest extends UnitTestCase
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertEquals('application/json', $response->getHeaderLine('Content-Type'));
-        
+
         $response->getBody()->rewind();
         $this->assertEquals(json_encode($data), $response->getBody()->getContents());
     }
@@ -31,9 +32,9 @@ class HttpResponseTestTraitTest extends UnitTestCase
             'success' => true,
             'user' => [
                 'id' => 1,
-                'name' => 'John'
+                'name' => 'John',
             ],
-            'meta' => 'extra'
+            'meta' => 'extra',
         ];
         $response = $this->createJsonResponse($data);
 
@@ -41,8 +42,8 @@ class HttpResponseTestTraitTest extends UnitTestCase
         $this->assertJsonResponseMatches($response, [
             'success' => true,
             'user' => [
-                'id' => 1
-            ]
+                'id' => 1,
+            ],
         ]);
     }
 
@@ -50,7 +51,7 @@ class HttpResponseTestTraitTest extends UnitTestCase
     {
         $response = $this->createJsonResponse(['status' => 'ok']);
 
-        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
         $this->assertJsonResponseMatches($response, ['status' => 'error']);
     }
 }

@@ -15,9 +15,9 @@ use DateTimeInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(ActivityLoggingService::class)]
 class ActivityLoggingServiceTest extends UnitTestCase

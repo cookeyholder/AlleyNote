@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Support\Traits;
 
-use App\Domains\Post\Models\Post;
-use Tests\Support\Traits\DatabaseSnapshotTrait;
+use PHPUnit\Framework\AssertionFailedError;
 use Tests\Support\IntegrationTestCase;
+use Tests\Support\Traits\DatabaseSnapshotTrait;
 
 class DatabaseSnapshotTraitTest extends IntegrationTestCase
 {
@@ -45,7 +45,7 @@ class DatabaseSnapshotTraitTest extends IntegrationTestCase
         $this->db->exec("UPDATE posts SET title = 'Modified' WHERE id = $id");
 
         // Assert - PHPUnit 的 fail() 丟出的是 AssertionFailedError
-        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
         $this->assertRowUnchanged($snapshot);
     }
 
@@ -70,7 +70,7 @@ class DatabaseSnapshotTraitTest extends IntegrationTestCase
         $this->db->exec("UPDATE posts SET title = 'B', views = 1 WHERE id = $id");
 
         // Assert
-        $this->expectException(\PHPUnit\Framework\AssertionFailedError::class);
+        $this->expectException(AssertionFailedError::class);
         $this->assertRowChangedOnly($snapshot, ['title']);
     }
 }

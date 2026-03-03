@@ -16,8 +16,8 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
-use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(StatisticsQueryService::class)]
 final class StatisticsQueryServiceTest extends UnitTestCase

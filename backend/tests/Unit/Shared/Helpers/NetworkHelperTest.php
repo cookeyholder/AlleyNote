@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Shared\Helpers;
 
+use App\Infrastructure\Http\ServerRequest;
+use App\Infrastructure\Http\Stream;
+use App\Infrastructure\Http\Uri;
 use App\Shared\Helpers\NetworkHelper;
 use PHPUnit\Framework\Attributes\Test;
-use App\Infrastructure\Http\ServerRequest;
-use App\Infrastructure\Http\Uri;
-use App\Infrastructure\Http\Stream;
 use Tests\SecureDDDTestCase;
 
 /**
@@ -18,7 +18,8 @@ class NetworkHelperTest extends SecureDDDTestCase
 {
     private function createNetworkRequest(string $method = 'GET', string $path = '/', array $headers = [], array $serverParams = []): ServerRequest
     {
-        $uri = (new Uri())->withPath($path);
+        $uri = new Uri()->withPath($path);
+
         // ServerRequest constructor: string $method, UriInterface $uri, array $headers, StreamInterface $body, string $version, array $serverParams
         return new ServerRequest($method, $uri, $headers, new Stream(''), '1.1', $serverParams);
     }
@@ -69,7 +70,7 @@ class NetworkHelperTest extends SecureDDDTestCase
         $request = $this->createNetworkRequest('GET', '/', ['X-Forwarded-For' => ['invalid-ip, 1.2.3.4']], ['REMOTE_ADDR' => '1.2.3.4']);
 
         $ip = NetworkHelper::getClientIp($request);
-        
+
         $this->assertEquals('1.2.3.4', $ip);
     }
 
@@ -77,7 +78,7 @@ class NetworkHelperTest extends SecureDDDTestCase
     public function defaultsToLocalhostWhenNoServerParams(): void
     {
         $request = $this->createNetworkRequest('GET', '/');
-        
+
         $ip = NetworkHelper::getClientIp($request);
 
         $this->assertEquals('127.0.0.1', $ip);

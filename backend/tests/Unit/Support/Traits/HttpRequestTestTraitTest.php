@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Support\Traits;
 
 use App\Infrastructure\Http\ServerRequest;
-use App\Infrastructure\Http\Uri;
-use Psr\Http\Message\ServerRequestInterface;
 use Tests\Support\Traits\HttpRequestTestTrait;
 use Tests\Support\UnitTestCase;
 
@@ -35,7 +33,7 @@ class HttpRequestTestTraitTest extends UnitTestCase
         // 驗證不可變性
         $this->assertNotSame($request, $authenticatedRequest);
         $this->assertEquals('', $request->getHeaderLine('Authorization'));
-        
+
         // 驗證標頭注入
         $this->assertEquals('Bearer test-token-123', $authenticatedRequest->getHeaderLine('Authorization'));
     }
@@ -48,7 +46,7 @@ class HttpRequestTestTraitTest extends UnitTestCase
         $jsonRequest = $this->withJsonBody($request, $data);
 
         $this->assertEquals('application/json', $jsonRequest->getHeaderLine('Content-Type'));
-        
+
         $jsonRequest->getBody()->rewind();
         $this->assertEquals(json_encode($data), $jsonRequest->getBody()->getContents());
     }

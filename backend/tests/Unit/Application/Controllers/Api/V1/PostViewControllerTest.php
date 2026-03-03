@@ -13,10 +13,10 @@ use App\Shared\Events\Contracts\EventDispatcherInterface;
 use Exception;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\Support\UnitTestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Tests\Support\UnitTestCase;
 
 /**
  * PostViewController 單元測試.

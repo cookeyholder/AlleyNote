@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Support;
 
 use Mockery;
-
 use Tests\SecureDDDTestCase;
 
 /**

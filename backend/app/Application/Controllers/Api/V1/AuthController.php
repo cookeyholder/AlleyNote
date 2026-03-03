@@ -19,11 +19,8 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Exceptions\NotFoundException;
-use App\Shared\Exceptions\ValidationException;
 use App\Shared\Helpers\NetworkHelper;
 use Exception;
-use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -108,6 +105,7 @@ class AuthController extends BaseController
             ], 201);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }
@@ -173,6 +171,7 @@ class AuthController extends BaseController
                 $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
             }
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }
@@ -224,6 +223,7 @@ class AuthController extends BaseController
             ], 200);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }
@@ -271,6 +271,7 @@ class AuthController extends BaseController
             ], 200);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }
@@ -307,6 +308,7 @@ class AuthController extends BaseController
             ], 200);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }
@@ -370,6 +372,7 @@ class AuthController extends BaseController
             ], 200);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }
@@ -419,6 +422,7 @@ class AuthController extends BaseController
             ], 200);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
+
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
     }

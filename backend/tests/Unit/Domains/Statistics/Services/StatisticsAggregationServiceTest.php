@@ -15,9 +15,9 @@ use App\Shared\Events\Contracts\EventDispatcherInterface;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\Support\UnitTestCase;
 use ReflectionClass;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsAggregationService 單元測試.

@@ -9,8 +9,8 @@ use App\Infrastructure\Http\ServerRequestFactory;
 use Exception;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\SkippedTest;
-use Tests\Support\IntegrationTestCase;
 use Psr\Http\Message\ResponseInterface;
+use Tests\Support\IntegrationTestCase;
 use Throwable;
 
 /**

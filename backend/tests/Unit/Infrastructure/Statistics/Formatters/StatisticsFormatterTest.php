@@ -7,8 +7,8 @@ namespace Tests\Unit\Infrastructure\Statistics\Formatters;
 use App\Infrastructure\Statistics\Formatters\CSVStatisticsFormatter;
 use App\Infrastructure\Statistics\Formatters\JSONStatisticsFormatter;
 use App\Infrastructure\Statistics\Formatters\PDFStatisticsFormatter;
-use Tests\Support\UnitTestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * 統計格式化器單元測試.

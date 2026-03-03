@@ -22,7 +22,6 @@ trait HttpRequestTestTrait
      * @param string $method HTTP 方法
      * @param string $path 路徑 (例如 /api/posts)
      * @param array $headers 額外標頭
-     * @return ServerRequestInterface
      */
     protected function createRequest(
         string $method = 'GET',
@@ -41,7 +40,7 @@ trait HttpRequestTestTrait
         return new ServerRequest(
             $method,
             $uri,
-            array_merge($defaultHeaders, $headers)
+            array_merge($defaultHeaders, $headers),
         );
     }
 

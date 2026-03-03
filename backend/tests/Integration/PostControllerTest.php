@@ -7,10 +7,10 @@ namespace Tests\Integration;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostService;
-use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
-use App\Shared\Contracts\OutputSanitizerInterface;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Infrastructure\Http\Response;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Validation\Validator;
 use Mockery;
 use Tests\Factory\PostFactory;
@@ -23,9 +23,13 @@ use Tests\Support\IntegrationTestCase;
 class PostControllerTest extends IntegrationTestCase
 {
     private $postService;
+
     private $validator;
+
     private $sanitizer;
+
     private $activityLogger;
+
     private $statsService;
 
     protected function setUp(): void
@@ -37,7 +41,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->sanitizer->shouldReceive('sanitizeHtml')->andReturnUsing(fn($i) => $i)->zeroOrMoreTimes();
         $this->sanitizer->shouldReceive('sanitizeRichText')->andReturnUsing(fn($i) => $i)->zeroOrMoreTimes();
-        
+
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class)->shouldIgnoreMissing();
         $this->statsService = Mockery::mock(PostViewStatisticsService::class)->shouldIgnoreMissing();
     }
@@ -54,7 +58,7 @@ class PostControllerTest extends IntegrationTestCase
                 'items' => [],
                 'total' => 0,
                 'page' => 1,
-                'per_page' => 15
+                'per_page' => 15,
             ]);
 
         // 3. 執行
@@ -63,7 +67,7 @@ class PostControllerTest extends IntegrationTestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            $this->statsService
+            $this->statsService,
         );
 
         $response = $controller->index($request, new Response());
@@ -73,8 +77,8 @@ class PostControllerTest extends IntegrationTestCase
         $this->assertJsonResponseMatches($response, [
             'success' => true,
             'pagination' => [
-                'total' => 0
-            ]
+                'total' => 0,
+            ],
         ]);
     }
 
@@ -85,7 +89,7 @@ class PostControllerTest extends IntegrationTestCase
             'title' => '重構標題',
             'content' => '重構內容',
             'status' => 'published',
-            'is_pinned' => true
+            'is_pinned' => true,
         ];
 
         $request = $this->createRequest('POST', '/api/posts');
@@ -100,7 +104,7 @@ class PostControllerTest extends IntegrationTestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            $this->statsService
+            $this->statsService,
         );
 
         $response = $controller->store($request, new Response());
@@ -109,8 +113,8 @@ class PostControllerTest extends IntegrationTestCase
         $this->assertJsonResponseMatches($response, [
             'success' => true,
             'data' => [
-                'id' => 123
-            ]
+                'id' => 123,
+            ],
         ]);
     }
 }

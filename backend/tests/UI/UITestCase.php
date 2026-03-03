@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\UI;
 
-use Tests\SecureDDDTestCase;
 use Symfony\Component\Process\Process;
+use Tests\SecureDDDTestCase;
 
 abstract class UITestCase extends SecureDDDTestCase
 {

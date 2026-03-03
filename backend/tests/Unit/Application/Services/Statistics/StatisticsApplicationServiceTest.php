@@ -13,8 +13,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\Support\UnitTestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsApplicationService 單元測試.

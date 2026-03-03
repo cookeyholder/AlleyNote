@@ -7,8 +7,8 @@ namespace Tests\Unit\Domains\Auth\Contracts;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
-use Tests\Support\UnitTestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
 /**
  * Refresh Token Repository 介面測試.
