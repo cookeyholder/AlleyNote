@@ -146,4 +146,15 @@ interface PostStatisticsRepositoryInterface
      * }
      */
     public function getPostActivitySummary(StatisticsPeriod $period): array;
+
+    /**
+     * 取得瀏覽量時間序列統計.
+     *
+     * @return array<int, array{date: string, views: int, visitors: int}>
+     */
+    public function getViewTimeSeriesData(
+        \DateTimeInterface $startDate,
+        \DateTimeInterface $endDate,
+        string $granularity
+    ): array;
 }

@@ -23,7 +23,6 @@ class StatisticsChartController extends BaseController
 {
     public function __construct(
         private StatisticsVisualizationServiceInterface $visualizationService,
-        private PDO $db,
     ) {}
 
     /**
@@ -129,8 +128,7 @@ class StatisticsChartController extends BaseController
 
             $this->validateGranularity($granularity);
 
-            // 直接查詢資料庫
-            $chartData = $this->getViewsTimeSeriesData($startDate, $endDate, $granularity);
+            $chartData = $this->visualizationService->getViewsTimeSeriesData($startDate, $endDate, $granularity);
 
             return $this->json($response, [
                 'success' => true,
@@ -146,49 +144,6 @@ class StatisticsChartController extends BaseController
         } catch (Throwable $e) {
             throw new Exception('取得瀏覽量統計失敗: ' . $e->getMessage());
         }
-    }
-
-    /**
-     * 查詢瀏覽量時間序列資料.
-     *
-     * @return array<int, array{date: string, views: int, visitors: int}>
-     */
-    private function getViewsTimeSeriesData(
-        DateTimeImmutable $startDate,
-        DateTimeImmutable $endDate,
-        string $granularity,
-    ): array {
-        // 根據粒度決定 DATE_FORMAT
-        $dateFormat = match ($granularity) {
-            'hour' => '%Y-%m-%d %H:00:00',
-            'day' => '%Y-%m-%d',
-            'week' => '%Y-%u',
-            'month' => '%Y-%m',
-            default => '%Y-%m-%d',
-        };
-
-        $sql = '
-            SELECT 
-                DATE_FORMAT(view_date, :date_format) as date,
-                COUNT(*) as views,
-                COUNT(DISTINCT user_ip) as visitors
-            FROM post_views
-            WHERE view_date BETWEEN :start_date AND :end_date
-            GROUP BY DATE_FORMAT(view_date, :date_format)
-            ORDER BY date ASC
-        ';
-
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute([
-            'date_format' => $dateFormat,
-            'start_date' => $startDate->format('Y-m-d H:i:s'),
-            'end_date' => $endDate->format('Y-m-d 23:59:59'),
-        ]);
-
-        /** @var array<int, array{date: string, views: int, visitors: int}> */
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $result;
     }
 
     /**

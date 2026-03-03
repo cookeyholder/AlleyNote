@@ -106,9 +106,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
     public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
-        // 暫時跳過黑名單檢查以加快調試
-        // TODO: 修復黑名單檢查邏輯
-        /*
+        // 檢查黑名單
         if ($checkBlacklist && $this->isTokenRevoked($token)) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_BLACKLISTED,
@@ -116,7 +114,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'Token has been revoked',
             );
         }
-        */
 
         // 驗證 token 並確認是 access token
         $payload = $this->jwtProvider->validateToken($token, 'access');
@@ -224,11 +221,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return $this->blacklistRepository->isBlacklisted($payload->getJti());
         } catch (Throwable $e) {
-            // 輸出到 stderr
-            file_put_contents('php://stderr', '[JWT] isTokenRevoked 失敗: ' . $e->getMessage() . "\n");
-            file_put_contents('php://stderr', '[JWT] 異常類型: ' . get_class($e) . "\n");
-            file_put_contents('php://stderr', '[JWT] 追蹤: ' . $e->getTraceAsString() . "\n");
-
             return true; // 無法解析的 token 視為已撤銷
         }
     }
