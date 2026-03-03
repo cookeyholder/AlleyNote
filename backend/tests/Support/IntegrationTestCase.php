@@ -6,6 +6,7 @@ namespace Tests\Support;
 
 use Mockery;
 use Tests\Support\Traits\CacheTestTrait;
+use Tests\Support\Traits\DatabaseSnapshotTrait;
 use Tests\Support\Traits\DatabaseTestTrait;
 use Tests\Support\Traits\HttpResponseTestTrait;
 
@@ -19,7 +20,9 @@ abstract class IntegrationTestCase extends BaseTestCase
 {
     use DatabaseTestTrait;
     use CacheTestTrait;
-    use HttpResponseTestTrait;
+    use DatabaseSnapshotTrait;
+
+    protected function setUp(): void
 
     protected function setUp(): void
     {
