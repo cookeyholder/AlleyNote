@@ -1,6 +1,90 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 7
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getBrowserStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getComprehensiveReport\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getDeviceTypeStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getHourlyDistribution\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getOSStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getReferrerStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getBrowserStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getComprehensiveReport\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getDeviceTypeStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getHourlyDistribution\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getOSStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getReferrerStats\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AdvancedAnalyticsController.php
+
+		-
+			message: '#^Parameter \$headers of class OpenApi\\Attributes\\Response constructor expects list\<OpenApi\\Attributes\\Header\>\|null, array\{Content\-Disposition\: OpenApi\\Attributes\\Header, Content\-Type\: OpenApi\\Attributes\\Header, Content\-Length\: OpenApi\\Attributes\\Header\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/AttachmentController.php
+
+		-
 			message: '#^Parameter \#2 \$currentPassword of method App\\Domains\\Auth\\Services\\UserManagementService\:\:changePassword\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -17,6 +101,42 @@ parameters:
 			identifier: cast.int
 			count: 3
 			path: app/Application/Controllers/Api/V1/PostController.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 3
+			path: app/Application/Controllers/Api/V1/PostController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{referrer\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/PostViewController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{success\: OpenApi\\Attributes\\Property, error\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/PostViewController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{success\: OpenApi\\Attributes\\Property, message\: OpenApi\\Attributes\\Property, data\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/PostViewController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{message\: OpenApi\\Attributes\\Property, retry_after\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/PostViewController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{post_id\: OpenApi\\Attributes\\Property, viewed_at\: OpenApi\\Attributes\\Property, is_authenticated\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/PostViewController.php
 
 		-
 			message: '#^Cannot access offset ''description'' on mixed\.$#'
@@ -89,6 +209,132 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Application/Controllers/Api/V1/RoleController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{success\: OpenApi\\Attributes\\Property, message\: OpenApi\\Attributes\\Property, data\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{cleared_tags\: OpenApi\\Attributes\\Property, all_cache_cleared\: OpenApi\\Attributes\\Property, timestamp\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{overall_status\: OpenApi\\Attributes\\Property, cache\: OpenApi\\Attributes\\Property, database\: OpenApi\\Attributes\\Property, services\: OpenApi\\Attributes\\Property, timestamp\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{refreshed_types\: OpenApi\\Attributes\\Property, cache_cleared\: OpenApi\\Attributes\\Property, snapshots_created\: OpenApi\\Attributes\\Property, execution_time\: OpenApi\\Attributes\\Property, timestamp\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{statistics_application_service\: OpenApi\\Attributes\\Property, statistics_query_service\: OpenApi\\Attributes\\Property, cache_service\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{status\: OpenApi\\Attributes\\Property, connection_time\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{status\: OpenApi\\Attributes\\Property, hits\: OpenApi\\Attributes\\Property, misses\: OpenApi\\Attributes\\Property, hit_rate\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Schema constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{types\: OpenApi\\Attributes\\Property, force_recalculate\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsAdminController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{success\: OpenApi\\Attributes\\Property, data\: OpenApi\\Attributes\\Property, meta\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{success\: OpenApi\\Attributes\\Property, data\: OpenApi\\Attributes\\Property, pagination\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Application/Controllers/Api/V1/StatisticsController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\JsonContent constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{success\: OpenApi\\Attributes\\Property, data\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Application/Controllers/Api/V1/StatisticsController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{current_page\: OpenApi\\Attributes\\Property, per_page\: OpenApi\\Attributes\\Property, total\: OpenApi\\Attributes\\Property, last_page\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Application/Controllers/Api/V1/StatisticsController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{start_date\: OpenApi\\Attributes\\Property, end_date\: OpenApi\\Attributes\\Property, cache_hit\: OpenApi\\Attributes\\Property\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsController.php
+
+		-
+			message: '#^Parameter \$properties of class OpenApi\\Attributes\\Property constructor expects list\<OpenApi\\Attributes\\Property\>\|null, array\{total_posts\: OpenApi\\Attributes\\Property, active_users\: OpenApi\\Attributes\\Property, new_users\: OpenApi\\Attributes\\Property, total_views\: OpenApi\\Attributes\\Property, post_activity\: OpenApi\\Attributes\\Property, user_activity\: OpenApi\\Attributes\\Property, engagement_metrics\: OpenApi\\Attributes\\Property, period_summary\: OpenApi\\Attributes\\Property, \.\.\.\} given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsController.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 3
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportComprehensiveReportToCSV\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportToJSON\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
+
+		-
+			message: '#^Parameter \#2 \$startDate of method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportViewsToCSV\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportComprehensiveReportToCSV\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportToJSON\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
+
+		-
+			message: '#^Parameter \#3 \$endDate of method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportViewsToCSV\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Api/V1/StatisticsExportController.php
 
 		-
 			message: '#^Cannot access offset ''password'' on mixed\.$#'
@@ -217,16 +463,34 @@ parameters:
 			path: app/Application/Controllers/PostController.php
 
 		-
-			message: '#^Method App\\Application\\Middleware\\JwtAuthenticationMiddleware\:\:extractDeviceFingerprint\(\) is unused\.$#'
-			identifier: method.unused
+			message: '#^Call to an undefined static method OpenApi\\Generator\:\:scan\(\)\.$#'
+			identifier: staticMethod.notFound
+			count: 1
+			path: app/Application/Controllers/Web/SwaggerController.php
+
+		-
+			message: '#^Cannot call method toJson\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: app/Application/Controllers/Web/SwaggerController.php
+
+		-
+			message: '#^Parameter \#1 \$string of method Psr\\Http\\Message\\StreamInterface\:\:write\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Application/Controllers/Web/SwaggerController.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
 			count: 1
 			path: app/Application/Middleware/JwtAuthenticationMiddleware.php
 
 		-
-			message: '#^Method App\\Application\\Middleware\\JwtAuthenticationMiddleware\:\:performSecurityChecks\(\) has App\\Domains\\Auth\\Exceptions\\InvalidTokenException in PHPDoc @throws tag but it''s not thrown\.$#'
-			identifier: throws.unusedType
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
 			count: 1
-			path: app/Application/Middleware/JwtAuthenticationMiddleware.php
+			path: app/Domains/Attachment/Services/AttachmentService.php
 
 		-
 			message: '#^Parameter \$email of class App\\Domains\\Auth\\DTOs\\CreateUserDTO constructor expects string, mixed given\.$#'
@@ -499,240 +763,6 @@ parameters:
 			path: app/Domains/Auth/Services/UserManagementService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$color\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$created_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$description\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$slug\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Post\\Models\\Tag\:\:\$usage_count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Call to an undefined method App\\Domains\\Post\\Models\\Tag\:\:belongsToMany\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Method App\\Domains\\Post\\Models\\Tag\:\:posts\(\) has invalid return type Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Method App\\Domains\\Post\\Models\\Tag\:\:posts\(\) should return Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^PHPDoc tag @property for property App\\Domains\\Post\\Models\\Tag\:\:\$created_at contains unknown class Carbon\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^PHPDoc tag @property for property App\\Domains\\Post\\Models\\Tag\:\:\$updated_at contains unknown class Carbon\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domains/Post/Models/Tag.php
-
-		-
-			message: '#^Binary operation "/" between mixed and int results in an error\.$#'
-			identifier: binaryOp.invalid
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:create\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:find\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 3
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:query\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Call to an undefined static method App\\Domains\\Post\\Models\\Tag\:\:where\(\)\.$#'
-			identifier: staticMethod.notFound
-			count: 4
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Call to static method slug\(\) on an unknown class Illuminate\\Support\\Str\.$#'
-			identifier: class.notFound
-			count: 2
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method count\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method delete\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method detach\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method exists\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method fresh\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method get\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method map\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method orWhere\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method orderBy\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method posts\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method skip\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method take\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method toArray\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method update\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:createTag\(\) should return array\<string, mixed\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:getTag\(\) should return array\<string, mixed\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:listTags\(\) should return array\{items\: array\<int, array\<string, mixed\>\>, total\: int, page\: int, per_page\: int, last_page\: int\} but returns array\{items\: mixed, total\: mixed, page\: int, per_page\: int, last_page\: int\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
-			message: '#^Method App\\Domains\\Post\\Services\\TagManagementService\:\:updateTag\(\) should return array\<string, mixed\> but returns mixed\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Domains/Post/Services/TagManagementService.php
-
-		-
 			message: '#^Parameter \#1 \$validationResult of class App\\Shared\\Exceptions\\ValidationException constructor expects App\\Shared\\Validation\\ValidationResult, string given\.$#'
 			identifier: argument.type
 			count: 2
@@ -745,88 +775,232 @@ parameters:
 			path: app/Domains/Post/Services/TagManagementService.php
 
 		-
-			message: '#^Part \$search \(mixed\) of encapsed string cannot be cast to string\.$#'
-			identifier: encapsedStringPart.nonString
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 1
+			path: app/Domains/Security/Services/SuspiciousActivityDetector.php
+
+		-
+			message: '#^Parameter \#1 \$queryAdapter of class App\\Infrastructure\\Statistics\\Services\\StatisticsVisualizationService constructor expects App\\Infrastructure\\Statistics\\Adapters\\StatisticsQueryAdapter, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Statistics/Providers/StatisticsServiceProvider.php
+
+		-
+			message: '#^Parameter \#2 \$categoryProcessor of class App\\Infrastructure\\Statistics\\Services\\StatisticsVisualizationService constructor expects App\\Infrastructure\\Statistics\\Processors\\CategoryProcessor, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Statistics/Providers/StatisticsServiceProvider.php
+
+		-
+			message: '#^Parameter \#3 \$timeSeriesProcessor of class App\\Infrastructure\\Statistics\\Services\\StatisticsVisualizationService constructor expects App\\Infrastructure\\Statistics\\Processors\\TimeSeriesProcessor, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Statistics/Providers/StatisticsServiceProvider.php
+
+		-
+			message: '#^Parameter \#4 \$cacheService of class App\\Infrastructure\\Statistics\\Services\\StatisticsVisualizationService constructor expects App\\Domains\\Statistics\\Contracts\\StatisticsCacheServiceInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Statistics/Providers/StatisticsServiceProvider.php
+
+		-
+			message: '#^Parameter \#5 \$postRepository of class App\\Infrastructure\\Statistics\\Services\\StatisticsVisualizationService constructor expects App\\Domains\\Statistics\\Contracts\\PostStatisticsRepositoryInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Domains/Statistics/Providers/StatisticsServiceProvider.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 3
-			path: app/Domains/Post/Services/TagManagementService.php
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$created_at\.$#'
-			identifier: property.notFound
+			message: '#^Cannot access offset ''hour'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$description\.$#'
-			identifier: property.notFound
+			message: '#^Cannot access offset ''referrer'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$id\.$#'
-			identifier: property.notFound
+			message: '#^Cannot access offset ''total_views'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$key\.$#'
-			identifier: property.notFound
+			message: '#^Cannot access offset ''unique_visitors'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Domains/Setting/Models/Setting.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$type\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Domains/Setting/Models/Setting.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$updated_at\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Domains/Setting/Models/Setting.php
-
-		-
-			message: '#^Access to an undefined property App\\Domains\\Setting\\Models\\Setting\:\:\$value\.$#'
-			identifier: property.notFound
-			count: 4
-			path: app/Domains/Setting/Models/Setting.php
-
-		-
-			message: '#^Cannot call method toIso8601String\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Domains/Setting/Models/Setting.php
-
-		-
-			message: '#^Cannot cast mixed to float\.$#'
-			identifier: cast.double
-			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
-			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			count: 6
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^PHPDoc tag @property for property App\\Domains\\Setting\\Models\\Setting\:\:\$created_at contains unknown class Carbon\\Carbon\.$#'
-			identifier: class.notFound
+			message: '#^Method App\\Domains\\Statistics\\Services\\AdvancedAnalyticsService\:\:getReferrerStats\(\) should return array\<array\{referrer\: string, count\: int, percentage\: float\}\> but returns list\<array\{referrer\: mixed, count\: int, percentage\: float\}\>\.$#'
+			identifier: return.type
 			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^PHPDoc tag @property for property App\\Domains\\Setting\\Models\\Setting\:\:\$updated_at contains unknown class Carbon\\Carbon\.$#'
-			identifier: class.notFound
-			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			message: '#^Parameter \#1 \$userAgent of method App\\Domains\\Statistics\\Services\\UserAgentParserService\:\:parse\(\) expects string\|null, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: app/Domains/Statistics/Services/AdvancedAnalyticsService.php
 
 		-
-			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			message: '#^Cannot access offset ''post_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/PostViewStatisticsService.php
+
+		-
+			message: '#^Cannot access offset ''unique_visitors'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Domains/Statistics/Services/PostViewStatisticsService.php
+
+		-
+			message: '#^Cannot access offset ''views'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: app/Domains/Statistics/Services/PostViewStatisticsService.php
+
+		-
+			message: '#^Cannot cast mixed to int\.$#'
+			identifier: cast.int
+			count: 5
+			path: app/Domains/Statistics/Services/PostViewStatisticsService.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''post_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''post_title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''referrer'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''user_agent'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''user_ip'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Cannot access offset ''view_date'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Method App\\Domains\\Statistics\\Services\\StatisticsExportService\:\:exportToJSON\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fclose expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function fputcsv expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 25
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function rewind expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#1 \$stream of function stream_get_contents expects resource, resource\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Parameter \#2 \$fields of function fputcsv expects array\<int\|string, bool\|float\|int\|string\|null\>, array\<int, mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Domains/Setting/Models/Setting.php
+			path: app/Domains/Statistics/Services/StatisticsExportService.php
+
+		-
+			message: '#^Offset 1 on array\{non\-falsy\-string, non\-empty\-string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Domains/Statistics/Services/UserAgentParserService.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Cache/CacheManager.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$arrays of function array_merge expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Infrastructure/Http/ServerRequest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Routing/RouteLoader.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: app/Infrastructure/Services/CacheService.php
 
 		-
 			message: '#^Cannot cast mixed to string\.$#'
@@ -835,7 +1009,7 @@ parameters:
 			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
 
 		-
-			message: '#^Parameter \#1 \$rows of method App\\Infrastructure\\Statistics\\Formatters\\CSVStatisticsFormatter\:\:normalizeRows\(\) expects array\<array\<string, mixed\>\>, array given\.$#'
+			message: '#^Parameter \#1 \$rows of method App\\Infrastructure\\Statistics\\Formatters\\CSVStatisticsFormatter\:\:normalizeRows\(\) expects array\<array\<string, mixed\>\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Infrastructure/Statistics/Formatters/CSVStatisticsFormatter.php
@@ -1183,16 +1357,28 @@ parameters:
 			path: app/Infrastructure/Statistics/Services/StatisticsPerformanceReportGenerator.php
 
 		-
-			message: '#^Class App\\Application\\Controllers\\Api\\V1\\AuthController constructor invoked with 5 parameters, 7 required\.$#'
-			identifier: arguments.count
-			count: 5
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: app/Shared/Exceptions/Validation/RequestValidationException.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 3
+			path: app/Shared/Validation/Validator.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
 			path: tests/Integration/AuthControllerTest.php
 
 		-
-			message: '#^Parameter \#6 \$sessionId of class App\\Domains\\Auth\\DTOs\\LoginResponseDTO constructor expects string\|null, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: tests/Integration/AuthControllerTest.php
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: tests/Integration/Http/PostControllerTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
@@ -1217,6 +1403,18 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Integration/Performance/StatisticsIndexOptimizationTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: tests/Integration/PostActivityLoggingTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: tests/Integration/PostControllerTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
@@ -1247,6 +1445,156 @@ parameters:
 			identifier: argument.type
 			count: 2
 			path: tests/Integration/Statistics/StatisticsMonitoringIntegrationTest.php
+
+		-
+			message: '#^Call to an undefined method Tests\\Integration\\Support\\IntegrationTestExampleTest\:\:assertJsonResponseHasKey\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Call to an undefined method Tests\\Integration\\Support\\IntegrationTestExampleTest\:\:assertJsonResponseValue\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Call to an undefined method Tests\\Integration\\Support\\IntegrationTestExampleTest\:\:createJsonResponseMock\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Parameter \#1 \$response of method Tests\\Support\\IntegrationTestCase\:\:assertResponseStatus\(\) expects Psr\\Http\\Message\\ResponseInterface, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Property Tests\\Performance\\ApiPerformanceTest\:\:\$postRepository \(App\\Domains\\Post\\Repositories\\PostRepository\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Performance/ApiPerformanceTest.php
+
+		-
+			message: '#^Property Tests\\Performance\\ApiPerformanceTest\:\:\$statsRepository \(App\\Infrastructure\\Statistics\\Repositories\\PostStatisticsRepository\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Performance/ApiPerformanceTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$activityLogger \(App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface&Mockery\\MockInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$headers is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$lastWrittenContent is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$request \(Mockery\\MockInterface&Psr\\Http\\Message\\ServerRequestInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$response \(Mockery\\MockInterface&Psr\\Http\\Message\\ResponseInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$stream \(Mockery\\MockInterface&Psr\\Http\\Message\\StreamInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\CsrfProtectionTest\:\:\$xssProtection is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Security/CsrfProtectionTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 2
+			path: tests/Security/XssPreventionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\XssPreventionTest\:\:\$activityLogger \(App\\Domains\\Security\\Contracts\\ActivityLoggingServiceInterface&Mockery\\MockInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/XssPreventionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\XssPreventionTest\:\:\$request \(Mockery\\MockInterface&Psr\\Http\\Message\\ServerRequestInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/XssPreventionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\XssPreventionTest\:\:\$response \(Mockery\\MockInterface&Psr\\Http\\Message\\ResponseInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/XssPreventionTest.php
+
+		-
+			message: '#^Property Tests\\Security\\XssPreventionTest\:\:\$stream \(Mockery\\MockInterface&Psr\\Http\\Message\\StreamInterface\) does not accept Mockery\\LegacyMockInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Security/XssPreventionTest.php
+
+		-
+			message: '#^Parameter \#2 \$parent of method Tests\\Support\\BaseTestCase\:\:assertArraySubsetRecursive\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Support/BaseTestCase.php
+
+		-
+			message: '#^Possibly invalid array key type mixed\.$#'
+			identifier: offsetAccess.invalidOffset
+			count: 10
+			path: tests/Support/Cache/ArrayCacheAdapter.php
+
+		-
+			message: '#^Parameter \#2 \$parent of method Tests\\Support\\IntegrationTestCase\:\:assertArraySubsetRecursive\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Support/IntegrationTestCase.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: tests/Unit/Application/Controllers/Api/V1/SettingControllerTest.php
+
+		-
+			message: '#^Cannot cast mixed to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: tests/Unit/Application/Controllers/Api/V1/TagControllerTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsBool\(\) with bool will always evaluate to true\.$#'

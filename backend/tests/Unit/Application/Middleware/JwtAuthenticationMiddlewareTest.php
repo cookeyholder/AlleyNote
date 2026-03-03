@@ -15,12 +15,12 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * JWT 認證中介軟體單元測試.
  */
-final class JwtAuthenticationMiddlewareTest extends TestCase
+final class JwtAuthenticationMiddlewareTest extends UnitTestCase
 {
     private JwtTokenServiceInterface|MockInterface $jwtTokenService;
 
@@ -35,12 +35,6 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
         $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->middleware = new JwtAuthenticationMiddleware($this->jwtTokenService);
         $this->handler = Mockery::mock(RequestHandlerInterface::class);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
     }
 
     public function testShouldSkipProcessingForPublicPaths(): void
@@ -66,10 +60,10 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
 
         $this->assertEquals(401, $response->getStatusCode());
 
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertFalse($body['success']);
-        $this->assertEquals('缺少有效的認證 Token', $body['error']);
+        $this->assertJsonResponseMatches($response, [
+            'success' => false,
+            'error' => ['code' => 'UNAUTHORIZED', 'message' => '缺少有效的認證 Token']
+        ]);
     }
 
     public function testShouldPassWhenTokenValid(): void
@@ -89,10 +83,8 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
     public function testShouldReturn401WhenTokenExpired(): void
     {
         $token = 'expired-token';
-        // 使用帶有 Host 的完整 URI 確保 getPath() 回傳 /api/posts
         $request = new ServerRequest('GET', new Uri('http://localhost/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
-        // 修正 TokenExpiredException 的建構，避免使用不支援的具名參數
         $this->jwtTokenService->shouldReceive('validateAccessToken')
             ->once()
             ->andThrow(new TokenExpiredException(TokenExpiredException::ACCESS_TOKEN, null, null, 'Token 已過期'));
@@ -100,9 +92,9 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $this->handler);
         $this->assertEquals(401, $response->getStatusCode());
 
-        $response->getBody()->rewind();
-        $body = json_decode($response->getBody()->getContents(), true);
-        $this->assertFalse($body['success']);
-        $this->assertEquals('Token 已過期', $body['error']);
+        $this->assertJsonResponseMatches($response, [
+            'success' => false,
+            'error' => ['code' => 'TOKEN_EXPIRED', 'message' => 'Token 已過期']
+        ]);
     }
 }

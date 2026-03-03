@@ -257,21 +257,11 @@ class PostController extends BaseController
     public function store(Request $request, Response $response): Response
     {
         try {
-            $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = $request->getParsedBody();
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // 記錄 JSON 格式錯誤
-                $this->activityLogger->logFailure(
-                    actionType: ActivityType::POST_CREATED,
-                    userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid JSON format',
-                    metadata: ['ip_address' => $this->getUserIp($request)],
-                );
-
-                $errorResponse = $this->errorResponse('Invalid JSON format', 400);
+            if (!is_array($data)) {
+                $errorResponse = $this->errorResponse('Invalid request data format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
-
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
@@ -544,38 +534,16 @@ class PostController extends BaseController
             $id = (int) $args['id'];
 
             if ($id <= 0) {
-                // 記錄無效 ID 錯誤
-                $this->activityLogger->logFailure(
-                    actionType: ActivityType::POST_UPDATED,
-                    userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid post ID: ' . $args['id'],
-                    metadata: ['ip_address' => $this->getUserIp($request)],
-                );
-
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
-
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = $request->getParsedBody();
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // 記錄 JSON 格式錯誤
-                $this->activityLogger->logFailure(
-                    actionType: ActivityType::POST_UPDATED,
-                    userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid JSON format',
-                    metadata: [
-                        'post_id' => $id,
-                        'ip_address' => $this->getUserIp($request),
-                    ],
-                );
-
-                $errorResponse = $this->errorResponse('Invalid JSON format', 400);
+            if (!is_array($data)) {
+                $errorResponse = $this->errorResponse('Invalid request data format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
-
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 

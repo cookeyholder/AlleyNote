@@ -14,16 +14,15 @@ abstract class BaseController
 {
     /** @var array<string, HttpStatusCode> */
     private const EXCEPTION_HTTP_CODES = [
-        'App\Exceptions\Post\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Exceptions\Post\PostStatusException' => HttpStatusCode::BAD_REQUEST,
-        'App\Exceptions\Post\PostValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
-        'App\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Exceptions\Auth\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
-        'App\Exceptions\Auth\ForbiddenException' => HttpStatusCode::FORBIDDEN,
-        'App\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
+        'App\Domains\Post\Exceptions\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
+        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::BAD_REQUEST,
+        'App\Shared\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
+        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
+        'App\Shared\Exceptions\ValidationException' => HttpStatusCode::BAD_REQUEST,
+        'App\Shared\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
+        'App\Domains\Auth\Exceptions\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
+        'App\Domains\Auth\Exceptions\ForbiddenException' => HttpStatusCode::FORBIDDEN,
+        'App\Domains\Auth\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
     ];
 
     /**
@@ -49,8 +48,11 @@ abstract class BaseController
     protected function jsonResponse(array $data, HttpStatusCode|int $httpCode = HttpStatusCode::OK): string
     {
         $code = $httpCode instanceof HttpStatusCode ? $httpCode->value : (int) $httpCode;
-        http_response_code($code);
-        header('Content-Type: application/json; charset=utf-8');
+        // 注意：在 CLI/測試環境中這可能不起作用，但在 Web 環境中正常
+        if (PHP_SAPI !== 'cli') {
+            http_response_code($code);
+            header('Content-Type: application/json; charset=utf-8');
+        }
 
         return json_encode($data, JsonFlag::DEFAULT->value) ?: '{}';
     }
