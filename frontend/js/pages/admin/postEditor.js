@@ -383,12 +383,7 @@ async function savePost(postId, status) {
   if (editorInstance && editorInstance.editor) {
     content = editorInstance.editor.getData();
   }
-  
-    title: form.title.value,
-    contentLength: content.length,
-    status: status || form.status.value
-  });
-  
+
   const data = {
     title: form.title.value.trim(),
     content: content,

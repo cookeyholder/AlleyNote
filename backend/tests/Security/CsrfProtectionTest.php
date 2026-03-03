@@ -57,10 +57,10 @@ class CsrfProtectionTest extends TestCase
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
         $this->xssProtection = Mockery::mock(XssProtectionServiceInterface::class);
         $this->csrfProtection = Mockery::mock(CsrfProtectionServiceInterface::class);
-        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
-        $this->request = Mockery::mock(ServerRequestInterface::class);
-        $this->response = Mockery::mock(ResponseInterface::class);
-        $this->stream = Mockery::mock(StreamInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class)->shouldIgnoreMissing();
+        $this->request = Mockery::mock(ServerRequestInterface::class)->shouldIgnoreMissing();
+        $this->response = Mockery::mock(ResponseInterface::class)->shouldIgnoreMissing();
+        $this->stream = Mockery::mock(StreamInterface::class)->shouldIgnoreMissing();
 
         $this->activityLogger->shouldReceive('log')->byDefault()->andReturn(true);
         $this->activityLogger->shouldReceive('logFailure')->byDefault()->andReturn(true);
