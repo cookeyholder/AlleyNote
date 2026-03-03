@@ -9,6 +9,7 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use Mockery;
@@ -143,7 +144,7 @@ class PostActivityLoggingTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
 
         $response = $controller->store($this->request, $this->response);
@@ -187,7 +188,7 @@ class PostActivityLoggingTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
 
         $response = $controller->store($this->request, $this->response);
@@ -253,7 +254,7 @@ class PostActivityLoggingTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
 
         $response = $controller->show($this->request, $this->response, $args);
@@ -328,7 +329,7 @@ class PostActivityLoggingTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
 
         $response = $controller->togglePin($this->request, $this->response, $args);

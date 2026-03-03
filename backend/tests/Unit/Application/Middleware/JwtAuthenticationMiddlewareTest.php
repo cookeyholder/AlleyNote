@@ -6,17 +6,15 @@ namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
-use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\ValueObjects\JwtPayload;
-use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
-use DateTimeImmutable;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Uri;
+use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
+use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
-use RuntimeException;
 use Tests\TestCase;
 
 /**
@@ -78,7 +76,7 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
     {
         $token = 'valid-token';
         $request = new ServerRequest('GET', new Uri('http://localhost/api/posts'), ['Authorization' => 'Bearer ' . $token]);
-        
+
         $payload = new JwtPayload('jti', '123', 'iss', ['alleynote-client'], new DateTimeImmutable(), new DateTimeImmutable('+1 hour'));
 
         $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->with($token)->andReturn($payload);

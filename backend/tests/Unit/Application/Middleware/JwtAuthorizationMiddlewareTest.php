@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\JwtAuthorizationMiddleware;
-use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Uri;
+use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;

@@ -13,6 +13,7 @@ use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
@@ -148,7 +149,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -197,7 +198,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -239,7 +240,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -279,7 +280,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -323,7 +324,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -365,7 +366,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -406,7 +407,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
@@ -445,7 +446,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -481,7 +482,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 

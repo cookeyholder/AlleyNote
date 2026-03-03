@@ -6,6 +6,7 @@ namespace App\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeInterface;
 
 /**
  * 文章統計查詢 Repository 介面.
@@ -150,14 +151,14 @@ interface PostStatisticsRepositoryInterface
     /**
      * 取得瀏覽量時間序列統計.
      *
-     * @param \DateTimeInterface $startDate 開始日期
-     * @param \DateTimeInterface $endDate 結束日期
+     * @param DateTimeInterface $startDate 開始日期
+     * @param DateTimeInterface $endDate 結束日期
      * @param string $granularity 時間粒度
      * @return array<int, array{date: string, views: int, visitors: int}> 統計數據陣列
      */
     public function getViewTimeSeriesData(
-        \DateTimeInterface $startDate,
-        \DateTimeInterface $endDate,
-        string $granularity
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity,
     ): array;
 }

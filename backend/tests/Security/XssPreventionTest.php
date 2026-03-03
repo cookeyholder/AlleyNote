@@ -6,6 +6,7 @@ namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
@@ -67,12 +68,13 @@ class XssPreventionTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
 
         $this->response->shouldReceive('getBody')->andReturn($this->stream);
         $this->stream->shouldReceive('write')->andReturnUsing(function ($content) {
             $this->lastWrittenContent = (string) $content;
+
             return strlen((string) $content);
         });
 
@@ -92,7 +94,7 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getHeaderLine')->with('X-CSRF-TOKEN')->andReturn('token');
 
         $this->sanitizer->shouldReceive('sanitize')->andReturn('Title');
-        $this->postService->shouldReceive('createPost')->andReturn(new \App\Domains\Post\Models\Post(['id' => 1]));
+        $this->postService->shouldReceive('createPost')->andReturn(new Post(['id' => 1]));
 
         $this->controller->store($this->request, $this->response);
 
@@ -109,7 +111,7 @@ class XssPreventionTest extends TestCase
         $this->request->shouldReceive('getHeaderLine')->with('X-CSRF-TOKEN')->andReturn('token');
 
         $this->sanitizer->shouldReceive('sanitize')->andReturn('Content');
-        $this->postService->shouldReceive('createPost')->andReturn(new \App\Domains\Post\Models\Post(['id' => 1]));
+        $this->postService->shouldReceive('createPost')->andReturn(new Post(['id' => 1]));
 
         $this->controller->store($this->request, $this->response);
 

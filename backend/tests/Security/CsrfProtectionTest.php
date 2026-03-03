@@ -6,6 +6,7 @@ namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
@@ -71,22 +72,25 @@ class CsrfProtectionTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
-            Mockery::mock(PostViewStatisticsService::class)
+            Mockery::mock(PostViewStatisticsService::class),
         );
 
         $this->response->shouldReceive('getBody')->andReturn($this->stream);
         $this->stream->shouldReceive('write')->andReturnUsing(function ($content) {
             $this->lastWrittenContent = (string) $content;
+
             return strlen((string) $content);
         });
 
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->byDefault();
         $this->response->shouldReceive('withStatus')->andReturnUsing(function ($status) {
             $this->lastStatusCode = $status;
+
             return $this->response;
         });
         $this->response->shouldReceive('withHeader')->andReturnUsing(function ($name, $value) {
             $this->headers[$name] = $value;
+
             return $this->response;
         });
         $this->response->shouldReceive('getStatusCode')->andReturnUsing(function () {
@@ -126,8 +130,8 @@ class CsrfProtectionTest extends TestCase
         $this->request->shouldReceive('getMethod')->andReturn('POST');
         $this->request->shouldReceive('getParsedBody')->andReturn(['title' => 'Test', 'content' => 'Test']);
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
-        
-        $this->postService->shouldReceive('createPost')->andReturn(new \App\Domains\Post\Models\Post(['id' => 1]));
+
+        $this->postService->shouldReceive('createPost')->andReturn(new Post(['id' => 1]));
 
         $response = $this->controller->store($this->request, $this->response);
 

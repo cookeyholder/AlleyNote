@@ -770,7 +770,7 @@ class PostRepository implements PostRepositoryInterface
                 WHERE tag_id IN ({$placeholders}) 
                 GROUP BY tag_id
             ";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute($tagIds);
             $counts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
