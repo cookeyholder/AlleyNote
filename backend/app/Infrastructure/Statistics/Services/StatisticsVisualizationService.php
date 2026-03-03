@@ -54,7 +54,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $granularity,
                 );
             },
-            3600,
+            300, // 趨勢資料快取 5 分鐘
         );
 
         assert($result instanceof ChartData);
@@ -88,7 +88,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $granularity,
                 );
             },
-            3600,
+            300,
         );
 
         assert($result instanceof ChartData);
@@ -190,7 +190,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $granularity,
                 );
             },
-            3600,
+            300,
         );
 
         assert($result instanceof ChartData);

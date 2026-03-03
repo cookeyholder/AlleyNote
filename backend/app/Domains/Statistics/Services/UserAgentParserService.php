@@ -102,6 +102,8 @@ class UserAgentParserService
     private function detectOS(string $userAgent): string
     {
         $osList = [
+            'iOS' => '/iPhone|iPad|iPod/i',
+            'Android' => '/Android/i',
             'Windows 11' => '/Windows NT 10\.0.*Edg/i',
             'Windows 10' => '/Windows NT 10\.0/i',
             'Windows 8.1' => '/Windows NT 6\.3/i',
@@ -109,8 +111,6 @@ class UserAgentParserService
             'Windows 7' => '/Windows NT 6\.1/i',
             'Mac OS X' => '/Mac OS X/i',
             'macOS' => '/Macintosh/i',
-            'iOS' => '/iPhone|iPad|iPod/i',
-            'Android' => '/Android/i',
             'Linux' => '/Linux/i',
             'Ubuntu' => '/Ubuntu/i',
         ];

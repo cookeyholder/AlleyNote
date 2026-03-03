@@ -255,7 +255,6 @@ async function initCKEditor(post) {
       });
     }
     
-    console.log('[PostEditor] CKEditor 已初始化');
   } catch (error) {
     console.error('[PostEditor] CKEditor 初始化失敗:', error);
     toast.error('編輯器初始化失敗，請重新整理頁面');
@@ -334,7 +333,6 @@ function startAutoSave(postId) {
       
       await apiClient.put(`/posts/${postId}`, data);
       hasUnsavedChanges = false;
-      console.log('Auto-saved at', new Date().toLocaleTimeString());
     } catch (error) {
       console.error('Auto-save failed:', error);
     }
@@ -386,7 +384,6 @@ async function savePost(postId, status) {
     content = editorInstance.editor.getData();
   }
   
-  console.log('[PostEditor] 儲存文章:', {
     title: form.title.value,
     contentLength: content.length,
     status: status || form.status.value

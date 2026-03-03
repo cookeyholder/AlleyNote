@@ -94,10 +94,8 @@ export async function renderDashboard() {
 async function loadDashboardData() {
   try {
     // 載入文章列表以計算統計資料
-    console.log('[Dashboard] 開始載入文章列表...');
     // 直接使用 apiClient 以避免模組緩存問題
     const result = await apiClient.get('/posts', { params: { page: 1, per_page: 100 } });
-    console.log('[Dashboard] API 回應:', result);
     const posts = result.data || [];
     const total = result.pagination?.total || 0;
     

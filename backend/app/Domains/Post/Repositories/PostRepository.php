@@ -761,15 +761,31 @@ class PostRepository implements PostRepositoryInterface
             return;
         }
 
-        foreach ($tagIds as $tagId) {
-            // 計算該標籤被使用的次數
-            $countStmt = $this->db->prepare('SELECT COUNT(*) FROM post_tags WHERE tag_id = ?');
-            $countStmt->execute([$tagId]);
-            $count = (int) $countStmt->fetchColumn();
+        try {
+            // 使用單一查詢獲取所有相關標籤的當前實際計數
+            $placeholders = implode(',', array_fill(0, count($tagIds), '?'));
+            $sql = "
+                SELECT tag_id, COUNT(*) as count 
+                FROM post_tags 
+                WHERE tag_id IN ({$placeholders}) 
+                GROUP BY tag_id
+            ";
+            
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($tagIds);
+            $counts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
 
-            // 更新標籤的 usage_count
-            $updateStmt = $this->db->prepare('UPDATE tags SET usage_count = ? WHERE id = ?');
-            $updateStmt->execute([$count, $tagId]);
+            // 批次更新 tags 表
+            $updateSql = 'UPDATE tags SET usage_count = ? WHERE id = ?';
+            $updateStmt = $this->db->prepare($updateSql);
+
+            foreach ($tagIds as $tagId) {
+                $count = $counts[$tagId] ?? 0;
+                $updateStmt->execute([$count, $tagId]);
+            }
+        } catch (PDOException $e) {
+            // 記錄錯誤但不中斷主流程
+            error_log('Failed to update tags usage count: ' . $e->getMessage());
         }
     }
 
