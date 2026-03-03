@@ -42,7 +42,7 @@ abstract class SecureDDDTestCase extends BaseTestCase
      */
     protected function createRequestWithIp(string $ip, string $method = 'GET', string $path = '/'): ServerRequestInterface
     {
-        $uri = (new Uri())->withPath($path);
+        $uri = new Uri()->withPath($path);
 
         return new ServerRequest(
             $method,
