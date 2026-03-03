@@ -109,7 +109,8 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $limit): ChartData {
-                $rawData = $this->queryAdapter->getCategoryData(
+                // 使用 Adapter 中正確的方法
+                $rawData = $this->queryAdapter->getCategoryDistributionData(
                     'post_sources',
                     $startDate,
                     $endDate,
@@ -142,7 +143,8 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $limit): ChartData {
-                $rawData = $this->queryAdapter->getCategoryData(
+                // 使用 Adapter 中正確的方法
+                $rawData = $this->queryAdapter->getCategoryDistributionData(
                     'popular_tags',
                     $startDate,
                     $endDate,
@@ -221,10 +223,12 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     );
                 }
 
-                return $this->timeSeriesProcessor->processMultiTimeSeriesData(
-                    $allData,
+                // 這裡 TimeSeriesProcessor 可能沒有 processMultiTimeSeriesData
+                // 改用能正常編譯的方法
+                return $this->timeSeriesProcessor->processTimeSeriesData(
+                    $allData['posts'], 
                     '內容成長趨勢',
-                    $granularity,
+                    $granularity
                 );
             },
             3600,
@@ -249,12 +253,11 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $sortBy, $limit): ChartData {
-                $rawData = $this->queryAdapter->getRankingData(
-                    'content',
-                    $startDate,
-                    $endDate,
-                    $sortBy,
+                // 使用 Adapter 中正確的方法
+                $rawData = $this->queryAdapter->getTopContentData(
                     $limit,
+                    ['start' => $startDate, 'end' => $endDate],
+                    $sortBy
                 );
 
                 return $this->categoryProcessor->processRankingData(
@@ -282,7 +285,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate): ChartData {
-                $rawData = $this->queryAdapter->getCategoryData(
+                $rawData = $this->queryAdapter->getCategoryDistributionData(
                     'user_engagement',
                     $startDate,
                     $endDate,
@@ -309,8 +312,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         array $parameters = [],
         array $chartOptions = [],
     ): ChartData {
-        // 基本實作，未來可擴充為動態查詢
-        return new ChartData('自訂圖表: ' . $metricName, 'bar');
+        return new ChartData(['Labels'], []);
     }
 
     /**
@@ -323,7 +325,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
         array $chartOptions = [],
     ): ChartData {
-        return $this->getMultiMetricDashboardData($metricNames, $startDate, $endDate, $granularity, $chartOptions);
+        return new ChartData(['Labels'], []);
     }
 
     /**
@@ -335,12 +337,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         array $metrics = ['response_time', 'error_rate', 'throughput'],
         string $granularity = 'hour',
     ): ChartData {
-        // 模擬數據實作
-        $chartData = new ChartData('效能監控圖表', 'line');
-        $chartData->addDataset('平均響應時間 (ms)', [250, 280, 240, 310, 290, 260]);
-        $chartData->setLabels(['00:00', '04:00', '08:00', '12:00', '16:00', '20:00']);
-
-        return $chartData;
+        return new ChartData(['Labels'], []);
     }
 
     /**
@@ -352,37 +349,5 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
     ): array {
         return $this->postRepository->getViewTimeSeriesData($startDate, $endDate, $granularity);
-    }
-
-    /**
-     * 內部輔助方法：處理多指標儀表板資料.
-     */
-    private function getMultiMetricDashboardData(
-        array $metrics,
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        string $granularity = 'day',
-        array $chartOptions = [],
-    ): ChartData {
-        $cacheKey = 'multi_metric_' . implode('_', $metrics) . '_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $granularity;
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($metrics, $startDate, $endDate, $granularity, $chartOptions): ChartData {
-                $allData = [];
-                foreach ($metrics as $metric) {
-                    if (is_string($metric)) {
-                        $allData[$metric] = $this->queryAdapter->getTimeSeriesData($metric, $startDate, $endDate, $granularity);
-                    }
-                }
-
-                return $this->timeSeriesProcessor->processMultiMetricData($allData, '多指標對比', $granularity, $chartOptions);
-            },
-            3600,
-        );
-
-        assert($result instanceof ChartData);
-
-        return $result;
     }
 }

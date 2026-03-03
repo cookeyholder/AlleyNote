@@ -155,6 +155,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -203,6 +204,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->show($this->request, $this->response, ['id' => $postId]);
 
@@ -244,6 +246,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -283,6 +286,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -326,6 +330,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -367,6 +372,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->update($this->request, $this->response, ['id' => $postId]);
 
@@ -412,6 +418,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->delete($this->request, $this->response, ['id' => '1']);
 
@@ -450,6 +457,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 
@@ -485,6 +493,7 @@ class PostControllerTest extends TestCase
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
         );
         $response = $controller->togglePin($this->request, $this->response, ['id' => '1']);
 

@@ -195,7 +195,18 @@ final class JwtTokenServiceTest extends TestCase
             'type' => 'access',
         ];
 
-        // 由於黑名單檢查已被暫時停用，不再 mock parseTokenUnsafe 和 isBlacklisted
+        // Mock parseTokenUnsafe for blacklist check
+        $this->mockJwtProvider
+            ->expects($this->once())
+            ->method('parseTokenUnsafe')
+            ->with($token)
+            ->willReturn($payload);
+
+        $this->mockBlacklistRepository
+            ->expects($this->once())
+            ->method('isBlacklisted')
+            ->with('test-jti')
+            ->willReturn(false);
 
         $this->mockJwtProvider
             ->expects($this->once())
@@ -214,8 +225,34 @@ final class JwtTokenServiceTest extends TestCase
 
     public function test_validateAccessToken_should_throw_exception_when_token_blacklisted(): void
     {
-        // 暫時跳過此測試，因為黑名單檢查已被暫時停用
-        $this->markTestSkipped('黑名單檢查已被暫時停用以加快調試');
+        // Arrange
+        $token = 'blacklisted-token';
+        $jti = 'test-jti';
+        $payload = [
+            'jti' => $jti,
+            'sub' => '123',
+            'type' => 'access',
+        ];
+
+        $this->mockJwtProvider
+            ->expects($this->once())
+            ->method('validateToken')
+            ->willReturn($payload);
+
+        $this->mockJwtProvider
+            ->expects($this->once())
+            ->method('parseTokenUnsafe')
+            ->willReturn($payload);
+
+        $this->mockBlacklistRepository
+            ->expects($this->once())
+            ->method('isBlacklisted')
+            ->with($jti)
+            ->willReturn(true);
+
+        // Act & Assert
+        $this->expectException(InvalidTokenException::class);
+        $this->service->validateAccessToken($token);
     }
 
     public function test_validateAccessToken_should_skip_blacklist_check_when_disabled(): void
@@ -235,6 +272,11 @@ final class JwtTokenServiceTest extends TestCase
         $this->mockBlacklistRepository
             ->expects($this->never())
             ->method('isBlacklisted');
+
+        $this->mockJwtProvider
+            ->expects($this->once())
+            ->method('parseTokenUnsafe')
+            ->willReturn($payload);
 
         $this->mockJwtProvider
             ->expects($this->once())

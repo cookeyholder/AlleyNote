@@ -6,9 +6,9 @@ namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ServerRequest;
-use GuzzleHttp\Psr7\Uri;
+use App\Infrastructure\Http\Response;
+use App\Infrastructure\Http\ServerRequest;
+use App\Infrastructure\Http\Uri;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\TestCase;
