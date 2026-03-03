@@ -43,7 +43,12 @@ class ServerRequest implements ServerRequestInterface
     ) {
         $this->method = $method;
         $this->uri = $uri;
-        $this->headers = $headers;
+        
+        // 統一 Header 鍵值為小寫
+        foreach ($headers as $name => $value) {
+            $this->headers[strtolower((string) $name)] = is_array($value) ? $value : [$value];
+        }
+
         if ($body) {
             $this->body = $body;
         }

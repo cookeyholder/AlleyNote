@@ -231,12 +231,18 @@ final class JwtTokenServiceTest extends TestCase
         $payload = [
             'jti' => $jti,
             'sub' => '123',
+            'iss' => 'alleynote-api',
+            'aud' => 'alleynote-client',
+            'iat' => time(),
+            'exp' => time() + 3600,
             'type' => 'access',
         ];
 
-        // isTokenRevoked 會呼叫 parseTokenUnsafe
+        // isTokenRevoked 會呼叫 extractPayload -> parseTokenUnsafe
         $this->mockJwtProvider
+            ->expects($this->once())
             ->method('parseTokenUnsafe')
+            ->with($token)
             ->willReturn($payload);
 
         $this->mockBlacklistRepository

@@ -67,7 +67,7 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
         $response = $this->middleware->process($request, $this->handler);
 
         $this->assertEquals(401, $response->getStatusCode());
-        
+
         $response->getBody()->rewind();
         $body = json_decode($response->getBody()->getContents(), true);
         $this->assertFalse($body['success']);
@@ -91,15 +91,20 @@ final class JwtAuthenticationMiddlewareTest extends TestCase
     public function testShouldReturn401WhenTokenExpired(): void
     {
         $token = 'expired-token';
+        // 使用帶有 Host 的完整 URI 確保 getPath() 回傳 /api/posts
         $request = new ServerRequest('GET', new Uri('http://localhost/api/posts'), ['Authorization' => 'Bearer ' . $token]);
 
-        $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->andThrow(new TokenExpiredException('Token 已過期'));
+        // 修正 TokenExpiredException 的建構，避免使用不支援的具名參數
+        $this->jwtTokenService->shouldReceive('validateAccessToken')
+            ->once()
+            ->andThrow(new TokenExpiredException(TokenExpiredException::ACCESS_TOKEN, null, null, 'Token 已過期'));
 
         $response = $this->middleware->process($request, $this->handler);
         $this->assertEquals(401, $response->getStatusCode());
 
         $response->getBody()->rewind();
         $body = json_decode($response->getBody()->getContents(), true);
+        $this->assertFalse($body['success']);
         $this->assertEquals('Token 已過期', $body['error']);
     }
 }
