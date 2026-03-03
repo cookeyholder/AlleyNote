@@ -8,28 +8,32 @@ use App\Infrastructure\Database\DatabaseConnection;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-class PostFactory
+/**
+ * 使用者資料工廠.
+ */
+class UserFactory
 {
+    /**
+     * 產出使用者資料陣列.
+     */
     public static function make(array $attributes = []): array
     {
         $now = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
-        
+        $random = bin2hex(random_bytes(4));
+
         return array_merge([
-            'uuid' => sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535)),
-            'seq_number' => (string) mt_rand(100000, 999999),
-            'title' => '範例文章',
-            'content' => '這是一篇範例文章的內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
-            'is_pinned' => 0,
+            'username' => 'user_' . $random,
+            'email' => 'user_' . $random . '@example.com',
+            'password' => password_hash('password123', PASSWORD_BCRYPT),
             'status' => 1,
-            'views' => 0,
-            'publish_date' => $now,
             'created_at' => $now,
             'updated_at' => $now,
         ], $attributes);
     }
 
+    /**
+     * 建立使用者並寫入資料庫.
+     */
     public static function create(array $attributes = []): array
     {
         $data = self::make($attributes);
@@ -39,7 +43,7 @@ class PostFactory
         $fields = implode(', ', $keys);
         $placeholders = implode(', ', array_fill(0, count($keys), '?'));
 
-        $stmt = $db->prepare("INSERT INTO posts ({$fields}) VALUES ({$placeholders})");
+        $stmt = $db->prepare("INSERT INTO users ({$fields}) VALUES ({$placeholders})");
         $stmt->execute(array_values($data));
 
         $data['id'] = (int) $db->lastInsertId();
