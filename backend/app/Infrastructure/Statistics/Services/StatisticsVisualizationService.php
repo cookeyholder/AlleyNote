@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
+use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\ValueObjects\ChartData;
@@ -12,176 +13,36 @@ use App\Infrastructure\Statistics\Processors\CategoryProcessor;
 use App\Infrastructure\Statistics\Processors\TimeSeriesProcessor;
 use DateTimeInterface;
 
-final readonly class StatisticsVisualizationService implements StatisticsVisualizationServiceInterface
+/**
+ * 統計可視化服務實作.
+ *
+ * 負責將統計資料加工為圖表所需的格式，並處理緩存。
+ */
+class StatisticsVisualizationService implements StatisticsVisualizationServiceInterface
 {
     public function __construct(
-        private StatisticsQueryAdapter $queryAdapter,
-        private CategoryProcessor $categoryProcessor,
-        private TimeSeriesProcessor $timeSeriesProcessor,
-        private StatisticsCacheServiceInterface $cacheService,
+        private readonly StatisticsQueryAdapter $queryAdapter,
+        private readonly CategoryProcessor $categoryProcessor,
+        private readonly TimeSeriesProcessor $timeSeriesProcessor,
+        private readonly StatisticsCacheServiceInterface $cacheService,
+        private readonly PostStatisticsRepositoryInterface $postRepository,
     ) {}
 
+    /**
+     * 取得文章發布時間序列統計.
+     */
     public function getPostsTimeSeriesData(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
         string $granularity = 'day',
     ): ChartData {
-        return $this->getTimeSeriesData('posts', $startDate, $endDate, $granularity);
-    }
-
-    public function getUserActivityTimeSeriesData(
-        DateTimeInterface $startDate,
-        DateTimeInterface $endDate,
-        string $granularity = 'day',
-    ): ChartData {
-        return $this->getTimeSeriesData('user_activity', $startDate, $endDate, $granularity);
-    }
-
-    public function getPostSourceDistributionData(
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        int $limit = 10,
-    ): ChartData {
-        return $this->getCategoryDistributionData('source', $startDate, $endDate, $limit);
-    }
-
-    public function getPopularTagsDistributionData(
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        int $limit = 10,
-    ): ChartData {
-        return $this->getCategoryDistributionData('tags', $startDate, $endDate, $limit);
-    }
-
-    public function getUserRegistrationTrendData(
-        DateTimeInterface $startDate,
-        DateTimeInterface $endDate,
-        string $granularity = 'day',
-    ): ChartData {
-        return $this->getTimeSeriesData('user_registration', $startDate, $endDate, $granularity);
-    }
-
-    public function getContentGrowthTrendData(
-        DateTimeInterface $startDate,
-        DateTimeInterface $endDate,
-        string $granularity = 'day',
-    ): ChartData {
-        return $this->getTimeSeriesData('content_growth', $startDate, $endDate, $granularity);
-    }
-
-    public function getPopularContentRankingData(
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        string $sortBy = 'views',
-        int $limit = 10,
-    ): ChartData {
-        $timeRange = [];
-        if ($startDate !== null) {
-            $timeRange['start'] = $startDate;
-        }
-        if ($endDate !== null) {
-            $timeRange['end'] = $endDate;
-        }
-
-        return $this->getTopContentData($limit, $timeRange, $sortBy);
-    }
-
-    public function getUserEngagementDistributionData(
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-    ): ChartData {
-        return $this->getUserEngagementData($startDate, $endDate);
-    }
-
-    public function getCustomChartData(
-        string $metricName,
-        array $parameters = [],
-        array $chartOptions = [],
-    ): ChartData {
-        $startDate = $parameters['start_date'] ?? null;
-        $endDate = $parameters['end_date'] ?? null;
-        $granularity = $parameters['granularity'] ?? 'day';
-
-        $validStartDate = ($startDate instanceof DateTimeInterface) ? $startDate : null;
-        $validEndDate = ($endDate instanceof DateTimeInterface) ? $endDate : null;
-        $validGranularity = is_string($granularity) ? $granularity : 'day';
-
-        return $this->getTimeSeriesData($metricName, $validStartDate, $validEndDate, $validGranularity);
-    }
-
-    public function getMultiMetricChartData(
-        array $metricNames,
-        DateTimeInterface $startDate,
-        DateTimeInterface $endDate,
-        string $granularity = 'day',
-        array $chartOptions = [],
-    ): ChartData {
-        return $this->getMultiMetricDashboardData(
-            $metricNames,
-            $startDate,
-            $endDate,
-            $granularity,
-            $chartOptions,
-        );
-    }
-
-    public function getPerformanceMetricsData(
-        DateTimeInterface $startDate,
-        DateTimeInterface $endDate,
-        array $metrics = ['response_time', 'throughput', 'error_rate'],
-        string $granularity = 'hour',
-    ): ChartData {
-        $cacheKey = 'performance_metrics_' . implode('_', $metrics) . '_'
-            . $startDate->format('Y-m-d') . '_'
-            . $endDate->format('Y-m-d') . '_'
-            . $granularity;
+        $cacheKey = 'posts_timeseries_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
 
         $result = $this->cacheService->remember(
             $cacheKey,
-            function () use ($metrics, $startDate, $endDate, $granularity): ChartData {
-                $allData = [];
-
-                foreach ($metrics as $metric) {
-                    $rawData = $this->queryAdapter->getMetricTimeSeriesData(
-                        $metric,
-                        $startDate,
-                        $endDate,
-                        $granularity,
-                    );
-                    $allData[$metric] = $rawData;
-                }
-
-                return $this->timeSeriesProcessor->processMultiSeriesData(
-                    $allData,
-                    'Performance Metrics',
-                    $granularity,
-                );
-            },
-            3600,
-        );
-
-        assert($result instanceof ChartData);
-
-        return $result;
-    }
-
-    // 輔助方法
-    private function getTimeSeriesData(
-        string $metric,
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        string $granularity = 'day',
-    ): ChartData {
-        $cacheKey = "timeseries_{$metric}_"
-            . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_'
-            . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_'
-            . $granularity;
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($metric, $startDate, $endDate, $granularity): ChartData {
+            function () use ($startDate, $endDate, $granularity): ChartData {
                 $rawData = $this->queryAdapter->getTimeSeriesData(
-                    $metric,
+                    'posts',
                     $startDate,
                     $endDate,
                     $granularity,
@@ -189,146 +50,8 @@ final readonly class StatisticsVisualizationService implements StatisticsVisuali
 
                 return $this->timeSeriesProcessor->processTimeSeriesData(
                     $rawData,
-                    $metric,
+                    '文章發布趨勢',
                     $granularity,
-                );
-            },
-            3600,
-        );
-
-        assert($result instanceof ChartData);
-
-        return $result;
-    }
-
-    private function getCategoryDistributionData(
-        string $categoryType,
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        int $limit = 10,
-    ): ChartData {
-        $cacheKey = "category_{$categoryType}_"
-            . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_'
-            . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_'
-            . $limit;
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($categoryType, $startDate, $endDate, $limit): ChartData {
-                $rawData = $this->queryAdapter->getCategoryDistributionData(
-                    $categoryType,
-                    $startDate,
-                    $endDate,
-                    $limit,
-                );
-
-                return $this->categoryProcessor->processCategoryData(
-                    $rawData,
-                    $categoryType,
-                );
-            },
-            3600,
-        );
-
-        assert($result instanceof ChartData);
-
-        return $result;
-    }
-
-    private function getTopContentData(
-        int $limit = 10,
-        array $timeRange = [],
-        string $sortBy = 'views',
-    ): ChartData {
-        $cacheKey = "top_content_{$limit}_{$sortBy}_"
-            . md5(serialize($timeRange));
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($limit, $timeRange, $sortBy): ChartData {
-                $rawData = $this->queryAdapter->getTopContentData($limit, $timeRange, $sortBy);
-
-                return $this->categoryProcessor->processRankingData(
-                    $rawData,
-                    'Top Content',
-                );
-            },
-            3600,
-        );
-
-        assert($result instanceof ChartData);
-
-        return $result;
-    }
-
-    private function getUserEngagementData(
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        string $granularity = 'day',
-    ): ChartData {
-        $cacheKey = 'user_engagement_'
-            . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_'
-            . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_'
-            . $granularity;
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($startDate, $endDate, $granularity): ChartData {
-                $rawData = $this->queryAdapter->getUserEngagementData(
-                    $startDate,
-                    $endDate,
-                    $granularity,
-                );
-
-                return $this->timeSeriesProcessor->processEngagementData(
-                    $rawData,
-                    $granularity,
-                );
-            },
-            3600,
-        );
-
-        assert($result instanceof ChartData);
-
-        return $result;
-    }
-
-    private function getMultiMetricDashboardData(
-        array $metrics,
-        ?DateTimeInterface $startDate = null,
-        ?DateTimeInterface $endDate = null,
-        string $granularity = 'day',
-        array $chartOptions = [],
-    ): ChartData {
-        $cacheKey = 'multi_metric_' . implode('_', $metrics) . '_'
-            . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_'
-            . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_'
-            . $granularity . '_' . md5(serialize($chartOptions));
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($metrics, $startDate, $endDate, $granularity, $chartOptions): ChartData {
-                $allData = [];
-
-                foreach ($metrics as $metric) {
-                    if (!is_string($metric)) {
-                        continue;
-                    }
-
-                    $rawData = $this->queryAdapter->getTimeSeriesData(
-                        $metric,
-                        $startDate,
-                        $endDate,
-                        $granularity,
-                    );
-                    $allData[$metric] = $rawData;
-                }
-
-                return $this->timeSeriesProcessor->processMultiMetricData(
-                    $allData,
-                    'Multi-Metric Chart',
-                    $granularity,
-                    $chartOptions,
                 );
             },
             3600,
@@ -340,14 +63,279 @@ final readonly class StatisticsVisualizationService implements StatisticsVisuali
     }
 
     /**
+     * 取得使用者活動時間序列統計.
+     */
+    public function getUserActivityTimeSeriesData(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity = 'day',
+    ): ChartData {
+        $cacheKey = 'user_activity_timeseries_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate, $granularity): ChartData {
+                $rawData = $this->queryAdapter->getTimeSeriesData(
+                    'user_activities',
+                    $startDate,
+                    $endDate,
+                    $granularity,
+                );
+
+                return $this->timeSeriesProcessor->processTimeSeriesData(
+                    $rawData,
+                    '使用者活動趨勢',
+                    $granularity,
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得文章來源分布統計.
+     */
+    public function getPostSourceDistributionData(
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        int $limit = 10,
+    ): ChartData {
+        $cacheKey = 'post_source_dist_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $limit;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate, $limit): ChartData {
+                $rawData = $this->queryAdapter->getCategoryData(
+                    'post_sources',
+                    $startDate,
+                    $endDate,
+                    $limit,
+                );
+
+                return $this->categoryProcessor->processCategoryData(
+                    $rawData,
+                    '文章來源分布',
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得熱門標籤分布統計.
+     */
+    public function getPopularTagsDistributionData(
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        int $limit = 10,
+    ): ChartData {
+        $cacheKey = 'popular_tags_dist_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $limit;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate, $limit): ChartData {
+                $rawData = $this->queryAdapter->getCategoryData(
+                    'popular_tags',
+                    $startDate,
+                    $endDate,
+                    $limit,
+                );
+
+                return $this->categoryProcessor->processCategoryData(
+                    $rawData,
+                    '熱門標籤分布',
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得使用者註冊趨勢分析.
+     */
+    public function getUserRegistrationTrendData(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity = 'day',
+    ): ChartData {
+        $cacheKey = 'user_reg_trend_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate, $granularity): ChartData {
+                $rawData = $this->queryAdapter->getTimeSeriesData(
+                    'user_registrations',
+                    $startDate,
+                    $endDate,
+                    $granularity,
+                );
+
+                return $this->timeSeriesProcessor->processTimeSeriesData(
+                    $rawData,
+                    '使用者註冊趨勢',
+                    $granularity,
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得內容成長趨勢分析.
+     */
+    public function getContentGrowthTrendData(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity = 'day',
+    ): ChartData {
+        $cacheKey = 'content_growth_trend_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate, $granularity): ChartData {
+                $metrics = ['posts', 'comments', 'attachments'];
+                $allData = [];
+
+                foreach ($metrics as $metric) {
+                    $allData[$metric] = $this->queryAdapter->getTimeSeriesData(
+                        $metric,
+                        $startDate,
+                        $endDate,
+                        $granularity,
+                    );
+                }
+
+                return $this->timeSeriesProcessor->processMultiTimeSeriesData(
+                    $allData,
+                    '內容成長趨勢',
+                    $granularity,
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得熱門內容排行榜.
+     */
+    public function getPopularContentRankingData(
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        string $sortBy = 'views',
+        int $limit = 10,
+    ): ChartData {
+        $cacheKey = 'popular_content_ranking_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $sortBy . '_' . $limit;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate, $sortBy, $limit): ChartData {
+                $rawData = $this->queryAdapter->getRankingData(
+                    'content',
+                    $startDate,
+                    $endDate,
+                    $sortBy,
+                    $limit,
+                );
+
+                return $this->categoryProcessor->processRankingData(
+                    $rawData,
+                    '熱門內容排行',
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得使用者活躍度分布統計.
+     */
+    public function getUserEngagementDistributionData(
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+    ): ChartData {
+        $cacheKey = 'user_engagement_dist_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all');
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($startDate, $endDate): ChartData {
+                $rawData = $this->queryAdapter->getCategoryData(
+                    'user_engagement',
+                    $startDate,
+                    $endDate,
+                );
+
+                return $this->categoryProcessor->processCategoryData(
+                    $rawData,
+                    '使用者活躍度分布',
+                );
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
+    }
+
+    /**
+     * 取得自訂統計圖表資料.
+     */
+    public function getCustomChartData(
+        string $metricName,
+        array $parameters = [],
+        array $chartOptions = [],
+    ): ChartData {
+        // 基本實作，未來可擴充為動態查詢
+        return new ChartData('自訂圖表: ' . $metricName, 'bar');
+    }
+
+    /**
+     * 取得多指標組合圖表資料.
+     */
+    public function getMultiMetricChartData(
+        array $metricNames,
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity = 'day',
+        array $chartOptions = [],
+    ): ChartData {
+        return $this->getMultiMetricDashboardData($metricNames, $startDate, $endDate, $granularity, $chartOptions);
+    }
+
+    /**
      * 取得效能監控圖表資料.
      */
     public function getPerformanceMetricsData(
-        \DateTimeInterface $startDate,
-        \DateTimeInterface $endDate,
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
         array $metrics = ['response_time', 'error_rate', 'throughput'],
         string $granularity = 'hour',
     ): ChartData {
+        // 模擬數據實作
         $chartData = new ChartData('效能監控圖表', 'line');
         $chartData->addDataset('平均響應時間 (ms)', [250, 280, 240, 310, 290, 260]);
         $chartData->setLabels(['00:00', '04:00', '08:00', '12:00', '16:00', '20:00']);
@@ -359,10 +347,42 @@ final readonly class StatisticsVisualizationService implements StatisticsVisuali
      * 取得瀏覽量時間序列統計.
      */
     public function getViewsTimeSeriesData(
-        \DateTimeInterface $startDate,
-        \DateTimeInterface $endDate,
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
         string $granularity = 'day',
     ): array {
         return $this->postRepository->getViewTimeSeriesData($startDate, $endDate, $granularity);
+    }
+
+    /**
+     * 內部輔助方法：處理多指標儀表板資料.
+     */
+    private function getMultiMetricDashboardData(
+        array $metrics,
+        ?DateTimeInterface $startDate = null,
+        ?DateTimeInterface $endDate = null,
+        string $granularity = 'day',
+        array $chartOptions = [],
+    ): ChartData {
+        $cacheKey = 'multi_metric_' . implode('_', $metrics) . '_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $granularity;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($metrics, $startDate, $endDate, $granularity, $chartOptions): ChartData {
+                $allData = [];
+                foreach ($metrics as $metric) {
+                    if (is_string($metric)) {
+                        $allData[$metric] = $this->queryAdapter->getTimeSeriesData($metric, $startDate, $endDate, $granularity);
+                    }
+                }
+
+                return $this->timeSeriesProcessor->processMultiMetricData($allData, '多指標對比', $granularity, $chartOptions);
+            },
+            3600,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
     }
 }

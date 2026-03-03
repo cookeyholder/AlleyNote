@@ -155,7 +155,15 @@ class StatisticsServiceProvider
             }),
 
             // 視覺化服務
-            StatisticsVisualizationServiceInterface::class => \DI\autowire(StatisticsVisualizationService::class),
+            StatisticsVisualizationServiceInterface::class => \DI\factory(function (ContainerInterface $container): StatisticsVisualizationServiceInterface {
+                return new StatisticsVisualizationService(
+                    $container->get(\App\Infrastructure\Statistics\Adapters\StatisticsQueryAdapter::class),
+                    $container->get(\App\Infrastructure\Statistics\Processors\CategoryProcessor::class),
+                    $container->get(\App\Infrastructure\Statistics\Processors\TimeSeriesProcessor::class),
+                    $container->get(StatisticsCacheServiceInterface::class),
+                    $container->get(PostStatisticsRepositoryInterface::class)
+                );
+            }),
 
             // 文章瀏覽統計服務
             PostViewStatisticsService::class => \DI\factory(function (ContainerInterface $container): PostViewStatisticsService {
