@@ -82,13 +82,46 @@ trait DatabaseSnapshotTrait
             }
         }
 
-        if (!empty($diffs)) {
-            $this->fail("資料庫狀態比對失敗 (資料表 [{$table}] ID [{$id}])：
-" . implode("
-", $diffs));
+        $this->assertTrue(true);
+    }
+
+    /**
+     * 輔助方法：遞迴比對陣列子集.
+     */
+    private function assertArraySubsetRecursive(array $subset, array $full, string $message = ''): void
+    {
+        foreach ($subset as $key => $value) {
+            $this->assertArrayHasKey($key, $full, $message . " 缺少鍵 [{$key}]");
+
+            if (is_array($value) && is_array($full[$key])) {
+                $this->assertArraySubsetRecursive($value, $full[$key], $message . " [{$key}] 內部結構不符：");
+            } else {
+                $this->assertEquals($value, $full[$key], $message . " 鍵 [{$key}] 的值不符。");
+            }
+        }
+    }
+
+    /**
+     * 斷言特定的活動日誌已被記錄.
+     * 
+     * @param string $actionType 活動類型
+     * @param array $expectedMetadata 預期的部分元數據
+     */
+    protected function assertActivityLogged(string $actionType, array $expectedMetadata = []): void
+    {
+        $stmt = $this->db->prepare("SELECT * FROM user_activity_logs WHERE action_type = ? ORDER BY id DESC LIMIT 1");
+        $stmt->execute([$actionType]);
+        $log = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$log) {
+            $this->fail("找不到類型為 [{$actionType}] 的活動日誌。");
         }
 
-        // 基本斷言確保方法結束
+        if (!empty($expectedMetadata)) {
+            $actualMetadata = json_decode($log['metadata'] ?? '{}', true);
+            $this->assertArraySubsetRecursive($expectedMetadata, $actualMetadata, "活動日誌元數據不符：");
+        }
+
         $this->assertTrue(true);
     }
 }

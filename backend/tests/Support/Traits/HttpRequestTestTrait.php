@@ -69,6 +69,7 @@ trait HttpRequestTestTrait
         $json = json_encode($data, JSON_UNESCAPED_UNICODE);
         $stream = new Stream(fopen('php://temp', 'r+'));
         $stream->write($json ?: '');
+        $stream->rewind();
 
         return $request
             ->withHeader('Content-Type', 'application/json')
