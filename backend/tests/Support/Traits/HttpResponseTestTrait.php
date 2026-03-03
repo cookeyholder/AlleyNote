@@ -17,6 +17,60 @@ use Psr\Http\Message\StreamInterface;
 trait HttpResponseTestTrait
 {
     /**
+     * 建立帶有 JSON 內容的真實回應實體.
+     *
+     * @param array<string, mixed> $data 欲編碼的資料
+     * @param int $statusCode HTTP 狀態碼
+     * @return ResponseInterface
+     */
+    protected function createJsonResponse(array $data, int $statusCode = 200): ResponseInterface
+    {
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE);
+        $stream = new \App\Infrastructure\Http\Stream(fopen('php://temp', 'r+'));
+        $stream->write($json ?: '');
+
+        return new \App\Infrastructure\Http\Response(
+            statusCode: $statusCode,
+            headers: ['Content-Type' => 'application/json'],
+            body: $stream
+        );
+    }
+
+    /**
+     * 斷言 JSON 回應符合預期的部分結構與內容.
+     * 
+     * @param ResponseInterface $response 回應實體
+     * @param array $expected 預期的部分資料結構
+     */
+    protected function assertJsonResponseMatches(ResponseInterface $response, array $expected): void
+    {
+        $body = (string) $response->getBody();
+        $actual = json_decode($body, true);
+
+        if ($actual === null && !empty($body)) {
+            $this->fail("無法解析回應主體為 JSON：{$body}");
+        }
+
+        $this->assertArraySubsetRecursive($expected, $actual, "JSON 回應內容不符合預期結構。");
+    }
+
+    /**
+     * 輔助方法：遞迴比對陣列子集.
+     */
+    private function assertArraySubsetRecursive(array $subset, array $full, string $message = ''): void
+    {
+        foreach ($subset as $key => $value) {
+            $this->assertArrayHasKey($key, $full, $message . " 缺少鍵 [{$key}]");
+
+            if (is_array($value) && is_array($full[$key])) {
+                $this->assertArraySubsetRecursive($value, $full[$key], $message . " [{$key}] 內部結構不符：");
+            } else {
+                $this->assertEquals($value, $full[$key], $message . " 鍵 [{$key}] 的值不符。");
+            }
+        }
+    }
+
+    /**
      * 建立 HTTP 回應的模擬物件.
      */
     protected function createResponseMock(): ResponseInterface|MockInterface
