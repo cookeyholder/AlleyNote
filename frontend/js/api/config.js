@@ -22,4 +22,3 @@ export const API_CONFIG = {
   withCredentials: true,
 };
 
-console.log('API Config:', API_CONFIG);

@@ -78,7 +78,6 @@ export async function guestOnly() {
  * 初始化路由
  */
 export async function initRouter() {
-  console.log('🛣️ 初始化路由系統...');
   
   const router = await getRouter();
 
@@ -196,7 +195,6 @@ export async function initRouter() {
   // 解析當前 URL
   router.resolve();
 
-  console.log('✅ 路由系統初始化完成');
 }
 
 // 匯出別名供向後相容

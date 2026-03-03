@@ -411,7 +411,6 @@ export default class StatisticsPage {
   }
 
   initCharts() {
-    console.log('開始初始化圖表...');
     
     // 等待下一個事件循環，確保 DOM 已經渲染
     setTimeout(() => {
@@ -447,8 +446,6 @@ export default class StatisticsPage {
     const ctx = canvas.getContext('2d');
     const trafficData = this.stats.trafficData || [];
 
-    console.log('初始化流量趨勢圖，資料筆數:', trafficData.length);
-    console.log('流量資料:', trafficData);
 
     // 如果沒有資料，使用空資料集
     const labels = trafficData.length > 0 ? trafficData.map(d => d.date) : [];
@@ -506,7 +503,6 @@ export default class StatisticsPage {
         }
       });
       
-      console.log('流量趨勢圖初始化成功');
     } catch (error) {
       console.error('初始化流量趨勢圖失敗:', error);
     }

@@ -18,24 +18,19 @@ import { toast } from './utils/toast.js';
  * 初始化應用程式
  */
 async function initApp() {
-  console.log('🚀 AlleyNote 前端應用程式啟動中...');
   
   try {
     // 顯示載入指示器
     loading.show('應用程式初始化中...');
 
     // 1. 恢復使用者狀態
-    console.log('🔄 恢復使用者狀態...');
     globalActions.restoreUser();
-    console.log('✅ 使用者狀態已恢復');
 
     // 2. 檢查並刷新使用者資訊
     if (globalGetters.isAuthenticated()) {
       try {
-        console.log('🔐 驗證使用者身份...');
         const user = await authAPI.me();
         globalActions.setUser(user);
-        console.log('✅ 使用者已登入:', user.username);
       } catch (error) {
         console.warn('⚠️ 使用者驗證失敗，清除登入狀態');
         globalActions.clearUser();
@@ -43,9 +38,7 @@ async function initApp() {
     }
 
     // 3. 初始化路由系統
-    console.log('🛣️ 初始化路由系統...');
     initRouter();
-    console.log('✅ 路由系統已初始化');
 
     // 4. 設定全域事件監聽
     setupGlobalListeners();
@@ -55,7 +48,6 @@ async function initApp() {
       loading.hide();
     }, 300);
 
-    console.log('✅ AlleyNote 前端應用程式啟動完成');
     
   } catch (error) {
     console.error('❌ 應用程式啟動失敗:', error);
@@ -70,7 +62,6 @@ async function initApp() {
 function setupGlobalListeners() {
   // 監聽登出事件
   window.addEventListener('auth:logout', () => {
-    console.log('👋 使用者登出');
     globalActions.clearUser();
     
     // 重導向到首頁
@@ -93,7 +84,6 @@ function setupGlobalListeners() {
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      console.log('視窗大小已變化');
     }, 250);
   });
 
@@ -106,7 +96,6 @@ function setupGlobalListeners() {
     console.error('未處理的 Promise 拒絕:', event.reason);
   });
 
-  console.log('✅ 全域事件監聽已設定');
 }
 
 /**

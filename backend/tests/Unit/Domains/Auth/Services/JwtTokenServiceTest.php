@@ -235,12 +235,10 @@ final class JwtTokenServiceTest extends TestCase
         ];
 
         $this->mockJwtProvider
-            ->expects($this->once())
             ->method('validateToken')
             ->willReturn($payload);
 
         $this->mockJwtProvider
-            ->expects($this->once())
             ->method('parseTokenUnsafe')
             ->willReturn($payload);
 

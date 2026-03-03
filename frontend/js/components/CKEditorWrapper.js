@@ -107,7 +107,6 @@ export async function initCKEditor(elementId, initialContent = '') {
 
     // 監聽內容變化
     editor.model.document.on('change:data', () => {
-      console.log('[CKEditor] 內容已變更');
     });
 
     return editor;
@@ -125,7 +124,6 @@ export async function destroyCKEditor(editor) {
   if (editor) {
     try {
       await editor.destroy();
-      console.log('[CKEditor] 實例已銷毀');
     } catch (error) {
       console.error('[CKEditor] 銷毀失敗:', error);
     }

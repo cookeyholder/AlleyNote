@@ -64,10 +64,26 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
+    // 從 Cookie 中獲取 CSRF Token (僅在非 GET 請求時需要)
+    const csrfToken = this.getCookie('csrf_token');
+    if (csrfToken) {
+      headers['X-CSRF-TOKEN'] = csrfToken;
+    }
+
     // 合併自訂標頭
     Object.assign(headers, customHeaders);
 
     return headers;
+  }
+
+  /**
+   * 獲取特定的 Cookie 值
+   */
+  getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
   }
 
   /**
