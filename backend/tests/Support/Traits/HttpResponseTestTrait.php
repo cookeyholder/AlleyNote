@@ -40,6 +40,7 @@ trait HttpResponseTestTrait
         $response->shouldReceive('withHeader')->andReturnSelf();
         $response->shouldReceive('withStatus')->andReturnSelf();
         $response->shouldReceive('getStatusCode')->andReturn(200)->byDefault();
+
         return $response;
     }
 
@@ -51,7 +52,7 @@ trait HttpResponseTestTrait
         $body = (string) $response->getBody();
         $actual = json_decode($body, true);
         $this->assertIsArray($actual, "無法解析回應為 JSON: {$body}");
-        
+
         foreach ($expected as $key => $value) {
             $this->assertArrayHasKey($key, $actual);
             if (is_array($value)) {

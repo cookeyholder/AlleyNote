@@ -262,6 +262,7 @@ class PostController extends BaseController
             if (!is_array($data)) {
                 $errorResponse = $this->errorResponse('Invalid request data format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
@@ -536,6 +537,7 @@ class PostController extends BaseController
             if ($id <= 0) {
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
@@ -544,6 +546,7 @@ class PostController extends BaseController
             if (!is_array($data)) {
                 $errorResponse = $this->errorResponse('Invalid request data format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 

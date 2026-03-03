@@ -7,12 +7,10 @@ namespace Tests\Unit\Domains\Auth\Services;
 use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
-use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Services\JwtTokenService;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Shared\Config\JwtConfig;
-use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,10 +22,15 @@ use Tests\Support\UnitTestCase;
 final class JwtTokenServiceTest extends UnitTestCase
 {
     private JwtTokenService $service;
+
     private JwtProviderInterface|MockInterface $mockJwtProvider;
+
     private RefreshTokenRepositoryInterface|MockInterface $mockRefreshTokenRepository;
+
     private TokenBlacklistRepositoryInterface|MockInterface $mockBlacklistRepository;
+
     private JwtConfig $config;
+
     private DeviceInfo $deviceInfo;
 
     protected function setUp(): void
@@ -59,7 +62,7 @@ final class JwtTokenServiceTest extends UnitTestCase
 
         $this->mockJwtProvider->shouldReceive('generateAccessToken')->once()->andReturn($accessToken);
         $this->mockJwtProvider->shouldReceive('generateRefreshToken')->once()->andReturn($refreshToken);
-        
+
         $this->mockJwtProvider->shouldReceive('parseTokenUnsafe')
             ->twice()
             ->andReturn([

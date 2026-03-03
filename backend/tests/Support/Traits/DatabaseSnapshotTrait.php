@@ -37,8 +37,10 @@ trait DatabaseSnapshotTrait
         $diffs = [];
 
         foreach ($oldData as $key => $oldValue) {
-            if ($key === 'table_name') continue;
-            
+            if ($key === 'table_name') {
+                continue;
+            }
+
             $newValue = $newData[$key] ?? null;
             if ($oldValue !== $newValue && !in_array($key, $allowedFields, true)) {
                 $diffs[] = "欄位 [{$key}] 發生預期外的變動";
@@ -46,10 +48,10 @@ trait DatabaseSnapshotTrait
         }
 
         if (!empty($diffs)) {
-            $this->fail(implode("
-", $diffs));
+            $this->fail(implode('
+', $diffs));
         }
-        
+
         $this->assertTrue(true);
     }
 }

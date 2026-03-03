@@ -20,9 +20,9 @@ abstract class IntegrationTestCase extends SecureDDDTestCase
 {
     use DatabaseTestTrait;
     use CacheTestTrait;
-    // Note: DatabaseSnapshotTrait may not exist in this branch yet, 
+    // Note: DatabaseSnapshotTrait may not exist in this branch yet,
     // but we'll try to use it if available or just skip if it fails.
-    
+
     protected function setUp(): void
     {
         parent::setUp();
