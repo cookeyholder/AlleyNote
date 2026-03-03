@@ -197,15 +197,21 @@ final class JwtTokenServiceTest extends TestCase
 
         // Mock parseTokenUnsafe for blacklist check
         $this->mockJwtProvider
+            ->expects($this->once())
             ->method('parseTokenUnsafe')
+            ->with($token)
             ->willReturn($payload);
 
         $this->mockBlacklistRepository
+            ->expects($this->once())
             ->method('isBlacklisted')
+            ->with('test-jti')
             ->willReturn(false);
 
         $this->mockJwtProvider
+            ->expects($this->once())
             ->method('validateToken')
+            ->with($token, 'access')
             ->willReturn($payload);
 
         // Act
@@ -263,16 +269,18 @@ final class JwtTokenServiceTest extends TestCase
             'type' => 'access',
         ];
 
-        $this->mockJwtProvider
-            ->method('parseTokenUnsafe')
-            ->willReturn($payload);
-
         $this->mockBlacklistRepository
-            ->method('isBlacklisted')
-            ->willReturn($checkBlacklist ? false : true); // 根據情境調整
+            ->expects($this->never())
+            ->method('isBlacklisted');
 
         $this->mockJwtProvider
+            ->expects($this->never())
+            ->method('parseTokenUnsafe');
+
+        $this->mockJwtProvider
+            ->expects($this->once())
             ->method('validateToken')
+            ->with($token, 'access')
             ->willReturn($payload);
 
         // Act
