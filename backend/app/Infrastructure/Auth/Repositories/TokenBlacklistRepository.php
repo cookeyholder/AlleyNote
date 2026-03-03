@@ -10,6 +10,7 @@ use DateTime;
 use DateTimeImmutable;
 use PDO;
 use PDOException;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -84,9 +85,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $currentTime = new DateTime();
             $sql = '
-                SELECT COUNT(*) 
-                FROM token_blacklist 
-                WHERE jti = :jti 
+                SELECT COUNT(*)
+                FROM token_blacklist
+                WHERE jti = :jti
                 AND expires_at > :current_time
             ';
 
@@ -114,9 +115,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $currentTime = new DateTime();
             // 假設我們在 metadata 中儲存 token_hash
             $sql = '
-                SELECT COUNT(*) 
-                FROM token_blacklist 
-                WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash 
+                SELECT COUNT(*)
+                FROM token_blacklist
+                WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash
                 AND expires_at > :current_time
             ';
 
@@ -162,7 +163,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE jti = :jti
             ';
 
@@ -170,10 +171,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute(['jti' => $jti]);
 
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) {
+            if (!is_array($row)) {
                 return null;
             }
 
+            /** @var array<string, mixed> $row */
             return $this->createEntryFromRow($row);
         } catch (PDOException) {
             return null;
@@ -192,7 +194,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE user_id = :user_id
                 ORDER BY blacklisted_at DESC
             ';
@@ -212,7 +214,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -233,7 +238,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE device_id = :device_id
                 ORDER BY blacklisted_at DESC
             ';
@@ -253,7 +258,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -274,7 +282,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE token_type = :token_type
                 ORDER BY blacklisted_at DESC
             ';
@@ -294,7 +302,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -315,7 +326,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE reason = :reason
                 ORDER BY blacklisted_at DESC
             ';
@@ -335,7 +346,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -419,9 +433,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $currentTime = new DateTime();
             $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
             $sql = "
-                SELECT jti 
-                FROM token_blacklist 
-                WHERE jti IN ({$placeholders}) 
+                SELECT jti
+                FROM token_blacklist
+                WHERE jti IN ({$placeholders})
                 AND expires_at > ?
             ";
 
@@ -430,6 +444,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $stmt->execute($params);
 
             $blacklistedJtis = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            /** @var array<int|string> $blacklistedJtis */
             $blacklistedSet = array_flip($blacklistedJtis);
 
             $result = [];
@@ -484,10 +499,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             // 先查找該使用者所有的 refresh token
             $selectSql = '
-                SELECT jti 
-                FROM refresh_tokens 
-                WHERE user_id = :user_id 
-                AND revoked = 0 
+                SELECT jti
+                FROM refresh_tokens
+                WHERE user_id = :user_id
+                AND revoked = 0
                 AND expires_at > :current_time
             ';
 
@@ -516,6 +531,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $futureExpiry = $now->modify('+1 day'); // 給一個合理的過期時間
 
             foreach ($jtis as $jti) {
+                if (!is_string($jti)) {
+                    continue;
+                }
                 $entries[] = new TokenBlacklistEntry(
                     jti: $jti,
                     tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
@@ -546,10 +564,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             // 查找該裝置所有的 refresh token
             $selectSql = '
-                SELECT jti, user_id 
-                FROM refresh_tokens 
-                WHERE device_id = :device_id 
-                AND revoked = 0 
+                SELECT jti, user_id
+                FROM refresh_tokens
+                WHERE device_id = :device_id
+                AND revoked = 0
                 AND expires_at > :current_time
             ';
 
@@ -570,6 +588,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $futureExpiry = $now->modify('+1 day');
 
             foreach ($tokens as $token) {
+                if (!is_array($token)) {
+                    continue;
+                }
+                if (!isset($token['jti']) || !is_string($token['jti'])) {
+                    continue;
+                }
+                if (!isset($token['user_id']) || !is_numeric($token['user_id'])) {
+                    continue;
+                }
+
                 $entries[] = new TokenBlacklistEntry(
                     jti: $token['jti'],
                     tokenType: TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
@@ -636,7 +664,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $cutoffDate->modify("-{$days} days");
 
             $sql = '
-                DELETE FROM token_blacklist 
+                DELETE FROM token_blacklist
                 WHERE blacklisted_at <= :cutoff_date
             ';
 
@@ -731,20 +759,26 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     {
         try {
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_blacklisted,
                     COUNT(CASE WHEN token_type = "access" THEN 1 END) as access_tokens,
                     COUNT(CASE WHEN token_type = "refresh" THEN 1 END) as refresh_tokens,
                     COUNT(CASE WHEN reason IN ("security_breach", "suspicious_activity", "device_lost", "invalid_signature") THEN 1 END) as security_related,
                     MAX(blacklisted_at) as last_blacklisted
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE user_id = :user_id
             ';
 
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute(['user_id' => $userId]);
 
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: [
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (is_array($result)) {
+                /** @var array<string, mixed> $result */
+                return $result;
+            }
+
+            return [
                 'total_blacklisted' => 0,
                 'access_tokens' => 0,
                 'refresh_tokens' => 0,
@@ -774,7 +808,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
             ';
 
             if ($since !== null) {
@@ -794,7 +828,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -815,9 +852,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             // 優先取得安全相關的項目
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE reason IN ("security_breach", "suspicious_activity", "device_lost", "invalid_signature")
-                ORDER BY blacklisted_at DESC 
+                ORDER BY blacklisted_at DESC
                 LIMIT :limit
             ';
 
@@ -827,7 +864,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -849,7 +889,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         try {
             $sql = '
                 SELECT jti, token_type, user_id, expires_at, blacklisted_at, reason, device_id, metadata
-                FROM token_blacklist 
+                FROM token_blacklist
                 WHERE 1=1
             ';
 
@@ -857,7 +897,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             if (!empty($criteria['user_id'])) {
                 $sql .= ' AND user_id = :user_id';
-                $params['user_id'] = (int) $criteria['user_id'];
+                $params['user_id'] = is_numeric($criteria['user_id']) ? (int) $criteria['user_id'] : 0;
             }
 
             if (!empty($criteria['device_id'])) {
@@ -907,7 +947,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             $entries = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromRow($row);
+                if (is_array($row)) {
+                    /** @var array<string, mixed> $row */
+                    $entries[] = $this->createEntryFromRow($row);
+                }
             }
 
             return $entries;
@@ -930,7 +973,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
 
             if (!empty($criteria['user_id'])) {
                 $sql .= ' AND user_id = :user_id';
-                $params['user_id'] = (int) $criteria['user_id'];
+                $params['user_id'] = is_numeric($criteria['user_id']) ? (int) $criteria['user_id'] : 0;
             }
 
             if (!empty($criteria['device_id'])) {
@@ -1007,7 +1050,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             $formattedTime = $currentTime->format('Y-m-d H:i:s');
 
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_entries,
                     COUNT(CASE WHEN expires_at > :current_time_1 THEN 1 END) as active_entries,
                     COUNT(CASE WHEN expires_at <= :current_time_2 THEN 1 END) as expired_entries
@@ -1021,9 +1064,9 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
             ]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $totalEntries = (int) $result['total_entries'];
-            $activeEntries = (int) $result['active_entries'];
-            $expiredEntries = (int) $result['expired_entries'];
+            $totalEntries = is_array($result) && isset($result['total_entries']) && is_numeric($result['total_entries']) ? (int) $result['total_entries'] : 0;
+            $activeEntries = is_array($result) && isset($result['active_entries']) && is_numeric($result['active_entries']) ? (int) $result['active_entries'] : 0;
+            $expiredEntries = is_array($result) && isset($result['expired_entries']) && is_numeric($result['expired_entries']) ? (int) $result['expired_entries'] : 0;
 
             // 粗略估算大小（每個項目平均約 200 bytes）
             $estimatedSizeMb = ($totalEntries * 200) / (1024 * 1024);
@@ -1109,22 +1152,38 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
      */
     private function createEntryFromRow(array $row): TokenBlacklistEntry
     {
+        /** @var array<string, mixed> $metadata */
         $metadata = [];
-        if (!empty($row['metadata'])) {
+        if (isset($row['metadata']) && is_string($row['metadata']) && $row['metadata'] !== '') {
             $decoded = json_decode($row['metadata'], true);
             if (is_array($decoded)) {
+                /** @var array<string, mixed> $decoded */
                 $metadata = $decoded;
             }
         }
 
+        // 驗證必要欄位
+        $jti = isset($row['jti']) && is_string($row['jti']) ? $row['jti'] : throw new RuntimeException('Missing or invalid jti');
+        $tokenType = isset($row['token_type']) && is_string($row['token_type']) ? $row['token_type'] : throw new RuntimeException('Missing or invalid token_type');
+        $expiresAt = isset($row['expires_at']) && is_string($row['expires_at']) ? $row['expires_at'] : throw new RuntimeException('Missing or invalid expires_at');
+        $blacklistedAt = isset($row['blacklisted_at']) && is_string($row['blacklisted_at']) ? $row['blacklisted_at'] : throw new RuntimeException('Missing or invalid blacklisted_at');
+        $reason = isset($row['reason']) && is_string($row['reason']) ? $row['reason'] : throw new RuntimeException('Missing or invalid reason');
+
+        $userId = null;
+        if (isset($row['user_id'])) {
+            $userId = is_numeric($row['user_id']) ? (int) $row['user_id'] : null;
+        }
+
+        $deviceId = isset($row['device_id']) && is_string($row['device_id']) ? $row['device_id'] : null;
+
         return new TokenBlacklistEntry(
-            jti: $row['jti'],
-            tokenType: $row['token_type'],
-            expiresAt: new DateTimeImmutable($row['expires_at']),
-            blacklistedAt: new DateTimeImmutable($row['blacklisted_at']),
-            reason: $row['reason'],
-            userId: $row['user_id'] !== null ? (int) $row['user_id'] : null,
-            deviceId: $row['device_id'],
+            jti: $jti,
+            tokenType: $tokenType,
+            expiresAt: new DateTimeImmutable($expiresAt),
+            blacklistedAt: new DateTimeImmutable($blacklistedAt),
+            reason: $reason,
+            userId: $userId,
+            deviceId: $deviceId,
             metadata: $metadata,
         );
     }

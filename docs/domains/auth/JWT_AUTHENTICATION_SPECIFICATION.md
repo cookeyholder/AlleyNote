@@ -4,17 +4,17 @@
 **版本**: v4.0
 **建立日期**: 2025-08-26
 **更新日期**: 2025-09-03
-**架構**: 前後端分離 (Vite + TypeScript + PHP 8.4.12 DDD)
+**架構**: 前後端分離 (原生 HTML/JavaScript/CSS + PHP 8.4.12 DDD)
 **作者**: GitHub Copilot
 
 ## 1. 概述
 
 ### 1.1 目標
-將 AlleyNote 前後端分離架構的認證系統實作為現代 JWT (JSON Web Token) 認證機制，為 Vite + TypeScript 前端和 PHP 8.4.12 DDD 後端提供安全、可擴展且無狀態的使用者認證。
+將 AlleyNote 前後端分離架構的認證系統實作為現代 JWT (JSON Web Token) 認證機制，為 原生 HTML/JavaScript/CSS 前端和 PHP 8.4.12 DDD 後端提供安全、可擴展且無狀態的使用者認證。
 
 ### 1.2 範圍
 - 實作前後端分離的 JWT token 產生、驗證和管理
-- Vite + TypeScript Composition API 認證狀態管理
+- 原生 HTML/JavaScript/CSS Composition API 認證狀態管理
 - PHP 8.4.12 後端 API 認證系統
 - 加入 refresh token 機制
 - 實作 CORS 安全認證 middleware
@@ -26,7 +26,7 @@
 - **Domain Layer**: JWT 相關的業務邏輯和規則
 - **Application Layer**: API 控制器和應用服務
 - **Infrastructure Layer**: JWT 函式庫整合和持久化
-- **Frontend Layer**: Vite + TypeScript 認證狀態管理和 API 整合
+- **Frontend Layer**: 原生 HTML/JavaScript/CSS 認證狀態管理和 API 整合
 - **Shared Layer**: 通用介面和例外處理
 
 ## 2. 技術規格

@@ -36,6 +36,22 @@ interface UserRepositoryInterface
     public function findByUuid(string $uuid): ?array;
 
     /**
+     * 根據 ID 查找使用者.
+     *
+     * @param int $id 使用者 ID
+     * @return array<string, mixed>|null 使用者資料陣列或 null
+     */
+    public function findById(int $id): ?array;
+
+    /**
+     * 根據 ID 查找使用者（包含角色資訊）.
+     *
+     * @param int $id 使用者 ID
+     * @return array<string, mixed>|null 使用者資料陣列（包含 roles 欄位）或 null
+     */
+    public function findByIdWithRoles(int $id): ?array;
+
+    /**
      * 驗證使用者登入憑證.
      *
      * @param string $username 使用者名稱或電子郵件
@@ -125,8 +141,9 @@ interface UserRepositoryInterface
      * 搜尋使用者.
      *
      * @param string $keyword 關鍵字
-     * @param array<string, mixed> $fields 搜尋欄位
+     * @param array<int, string>|array<string, mixed> $fields 搜尋欄位
      * @param int $limit 限制筆數
+     * @return array<int, mixed>
      */
     public function search(string $keyword, array $fields = ['username', 'email'], int $limit = 10): array;
 

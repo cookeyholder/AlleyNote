@@ -20,6 +20,7 @@ class MemoryRouteCache implements RouteCacheInterface
 
     private array $timestamps = [];
 
+    /** @var array{hits: int, misses: int, size: int, created_at: int, last_used: int} */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -40,7 +41,7 @@ class MemoryRouteCache implements RouteCacheInterface
         }
 
         // 檢查是否過期
-        if ($this->ttl > 0 && isset($this->timestamps['routes'])) {
+        if ($this->ttl > 0 && isset($this->timestamps['routes']) && is_int($this->timestamps['routes'])) {
             $elapsed = time() - $this->timestamps['routes'];
             if ($elapsed > $this->ttl) {
                 unset($this->cache['routes']);
@@ -121,6 +122,9 @@ class MemoryRouteCache implements RouteCacheInterface
         return $this->ttl;
     }
 
+    /**
+     * @return array{hits: int, misses: int, size: int, created_at: int, last_used: int}
+     */
     public function getStats(): array
     {
         return $this->stats;
@@ -147,7 +151,7 @@ class MemoryRouteCache implements RouteCacheInterface
      */
     public function isItemExpired(string $key): bool
     {
-        if (!isset($this->timestamps[$key])) {
+        if (!isset($this->timestamps[$key]) || !is_int($this->timestamps[$key])) {
             return true;
         }
 

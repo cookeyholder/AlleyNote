@@ -41,7 +41,8 @@ final class JwtConfig
      */
     private function loadFromEnvironment(): void
     {
-        $this->algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
+        $algorithmEnv = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
+        $this->algorithm = is_string($algorithmEnv) ? $algorithmEnv : 'RS256';
 
         // 先驗證算法是否支援
         if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512'])) {
@@ -56,10 +57,17 @@ final class JwtConfig
             $this->publicKey = $this->loadPublicKey();
         }
 
-        $this->issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
-        $this->audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
-        $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
-        $this->refreshTokenTtl = (int) ($_ENV['JWT_REFRESH_TOKEN_TTL'] ?? 2592000);
+        $issuerEnv = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
+        $this->issuer = is_string($issuerEnv) ? $issuerEnv : 'alleynote-api';
+
+        $audienceEnv = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
+        $this->audience = is_string($audienceEnv) ? $audienceEnv : 'alleynote-client';
+
+        $accessTtlEnv = $_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600;
+        $this->accessTokenTtl = is_numeric($accessTtlEnv) ? (int) $accessTtlEnv : 3600;
+
+        $refreshTtlEnv = $_ENV['JWT_REFRESH_TOKEN_TTL'] ?? 2592000;
+        $this->refreshTokenTtl = is_numeric($refreshTtlEnv) ? (int) $refreshTtlEnv : 2592000;
     }
 
     /**
@@ -207,6 +215,10 @@ final class JwtConfig
 
             if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
                 throw new InvalidArgumentException('私鑰簽名測試失敗');
+            }
+
+            if (!is_string($signature)) {
+                throw new InvalidArgumentException('簽名產生失敗');
             }
 
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {

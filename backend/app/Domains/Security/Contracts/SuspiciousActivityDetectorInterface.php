@@ -76,7 +76,7 @@ interface SuspiciousActivityDetectorInterface
     /**
      * 取得所有配置的閾值
      *
-     * @return array<string, array<string, int>> 閾值配置
+     * @return array{failure_thresholds: array<string, array<string, int>>, frequency_thresholds: array<string, array<string, int>>}
      */
     public function getThresholdConfiguration(): array;
 

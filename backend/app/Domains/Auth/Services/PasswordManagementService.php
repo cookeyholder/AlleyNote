@@ -33,13 +33,18 @@ class PasswordManagementService
     public function changePassword(int $userId, string $currentPassword, string $newPassword): bool
     {
         // 驗證使用者身分
-        $user = $this->userRepository->findById((string) $userId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
             throw new InvalidArgumentException('找不到指定的使用者');
         }
 
         // 驗證目前密碼
-        if (!$this->passwordService->verifyPassword($currentPassword, $user['password'])) {
+        $storedPassword = $user['password'] ?? null;
+        if (!is_string($storedPassword)) {
+            throw new InvalidArgumentException('無法讀取使用者密碼');
+        }
+
+        if (!$this->passwordService->verifyPassword($currentPassword, $storedPassword)) {
             throw new InvalidArgumentException('目前密碼不正確');
         }
 
@@ -108,15 +113,20 @@ class PasswordManagementService
      */
     public function upgradePasswordHash(int $userId, string $plainPassword): bool
     {
-        $user = $this->userRepository->findById((string) $userId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
+            return false;
+        }
+
+        $storedPassword = $user['password'] ?? null;
+        if (!is_string($storedPassword)) {
             return false;
         }
 
         // 檢查密碼是否正確且需要升級
         if (
-            $this->passwordService->verifyPassword($plainPassword, $user['password'])
-            && $this->passwordService->needsRehash($user['password'])
+            $this->passwordService->verifyPassword($plainPassword, $storedPassword)
+            && $this->passwordService->needsRehash($storedPassword)
         ) {
             // 重新雜湊密碼並透過 updatePassword 方法更新
             return $this->userRepository->updatePassword($userId, $plainPassword);

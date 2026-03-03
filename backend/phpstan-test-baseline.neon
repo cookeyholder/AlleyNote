@@ -1,0 +1,1993 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Cannot access offset ''action_type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: tests/Functional/AttachmentActivityLoggingTest.php
+
+		-
+			message: '#^Cannot access offset ''metadata'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: tests/Functional/AttachmentActivityLoggingTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: tests/Functional/AttachmentActivityLoggingTest.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 6
+			path: tests/Functional/AttachmentActivityLoggingTest.php
+
+		-
+			message: '#^Cannot call method fetch\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 6
+			path: tests/Functional/AttachmentActivityLoggingTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 6
+			path: tests/Functional/AttachmentActivityLoggingTest.php
+
+		-
+			message: '#^Binary operation "\." between ''Login endpoint…'' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 2
+			path: tests/Integration/Api/V1/AuthEndpointTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strlen expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/AttachmentControllerTest.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 2
+			path: tests/Integration/AttachmentUploadTest.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function file_put_contents expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/AttachmentUploadTest.php
+
+		-
+			message: '#^Parameter \#1 \$path of function dirname expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/AttachmentUploadTest.php
+
+		-
+			message: '#^Parameter \#2 \$cache of class App\\Domains\\Attachment\\Repositories\\AttachmentRepository constructor expects App\\Shared\\Contracts\\CacheServiceInterface, App\\Infrastructure\\Services\\CacheService\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/AttachmentUploadTest.php
+
+		-
+			message: '#^Parameter \#2 \$cache of class App\\Domains\\Post\\Repositories\\PostRepository constructor expects App\\Shared\\Contracts\\CacheServiceInterface, App\\Infrastructure\\Services\\CacheService\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/AttachmentUploadTest.php
+
+		-
+			message: '#^Cannot access offset ''message'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Integration/AuthControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''success'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: tests/Integration/AuthControllerTest.php
+
+		-
+			message: '#^Property Tests\\Integration\\AuthControllerTest\:\:\$statusCode \(int\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/AuthControllerTest.php
+
+		-
+			message: '#^Binary operation "\." between ''錯誤訊息不包含預期的中文內容\: '' and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Shared\\Contracts\\ValidatorInterface will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Shared\\Validation\\Factory\\ValidatorFactory will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''age''\|''email''\|''ip''\|''name''\|''url'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method checkRule\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 18
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method create\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method createForDTO\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method createWithConfig\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method getErrors\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 5
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method isValid\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 7
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method validate\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 7
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method validateOrFail\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$definitions of method DI\\ContainerBuilder\<DI\\Container\>\:\:addDefinitions\(\) expects array\|DI\\Definition\\Source\\DefinitionSource\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Integration/DIValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Post\\DTOs\\CreatePostDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DTOs/DTOControllerIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Post\\DTOs\\UpdatePostDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Integration/DTOs/DTOControllerIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DTOs/DTOControllerIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DTOs/DTOControllerIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DTOs/DTOControllerIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Attachment\\DTOs\\CreateAttachmentDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Auth\\DTOs\\RegisterUserDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Post\\DTOs\\CreatePostDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Post\\DTOs\\UpdatePostDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Security\\DTOs\\CreateIpRuleDTO will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DTOs/DTOValidationIntegrationTest.php
+
+		-
+			message: '#^Argument of an invalid type list\<string\>\|false supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot access offset ''content'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot access offset 0 on list\<string\>\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot call method fetchAll\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Cannot call method fetchColumn\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/Integration/DatabaseBackupTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function rsort expects TArray of array\<string\>, list\<string\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Integration/FileSystemBackupTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method shouldReceive\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Method Tests\\Integration\\JwtAuthenticationIntegrationTest\:\:generateTestPrivateKey\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Method Tests\\Integration\\JwtAuthenticationIntegrationTest\:\:generateTestPublicKey\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Parameter \#3 \$userRepository of class App\\Domains\\Auth\\Services\\AuthenticationService constructor expects App\\Domains\\Auth\\Contracts\\UserRepositoryInterface, App\\Domains\\Auth\\Contracts\\UserRepositoryInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Property Tests\\Integration\\JwtAuthenticationIntegrationTest\:\:\$userRepository \(App\\Domains\\Auth\\Contracts\\UserRepositoryInterface\|Mockery\\MockInterface\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Integration/JwtAuthenticationIntegrationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/JwtTokenBlacklistIntegrationTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 15
+			path: tests/Integration/RateLimitTest.php
+
+		-
+			message: '#^Cannot call method andThrow\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/RateLimitTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 3
+			path: tests/Integration/RateLimitTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 16
+			path: tests/Integration/RateLimitTest.php
+
+		-
+			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
+			identifier: foreach.nonIterable
+			count: 1
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 4
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsInt\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getIsPinned\(\) on App\\Domains\\Post\\Models\\Post\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot call method zeroOrMoreTimes\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/Integration/Repositories/PostRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Infrastructure\\Services\\CacheService\|Mockery\\MockInterface\:\:get\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Infrastructure\\Services\\CacheService\|Mockery\\MockInterface\:\:remember\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsInt\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Cannot access offset ''title'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Integration/Support/IntegrationTestExampleTest.php
+
+		-
+			message: '#^Parameter \#1 \.\.\.\$definitions of method DI\\ContainerBuilder\<DI\\Container\>\:\:addDefinitions\(\) expects array\|DI\\Definition\\Source\\DefinitionSource\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Performance/JwtPerformanceTest.php
+
+		-
+			message: '#^Property Tests\\Performance\\JwtPerformanceTest\:\:\$jwtConfig \(App\\Shared\\Config\\JwtConfig\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Performance/JwtPerformanceTest.php
+
+		-
+			message: '#^Property Tests\\Performance\\JwtPerformanceTest\:\:\$jwtConfig is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: tests/Performance/JwtPerformanceTest.php
+
+		-
+			message: '#^Property Tests\\Performance\\JwtPerformanceTest\:\:\$jwtTokenService \(App\\Domains\\Auth\\Contracts\\JwtTokenServiceInterface\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Performance/JwtPerformanceTest.php
+
+		-
+			message: '#^Anonymous function has an unused use \$content\.$#'
+			identifier: closure.unusedUse
+			count: 1
+			path: tests/Security/FileUploadSecurityTest.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function touch expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Security/FileUploadSecurityTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with array and ''使用者註冊不應該返回 null'' will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Security/PasswordHashingTest.php
+
+		-
+			message: '#^Parameter \#1 \$password of function password_hash expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Security/PasswordHashingTest.php
+
+		-
+			message: '#^Parameter \#1 \$validator of class App\\Domains\\Auth\\DTOs\\RegisterUserDTO constructor expects App\\Shared\\Contracts\\ValidatorInterface, App\\Shared\\Contracts\\ValidatorInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Security/PasswordHashingTest.php
+
+		-
+			message: '#^Parameter \#2 \$passwordService of class App\\Domains\\Auth\\Services\\AuthService constructor expects App\\Domains\\Auth\\Contracts\\PasswordSecurityServiceInterface, App\\Domains\\Auth\\Contracts\\PasswordSecurityServiceInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Security/PasswordHashingTest.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: tests/Security/SqlInjectionTest.php
+
+		-
+			message: '#^Cannot call method fetch\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/Security/SqlInjectionTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/Security/SqlInjectionTest.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Support/IntegrationTestCase.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Support/IntegrationTestCase.php
+
+		-
+			message: '#^Method Tests\\UI\\CrossBrowserTest\:\:browserAction\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/UI/CrossBrowserTest.php
+
+		-
+			message: '#^Method Tests\\UI\\CrossBrowserTest\:\:browserAction\(\) invoked with 2 parameters, 0 required\.$#'
+			identifier: arguments.count
+			count: 7
+			path: tests/UI/CrossBrowserTest.php
+
+		-
+			message: '#^Method Tests\\UI\\CrossBrowserTest\:\:performBrowserAction\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: tests/UI/CrossBrowserTest.php
+
+		-
+			message: '#^Parameter \#1 \$browser of method Tests\\UI\\CrossBrowserTest\:\:testBrowserCompatibility\(\) expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/UI/CrossBrowserTest.php
+
+		-
+			message: '#^Part \$browser\[''name''\] \(mixed\) of encapsed string cannot be cast to string\.$#'
+			identifier: encapsedStringPart.nonString
+			count: 1
+			path: tests/UI/CrossBrowserTest.php
+
+		-
+			message: '#^Method Tests\\UI\\UITestCase\:\:assertElementVisible\(\) invoked with 2 parameters, 1 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: tests/UI/UserExperienceTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Application/Middleware/AuthorizationResultTest.php
+
+		-
+			message: '#^Cannot access offset ''code'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php
+
+		-
+			message: '#^Cannot access offset ''error'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php
+
+		-
+			message: '#^Cannot access offset ''success'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php
+
+		-
+			message: '#^Parameter \#1 \$jwtTokenService of class App\\Application\\Middleware\\JwtAuthenticationMiddleware constructor expects App\\Domains\\Auth\\Contracts\\JwtTokenServiceInterface, App\\Domains\\Auth\\Contracts\\JwtTokenServiceInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php
+
+		-
+			message: '#^Parameter \#2 \$handler of method App\\Application\\Middleware\\JwtAuthenticationMiddleware\:\:process\(\) expects App\\Infrastructure\\Routing\\Contracts\\RequestHandlerInterface, App\\Infrastructure\\Routing\\Contracts\\RequestHandlerInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 12
+			path: tests/Unit/Application/Middleware/JwtAuthenticationMiddlewareTest.php
+
+		-
+			message: '#^Cannot access offset ''code'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Application/Middleware/JwtAuthorizationMiddlewareTest.php
+
+		-
+			message: '#^Cannot access offset ''success'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Application/Middleware/JwtAuthorizationMiddlewareTest.php
+
+		-
+			message: '#^Parameter \#2 \$handler of method App\\Application\\Middleware\\JwtAuthorizationMiddleware\:\:process\(\) expects App\\Infrastructure\\Routing\\Contracts\\RequestHandlerInterface, App\\Infrastructure\\Routing\\Contracts\\RequestHandlerInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 7
+			path: tests/Unit/Application/Middleware/JwtAuthorizationMiddlewareTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertFalse\(\) with false will always evaluate to false\.$#'
+			identifier: method.impossibleType
+			count: 1
+			path: tests/Unit/Cache/CacheManagerTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Cache/CacheManagerTest.php
+
+		-
+			message: '#^Cannot access offset ''allowed'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Controllers/IpControllerTest.php
+
+		-
+			message: '#^Cannot access offset ''ip_address'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Controllers/IpControllerTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Controllers/IpControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Controllers/IpControllerTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Controllers/IpControllerTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/DTOs/BaseDTOTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/DTOs/BaseDTOTest.php
+
+		-
+			message: '#^Cannot call method andThrow\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/DTOs/BaseDTOTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/DTOs/BaseDTOTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/DTOs/BaseDTOTest.php
+
+		-
+			message: '#^Parameter \#1 \$data of method App\\Shared\\DTOs\\BaseDTO\:\:validate\(\) expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/DTOs/BaseDTOTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/DTOs/DTOValidationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsBool\(\) with bool will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/DTOs/DTOValidationTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsInt\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/DTOs/DTOValidationTest.php
+
+		-
+			message: '#^Parameter \#1 \$actual of method PHPUnit\\Framework\\Assert\:\:assertJson\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/DTOs/Post/CreatePostDTOTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/DTOs/Post/CreatePostDTOTest.php
+
+		-
+			message: '#^Parameter \#1 \$actual of method PHPUnit\\Framework\\Assert\:\:assertJson\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/DTOs/Post/UpdatePostDTOTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/DTOs/Post/UpdatePostDTOTest.php
+
+		-
+			message: '#^Cannot access offset ''name'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Database/DatabaseConnectionTest.php
+
+		-
+			message: '#^Cannot call method fetch\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Database/DatabaseConnectionTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
+			identifier: method.nonObject
+			count: 37
+			path: tests/Unit/Domains/Auth/Contracts/JwtTokenServiceInterfaceTest.php
+
+		-
+			message: '#^Property Tests\\Unit\\Domains\\Auth\\Contracts\\JwtTokenServiceInterfaceTest\:\:\$interfaceReflection with generic class ReflectionClass does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/Unit/Domains/Auth/Contracts/JwtTokenServiceInterfaceTest.php
+
+		-
+			message: '#^Cannot call method allowsNull\(\) on ReflectionType\|null\.$#'
+			identifier: method.nonObject
+			count: 6
+			path: tests/Unit/Domains/Auth/Contracts/RefreshTokenRepositoryInterfaceTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
+			identifier: method.nonObject
+			count: 45
+			path: tests/Unit/Domains/Auth/Contracts/RefreshTokenRepositoryInterfaceTest.php
+
+		-
+			message: '#^Property Tests\\Unit\\Domains\\Auth\\Contracts\\RefreshTokenRepositoryInterfaceTest\:\:\$interfaceReflection with generic class ReflectionClass does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/Unit/Domains/Auth/Contracts/RefreshTokenRepositoryInterfaceTest.php
+
+		-
+			message: '#^Cannot call method allowsNull\(\) on ReflectionType\|null\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/Unit/Domains/Auth/Contracts/TokenBlacklistRepositoryInterfaceTest.php
+
+		-
+			message: '#^Cannot call method getName\(\) on ReflectionType\|null\.$#'
+			identifier: method.nonObject
+			count: 55
+			path: tests/Unit/Domains/Auth/Contracts/TokenBlacklistRepositoryInterfaceTest.php
+
+		-
+			message: '#^Property Tests\\Unit\\Domains\\Auth\\Contracts\\TokenBlacklistRepositoryInterfaceTest\:\:\$interfaceReflection with generic class ReflectionClass does not specify its types\: T$#'
+			identifier: missingType.generics
+			count: 1
+			path: tests/Unit/Domains/Auth/Contracts/TokenBlacklistRepositoryInterfaceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Domains/Auth/Entities/RefreshTokenTest.php
+
+		-
+			message: '#^Cannot access offset ''country'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
+
+		-
+			message: '#^Cannot access offset ''reason'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/AuthenticationExceptionTest.php
+
+		-
+			message: '#^Cannot access offset ''reason'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/InvalidTokenExceptionTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Domains/Auth/Exceptions/JwtExceptionTest.php
+
+		-
+			message: '#^Parameter \#1 \$needle of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/JwtExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/JwtExceptionTest.php
+
+		-
+			message: '#^Parameter \#4 \$context of class App\\Domains\\Auth\\Exceptions\\JwtException@anonymous/Unit/Domains/Auth/Exceptions/JwtExceptionTest\.php\:29 constructor expects array\<string, mixed\>, array given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/JwtExceptionTest.php
+
+		-
+			message: '#^Cannot access offset ''reason'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/RefreshTokenExceptionTest.php
+
+		-
+			message: '#^Cannot access offset ''token_type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/TokenExpiredExceptionTest.php
+
+		-
+			message: '#^Cannot access offset ''reason'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringStartsWith\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Exceptions/TokenGenerationExceptionTest.php
+
+		-
+			message: '#^Cannot access offset ''token_type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$validator of class App\\Domains\\Auth\\DTOs\\RegisterUserDTO constructor expects App\\Shared\\Contracts\\ValidatorInterface, App\\Shared\\Contracts\\ValidatorInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 5
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayNotHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \$jwtTokenService of class App\\Domains\\Auth\\Services\\AuthService constructor expects App\\Domains\\Auth\\Contracts\\JwtTokenServiceInterface\|null, App\\Domains\\Auth\\Contracts\\JwtTokenServiceInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 5
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \$passwordService of class App\\Domains\\Auth\\Services\\AuthService constructor expects App\\Domains\\Auth\\Contracts\\PasswordSecurityServiceInterface, App\\Domains\\Auth\\Contracts\\PasswordSecurityServiceInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 11
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \$userRepository of class App\\Domains\\Auth\\Services\\AuthService constructor expects App\\Domains\\Auth\\Repositories\\UserRepository, App\\Domains\\Auth\\Repositories\\UserRepository\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 11
+			path: tests/Unit/Domains/Auth/Services/AuthServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Domains/Auth/Services/JwtTokenServiceSimpleTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsBool\(\) with bool will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Domains/Auth/Services/JwtTokenServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$jtis of method App\\Domains\\Auth\\Services\\TokenBlacklistService\:\:batchCheckBlacklist\(\) expects array\<int, string\>, array\<int, string\|false\|null\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertContains\(\) expects iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Unit/Domains/Auth/Services/TokenBlacklistServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Domains/Auth/ValueObjects/DeviceInfoTest.php
+
+		-
+			message: '#^Cannot call method getTimestamp\(\) on DateTimeImmutable\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Domains/Auth/ValueObjects/JwtPayloadTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Domains/Security/Enums/ActivitySeverityTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Domains/Security/Enums/ActivityStatusTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface\:\:getSuspiciousIpAddresses\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method PDOStatement\|PHPUnit\\Framework\\MockObject\\MockObject\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 38
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method PDO\|PHPUnit\\Framework\\MockObject\\MockObject\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 22
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 7
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''action_category'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''action_type'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''description'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''failure_count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''ip_address'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$haystack of function str_contains expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strtolower expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Domains/Security/Repositories/ActivityLogRepositoryTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Domains\\Security\\Contracts\\ActivityLogRepositoryInterface\|PHPUnit\\Framework\\MockObject\\MockObject\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: tests/Unit/Domains/Security/Services/ActivityLoggingServiceTest.php
+
+		-
+			message: '#^Call to an undefined method PHPUnit\\Framework\\MockObject\\MockObject\|Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Unit/Domains/Security/Services/ActivityLoggingServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Domains/Security/Services/SuspiciousActivityDetectorTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/ExampleTest.php
+
+		-
+			message: '#^Cannot access offset ''page'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Http/ApiResponseTest.php
+
+		-
+			message: '#^Cannot access offset ''per_page'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Http/ApiResponseTest.php
+
+		-
+			message: '#^Cannot access offset ''total'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Http/ApiResponseTest.php
+
+		-
+			message: '#^Cannot access offset ''total_pages'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Http/ApiResponseTest.php
+
+		-
+			message: '#^Parameter \#2 \$datetime of static method DateTimeImmutable\:\:createFromFormat\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Http/ApiResponseTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertMatchesRegularExpression\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Http/ApiResponseTest.php
+
+		-
+			message: '#^Binary operation "\-" between int\<1801, max\> and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
+
+		-
+			message: '#^Binary operation "\-" between int\<86401, max\> and mixed results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
+
+		-
+			message: '#^Property Tests\\Unit\\Infrastructure\\Auth\\Jwt\\FirebaseJwtProviderTest\:\:\$validPrivateKey \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
+
+		-
+			message: '#^Property Tests\\Unit\\Infrastructure\\Auth\\Jwt\\FirebaseJwtProviderTest\:\:\$validPublicKey \(string\) does not accept mixed\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Jwt/FirebaseJwtProviderTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 10
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 1 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 9
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 12 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 2 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 3
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 4 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 4
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 5 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 6 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$array of function array_slice expects array, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Infrastructure/Auth/Repositories/RefreshTokenRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''current_time'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 5
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''cutoff_date'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''device_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''exclude_jti'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''jti'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''token_hash'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 1 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 2 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Cannot access offset 3 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Infrastructure/Auth/Repositories/TokenBlacklistRepositoryTest.php
+
+		-
+			message: '#^Method App\\Domains\\Statistics\\Contracts\\StatisticsFormatterInterface@anonymous/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest\.php\:320\:\:format\(\) should return string but returns string\|false\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Unit/Infrastructure/Statistics/Services/StatisticsExportServiceTest.php
+
+		-
+			message: '#^Cannot call method getDeletedAt\(\) on App\\Domains\\Attachment\\Models\\Attachment\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getId\(\) on App\\Domains\\Attachment\\Models\\Attachment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getPostId\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getUuid\(\) on App\\Domains\\Attachment\\Models\\Attachment\|null\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of method App\\Domains\\Attachment\\Repositories\\AttachmentRepository\:\:delete\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of method App\\Domains\\Attachment\\Repositories\\AttachmentRepository\:\:find\(\) expects int, int\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$uuid of method App\\Domains\\Attachment\\Repositories\\AttachmentRepository\:\:findByUuid\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/Unit/Repositories/AttachmentRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with int will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Repository/IpRepositoryTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/Unit/Repository/IpRepositoryTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Repository/PostRepositoryPerformanceTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/Unit/Repository/PostRepositoryPerformanceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Repository/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot call method fetchAll\(\) on PDOStatement\|false\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Repository/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getIsPinned\(\) on App\\Domains\\Post\\Models\\Post\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Repository/PostRepositoryTest.php
+
+		-
+			message: '#^Cannot call method getViews\(\) on App\\Domains\\Post\\Models\\Post\|null\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Repository/PostRepositoryTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertCount\(\) expects Countable\|iterable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Repository/PostRepositoryTest.php
+
+		-
+			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
+			identifier: callable.nonCallable
+			count: 1
+			path: tests/Unit/Repository/PostRepositoryTest.php
+
+		-
+			message: '#^Offset ''email'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 4
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Offset ''id'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Offset ''last_login'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Offset ''username'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 4
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Offset ''uuid'' might not exist on array\|null\.$#'
+			identifier: offsetAccess.notFound
+			count: 1
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$datetime of class DateTime constructor expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$id of method App\\Domains\\Auth\\Repositories\\UserRepository\:\:findById\(\) expects int, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Parameter \#1 \$uuid of method App\\Domains\\Auth\\Repositories\\UserRepository\:\:findByUuid\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Repository/UserRepositoryTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with App\\Domains\\Attachment\\Models\\Attachment will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Services/AttachmentServiceTest.php
+
+		-
+			message: '#^Cannot call method getRealPath\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Services/AttachmentServiceTest.php
+
+		-
+			message: '#^Cannot call method isDir\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Services/AttachmentServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$directory\|filename of callable ''rmdir''\|''unlink'' expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/AttachmentServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function chmod expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/AttachmentServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$filename of function file_put_contents expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/AttachmentServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''email'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Services/AuthServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''status'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/AuthServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/AuthServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$validator of class App\\Domains\\Auth\\DTOs\\RegisterUserDTO constructor expects App\\Shared\\Contracts\\ValidatorInterface, App\\Shared\\Contracts\\ValidatorInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Services/AuthServiceTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 10
+			path: tests/Unit/Services/IpServiceTest.php
+
+		-
+			message: '#^Cannot call method andThrow\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Services/IpServiceTest.php
+
+		-
+			message: '#^Cannot call method never\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/Services/IpServiceTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 12
+			path: tests/Unit/Services/IpServiceTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 12
+			path: tests/Unit/Services/IpServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Services/PostServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$validator of class App\\Domains\\Post\\DTOs\\CreatePostDTO constructor expects App\\Shared\\Contracts\\ValidatorInterface, App\\Shared\\Contracts\\ValidatorInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/PostServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$validator of class App\\Domains\\Post\\DTOs\\UpdatePostDTO constructor expects App\\Shared\\Contracts\\ValidatorInterface, App\\Shared\\Contracts\\ValidatorInterface\|Mockery\\MockInterface given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Unit/Services/PostServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''當快取更新失敗時應該允許請求'' will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true and ''當快取服務失敗時應該允許請求'' will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''count'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''reset'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 4
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot call method andThrow\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot call method once\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot call method shouldReceive\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot call method with\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 8
+			path: tests/Unit/Services/RateLimitServiceTest.php
+
+		-
+			message: '#^Cannot access offset non\-empty\-string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/CsrfProtectionServiceTest.php
+
+		-
+			message: '#^Cannot access offset string on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/CsrfProtectionServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$value of function count expects array\|Countable, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/Security/CsrfProtectionServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/Security/CsrfProtectionServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayNotHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Services/Security/CsrfProtectionServiceTest.php
+
+		-
+			message: '#^Result of method App\\Domains\\Attachment\\Services\\FileSecurityService\:\:validateUpload\(\) \(void\) is used\.$#'
+			identifier: method.void
+			count: 1
+			path: tests/Unit/Services/Security/FileSecurityServiceTest.php
+
+		-
+			message: '#^Binary operation "\." between mixed and string results in an error\.$#'
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''API_KEY'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''Password'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''api_key'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''csrf_TOKEN'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''csrf_token'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''empty_string'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''event'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''false_value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''long_field'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''method'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''nested'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''null_value'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''password'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''public_info'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''safe_data'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''safe_field'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''user_agent_hash'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''user_id'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''user_token'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''username'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''zero'' on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Inner named functions are not supported by PHPStan\. Consider refactoring to an anonymous function, class method, or a top\-level\-defined function\. See issue \#165 \(https\://github\.com/phpstan/phpstan/issues/165\) for more details\.$#'
+			identifier: function.inner
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Parameter \#1 \$string of function strlen expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 8
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayNotHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$string of method PHPUnit\\Framework\\Assert\:\:assertStringEndsWith\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Services/Security/LoggingSecurityServiceTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 4
+			path: tests/Unit/Services/Security/PwnedPasswordServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$array of method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\) expects array\<mixed\>\|ArrayAccess\<\(int\|string\), mixed\>, mixed given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Unit/Services/Security/PwnedPasswordServiceTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 3
+			path: tests/Unit/Services/Security/SessionSecurityServiceTest.php
+
+		-
+			message: '#^Cannot access offset ''key'' on array\|false\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Unit/Shared/Config/JwtConfigTest.php
+
+		-
+			message: '#^Parameter \#1 \$key of function openssl_pkey_export expects array\|OpenSSLAsymmetricKey\|OpenSSLCertificate\|string, OpenSSLAsymmetricKey\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Shared/Config/JwtConfigTest.php
+
+		-
+			message: '#^Parameter \#1 \$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Shared/Config/JwtConfigTest.php
+
+		-
+			message: '#^Parameter \#3 \$subject of function str_replace expects array\<string\>\|string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Shared/Config/JwtConfigTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsString\(\) with string will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 3
+			path: tests/Unit/Support/TestArchitectureExampleTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 1
+			path: tests/Unit/Support/TestArchitectureExampleTest.php
+
+		-
+			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array will always evaluate to true\.$#'
+			identifier: method.alreadyNarrowedType
+			count: 2
+			path: tests/Unit/Validation/ValidationExceptionTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Validation/ValidationExceptionTest.php
+
+		-
+			message: '#^Call to function count\(\) on a separate line has no effect\.$#'
+			identifier: function.resultUnused
+			count: 2
+			path: tests/Unit/Validation/ValidationResultTest.php
+
+		-
+			message: '#^Parameter \#1 \$json of function json_decode expects string, string\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/Validation/ValidationResultTest.php
+
+		-
+			message: '#^Cannot access offset 0 on mixed\.$#'
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 2
+			path: tests/Unit/Validation/ValidatorTest.php
+
+		-
+			message: '#^Parameter \#2 \$haystack of method PHPUnit\\Framework\\Assert\:\:assertStringContainsString\(\) expects string, mixed given\.$#'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/Validation/ValidatorTest.php
+
+		-
+			message: '#^Parameter \#3 \$parameters of method App\\Shared\\Contracts\\ValidatorInterface\:\:checkRule\(\) expects array\<string, mixed\>, array\<int, int\> given\.$#'
+			identifier: argument.type
+			count: 4
+			path: tests/Unit/Validation/ValidatorTest.php

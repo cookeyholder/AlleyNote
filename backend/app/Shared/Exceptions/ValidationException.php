@@ -29,16 +29,20 @@ class ValidationException extends Exception
         return $this->validationResult;
     }
 
-    // Static factory method for creating from an array of errors
+    /**
+     * @param array<string, mixed> $errors
+     * @param array<string, mixed>|string $failedRulesOrMessage
+     */
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
         // Handle overloaded parameters
         if (is_array($failedRulesOrMessage)) {
+            /** @var array<string, mixed> $failedRules */
             $failedRules = $failedRulesOrMessage;
             $validationResult = ValidationResult::failure($errors, $failedRules);
         } else {
             $message = $failedRulesOrMessage;
-            $validationResult = ValidationResult::failure($errors);
+            $validationResult = ValidationResult::failure($errors, []);
         }
 
         return new self($validationResult, $message);
@@ -51,6 +55,19 @@ class ValidationException extends Exception
         $failedRules = $rule ? [$field => [$rule]] : [];
 
         $validationResult = ValidationResult::failure($errors, $failedRules);
+
+        return new self($validationResult, $message);
+    }
+
+    /**
+     * 從多個欄位錯誤建立異常.
+     *
+     * @param array<string, array<string>> $errors 錯誤訊息陣列，格式：['field' => ['error1', 'error2']]
+     * @param string $message 自訂錯誤訊息
+     */
+    public static function fromMultipleErrors(array $errors, string $message = ''): self
+    {
+        $validationResult = ValidationResult::failure($errors);
 
         return new self($validationResult, $message);
     }

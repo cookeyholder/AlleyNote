@@ -470,12 +470,12 @@ class PostServiceTest extends TestCase
 
         $this->repository->shouldReceive('setTags')
             ->once()
-            ->with($id, $tagIds)
-            ->andReturn(true);
+            ->with($id, $tagIds);
 
-        $result = $this->service->setTags($id, $tagIds);
+        $this->service->setTags($id, $tagIds);
 
-        $this->assertTrue($result);
+        // 驗證方法被調用且沒有拋出異常
+        $this->addToAssertionCount(1);
     }
 
     public function testSetTagsWithNonExistentPost(): void

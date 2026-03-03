@@ -68,19 +68,37 @@ final readonly class JwtPayload implements JsonSerializable
 
         $iat = is_int($data['iat'])
             ? new DateTimeImmutable('@' . $data['iat'])
-            : new DateTimeImmutable($data['iat']);
+            : (is_string($data['iat']) ? new DateTimeImmutable($data['iat']) : throw new InvalidArgumentException('iat must be int or string'));
 
         $exp = is_int($data['exp'])
             ? new DateTimeImmutable('@' . $data['exp'])
-            : new DateTimeImmutable($data['exp']);
+            : (is_string($data['exp']) ? new DateTimeImmutable($data['exp']) : throw new InvalidArgumentException('exp must be int or string'));
 
         $nbf = isset($data['nbf'])
             ? (is_int($data['nbf'])
                 ? new DateTimeImmutable('@' . $data['nbf'])
-                : new DateTimeImmutable($data['nbf']))
+                : (is_string($data['nbf']) ? new DateTimeImmutable($data['nbf']) : throw new InvalidArgumentException('nbf must be int or string')))
             : null;
 
-        $aud = is_array($data['aud']) ? $data['aud'] : [$data['aud']];
+        // 驗證並處理 aud 欄位
+        if (is_array($data['aud'])) {
+            $aud = array_filter($data['aud'], fn($item) => is_string($item));
+        } elseif (is_string($data['aud'])) {
+            $aud = [$data['aud']];
+        } else {
+            throw new InvalidArgumentException('aud must be string or array of strings');
+        }
+
+        // 驗證 jti, sub, iss 是字串
+        if (!is_string($data['jti'])) {
+            throw new InvalidArgumentException('jti must be string');
+        }
+        if (!is_string($data['sub'])) {
+            throw new InvalidArgumentException('sub must be string');
+        }
+        if (!is_string($data['iss'])) {
+            throw new InvalidArgumentException('iss must be string');
+        }
 
         // 提取自訂宣告 (排除標準宣告)
         $standardClaims = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp', 'nbf'];

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 /**
  * 認證路由配置
- * 
+ *
  * 這個檔案包含所有認證相關的路由定義
  */
 
 use App\Application\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Auth\PasswordValidationController;
 
 return [
     // 登入
@@ -53,29 +54,27 @@ return [
         'name' => 'auth.refresh'
     ],
 
+    // 密碼驗證
+    'auth.password.validate' => [
+        'methods' => ['POST'],
+        'path' => '/api/auth/validate-password',
+        'handler' => [PasswordValidationController::class, 'validate'],
+        'name' => 'auth.password.validate'
+    ],
+
     // 密碼重設請求 (TODO: 實作)
     'auth.password.reset.request' => [
         'methods' => ['POST'],
-        'path' => '/api/auth/password/reset',
-        'handler' => function () {
-            return [
-                'message' => '密碼重設請求功能尚未實作',
-                'status' => 'not_implemented'
-            ];
-        },
+        'path' => '/api/auth/forgot-password',
+        'handler' => [AuthController::class, 'forgotPassword'],
         'name' => 'auth.password.reset.request'
     ],
 
-    // 密碼重設確認 (TODO: 實作)
+    // 密碼重設確認
     'auth.password.reset.confirm' => [
         'methods' => ['POST'],
-        'path' => '/api/auth/password/reset/confirm',
-        'handler' => function () {
-            return [
-                'message' => '密碼重設確認功能尚未實作',
-                'status' => 'not_implemented'
-            ];
-        },
+        'path' => '/api/auth/reset-password',
+        'handler' => [AuthController::class, 'resetPassword'],
         'name' => 'auth.password.reset.confirm'
     ],
 
@@ -91,5 +90,23 @@ return [
         },
         'name' => 'auth.password.update',
         'middleware' => ['auth'] // 需要認證的中間件
+    ],
+
+    // 更新個人資料
+    'auth.profile.update' => [
+        'methods' => ['PUT'],
+        'path' => '/api/auth/profile',
+        'handler' => [AuthController::class, 'updateProfile'],
+        'name' => 'auth.profile.update',
+        'middleware' => ['auth']
+    ],
+
+    // 變更密碼
+    'auth.change-password' => [
+        'methods' => ['POST'],
+        'path' => '/api/auth/change-password',
+        'handler' => [AuthController::class, 'changePassword'],
+        'name' => 'auth.change-password',
+        'middleware' => ['auth']
     ]
 ];

@@ -57,6 +57,25 @@ class PostRepositoryTest extends TestCase
 
     protected function createTestTables(): void
     {
+        // 建立 users 資料表（用於 JOIN）
+        $this->db->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username VARCHAR(50) NOT NULL UNIQUE,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password VARCHAR(255) NOT NULL,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME NOT NULL
+            )
+        ');
+
+        // 插入測試用戶
+        $now = date('Y-m-d H:i:s');
+        $this->db->exec("
+            INSERT INTO users (id, username, email, password, created_at, updated_at) VALUES
+            (1, 'testuser', 'test@example.com', 'hashed_password', '$now', '$now')
+        ");
+
         // 建立文章資料表
         $this->db->exec('
             CREATE TABLE posts (
@@ -83,7 +102,10 @@ class PostRepositoryTest extends TestCase
         $this->db->exec('
             CREATE TABLE tags (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name VARCHAR(50) NOT NULL
+                name VARCHAR(50) NOT NULL,
+                usage_count INTEGER DEFAULT 0,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME
             )
         ');
 
@@ -292,13 +314,13 @@ class PostRepositoryTest extends TestCase
             $this->db->rollBack();
         }
 
-        // 建立測試用標籤
-        $this->db->exec("INSERT INTO tags (id, name) VALUES (1, '測試標籤')");
+        // 建立測試用標籤（包含所有必要欄位）
+        $now = date('Y-m-d H:i:s');
+        $this->db->exec("INSERT INTO tags (id, name, usage_count, created_at, updated_at) VALUES (1, '測試標籤', 0, '{$now}', '{$now}')");
 
         $post = $this->repository->create(PostFactory::make());
-        $result = $this->repository->setTags($post->getId(), [1]);
+        $this->repository->setTags($post->getId(), [1]);
 
-        $this->assertTrue($result);
         $tags = $this->db->query("SELECT * FROM post_tags WHERE post_id = {$post->getId()}")->fetchAll();
         $this->assertCount(1, $tags);
     }

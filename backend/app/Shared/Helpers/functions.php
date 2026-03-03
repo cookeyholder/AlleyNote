@@ -84,9 +84,12 @@ if (!function_exists('sanitize_filename')) {
     function sanitize_filename(string $filename): string
     {
         // 移除非法字元
-        $filename = preg_replace('/[^\p{L}\p{N}\s\-\_\.]/u', '', $filename);
+        $cleaned = preg_replace('/[^\p{L}\p{N}\s\-\_\.]/u', '', $filename);
+        $filename = is_string($cleaned) ? $cleaned : $filename;
+
         // 將多個空格替換為單一底線
-        $filename = preg_replace('/\s+/', '_', $filename);
+        $replaced = preg_replace('/\s+/', '_', $filename);
+        $filename = is_string($replaced) ? $replaced : $filename;
 
         return trim($filename, '.-_');
     }
@@ -103,10 +106,15 @@ if (!function_exists('get_file_mime_type')) {
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
+
+        if ($finfo === false) {
+            return null;
+        }
+
         $mimeType = finfo_file($finfo, $path);
         finfo_close($finfo);
 
-        return $mimeType;
+        return is_string($mimeType) ? $mimeType : null;
     }
 }
 
@@ -122,10 +130,10 @@ if (!function_exists('sanitize_post_array')) {
             // 如果是陣列，手動清理
             if (is_array($post)) {
                 $sanitized = $post;
-                if (isset($sanitized['title'])) {
+                if (isset($sanitized['title']) && is_string($sanitized['title'])) {
                     $sanitized['title'] = htmlspecialchars($sanitized['title'], ENT_QUOTES, 'UTF-8');
                 }
-                if (isset($sanitized['content'])) {
+                if (isset($sanitized['content']) && is_string($sanitized['content'])) {
                     $sanitized['content'] = htmlspecialchars($sanitized['content'], ENT_QUOTES, 'UTF-8');
                 }
 

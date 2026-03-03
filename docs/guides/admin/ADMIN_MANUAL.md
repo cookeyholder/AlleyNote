@@ -30,7 +30,7 @@
 AlleyNote 採用 Docker 容器化部署並遵循 DDD 原則，主要組成如下：
 
 - **後端**: PHP 8.4.12、SQLite、RESTful API、分層式 DDD 模組
-- **前端**: Vite 5 + TypeScript + Tailwind CSS（以 Axios 與後端溝通）
+- **前端**: 無構建工具 + TypeScript + Tailwind CSS（以 Fetch API 與後端溝通）
 - **Web 伺服器**: Nginx（反向代理與 SSL 終止）
 - **容器化**: Docker 28.3.3 + Docker Compose v2.39.2
 - **快取系統**: Redis（快取、佇列與暫存）
@@ -197,7 +197,7 @@ APP_URL=https://yourdomain.com
 
 # 資料庫設定
 DB_CONNECTION=sqlite
-DB_DATABASE=/var/www/html/database/alleynote.db
+DB_DATABASE=/var/www/html/database/alleynote.sqlite3
 
 # 快取設定
 CACHE_DRIVER=redis
@@ -495,7 +495,7 @@ dig yourdomain.com
 #### 資料庫連線錯誤
 ```bash
 # 1. 檢查資料庫檔案
-ls -la database/alleynote.db
+ls -la database/alleynote.sqlite3
 
 # 2. 檢查檔案權限
 docker compose exec web ls -la database/alleynote.sqlite3
@@ -579,7 +579,7 @@ docker compose exec web sqlite3 database/alleynote.sqlite3 "VACUUM;"
 docker compose exec web sqlite3 database/alleynote.sqlite3 "ANALYZE;"
 
 # 4. 檢查資料庫統計
-docker compose exec web sqlite3 database/alleynote.db "
+docker compose exec web sqlite3 database/alleynote.sqlite3 "
 SELECT name, COUNT(*) as row_count
 FROM sqlite_master m JOIN pragma_table_info(m.name) p
 WHERE m.type='table'

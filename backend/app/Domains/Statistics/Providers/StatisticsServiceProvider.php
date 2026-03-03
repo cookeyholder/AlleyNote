@@ -7,12 +7,20 @@ namespace App\Domains\Statistics\Providers;
 use App\Application\Services\Statistics\StatisticsQueryService;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Listeners\PostViewedListener;
+use App\Domains\Statistics\Services\AdvancedAnalyticsService;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\Services\StatisticsConfigService;
+use App\Domains\Statistics\Services\StatisticsExportService;
+use App\Domains\Statistics\Services\UserAgentParserService;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use App\Infrastructure\Statistics\Repositories\StatisticsRepository;
@@ -20,8 +28,10 @@ use App\Infrastructure\Statistics\Repositories\UserStatisticsRepository;
 use App\Infrastructure\Statistics\Services\SlowQueryMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsCacheService;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
+use App\Infrastructure\Statistics\Services\StatisticsVisualizationService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
+use App\Shared\Events\Contracts\EventListenerInterface;
 use App\Shared\Events\SimpleEventDispatcher;
 use PDO;
 use Psr\Container\ContainerInterface;
@@ -99,7 +109,14 @@ class StatisticsServiceProvider
                 /** @var LoggerInterface|null $logger */
                 $logger = $container->has(LoggerInterface::class) ? $container->get(LoggerInterface::class) : null;
 
-                return new SimpleEventDispatcher($logger);
+                $dispatcher = new SimpleEventDispatcher($logger);
+
+                // 註冊事件監聽器
+                /** @var EventListenerInterface $postViewedListener */
+                $postViewedListener = $container->get(PostViewedListener::class);
+                $dispatcher->listen('statistics.post.viewed', $postViewedListener);
+
+                return $dispatcher;
             }),
 
             // 領域服務
@@ -121,6 +138,9 @@ class StatisticsServiceProvider
                 );
             }),
 
+            // 綁定介面到實作
+            StatisticsAggregationServiceInterface::class => \DI\get(StatisticsAggregationService::class),
+
             // 應用服務
             StatisticsQueryService::class => \DI\factory(function (ContainerInterface $container): StatisticsQueryService {
                 /** @var StatisticsRepositoryInterface $statisticsRepository */
@@ -129,13 +149,54 @@ class StatisticsServiceProvider
                 $cacheService = $container->get(StatisticsCacheServiceInterface::class);
                 /** @var LoggerInterface $logger */
                 $logger = $container->get(LoggerInterface::class);
+                /** @var PDO $db */
+                $db = $container->get(PDO::class);
 
-                return new StatisticsQueryService($statisticsRepository, $cacheService, $logger);
+                return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
             }),
+
+            // 綁定介面到實作
+            StatisticsQueryServiceInterface::class => \DI\get(StatisticsQueryService::class),
 
             // 配置服務
             StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
                 return new StatisticsConfigService();
+            }),
+
+            // 視覺化服務
+            StatisticsVisualizationServiceInterface::class => \DI\autowire(StatisticsVisualizationService::class),
+
+            // 文章瀏覽統計服務
+            PostViewStatisticsService::class => \DI\factory(function (ContainerInterface $container): PostViewStatisticsService {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+
+                return new PostViewStatisticsService($pdo);
+            }),
+
+            // User-Agent 解析服務
+            UserAgentParserService::class => \DI\factory(function (): UserAgentParserService {
+                return new UserAgentParserService();
+            }),
+
+            // 進階分析服務
+            AdvancedAnalyticsService::class => \DI\factory(function (ContainerInterface $container): AdvancedAnalyticsService {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                /** @var UserAgentParserService $userAgentParser */
+                $userAgentParser = $container->get(UserAgentParserService::class);
+
+                return new AdvancedAnalyticsService($pdo, $userAgentParser);
+            }),
+
+            // 統計報表匯出服務
+            StatisticsExportService::class => \DI\factory(function (ContainerInterface $container): StatisticsExportService {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+                /** @var AdvancedAnalyticsService $analyticsService */
+                $analyticsService = $container->get(AdvancedAnalyticsService::class);
+
+                return new StatisticsExportService($pdo, $analyticsService);
             }),
         ];
     }

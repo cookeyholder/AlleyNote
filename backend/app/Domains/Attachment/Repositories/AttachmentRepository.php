@@ -51,7 +51,7 @@ class AttachmentRepository
 
     public function find(int $id): ?Attachment
     {
-        return $this->cache->remember("attachment:{$id}", function () use ($id) {
+        $result = $this->cache->remember("attachment:{$id}", function () use ($id) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -63,13 +63,15 @@ class AttachmentRepository
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            return is_array($data) ? new Attachment($data) : null;
         });
+
+        return $result instanceof Attachment ? $result : null;
     }
 
     public function findByUuid(string $uuid): ?Attachment
     {
-        return $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
+        $result = $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -81,13 +83,15 @@ class AttachmentRepository
 
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            return is_array($data) ? new Attachment($data) : null;
         });
+
+        return $result instanceof Attachment ? $result : null;
     }
 
     public function getByPostId(int $postId): array
     {
-        return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
+        $result = $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -101,11 +105,40 @@ class AttachmentRepository
 
             $attachments = [];
             while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $attachments[] = new Attachment($data);
+                if (is_array($data)) {
+                    $attachments[] = new Attachment($data);
+                }
             }
 
             return $attachments;
         });
+
+        return is_array($result) ? $result : [];
+    }
+
+    /**
+     * 計算指定文章的附件數量.
+     */
+    public function countByPostId(int $postId): int
+    {
+        $sql = '
+            SELECT COUNT(*) as count
+            FROM attachments
+            WHERE post_id = :post_id
+            AND deleted_at IS NULL
+        ';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['post_id' => $postId]);
+
+        /** @var array<string, mixed>|false $result */
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (is_array($result) && isset($result['count']) && is_numeric($result['count'])) {
+            return (int) $result['count'];
+        }
+
+        return 0;
     }
 
     public function delete(int $id): bool

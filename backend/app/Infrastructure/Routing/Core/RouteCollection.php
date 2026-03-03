@@ -149,17 +149,41 @@ class RouteCollection implements RouteCollectionInterface
         $collection = new self();
 
         foreach ($data as $routeData) {
+            if (!is_array($routeData)) {
+                continue;
+            }
+
+            $methods = $routeData['methods'] ?? [];
+            $pattern = $routeData['pattern'] ?? '';
+            $handler = $routeData['handler'] ?? '';
+
+            // 驗證 methods 是字串陣列
+            if (!is_array($methods) || !is_string($pattern)) {
+                continue;
+            }
+
+            /** @var string[] $validMethods */
+            $validMethods = array_filter($methods, 'is_string');
+            if (empty($validMethods)) {
+                continue;
+            }
+
+            // 驗證 handler 型別
+            if (!is_string($handler) && !is_array($handler) && !is_callable($handler)) {
+                continue;
+            }
+
             $route = new Route(
-                $routeData['methods'],
-                $routeData['pattern'],
-                $routeData['handler'], // Note: 反序列化處理器可能需要額外邏輯
+                $validMethods,
+                $pattern,
+                $handler, // Note: 反序列化處理器可能需要額外邏輯
             );
 
-            if (!empty($routeData['name'])) {
+            if (!empty($routeData['name']) && is_string($routeData['name'])) {
                 $route->setName($routeData['name']);
             }
 
-            if (!empty($routeData['middleware'])) {
+            if (!empty($routeData['middleware']) && (is_string($routeData['middleware']) || is_array($routeData['middleware']))) {
                 $route->middleware($routeData['middleware']);
             }
 

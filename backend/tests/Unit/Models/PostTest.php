@@ -55,14 +55,12 @@ class PostTest extends TestCase
     public function setsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
+            'id' => 0,
             'uuid' => 'test-uuid',
             'title' => 'Test Title',
             'content' => 'Test Content',
             'user_id' => 1,
         ]);
-
-        // 移除 id，這樣才能測試預設值
-        unset($data['id']);
 
         $post = new Post($data);
 

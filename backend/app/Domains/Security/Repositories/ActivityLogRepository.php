@@ -13,6 +13,7 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
+use PDOStatement;
 use RuntimeException;
 
 /**
@@ -267,13 +268,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$data) {
-            return null;
-        }
-
-        $entity = ActivityLog::fromDatabaseRow($data);
-
-        return $entity->toArray();
+        return $this->mapDataToArray($data);
     }
 
     /**
@@ -288,13 +283,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$data) {
-            return null;
-        }
-
-        $entity = ActivityLog::fromDatabaseRow($data);
-
-        return $entity->toArray();
+        return $this->mapDataToArray($data);
     }
 
     /**
@@ -315,11 +304,19 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return array_map(function (array $row): array {
-                $entity = ActivityLog::fromDatabaseRow($row);
+            if (!is_array($results)) {
+                return [];
+            }
 
-                return $entity->toArray();
-            }, $results);
+            $mapped = [];
+            foreach ($results as $row) {
+                $result = $this->mapDataToArray($row);
+                if ($result !== null) {
+                    $mapped[] = $result;
+                }
+            }
+
+            return $mapped;
         } catch (PDOException $e) {
             throw new RuntimeException(
                 sprintf('Failed to retrieve activity logs: %s', $e->getMessage()),
@@ -368,13 +365,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -414,13 +405,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -455,13 +440,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -502,13 +481,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -729,13 +702,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -866,13 +833,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -900,13 +861,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 
         $stmt->execute();
 
-        $results = [];
-        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $entity = ActivityLog::fromDatabaseRow($data);
-            $results[] = $entity->toArray();
-        }
-
-        return $results;
+        return $this->fetchAllToArray($stmt);
     }
 
     /**
@@ -914,8 +869,169 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      */
     private function mapToArray(array $data): array
     {
-        $entity = ActivityLog::fromDatabaseRow($data);
+        // Ensure all keys are strings
+        /** @var array<string, mixed> $validData */
+        $validData = [];
+        foreach ($data as $key => $value) {
+            if (is_string($key)) {
+                $validData[$key] = $value;
+            }
+        }
+
+        $entity = ActivityLog::fromDatabaseRow($validData);
 
         return $entity->toArray();
+    }
+
+    /**
+     * 取得登入失敗統計資料.
+     *
+     * @param DateTimeInterface $startTime 開始時間
+     * @param DateTimeInterface $endTime 結束時間
+     * @param int $limit 限制筆數
+     * @return array{total: int, accounts: array<array{username: string, email: string|null, count: int, latest_attempt: string|null}>, trend: array<array{date: string, count: int}>}
+     */
+    public function getLoginFailureStatistics(
+        DateTimeInterface $startTime,
+        DateTimeInterface $endTime,
+        int $limit = 10,
+    ): array {
+        // 取得登入失敗帳號統計（使用標準 SQL json_extract 函數）
+        $accountSql = '
+            SELECT
+                json_extract(metadata, "$.email") as email,
+                json_extract(metadata, "$.username") as username,
+                COUNT(*) as count,
+                MAX(occurred_at) as latest_attempt
+            FROM ' . self::TABLE_NAME . "
+            WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
+                AND occurred_at BETWEEN :start_time AND :end_time
+            GROUP BY COALESCE(json_extract(metadata, '$.email'), json_extract(metadata, '$.username'))
+            ORDER BY count DESC
+            LIMIT :limit
+        ";
+
+        $accountStmt = $this->db->prepare($accountSql);
+        $accountStmt->bindValue(':start_time', $startTime->format('Y-m-d H:i:s'));
+        $accountStmt->bindValue(':end_time', $endTime->format('Y-m-d H:i:s'));
+        $accountStmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $accountStmt->execute();
+
+        /** @var array<array<string, mixed>> $accounts */
+        $accounts = $accountStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 取得總失敗次數
+        $totalSql = '
+            SELECT COUNT(*) as total
+            FROM ' . self::TABLE_NAME . "
+            WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
+                AND occurred_at BETWEEN :start_time AND :end_time
+        ";
+
+        $totalStmt = $this->db->prepare($totalSql);
+        $totalStmt->bindValue(':start_time', $startTime->format('Y-m-d H:i:s'));
+        $totalStmt->bindValue(':end_time', $endTime->format('Y-m-d H:i:s'));
+        $totalStmt->execute();
+
+        $totalResult = $totalStmt->fetch(PDO::FETCH_ASSOC);
+        $total = 0;
+        if (is_array($totalResult) && isset($totalResult['total'])) {
+            $totalValue = $totalResult['total'];
+            $total = is_numeric($totalValue) ? (int) $totalValue : 0;
+        }
+
+        // 取得趨勢資料
+        $trendSql = '
+            SELECT
+                DATE(occurred_at) as date,
+                COUNT(*) as count
+            FROM ' . self::TABLE_NAME . "
+            WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
+                AND occurred_at BETWEEN :start_time AND :end_time
+            GROUP BY DATE(occurred_at)
+            ORDER BY date ASC
+        ";
+
+        $trendStmt = $this->db->prepare($trendSql);
+        $trendStmt->bindValue(':start_time', $startTime->format('Y-m-d H:i:s'));
+        $trendStmt->bindValue(':end_time', $endTime->format('Y-m-d H:i:s'));
+        $trendStmt->execute();
+
+        /** @var array<array<string, mixed>> $trend */
+        $trend = $trendStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return [
+            'total' => $total,
+            'accounts' => array_map(function (array $account): array {
+                $email = $account['email'] ?? null;
+                $username = $account['username'] ?? null;
+                $count = $account['count'] ?? 0;
+                $latestAttempt = $account['latest_attempt'] ?? null;
+
+                return [
+                    'username' => is_string($email) ? $email : (is_string($username) ? $username : 'unknown'),
+                    'email' => is_string($email) ? $email : null,
+                    'count' => is_numeric($count) ? (int) $count : 0,
+                    'latest_attempt' => is_string($latestAttempt) ? $latestAttempt : null,
+                ];
+            }, $accounts),
+            'trend' => array_map(function (array $item): array {
+                $date = $item['date'] ?? '';
+                $count = $item['count'] ?? 0;
+
+                return [
+                    'date' => is_string($date) ? $date : '',
+                    'count' => is_numeric($count) ? (int) $count : 0,
+                ];
+            }, $trend),
+        ];
+    }
+
+    /**
+     * 從 PDO fetch 結果建立 ActivityLog 並轉為陣列.
+     *
+     * @param mixed $data
+     * @return array<string, mixed>|null
+     */
+    private function mapDataToArray($data): ?array
+    {
+        if (!is_array($data) || empty($data)) {
+            return null;
+        }
+
+        // Ensure all keys are strings
+        /** @var array<string, mixed> $validData */
+        $validData = [];
+        foreach ($data as $key => $value) {
+            if (is_string($key)) {
+                $validData[$key] = $value;
+            }
+        }
+
+        if (empty($validData)) {
+            return null;
+        }
+
+        $entity = ActivityLog::fromDatabaseRow($validData);
+
+        return $entity->toArray();
+    }
+
+    /**
+     * 從 PDOStatement 的 fetch 迴圈建立 ActivityLog 陣列.
+     *
+     * @return array<array<string, mixed>>
+     */
+    private function fetchAllToArray(PDOStatement $stmt): array
+    {
+        $results = [];
+        while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $mapped = $this->mapDataToArray($data);
+            if ($mapped !== null) {
+                $results[] = $mapped;
+            }
+        }
+
+        return $results;
     }
 }

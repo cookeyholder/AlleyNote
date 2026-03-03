@@ -9,10 +9,22 @@ declare(strict_types=1);
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
+use App\Domains\Auth\Repositories\RoleRepository;
+use App\Domains\Auth\Repositories\PermissionRepository;
+use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Services\UserManagementService;
+use App\Domains\Auth\Services\RoleManagementService;
+use App\Domains\Auth\Services\PasswordManagementService;
+use App\Application\Controllers\Api\V1\UserController;
+use App\Application\Controllers\Api\V1\RoleController;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Contracts\TagRepositoryInterface;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Repositories\TagRepository;
 use App\Domains\Post\Services\PostService;
+use App\Domains\Post\Services\TagManagementService;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Providers\SecurityServiceProvider;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
@@ -239,12 +251,52 @@ return array_merge(
         PostServiceInterface::class => \DI\autowire(PostService::class)
             ->constructorParameter('repository', \DI\get(PostRepositoryInterface::class)),
 
+        TagRepositoryInterface::class => \DI\autowire(TagRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        TagManagementService::class => \DI\autowire(TagManagementService::class)
+            ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class))
+            ->constructorParameter('logger', \DI\get(LoggerInterface::class)),
+
         RateLimitService::class => \DI\autowire(RateLimitService::class)
             ->constructorParameter('cache', \DI\get(CacheService::class)),
 
         ValidatorFactory::class => \DI\autowire(ValidatorFactory::class),
         ValidatorInterface::class => \DI\factory(static fn (ValidatorFactory $factory) => $factory->createForDTO()),
         Validator::class => \DI\autowire(Validator::class),
+
+        // ========================================
+        // 使用者管理模組
+        // ========================================
+
+        // Repositories
+        RoleRepository::class => \DI\autowire(RoleRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        PermissionRepository::class => \DI\autowire(PermissionRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        UserRepository::class => \DI\autowire(UserRepository::class)
+            ->constructorParameter('db', \DI\get(\PDO::class)),
+
+        // Services
+        UserManagementService::class => \DI\autowire(UserManagementService::class)
+            ->constructorParameter('userRepository', \DI\get(UserRepository::class)),
+
+        PasswordManagementService::class => \DI\autowire(PasswordManagementService::class)
+            ->constructorParameter('userRepository', \DI\get(UserRepository::class))
+            ->constructorParameter('passwordService', \DI\get(PasswordSecurityServiceInterface::class)),
+
+        RoleManagementService::class => \DI\autowire(RoleManagementService::class)
+            ->constructorParameter('roleRepository', \DI\get(RoleRepository::class))
+            ->constructorParameter('permissionRepository', \DI\get(PermissionRepository::class)),
+
+        // Controllers
+        UserController::class => \DI\autowire(UserController::class)
+            ->constructorParameter('userManagementService', \DI\get(UserManagementService::class)),
+
+        RoleController::class => \DI\autowire(RoleController::class)
+            ->constructorParameter('roleManagementService', \DI\get(RoleManagementService::class)),
     ],
 
     // 監控服務

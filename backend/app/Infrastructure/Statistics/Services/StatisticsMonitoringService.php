@@ -59,7 +59,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                     COUNT(*) as total_calculations,
                     SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed_calculations
                 FROM statistics_query_monitoring
-                WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+                WHERE created_at >= datetime('now', '-24 hours')
                   AND query_type IN ('daily', 'monthly', 'calculation')
             ");
 

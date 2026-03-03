@@ -207,7 +207,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             header('Content-Type: application/json');
         }
 
-        echo json_encode($errorData) ?? '';
+        echo json_encode($errorData);
         exit;
     }
 
@@ -284,7 +284,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $key = strtolower($key);
 
         foreach ($this->sensitiveKeys as $sensitiveKey) {
-            if (str_contains($key, strtolower($sensitiveKey))) {
+            if (is_string($sensitiveKey) && str_contains($key, strtolower($sensitiveKey))) {
                 return true;
             }
         }

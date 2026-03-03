@@ -1,0 +1,116 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'frontend/**'
+
+jobs:
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Lint JavaScript sources
+        working-directory: ./frontend
+        run: npx --yes eslint@8.57.0 js
+
+      - name: Check formatting
+        run: npx --yes prettier@3.2.5 --config frontend/.prettierrc.json --ignore-path frontend/.prettierignore --check "frontend/{scripts,tests}/**/*.mjs" "frontend/*.json"
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run unit tests
+        run: node --test frontend/tests/*.test.mjs
+
+      - name: Generate coverage report
+        run: npx --yes c8@9.1.0 --reporter=json --report-dir frontend/coverage node --test frontend/tests/*.test.mjs
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./frontend/coverage/coverage-final.json
+          flags: frontend
+          name: frontend-coverage
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build application artifacts
+        run: node frontend/scripts/build.mjs
+
+      - name: Check build size
+        run: |
+          MAIN_JS_SIZE=$(find frontend/dist/assets -name 'main-*.js' -exec du -k {} \; | awk '{print $1}')
+          echo "Main JS size: ${MAIN_JS_SIZE}KB"
+          if [ -z "$MAIN_JS_SIZE" ]; then
+            echo "::error::main-*.js bundle not found in dist/assets"
+            exit 1
+          fi
+          if [ "$MAIN_JS_SIZE" -gt 500 ]; then
+            echo "::warning::Main JS bundle is larger than 500KB"
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: frontend/dist/
+          retention-days: 7
+
+  notify:
+    name: Notify
+    runs-on: ubuntu-latest
+    needs: build
+    if: always()
+
+    steps:
+      - name: Send notification
+        run: |
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ All checks passed!"
+          else
+            echo "❌ Some checks failed!"
+          fi

@@ -11,6 +11,9 @@ namespace App\Infrastructure\Routing\Contracts;
  */
 class RouteMatchResult
 {
+    /**
+     * @param array<string, string> $parameters
+     */
     public function __construct(
         private readonly bool $isMatched,
         private readonly ?RouteInterface $route = null,

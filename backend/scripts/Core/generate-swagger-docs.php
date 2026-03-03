@@ -28,7 +28,7 @@ use OpenApi\Generator;
 /**
  * 解析命令列參數
  */
-function parseArguments(array<mixed> $argv): array<mixed>
+function parseArguments(array $argv): array
 {
     $options = [
         'output' => __DIR__ . '/../public',
@@ -44,25 +44,25 @@ function parseArguments(array<mixed> $argv): array<mixed>
         $arg = $argv[$i];
 
         if (str_starts_with($arg, '--output=')) {
-            (is_array($options) ? $options['output'] : (is_object($options) ? $options->output : null)) = substr($arg, 9);
+            $options['output'] = substr($arg, 9);
         } elseif (str_starts_with($arg, '--format=')) {
             $format = substr($arg, 9);
             if (in_array($format, ['json', 'yaml', 'both'])) {
-                (is_array($options) ? $options['format'] : (is_object($options) ? $options->format : null)) = $format;
+                $options['format'] = $format;
             }
         } elseif (str_starts_with($arg, '--env=')) {
             $env = substr($arg, 6);
             if (in_array($env, ['development', 'staging', 'production'])) {
-                (is_array($options) ? $options['env'] : (is_object($options) ? $options->env : null)) = $env;
+                $options['env'] = $env;
             }
         } elseif ($arg === '--validate') {
-            (is_array($options) ? $options['validate'] : (is_object($options) ? $options->validate : null)) = true;
+            $options['validate'] = true;
         } elseif ($arg === '--verbose' || $arg === '-v') {
-            (is_array($options) ? $options['verbose'] : (is_object($options) ? $options->verbose : null)) = true;
+            $options['verbose'] = true;
         } elseif ($arg === '--quiet' || $arg === '-q') {
-            (is_array($options) ? $options['quiet'] : (is_object($options) ? $options->quiet : null)) = true;
+            $options['quiet'] = true;
         } elseif ($arg === '--help' || $arg === '-h') {
-            (is_array($options) ? $options['help'] : (is_object($options) ? $options->help : null)) = true;
+            $options['help'] = true;
         }
     }
 
@@ -110,7 +110,7 @@ EOF;
 /**
  * 驗證 API 文件
  */
-function validateApiDoc(array<mixed> $apiDoc, ConsoleOutput $output): bool
+function validateApiDoc(array $apiDoc, ConsoleOutput $output): bool
 {
     $errors = [];
 
@@ -180,7 +180,7 @@ function validateApiDoc(array<mixed> $apiDoc, ConsoleOutput $output): bool
 /**
  * 取得檔案統計資訊
  */
-function getFileStats(string $file): array<mixed>
+function getFileStats(string $file): array
 {
     if (!file_exists($file)) {
         return ['size' => 0, 'lines' => 0];
@@ -209,7 +209,7 @@ function formatFileSize(int $bytes): string
 /**
  * 主程式
  */
-function main(array<mixed> $argv): void
+function main(array $argv): void
 {
     // 解析參數
     $options = parseArguments($argv);

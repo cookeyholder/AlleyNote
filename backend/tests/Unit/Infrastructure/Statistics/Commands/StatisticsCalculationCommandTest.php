@@ -59,6 +59,16 @@ final class StatisticsCalculationCommandTest extends TestCase
 
     protected function tearDown(): void
     {
+        // 清理鎖定檔案
+        $lockFiles = glob('/tmp/statistics_calculation_*.lock');
+        if ($lockFiles !== false) {
+            foreach ($lockFiles as $lockFile) {
+                if (file_exists($lockFile)) {
+                    unlink($lockFile);
+                }
+            }
+        }
+
         Mockery::close();
         parent::tearDown();
     }

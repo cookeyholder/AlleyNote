@@ -8,13 +8,18 @@ use App\Shared\Exceptions\ValidationException;
 
 class RequestValidationException extends ValidationException
 {
+    /**
+     * @param array<string, mixed> $errors
+     */
     public function __construct(string $message = '', array $errors = [])
     {
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';
         }
 
-        parent::__construct($message, $errors);
+        // 呼叫 ValidationException::fromErrors 來建立 ValidationResult
+        $exception = self::fromErrors($errors, $message);
+        parent::__construct($exception->getValidationResult(), $exception->getMessage());
     }
 
     public static function invalidJson(): self
@@ -22,11 +27,16 @@ class RequestValidationException extends ValidationException
         return new self('請求資料格式錯誤，必須為有效的 JSON 格式');
     }
 
+    /**
+     * @param array<int|string, mixed> $fields
+     */
     public static function missingRequiredFields(array $fields): self
     {
         $errors = [];
         foreach ($fields as $field) {
-            $errors[$field] = "欄位 '{$field}' 為必填項目";
+            if (is_string($field)) {
+                $errors[$field] = "欄位 '{$field}' 為必填項目";
+            }
         }
 
         return new self('缺少必要欄位', $errors);
@@ -75,24 +85,29 @@ class RequestValidationException extends ValidationException
         return new self('日期格式錯誤', $errors);
     }
 
-    public static function valueNotInList(string $field, $value, array $allowedValues): self
+    public static function valueNotInList(string $field, mixed $value, array $allowedValues): self
     {
+        $valueStr = is_scalar($value) ? (string) $value : gettype($value);
         $allowedList = implode(', ', $allowedValues);
-        $errors = [$field => "'{$value}' 不在允許的值清單中：{$allowedList}"];
+        $errors = [$field => "'{$valueStr}' 不在允許的值清單中：{$allowedList}"];
 
         return new self('欄位值不在允許範圍內', $errors);
     }
 
-    public static function numericRangeError(string $field, $value, $min = null, mixed $max = null): self
+    public static function numericRangeError(string $field, mixed $value, mixed $min = null, mixed $max = null): self
     {
-        $message = "欄位 '{$field}' 的值 '{$value}' 超出允許範圍";
+        $valueStr = is_numeric($value) ? (string) $value : gettype($value);
+        $minStr = $min !== null && is_numeric($min) ? (string) $min : '';
+        $maxStr = $max !== null && is_numeric($max) ? (string) $max : '';
 
-        if ($min !== null && $max !== null) {
-            $message .= "（範圍：{$min} - {$max}）";
-        } elseif ($min !== null) {
-            $message .= "（最小值：{$min}）";
-        } elseif ($max !== null) {
-            $message .= "（最大值：{$max}）";
+        $message = "欄位 '{$field}' 的值 '{$valueStr}' 超出允許範圍";
+
+        if ($minStr !== '' && $maxStr !== '') {
+            $message .= "（範圍：{$minStr} - {$maxStr}）";
+        } elseif ($minStr !== '') {
+            $message .= "（最小值：{$minStr}）";
+        } elseif ($maxStr !== '') {
+            $message .= "（最大值：{$maxStr}）";
         }
 
         $errors = [$field => $message];
@@ -102,7 +117,8 @@ class RequestValidationException extends ValidationException
 
     public static function duplicateValue(string $field, mixed $value): self
     {
-        $errors = [$field => "值 '{$value}' 已存在，不能重複"];
+        $valueStr = is_scalar($value) ? (string) $value : gettype($value);
+        $errors = [$field => "值 '{$valueStr}' 已存在，不能重複"];
 
         return new self('值重複', $errors);
     }
@@ -124,6 +140,9 @@ class RequestValidationException extends ValidationException
         return new self('檔案大小超出限制', $errors);
     }
 
+    /**
+     * @param array<string, mixed> $errors
+     */
     public static function customValidation(array $errors): self
     {
         return new self('自定義驗證失敗', $errors);

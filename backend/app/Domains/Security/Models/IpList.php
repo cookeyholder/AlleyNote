@@ -27,14 +27,29 @@ class IpList implements JsonSerializable
 
     public function __construct(array $attributes)
     {
-        $this->id = isset($attributes['id']) ? (int) $attributes['id'] : 0;
-        $this->uuid = $attributes['uuid'] ?? '';
-        $this->ipAddress = $attributes['ip_address'] ?? '';
-        $this->type = isset($attributes['type']) ? (int) $attributes['type'] : 0;
-        $this->unitId = isset($attributes['unit_id']) ? (int) $attributes['unit_id'] : null;
-        $this->description = $attributes['description'] ?? null;
-        $this->createdAt = $attributes['created_at'] ?? date('Y-m-d H:i:s');
-        $this->updatedAt = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
+        $idValue = $attributes['id'] ?? 0;
+        $this->id = is_numeric($idValue) ? (int) $idValue : 0;
+
+        $uuidValue = $attributes['uuid'] ?? '';
+        $this->uuid = is_string($uuidValue) ? $uuidValue : '';
+
+        $ipAddressValue = $attributes['ip_address'] ?? '';
+        $this->ipAddress = is_string($ipAddressValue) ? $ipAddressValue : '';
+
+        $typeValue = $attributes['type'] ?? 0;
+        $this->type = is_numeric($typeValue) ? (int) $typeValue : 0;
+
+        $unitIdValue = $attributes['unit_id'] ?? null;
+        $this->unitId = (isset($unitIdValue) && is_numeric($unitIdValue)) ? (int) $unitIdValue : null;
+
+        $descriptionValue = $attributes['description'] ?? null;
+        $this->description = (isset($descriptionValue) && is_string($descriptionValue)) ? $descriptionValue : null;
+
+        $createdAtValue = $attributes['created_at'] ?? date('Y-m-d H:i:s');
+        $this->createdAt = is_string($createdAtValue) ? $createdAtValue : date('Y-m-d H:i:s');
+
+        $updatedAtValue = $attributes['updated_at'] ?? date('Y-m-d H:i:s');
+        $this->updatedAt = is_string($updatedAtValue) ? $updatedAtValue : date('Y-m-d H:i:s');
     }
 
     public static function fromArray(array $data): self
@@ -116,7 +131,7 @@ class IpList implements JsonSerializable
         $data = $this->toArray();
 
         // 清理可能包含 HTML 的欄位
-        if ($data['description'] !== null) {
+        if ($data['description'] !== null && is_string($data['description'])) {
             $data['description'] = $sanitizer->sanitizeHtml($data['description']);
         }
 

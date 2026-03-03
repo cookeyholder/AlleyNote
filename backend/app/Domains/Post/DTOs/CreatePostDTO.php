@@ -54,7 +54,10 @@ class CreatePostDTO extends BaseDTO
         }
 
         // 驗證資料
-        $validatedData = $this->validate($data);
+        /** @var array<string, mixed> $typedData */
+        $typedData = $data;
+        /** @var array<string, mixed> $validatedData */
+        $validatedData = $this->validate($typedData);
 
         // 設定屬性
         $this->title = $this->getString($validatedData, 'title') ?? '';
@@ -62,7 +65,11 @@ class CreatePostDTO extends BaseDTO
         $this->userId = $this->getInt($validatedData, 'user_id') ?? 0;
         $this->userIp = $this->getString($validatedData, 'user_ip') ?? '';
         $this->isPinned = $this->getBool($validatedData, 'is_pinned') ?? false;
-        $this->status = PostStatus::from($validatedData['status']);
+
+        $statusValue = $validatedData['status'] ?? PostStatus::DRAFT->value;
+        $this->status = is_string($statusValue) || is_int($statusValue)
+            ? PostStatus::from($statusValue)
+            : PostStatus::DRAFT;
 
         // 處理發布日期，空字串轉為 null
         $publishDate = $this->getString($validatedData, 'publish_date');
@@ -81,8 +88,8 @@ class CreatePostDTO extends BaseDTO
             }
 
             $title = trim($value);
-            $minLength = (int) ($parameters[0] ?? 1);
-            $maxLength = (int) ($parameters[1] ?? 255);
+            $minLength = is_numeric($parameters[0] ?? 1) ? (int) ($parameters[0] ?? 1) : 1;
+            $maxLength = is_numeric($parameters[1] ?? 255) ? (int) ($parameters[1] ?? 255) : 255;
 
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');

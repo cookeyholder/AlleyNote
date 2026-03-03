@@ -83,8 +83,8 @@ class PostValidator extends Validator
                 return false;
             }
 
-            $minLength = isset($parameters[0]) ? (int) $parameters[0] : 1;
-            $maxLength = isset($parameters[1]) ? (int) $parameters[1] : 255;
+            $minLength = isset($parameters[0]) && is_numeric($parameters[0]) ? (int) $parameters[0] : 1;
+            $maxLength = isset($parameters[1]) && is_numeric($parameters[1]) ? (int) $parameters[1] : 255;
 
             $length = mb_strlen($cleanTitle);
 
@@ -104,8 +104,8 @@ class PostValidator extends Validator
                 return false;
             }
 
-            $minLength = isset($parameters[0]) ? (int) $parameters[0] : 1;
-            $maxLength = isset($parameters[1]) ? (int) $parameters[1] : null;
+            $minLength = isset($parameters[0]) && is_numeric($parameters[0]) ? (int) $parameters[0] : 1;
+            $maxLength = isset($parameters[1]) && is_numeric($parameters[1]) ? (int) $parameters[1] : null;
 
             $length = mb_strlen($cleanContent);
 
@@ -148,7 +148,8 @@ class PostValidator extends Validator
 
             // 如果有指定版本限制
             if (!empty($parameters)) {
-                $version = strtolower($parameters[0]);
+                $paramValue = $parameters[0];
+                $version = is_string($paramValue) ? strtolower($paramValue) : '';
                 if ($version === 'ipv4') {
                     return filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
                 } elseif ($version === 'ipv6') {
@@ -237,13 +238,17 @@ class PostValidator extends Validator
      *
      * @param array $data 要驗證的資料
      */
-    public static function getDynamicUpdateRules(array $data): mixed
+    /**
+     * @return array<string, mixed>
+     */
+    public static function getDynamicUpdateRules(array $data): array
     {
         $rules = [];
+        /** @var array<string, mixed> $availableRules */
         $availableRules = self::getUpdatePostRules();
 
         foreach ($data as $field => $value) {
-            if (isset($availableRules[$field])) {
+            if (is_string($field) && isset($availableRules[$field]) && is_string($availableRules[$field])) {
                 $rules[$field] = $availableRules[$field];
             }
         }
@@ -261,8 +266,14 @@ class PostValidator extends Validator
     {
         $rules = $isUpdate ? self::getUpdatePostRules() : self::getCreatePostRules();
 
+        // 確保 rules 和 data 符合型別
+        /** @var array<string, mixed> $typedRules */
+        $typedRules = $rules;
+        /** @var array<string, mixed> $typedData */
+        $typedData = $data;
+
         // 執行基本驗證
-        $result = $this->validate($data, $rules);
+        $result = $this->validate($typedData, $typedRules);
 
         // 如果基本驗證失敗，直接返回結果
         if ($result->isInvalid()) {

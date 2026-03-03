@@ -94,7 +94,7 @@ class PasswordHashingTest extends TestCase
                 uuid VARCHAR(36) NOT NULL,
                 username VARCHAR(255) NOT NULL UNIQUE,
                 email VARCHAR(255) NOT NULL UNIQUE,
-                password VARCHAR(255) NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
                 status INTEGER DEFAULT 1,
                 last_login DATETIME,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -140,7 +140,7 @@ class PasswordHashingTest extends TestCase
         $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
 
         // 從資料庫取得雜湊後的密碼
-        $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
+        $stmt = $this->db->prepare('SELECT password_hash FROM users WHERE id = ?');
         $stmt->execute([$userId]);
         $hashedPassword = $stmt->fetchColumn();
 
@@ -187,7 +187,7 @@ class PasswordHashingTest extends TestCase
         $this->assertNotNull($userId, '無法從註冊結果中取得使用者 ID');
 
         // 從資料庫取得雜湊後的密碼
-        $stmt = $this->db->prepare('SELECT password FROM users WHERE id = ?');
+        $stmt = $this->db->prepare('SELECT password_hash FROM users WHERE id = ?');
         $stmt->execute([$userId]);
         $hashedPassword = $stmt->fetchColumn();
 

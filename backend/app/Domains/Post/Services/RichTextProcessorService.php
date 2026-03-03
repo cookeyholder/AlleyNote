@@ -142,23 +142,30 @@ class RichTextProcessorService
     private function preprocessCKEditorContent(string $content): string
     {
         // 移除 CKEditor 可能插入的多餘屬性
-        $content = preg_replace('/\sdata-cke-[^=]*="[^"]*"/i', '', $content);
-        $content = preg_replace('/\scontenteditable="[^"]*"/i', '', $content);
-        $content = preg_replace('/\sspellcheck="[^"]*"/i', '', $content);
+        $result1 = preg_replace('/\sdata-cke-[^=]*="[^"]*"/i', '', $content);
+        $content = is_string($result1) ? $result1 : $content;
+
+        $result2 = preg_replace('/\scontenteditable="[^"]*"/i', '', $content);
+        $content = is_string($result2) ? $result2 : $content;
+
+        $result3 = preg_replace('/\sspellcheck="[^"]*"/i', '', $content);
+        $content = is_string($result3) ? $result3 : $content;
 
         // 正規化換行符號
         $content = str_replace(["\r\n", "\r"], "\n", $content);
 
         // 移除空的段落
-        $content = preg_replace('/]*>(\s|&nbsp;)*/i', '', $content);
+        $result4 = preg_replace('/]*>(\s|&nbsp;)*/i', '', $content);
+        $content = is_string($result4) ? $result4 : $content;
 
         return trim($content);
     }
 
     /**
      * 取得允許的標籤和屬性清單.
+     * @return array{tags: string[], attributes: string[]}
      */
-    public function getAllowedElements(string $userLevel = 'basic'): mixed
+    public function getAllowedElements(string $userLevel = 'basic'): array
     {
         $purifier = match ($userLevel) {
             'admin' => $this->adminPurifier,
@@ -166,36 +173,29 @@ class RichTextProcessorService
             default => $this->basicPurifier,
         };
 
-        $definition = $purifier->config->getHTMLDefinition();
+        $config = $purifier->config;
+        if (!is_object($config) || !method_exists($config, 'getHTMLDefinition')) {
+            return ['tags' => [], 'attributes' => []];
+        }
+
+        $definition = $config->getHTMLDefinition();
+        if (!is_object($definition) || !isset($definition->info) || !is_array($definition->info)) {
+            return ['tags' => [], 'attributes' => []];
+        }
+
         $allowedElements = $definition->info;
 
         $tags = array_keys($allowedElements);
         $attributes = [];
         foreach ($allowedElements as $element) {
-            $attributes = array_merge($attributes, array_keys($element->attr));
+            if (is_object($element) && isset($element->attr) && is_array($element->attr)) {
+                $attributes = array_merge($attributes, array_keys($element->attr));
+            }
         }
 
         return [
             'tags' => array_unique($tags),
             'attributes' => array_unique($attributes),
-        ];
-    }
-
-    /**
-     * 生成內容統計資訊.
-     */
-    private function generateStatistics(string $original, string $filtered): mixed
-    {
-        return [
-            'original_length' => strlen($original),
-            'filtered_length' => strlen($filtered),
-            'reduction_percentage' => strlen($original) > 0
-                ? round((strlen($original) - strlen($filtered)) / strlen($original) * 100, 2)
-                : 0,
-            'word_count' => str_word_count(strip_tags($filtered)),
-            'tag_count' => substr_count($filtered, '<'),
-            'link_count' => substr_count(strtolower($filtered), '<a '),
-            'image_count' => substr_count(strtolower($filtered), '<img '),
         ];
     }
 

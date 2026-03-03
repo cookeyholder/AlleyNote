@@ -41,32 +41,39 @@ class StatisticsSnapshot implements JsonSerializable
      */
     public function __construct(array $data)
     {
-        $this->id = isset($data['id']) ? (int) $data['id'] : 0;
-        $this->uuid = isset($data['uuid']) ? (string) $data['uuid'] : '';
-        $this->snapshotType = isset($data['snapshot_type']) ? (string) $data['snapshot_type'] : '';
-        $this->periodType = isset($data['period_type']) ? (string) $data['period_type'] : '';
-        $this->periodStart = isset($data['period_start']) ? (string) $data['period_start'] : '';
-        $this->periodEnd = isset($data['period_end']) ? (string) $data['period_end'] : '';
+        $this->id = isset($data['id']) && is_numeric($data['id']) ? (int) $data['id'] : 0;
+        $this->uuid = isset($data['uuid']) && is_string($data['uuid']) ? $data['uuid'] : '';
+        $this->snapshotType = isset($data['snapshot_type']) && is_string($data['snapshot_type']) ? $data['snapshot_type'] : '';
+        $this->periodType = isset($data['period_type']) && is_string($data['period_type']) ? $data['period_type'] : '';
+        $this->periodStart = isset($data['period_start']) && is_string($data['period_start']) ? $data['period_start'] : '';
+        $this->periodEnd = isset($data['period_end']) && is_string($data['period_end']) ? $data['period_end'] : '';
 
         // 處理 JSON 資料
+        $this->statisticsData = [];
         if (isset($data['statistics_data'])) {
             if (is_string($data['statistics_data'])) {
                 $decoded = json_decode($data['statistics_data'], true);
-                $this->statisticsData = is_array($decoded) ? $decoded : [];
+                if (is_array($decoded)) {
+                    foreach ($decoded as $key => $value) {
+                        if (is_string($key)) {
+                            $this->statisticsData[$key] = $value;
+                        }
+                    }
+                }
             } elseif (is_array($data['statistics_data'])) {
-                $this->statisticsData = $data['statistics_data'];
-            } else {
-                $this->statisticsData = [];
+                foreach ($data['statistics_data'] as $key => $value) {
+                    if (is_string($key)) {
+                        $this->statisticsData[$key] = $value;
+                    }
+                }
             }
-        } else {
-            $this->statisticsData = [];
         }
 
-        $this->totalViews = isset($data['total_views']) ? (int) $data['total_views'] : 0;
-        $this->totalUniqueViewers = isset($data['total_unique_viewers']) ? (int) $data['total_unique_viewers'] : 0;
-        $this->createdAt = isset($data['created_at']) ? (string) $data['created_at'] : '';
-        $this->updatedAt = (isset($data['updated_at']) && $data['updated_at'] !== null)
-            ? (string) $data['updated_at']
+        $this->totalViews = isset($data['total_views']) && is_numeric($data['total_views']) ? (int) $data['total_views'] : 0;
+        $this->totalUniqueViewers = isset($data['total_unique_viewers']) && is_numeric($data['total_unique_viewers']) ? (int) $data['total_unique_viewers'] : 0;
+        $this->createdAt = isset($data['created_at']) && is_string($data['created_at']) ? $data['created_at'] : '';
+        $this->updatedAt = (isset($data['updated_at']) && is_string($data['updated_at']))
+            ? $data['updated_at']
             : null;
     }
 

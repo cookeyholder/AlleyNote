@@ -21,10 +21,14 @@ class IpController
         private OutputSanitizerInterface $sanitizer,
     ) {}
 
+    /**
+     * @param array<string, mixed> $request
+     */
     public function create(array $request): array
     {
         try {
-            $dto = new CreateIpRuleDTO($this->validator, $request);
+            $payload = $this->filterStringKeys($request);
+            $dto = new CreateIpRuleDTO($this->validator, $payload);
             $ipList = $this->service->createIpRule($dto);
 
             return [
@@ -49,14 +53,19 @@ class IpController
         }
     }
 
+    /**
+     * @param array<string, mixed> $request
+     */
     public function getByType(array $request): array
     {
         try {
-            if (!isset($request['type'])) {
+            $payload = $this->filterStringKeys($request);
+            $type = $this->toIntOrNull($payload['type'] ?? null);
+            if ($type === null) {
                 throw new InvalidArgumentException('必須指定名單類型');
             }
 
-            $rules = $this->service->getRulesByType((int) $request['type']);
+            $rules = $this->service->getRulesByType($type);
 
             return [
                 'status' => 200,
@@ -78,19 +87,24 @@ class IpController
         }
     }
 
+    /**
+     * @param array<string, mixed> $request
+     */
     public function checkAccess(array $request): array
     {
         try {
-            if (!isset($request['ip'])) {
+            $payload = $this->filterStringKeys($request);
+            $ip = $this->toStringOrNull($payload['ip'] ?? null);
+            if ($ip === null) {
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
 
-            $isAllowed = $this->service->isIpAllowed($request['ip']);
+            $isAllowed = $this->service->isIpAllowed($ip);
 
             return [
                 'status' => 200,
                 'data' => [
-                    'ip' => $request['ip'],
+                    'ip' => $ip,
                     'allowed' => $isAllowed,
                 ],
             ];
@@ -105,5 +119,54 @@ class IpController
                 'error' => '檢查 IP 存取權限時發生錯誤',
             ];
         }
+    }
+
+    /**
+     * @param array<mixed, mixed> $input
+     * @return array<string, mixed>
+     */
+    private function filterStringKeys(array $input): array
+    {
+        $filtered = [];
+
+        foreach ($input as $key => $value) {
+            if (is_string($key)) {
+                $filtered[$key] = $value;
+            }
+        }
+
+        return $filtered;
+    }
+
+    private function toIntOrNull(mixed $value): ?int
+    {
+        if (is_int($value)) {
+            return $value;
+        }
+
+        if (is_string($value) && is_numeric($value)) {
+            return (int) $value;
+        }
+
+        return null;
+    }
+
+    private function toStringOrNull(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_string($value)) {
+            $trimmed = trim($value);
+
+            return $trimmed === '' ? null : $trimmed;
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return null;
     }
 }

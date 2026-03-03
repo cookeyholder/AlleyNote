@@ -23,11 +23,16 @@ final readonly class LoginRequestDTO
      */
     public static function fromArray(array $data): self
     {
+        $email = $data['email'] ?? '';
+        $password = $data['password'] ?? '';
+        $rememberMe = $data['remember_me'] ?? false;
+        $scopes = $data['scopes'] ?? null;
+
         return new self(
-            email: $data['email'] ?? '',
-            password: $data['password'] ?? '',
-            rememberMe: $data['remember_me'] ?? false,
-            scopes: $data['scopes'] ?? null,
+            email: is_string($email) ? $email : '',
+            password: is_string($password) ? $password : '',
+            rememberMe: is_bool($rememberMe) ? $rememberMe : false,
+            scopes: is_array($scopes) ? $scopes : null,
         );
     }
 

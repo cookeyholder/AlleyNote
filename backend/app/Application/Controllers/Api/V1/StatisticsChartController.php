@@ -9,6 +9,7 @@ use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
 use Exception;
+use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -22,6 +23,7 @@ class StatisticsChartController extends BaseController
 {
     public function __construct(
         private StatisticsVisualizationServiceInterface $visualizationService,
+        private PDO $db,
     ) {}
 
     /**
@@ -106,6 +108,94 @@ class StatisticsChartController extends BaseController
         } catch (Throwable $e) {
             throw new Exception('取得統計資料失敗');
         }
+    }
+
+    /**
+     * 取得瀏覽量時間序列統計.
+     *
+     * GET /api/statistics/charts/views/timeseries
+     */
+    public function getViewsTimeSeries(
+        ServerRequestInterface $request,
+        ResponseInterface $response,
+    ): ResponseInterface {
+        try {
+            /** @var array<string, mixed> $params */
+            $params = $request->getQueryParams();
+
+            [$startDate, $endDate] = $this->parseDateRange($params);
+            /** @var string $granularity */
+            $granularity = $params['granularity'] ?? 'day';
+
+            $this->validateGranularity($granularity);
+
+            // 直接查詢資料庫
+            $chartData = $this->getViewsTimeSeriesData($startDate, $endDate, $granularity);
+
+            return $this->json($response, [
+                'success' => true,
+                'data' => $chartData,
+                'meta' => [
+                    'start_date' => $startDate->format('Y-m-d'),
+                    'end_date' => $endDate->format('Y-m-d'),
+                    'granularity' => $granularity,
+                ],
+            ]);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Throwable $e) {
+            throw new Exception('取得瀏覽量統計失敗: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 查詢瀏覽量時間序列資料.
+     *
+     * @return array<int, array{date: string, views: int, visitors: int}>
+     */
+    private function getViewsTimeSeriesData(
+        DateTimeImmutable $startDate,
+        DateTimeImmutable $endDate,
+        string $granularity,
+    ): array {
+        // SQLite 使用 strftime 函數
+        $dateFormat = match ($granularity) {
+            'hour' => '%Y-%m-%d %H:00:00',
+            'day' => '%Y-%m-%d',
+            'week' => '%Y-%W',  // SQLite 使用 %W 表示週數
+            'month' => '%Y-%m',
+            default => '%Y-%m-%d',
+        };
+
+        $sql = '
+            SELECT 
+                strftime(:date_format, view_date) as date,
+                COUNT(*) as views,
+                COUNT(DISTINCT user_ip) as visitors
+            FROM post_views
+            WHERE view_date BETWEEN :start_date AND :end_date
+            GROUP BY strftime(:date_format, view_date)
+            ORDER BY date ASC
+        ';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'date_format' => $dateFormat,
+            'start_date' => $startDate->format('Y-m-d H:i:s'),
+            'end_date' => $endDate->format('Y-m-d 23:59:59'),
+        ]);
+
+        /** @var array<int, array{date: string, views: string, visitors: string}> */
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // 轉換為整數
+        return array_map(function ($row) {
+            return [
+                'date' => $row['date'],
+                'views' => (int) $row['views'],
+                'visitors' => (int) $row['visitors'],
+            ];
+        }, $result);
     }
 
     /**

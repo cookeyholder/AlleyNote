@@ -8,6 +8,7 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Closure;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 /**
  * 閉包請求處理器.
@@ -25,6 +26,12 @@ class ClosureRequestHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return ($this->handler)($request);
+        $response = ($this->handler)($request);
+
+        if (!$response instanceof ResponseInterface) {
+            throw new RuntimeException('Closure must return an instance of ResponseInterface');
+        }
+
+        return $response;
     }
 }
