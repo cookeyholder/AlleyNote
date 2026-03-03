@@ -33,28 +33,33 @@ class CacheService implements CacheServiceInterface
         $filename = $this->getCacheFilename($key);
         if (!file_exists($filename)) {
             $this->stats['misses']++;
+
             return null;
         }
 
         $data = file_get_contents($filename);
         if ($data === false) {
             $this->stats['misses']++;
+
             return null;
         }
 
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'], $cacheData['data'])) {
             $this->stats['misses']++;
+
             return null;
         }
 
         if (time() > $cacheData['expiry']) {
             $this->delete($key);
             $this->stats['misses']++;
+
             return null;
         }
 
         $this->stats['hits']++;
+
         return $cacheData['data'];
     }
 
@@ -62,7 +67,7 @@ class CacheService implements CacheServiceInterface
     {
         $filename = $this->getCacheFilename($key);
         $this->stats['sets']++;
-        
+
         $cacheData = [
             'key' => $key,
             'expiry' => time() + ($ttl ?: self::TTL),
@@ -128,8 +133,9 @@ class CacheService implements CacheServiceInterface
                 unlink($file);
             }
         }
-        
+
         $this->clearIndex();
+
         return true;
     }
 
@@ -142,6 +148,7 @@ class CacheService implements CacheServiceInterface
                 $this->set($key, $value, $ttl ?: self::TTL);
             }
         }
+
         return $value;
     }
 
@@ -156,6 +163,7 @@ class CacheService implements CacheServiceInterface
         foreach ($keys as $key) {
             $result[(string) $key] = $this->get((string) $key);
         }
+
         return $result;
     }
 
@@ -164,6 +172,7 @@ class CacheService implements CacheServiceInterface
         foreach ($values as $key => $value) {
             $this->set((string) $key, $value, $ttl);
         }
+
         return true;
     }
 
@@ -172,6 +181,7 @@ class CacheService implements CacheServiceInterface
         foreach ($keys as $key) {
             $this->delete((string) $key);
         }
+
         return true;
     }
 
@@ -193,6 +203,7 @@ class CacheService implements CacheServiceInterface
         if (!file_exists($path)) {
             return [];
         }
+
         return json_decode(file_get_contents($path) ?: '[]', true) ?: [];
     }
 
