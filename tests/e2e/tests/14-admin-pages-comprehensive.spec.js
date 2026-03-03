@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./fixtures/page-objects');
 
 /**
  * 管理後台導航完整性測試

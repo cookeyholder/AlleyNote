@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./fixtures/page-objects');
 
 /**
  * 系統設定頁面功能測試

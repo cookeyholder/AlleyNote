@@ -6,11 +6,11 @@ const { test, expect } = require('./fixtures/page-objects');
  * 驗證發布時間的時區轉換是否正確
  */
 test.describe('時區轉換功能測試', () => {
-  test.beforeEach(async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/admin/posts');
+  test.beforeEach(async ({ adminPage }) => {
+    await adminPage.goto('/admin/posts');
   });
 
-  test('編輯文章時應該正確顯示網站時區時間', async ({ authenticatedPage: page }) => {
+  test('編輯文章時應該正確顯示網站時區時間', async ({ adminPage: page }) => {
     // 找一篇文章來編輯
     const postsCount = await page.locator('tbody tr').count();
     
@@ -33,7 +33,7 @@ test.describe('時區轉換功能測試', () => {
     }
   });
 
-  test.skip('修改發布時間後應該正確儲存為 UTC', async ({ authenticatedPage: page }) => {
+  test.skip('修改發布時間後應該正確儲存為 UTC', async ({ adminPage: page }) => {
     // 導航到新增文章
     await page.goto('/admin/posts/create');
     
@@ -62,7 +62,7 @@ test.describe('時區轉換功能測試', () => {
     expect(savedPublishDate).toBe(publishDate);
   });
 
-  test.skip('系統設定應該顯示當前時區', async ({ authenticatedPage: page }) => {
+  test.skip('系統設定應該顯示當前時區', async ({ adminPage: page }) => {
     await page.goto('/admin/settings');
     
     // 檢查時區設定區塊

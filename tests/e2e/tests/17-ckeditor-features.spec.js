@@ -39,7 +39,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
    * 測試文章編輯器的工具列配置
    */
   test.describe('文章編輯器工具列配置', () => {
-    test('應該包含完整的工具列項目', async ({ authenticatedPage: page }) => {
+    test('應該包含完整的工具列項目', async ({ adminPage: page }) => {
       // 前往新增文章頁面
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
@@ -73,7 +73,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
       await expect(numberListBtn).toBeVisible({ timeout: 5000 });
     });
 
-    test('應該包含進階格式化工具', async ({ authenticatedPage: page }) => {
+    test('應該包含進階格式化工具', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);
@@ -98,7 +98,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
    * 測試文章編輯器的基本編輯功能
    */
   test.describe('文章編輯器編輯功能', () => {
-    test('應該能夠輸入文字', async ({ authenticatedPage: page }) => {
+    test('應該能夠輸入文字', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);
@@ -113,7 +113,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
       await expect(editor).toContainText('這是測試文字內容');
     });
 
-    test('應該能夠套用粗體格式', async ({ authenticatedPage: page }) => {
+    test('應該能夠套用粗體格式', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);
@@ -138,7 +138,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
       await expect(boldText).toContainText('粗體測試');
     });
 
-    test('應該能夠插入項目符號列表', async ({ authenticatedPage: page }) => {
+    test('應該能夠插入項目符號列表', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);
@@ -162,7 +162,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
       await expect(listItems).toHaveCount(3);
     });
 
-    test('應該能夠插入連結', async ({ authenticatedPage: page }) => {
+    test('應該能夠插入連結', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);
@@ -195,7 +195,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
       await expect(link).toContainText('點擊這裡');
     });
 
-    test('應該能夠使用鍵盤快捷鍵（Ctrl+B 粗體）', async ({ authenticatedPage: page }) => {
+    test('應該能夠使用鍵盤快捷鍵（Ctrl+B 粗體）', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);
@@ -221,7 +221,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
    * 測試頁腳編輯器配置
    */
   test.describe('頁腳編輯器配置', () => {
-    test('應該在系統設定頁面顯示頁腳編輯器', async ({ authenticatedPage: page }) => {
+    test('應該在系統設定頁面顯示頁腳編輯器', async ({ adminPage: page }) => {
       await page.goto('/admin/settings');
       await page.waitForLoadState('networkidle');
       
@@ -238,7 +238,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
       await expect(editor).toBeVisible({ timeout: 10000 });
     });
 
-    test('頁腳編輯器應該可以編輯內容', async ({ authenticatedPage: page }) => {
+    test('頁腳編輯器應該可以編輯內容', async ({ adminPage: page }) => {
       await page.goto('/admin/settings');
       await page.waitForLoadState('networkidle');
       
@@ -266,7 +266,7 @@ test.describe('CKEditor 5 編輯器功能測試', () => {
    * 測試編輯器的儲存功能
    */
   test.describe('編輯器內容儲存', () => {
-    test('應該能夠建立並儲存文章', async ({ authenticatedPage: page }) => {
+    test('應該能夠建立並儲存文章', async ({ adminPage: page }) => {
       await page.goto('/admin/posts/create');
       await page.waitForLoadState('networkidle');
       await waitForCKEditorReady(page);

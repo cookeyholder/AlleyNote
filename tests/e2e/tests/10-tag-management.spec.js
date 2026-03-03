@@ -5,12 +5,12 @@ const { test, expect } = require('./fixtures/page-objects');
  * 標籤管理功能測試套件
  */
 test.describe('標籤管理功能測試', () => {
-  test.beforeEach(async ({ authenticatedPage }) => {
-    await authenticatedPage.goto('/admin/tags');
-    await authenticatedPage.waitForTimeout(1000); // 等待資料載入
+  test.beforeEach(async ({ adminPage }) => {
+    await adminPage.goto('/admin/tags');
+    await adminPage.waitForTimeout(1000); // 等待資料載入
   });
 
-  test('應該正確顯示標籤管理頁面', async ({ authenticatedPage: page }) => {
+  test('應該正確顯示標籤管理頁面', async ({ adminPage: page }) => {
     // 檢查標題
     await expect(page.locator('main h1:has-text("標籤管理")')).toBeVisible();
     
@@ -18,7 +18,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('button:has-text("新增標籤")')).toBeVisible();
   });
 
-  test('應該顯示標籤列表或空狀態', async ({ authenticatedPage: page }) => {
+  test('應該顯示標籤列表或空狀態', async ({ adminPage: page }) => {
     // 檢查是否有標籤卡片或空狀態訊息
     const hasTags = await page.locator('.grid').count() > 0;
     const hasEmptyState = await page.locator('text=尚無標籤資料').count() > 0;
@@ -26,7 +26,7 @@ test.describe('標籤管理功能測試', () => {
     expect(hasTags || hasEmptyState).toBeTruthy();
   });
 
-  test('點擊新增標籤應該顯示新增對話框', async ({ authenticatedPage: page }) => {
+  test('點擊新增標籤應該顯示新增對話框', async ({ adminPage: page }) => {
     // 點擊新增標籤按鈕
     await page.click('button:has-text("新增標籤")');
     
@@ -46,7 +46,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('button[type="submit"]:has-text("新增標籤")')).toBeVisible();
   });
 
-  test('應該能夠取消新增標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠取消新增標籤', async ({ adminPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增標籤")');
     await page.waitForTimeout(500);
@@ -59,7 +59,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('.fixed.inset-0 h3:has-text("新增標籤")')).not.toBeVisible();
   });
 
-  test('新增標籤時應該驗證必填欄位', async ({ authenticatedPage: page }) => {
+  test('新增標籤時應該驗證必填欄位', async ({ adminPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增標籤")');
     await page.waitForTimeout(500);
@@ -72,7 +72,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('input[name="name"]')).toBeVisible();
   });
 
-  test('應該能夠成功新增標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠成功新增標籤', async ({ adminPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增標籤")');
     await page.waitForTimeout(500);
@@ -100,7 +100,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator(`text=${tagName}`)).toBeVisible();
   });
 
-  test('應該能夠編輯標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠編輯標籤', async ({ adminPage: page }) => {
     // 先確保有至少一個標籤
     const tagCards = page.locator('.edit-tag-btn');
     const count = await tagCards.count();
@@ -137,7 +137,7 @@ test.describe('標籤管理功能測試', () => {
     await expect(page.locator('.fixed.inset-0 h3:has-text("編輯標籤")')).not.toBeVisible();
   });
 
-  test('應該能夠刪除標籤', async ({ authenticatedPage: page }) => {
+  test('應該能夠刪除標籤', async ({ adminPage: page }) => {
     // 先確保有至少一個可刪除的標籤
     const deleteButtons = page.locator('.delete-tag-btn');
     const count = await deleteButtons.count();

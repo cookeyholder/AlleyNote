@@ -7,7 +7,7 @@ const { test, expect } = require('./fixtures/page-objects');
  */
 test.describe('CKEditor 編輯器可用性測試', () => {
   
-  test('新增文章頁面的 CKEditor 應該正常工作', async ({ authenticatedPage: page }) => {
+  test('新增文章頁面的 CKEditor 應該正常工作', async ({ adminPage: page }) => {
     // 前往新增文章頁面
     await page.goto('/admin/posts/create');
     await page.waitForLoadState('networkidle');
@@ -35,7 +35,7 @@ test.describe('CKEditor 編輯器可用性測試', () => {
     await expect(editor).toContainText('測試內容');
   });
 
-  test('編輯文章頁面的 CKEditor 應該正常工作', async ({ authenticatedPage: page }) => {
+  test('編輯文章頁面的 CKEditor 應該正常工作', async ({ adminPage: page }) => {
     // 先建立一篇測試文章
     const timestamp = Date.now();
     const testTitle = `測試文章 ${timestamp}`;
@@ -100,7 +100,7 @@ test.describe('CKEditor 編輯器可用性測試', () => {
     await page.waitForTimeout(1000);
   });
 
-  test('CKEditor 不應該顯示 toolbarview-item-unavailable 警告', async ({ authenticatedPage: page }) => {
+  test('CKEditor 不應該顯示 toolbarview-item-unavailable 警告', async ({ adminPage: page }) => {
     // 設置 console 監聽
     const warnings = [];
     page.on('console', msg => {

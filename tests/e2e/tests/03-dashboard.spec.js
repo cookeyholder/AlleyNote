@@ -8,16 +8,16 @@ const { test, expect, DashboardPage } = require('./fixtures/page-objects');
 test.describe('Dashboard 功能測試', () => {
   let dashboardPage;
 
-  test.beforeEach(async ({ authenticatedPage }) => {
-    dashboardPage = new DashboardPage(authenticatedPage);
+  test.beforeEach(async ({ adminPage }) => {
+    dashboardPage = new DashboardPage(adminPage);
     await dashboardPage.goto();
   });
 
-  test('應該正確顯示儀表板標題', async ({ authenticatedPage: page }) => {
+  test('應該正確顯示儀表板標題', async ({ adminPage: page }) => {
     await expect(dashboardPage.heading).toBeVisible();
   });
 
-  test('應該顯示統計卡片', async ({ authenticatedPage: page }) => {
+  test('應該顯示統計卡片', async ({ adminPage: page }) => {
     // 檢查統計卡片
     await expect(page.locator('text=總文章數').first()).toBeVisible();
     await expect(page.locator('text=總瀏覽量').first()).toBeVisible();
@@ -25,7 +25,7 @@ test.describe('Dashboard 功能測試', () => {
     await expect(page.locator('h3:has-text("已發布")').first()).toBeVisible();
   });
 
-  test('應該顯示最近發布的文章', async ({ authenticatedPage: page }) => {
+  test('應該顯示最近發布的文章', async ({ adminPage: page }) => {
     const recentPostsHeading = page.locator('h2:has-text("最近發布的文章")');
     await expect(recentPostsHeading).toBeVisible();
     
@@ -38,7 +38,7 @@ test.describe('Dashboard 功能測試', () => {
     }
   });
 
-  test('應該顯示快速操作區塊', async ({ authenticatedPage: page }) => {
+  test('應該顯示快速操作區塊', async ({ adminPage: page }) => {
     await expect(page.locator('h2:has-text("快速操作")')).toBeVisible();
     
     // 檢查快速操作連結
@@ -47,17 +47,17 @@ test.describe('Dashboard 功能測試', () => {
     await expect(page.locator('text=使用者管理')).toBeVisible();
   });
 
-  test('點擊新增文章應該導航到編輯頁面', async ({ authenticatedPage: page }) => {
+  test('點擊新增文章應該導航到編輯頁面', async ({ adminPage: page }) => {
     await page.click('text=新增文章');
     await expect(page).toHaveURL(/\/admin\/posts\/create/);
   });
 
-  test('點擊管理文章應該導航到文章列表', async ({ authenticatedPage: page }) => {
+  test('點擊管理文章應該導航到文章列表', async ({ adminPage: page }) => {
     await page.click('text=管理文章');
     await expect(page).toHaveURL(/\/admin\/posts/);
   });
 
-  test('側邊欄應該正確顯示', async ({ authenticatedPage: page }) => {
+  test('側邊欄應該正確顯示', async ({ adminPage: page }) => {
     // 檢查側邊欄選單項目
     await expect(page.locator('a:has-text("儀表板")')).toBeVisible();
     await expect(page.locator('a:has-text("文章管理")')).toBeVisible();
@@ -67,7 +67,7 @@ test.describe('Dashboard 功能測試', () => {
     await expect(page.locator('a:has-text("系統設定")')).toBeVisible();
   });
 
-  test('應該顯示使用者資訊', async ({ authenticatedPage: page }) => {
+  test('應該顯示使用者資訊', async ({ adminPage: page }) => {
     // 檢查使用者郵箱顯示
     await expect(page.locator('text=admin@example.com')).toBeVisible();
   });

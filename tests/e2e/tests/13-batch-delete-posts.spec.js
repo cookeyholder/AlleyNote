@@ -1,5 +1,5 @@
 // @ts-check
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./fixtures/page-objects');
 
 /**
  * 批次刪除文章功能測試

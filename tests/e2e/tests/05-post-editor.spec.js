@@ -7,11 +7,11 @@ const { test, expect, PostEditorPage } = require('./fixtures/page-objects');
 test.describe('文章編輯功能測試', () => {
   let editorPage;
 
-  test.beforeEach(async ({ authenticatedPage }) => {
-    editorPage = new PostEditorPage(authenticatedPage);
+  test.beforeEach(async ({ adminPage }) => {
+    editorPage = new PostEditorPage(adminPage);
   });
 
-  test.skip('應該正確顯示新增文章頁面', async ({ authenticatedPage: page }) => {
+  test.skip('應該正確顯示新增文章頁面', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     await expect(page.locator('h1:has-text("新增文章")')).toBeVisible();
@@ -21,7 +21,7 @@ test.describe('文章編輯功能測試', () => {
     await expect(editorPage.submitButton).toBeVisible();
   });
 
-  test('應該能夠建立新文章', async ({ authenticatedPage: page }) => {
+  test('應該能夠建立新文章', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     const testTitle = `測試文章 ${Date.now()}`;
@@ -44,7 +44,7 @@ test.describe('文章編輯功能測試', () => {
     await expect(page.locator(`text=${testTitle}`)).toBeVisible({ timeout: 5000 });
   });
 
-  test.skip('應該能夠編輯現有文章', async ({ authenticatedPage: page }) => {
+  test.skip('應該能夠編輯現有文章', async ({ adminPage: page }) => {
     // 先導航到文章列表找一篇文章來編輯
     await page.goto('/admin/posts');
     
@@ -69,7 +69,7 @@ test.describe('文章編輯功能測試', () => {
     }
   });
 
-  test('應該能夠設定發布時間', async ({ authenticatedPage: page }) => {
+  test('應該能夠設定發布時間', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     // 檢查發布時間輸入框
@@ -86,7 +86,7 @@ test.describe('文章編輯功能測試', () => {
     await expect(page.locator('text=時區：Asia/Taipei')).toBeVisible();
   });
 
-  test('應該顯示自動儲存提示', async ({ authenticatedPage: page }) => {
+  test('應該顯示自動儲存提示', async ({ adminPage: page }) => {
     // 導航到編輯現有文章（需要有文章 ID）
     await page.goto('/admin/posts');
     
@@ -101,7 +101,7 @@ test.describe('文章編輯功能測試', () => {
     }
   });
 
-  test('應該能夠儲存草稿', async ({ authenticatedPage: page }) => {
+  test('應該能夠儲存草稿', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     const testTitle = `草稿文章 ${Date.now()}`;
@@ -119,7 +119,7 @@ test.describe('文章編輯功能測試', () => {
     await page.waitForTimeout(1000);
   });
 
-  test('取消按鈕應該返回文章列表', async ({ authenticatedPage: page }) => {
+  test('取消按鈕應該返回文章列表', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     // 點擊取消（沒有修改的情況下）
@@ -129,7 +129,7 @@ test.describe('文章編輯功能測試', () => {
     await expect(page).toHaveURL(/\/admin\/posts$/);
   });
 
-  test('應該驗證必填欄位', async ({ authenticatedPage: page }) => {
+  test('應該驗證必填欄位', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     // 不填寫任何內容，直接提交
@@ -140,7 +140,7 @@ test.describe('文章編輯功能測試', () => {
     await expect(page).toHaveURL(/\/admin\/posts\/create/);
   });
 
-  test('應該能夠新增摘要', async ({ authenticatedPage: page }) => {
+  test('應該能夠新增摘要', async ({ adminPage: page }) => {
     await editorPage.goto();
     
     const testExcerpt = '這是文章摘要';

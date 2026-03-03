@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('./fixtures/page-objects');
 
 test.describe('系統統計頁面', () => {
   test.beforeEach(async ({ page }) => {

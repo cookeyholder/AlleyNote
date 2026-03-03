@@ -1,13 +1,13 @@
 const { test, expect } = require('./fixtures/page-objects');
 
 test.describe('密碼安全性測試', () => {
-  test.beforeEach(async ({ authenticatedPage: page }) => {
+  test.beforeEach(async ({ adminPage: page }) => {
     // 進入使用者管理頁面
     await page.goto('http://localhost:3000/admin/users');
     await page.waitForLoadState('networkidle');
   });
 
-  test('弱密碼應該被拒絕 - 太短', async ({ authenticatedPage: page }) => {
+  test('弱密碼應該被拒絕 - 太短', async ({ adminPage: page }) => {
     // 點擊新增使用者
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
@@ -25,7 +25,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.requirement-item').filter({ hasText: '至少 8 個字元' })).toHaveClass(/text-modern-600/);
   });
 
-  test('弱密碼應該被拒絕 - 缺少大寫字母', async ({ authenticatedPage: page }) => {
+  test('弱密碼應該被拒絕 - 缺少大寫字母', async ({ adminPage: page }) => {
     // 點擊新增使用者
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
@@ -39,7 +39,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.strength-text')).not.toContainText('強');
   });
 
-  test('弱密碼應該被拒絕 - 包含連續字元', async ({ authenticatedPage: page }) => {
+  test('弱密碼應該被拒絕 - 包含連續字元', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -51,7 +51,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.requirement-item').filter({ hasText: '不包含連續字元' })).toHaveClass(/text-modern-600/);
   });
 
-  test.skip('弱密碼應該被拒絕 - 包含重複字元', async ({ authenticatedPage: page }) => {
+  test.skip('弱密碼應該被拒絕 - 包含重複字元', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -63,7 +63,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.requirement-item').filter({ hasText: '不包含重複字元' })).toHaveClass(/text-modern-600/);
   });
 
-  test('弱密碼應該被拒絕 - 常見密碼', async ({ authenticatedPage: page }) => {
+  test('弱密碼應該被拒絕 - 常見密碼', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -75,7 +75,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.suggestions-list')).toContainText('常見');
   });
 
-  test.skip('強密碼應該被接受', async ({ authenticatedPage: page }) => {
+  test.skip('強密碼應該被接受', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -98,7 +98,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.strength-text')).toMatch(/(強|非常強)/);
   });
 
-  test('密碼顯示/隱藏切換功能', async ({ authenticatedPage: page }) => {
+  test('密碼顯示/隱藏切換功能', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -119,7 +119,7 @@ test.describe('密碼安全性測試', () => {
     await expect(toggleBtn).toContainText('👁️');
   });
 
-  test('生成密碼功能', async ({ authenticatedPage: page }) => {
+  test('生成密碼功能', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -147,7 +147,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('text=已生成安全密碼')).toBeVisible();
   });
 
-  test.skip('密碼包含使用者名稱應該被警告', async ({ authenticatedPage: page }) => {
+  test.skip('密碼包含使用者名稱應該被警告', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -159,7 +159,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.password-strength-indicator')).toContainText('使用者名稱');
   });
 
-  test.skip('密碼包含 email 前綴應該被警告', async ({ authenticatedPage: page }) => {
+  test.skip('密碼包含 email 前綴應該被警告', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -171,7 +171,7 @@ test.describe('密碼安全性測試', () => {
     await expect(page.locator('.password-strength-indicator')).toContainText('電子郵件');
   });
 
-  test('密碼強度指示器應該即時更新', async ({ authenticatedPage: page }) => {
+  test('密碼強度指示器應該即時更新', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
@@ -193,7 +193,7 @@ test.describe('密碼安全性測試', () => {
     await expect(strengthBar).toHaveClass(/bg-(green|blue)-500/);
   });
 
-  test('密碼不匹配時應該顯示錯誤', async ({ authenticatedPage: page }) => {
+  test('密碼不匹配時應該顯示錯誤', async ({ adminPage: page }) => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
