@@ -5,14 +5,14 @@ FROM php:8.4-cli-trixie
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     git \
+    libfreetype6-dev \
+    libicu-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libzip-dev \
     openssh-client \
     unzip \
-    libzip-dev \
-    libicu-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libwebp-dev \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # 安裝 PHP 常用擴展並配置 GD
