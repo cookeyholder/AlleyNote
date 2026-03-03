@@ -10,7 +10,7 @@ use App\Domains\Security\Repositories\ActivityLogRepository;
 use App\Domains\Security\Services\ActivityLoggingService;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 use Psr\Log\NullLogger;
 
 /**
@@ -18,7 +18,7 @@ use Psr\Log\NullLogger;
  *
  * 測試所有附件相關的活動記錄功能
  */
-class AttachmentActivityLoggingTest extends TestCase
+class AttachmentActivityLoggingTest extends SecureDDDTestCase
 {
     private PDO $pdo;
 

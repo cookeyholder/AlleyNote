@@ -8,14 +8,14 @@ use App\Infrastructure\Statistics\Services\SlowQueryMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
 use DateTime;
 use PDO;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * 統計監控服務整合測試.
  *
  * 測試統計監控服務與相關元件的整合功能。
  */
-final class StatisticsMonitoringIntegrationTest extends TestCase
+final class StatisticsMonitoringIntegrationTest extends IntegrationTestCase
 {
     private StatisticsMonitoringService $monitoringService;
 

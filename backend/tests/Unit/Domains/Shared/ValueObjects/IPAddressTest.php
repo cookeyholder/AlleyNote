@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Shared\ValueObjects;
 
 use App\Domains\Shared\ValueObjects\IPAddress;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * IPAddress 值物件測試.
  */
-class IPAddressTest extends TestCase
+class IPAddressTest extends UnitTestCase
 {
     public function test_can_create_valid_ipv4(): void
     {

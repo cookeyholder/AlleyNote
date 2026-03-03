@@ -18,14 +18,14 @@ use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * JwtTokenService 單元測試.
  *
  * 測試 JWT Token 服務的核心功能，包括 token 生成、驗證、撤銷等操作。
  */
-final class JwtTokenServiceTest extends TestCase
+final class JwtTokenServiceTest extends UnitTestCase
 {
     private JwtTokenService $service;
 

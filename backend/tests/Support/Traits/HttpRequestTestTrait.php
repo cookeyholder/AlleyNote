@@ -71,8 +71,10 @@ trait HttpRequestTestTrait
         $stream->write($json ?: '');
         $stream->rewind();
 
+        // 同時填充 Body Stream 與 ParsedBody 以提升測試相容性
         return $request
             ->withHeader('Content-Type', 'application/json')
-            ->withBody($stream);
+            ->withBody($stream)
+            ->withParsedBody($data);
     }
 }

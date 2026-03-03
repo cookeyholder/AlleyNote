@@ -6,12 +6,14 @@ namespace Tests\Support;
 
 use Mockery;
 
+use Tests\SecureDDDTestCase;
+
 /**
  * 單元測試基底類別.
  *
  * 適用於純單元測試，不需要資料庫和外部依賴
  */
-abstract class UnitTestCase extends BaseTestCase
+abstract class UnitTestCase extends SecureDDDTestCase
 {
     protected function tearDown(): void
     {

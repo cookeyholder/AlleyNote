@@ -16,11 +16,11 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
 #[CoversClass(StatisticsQueryService::class)]
-final class StatisticsQueryServiceTest extends TestCase
+final class StatisticsQueryServiceTest extends UnitTestCase
 {
     private StatisticsQueryService $service;
 

@@ -14,10 +14,10 @@ use Exception;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
-class RefreshTokenServiceTest extends TestCase
+class RefreshTokenServiceTest extends UnitTestCase
 {
     use MockeryPHPUnitIntegration;
 

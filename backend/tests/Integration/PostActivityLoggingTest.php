@@ -7,6 +7,7 @@ namespace Tests\Integration;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostService;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Contracts\OutputSanitizerInterface;
@@ -34,7 +35,9 @@ class PostActivityLoggingTest extends IntegrationTestCase
         $this->postService = Mockery::mock(PostService::class);
         $this->validator = new Validator(); 
         $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class)->shouldIgnoreMissing();
-        $this->activityLogger = Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class);
+        $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
+        $this->activityLogger->shouldReceive('logSuccess')->zeroOrMoreTimes();
+        $this->activityLogger->shouldReceive('logFailure')->zeroOrMoreTimes();
     }
 
     public function test_it_logs_successful_post_creation(): void
@@ -48,10 +51,14 @@ class PostActivityLoggingTest extends IntegrationTestCase
             'is_pinned' => false
         ];
         
-        // 2. 建立真實請求
-        $request = $this->createRequest('POST', '/api/posts');
-        $request = $request->withAttribute('user_id', $user['id']);
-        $request = $this->withJsonBody($request, $postData);
+        // 2. 建立 Mock 請求
+        $request = Mockery::mock(\Psr\Http\Message\ServerRequestInterface::class);
+        $request->shouldReceive('getMethod')->andReturn('POST')->byDefault();
+        $request->shouldReceive('getUri->getPath')->andReturn('/api/posts')->byDefault();
+        $request->shouldReceive('getAttribute')->with('user_id')->andReturn($user['id'])->byDefault();
+        $request->shouldReceive('getParsedBody')->andReturn($postData)->byDefault();
+        $request->shouldReceive('getHeaderLine')->andReturn('')->zeroOrMoreTimes();
+        $request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->byDefault();
 
         // 3. 設定 Mock 期待 (回傳真實 Post 物件)
         $post = new Post(PostFactory::make(['title' => 'New Post Title', 'id' => 999]));

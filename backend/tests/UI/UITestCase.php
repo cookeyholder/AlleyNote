@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\UI;
 
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 use Symfony\Component\Process\Process;
 
-abstract class UITestCase extends TestCase
+abstract class UITestCase extends SecureDDDTestCase
 {
     protected static ?Process $serverProcess = null;
 

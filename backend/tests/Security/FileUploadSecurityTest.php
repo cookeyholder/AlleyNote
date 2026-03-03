@@ -17,9 +17,9 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use Tests\TestCase;
+use Tests\SecureDDDTestCase;
 
-class FileUploadSecurityTest extends TestCase
+class FileUploadSecurityTest extends SecureDDDTestCase
 {
     protected AttachmentService $service;
 
@@ -319,23 +319,6 @@ class FileUploadSecurityTest extends TestCase
             ->once()
             ->with($postId)
             ->andReturn(0);
-
-        // 模擬成功保存附件
-        $this->attachmentRepo->shouldReceive('create')
-            ->once()
-            ->andReturn([
-                'id' => 1,
-                'uuid' => 'attachment-uuid',
-                'post_id' => $postId,
-                'filename' => 'valid-image.jpg',
-                'original_filename' => 'valid-image.jpg',
-                'mime_type' => 'image/jpeg',
-                'size' => 1024,
-                'path' => '/uploads/valid-image.jpg',
-                'user_id' => 1,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
 
         // 執行測試 - 應該成功，但我們的驗證還是會失敗，所以期望拋出異常
         $this->expectException(ValidationException::class);

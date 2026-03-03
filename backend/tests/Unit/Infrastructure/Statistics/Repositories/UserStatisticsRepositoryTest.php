@@ -14,11 +14,11 @@ use PDOException;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use RuntimeException;
 
 #[CoversClass(UserStatisticsRepository::class)]
-class UserStatisticsRepositoryTest extends TestCase
+class UserStatisticsRepositoryTest extends UnitTestCase
 {
     private PDO&MockObject $mockDb;
 

@@ -8,7 +8,7 @@ use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
 use Exception;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\IntegrationTestCase;
 use Psr\Http\Message\ResponseInterface;
 
 /**
@@ -22,7 +22,7 @@ use Psr\Http\Message\ResponseInterface;
  */
 #[Group('integration')]
 #[Group('api')]
-class AuthEndpointTest extends TestCase
+class AuthEndpointTest extends IntegrationTestCase
 {
     private Application $app;
 
@@ -42,7 +42,7 @@ class AuthEndpointTest extends TestCase
     /**
      * 建立 HTTP 請求
      */
-    private function createRequest(string $method, string $path, ?array $body = null, array $headers = []): ResponseInterface
+    private function createLocalRequest(string $method, string $path, ?array $body = null, array $headers = []): ResponseInterface
     {
         // 準備 $_SERVER 環境變數
         $_SERVER = array_merge($_SERVER, [
@@ -88,7 +88,7 @@ class AuthEndpointTest extends TestCase
         ];
 
         try {
-            $response = $this->createRequest('POST', '/api/auth/login', $loginData);
+            $response = $this->createLocalRequest('POST', '/api/auth/login', $loginData);
             $responseBody = (string) $response->getBody();
             $data = json_decode($responseBody, true);
 
@@ -142,7 +142,7 @@ class AuthEndpointTest extends TestCase
         ];
 
         try {
-            $response = $this->createRequest('POST', '/api/auth/refresh', $refreshData);
+            $response = $this->createLocalRequest('POST', '/api/auth/refresh', $refreshData);
             $responseBody = (string) $response->getBody();
 
             // 如果是 404，表示路由沒有正確配置
@@ -175,7 +175,7 @@ class AuthEndpointTest extends TestCase
         ];
 
         try {
-            $response = $this->createRequest('POST', '/api/auth/logout', $logoutData);
+            $response = $this->createLocalRequest('POST', '/api/auth/logout', $logoutData);
             $responseBody = (string) $response->getBody();
 
             // 如果是 404，表示路由沒有正確配置
@@ -201,7 +201,7 @@ class AuthEndpointTest extends TestCase
     public function testProtectedEndpointWithoutToken(): void
     {
         try {
-            $response = $this->createRequest('GET', '/api/auth/me');
+            $response = $this->createLocalRequest('GET', '/api/auth/me');
             $responseBody = (string) $response->getBody();
 
             // 如果是 404，表示路由沒有正確配置
@@ -233,7 +233,7 @@ class AuthEndpointTest extends TestCase
         ];
 
         try {
-            $response = $this->createRequest('GET', '/api/auth/me', null, $headers);
+            $response = $this->createLocalRequest('GET', '/api/auth/me', null, $headers);
             $responseBody = (string) $response->getBody();
 
             // 如果是 404，表示路由沒有正確配置
@@ -263,7 +263,7 @@ class AuthEndpointTest extends TestCase
         $this->assertInstanceOf(Application::class, $this->app);
 
         // 測試基本路由（首頁）
-        $response = $this->createRequest('GET', '/');
+        $response = $this->createLocalRequest('GET', '/');
         $this->assertInstanceOf(ResponseInterface::class, $response);
 
         // 首頁應該回傳 200

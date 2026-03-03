@@ -19,9 +19,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Tests\TestCase;
+use Tests\SecureDDDTestCase;
 
-class XssPreventionTest extends TestCase
+class XssPreventionTest extends SecureDDDTestCase
 {
     private PostServiceInterface&MockInterface $postService;
 

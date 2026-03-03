@@ -15,13 +15,13 @@ use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\TaggedCacheManager;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\IntegrationTestCase;
 use Psr\Log\NullLogger;
 
 /**
  * TaggedCacheInterface 實作整合測試.
  */
-class TaggedCacheIntegrationTest extends TestCase
+class TaggedCacheIntegrationTest extends IntegrationTestCase
 {
     private TaggedCacheInterface $taggedCache;
 

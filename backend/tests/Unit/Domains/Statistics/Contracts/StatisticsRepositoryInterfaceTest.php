@@ -7,10 +7,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use ReflectionClass;
 
-class StatisticsRepositoryInterfaceTest extends TestCase
+class StatisticsRepositoryInterfaceTest extends UnitTestCase
 {
     public function testInterfaceExists(): void
     {

@@ -6,11 +6,11 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Attachment\Services\FileSecurityService;
 use App\Shared\Exceptions\ValidationException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
-class FileSecurityServiceTest extends TestCase
+class FileSecurityServiceTest extends UnitTestCase
 {
     private FileSecurityService $service;
 

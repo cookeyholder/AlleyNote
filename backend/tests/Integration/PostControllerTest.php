@@ -34,7 +34,10 @@ class PostControllerTest extends IntegrationTestCase
 
         $this->postService = Mockery::mock(PostService::class);
         $this->validator = new Validator();
-        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class)->shouldIgnoreMissing();
+        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
+        $this->sanitizer->shouldReceive('sanitizeHtml')->andReturnUsing(fn($i) => $i)->zeroOrMoreTimes();
+        $this->sanitizer->shouldReceive('sanitizeRichText')->andReturnUsing(fn($i) => $i)->zeroOrMoreTimes();
+        
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class)->shouldIgnoreMissing();
         $this->statsService = Mockery::mock(PostViewStatisticsService::class)->shouldIgnoreMissing();
     }

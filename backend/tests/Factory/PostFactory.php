@@ -22,7 +22,7 @@ class PostFactory
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
             'is_pinned' => 0,
-            'status' => 1,
+            'status' => 'draft',
             'views' => 0,
             'publish_date' => $now,
             'created_at' => $now,

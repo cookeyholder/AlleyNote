@@ -19,6 +19,7 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Helpers\NetworkHelper;
 use DateTime;
 use DateTimeZone;
 use Exception;
@@ -164,7 +165,7 @@ class PostController extends BaseController
                     'limit' => $limit,
                     'filters' => $filters,
                     'total_results' => $result['total'],
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -179,7 +180,7 @@ class PostController extends BaseController
                 reason: 'Request validation failed: ' . $e->getMessage(),
                 metadata: [
                     'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -194,7 +195,7 @@ class PostController extends BaseController
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -257,19 +258,18 @@ class PostController extends BaseController
     public function store(Request $request, Response $response): Response
     {
         try {
-            $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = $request->getParsedBody();
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // 記錄 JSON 格式錯誤
+            if (!is_array($data)) {
+                // 記錄資料格式錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_CREATED,
                     userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid JSON format',
-                    metadata: ['ip_address' => $this->getUserIp($request)],
+                    reason: 'Invalid request data format',
+                    metadata: ['ip_address' => NetworkHelper::getClientIp($request)],
                 );
 
-                $errorResponse = $this->errorResponse('Invalid JSON format', 400);
+                $errorResponse = $this->errorResponse('Invalid request data format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
@@ -278,7 +278,7 @@ class PostController extends BaseController
             // 添加必需的欄位
             $userId = $request->getAttribute('user_id') ?? 1;
             $data['user_id'] = $userId;
-            $data['user_ip'] = $this->getUserIp($request);
+            $data['user_ip'] = NetworkHelper::getClientIp($request);
 
             $dto = new CreatePostDTO($this->validator, $data);
             $post = $this->postService->createPost($dto);
@@ -300,7 +300,7 @@ class PostController extends BaseController
                 metadata: [
                     'title' => $post->getTitle(),
                     'status' => $post->getStatusValue(),
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -316,7 +316,7 @@ class PostController extends BaseController
                 reason: 'Validation failed: ' . $e->getMessage(),
                 metadata: [
                     'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -330,7 +330,7 @@ class PostController extends BaseController
                 actionType: ActivityType::POST_CREATED,
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
-                metadata: ['ip_address' => $this->getUserIp($request)],
+                metadata: ['ip_address' => NetworkHelper::getClientIp($request)],
             );
 
             $errorResponse = $this->handleException($e);
@@ -385,7 +385,7 @@ class PostController extends BaseController
                     actionType: ActivityType::POST_VIEWED,
                     userId: $request->getAttribute('user_id'),
                     reason: 'Invalid post ID: ' . $args['id'],
-                    metadata: ['ip_address' => $this->getUserIp($request)],
+                    metadata: ['ip_address' => NetworkHelper::getClientIp($request)],
                 );
 
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
@@ -397,7 +397,7 @@ class PostController extends BaseController
             $post = $this->postService->findById($id);
 
             // 記錄瀏覽次數
-            $userIp = $this->getUserIp($request);
+            $userIp = NetworkHelper::getClientIp($request);
             if ($userIp) {
                 $this->postService->recordView($id, $userIp);
             }
@@ -446,7 +446,7 @@ class PostController extends BaseController
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -462,7 +462,7 @@ class PostController extends BaseController
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -549,7 +549,7 @@ class PostController extends BaseController
                     actionType: ActivityType::POST_UPDATED,
                     userId: $request->getAttribute('user_id'),
                     reason: 'Invalid post ID: ' . $args['id'],
-                    metadata: ['ip_address' => $this->getUserIp($request)],
+                    metadata: ['ip_address' => NetworkHelper::getClientIp($request)],
                 );
 
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
@@ -558,22 +558,21 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
-            $body = $request->getBody()->getContents();
-            $data = json_decode($body, true);
+            $data = $request->getParsedBody();
 
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                // 記錄 JSON 格式錯誤
+            if (!is_array($data)) {
+                // 記錄資料格式錯誤
                 $this->activityLogger->logFailure(
                     actionType: ActivityType::POST_UPDATED,
                     userId: $request->getAttribute('user_id'),
-                    reason: 'Invalid JSON format',
+                    reason: 'Invalid request data format',
                     metadata: [
                         'post_id' => $id,
-                        'ip_address' => $this->getUserIp($request),
+                        'ip_address' => NetworkHelper::getClientIp($request),
                     ],
                 );
 
-                $errorResponse = $this->errorResponse('Invalid JSON format', 400);
+                $errorResponse = $this->errorResponse('Invalid request data format', 400);
                 $response->getBody()->write(($errorResponse ?: ''));
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
@@ -616,7 +615,7 @@ class PostController extends BaseController
                     'title' => $post->getTitle(),
                     'status' => $post->getStatusValue(),
                     'changes' => $data, // 記錄變更的欄位
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -633,7 +632,7 @@ class PostController extends BaseController
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
                     'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -649,7 +648,7 @@ class PostController extends BaseController
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -665,7 +664,7 @@ class PostController extends BaseController
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -735,7 +734,7 @@ class PostController extends BaseController
                     actionType: ActivityType::POST_DELETED,
                     userId: $request->getAttribute('user_id'),
                     reason: 'Invalid post ID: ' . $args['id'],
-                    metadata: ['ip_address' => $this->getUserIp($request)],
+                    metadata: ['ip_address' => NetworkHelper::getClientIp($request)],
                 );
 
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
@@ -759,7 +758,7 @@ class PostController extends BaseController
                 metadata: [
                     'title' => $postTitle,
                     'status' => $postStatus,
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -774,7 +773,7 @@ class PostController extends BaseController
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
                     'errors' => $e->getErrors(),
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -790,7 +789,7 @@ class PostController extends BaseController
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -806,7 +805,7 @@ class PostController extends BaseController
                 reason: 'Post status error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -822,7 +821,7 @@ class PostController extends BaseController
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -920,7 +919,7 @@ class PostController extends BaseController
                     actionType: ActivityType::POST_PINNED,
                     userId: $request->getAttribute('user_id'),
                     reason: 'Invalid post ID: ' . $args['id'],
-                    metadata: ['ip_address' => $this->getUserIp($request)],
+                    metadata: ['ip_address' => NetworkHelper::getClientIp($request)],
                 );
 
                 $errorResponse = $this->errorResponse('Invalid post ID', 400);
@@ -940,7 +939,7 @@ class PostController extends BaseController
                     reason: 'Invalid JSON format',
                     metadata: [
                         'post_id' => $id,
-                        'ip_address' => $this->getUserIp($request),
+                        'ip_address' => NetworkHelper::getClientIp($request),
                     ],
                 );
 
@@ -959,7 +958,7 @@ class PostController extends BaseController
                     metadata: [
                         'post_id' => $id,
                         'received_data' => $data,
-                        'ip_address' => $this->getUserIp($request),
+                        'ip_address' => NetworkHelper::getClientIp($request),
                     ],
                 );
 
@@ -982,7 +981,7 @@ class PostController extends BaseController
                 metadata: [
                     'title' => $post->getTitle(),
                     'pinned' => $data['pinned'],
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -999,7 +998,7 @@ class PostController extends BaseController
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -1015,7 +1014,7 @@ class PostController extends BaseController
                 reason: 'State transition error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -1031,7 +1030,7 @@ class PostController extends BaseController
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
                     'post_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => $this->getUserIp($request),
+                    'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
 
@@ -1039,67 +1038,6 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
-        }
-    }
-
-    /**
-     * 取得使用者 IP 位址
-     */
-    private function getUserIp(Request $request): string
-    {
-        $serverParams = $request->getServerParams();
-
-        // 優先順序：X-Forwarded-For > X-Real-IP > REMOTE_ADDR
-        $ipSources = [
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_REAL_IP',
-            'REMOTE_ADDR',
-        ];
-
-        foreach ($ipSources as $source) {
-            if (!empty($serverParams[$source])) {
-                $ip = $serverParams[$source];
-                if ($source === 'HTTP_X_FORWARDED_FOR') {
-                    // X-Forwarded-For 可能包含多個 IP，取第一個
-                    $ip = trim(explode(',', $ip)[0]);
-                }
-
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
-                }
-            }
-        }
-
-        // 如果無法取得有效 IP，使用 REMOTE_ADDR 或預設值
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
-    }
-
-    /**
-     * 刪除貼文.
-     */
-    public function destroy(Request $request, Response $response, array $args): Response
-    {
-        try {
-            $postId = (int) $args['id'];
-            $this->postService->deletePost($postId);
-
-            $responseData = [
-                'success' => true,
-                'message' => '貼文已成功刪除',
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
-            $responseData = [
-                'success' => false,
-                'error' => '刪除貼文失敗: ' . $e->getMessage(),
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
-
-            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
     }
 
@@ -1148,22 +1086,13 @@ class PostController extends BaseController
             // 更新貼文狀態為 published
             $post = $this->postService->updatePostStatus($postId, 'published');
 
-            $responseData = [
-                'success' => true,
-                'message' => '貼文已發布',
-                'data' => $post,
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $responseData = $this->successResponse($post, '貼文已發布');
+            $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $responseData = [
-                'success' => false,
-                'error' => '發布貼文失敗: ' . $e->getMessage(),
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $responseData = $this->handleException($e);
+            $response->getBody()->write($responseData);
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
@@ -1214,22 +1143,13 @@ class PostController extends BaseController
             // 更新貼文狀態為 draft
             $post = $this->postService->updatePostStatus($postId, 'draft');
 
-            $responseData = [
-                'success' => true,
-                'message' => '貼文已取消發布',
-                'data' => $post,
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $responseData = $this->successResponse($post, '貼文已取消發布');
+            $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $responseData = [
-                'success' => false,
-                'error' => '取消發布失敗: ' . $e->getMessage(),
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $responseData = $this->handleException($e);
+            $response->getBody()->write($responseData);
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
@@ -1277,25 +1197,17 @@ class PostController extends BaseController
         try {
             $postId = (int) $args['id'];
 
-            // 取消置頂
-            $post = $this->postService->unpinPost($postId);
+            // 直接調用 togglePin 的內部邏輯或簡化處理
+            $this->postService->setPinned($postId, false);
+            $post = $this->postService->findById($postId);
 
-            $responseData = [
-                'success' => true,
-                'message' => '已取消置頂',
-                'data' => $post,
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $responseData = $this->successResponse($post->toSafeArray($this->sanitizer), '已取消置頂');
+            $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
         } catch (Exception $e) {
-            $responseData = [
-                'success' => false,
-                'error' => '取消置頂失敗: ' . $e->getMessage(),
-            ];
-
-            $response->getBody()->write((json_encode($responseData) ?: '{"error": "JSON encoding failed"}'));
+            $responseData = $this->handleException($e);
+            $response->getBody()->write($responseData);
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }

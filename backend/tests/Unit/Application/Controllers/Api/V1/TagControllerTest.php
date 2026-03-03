@@ -11,13 +11,13 @@ use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 
 #[CoversClass(TagController::class)]
-class TagControllerTest extends TestCase
+class TagControllerTest extends UnitTestCase
 {
     private TagController $controller;
 

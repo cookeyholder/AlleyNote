@@ -8,14 +8,14 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
 use stdClass;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * Validator 單元測試.
  *
  * 測試驗證器的所有核心功能，包括內建規則、自訂規則、錯誤訊息等
  */
-class ValidatorTest extends TestCase
+class ValidatorTest extends UnitTestCase
 {
     private ValidatorInterface $validator;
 

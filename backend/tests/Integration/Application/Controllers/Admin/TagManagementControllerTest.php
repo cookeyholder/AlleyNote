@@ -9,7 +9,7 @@ use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Services\CacheGroupManager;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\IntegrationTestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -19,7 +19,7 @@ use RuntimeException;
 /**
  * TagManagementController 整合測試.
  */
-class TagManagementControllerTest extends TestCase
+class TagManagementControllerTest extends IntegrationTestCase
 {
     private TagManagementController $controller;
 

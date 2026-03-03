@@ -20,9 +20,9 @@ use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use RuntimeException;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostServiceTest extends TestCase
+class PostServiceTest extends UnitTestCase
 {
     private PostRepositoryInterface|MockInterface $repository;
 

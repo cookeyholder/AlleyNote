@@ -82,6 +82,10 @@ trait DatabaseSnapshotTrait
             }
         }
 
+        if (!empty($diffs)) {
+            $this->fail(implode("\n", $diffs));
+        }
+
         $this->assertTrue(true);
     }
 

@@ -8,9 +8,9 @@ use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Uri;
 use Psr\Http\Message\ServerRequestInterface;
 use Tests\Support\Traits\HttpRequestTestTrait;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class HttpRequestTestTraitTest extends TestCase
+class HttpRequestTestTraitTest extends UnitTestCase
 {
     use HttpRequestTestTrait;
 

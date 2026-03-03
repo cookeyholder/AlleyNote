@@ -7,14 +7,14 @@ namespace Tests\Unit\Validation;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Exception;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * ValidationException 單元測試.
  *
  * 測試驗證異常類的所有功能，包括建立、錯誤處理、API 回應格式等
  */
-class ValidationExceptionTest extends TestCase
+class ValidationExceptionTest extends UnitTestCase
 {
     /**
      * 測試使用 ValidationResult 建立異常.

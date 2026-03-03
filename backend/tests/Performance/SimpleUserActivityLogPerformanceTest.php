@@ -8,7 +8,7 @@ use Exception;
 use PDO;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 
 /**
  * 簡化版使用者活動記錄效能測試.
@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
  * 測試資料庫直接操作的效能，不依賴服務容器
  */
 #[Group('performance')]
-class SimpleUserActivityLogPerformanceTest extends TestCase
+class SimpleUserActivityLogPerformanceTest extends SecureDDDTestCase
 {
     private PDO $pdo;
 
@@ -293,7 +293,7 @@ class SimpleUserActivityLogPerformanceTest extends TestCase
     /**
      * 產生 UUID.
      */
-    private function generateUuid(): string
+    protected function generateUuid(): string
     {
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

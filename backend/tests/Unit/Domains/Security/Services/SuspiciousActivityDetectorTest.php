@@ -15,13 +15,13 @@ use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 
 /**
  * SuspiciousActivityDetector 測試.
  */
-class SuspiciousActivityDetectorTest extends TestCase
+class SuspiciousActivityDetectorTest extends UnitTestCase
 {
     private SuspiciousActivityDetector $detector;
 

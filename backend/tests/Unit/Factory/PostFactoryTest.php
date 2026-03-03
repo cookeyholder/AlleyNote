@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Factory;
 
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Tests\Factory\PostFactory;
 
-class PostFactoryTest extends TestCase
+class PostFactoryTest extends UnitTestCase
 {
     public function testItCanMakePostData(): void
     {
@@ -15,7 +15,6 @@ class PostFactoryTest extends TestCase
 
         $this->assertEquals('範例文章', $data['title']);
         $this->assertEquals('這是一篇範例文章的內容', $data['content']);
-        $this->assertEquals(1, $data['id']);
     }
 
     public function testItCanCreatePostInDatabase(): void

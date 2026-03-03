@@ -27,10 +27,10 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 #[Group('integration')]
-class AuthControllerTest extends TestCase
+class AuthControllerTest extends IntegrationTestCase
 {
     private AuthService|MockInterface $authService;
 

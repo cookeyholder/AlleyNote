@@ -8,12 +8,12 @@ use App\Domains\Shared\ValueObjects\Timestamp;
 use DateTimeImmutable;
 use DateTimeZone;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * Timestamp 值物件測試.
  */
-class TimestampTest extends TestCase
+class TimestampTest extends UnitTestCase
 {
     public function test_can_create_from_datetime(): void
     {

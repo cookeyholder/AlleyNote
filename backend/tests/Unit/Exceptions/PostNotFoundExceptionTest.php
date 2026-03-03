@@ -6,9 +6,9 @@ namespace Tests\Unit\Exceptions;
 
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Shared\Exceptions\NotFoundException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostNotFoundExceptionTest extends TestCase
+class PostNotFoundExceptionTest extends UnitTestCase
 {
     public function testConstructorWithPostId(): void
     {

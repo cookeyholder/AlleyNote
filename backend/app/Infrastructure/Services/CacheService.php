@@ -70,6 +70,7 @@ class CacheService implements CacheServiceInterface
         $filename = $this->getCacheFilename($key);
         $this->stats['sets']++;
         $cacheData = [
+            'key' => $key, // 儲存原始 Key 以支援模式比對刪除
             'expiry' => time() + ($ttl ?: self::TTL),
             'data' => $value,
         ];
@@ -100,14 +101,40 @@ class CacheService implements CacheServiceInterface
 
     public function deletePattern(string $pattern): int
     {
-        // 基礎實作：刪除所有快取檔案（當模式匹配無法精確實現時）
-        // 在生產環境中，應該使用 Redis 或其他支援模式匹配的快取系統
-        if (strpos($pattern, '*') !== false) {
-            return $this->clear() ? 1 : 0;
+        if (strpos($pattern, '*') === false) {
+            return $this->delete($pattern) ? 1 : 0;
         }
 
-        // 精確匹配
-        return $this->delete($pattern) ? 1 : 0;
+        // 轉換 Glob 模式為正則表達式
+        $regex = '/^' . str_replace(['*', ':'], ['.*', '\:'], preg_quote($pattern, '/')) . '$/';
+        $regex = str_replace('\.\*', '.*', $regex); // 還原星號
+
+        $files = glob($this->cachePath . '/*.cache');
+        if ($files === false) {
+            return 0;
+        }
+
+        $deletedCount = 0;
+        foreach ($files as $file) {
+            $data = file_get_contents($file);
+            if ($data === false) {
+                continue;
+            }
+
+            $cacheData = json_decode($data, true);
+            if (isset($cacheData['key']) && preg_match($regex, $cacheData['key'])) {
+                if (unlink($file)) {
+                    $deletedCount++;
+                }
+            }
+        }
+
+        if ($deletedCount > 0) {
+            $this->stats['deletes'] += $deletedCount;
+            $this->updateCacheSize();
+        }
+
+        return $deletedCount;
     }
 
     public function clear(): bool

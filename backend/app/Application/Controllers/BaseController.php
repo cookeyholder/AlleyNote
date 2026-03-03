@@ -14,16 +14,15 @@ abstract class BaseController
 {
     /** @var array<string, HttpStatusCode> */
     private const EXCEPTION_HTTP_CODES = [
-        'App\Exceptions\Post\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Exceptions\Post\PostStatusException' => HttpStatusCode::BAD_REQUEST,
-        'App\Exceptions\Post\PostValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
-        'App\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Exceptions\Auth\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
-        'App\Exceptions\Auth\ForbiddenException' => HttpStatusCode::FORBIDDEN,
-        'App\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
+        'App\Domains\Post\Exceptions\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
+        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::BAD_REQUEST,
+        'App\Shared\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
+        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
+        'App\Shared\Exceptions\ValidationException' => HttpStatusCode::BAD_REQUEST,
+        'App\Shared\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
+        'App\Domains\Auth\Exceptions\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
+        'App\Domains\Auth\Exceptions\ForbiddenException' => HttpStatusCode::FORBIDDEN,
+        'App\Domains\Auth\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
     ];
 
     /**

@@ -7,7 +7,7 @@ namespace Tests\Unit\Domains\Auth\Contracts;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use ReflectionClass;
 
 /**
@@ -16,7 +16,7 @@ use ReflectionClass;
  * 驗證RefreshTokenRepositoryInterface的介面定義和契約正確性。
  * 確保所有方法簽名、參數類型、回傳類型正確。
  */
-class RefreshTokenRepositoryInterfaceTest extends TestCase
+class RefreshTokenRepositoryInterfaceTest extends UnitTestCase
 {
     private ReflectionClass $interfaceReflection;
 

@@ -6,10 +6,10 @@ namespace Tests\Unit\Services\Security;
 
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use ReflectionClass;
 
-class LoggingSecurityServiceTest extends TestCase
+class LoggingSecurityServiceTest extends UnitTestCase
 {
     private LoggingSecurityService $service;
 

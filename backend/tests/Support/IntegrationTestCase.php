@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Support;
 
+use Tests\SecureDDDTestCase;
+
 use Mockery;
 use Tests\Support\Traits\CacheTestTrait;
 use Tests\Support\Traits\DatabaseSnapshotTrait;
@@ -16,13 +18,11 @@ use Tests\Support\Traits\HttpResponseTestTrait;
  * 適用於需要完整系統環境的整合測試
  * 提供資料庫、快取、HTTP 回應等完整功能
  */
-abstract class IntegrationTestCase extends BaseTestCase
+abstract class IntegrationTestCase extends SecureDDDTestCase
 {
     use DatabaseTestTrait;
     use CacheTestTrait;
     use DatabaseSnapshotTrait;
-
-    protected function setUp(): void
 
     protected function setUp(): void
     {

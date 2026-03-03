@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Statistics\ValueObjects;
 
 use App\Domains\Statistics\ValueObjects\PeriodType;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * PeriodType 枚舉單元測試.
  */
-final class PeriodTypeTest extends TestCase
+final class PeriodTypeTest extends UnitTestCase
 {
     #[Test]
     public function it_has_correct_values(): void

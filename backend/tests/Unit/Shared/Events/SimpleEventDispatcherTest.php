@@ -9,14 +9,14 @@ use App\Shared\Events\Contracts\EventListenerInterface;
 use App\Shared\Events\SimpleEventDispatcher;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 /**
  * SimpleEventDispatcher 單元測試.
  */
-class SimpleEventDispatcherTest extends TestCase
+class SimpleEventDispatcherTest extends UnitTestCase
 {
     private SimpleEventDispatcher $dispatcher;
 

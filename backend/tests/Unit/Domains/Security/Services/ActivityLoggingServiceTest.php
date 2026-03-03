@@ -15,12 +15,12 @@ use DateTimeInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
 #[CoversClass(ActivityLoggingService::class)]
-class ActivityLoggingServiceTest extends TestCase
+class ActivityLoggingServiceTest extends UnitTestCase
 {
     private ActivityLogRepositoryInterface|MockObject $repository;
 

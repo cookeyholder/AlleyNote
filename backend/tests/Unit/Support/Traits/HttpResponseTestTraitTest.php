@@ -6,9 +6,9 @@ namespace Tests\Unit\Support\Traits;
 
 use App\Infrastructure\Http\Response;
 use Tests\Support\Traits\HttpResponseTestTrait;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class HttpResponseTestTraitTest extends TestCase
+class HttpResponseTestTraitTest extends UnitTestCase
 {
     use HttpResponseTestTrait;
 

@@ -18,9 +18,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
-class PostControllerTest extends TestCase
+class PostControllerTest extends IntegrationTestCase
 {
     private PostServiceInterface $postService;
 

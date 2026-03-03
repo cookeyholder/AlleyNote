@@ -15,7 +15,7 @@ use PDOException;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 use RuntimeException;
 
 /**
@@ -24,7 +24,7 @@ use RuntimeException;
 #[Group('statistics')]
 #[Group('repository')]
 #[Group('unit')]
-final class StatisticsRepositoryTest extends TestCase
+final class StatisticsRepositoryTest extends UnitTestCase
 {
     private PDO&MockObject $mockPdo;
 

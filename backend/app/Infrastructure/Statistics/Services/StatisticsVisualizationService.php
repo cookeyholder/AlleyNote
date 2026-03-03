@@ -325,7 +325,19 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
         array $chartOptions = [],
     ): ChartData {
-        return new ChartData(['Labels'], []);
+        $cacheKey = 'multi_metric_' . implode('_', $metricNames) . '_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($metricNames, $startDate, $endDate, $granularity): ChartData {
+                return new ChartData(['Labels'], []);
+            },
+            300,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
     }
 
     /**
