@@ -9,6 +9,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libicu-dev \
     libjpeg62-turbo-dev \
     libpng-dev \
+    libsqlite3-dev \
     libwebp-dev \
     libzip-dev \
     openssh-client \
@@ -17,7 +18,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 
 # 安裝 PHP 常用擴展並配置 GD
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install zip intl pdo_mysql gd
+    && docker-php-ext-install gd intl pdo pdo_sqlite zip
 
 # 從官方映像複製 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
