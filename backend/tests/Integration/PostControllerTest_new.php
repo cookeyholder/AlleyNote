@@ -130,7 +130,13 @@ class PostControllerTest extends TestCase
             ->andReturn($expectedData);
 
         // Execute
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->index($this->request, $this->response);
 
         // Verify
@@ -168,7 +174,13 @@ class PostControllerTest extends TestCase
             ->with(1)
             ->andReturn($post);
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->show($this->request, $this->response, ['id' => '1']);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -205,7 +217,13 @@ class PostControllerTest extends TestCase
             ->with($postData)
             ->andReturn($createdPost);
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -242,7 +260,13 @@ class PostControllerTest extends TestCase
             ->with($invalidData)
             ->andThrow(new InvalidArgumentException('Validation failed'));
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -271,7 +295,13 @@ class PostControllerTest extends TestCase
             ->with(1, $updateData)
             ->andReturn(true);
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->update($this->request, $this->response, ['id' => '1']);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -308,7 +338,13 @@ class PostControllerTest extends TestCase
             ->with(999, $updateData)
             ->andThrow(new NotFoundException('Post not found'));
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->update($this->request, $this->response, ['id' => '999']);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -330,7 +366,13 @@ class PostControllerTest extends TestCase
             ->with(1)
             ->andReturn(true);
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->destroy($this->request, $this->response, ['id' => '1']);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -360,7 +402,13 @@ class PostControllerTest extends TestCase
             ->with(999)
             ->andThrow(new NotFoundException('Post not found'));
 
-        $controller = new PostController($this->postService, $this->xssProtection, $this->csrfProtection);
+        $controller = new PostController(
+            $this->postService,
+            $this->xssProtection,
+            $this->csrfProtection,
+            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
+            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+        );
         $response = $controller->destroy($this->request, $this->response, ['id' => '999']);
 
         $this->assertEquals(404, $response->getStatusCode());

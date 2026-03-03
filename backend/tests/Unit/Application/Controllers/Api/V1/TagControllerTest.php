@@ -201,7 +201,7 @@ class TagControllerTest extends TestCase
             ->andReturn($stream);
 
         $stream->shouldReceive('write')
-            ->andReturnSelf();
+            ->andReturnUsing(fn($string) => strlen((string) $string));
 
         $response->shouldReceive('withHeader')
             ->andReturnSelf();

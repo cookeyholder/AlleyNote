@@ -7,7 +7,7 @@ namespace App\Application\Middleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Exception;
-use GuzzleHttp\Psr7\Response;
+use App\Infrastructure\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -910,14 +910,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             'timestamp' => date('c'),
         ];
 
-        $body = json_encode($responseData, JSON_UNESCAPED_UNICODE);
-
         return new Response(
-            status: 403,
-            headers: [
-                'Content-Type' => 'application/json',
-            ],
-            body: $body,
+            statusCode: 403,
+            headers: ['Content-Type' => 'application/json'],
+            body: json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '',
         );
     }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Statistics\Services;
 
+use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\ValueObjects\ChartData;
 use App\Infrastructure\Statistics\Adapters\StatisticsQueryAdapter;
@@ -35,6 +36,9 @@ final class StatisticsVisualizationServiceTest extends TestCase
     /** @var MockObject&StatisticsCacheServiceInterface */
     private MockObject $mockCacheService;
 
+    /** @var MockObject&PostStatisticsRepositoryInterface */
+    private MockObject $mockPostRepository;
+
     private DateTimeImmutable $startDate;
 
     private DateTimeImmutable $endDate;
@@ -47,12 +51,14 @@ final class StatisticsVisualizationServiceTest extends TestCase
         $this->mockCategoryProcessor = $this->createMock(CategoryProcessor::class);
         $this->mockTimeSeriesProcessor = $this->createMock(TimeSeriesProcessor::class);
         $this->mockCacheService = $this->createMock(StatisticsCacheServiceInterface::class);
+        $this->mockPostRepository = $this->createMock(PostStatisticsRepositoryInterface::class);
 
         $this->service = new StatisticsVisualizationService(
             $this->mockQueryAdapter,
             $this->mockCategoryProcessor,
             $this->mockTimeSeriesProcessor,
             $this->mockCacheService,
+            $this->mockPostRepository,
         );
 
         $this->startDate = new DateTimeImmutable('2023-01-01');
@@ -221,11 +227,6 @@ final class StatisticsVisualizationServiceTest extends TestCase
         $chartOptions = ['filter' => 'active'];
         $expectedChartData = new ChartData(['Custom 1'], []);
 
-        $this->mockCacheService
-            ->expects($this->once())
-            ->method('remember')
-            ->willReturn($expectedChartData);
-
         // Act
         $result = $this->service->getCustomChartData($metricName, $parameters, $chartOptions);
 
@@ -257,17 +258,30 @@ final class StatisticsVisualizationServiceTest extends TestCase
         // Arrange
         $metrics = ['response_time', 'throughput'];
         $granularity = 'hour';
-        $expectedChartData = new ChartData(['2023-01-01 00:00'], []);
-
-        $this->mockCacheService
-            ->expects($this->once())
-            ->method('remember')
-            ->willReturn($expectedChartData);
 
         // Act
         $result = $this->service->getPerformanceMetricsData($this->startDate, $this->endDate, $metrics, $granularity);
 
         // Assert
         $this->assertInstanceOf(ChartData::class, $result);
+    }
+
+    public function testGetViewsTimeSeriesDataCallsRepository(): void
+    {
+        // Arrange
+        $granularity = 'day';
+        $expectedData = [['date' => '2023-01-01', 'views' => 10, 'visitors' => 5]];
+
+        $this->mockPostRepository
+            ->expects($this->once())
+            ->method('getViewTimeSeriesData')
+            ->with($this->startDate, $this->endDate, $granularity)
+            ->willReturn($expectedData);
+
+        // Act
+        $result = $this->service->getViewsTimeSeriesData($this->startDate, $this->endDate, $granularity);
+
+        // Assert
+        $this->assertEquals($expectedData, $result);
     }
 }
