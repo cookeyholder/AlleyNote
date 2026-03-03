@@ -74,7 +74,9 @@ class PostActivityLoggingTest extends TestCase
             ->byDefault();
 
         $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('write')->andReturnSelf()->byDefault();
+        $stream->shouldReceive('write')
+            ->andReturnUsing(fn($string) => strlen((string) $string))
+            ->byDefault();
         $stream->shouldReceive('__toString')->andReturn('{"success": true}')->byDefault();
         $this->response->shouldReceive('getBody')->andReturn($stream)->byDefault();
     }
@@ -99,6 +101,7 @@ class PostActivityLoggingTest extends TestCase
         $requestBody = json_encode($postData);
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn($requestBody);
+        $stream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($stream);
 
         $responseStream = Mockery::mock(StreamInterface::class);
@@ -155,6 +158,7 @@ class PostActivityLoggingTest extends TestCase
         $invalidJson = '{invalid json}';
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn($invalidJson);
+        $stream->shouldReceive('__toString')->andReturn($invalidJson);
         $this->request->shouldReceive('getBody')->andReturn($stream);
 
         $responseStream = Mockery::mock(StreamInterface::class);
@@ -273,6 +277,7 @@ class PostActivityLoggingTest extends TestCase
         $requestBody = json_encode($requestData);
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')->andReturn($requestBody);
+        $stream->shouldReceive('__toString')->andReturn($requestBody ?: '');
         $this->request->shouldReceive('getBody')->andReturn($stream);
 
         $this->postService->shouldReceive('setPinned')

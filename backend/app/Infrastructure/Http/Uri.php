@@ -109,7 +109,7 @@ class Uri implements UriInterface
         return $this->fragment;
     }
 
-    public function withScheme(mixed $scheme): self
+    public function withScheme(string $scheme): self
     {
         $new = clone $this;
         $new->scheme = strtolower($scheme);
@@ -117,7 +117,7 @@ class Uri implements UriInterface
         return $new;
     }
 
-    public function withUserInfo($user, mixed $password = null): self
+    public function withUserInfo(string $user, ?string $password = null): self
     {
         $new = clone $this;
         $new->userInfo = $user;
@@ -128,7 +128,7 @@ class Uri implements UriInterface
         return $new;
     }
 
-    public function withHost(mixed $host): self
+    public function withHost(string $host): self
     {
         $new = clone $this;
         $new->host = strtolower($host);
@@ -136,7 +136,7 @@ class Uri implements UriInterface
         return $new;
     }
 
-    public function withPort(mixed $port): self
+    public function withPort(?int $port): self
     {
         $new = clone $this;
         $new->port = $port;
@@ -144,7 +144,7 @@ class Uri implements UriInterface
         return $new;
     }
 
-    public function withPath(mixed $path): self
+    public function withPath(string $path): self
     {
         $new = clone $this;
         $new->path = $path;
@@ -152,7 +152,7 @@ class Uri implements UriInterface
         return $new;
     }
 
-    public function withQuery(mixed $query): self
+    public function withQuery(string $query): self
     {
         $new = clone $this;
         $new->query = $query;
@@ -160,7 +160,7 @@ class Uri implements UriInterface
         return $new;
     }
 
-    public function withFragment(mixed $fragment): self
+    public function withFragment(string $fragment): self
     {
         $new = clone $this;
         $new->fragment = $fragment;

@@ -42,7 +42,9 @@ class Response implements ResponseInterface
         }
 
         foreach ($headers as $name => $value) {
-            $this->withHeader($name, $value);
+            $normalizedName = strtolower($name);
+            $this->headerNames[$normalizedName] = $name;
+            $this->headers[$name] = is_array($value) ? $value : [$value];
         }
     }
 
@@ -51,7 +53,7 @@ class Response implements ResponseInterface
         return $this->protocolVersion;
     }
 
-    public function withProtocolVersion(string $version): ResponseInterface
+    public function withProtocolVersion(string $version): self
     {
         $clone = clone $this;
         $clone->protocolVersion = $version;
@@ -76,7 +78,12 @@ class Response implements ResponseInterface
             return [];
         }
 
-        return $this->headers[$this->headerNames[$name]];
+        $originalName = $this->headerNames[$name];
+        if (!is_string($originalName)) {
+            return [];
+        }
+
+        return $this->headers[$originalName] ?? [];
     }
 
     public function getHeaderLine(string $name): string
@@ -84,7 +91,7 @@ class Response implements ResponseInterface
         return implode(', ', $this->getHeader($name));
     }
 
-    public function withHeader(string $name, $value): ResponseInterface
+    public function withHeader(string $name, mixed $value): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
@@ -94,14 +101,16 @@ class Response implements ResponseInterface
         return $clone;
     }
 
-    public function withAddedHeader(string $name, $value): ResponseInterface
+    public function withAddedHeader(string $name, mixed $value): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
 
         if (isset($clone->headerNames[$normalizedName])) {
-            $name = $clone->headerNames[$normalizedName];
-            $clone->headers[$name] = array_merge($clone->headers[$name], is_array($value) ? $value : [$value]);
+            $actualName = $clone->headerNames[$normalizedName];
+            if (is_string($actualName)) {
+                $clone->headers[$actualName] = array_merge($clone->headers[$actualName], is_array($value) ? $value : [$value]);
+            }
         } else {
             $clone->headerNames[$normalizedName] = $name;
             $clone->headers[$name] = is_array($value) ? $value : [$value];
@@ -110,7 +119,7 @@ class Response implements ResponseInterface
         return $clone;
     }
 
-    public function withoutHeader(string $name): ResponseInterface
+    public function withoutHeader(string $name): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
@@ -120,7 +129,9 @@ class Response implements ResponseInterface
         }
 
         $originalName = $clone->headerNames[$normalizedName];
-        unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);
+        if (is_string($originalName)) {
+            unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);
+        }
 
         return $clone;
     }
@@ -130,7 +141,7 @@ class Response implements ResponseInterface
         return $this->body;
     }
 
-    public function withBody(StreamInterface $body): ResponseInterface
+    public function withBody(StreamInterface $body): self
     {
         $clone = clone $this;
         $clone->body = $body;
@@ -143,7 +154,7 @@ class Response implements ResponseInterface
         return $this->statusCode;
     }
 
-    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
+    public function withStatus(int $code, string $reasonPhrase = ''): self
     {
         $clone = clone $this;
         $clone->statusCode = $code;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
+use App\Infrastructure\Http\Response;
+use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Contracts\RouteInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -80,135 +82,7 @@ class ControllerResolver
      */
     private function createResponse(): ResponseInterface
     {
-        return new class implements ResponseInterface {
-            /** @var array<string, array<string>> */
-            private array $headers = [];
-
-            private mixed $body;
-
-            private int $statusCode = 200;
-
-            private string $reasonPhrase = 'OK';
-
-            private string $protocolVersion = '1.1';
-
-            public function __construct()
-            {
-                $this->body = new class {
-                    private string $content = '';
-
-                    public function write(string $string): int
-                    {
-                        $this->content .= $string;
-
-                        return strlen($string);
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->content;
-                    }
-                };
-            }
-
-            public function getStatusCode(): int
-            {
-                return $this->statusCode;
-            }
-
-            public function withStatus($code, $reasonPhrase = ''): self
-            {
-                $new = clone $this;
-                $new->statusCode = $code;
-                if ($reasonPhrase) {
-                    $new->reasonPhrase = $reasonPhrase;
-                }
-
-                return $new;
-            }
-
-            public function getReasonPhrase(): string
-            {
-                return $this->reasonPhrase;
-            }
-
-            public function getProtocolVersion(): string
-            {
-                return $this->protocolVersion;
-            }
-
-            public function withProtocolVersion($version): self
-            {
-                $new = clone $this;
-                $new->protocolVersion = $version;
-
-                return $new;
-            }
-
-            public function getHeaders(): array
-            {
-                /** @var array<string, array<string>> $headers */
-                $headers = $this->headers;
-
-                return $headers;
-            }
-
-            public function hasHeader($name): bool
-            {
-                return isset($this->headers[$name]);
-            }
-
-            public function getHeader($name): array
-            {
-                /** @var array<string> $header */
-                $header = $this->headers[$name] ?? [];
-
-                return $header;
-            }
-
-            public function getHeaderLine($name): string
-            {
-                return implode(', ', $this->getHeader($name));
-            }
-
-            public function withHeader($name, $value): self
-            {
-                $new = clone $this;
-                $new->headers[$name] = is_array($value) ? $value : [$value];
-
-                return $new;
-            }
-
-            public function withAddedHeader($name, $value): self
-            {
-                $new = clone $this;
-                $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
-
-                return $new;
-            }
-
-            public function withoutHeader($name): self
-            {
-                $new = clone $this;
-                unset($new->headers[$name]);
-
-                return $new;
-            }
-
-            public function getBody(): mixed
-            {
-                // @phpstan-ignore-next-line - Simple mock stream for basic functionality
-                return $this->body;
-            }
-
-            public function withBody($body): self
-            {
-                $new = clone $this;
-                $new->body = $body;
-
-                return $new;
-            }
-        };
+        return new Response();
     }
 
     /**
@@ -216,142 +90,14 @@ class ControllerResolver
      */
     private function createJsonResponse(mixed $data, int $status = 200): ResponseInterface
     {
-        // 建立簡單的 PSR-7 回應
-        $response = new class implements ResponseInterface {
-            /** @var array<string, array<string>> */
-            private array $headers = ['Content-Type' => ['application/json']];
+        $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '{}';
+        $stream = new Stream($json);
 
-            private mixed $body;
-
-            private int $statusCode = 200;
-
-            private string $reasonPhrase = 'OK';
-
-            private string $protocolVersion = '1.1';
-
-            public function __construct()
-            {
-                $this->body = new class {
-                    private string $content = '';
-
-                    public function write(string $string): int
-                    {
-                        $this->content .= $string;
-
-                        return strlen($string);
-                    }
-
-                    public function __toString(): string
-                    {
-                        return $this->content;
-                    }
-                };
-            }
-
-            public function getStatusCode(): int
-            {
-                return $this->statusCode;
-            }
-
-            public function withStatus($code, $reasonPhrase = ''): self
-            {
-                $new = clone $this;
-                $new->statusCode = $code;
-                if ($reasonPhrase) {
-                    $new->reasonPhrase = $reasonPhrase;
-                }
-
-                return $new;
-            }
-
-            public function getReasonPhrase(): string
-            {
-                return $this->reasonPhrase;
-            }
-
-            public function getProtocolVersion(): string
-            {
-                return $this->protocolVersion;
-            }
-
-            public function withProtocolVersion($version): self
-            {
-                $new = clone $this;
-                $new->protocolVersion = $version;
-
-                return $new;
-            }
-
-            public function getHeaders(): array
-            {
-                /** @var array<string, array<string>> $headers */
-                $headers = $this->headers;
-
-                return $headers;
-            }
-
-            public function hasHeader($name): bool
-            {
-                return isset($this->headers[$name]);
-            }
-
-            public function getHeader($name): array
-            {
-                /** @var array<string> $header */
-                $header = $this->headers[$name] ?? [];
-
-                return $header;
-            }
-
-            public function getHeaderLine($name): string
-            {
-                return implode(', ', $this->getHeader($name));
-            }
-
-            public function withHeader($name, $value): self
-            {
-                $new = clone $this;
-                $new->headers[$name] = is_array($value) ? $value : [$value];
-
-                return $new;
-            }
-
-            public function withAddedHeader($name, $value): self
-            {
-                $new = clone $this;
-                $new->headers[$name] = array_merge($this->getHeader($name), is_array($value) ? $value : [$value]);
-
-                return $new;
-            }
-
-            public function withoutHeader($name): self
-            {
-                $new = clone $this;
-                unset($new->headers[$name]);
-
-                return $new;
-            }
-
-            public function getBody(): mixed
-            {
-                // @phpstan-ignore-next-line - Simple mock stream for basic functionality
-                return $this->body;
-            }
-
-            public function withBody($body): self
-            {
-                $new = clone $this;
-                $new->body = $body;
-
-                return $new;
-            }
-        };
-
-        // 將資料編碼為 JSON
-        $json = (json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?? '') ?: '';
-        $response->getBody()->write($json ?: '{}');
-
-        return $response->withStatus($status)->withHeader('Content-Type', 'application/json');
+        return new Response(
+            $status,
+            ['Content-Type' => 'application/json'],
+            $stream,
+        );
     }
 
     /**

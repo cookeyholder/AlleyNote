@@ -367,11 +367,13 @@ final class RefreshTokenService
 
             foreach ($tokens as $tokenData) {
                 // 統計各裝置的 token 數量
-                $deviceId = $tokenData['device_id'] ?? 'unknown';
+                $deviceIdValue = $tokenData['device_id'] ?? 'unknown';
+                $deviceId = is_scalar($deviceIdValue) ? (string) $deviceIdValue : 'unknown';
                 $stats['by_device'][$deviceId] = ($stats['by_device'][$deviceId] ?? 0) + 1;
 
                 // 統計各狀態的 token 數量
-                $status = $tokenData['status'] ?? 'unknown';
+                $statusValue = $tokenData['status'] ?? 'unknown';
+                $status = is_scalar($statusValue) ? (string) $statusValue : 'unknown';
                 $stats['by_status'][$status] = ($stats['by_status'][$status] ?? 0) + 1;
             }
 
