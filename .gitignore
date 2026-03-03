@@ -65,3 +65,6 @@ _migration_backup/
 # SSL 憑證
 ssl-data/
 certbot-data/
+
+.DS_Store
+phpstan-errors.json

@@ -8,7 +8,7 @@
 database/
 ├── migrations/           # 資料庫遷移檔案
 ├── backups/             # 資料庫備份檔案（.gitignore 忽略）
-├── alleynote.db         # SQLite 主要資料庫檔案（.gitignore 忽略）
+├── alleynote.sqlite3    # SQLite 主要資料庫檔案（.gitignore 忽略）
 └── README.md           # 本說明檔案
 ```
 
@@ -25,7 +25,7 @@ database/
 
 ### 檔案說明
 
-- **`alleynote.db`**: 主要的 SQLite 資料庫檔案
+- **`alleynote.sqlite3`**: 主要的 SQLite 資料庫檔案
 - **`migrations/`**: 包含資料庫結構定義和遷移腳本
 - **`backups/`**: 自動備份檔案儲存位置
 
@@ -58,7 +58,7 @@ ls -la backups/alleynote_backup_*.db.gz
 ### 直接操作資料庫
 ```bash
 # 進入 SQLite 命令列介面
-sqlite3 alleynote.db
+sqlite3 alleynote.sqlite3
 
 # 常用 SQLite 指令
 .tables                 # 列出所有表格
@@ -79,24 +79,24 @@ sqlite3 alleynote.db
 ### 權限問題
 ```bash
 # 修復資料庫檔案權限
-sudo chown www-data:www-data alleynote.db
-sudo chmod 664 alleynote.db
+sudo chown www-data:www-data alleynote.sqlite3
+sudo chmod 664 alleynote.sqlite3
 ```
 
 ### 資料庫鎖定問題
 ```bash
 # 檢查是否有程序正在使用資料庫
-lsof alleynote.db
+lsof alleynote.sqlite3
 
 # 重建資料庫（如果檔案損壞）
-rm alleynote.db
+rm alleynote.sqlite3
 ./scripts/init-sqlite.sh
 ```
 
 ### 遷移失敗
 ```bash
 # 檢查資料庫完整性
-sqlite3 alleynote.db "PRAGMA integrity_check;"
+sqlite3 alleynote.sqlite3 "PRAGMA integrity_check;"
 
 # 手動執行特定遷移
 php -r "require 'migrations/001_create_posts_tables.php'; ..."

@@ -551,19 +551,28 @@ class StatisticsAdminController extends BaseController
      */
     private function checkAdminPermission(ServerRequestInterface $request): void
     {
-        $userPermissions = $request->getAttribute('permissions', []);
+        // 檢查用戶角色 (從 JWT token 中獲取)
+        $userRole = $request->getAttribute('role');
 
-        if (!is_array($userPermissions)) {
-            throw ValidationException::fromSingleError('permission', '權限資訊格式錯誤');
-        }
+        // 允許的管理員角色
+        $adminRoles = ['super_admin', 'admin'];
 
-        $hasPermission = in_array('*', $userPermissions)
-                        || in_array('admin.*', $userPermissions)
-                        || in_array('statistics.*', $userPermissions)
-                        || in_array('statistics.admin', $userPermissions);
+        if (!in_array($userRole, $adminRoles)) {
+            // 備用檢查：檢查權限陣列 (如果存在)
+            $userPermissions = $request->getAttribute('permissions', []);
 
-        if (!$hasPermission) {
-            throw ValidationException::fromSingleError('permission', '需要管理員權限');
+            if (!is_array($userPermissions)) {
+                throw ValidationException::fromSingleError('permission', '權限不足，需要管理員權限');
+            }
+
+            $hasPermission = in_array('*', $userPermissions)
+                            || in_array('admin.*', $userPermissions)
+                            || in_array('statistics.*', $userPermissions)
+                            || in_array('statistics.admin', $userPermissions);
+
+            if (!$hasPermission) {
+                throw ValidationException::fromSingleError('permission', '權限不足，需要管理員權限');
+            }
         }
     }
 

@@ -18,8 +18,10 @@ final readonly class LoginResponseDTO
         public int $userId,
         public string $userEmail,
         public int $expiresAt,
+        public ?string $userName = null,
         public ?string $sessionId = null,
         public ?array $permissions = null,
+        public ?array $roles = null,
     ) {}
 
     /**
@@ -27,6 +29,12 @@ final readonly class LoginResponseDTO
      */
     public function toArray(): array
     {
+        // 從 roles 中提取第一個角色名稱作為 role
+        $primaryRole = null;
+        if (is_array($this->roles) && count($this->roles) > 0) {
+            $primaryRole = $this->roles[0]['name'] ?? null;
+        }
+
         return [
             'access_token' => $this->tokens->getAccessToken(),
             'refresh_token' => $this->tokens->getRefreshToken(),
@@ -36,6 +44,9 @@ final readonly class LoginResponseDTO
             'user' => [
                 'id' => $this->userId,
                 'email' => $this->userEmail,
+                'name' => $this->userName, // 添加 name 欄位
+                'role' => $primaryRole, // 添加 role 欄位
+                'roles' => $this->roles,
             ],
             'session_id' => $this->sessionId,
             'permissions' => $this->permissions,

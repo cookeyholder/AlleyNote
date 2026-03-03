@@ -2,8 +2,20 @@
 
 declare(strict_types=1);
 
+// 設置 API 安全標頭
+header('X-Frame-Options: DENY');
+header('X-Content-Type-Options: nosniff');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+
+// 移除伺服器資訊洩漏
+header_remove('X-Powered-By');
+
 // 載入 Composer autoloader
 require __DIR__ . '/../vendor/autoload.php';
+
+// 載入環境變數
+require __DIR__ . '/../bootstrap/load_env.php';
 
 use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;

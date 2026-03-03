@@ -7,11 +7,13 @@ namespace App\Application\Controllers\Api\V1;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
@@ -42,6 +44,8 @@ class AuthController extends BaseController
         private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
         private ActivityLoggingServiceInterface $activityLoggingService,
+        private UserRepositoryInterface $userRepository,
+        private UserManagementService $userManagementService,
     ) {}
 
     /**
@@ -93,7 +97,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/register',
+        path: '/api/auth/register',
         summary: '使用者註冊',
         description: '建立新的使用者帳號，需要提供使用者名稱、電子郵件和密碼',
         operationId: 'registerUser',
@@ -246,7 +250,7 @@ class AuthController extends BaseController
                 'data' => $user,
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(201)
@@ -257,7 +261,7 @@ class AuthController extends BaseController
                 'error' => $e->getMessage(),
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -267,7 +271,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(404)
@@ -277,7 +281,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -285,10 +289,10 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤',
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(500)
@@ -297,7 +301,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/login',
+        path: '/api/auth/login',
         summary: '使用者登入',
         description: '使用帳號密碼或電子郵件密碼進行登入驗證',
         operationId: 'loginUser',
@@ -371,7 +375,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
                 return $response
                     ->withStatus(400)
@@ -426,7 +430,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -441,7 +445,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(404)
@@ -456,7 +460,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -469,10 +473,10 @@ class AuthController extends BaseController
 
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤',
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(500)
@@ -481,7 +485,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/logout',
+        path: '/api/auth/logout',
         summary: '使用者登出',
         description: '登出當前使用者，清除認證狀態和會話',
         operationId: 'logoutUser',
@@ -570,7 +574,7 @@ class AuthController extends BaseController
                 'message' => '登出成功',
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(200)
@@ -580,7 +584,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -590,7 +594,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(404)
@@ -600,7 +604,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -608,9 +612,9 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤',
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(500)
@@ -619,7 +623,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Get(
-        path: '/auth/me',
+        path: '/api/auth/me',
         summary: '取得當前使用者資訊',
         description: '取得目前登入使用者的詳細資訊',
         operationId: 'getCurrentUser',
@@ -658,7 +662,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少有效的 Authorization header',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
                 return $response
                     ->withStatus(401)
@@ -672,12 +676,19 @@ class AuthController extends BaseController
                 $payload = $this->jwtTokenService->validateAccessToken($accessToken);
                 $userId = $payload->getUserId();
 
-                // 這裡你可能需要從資料庫取得完整的使用者資訊
-                // 目前先回傳基本的使用者 ID 和從 token 取得的資訊
+                // 從資料庫取得完整的使用者資訊（包含角色）
+                $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
+
+                if (!$userWithRoles) {
+                    throw new NotFoundException('使用者不存在');
+                }
+
                 $userInfo = [
                     'user_id' => $userId,
-                    'email' => $payload->getCustomClaim('email'),
-                    'name' => $payload->getCustomClaim('name'),
+                    'email' => $userWithRoles['email'],
+                    'name' => $userWithRoles['name'] ?? null,
+                    'username' => $userWithRoles['username'] ?? null,
+                    'roles' => $userWithRoles['roles'] ?? [],
                     'token_issued_at' => $payload->getIssuedAt()->getTimestamp(),
                     'token_expires_at' => $payload->getExpiresAt()->getTimestamp(),
                 ];
@@ -690,7 +701,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => 'Token 無效或使用者不存在',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
                 return $response
                     ->withStatus(401)
@@ -704,6 +715,8 @@ class AuthController extends BaseController
                         'id' => $userInfo['user_id'],
                         'email' => $userInfo['email'],
                         'name' => $userInfo['name'],
+                        'username' => $userInfo['username'],
+                        'roles' => $userInfo['roles'],
                     ],
                     'token_info' => [
                         'issued_at' => $userInfo['token_issued_at'],
@@ -712,7 +725,7 @@ class AuthController extends BaseController
                 ],
             ];
 
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(200)
@@ -722,7 +735,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -732,7 +745,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(404)
@@ -742,7 +755,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -750,9 +763,9 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤',
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(500)
@@ -761,7 +774,7 @@ class AuthController extends BaseController
     }
 
     #[OA\Post(
-        path: '/auth/refresh',
+        path: '/api/auth/refresh',
         summary: '刷新認證 Token',
         description: '使用 Refresh Token 取得新的 Access Token',
         operationId: 'refreshToken',
@@ -829,7 +842,7 @@ class AuthController extends BaseController
                     'success' => false,
                     'error' => '缺少必要的 refresh_token',
                 ];
-                $response->getBody()->write((json_encode($responseData) ?? ''));
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
                 return $response
                     ->withStatus(400)
@@ -865,7 +878,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -875,7 +888,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(404)
@@ -885,7 +898,7 @@ class AuthController extends BaseController
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(400)
@@ -893,9 +906,9 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             $responseData = [
                 'success' => false,
-                'error' => '系統發生錯誤',
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
             ];
-            $response->getBody()->write((json_encode($responseData) ?? ''));
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
 
             return $response
                 ->withStatus(500)
@@ -926,6 +939,373 @@ class AuthController extends BaseController
         } catch (Exception $e) {
             // 記錄活動失敗不應該影響主要流程，只記錄錯誤
             error_log('Failed to log login failure activity: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * 更新個人資料.
+     *
+     * PUT /auth/profile
+     */
+    #[OA\Put(
+        path: '/api/auth/profile',
+        summary: '更新個人資料',
+        description: '更新當前登入使用者的個人資料',
+        operationId: 'updateProfile',
+        tags: ['auth'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: '個人資料',
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(
+                        property: 'username',
+                        type: 'string',
+                        description: '使用者名稱',
+                        example: 'johndoe',
+                    ),
+                    new OA\Property(
+                        property: 'email',
+                        type: 'string',
+                        format: 'email',
+                        description: '電子郵件地址',
+                        example: 'john@example.com',
+                    ),
+                    new OA\Property(
+                        property: 'name',
+                        type: 'string',
+                        description: '顯示名稱',
+                        example: 'John Doe',
+                    ),
+                ],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '更新成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '個人資料更新成功'),
+                        new OA\Property(
+                            property: 'data',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 1),
+                                new OA\Property(property: 'username', type: 'string', example: 'johndoe'),
+                                new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
+                                new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 401,
+                description: '未授權',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: '未授權存取'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 422,
+                description: '驗證失敗',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: '資料驗證失敗'),
+                        new OA\Property(property: 'errors', type: 'object'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function updateProfile(Request $request, Response $response): Response
+    {
+        try {
+            // 從 Authorization header 取得 access token
+            $authHeader = $request->getHeaderLine('Authorization');
+            if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少有效的 Authorization header',
+                ];
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+                return $response
+                    ->withStatus(401)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $accessToken = substr($authHeader, 7);
+
+            // 驗證 token 並取得使用者 ID
+            $payload = $this->jwtTokenService->validateAccessToken($accessToken);
+            $userId = $payload->getUserId();
+
+            // 取得更新資料
+            $data = $request->getParsedBody();
+            if (!is_array($data)) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '無效的請求資料格式',
+                ];
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $updateData = [];
+            if (isset($data['username'])) {
+                $updateData['username'] = $data['username'];
+            }
+            if (isset($data['email'])) {
+                $updateData['email'] = $data['email'];
+            }
+            if (isset($data['name'])) {
+                $updateData['name'] = $data['name'];
+            }
+
+            // 更新使用者資料
+            $this->userRepository->update($userId, $updateData);
+
+            // 取得更新後的使用者資訊
+            $user = $this->userRepository->findByIdWithRoles($userId);
+
+            if ($user === null) {
+                throw new NotFoundException('使用者不存在');
+            }
+
+            $responseData = [
+                'success' => true,
+                'message' => '個人資料更新成功',
+                'data' => [
+                    'id' => $user['id'],
+                    'username' => $user['username'],
+                    'email' => $user['email'],
+                    'name' => $user['name'] ?? null,
+                    'roles' => $user['roles'] ?? [],
+                ],
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->getErrors(),
+            ];
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(422)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * 變更密碼
+     *
+     * POST /auth/change-password
+     */
+    #[OA\Post(
+        path: '/api/auth/change-password',
+        summary: '變更密碼',
+        description: '變更當前登入使用者的密碼',
+        operationId: 'changePassword',
+        tags: ['auth'],
+        security: [['bearerAuth' => []]],
+        requestBody: new OA\RequestBody(
+            description: '密碼資料',
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(
+                        property: 'current_password',
+                        type: 'string',
+                        format: 'password',
+                        description: '當前密碼',
+                        example: 'oldpassword123',
+                    ),
+                    new OA\Property(
+                        property: 'new_password',
+                        type: 'string',
+                        format: 'password',
+                        description: '新密碼，至少6個字元',
+                        minLength: 6,
+                        example: 'newpassword123',
+                    ),
+                    new OA\Property(
+                        property: 'new_password_confirmation',
+                        type: 'string',
+                        format: 'password',
+                        description: '確認新密碼，必須與新密碼相同',
+                        example: 'newpassword123',
+                    ),
+                ],
+                required: ['current_password', 'new_password', 'new_password_confirmation'],
+            ),
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: '密碼變更成功',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '密碼變更成功'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 401,
+                description: '未授權',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'error', type: 'string', example: '未授權存取'),
+                    ],
+                ),
+            ),
+            new OA\Response(
+                response: 422,
+                description: '驗證失敗',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(property: 'message', type: 'string', example: '資料驗證失敗'),
+                        new OA\Property(property: 'errors', type: 'object'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function changePassword(Request $request, Response $response): Response
+    {
+        try {
+            // 從 Authorization header 取得 access token
+            $authHeader = $request->getHeaderLine('Authorization');
+            if (empty($authHeader) || !str_starts_with($authHeader, 'Bearer ')) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '缺少有效的 Authorization header',
+                ];
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+                return $response
+                    ->withStatus(401)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            $accessToken = substr($authHeader, 7);
+
+            // 驗證 token 並取得使用者 ID
+            $payload = $this->jwtTokenService->validateAccessToken($accessToken);
+            $userId = $payload->getUserId();
+
+            // 取得密碼資料
+            $data = $request->getParsedBody();
+            if (!is_array($data)) {
+                $responseData = [
+                    'success' => false,
+                    'error' => '無效的請求資料格式',
+                ];
+                $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+                return $response
+                    ->withStatus(400)
+                    ->withHeader('Content-Type', 'application/json');
+            }
+
+            // 驗證必填欄位
+            if (empty($data['current_password']) || empty($data['new_password']) || empty($data['new_password_confirmation'])) {
+                throw ValidationException::fromErrors([
+                    'current_password' => empty($data['current_password']) ? ['當前密碼為必填'] : [],
+                    'new_password' => empty($data['new_password']) ? ['新密碼為必填'] : [],
+                    'new_password_confirmation' => empty($data['new_password_confirmation']) ? ['確認新密碼為必填'] : [],
+                ]);
+            }
+
+            // 驗證新密碼確認
+            if ($data['new_password'] !== $data['new_password_confirmation']) {
+                throw ValidationException::fromSingleError('new_password_confirmation', '新密碼與確認密碼不符');
+            }
+
+            // 使用 UserManagementService 變更密碼
+            $this->userManagementService->changePassword(
+                $userId,
+                $data['current_password'],
+                $data['new_password'],
+            );
+
+            // 記錄密碼變更活動
+            $activityDto = CreateActivityLogDTO::success(
+                actionType: ActivityType::PASSWORD_CHANGED,
+                userId: $userId,
+                description: '密碼變更成功',
+                metadata: [
+                    'timestamp' => date('c'),
+                ],
+            )->withNetworkInfo(
+                $this->getClientIpAddress($request),
+                $request->getHeaderLine('User-Agent') ?: 'Unknown',
+            );
+
+            $this->activityLoggingService->log($activityDto);
+
+            $responseData = [
+                'success' => true,
+                'message' => '密碼變更成功',
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (ValidationException $e) {
+            $responseData = [
+                'success' => false,
+                'message' => $e->getMessage(),
+                'errors' => $e->getErrors(),
+            ];
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(422)
+                ->withHeader('Content-Type', 'application/json');
+        } catch (Exception $e) {
+            $responseData = [
+                'success' => false,
+                'error' => '系統發生錯誤: ' . $e->getMessage(),
+            ];
+
+            $response->getBody()->write((json_encode($responseData) ?: '{}'));
+
+            return $response
+                ->withStatus(500)
+                ->withHeader('Content-Type', 'application/json');
         }
     }
 }

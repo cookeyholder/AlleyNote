@@ -78,7 +78,7 @@ interface PostServiceInterface
      * @param array $tagIds 標籤 ID 陣列
      * @throws NotFoundException
      */
-    public function setTags(int $id, array $tagIds): bool;
+    public function setTags(int $id, array $tagIds): void;
 
     /**
      * 記錄文章觀看.
@@ -88,4 +88,20 @@ interface PostServiceInterface
      * @throws NotFoundException
      */
     public function recordView(int $id, string $userIp, ?int $userId = null): bool;
+
+    /**
+     * 更新貼文狀態.
+     * @param int $id 文章 ID
+     * @param string $status 狀態（draft, published, archived）
+     * @throws NotFoundException
+     * @throws ValidationException
+     */
+    public function updatePostStatus(int $id, string $status): Post;
+
+    /**
+     * 取消置頂貼文.
+     * @param int $id 文章 ID
+     * @throws NotFoundException
+     */
+    public function unpinPost(int $id): Post;
 }
