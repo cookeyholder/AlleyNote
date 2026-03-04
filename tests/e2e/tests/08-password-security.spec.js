@@ -3,7 +3,7 @@ const { test, expect } = require('./fixtures/page-objects');
 test.describe('密碼安全性測試', () => {
   test.beforeEach(async ({ adminPage: page }) => {
     // 進入使用者管理頁面
-    await page.goto('http://localhost:3000/admin/users');
+    await page.goto('/admin/users');
     await page.waitForLoadState('networkidle');
   });
 
