@@ -245,15 +245,17 @@ async function loadPosts() {
       return;
     }
 
-    // 渲染文章卡片
+    // 渲染文章卡片（使用 DOM API，避免注入風險）
     const postCards = await Promise.all(
       posts.map((post) => renderPostCard(post)),
     );
-    container.innerHTML = `
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        ${postCards.join("")}
-      </div>
-    `;
+    container.innerHTML = "";
+    const grid = document.createElement("div");
+    grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6";
+    postCards.forEach((card) => {
+      grid.appendChild(card);
+    });
+    container.appendChild(grid);
 
     // 渲染分頁
     renderPagination(pagination);
@@ -261,7 +263,7 @@ async function loadPosts() {
     container.innerHTML = `
       <div class="text-center py-16">
         <div class="text-6xl mb-4">⚠️</div>
-        <p class="text-xl text-red-600 mb-4">載入失敗：${error.message}</p>
+        <p id="home-load-error-message" class="text-xl text-red-600 mb-4"></p>
         <button
           onclick="location.reload()"
           class="btn-primary"
@@ -270,6 +272,11 @@ async function loadPosts() {
         </button>
       </div>
     `;
+    const errorMessageElement = document.getElementById("home-load-error-message");
+    if (errorMessageElement) {
+      const message = error instanceof Error ? error.message : "未知錯誤";
+      errorMessageElement.textContent = `載入失敗：${message}`;
+    }
   }
 }
 
@@ -287,47 +294,66 @@ async function renderPostCard(post) {
     "datetime",
   );
 
-  return `
-    <article class="card card-hover">
-      <div class="h-2 bg-accent-500 rounded-t-lg -mt-8 -mx-8 mb-4"></div>
-      <h4 class="text-lg font-semibold mb-2 text-modern-900 line-clamp-2">
-        <a href="/posts/${post.id}" class="hover:text-accent-600 transition-colors">
-          ${post.title}
-        </a>
-      </h4>
-      <p class="text-modern-600 text-sm mb-4 line-clamp-3">
-        ${excerpt}
-      </p>
-      <div class="flex items-center justify-between text-sm text-modern-500">
-        <div class="flex items-center gap-2">
-          <span>📅</span>
-          <time datetime="${dateString}">${formattedDate}</time>
-        </div>
-        <div class="flex items-center gap-2">
-          <span>👤</span>
-          <span>${post.author?.name || post.author || "匿名"}</span>
-        </div>
-      </div>
-      ${
-        post.tags && post.tags.length > 0
-          ? `
-        <div class="mt-4 flex flex-wrap gap-2">
-          ${post.tags
-            .slice(0, 3)
-            .map(
-              (tag) => `
-            <span class="px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs">
-              #${tag}
-            </span>
-          `,
-            )
-            .join("")}
-        </div>
-      `
-          : ""
-      }
-    </article>
-  `;
+  const article = document.createElement("article");
+  article.className = "card card-hover";
+
+  const accentBar = document.createElement("div");
+  accentBar.className = "h-2 bg-accent-500 rounded-t-lg -mt-8 -mx-8 mb-4";
+  article.appendChild(accentBar);
+
+  const titleElement = document.createElement("h4");
+  titleElement.className = "text-lg font-semibold mb-2 text-modern-900 line-clamp-2";
+  const titleLink = document.createElement("a");
+  titleLink.className = "hover:text-accent-600 transition-colors";
+  titleLink.href = `/posts/${post.id}`;
+  titleLink.textContent = String(post.title ?? "");
+  titleElement.appendChild(titleLink);
+  article.appendChild(titleElement);
+
+  const excerptElement = document.createElement("p");
+  excerptElement.className = "text-modern-600 text-sm mb-4 line-clamp-3";
+  excerptElement.textContent = String(excerpt ?? "");
+  article.appendChild(excerptElement);
+
+  const meta = document.createElement("div");
+  meta.className = "flex items-center justify-between text-sm text-modern-500";
+
+  const dateWrap = document.createElement("div");
+  dateWrap.className = "flex items-center gap-2";
+  const dateIcon = document.createElement("span");
+  dateIcon.textContent = "📅";
+  const timeElement = document.createElement("time");
+  timeElement.dateTime = String(dateString ?? "");
+  timeElement.textContent = String(formattedDate ?? "");
+  dateWrap.appendChild(dateIcon);
+  dateWrap.appendChild(timeElement);
+
+  const authorWrap = document.createElement("div");
+  authorWrap.className = "flex items-center gap-2";
+  const authorIcon = document.createElement("span");
+  authorIcon.textContent = "👤";
+  const authorName = document.createElement("span");
+  authorName.textContent = String(post.author?.name || post.author || "匿名");
+  authorWrap.appendChild(authorIcon);
+  authorWrap.appendChild(authorName);
+
+  meta.appendChild(dateWrap);
+  meta.appendChild(authorWrap);
+  article.appendChild(meta);
+
+  if (post.tags && post.tags.length > 0) {
+    const tagsWrap = document.createElement("div");
+    tagsWrap.className = "mt-4 flex flex-wrap gap-2";
+    post.tags.slice(0, 3).forEach((tag) => {
+      const tagElement = document.createElement("span");
+      tagElement.className = "px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs";
+      tagElement.textContent = `#${String(tag ?? "")}`;
+      tagsWrap.appendChild(tagElement);
+    });
+    article.appendChild(tagsWrap);
+  }
+
+  return article;
 }
 
 /**
