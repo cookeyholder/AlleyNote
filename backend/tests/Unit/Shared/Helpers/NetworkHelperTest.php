@@ -56,6 +56,16 @@ class NetworkHelperTest extends SecureDDDTestCase
     }
 
     #[Test]
+    public function ignoresProxyHeadersWhenTrustedProxyListIsEmpty(): void
+    {
+        $request = $this->createNetworkRequest('GET', '/', ['X-Forwarded-For' => ['5.6.7.8']], ['REMOTE_ADDR' => '10.0.0.1']);
+
+        $ip = NetworkHelper::getClientIp($request);
+
+        $this->assertEquals('10.0.0.1', $ip);
+    }
+
+    #[Test]
     public function returnsXRealIpIfPresentAndTrusted(): void
     {
         $request = $this->createNetworkRequest('GET', '/', ['X-Real-IP' => ['9.10.11.12']], ['REMOTE_ADDR' => '127.0.0.1']);

@@ -18,7 +18,7 @@ abstract class BaseController
         'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::BAD_REQUEST,
         'App\Shared\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
         'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
-        'App\Shared\Exceptions\ValidationException' => HttpStatusCode::BAD_REQUEST,
+        'App\Shared\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Domains\Auth\Exceptions\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
         'App\Domains\Auth\Exceptions\ForbiddenException' => HttpStatusCode::FORBIDDEN,

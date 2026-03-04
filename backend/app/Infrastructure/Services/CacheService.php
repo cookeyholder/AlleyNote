@@ -104,8 +104,10 @@ class CacheService implements CacheServiceInterface
             return $this->delete($pattern) ? 1 : 0;
         }
 
-        $regex = '/^' . str_replace(['*', ':'], ['.*', '\:'], preg_quote($pattern, '/')) . '$/';
-        $regex = str_replace('\.\*', '.*', $regex);
+        // 注意：此方法會遍歷索引中的所有 key，當 key 數量很大時會有 I/O 與 CPU 成本。
+        // 若需要高頻率/大量 pattern 刪除，建議改用支援原生 pattern matching 的快取驅動（例如 Redis）。
+        $quotedPattern = preg_quote($pattern, '/');
+        $regex = '/^' . str_replace('\\*', '.*', $quotedPattern) . '$/';
 
         $index = $this->getIndex();
         $deletedCount = 0;

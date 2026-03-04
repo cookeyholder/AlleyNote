@@ -37,6 +37,13 @@ const test = base.extend({
     // 提供頁面給測試使用
     await use(page);
   },
+
+  /**
+   * 向後相容：既有測試仍使用 authenticatedPage
+   */
+  authenticatedPage: async ({ adminPage }, use) => {
+    await use(adminPage);
+  },
 });
 
 /**

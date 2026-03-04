@@ -14,6 +14,15 @@ let siteSettings = {
   footer_description: "基於 Domain-Driven Design 的企業級公布欄系統",
 };
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 /**
  * 渲染首頁
  */
@@ -24,6 +33,10 @@ export async function renderHome() {
   // 檢查使用者登入狀態
   const isAuthenticated = globalGetters.isAuthenticated();
   const user = globalGetters.getUser();
+  const safeSiteName = escapeHtml(siteSettings.site_name || "AlleyNote");
+  const safeSiteDescription = escapeHtml(siteSettings.site_description || "");
+  const safeFooterCopyright = escapeHtml(siteSettings.footer_copyright || "");
+  const safeUsername = escapeHtml(user?.username || "管理後台");
 
   const app = document.getElementById("app");
 
@@ -36,7 +49,7 @@ export async function renderHome() {
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-accent-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-accent-600/20">A</div>
               <a href="/" data-navigo class="text-2xl font-bold text-modern-900 hover:text-accent-600 transition-colors">
-                ${siteSettings.site_name}
+                ${safeSiteName}
               </a>
             </div>
             <div class="flex items-center gap-6">
@@ -63,7 +76,7 @@ export async function renderHome() {
                     <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <span class="hidden sm:inline font-bold">${user?.username || "管理後台"}</span>
+                    <span class="hidden sm:inline font-bold">${safeUsername}</span>
                     <span class="sm:hidden font-bold">後台</span>
                   </a>
                 </div>
@@ -95,10 +108,10 @@ export async function renderHome() {
             企業級公布欄系統
           </div>
           <h2 class="text-5xl md:text-6xl font-bold text-modern-900 mb-6 tracking-tight">
-            ${siteSettings.site_name}
+            ${safeSiteName}
           </h2>
           <p class="max-w-2xl mx-auto text-xl text-modern-500 leading-relaxed">
-            ${siteSettings.site_description}
+            ${safeSiteDescription}
           </p>
         </div>
 
@@ -174,14 +187,14 @@ export async function renderHome() {
             <div>
               <div class="flex items-center gap-3 mb-6">
                 <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center text-white font-bold">A</div>
-                <span class="text-2xl font-bold tracking-tight">${siteSettings.site_name}</span>
+                <span class="text-2xl font-bold tracking-tight">${safeSiteName}</span>
               </div>
               <div id="footer-description" class="text-modern-400 text-sm leading-relaxed max-w-md"></div>
             </div>
             <div class="text-left md:text-right">
               <p class="text-modern-500 text-xs font-bold uppercase tracking-widest mb-2">Copyright Control</p>
               <p class="text-modern-300 text-sm">
-                ${siteSettings.footer_copyright}
+                ${safeFooterCopyright}
               </p>
             </div>
           </div>
@@ -327,21 +340,28 @@ async function renderPostCard(post) {
   );
 
   const article = document.createElement("article");
-  article.className = "group bg-white border border-modern-200 rounded-3xl p-8 hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden";
+  article.className =
+    "group bg-white border border-modern-200 rounded-3xl p-8 hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden";
 
   // 背景裝飾
   article.innerHTML = `
     <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
       <svg class="w-24 h-24 text-modern-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3v5h5M7 8h5M7 12h10M7 16h10"/></svg>
     </div>
-    
+
     <div class="relative z-10 flex flex-col h-full">
       <div class="flex items-center gap-2 mb-4">
-        ${post.tags && post.tags.length > 0 ? 
-          post.tags.slice(0, 2).map(tag => `
+        ${
+          post.tags && post.tags.length > 0
+            ? post.tags
+                .slice(0, 2)
+                .map(
+                  (tag) => `
             <span class="px-2.5 py-1 bg-accent-50 text-accent-600 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
-          `).join('') : 
-          '<span class="px-2.5 py-1 bg-modern-50 text-modern-400 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-modern-100">General</span>'
+          `,
+                )
+                .join("")
+            : '<span class="px-2.5 py-1 bg-modern-50 text-modern-400 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-modern-100">General</span>'
         }
       </div>
 
@@ -357,7 +377,7 @@ async function renderPostCard(post) {
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-1.5">
             <svg class="w-4 h-4 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            <time class="text-xs font-bold text-modern-500 tabular-nums">${String(formattedDate.split(' ')[0] ?? "")}</time>
+            <time class="text-xs font-bold text-modern-500 tabular-nums">${String(formattedDate.split(" ")[0] ?? "")}</time>
           </div>
           <div class="flex items-center gap-1.5">
             <svg class="w-4 h-4 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>

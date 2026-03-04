@@ -25,8 +25,8 @@ final class NetworkHelper
         $serverParams = $request->getServerParams();
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
 
-        // 如果 remote_addr 不在信任清單中，直接回傳 remote_addr 以防 IP 偽造
-        if (!empty($trustedProxies) && !self::isIpInRanges($remoteAddr, $trustedProxies)) {
+        // 僅在有設定 trusted proxies 且來源為受信代理時才信任轉發標頭
+        if (empty($trustedProxies) || !self::isIpInRanges($remoteAddr, $trustedProxies)) {
             return $remoteAddr;
         }
 

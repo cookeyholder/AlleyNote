@@ -6,6 +6,7 @@ namespace Tests\Support\Traits;
 
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\Stream;
+use JsonException;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,9 +27,15 @@ trait HttpResponseTestTrait
      */
     protected function createJsonResponse(array $data, int $statusCode = 200): ResponseInterface
     {
-        $json = json_encode($data, JSON_UNESCAPED_UNICODE);
+        try {
+            $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $this->fail('JSON 編碼失敗：' . $e->getMessage());
+            $json = '{}';
+        }
+
         $stream = new Stream(fopen('php://temp', 'r+'));
-        $stream->write($json ?: '');
+        $stream->write($json);
 
         return new Response(
             statusCode: $statusCode,
@@ -46,10 +53,18 @@ trait HttpResponseTestTrait
     protected function assertJsonResponseMatches(ResponseInterface $response, array $expected): void
     {
         $body = (string) $response->getBody();
-        $actual = json_decode($body, true);
+        try {
+            $actual = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $this->fail('無法解析回應主體為 JSON：' . $e->getMessage() . '，原始內容：' . $body);
 
-        if ($actual === null && !empty($body)) {
-            $this->fail("無法解析回應主體為 JSON：{$body}");
+            return;
+        }
+
+        if (!is_array($actual)) {
+            $this->fail('JSON 回應內容必須為物件或陣列。');
+
+            return;
         }
 
         $this->assertArraySubsetRecursive($expected, $actual, 'JSON 回應內容不符合預期結構。');
@@ -133,13 +148,15 @@ trait HttpResponseTestTrait
         $response->shouldReceive('getStatusCode')
             ->andReturn($statusCode);
 
+        $json = $this->encodeJsonForTest($data);
+
         // 建立 Stream 模擬物件
         /** @var StreamInterface|MockInterface $stream */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
-            ->andReturn(json_encode($data));
+            ->andReturn($json);
         $stream->shouldReceive('__toString')
-            ->andReturn(json_encode($data));
+            ->andReturn($json);
 
         $response->shouldReceive('getBody')
             ->andReturn($stream);
@@ -219,10 +236,12 @@ trait HttpResponseTestTrait
     protected function assertResponseIsJson(ResponseInterface $response): void
     {
         $body = $response->getBody()->getContents();
-        $decoded = json_decode($body, true);
-
-        $this->assertNotNull($decoded, '回應內容應該是有效的 JSON');
-        $this->assertEquals(JSON_ERROR_NONE, json_last_error(), 'JSON 解析不應該有錯誤');
+        try {
+            json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            $this->assertTrue(true);
+        } catch (JsonException $e) {
+            $this->fail('回應內容應該是有效的 JSON：' . $e->getMessage());
+        }
     }
 
     /**
@@ -233,9 +252,23 @@ trait HttpResponseTestTrait
         $this->assertResponseIsJson($response);
 
         $body = $response->getBody()->getContents();
-        $data = json_decode($body, true);
+        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey($key, $data, "JSON 回應應該包含鍵: {$key}");
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function encodeJsonForTest(array $data): string
+    {
+        try {
+            return json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $this->fail('JSON 編碼失敗：' . $e->getMessage());
+
+            return '{}';
+        }
     }
 
     /**

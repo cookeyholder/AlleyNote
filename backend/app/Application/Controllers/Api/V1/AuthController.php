@@ -329,8 +329,8 @@ class AuthController extends BaseController
             );
 
             $this->activityLoggingService->log($activityDto);
-        } catch (Exception) {
-            // Ignore logging errors
+        } catch (Exception $e) {
+            error_log('Failed to log login failure activity: ' . $e->getMessage());
         }
     }
 

@@ -73,3 +73,4 @@ backend/test_private_key.pem
 backend/test_public_key.pem
 /backend/keys/*.pem
 test_output.txt
+tests_result.txt
