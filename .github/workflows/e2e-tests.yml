@@ -2,15 +2,15 @@ name: E2E Tests
 
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [main, develop, feature/*]
   pull_request:
-    branches: [ main, develop ]
-  workflow_dispatch:  # 允許手動觸發
+    branches: [main, develop]
+  workflow_dispatch: # 允許手動觸發
 
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    
+
     services:
       redis:
         image: redis:alpine
@@ -29,14 +29,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
           cache-dependency-path: tests/e2e/package-lock.json
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
           coverage: none
 
@@ -53,7 +53,7 @@ jobs:
       - name: Start PHP built-in server
         working-directory: backend
         run: |
-          php -S localhost:8080 -t public > /dev/null 2>&1 &
+          php -S localhost:8081 -t public > /dev/null 2>&1 &
           sleep 2
 
       - name: Start frontend server
@@ -99,22 +99,22 @@ jobs:
             const testResults = fs.existsSync('tests/e2e/test-results.json')
               ? JSON.parse(fs.readFileSync('tests/e2e/test-results.json', 'utf8'))
               : null;
-            
+
             if (testResults) {
               const { stats } = testResults;
               const passed = stats.expected || 0;
               const failed = stats.unexpected || 0;
               const total = passed + failed;
-              
+
               const body = `## 🎭 E2E Test Results
-              
+
               - ✅ Passed: ${passed}
               - ❌ Failed: ${failed}
               - 📊 Total: ${total}
-              
+
               ${failed > 0 ? '⚠️ Some tests failed. Check the artifacts for details.' : '🎉 All tests passed!'}
               `;
-              
+
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,

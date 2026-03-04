@@ -9,6 +9,7 @@ use App\Domains\Setting\Services\SettingManagementService;
 use App\Shared\Helpers\TimezoneHelper;
 use DateTimeImmutable;
 use DateTimeZone;
+use PDO;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\IntegrationTestCase;
 
@@ -33,8 +34,8 @@ final class SettingTimezoneIntegrationTest extends IntegrationTestCase
         )');
 
         $this->tempDbPath = sys_get_temp_dir() . '/alleynote_tz_' . bin2hex(random_bytes(8)) . '.sqlite3';
-        $tempPdo = new \PDO('sqlite:' . $this->tempDbPath);
-        $tempPdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $tempPdo = new PDO('sqlite:' . $this->tempDbPath);
+        $tempPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $tempPdo->exec('CREATE TABLE settings (id INTEGER PRIMARY KEY AUTOINCREMENT, key TEXT NOT NULL UNIQUE, value TEXT, type TEXT NOT NULL DEFAULT "string", description TEXT, created_at TEXT, updated_at TEXT)');
         $tempPdo->exec("INSERT INTO settings (key, value, type, created_at, updated_at) VALUES ('site_timezone', 'Asia/Tokyo', 'string', datetime('now'), datetime('now'))");
 
@@ -79,7 +80,7 @@ final class SettingTimezoneIntegrationTest extends IntegrationTestCase
         $siteTime = '2025-10-11 15:30:00';
         $utc = TimezoneHelper::siteTimezoneToUtc($siteTime);
 
-        $expectedUtc = (new DateTimeImmutable($siteTime, new DateTimeZone('Asia/Tokyo')))
+        $expectedUtc = new DateTimeImmutable($siteTime, new DateTimeZone('Asia/Tokyo'))
             ->setTimezone(new DateTimeZone('UTC'))
             ->format('Y-m-d\TH:i:s\Z');
 
