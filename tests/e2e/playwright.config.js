@@ -33,6 +33,7 @@ module.exports = defineConfig({
   forbidOnly: !!process.env.CI, // CI 環境禁止 .only
   retries: process.env.CI ? 1 : 0, // CI 環境重試 1 次（從 2 降為 1）
   workers: process.env.CI ? 1 : 1, // 使用 1 個 worker
+  maxFailures: process.env.CI ? 1 : 0, // CI 首個失敗即停止（fail-fast）
 
   // 超時設定
   timeout: 60000, // 每個測試最長 60 秒（新增）
