@@ -80,34 +80,52 @@ class LoginPage extends SecureBasePage {
   }
 
   async loginWithFallback(candidates) {
+    let lastError = null;
+
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
 
-      await this.goto();
-      await this.login(candidate.email, candidate.password);
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        await this.goto();
+        await this.login(candidate.email, candidate.password);
 
-      try {
-        await this.page.waitForURL("**/admin/dashboard", { timeout: 10000 });
-
-        return;
-      } catch {
-        const hasToken = await this.page.evaluate(() => {
-          const raw = localStorage.getItem("alleynote_access_token");
-          return !!raw && raw !== "null";
-        });
-
-        if (hasToken) {
-          await this.page.goto("/admin/dashboard");
-          await this.page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+        try {
+          await this.page.waitForURL("**/admin/dashboard", { timeout: 12000 });
 
           return;
-        }
+        } catch (error) {
+          lastError = error;
 
-        if (index === candidates.length - 1) {
-          throw new Error("E2E login failed for all configured test users");
+          const hasToken = await this.page.evaluate(() => {
+            const raw = localStorage.getItem("alleynote_access_token");
+            return !!raw && raw !== "null";
+          });
+
+          if (hasToken) {
+            try {
+              await this.page.goto("/admin/dashboard");
+              await this.page.waitForURL("**/admin/dashboard", {
+                timeout: 10000,
+              });
+
+              return;
+            } catch (tokenError) {
+              lastError = tokenError;
+            }
+          }
+
+          await this.page.waitForTimeout(800);
         }
       }
     }
+
+    if (lastError instanceof Error) {
+      throw new Error(
+        `E2E login failed for all configured test users: ${lastError.message}`,
+      );
+    }
+
+    throw new Error("E2E login failed for all configured test users");
   }
 }
 
