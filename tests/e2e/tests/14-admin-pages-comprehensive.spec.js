@@ -27,13 +27,8 @@ test.describe.skip("管理後台頁面完整性測試", () => {
     { path: "/admin/settings", name: "系統設定", heading: "系統設定" },
   ];
 
-  test.beforeEach(async ({ page }) => {
-    // 登入
-    await page.goto("/login");
-    await page.fill('input[name="email"]', "admin@example.com");
-    await page.fill('input[name="password"]', "Admin@123456");
-    await page.click('button[type="submit"]');
-    await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+  test.beforeEach(async ({ adminPage }) => {
+    await adminPage.waitForURL("**/admin/dashboard", { timeout: 15000 });
   });
 
   // 為每個頁面建立獨立測試
@@ -174,13 +169,8 @@ test.describe.skip("管理後台頁面完整性測試", () => {
  * 管理頁面核心功能測試
  */
 test.describe("管理頁面核心功能測試", () => {
-  test.beforeEach(async ({ page }) => {
-    // 登入
-    await page.goto("/login");
-    await page.fill('input[name="email"]', "admin@example.com");
-    await page.fill('input[name="password"]', "Admin@123456");
-    await page.click('button[type="submit"]');
-    await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+  test.beforeEach(async ({ adminPage }) => {
+    await adminPage.waitForURL("**/admin/dashboard", { timeout: 15000 });
   });
 
   test("儀表板 - 應該顯示統計卡片", async ({ page }) => {
@@ -266,7 +256,7 @@ test.describe("管理頁面核心功能測試", () => {
     const count = await forms.count();
 
     // 如果還沒實作，至少頁面應該載入
-    const heading = page.locator("h1");
+    const heading = page.locator("main h1").first();
     await expect(heading).toBeVisible();
   });
 });
