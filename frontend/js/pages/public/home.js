@@ -153,9 +153,7 @@ export async function renderHome() {
             <p class="text-modern-600 mb-2">
               ${siteSettings.footer_copyright}
             </p>
-            <div id="footer-description" class="text-sm text-modern-500 prose-modern max-w-none">
-              ${siteSettings.footer_description}
-            </div>
+            <div id="footer-description" class="text-sm text-modern-500 prose-modern max-w-none"></div>
           </div>
         </div>
       </footer>
@@ -165,10 +163,10 @@ export async function renderHome() {
   // 載入文章
   await loadPosts();
 
-  // 設置頁腳描述（支援 HTML）
+  // 設置頁腳描述（純文字，避免 XSS）
   const footerDescElement = document.getElementById("footer-description");
   if (footerDescElement && siteSettings.footer_description) {
-    footerDescElement.innerHTML = siteSettings.footer_description;
+    footerDescElement.textContent = String(siteSettings.footer_description);
   }
 
   // 綁定搜尋事件
