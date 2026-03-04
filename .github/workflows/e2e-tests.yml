@@ -54,6 +54,14 @@ jobs:
           mkdir -p database
           php init_db.php
 
+      - name: Generate JWT keys for CI
+        working-directory: backend
+        run: |
+          mkdir -p keys
+          openssl genrsa -out keys/private.pem 2048
+          openssl rsa -in keys/private.pem -pubout -out keys/public.pem
+          chmod 600 keys/private.pem
+
       - name: Start PHP built-in server
         working-directory: backend
         run: |
