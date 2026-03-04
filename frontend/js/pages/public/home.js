@@ -336,8 +336,15 @@ async function renderPostCard(post) {
  * 提取摘要
  */
 function extractExcerpt(html, length = 150) {
-  // 移除 HTML 標籤
-  const text = html.replace(/<[^>]*>/g, "");
+  let text = "";
+
+  if (typeof document !== "undefined") {
+    const template = document.createElement("template");
+    template.innerHTML = String(html ?? "");
+    text = template.content.textContent ?? "";
+  } else {
+    text = String(html ?? "");
+  }
 
   if (text.length <= length) {
     return text;
