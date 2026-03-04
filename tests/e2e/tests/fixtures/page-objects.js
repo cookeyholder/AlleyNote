@@ -86,6 +86,10 @@ class LoginPage extends SecureBasePage {
       const candidate = candidates[index];
 
       for (let attempt = 1; attempt <= 3; attempt += 1) {
+        if (this.page.isClosed()) {
+          throw new Error("E2E login aborted because page was closed");
+        }
+
         await this.goto();
         await this.login(candidate.email, candidate.password);
 
@@ -96,10 +100,16 @@ class LoginPage extends SecureBasePage {
         } catch (error) {
           lastError = error;
 
-          const hasToken = await this.page.evaluate(() => {
-            const raw = localStorage.getItem("alleynote_access_token");
-            return !!raw && raw !== "null";
-          });
+          if (this.page.isClosed()) {
+            break;
+          }
+
+          const hasToken = await this.page
+            .evaluate(() => {
+              const raw = localStorage.getItem("alleynote_access_token");
+              return !!raw && raw !== "null";
+            })
+            .catch(() => false);
 
           if (hasToken) {
             try {
@@ -114,8 +124,16 @@ class LoginPage extends SecureBasePage {
             }
           }
 
+          if (this.page.isClosed()) {
+            break;
+          }
+
           await this.page.waitForTimeout(800);
         }
+      }
+
+      if (this.page.isClosed()) {
+        break;
       }
     }
 
