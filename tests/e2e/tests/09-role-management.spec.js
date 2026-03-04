@@ -11,36 +11,36 @@
 import { test, expect } from "@playwright/test";
 
 const TEST_EMAIL = "admin@example.com";
-const TEST_PASSWORD = "password";
+const TEST_PASSWORD = "Admin@123456";
 
 // 測試前登入
 test.beforeEach(async ({ page }) => {
   await page.goto("/login");
   await page.fill('input[type="email"]', TEST_EMAIL);
   await page.fill('input[type="password"]', TEST_PASSWORD);
-  await page.click('button:has-text("登入")');
+  await page.click("#login-btn");
 
   // 等待登入成功並導航到儀表板
-  await page.waitForURL("**/admin/dashboard");
+  await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
 
   // 導航到角色管理頁面
-  await page.click('a:has-text("角色管理")');
+  await page.click('a[href="/admin/roles"]');
   await page.waitForURL("**/admin/roles");
 });
 
 test.describe("角色管理頁面", () => {
   test("應該顯示角色列表", async ({ page }) => {
     // 檢查頁面標題 (使用更精確的選擇器)
-    await expect(page.locator('main h1:has-text("角色管理")')).toBeVisible();
+    await expect(page.locator('main h1:has-text("角色與權限")')).toBeVisible();
 
     // 檢查是否有新增角色按鈕
-    await expect(page.locator('button:has-text("新增角色")')).toBeVisible();
+    await expect(page.locator("#addRoleBtn")).toBeVisible();
 
     // 檢查是否有角色列表標題
-    await expect(page.locator('h2:has-text("角色列表")')).toBeVisible();
+    await expect(page.locator('h2:has-text("角色清單")')).toBeVisible();
 
     // 檢查是否有權限設定標題
-    await expect(page.locator('h2:has-text("權限設定")')).toBeVisible();
+    await expect(page.locator('h2:has-text("權限配置")')).toBeVisible();
 
     // 檢查至少有一個角色
     const roleItems = page.locator(".role-item");
@@ -54,7 +54,7 @@ test.describe("角色管理頁面", () => {
     const description = "這是一個測試用的角色";
 
     // 點擊新增角色按鈕
-    await page.click('button:has-text("新增角色")');
+    await page.click("#addRoleBtn");
 
     // 等待 Modal 出現
     await expect(page.locator('h3:has-text("新增角色")')).toBeVisible();
@@ -65,7 +65,7 @@ test.describe("角色管理頁面", () => {
     await page.fill('textarea[name="description"]', description);
 
     // 提交表單
-    await page.click('button[type="submit"]:has-text("新增角色")');
+    await page.click('#roleForm button[type="submit"]');
 
     // 等待 Modal 關閉
     await expect(page.locator('h3:has-text("新增角色")')).not.toBeVisible();
@@ -78,7 +78,7 @@ test.describe("角色管理頁面", () => {
 
     // 清理：刪除測試角色
     await page
-      .locator(`.role-item:has-text("${displayName}") button:has-text("刪除")`)
+      .locator(`.role-item:has-text("${displayName}") button[title="刪除角色"]`)
       .click();
     await page.waitForTimeout(500); // 等待 confirm dialog
   });
@@ -97,7 +97,7 @@ test.describe("角色管理頁面", () => {
 
     // 檢查是否有儲存按鈕
     await expect(
-      permissionsContainer.locator('button:has-text("儲存權限")'),
+      permissionsContainer.locator('button:has-text("儲存權限設定")'),
     ).toBeVisible();
 
     // 檢查是否有取消按鈕
@@ -128,7 +128,7 @@ test.describe("角色管理頁面", () => {
     await firstCheckbox.click();
 
     // 點擊儲存
-    await page.click('button:has-text("儲存權限")');
+    await page.click('button:has-text("儲存權限設定")');
 
     // 檢查成功訊息
     await expect(page.locator("text=權限已更新")).toBeVisible();
@@ -144,7 +144,7 @@ test.describe("角色管理頁面", () => {
 
     // 還原變更
     await firstCheckbox.click();
-    await page.click('button:has-text("儲存權限")');
+    await page.click('button:has-text("儲存權限設定")');
     await expect(page.locator("text=權限已更新")).toBeVisible();
   });
 
@@ -159,7 +159,7 @@ test.describe("角色管理頁面", () => {
     await page.click('button:has-text("取消")');
 
     // 檢查是否回到初始狀態
-    await expect(page.locator("text=請選擇一個角色來管理權限")).toBeVisible();
+    await expect(page.locator("text=請先從左側選擇一個角色")).toBeVisible();
   });
 
   test("應該能刪除角色", async ({ page }) => {
@@ -168,10 +168,10 @@ test.describe("角色管理頁面", () => {
     const displayName = `臨時角色 ${timestamp}`;
 
     // 先建立一個測試角色
-    await page.click('button:has-text("新增角色")');
+    await page.click("#addRoleBtn");
     await page.fill('input[name="name"]', roleName);
     await page.fill('input[name="display_name"]', displayName);
-    await page.click('button[type="submit"]:has-text("新增角色")');
+    await page.click('#roleForm button[type="submit"]');
     await expect(page.locator("text=角色建立成功")).toBeVisible();
 
     // 設置對話框處理器
@@ -179,7 +179,7 @@ test.describe("角色管理頁面", () => {
 
     // 刪除角色
     await page
-      .locator(`.role-item:has-text("${displayName}") button:has-text("刪除")`)
+      .locator(`.role-item:has-text("${displayName}") button[title="刪除角色"]`)
       .click();
 
     // 等待刪除完成
@@ -216,7 +216,7 @@ test.describe("角色管理頁面", () => {
 
     // 超級管理員角色不應該有刪除按鈕
     await expect(
-      superAdminRole.locator('button:has-text("刪除")'),
+      superAdminRole.locator('button[title="刪除角色"]'),
     ).not.toBeVisible();
   });
 });
@@ -224,10 +224,10 @@ test.describe("角色管理頁面", () => {
 test.describe("角色管理權限驗證", () => {
   test("新增角色時角色名稱和顯示名稱為必填", async ({ page }) => {
     // 點擊新增角色按鈕
-    await page.click('button:has-text("新增角色")');
+    await page.click("#addRoleBtn");
 
     // 不填寫任何內容，直接提交
-    await page.click('button[type="submit"]:has-text("新增角色")');
+    await page.click('#roleForm button[type="submit"]');
 
     // 檢查是否有驗證提示（瀏覽器原生驗證）
     const nameInput = page.locator('input[name="name"]');

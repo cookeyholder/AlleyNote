@@ -27,6 +27,7 @@
 ## 🏗️ 系統概述
 
 ### AlleyNote 系統架構 (前後端分離)
+
 AlleyNote 採用 Docker 容器化部署並遵循 DDD 原則，主要組成如下：
 
 - **後端**: PHP 8.4.12、SQLite、RESTful API、分層式 DDD 模組
@@ -38,6 +39,7 @@ AlleyNote 採用 Docker 容器化部署並遵循 DDD 原則，主要組成如下
 - **SSL 管理**: Certbot（自動申請與續約）
 
 ### 當前系統狀態
+
 - **PHP 環境**: PHP 8.4.12（Xdebug 3.4.5、Zend OPcache 啟用）
 - **測試與品質**: PHPUnit 11、PHPStan Level 10、PHP CS Fixer、自動化 CI 流程
 - **架構模式**: Domain-Driven Design (DDD)
@@ -45,6 +47,7 @@ AlleyNote 採用 Docker 容器化部署並遵循 DDD 原則，主要組成如下
 - **統計現況**: 每日快照、趨勢曲線、儀表板小工具均已啟用
 
 ### 核心功能
+
 - 文章與附件管理（含內容審核與審計紀錄）
 - 使用者認證、權限、IP 控制
 - 統計儀表板（快照、熱門趨勢、批次回填）
@@ -56,6 +59,7 @@ AlleyNote 採用 Docker 容器化部署並遵循 DDD 原則，主要組成如下
 ## 👥 用戶管理
 
 ### 查看用戶列表
+
 ```bash
 # 進入後端容器
 docker compose exec web bash
@@ -68,11 +72,12 @@ sqlite3 database/alleynote.sqlite3 "SELECT role, COUNT(*) as count FROM users GR
 ```
 
 ### 創建管理員用戶
+
 ```bash
 # 使用 PHP 8.4.12 建立雜湊密碼
 docker compose exec web php -r "
 \$email = 'admin@yourdomain.com';
-\$password = 'secure_password_123';
+\$password = 'Example#Pass123!';
 \$hashedPassword = password_hash(\$password, PASSWORD_ARGON2ID);
 
 \$pdo = new PDO('sqlite:database/alleynote.sqlite3');
@@ -85,11 +90,12 @@ echo \"\n\";
 ```
 
 ### 密碼重設
+
 ```bash
 # 使用 PHP 8.4 的 readonly 屬性和新語法
 docker compose exec web php -r "
 \$email = 'user@example.com';
-\$newPassword = 'new_secure_password';
+\$newPassword = 'Example#Pass123!';
 \$hashedPassword = password_hash(\$newPassword, PASSWORD_ARGON2ID);
 
 \$pdo = new PDO('sqlite:database/alleynote.sqlite3');
@@ -102,6 +108,7 @@ echo \"\n\";
 ```
 
 ### 用戶權限管理
+
 ```sql
 -- 將用戶設為管理員
 UPDATE users SET role = 'admin' WHERE email = 'user@example.com';
@@ -121,6 +128,7 @@ UPDATE users SET status = 'active' WHERE email = 'user@example.com';
 ## 📝 內容管理
 
 ### 文章管理
+
 ```bash
 # 查看所有文章
 docker compose exec web sqlite3 database/alleynote.sqlite3 "
@@ -139,6 +147,7 @@ GROUP BY status;
 ```
 
 ### 置頂文章管理
+
 ```sql
 -- 設置文章置頂
 UPDATE posts SET is_pinned = 1 WHERE id = 1;
@@ -151,6 +160,7 @@ SELECT id, title, is_pinned FROM posts WHERE is_pinned = 1;
 ```
 
 ### 附件管理
+
 ```bash
 # 查看附件使用情況
 docker compose exec web sqlite3 database/alleynote.sqlite3 "
@@ -178,6 +188,7 @@ find storage/uploads -type f -mtime +30 -name "*.tmp" -delete
 ## ⚙️ 系統配置
 
 ### 環境變數管理
+
 ```bash
 # 查看當前環境變數
 docker compose exec web env | grep APP_
@@ -189,6 +200,7 @@ docker compose up -d
 ```
 
 ### 重要配置項目
+
 ```env
 # 應用程式設定
 APP_ENV=production
@@ -214,7 +226,9 @@ CSRF_TOKEN_LIFETIME=3600
 ```
 
 ### PHP 配置調整
+
 編輯 `docker/php/php.ini`：
+
 ```ini
 ; 檔案上傳設定
 upload_max_filesize = 10M
@@ -237,6 +251,7 @@ error_log = /var/www/html/logs/php_errors.log
 ## 🔒 安全管理
 
 ### IP 存取控制
+
 ```bash
 # 查看 IP 黑白名單
 docker compose exec web sqlite3 database/alleynote.sqlite3 "
@@ -259,6 +274,7 @@ VALUES ('10.0.0.0/8', 'whitelist', '內部網路', 1, datetime('now'));
 ```
 
 ### 查看登入記錄
+
 ```bash
 # 查看最近登入記錄
 docker compose exec web sqlite3 database/alleynote.sqlite3 "
@@ -280,6 +296,7 @@ ORDER BY attempts DESC;
 ```
 
 ### SSL 憑證管理
+
 ```bash
 # 檢查憑證有效期
 docker compose exec certbot certbot certificates
@@ -299,10 +316,12 @@ ls -la ssl-data/live/yourdomain.com/
 ## 💾 備份與還原
 
 ### 自動備份設定
+
 ```bash
 # 設定定期備份（加入 crontab）
 crontab -e
 ```
+
 ```cron
 # 每日凌晨 2 點備份資料庫
 0 2 * * * /path/to/alleynote/backend/scripts/backup_sqlite.sh
@@ -315,6 +334,7 @@ crontab -e
 ```
 
 ### 手動備份
+
 ```bash
 # 備份資料庫
 docker compose exec web bash -lc "./scripts/backup_sqlite.sh"
@@ -327,6 +347,7 @@ ls -la database/backups/
 ```
 
 ### 還原備份
+
 ```bash
 # 還原資料庫
 docker compose exec web bash -lc "./scripts/restore_sqlite.sh database/backups/alleynote_20231201_020000.sqlite3"
@@ -339,6 +360,7 @@ docker compose exec web sqlite3 database/alleynote.sqlite3 ".tables"
 ```
 
 ### 異地備份
+
 ```bash
 # 設定 rsync 異地備份
 rsync -avz --delete database/backups/ backup-server:/backups/alleynote/
@@ -352,6 +374,7 @@ aws s3 sync database/backups/ s3://your-backup-bucket/alleynote/
 ## 📊 監控與維護
 
 ### 系統資源監控
+
 ```bash
 # 檢查容器資源使用
  docker compose exec web ps aux | grep php
@@ -367,6 +390,7 @@ du -sh logs/
 ```
 
 ### 應用程式監控
+
 ```bash
 # 檢查 PHP 程序狀態
 docker compose exec web ps aux | grep php
@@ -380,6 +404,7 @@ docker compose exec redis redis-cli ping
 ```
 
 ### 效能監控
+
 ```bash
 # 監控資料庫查詢效能
 docker compose exec web php scripts/db-performance.php
@@ -392,7 +417,9 @@ curl -w "@curl-format.txt" -o /dev/null -s "http://localhost/"
 ```
 
 ### 健康檢查腳本
+
 建立 `scripts/health-check.sh`：
+
 ```bash
 #!/bin/bash
 
@@ -431,38 +458,41 @@ echo "=== 健康檢查完成 ==="
 ## � 統計模組
 
 ### 儀表板與快照檢視
+
 - 後台路徑：管理後台 → 「統計儀表板」可檢視總覽、熱門內容與趨勢圖。
 - 快速確認資料：
-    ```bash
-    docker compose exec web sqlite3 database/alleynote.sqlite3 "
-    SELECT snapshot_type, period_type, snapshot_date, total_posts, total_users
-    FROM statistics_snapshots
-    ORDER BY snapshot_date DESC
-    LIMIT 10;
-    "
-    ```
+  ```bash
+  docker compose exec web sqlite3 database/alleynote.sqlite3 "
+  SELECT snapshot_type, period_type, snapshot_date, total_posts, total_users
+  FROM statistics_snapshots
+  ORDER BY snapshot_date DESC
+  LIMIT 10;
+  "
+  ```
 - 若儀表板無法載入，請先清除瀏覽器快取並確認後端 `statistics_snapshots` 資料是否存在。
 
 ### 手動回填與重新計算
+
 - 推薦於部署後或大量資料匯入後執行以下指令重新整理統計：
-    ```bash
-    docker compose exec web php ./scripts/statistics-calculation.php --periods=daily,weekly --force
-    ```
+  ```bash
+  docker compose exec web php ./scripts/statistics-calculation.php --periods=daily,weekly --force
+  ```
 - 指令選項說明：
-    - `--periods` 可指定 `daily`、`weekly`、`monthly` 多種週期（以逗號分隔）。
-    - `--force` 會覆蓋既有快照，可搭配 `--max-retries` 控制重試次數。
+  - `--periods` 可指定 `daily`、`weekly`、`monthly` 多種週期（以逗號分隔）。
+  - `--force` 會覆蓋既有快照，可搭配 `--max-retries` 控制重試次數。
 - 若無法使用容器，可在主機端執行 `./backend/scripts/statistics-calculation.php`，需先載入 Composer 相依套件。
 
 ### 快取與排程建議
+
 - 建議每天定時執行統計計算腳本，可加入 crontab：
-    ```cron
-    15 1 * * * docker compose exec web php ./scripts/statistics-calculation.php --periods=daily
-    ```
+  ```cron
+  15 1 * * * docker compose exec web php ./scripts/statistics-calculation.php --periods=daily
+  ```
 - 若要強制刷新統計快取，可刪除快照快取並重新計算：
-    ```bash
-    docker compose exec web rm -rf storage/cache/statistics || true
-    docker compose exec web php ./scripts/statistics-calculation.php --force
-    ```
+  ```bash
+  docker compose exec web rm -rf storage/cache/statistics || true
+  docker compose exec web php ./scripts/statistics-calculation.php --force
+  ```
 - 重新部署後建議再執行 `docker compose exec web php ./scripts/warm-cache.php`，確保 DI 與統計相依服務快取已就緒。
 
 ---
@@ -472,6 +502,7 @@ echo "=== 健康檢查完成 ==="
 ### 常見問題診斷
 
 #### 網站無法訪問
+
 ```bash
 # 1. 檢查容器狀態
 docker compose ps
@@ -493,6 +524,7 @@ dig yourdomain.com
 ```
 
 #### 資料庫連線錯誤
+
 ```bash
 # 1. 檢查資料庫檔案
 ls -la database/alleynote.sqlite3
@@ -512,6 +544,7 @@ docker compose exec web sqlite3 database/alleynote.sqlite3 "PRAGMA integrity_che
 ```
 
 #### 記憶體不足
+
 ```bash
 # 1. 檢查記憶體使用
 free -h
@@ -530,6 +563,7 @@ docker compose down && docker compose up -d --build
 ```
 
 #### SSL 憑證問題
+
 ```bash
 # 1. 檢查憑證有效期
 openssl x509 -in ssl-data/live/yourdomain.com/fullchain.pem -text -noout
@@ -546,6 +580,7 @@ docker compose exec nginx nginx -t
 ```
 
 ### 緊急恢復程序
+
 ```bash
 # 1. 停止所有服務
 docker compose down
@@ -568,6 +603,7 @@ docker compose up -d
 ## ⚡ 效能優化
 
 ### 資料庫優化
+
 ```bash
 # 1. 重建資料庫索引
 docker compose exec web sqlite3 database/alleynote.sqlite3 "REINDEX;"
@@ -588,6 +624,7 @@ GROUP BY name;
 ```
 
 ### 快取優化
+
 ```bash
 # 1. 清理應用程式快取
 docker compose exec web rm -rf storage/cache/*
@@ -603,6 +640,7 @@ docker compose exec redis redis-cli info stats | grep hit
 ```
 
 ### 檔案系統優化
+
 ```bash
 # 1. 清理臨時檔案
 find storage/tmp/ -type f -mtime +7 -delete
@@ -623,6 +661,7 @@ find storage/ -type d -exec chmod 755 {} \;
 ## 📋 日誌管理
 
 ### 日誌檔案位置
+
 - **應用程式日誌**：`logs/app.log`
 - **錯誤日誌**：`logs/error.log`
 - **存取日誌**：`logs/access.log`
@@ -630,6 +669,7 @@ find storage/ -type d -exec chmod 755 {} \;
 - **安全日誌**：`logs/security.log`
 
 ### 日誌查看和分析
+
 ```bash
 # 查看即時日誌
 tail -f logs/app.log
@@ -645,7 +685,9 @@ docker compose logs -f --tail=100 web
 ```
 
 ### 日誌輪轉設定
+
 建立 `/etc/logrotate.d/alleynote`：
+
 ```
 /path/to/alleynote/logs/*.log {
     daily
@@ -662,6 +704,7 @@ docker compose logs -f --tail=100 web
 ```
 
 ### 日誌監控告警
+
 ```bash
 # 監控錯誤數量
 ERROR_COUNT=$(grep "ERROR" logs/app.log | wc -l)
@@ -683,29 +726,34 @@ fi
 ### 定期維護檢查清單
 
 #### 每日檢查
+
 - [ ] 服務狀態正常
 - [ ] 網站可正常訪問
 - [ ] 磁碟空間充足
 - [ ] 備份執行成功
 
 #### 每週檢查
+
 - [ ] 查看錯誤日誌
 - [ ] 檢查安全事件
 - [ ] 更新系統套件
 - [ ] 測試備份還原
 
 #### 每月檢查
+
 - [ ] 檢查 SSL 憑證有效期
 - [ ] 清理舊日誌和備份
 - [ ] 檢查資料庫效能
 - [ ] 更新應用程式
 
 ### 緊急聯絡資訊
+
 - **系統管理員**：admin@yourdomain.com
 - **技術支援**：support@yourdomain.com
 - **緊急電話**：+886-xxx-xxx-xxx
 
 ### 相關文件
+
 - [快速入門指南](ADMIN_QUICK_START.md)
 - [部署指南](DEPLOYMENT.md)
 - [SSL 設定指南](SSL_DEPLOYMENT_GUIDE.md)

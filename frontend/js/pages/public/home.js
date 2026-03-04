@@ -30,38 +30,41 @@ export async function renderHome() {
   app.innerHTML = `
     <div class="min-h-screen bg-modern-50">
       <!-- 導航列 -->
-      <nav class="bg-white shadow-sm sticky top-0 z-30">
+      <nav class="bg-white border-b border-modern-200 sticky top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between h-16 items-center">
-            <div class="flex items-center">
-              <a href="/" data-navigo class="text-2xl font-bold text-accent-600 hover:text-accent-700 transition-colors">
+          <div class="flex justify-between h-20 items-center">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-accent-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-accent-600/20">A</div>
+              <a href="/" data-navigo class="text-2xl font-bold text-modern-900 hover:text-accent-600 transition-colors">
                 ${siteSettings.site_name}
               </a>
             </div>
-            <div class="flex items-center gap-4">
-              <div class="relative hidden md:block">
+            <div class="flex items-center gap-6">
+              <div class="relative hidden lg:block">
                 <input
                   type="text"
                   id="home-search"
-                  placeholder="搜尋文章..."
-                  class="w-64 px-4 py-2 pl-10 border border-modern-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500"
+                  placeholder="探索感興趣的文章..."
+                  class="w-72 px-4 py-2.5 pl-11 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
                 />
-                <span class="absolute left-3 top-2.5 text-modern-400">🔍</span>
+                <span class="absolute left-4 top-3 text-modern-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
               </div>
               ${
                 isAuthenticated
                   ? `
-                <div class="flex items-center gap-3">
+                <div class="flex items-center">
                   <a
                     href="/admin/dashboard"
                     data-navigo
-                    class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-accent-600 to-accent-700 text-white rounded-lg hover:from-accent-700 hover:to-accent-800 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                    class="flex items-center gap-2 px-5 py-2.5 bg-modern-900 text-white rounded-xl hover:bg-black transition-all shadow-lg shadow-modern-200"
                   >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <span class="hidden sm:inline font-medium">${user?.username || "管理後台"}</span>
-                    <span class="sm:hidden font-medium">後台</span>
+                    <span class="hidden sm:inline font-bold">${user?.username || "管理後台"}</span>
+                    <span class="sm:hidden font-bold">後台</span>
                   </a>
                 </div>
               `
@@ -69,9 +72,9 @@ export async function renderHome() {
                 <a
                   href="/login"
                   data-navigo
-                  class="btn-primary"
+                  class="px-6 py-2.5 bg-accent-600 text-white font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all"
                 >
-                  登入
+                  成員登入
                 </a>
               `
               }
@@ -81,79 +84,106 @@ export async function renderHome() {
       </nav>
 
       <!-- 主要內容 -->
-      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <!-- Hero Section -->
-        <div class="text-center mb-12 animate-fade-in">
-          <h2 class="text-4xl md:text-5xl font-bold text-modern-900 mb-4">
+        <div class="text-center mb-20 animate-fade-in">
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-accent-50 text-accent-700 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-accent-500"></span>
+            </span>
+            企業級公布欄系統
+          </div>
+          <h2 class="text-5xl md:text-6xl font-bold text-modern-900 mb-6 tracking-tight">
             ${siteSettings.site_name}
           </h2>
-          <p class="text-xl text-modern-600 mb-8">
+          <p class="max-w-2xl mx-auto text-xl text-modern-500 leading-relaxed">
             ${siteSettings.site_description}
           </p>
         </div>
 
         <!-- 搜尋列 (手機版) -->
-        <div class="mb-6 md:hidden">
+        <div class="mb-12 lg:hidden px-4">
           <div class="relative">
             <input
               type="text"
               id="home-search-mobile"
-              placeholder="搜尋文章..."
-              class="w-full px-4 py-3 pl-10 border border-modern-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500"
+              placeholder="搜尋文章關鍵字..."
+              class="w-full px-4 py-4 pl-12 bg-white border border-modern-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-accent-500 outline-none transition-all"
             />
-            <span class="absolute left-3 top-3.5 text-modern-400">🔍</span>
+            <span class="absolute left-4 top-4.5 text-modern-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
           </div>
         </div>
 
         <!-- 最新文章標題 -->
-        <div class="flex items-center justify-between mb-8">
-          <h3 class="text-2xl font-bold text-modern-900">最新文章</h3>
-          <div class="text-sm text-modern-600" id="posts-count">
-            <!-- 文章數量 -->
+        <div class="flex items-end justify-between mb-10 border-b border-modern-200 pb-6">
+          <div>
+            <h3 class="text-3xl font-bold text-modern-900">最新發布內容</h3>
+            <p class="text-sm text-modern-400 mt-1 uppercase tracking-widest font-bold" id="posts-count"></p>
+          </div>
+          <div class="hidden md:flex items-center gap-2 text-accent-600 font-bold text-sm">
+            向下探索
+            <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
           </div>
         </div>
 
         <!-- 文章列表 -->
-        <div id="posts-container">
-          <div class="text-center py-12">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600 mx-auto"></div>
-            <p class="mt-4 text-modern-600">載入中...</p>
+        <div id="posts-container" class="min-h-[400px]">
+          <div class="flex items-center justify-center py-24">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600"></div>
           </div>
         </div>
 
         <!-- 分頁 -->
-        <div id="pagination-container" class="mt-8"></div>
+        <div id="pagination-container" class="mt-12"></div>
 
         <!-- 特色卡片 -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 animate-slide-up">
-          <div class="card card-hover text-center">
-            <div class="text-4xl mb-4">🚀</div>
-            <h3 class="text-xl font-semibold mb-2">現代化技術</h3>
-            <p class="text-modern-600">Vite + Tailwind CSS + JavaScript</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24">
+          <div class="p-8 bg-white border border-modern-200 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 group">
+            <div class="w-14 h-14 bg-accent-50 text-accent-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-accent-600 group-hover:text-white transition-colors">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-modern-900 mb-2 tracking-tight">現代化技術棧</h3>
+            <p class="text-modern-500 leading-relaxed">採用最新 Vite 工具鏈與 Tailwind CSS 打造極致流暢的使用體驗。</p>
           </div>
 
-          <div class="card card-hover text-center">
-            <div class="text-4xl mb-4">🛡️</div>
-            <h3 class="text-xl font-semibold mb-2">安全可靠</h3>
-            <p class="text-modern-600">JWT 認證 + XSS/CSRF 防護</p>
+          <div class="p-8 bg-white border border-modern-200 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 group">
+            <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-modern-900 mb-2 tracking-tight">軍規級安全性</h3>
+            <p class="text-modern-500 leading-relaxed">內建 JWT 多重認證與嚴密的 XSS/CSRF 防護網，守護您的數據安全。</p>
           </div>
 
-          <div class="card card-hover text-center">
-            <div class="text-4xl mb-4">⚡</div>
-            <h3 class="text-xl font-semibold mb-2">高效能</h3>
-            <p class="text-modern-600">快速載入 + 響應式設計</p>
+          <div class="p-8 bg-white border border-modern-200 rounded-3xl shadow-sm hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 group">
+            <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-modern-900 mb-2 tracking-tight">極致效能表現</h3>
+            <p class="text-modern-500 leading-relaxed">優化的前端渲染與資源載入策略，確保在任何設備上都能秒速開啟。</p>
           </div>
         </div>
       </main>
 
       <!-- 頁腳 -->
-      <footer class="bg-white border-t border-modern-200 mt-20">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div class="text-center">
-            <p class="text-modern-600 mb-2">
-              ${siteSettings.footer_copyright}
-            </p>
-            <div id="footer-description" class="text-sm text-modern-500 prose-modern max-w-none"></div>
+      <footer class="bg-modern-900 text-white mt-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center text-white font-bold">A</div>
+                <span class="text-2xl font-bold tracking-tight">${siteSettings.site_name}</span>
+              </div>
+              <div id="footer-description" class="text-modern-400 text-sm leading-relaxed max-w-md"></div>
+            </div>
+            <div class="text-left md:text-right">
+              <p class="text-modern-500 text-xs font-bold uppercase tracking-widest mb-2">Copyright Control</p>
+              <p class="text-modern-300 text-sm">
+                ${siteSettings.footer_copyright}
+              </p>
+            </div>
           </div>
         </div>
       </footer>
@@ -272,7 +302,9 @@ async function loadPosts() {
         </button>
       </div>
     `;
-    const errorMessageElement = document.getElementById("home-load-error-message");
+    const errorMessageElement = document.getElementById(
+      "home-load-error-message",
+    );
     if (errorMessageElement) {
       const message = error instanceof Error ? error.message : "未知錯誤";
       errorMessageElement.textContent = `載入失敗：${message}`;
@@ -295,63 +327,49 @@ async function renderPostCard(post) {
   );
 
   const article = document.createElement("article");
-  article.className = "card card-hover";
+  article.className = "group bg-white border border-modern-200 rounded-3xl p-8 hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden";
 
-  const accentBar = document.createElement("div");
-  accentBar.className = "h-2 bg-accent-500 rounded-t-lg -mt-8 -mx-8 mb-4";
-  article.appendChild(accentBar);
+  // 背景裝飾
+  article.innerHTML = `
+    <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+      <svg class="w-24 h-24 text-modern-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3v5h5M7 8h5M7 12h10M7 16h10"/></svg>
+    </div>
+    
+    <div class="relative z-10 flex flex-col h-full">
+      <div class="flex items-center gap-2 mb-4">
+        ${post.tags && post.tags.length > 0 ? 
+          post.tags.slice(0, 2).map(tag => `
+            <span class="px-2.5 py-1 bg-accent-50 text-accent-600 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
+          `).join('') : 
+          '<span class="px-2.5 py-1 bg-modern-50 text-modern-400 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-modern-100">General</span>'
+        }
+      </div>
 
-  const titleElement = document.createElement("h4");
-  titleElement.className = "text-lg font-semibold mb-2 text-modern-900 line-clamp-2";
-  const titleLink = document.createElement("a");
-  titleLink.className = "hover:text-accent-600 transition-colors";
-  titleLink.href = `/posts/${post.id}`;
-  titleLink.textContent = String(post.title ?? "");
-  titleElement.appendChild(titleLink);
-  article.appendChild(titleElement);
+      <h4 class="text-xl font-bold text-modern-900 mb-3 group-hover:text-accent-600 transition-colors line-clamp-2">
+        <a href="/posts/${post.id}" data-navigo>${String(post.title ?? "")}</a>
+      </h4>
 
-  const excerptElement = document.createElement("p");
-  excerptElement.className = "text-modern-600 text-sm mb-4 line-clamp-3";
-  excerptElement.textContent = String(excerpt ?? "");
-  article.appendChild(excerptElement);
+      <p class="text-modern-500 text-sm mb-8 line-clamp-3 leading-relaxed flex-1">
+        ${String(excerpt ?? "")}
+      </p>
 
-  const meta = document.createElement("div");
-  meta.className = "flex items-center justify-between text-sm text-modern-500";
-
-  const dateWrap = document.createElement("div");
-  dateWrap.className = "flex items-center gap-2";
-  const dateIcon = document.createElement("span");
-  dateIcon.textContent = "📅";
-  const timeElement = document.createElement("time");
-  timeElement.dateTime = String(dateString ?? "");
-  timeElement.textContent = String(formattedDate ?? "");
-  dateWrap.appendChild(dateIcon);
-  dateWrap.appendChild(timeElement);
-
-  const authorWrap = document.createElement("div");
-  authorWrap.className = "flex items-center gap-2";
-  const authorIcon = document.createElement("span");
-  authorIcon.textContent = "👤";
-  const authorName = document.createElement("span");
-  authorName.textContent = String(post.author?.name || post.author || "匿名");
-  authorWrap.appendChild(authorIcon);
-  authorWrap.appendChild(authorName);
-
-  meta.appendChild(dateWrap);
-  meta.appendChild(authorWrap);
-  article.appendChild(meta);
-
-  if (post.tags && post.tags.length > 0) {
-    const tagsWrap = document.createElement("div");
-    tagsWrap.className = "mt-4 flex flex-wrap gap-2";
-    post.tags.slice(0, 3).forEach((tag) => {
-      const tagElement = document.createElement("span");
-      tagElement.className = "px-2 py-1 bg-accent-100 text-accent-700 rounded text-xs";
-      tagElement.textContent = `#${String(tag ?? "")}`;
-      tagsWrap.appendChild(tagElement);
-    });
-    article.appendChild(tagsWrap);
-  }
+      <div class="pt-6 border-t border-modern-100 flex items-center justify-between mt-auto">
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <time class="text-xs font-bold text-modern-500 tabular-nums">${String(formattedDate.split(' ')[0] ?? "")}</time>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span class="text-xs font-bold text-modern-500">${String(post.author?.username || post.author || "Guest")}</span>
+          </div>
+        </div>
+        <a href="/posts/${post.id}" data-navigo class="w-8 h-8 rounded-full bg-modern-50 text-modern-400 flex items-center justify-center group-hover:bg-accent-600 group-hover:text-white transition-all shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  `;
 
   return article;
 }
@@ -405,26 +423,26 @@ function renderPagination(pagination) {
   }
 
   container.innerHTML = `
-    <div class="flex items-center justify-center gap-2">
+    <div class="flex items-center justify-center gap-2 p-2 bg-modern-100/50 rounded-2xl w-fit mx-auto shadow-inner">
       <button
         onclick="window.homeGoToPage(${current_page - 1})"
         ${current_page === 1 ? "disabled" : ""}
-        class="px-4 py-2 border border-modern-300 rounded-lg hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        class="px-4 py-2 text-sm font-bold text-modern-600 rounded-xl hover:bg-white hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       >
-        上一頁
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
       </button>
       ${pages
         .map((page) => {
           if (page === "...") {
-            return '<span class="px-4 py-2 text-modern-500">...</span>';
+            return '<span class="px-3 text-modern-400 font-bold">...</span>';
           }
           return `
           <button
             onclick="window.homeGoToPage(${page})"
-            class="px-4 py-2 border border-modern-300 rounded-lg hover:bg-modern-50 transition-colors ${
+            class="w-10 h-10 flex items-center justify-center text-sm font-bold rounded-xl transition-all ${
               page === current_page
-                ? "bg-accent-600 text-white border-accent-600"
-                : ""
+                ? "bg-accent-600 text-white shadow-lg shadow-accent-600/30"
+                : "text-modern-500 hover:bg-white hover:shadow-sm"
             }"
           >
             ${page}
@@ -435,9 +453,9 @@ function renderPagination(pagination) {
       <button
         onclick="window.homeGoToPage(${current_page + 1})"
         ${current_page === total_pages ? "disabled" : ""}
-        class="px-4 py-2 border border-modern-300 rounded-lg hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        class="px-4 py-2 text-sm font-bold text-modern-600 rounded-xl hover:bg-white hover:shadow-sm disabled:opacity-30 disabled:cursor-not-allowed transition-all"
       >
-        下一頁
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
       </button>
     </div>
   `;

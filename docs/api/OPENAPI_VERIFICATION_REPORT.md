@@ -1,27 +1,41 @@
 # OpenAPI 規格驗證報告
 
-**生成日期**: 2025-10-11  
-**API 版本**: 1.0.0  
+**生成日期**: 2025-10-11
+**API 版本**: 1.0.0
 **OpenAPI 版本**: 3.0.0
 
 ---
 
 ## 📊 驗證總結
 
-| 項目 | 結果 | 說明 |
-|-----|------|------|
-| **OpenAPI 規格** | ✅ 通過 | 符合 OpenAPI 3.0.0 規範 |
-| **Swagger UI** | ✅ 可訪問 | http://localhost:8080/api/docs/ui |
-| **API 文件** | ✅ 可訪問 | http://localhost:8080/api/docs |
-| **新增 Tags** | ✅ 4 個 | Users, Roles, Permissions, Settings |
-| **新增端點** | ✅ 23 個 | 所有端點正確註冊 |
-| **HTTP 狀態碼** | 200 | API 文件正常回應 |
+> 註：本報告為歷史驗證結果，當時以 `localhost:8080` 執行。
+> 目前 DevContainer 本機模式請使用 `localhost:8081`，Production / 覆寫模式可用 `localhost:8080`。
+>
+> 讀取本報告示例時可先設定：
+>
+> ```bash
+> # DevContainer 本機模式
+> export API_HOST=http://localhost:8081
+>
+> # Production-like 覆寫模式
+> # export API_HOST=http://localhost:8080
+> ```
+
+| 項目             | 結果      | 說明                                |
+| ---------------- | --------- | ----------------------------------- |
+| **OpenAPI 規格** | ✅ 通過   | 符合 OpenAPI 3.0.0 規範             |
+| **Swagger UI**   | ✅ 可訪問 | $API_HOST/api/docs/ui               |
+| **API 文件**     | ✅ 可訪問 | $API_HOST/api/docs                  |
+| **新增 Tags**    | ✅ 4 個   | Users, Roles, Permissions, Settings |
+| **新增端點**     | ✅ 23 個  | 所有端點正確註冊                    |
+| **HTTP 狀態碼**  | 200       | API 文件正常回應                    |
 
 ---
 
 ## 🎯 OpenAPI 規格概覽
 
 ### 基本資訊
+
 ```json
 {
   "openapi": "3.0.0",
@@ -36,6 +50,7 @@
 ```
 
 ### 所有 API Tags
+
 1. **Activity Log** - 活動日誌管理
 2. **Permissions** ⭐ - 權限管理（新增）
 3. **posts** - 文章管理
@@ -55,17 +70,17 @@
 
 ### 已註冊的端點（9 個）
 
-| 端點 | HTTP 方法 | 操作 ID | 狀態 |
-|------|----------|---------|------|
-| `/api/users` | GET | `listUsers` | ✅ |
-| `/api/users` | POST | `createUser` | ✅ |
-| `/api/users/{id}` | GET | `getUserById` | ✅ |
-| `/api/users/{id}` | PUT | `updateUser` | ✅ |
-| `/api/users/{id}` | DELETE | `deleteUser` | ✅ |
-| `/api/users/{id}/roles` | PUT | `assignRolesToUser` | ✅ |
-| `/api/admin/users/{id}/activate` | POST | `activateUser` | ✅ |
-| `/api/admin/users/{id}/deactivate` | POST | `deactivateUser` | ✅ |
-| `/api/admin/users/{id}/reset-password` | POST | `resetUserPassword` | ✅ |
+| 端點                                   | HTTP 方法 | 操作 ID             | 狀態 |
+| -------------------------------------- | --------- | ------------------- | ---- |
+| `/api/users`                           | GET       | `listUsers`         | ✅   |
+| `/api/users`                           | POST      | `createUser`        | ✅   |
+| `/api/users/{id}`                      | GET       | `getUserById`       | ✅   |
+| `/api/users/{id}`                      | PUT       | `updateUser`        | ✅   |
+| `/api/users/{id}`                      | DELETE    | `deleteUser`        | ✅   |
+| `/api/users/{id}/roles`                | PUT       | `assignRolesToUser` | ✅   |
+| `/api/admin/users/{id}/activate`       | POST      | `activateUser`      | ✅   |
+| `/api/admin/users/{id}/deactivate`     | POST      | `deactivateUser`    | ✅   |
+| `/api/admin/users/{id}/reset-password` | POST      | `resetUserPassword` | ✅   |
 
 ### 端點詳細驗證：GET /api/users
 
@@ -133,14 +148,14 @@
 
 ### 已註冊的端點（6 個）
 
-| 端點 | HTTP 方法 | 操作 ID | 狀態 |
-|------|----------|---------|------|
-| `/api/roles` | GET | `listRoles` | ✅ |
-| `/api/roles` | POST | `createRole` | ✅ |
-| `/api/roles/{id}` | GET | `getRoleById` | ✅ |
-| `/api/roles/{id}` | PUT | `updateRole` | ✅ |
-| `/api/roles/{id}` | DELETE | `deleteRole` | ✅ |
-| `/api/roles/{id}/permissions` | PUT | `updateRolePermissions` | ✅ |
+| 端點                          | HTTP 方法 | 操作 ID                 | 狀態 |
+| ----------------------------- | --------- | ----------------------- | ---- |
+| `/api/roles`                  | GET       | `listRoles`             | ✅   |
+| `/api/roles`                  | POST      | `createRole`            | ✅   |
+| `/api/roles/{id}`             | GET       | `getRoleById`           | ✅   |
+| `/api/roles/{id}`             | PUT       | `updateRole`            | ✅   |
+| `/api/roles/{id}`             | DELETE    | `deleteRole`            | ✅   |
+| `/api/roles/{id}/permissions` | PUT       | `updateRolePermissions` | ✅   |
 
 **驗證結果**: ✅ 所有端點正確註冊並包含完整的 OpenAPI 註解
 
@@ -150,11 +165,11 @@
 
 ### 已註冊的端點（3 個）
 
-| 端點 | HTTP 方法 | 操作 ID | 狀態 |
-|------|----------|---------|------|
-| `/api/permissions` | GET | `listPermissions` | ✅ |
-| `/api/permissions/{id}` | GET | `getPermissionById` | ✅ |
-| `/api/permissions/grouped` | GET | `listPermissionsGrouped` | ✅ |
+| 端點                       | HTTP 方法 | 操作 ID                  | 狀態 |
+| -------------------------- | --------- | ------------------------ | ---- |
+| `/api/permissions`         | GET       | `listPermissions`        | ✅   |
+| `/api/permissions/{id}`    | GET       | `getPermissionById`      | ✅   |
+| `/api/permissions/grouped` | GET       | `listPermissionsGrouped` | ✅   |
 
 **驗證結果**: ✅ 所有端點正確註冊並包含完整的 OpenAPI 註解
 
@@ -164,13 +179,13 @@
 
 ### 已註冊的端點（5 個）
 
-| 端點 | HTTP 方法 | 操作 ID | 狀態 |
-|------|----------|---------|------|
-| `/api/settings` | GET | `listSettings` | ✅ |
-| `/api/settings` | PUT | `updateSettings` | ✅ |
-| `/api/settings/{key}` | GET | `getSettingByKey` | ✅ |
-| `/api/settings/{key}` | PUT | `updateSingleSetting` | ✅ |
-| `/api/settings/timezone/info` | GET | `getTimezoneInfo` | ✅ |
+| 端點                          | HTTP 方法 | 操作 ID               | 狀態 |
+| ----------------------------- | --------- | --------------------- | ---- |
+| `/api/settings`               | GET       | `listSettings`        | ✅   |
+| `/api/settings`               | PUT       | `updateSettings`      | ✅   |
+| `/api/settings/{key}`         | GET       | `getSettingByKey`     | ✅   |
+| `/api/settings/{key}`         | PUT       | `updateSingleSetting` | ✅   |
+| `/api/settings/timezone/info` | GET       | `getTimezoneInfo`     | ✅   |
 
 **驗證結果**: ✅ 所有端點正確註冊並包含完整的 OpenAPI 註解
 
@@ -179,6 +194,7 @@
 ## 🔍 OpenAPI 規格品質檢查
 
 ### 1. 結構完整性
+
 - ✅ `openapi` 版本宣告正確
 - ✅ `info` 區塊包含標題、版本、描述
 - ✅ `paths` 包含所有端點定義
@@ -186,6 +202,7 @@
 - ✅ `components` 定義共用的 Schema（如適用）
 
 ### 2. 端點定義品質
+
 - ✅ 每個端點都有唯一的 `operationId`
 - ✅ 所有端點都有 `summary` 和 `description`
 - ✅ 所有參數都有型別定義和描述
@@ -194,12 +211,14 @@
 - ✅ 所有回應都有詳細的 schema 定義
 
 ### 3. 文件可讀性
+
 - ✅ 使用繁體中文描述，易於理解
 - ✅ 包含豐富的範例資料
 - ✅ 參數說明清楚明確
 - ✅ 錯誤回應有適當的說明
 
 ### 4. 規範符合性
+
 - ✅ 符合 OpenAPI 3.0.0 規範
 - ✅ JSON 格式正確，可被工具解析
 - ✅ Schema 定義遵循 JSON Schema 標準
@@ -210,7 +229,8 @@
 ## 🧪 Swagger UI 測試結果
 
 ### 訪問測試
-- **URL**: http://localhost:8080/api/docs/ui
+
+- **URL**: $API_HOST/api/docs/ui
 - **HTTP 狀態碼**: 200 OK
 - **載入狀態**: ✅ 正常
 - **互動功能**: ✅ 可用
@@ -218,6 +238,7 @@
 ### 功能測試清單
 
 #### 1. 瀏覽功能
+
 - ✅ 可以查看所有 API Tags
 - ✅ 可以展開/收合每個端點
 - ✅ 可以查看端點詳細資訊
@@ -225,6 +246,7 @@
 - ✅ 可以查看回應範例
 
 #### 2. Users API 測試
+
 - ✅ Users Tag 正確顯示
 - ✅ 9 個端點全部可見
 - ✅ 參數欄位正確顯示（page, per_page, search）
@@ -232,17 +254,20 @@
 - ✅ 回應範例格式正確
 
 #### 3. Roles API 測試
+
 - ✅ Roles Tag 正確顯示
 - ✅ 6 個端點全部可見
 - ✅ 權限 ID 陣列參數正確顯示
 - ✅ 請求範例格式正確
 
 #### 4. Permissions API 測試
+
 - ✅ Permissions Tag 正確顯示
 - ✅ 3 個端點全部可見
 - ✅ 分組端點回應結構正確
 
 #### 5. Settings API 測試
+
 - ✅ Settings Tag 正確顯示
 - ✅ 5 個端點全部可見
 - ✅ 批量更新和單一更新端點區分明確
@@ -253,24 +278,27 @@
 ## 📈 統計數據
 
 ### 端點統計
-| API 分類 | 端點數量 | 佔比 |
-|---------|---------|------|
-| Users Management | 9 | 20.0% |
-| Roles Management | 6 | 13.3% |
-| Permissions Management | 3 | 6.7% |
-| Settings Management | 5 | 11.1% |
-| 其他 API | 22 | 48.9% |
-| **總計** | **45** | **100%** |
+
+| API 分類               | 端點數量 | 佔比     |
+| ---------------------- | -------- | -------- |
+| Users Management       | 9        | 20.0%    |
+| Roles Management       | 6        | 13.3%    |
+| Permissions Management | 3        | 6.7%     |
+| Settings Management    | 5        | 11.1%    |
+| 其他 API               | 22       | 48.9%    |
+| **總計**               | **45**   | **100%** |
 
 ### HTTP 方法分布
-| 方法 | 數量 | 用途 |
-|-----|------|------|
-| GET | ~25 | 查詢資源 |
-| POST | ~10 | 建立資源 |
-| PUT | ~8 | 更新資源 |
-| DELETE | ~2 | 刪除資源 |
+
+| 方法   | 數量 | 用途     |
+| ------ | ---- | -------- |
+| GET    | ~25  | 查詢資源 |
+| POST   | ~10  | 建立資源 |
+| PUT    | ~8   | 更新資源 |
+| DELETE | ~2   | 刪除資源 |
 
 ### 回應狀態碼覆蓋
+
 - ✅ 200 OK - 成功查詢/更新
 - ✅ 201 Created - 成功建立
 - ✅ 404 Not Found - 資源不存在
@@ -294,7 +322,7 @@
 ### 建議
 
 1. ✅ **已完成**: 所有核心管理 API 的 OpenAPI 註解
-2. 🔄 **持續改進**: 
+2. 🔄 **持續改進**:
    - 可以考慮添加更多的回應範例
    - 可以添加認證相關的 Security Schema
    - 可以添加 API 使用限制說明（rate limiting）
@@ -308,16 +336,17 @@
 
 ## 🔗 相關連結
 
-- **Swagger UI**: http://localhost:8080/api/docs/ui
-- **OpenAPI JSON**: http://localhost:8080/api/docs
-- **API 資訊**: http://localhost:8080/api
-- **健康檢查**: http://localhost:8080/api/health
+- **Swagger UI**: $API_HOST/api/docs/ui
+- **OpenAPI JSON**: $API_HOST/api/docs
+- **API 資訊**: $API_HOST/api
+- **健康檢查**: $API_HOST/api/health
 
 ---
 
 ## 📝 附註
 
 本驗證報告基於以下環境：
+
 - **環境**: Docker 容器
 - **PHP 版本**: 8.4.13
 - **系統**: AlleyNote 論壇系統

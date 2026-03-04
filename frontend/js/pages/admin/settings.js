@@ -16,223 +16,219 @@ let footerDescriptionEditor = null;
 
 export async function renderSettings() {
   const content = `
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-4xl mx-auto pb-12">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-modern-900">系統設定</h1>
+        <p class="text-sm text-modern-500 mt-1">調整全站運行的核心參數與顯示規則</p>
+      </div>
+
       <!-- 基本設定 -->
-      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
-        <h2 class="text-xl font-semibold text-modern-900 mb-4">基本設定</h2>
-        <div class="space-y-4">
+      <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-accent-50 text-accent-600 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 012.5 2.5v.5m-9-11a9 9 0 1118 0 9 9 0 01-18 0z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-modern-900">基本設定</h2>
+        </div>
+        <div class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              網站名稱
-            </label>
+            <label class="block text-sm font-bold text-modern-700 mb-2">網站名稱</label>
             <input
               type="text"
               id="site-name"
-              value=""
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              placeholder="例如：AlleyNote 公布欄"
+              class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all outline-none"
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              網站描述
-            </label>
+            <label class="block text-sm font-bold text-modern-700 mb-2">網站描述</label>
             <textarea
               id="site-description"
               rows="3"
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              placeholder="簡單介紹您的網站內容..."
+              class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all outline-none"
             ></textarea>
           </div>
         </div>
       </div>
       
-      <!-- 文章設定 -->
-      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
-        <h2 class="text-xl font-semibold text-modern-900 mb-4">文章設定</h2>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
+      <!-- 文章與互動 -->
+      <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-emerald-50 text-emerald-600 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-modern-900">文章與互動</h2>
+        </div>
+        <div class="space-y-6">
+          <div class="flex items-center justify-between p-4 bg-modern-50 rounded-2xl">
             <div>
-              <label class="block text-sm font-medium text-modern-700">
-                允許留言
-              </label>
-              <p class="text-sm text-modern-500">啟用此選項後，文章下方會顯示留言功能</p>
+              <label class="block text-sm font-bold text-modern-800">允許留言</label>
+              <p class="text-xs text-modern-500 mt-0.5">啟用後，訪客可在文章下方進行互動討論</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" id="enable-comments" class="sr-only peer">
-              <div class="w-11 h-6 bg-modern-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-accent-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-modern-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-600"></div>
+              <div class="w-12 h-6 bg-modern-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-modern-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
             </label>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              每頁顯示文章數
-            </label>
-            <input
-              type="number"
-              id="posts-per-page"
-              value=""
-              min="5"
-              max="50"
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-            />
-            <p class="text-sm text-modern-500 mt-1">建議範圍：5-50 篇</p>
+            <label class="block text-sm font-bold text-modern-700 mb-2">每頁顯示文章數</label>
+            <div class="flex items-center gap-4">
+              <input
+                type="number"
+                id="posts-per-page"
+                min="5"
+                max="50"
+                class="w-32 px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
+              />
+              <span class="text-sm text-modern-500">建議設置在 10 至 30 之間</span>
+            </div>
           </div>
         </div>
       </div>
       
-      <!-- 時區設定 -->
-      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
-        <h2 class="text-xl font-semibold text-modern-900 mb-4">時區設定</h2>
-        <div class="space-y-4">
+      <!-- 國際化與時區 -->
+      <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-modern-900">國際化與時區</h2>
+        </div>
+        <div class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              網站時區
-            </label>
+            <label class="block text-sm font-bold text-modern-700 mb-2">網站主要時區</label>
             <select
               id="site-timezone"
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none appearance-none"
             >
               <option value="">載入中...</option>
             </select>
-            <p class="text-sm text-modern-500 mt-2">
-              設定網站使用的時區，影響所有時間的顯示與儲存
-            </p>
           </div>
           
-          <div class="bg-modern-50 border border-modern-200 rounded-lg p-4">
-            <div class="flex items-center gap-2 text-sm">
-              <svg class="w-5 h-5 text-modern-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="text-modern-700 font-medium">當前網站時間：</span>
-              <span id="current-site-time" class="text-modern-900">--:--:--</span>
+          <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex items-center gap-4">
+            <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-blue-600">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <p class="text-xs font-bold text-blue-400 uppercase tracking-wider">當前網站伺服器時間</p>
+              <p id="current-site-time" class="text-xl font-bold text-blue-900 tabular-nums">--:--:--</p>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- 使用者設定 -->
-      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
-        <h2 class="text-xl font-semibold text-modern-900 mb-4">使用者設定</h2>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
+      <!-- 安全與上傳 -->
+      <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-amber-50 text-amber-600 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-modern-900">安全與上傳</h2>
+        </div>
+        <div class="space-y-8">
+          <div class="flex items-center justify-between p-4 bg-modern-50 rounded-2xl">
             <div>
-              <label class="block text-sm font-medium text-modern-700">
-                允許使用者註冊
-              </label>
-              <p class="text-sm text-modern-500">啟用後，訪客可以自行註冊新帳號</p>
+              <label class="block text-sm font-bold text-modern-800">開放訪客註冊</label>
+              <p class="text-xs text-modern-500 mt-0.5">關閉此項後，僅能由管理員手動建立帳號</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" id="enable-registration" class="sr-only peer">
-              <div class="w-11 h-6 bg-modern-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-accent-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-modern-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent-600"></div>
+              <div class="w-12 h-6 bg-modern-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-modern-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
             </label>
           </div>
           
-          <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              最大上傳檔案大小（MB）
-            </label>
-            <input
-              type="number"
-              id="max-upload-size"
-              value=""
-              min="1"
-              max="100"
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-            />
-            <p class="text-sm text-modern-500 mt-1">建議範圍：1-100 MB</p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 檔案上傳設定 -->
-      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
-        <h2 class="text-xl font-semibold text-modern-900 mb-4">檔案上傳設定</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              允許的檔案類型
-            </label>
-            <div id="file-types-container" class="space-y-2">
-              <!-- 動態生成的 checkbox 會插入這裡 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-bold text-modern-700 mb-2">單檔上傳上限 (MB)</label>
+              <input
+                type="number"
+                id="max-upload-size"
+                min="1"
+                max="100"
+                class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
+              />
             </div>
-            <p class="text-sm text-modern-500 mt-2">
-              選擇允許使用者上傳的檔案類型
-            </p>
+            <div>
+              <label class="block text-sm font-bold text-modern-700 mb-2">單篇文章附件上限</label>
+              <input
+                type="number"
+                id="max-attachments-per-post"
+                min="1"
+                max="50"
+                class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
+              />
+            </div>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              單篇文章附件數量上限
-            </label>
-            <input
-              type="number"
-              id="max-attachments-per-post"
-              value=""
-              min="1"
-              max="50"
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
-            />
-            <p class="text-sm text-modern-500 mt-1">建議範圍：1-50 個附件</p>
+            <label class="block text-sm font-bold text-modern-700 mb-4">允許上傳的檔案副檔名</label>
+            <div id="file-types-container" class="space-y-6">
+              <!-- 動態生成 -->
+            </div>
           </div>
           
-          <div class="bg-info-50 border border-info-200 rounded-lg p-4">
-            <div class="flex items-start gap-2">
-              <svg class="w-5 h-5 text-info-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <div class="text-sm text-info-800">
-                <p class="font-medium mb-1">安全提示</p>
-                <p>建議只允許必要的檔案類型，以降低安全風險。可執行檔案（如 .exe、.bat）已被系統禁止。檔案內容會使用 magic numbers 驗證，無法透過修改副檔名繞過檢查。</p>
-              </div>
+          <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-5 flex items-start gap-4">
+            <div class="p-2 bg-white rounded-xl shadow-sm text-amber-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <div>
+              <h4 class="text-sm font-bold text-amber-900 mb-1">系統安全性備註</h4>
+              <p class="text-xs text-amber-700 leading-relaxed">
+                系統會對上傳檔案進行二進位特徵碼驗證，禁止所有可執行格式 (.exe, .bat, .sh)。
+                建議只勾選必要的媒體或文件格式以確保系統安全。
+              </p>
             </div>
           </div>
         </div>
       </div>
       
-      <!-- 頁腳設定 -->
-      <div class="bg-white rounded-lg shadow-sm border border-modern-200 p-6 mb-6">
-        <h2 class="text-xl font-semibold text-modern-900 mb-4">頁腳設定</h2>
-        <div class="space-y-4">
+      <!-- 頁腳客製化 -->
+      <div class="card bg-white border-modern-200 shadow-sm p-8 mb-10">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-2 bg-purple-50 text-purple-600 rounded-lg">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          </div>
+          <h2 class="text-xl font-bold text-modern-900">頁腳客製化</h2>
+        </div>
+        <div class="space-y-6">
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              版權文字
-            </label>
+            <label class="block text-sm font-bold text-modern-700 mb-2">版權聲明文字</label>
             <input
               type="text"
               id="footer-copyright"
-              value=""
               placeholder="© 2024 AlleyNote. All rights reserved."
-              class="w-full px-4 py-2 border border-modern-300 rounded-lg focus:ring-2 focus:ring-accent-500 focus:border-transparent"
+              class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
             />
-            <p class="text-sm text-modern-500 mt-1">顯示在頁腳的版權聲明</p>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-modern-700 mb-2">
-              頁腳描述
-            </label>
-            <div id="footer-description-editor" class="border border-modern-300 rounded-lg overflow-hidden"></div>
-            <p class="text-sm text-modern-500 mt-1">
-              顯示在頁腳的網站描述，支援富文本格式（HTML）
-            </p>
+            <label class="block text-sm font-bold text-modern-700 mb-2">頁腳描述內容 (富文本)</label>
+            <div id="footer-description-editor" class="border border-modern-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent-500 transition-all"></div>
           </div>
         </div>
       </div>
       
-      <!-- 儲存按鈕 -->
-      <div class="flex justify-end gap-4">
-        <button
-          id="reset-btn"
-          class="px-6 py-2 border border-modern-300 text-modern-700 rounded-lg hover:bg-modern-50 transition-colors"
-        >
-          重置
-        </button>
-        <button
-          id="save-btn"
-          class="px-6 py-2 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors"
-        >
-          儲存設定
-        </button>
+      <!-- 控制列 -->
+      <div class="flex items-center justify-between p-6 bg-modern-900 rounded-2xl shadow-xl shadow-modern-200 animate-slide-up">
+        <div class="text-modern-400 text-sm hidden md:block">
+          所有變更在點擊「儲存」前不會生效
+        </div>
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <button
+            id="reset-btn"
+            class="flex-1 md:flex-none px-8 py-3 bg-modern-800 text-modern-300 font-bold rounded-xl hover:bg-modern-700 hover:text-white transition-all"
+          >
+            重置回原始值
+          </button>
+          <button
+            id="save-btn"
+            class="flex-1 md:flex-none px-10 py-3 bg-accent-600 text-white font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all"
+          >
+            儲存所有設定
+          </button>
+        </div>
       </div>
     </div>
   `;

@@ -83,14 +83,17 @@ export default class UsersPage {
 
   render() {
     const content = `
-      <div class="max-w-7xl mx-auto">
-        <div class="flex items-center justify-between mb-8">
-          <h1 class="text-3xl font-bold text-modern-900">使用者管理</h1>
+      <div class="max-w-7xl mx-auto pb-12">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 class="text-3xl font-bold text-modern-900">使用者管理</h1>
+            <p class="text-sm text-modern-500 mt-1">管理系統存取權限與維護使用者帳號資訊</p>
+          </div>
           <button 
             id="addUserBtn" 
-            class="px-6 py-3 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors font-medium"
+            class="flex items-center justify-center gap-2 px-6 py-3 bg-accent-600 text-white rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all font-bold"
           >
-            <i class="fas fa-plus mr-2"></i>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             新增使用者
           </button>
         </div>
@@ -164,40 +167,45 @@ export default class UsersPage {
     const isSuperAdmin = roleName.includes('超級管理員') || (primaryRole?.name === 'super_admin');
     
     return `
-      <tr class="hover:bg-modern-50 transition-colors">
+      <tr class="group hover:bg-modern-50/80 transition-all duration-150">
         <td class="px-6 py-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-accent-500 flex items-center justify-center text-white font-semibold">
+            <div class="w-10 h-10 rounded-xl bg-accent-50 border border-accent-100 flex items-center justify-center text-accent-600 font-bold shadow-sm">
               ${(user.username || 'U')[0].toUpperCase()}
             </div>
-            <span class="font-medium text-modern-900">${this.escapeHtml(user.username)}</span>
+            <div>
+              <div class="text-sm font-bold text-modern-900 group-hover:text-accent-700 transition-colors">${this.escapeHtml(user.username)}</div>
+              <div class="text-[10px] text-modern-400 font-bold uppercase tracking-tighter">User ID: #${user.id}</div>
+            </div>
           </div>
         </td>
-        <td class="px-6 py-4 text-modern-700">${this.escapeHtml(user.email)}</td>
+        <td class="px-6 py-4 text-sm font-medium text-modern-600">${this.escapeHtml(user.email)}</td>
         <td class="px-6 py-4">
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
             isSuperAdmin
-              ? 'bg-purple-100 text-purple-800' 
-              : 'bg-blue-100 text-blue-800'
+              ? 'bg-purple-50 text-purple-700 border-purple-100' 
+              : 'bg-blue-50 text-blue-700 border-blue-100'
           }">
             ${this.escapeHtml(roleName)}
           </span>
         </td>
-        <td class="px-6 py-4 text-modern-700">${this.formatDate(user.created_at)}</td>
-        <td class="px-6 py-4 text-modern-700">${this.formatDate(user.last_login)}</td>
-        <td class="px-6 py-4">
-          <div class="flex items-center justify-end gap-2">
+        <td class="px-6 py-4 text-sm font-medium text-modern-500 tabular-nums">${this.formatDate(user.created_at)}</td>
+        <td class="px-6 py-4 text-sm font-medium text-modern-500 tabular-nums">${this.formatDate(user.last_login)}</td>
+        <td class="px-6 py-4 text-right">
+          <div class="flex items-center justify-end gap-1">
             <button 
-              class="edit-user-btn px-4 py-2 text-sm font-medium text-accent-700 border-2 border-accent-600 rounded-lg hover:bg-accent-50 transition-colors"
+              class="edit-user-btn p-2 text-modern-400 hover:text-accent-600 hover:bg-accent-50 rounded-xl transition-all"
+              title="編輯資料"
               data-user-id="${user.id}"
             >
-              編輯
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
             <button 
-              class="delete-user-btn px-4 py-2 text-sm font-medium text-red-700 border-2 border-red-600 rounded-lg hover:bg-red-50 transition-colors"
+              class="delete-user-btn p-2 text-modern-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+              title="移除使用者"
               data-user-id="${user.id}"
             >
-              刪除
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
             </button>
           </div>
         </td>
@@ -209,21 +217,21 @@ export default class UsersPage {
     if (this.totalPages <= 1) return '';
 
     return `
-      <div class="flex items-center justify-between px-6 py-4 border-t border-modern-200">
-        <div class="text-sm text-modern-600">
+      <div class="flex items-center justify-between px-6 py-6 bg-modern-50/30 border-t border-modern-100">
+        <div class="text-sm font-bold text-modern-500 uppercase tracking-widest">
           第 ${this.currentPage} / ${this.totalPages} 頁
         </div>
         <div class="flex gap-2">
           <button 
             id="prevPageBtn" 
-            class="px-4 py-2 text-sm font-medium text-modern-700 border-2 border-modern-300 rounded-lg hover:bg-modern-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-sm font-bold text-modern-600 bg-white border border-modern-200 rounded-xl hover:bg-modern-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             ${this.currentPage <= 1 ? 'disabled' : ''}
           >
             上一頁
           </button>
           <button 
             id="nextPageBtn" 
-            class="px-4 py-2 text-sm font-medium text-modern-700 border-2 border-modern-300 rounded-lg hover:bg-modern-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-sm font-bold text-modern-600 bg-white border border-modern-200 rounded-xl hover:bg-modern-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             ${this.currentPage >= this.totalPages ? 'disabled' : ''}
           >
             下一頁
@@ -343,17 +351,18 @@ export default class UsersPage {
         </div>
 
         ${!isEdit ? `
-          <div>
-            <div class="flex justify-between items-center mb-2">
-              <label for="password" class="block text-sm font-medium text-modern-700">
-                密碼 *
+          <div class="p-4 bg-modern-50 rounded-2xl border border-modern-100">
+            <div class="flex justify-between items-center mb-4">
+              <label for="password" class="block text-sm font-bold text-modern-700">
+                設定登入密碼 *
               </label>
               <button
                 type="button"
                 id="generatePasswordBtn"
-                class="text-sm text-accent-600 hover:text-accent-700 font-medium"
+                class="flex items-center gap-1 text-xs text-accent-600 hover:text-accent-700 font-bold bg-white px-3 py-1.5 rounded-lg shadow-sm border border-accent-100 transition-all"
               >
-                🎲 生成密碼
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                自動生成密碼
               </button>
             </div>
             <div class="relative">
@@ -361,49 +370,51 @@ export default class UsersPage {
                 type="password"
                 id="password"
                 name="password"
-                class="w-full px-4 py-3 pr-12 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
+                placeholder="至少 8 位字元"
+                class="w-full px-4 py-3 bg-white border border-modern-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all"
                 required
                 minlength="8"
               />
               <button
                 type="button"
                 id="togglePasswordBtn"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-modern-500 hover:text-modern-700"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-modern-400 hover:text-accent-600 transition-colors p-1"
               >
-                👁️
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eye-icon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               </button>
             </div>
             <!-- 密碼強度指示器將自動插入此處 -->
           </div>
 
           <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-modern-700 mb-2">
-              確認密碼 *
+            <label for="password_confirmation" class="block text-sm font-bold text-modern-700 mb-2">
+              確認新密碼 *
             </label>
             <input
               type="password"
               id="password_confirmation"
               name="password_confirmation"
-              class="w-full px-4 py-3 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500"
+              placeholder="請再次輸入密碼以供確認"
+              class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all"
               required
               minlength="8"
             />
           </div>
         ` : ''}
 
-        <div class="flex justify-end gap-3 pt-4">
+        <div class="flex justify-end gap-3 pt-6 border-t border-modern-100">
           <button
             type="button"
             id="cancelModalBtn"
-            class="px-6 py-3 text-sm font-medium text-modern-700 border-2 border-modern-300 rounded-lg hover:bg-modern-50 transition-colors"
+            class="px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors"
           >
             取消
           </button>
           <button
             type="submit"
-            class="px-6 py-3 text-sm font-medium text-white bg-accent-600 rounded-lg hover:bg-accent-700 transition-colors"
+            class="px-8 py-2.5 text-sm font-bold text-white bg-accent-600 rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all"
           >
-            ${isEdit ? '儲存變更' : '新增使用者'}
+            ${isEdit ? '儲存變更內容' : '確認建立帳號'}
           </button>
         </div>
       </form>
@@ -457,7 +468,19 @@ export default class UsersPage {
         togglePasswordBtn.addEventListener('click', () => {
           const type = passwordInput.type === 'password' ? 'text' : 'password';
           passwordInput.type = type;
-          togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🙈';
+          
+          // 更新圖標
+          const svg = togglePasswordBtn.querySelector('svg');
+          if (type === 'password') {
+            svg.innerHTML = `
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            `;
+          } else {
+            svg.innerHTML = `
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            `;
+          }
         });
       }
 

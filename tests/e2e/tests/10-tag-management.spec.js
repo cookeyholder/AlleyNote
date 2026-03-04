@@ -6,9 +6,9 @@ async function ensureAtLeastOneTag(page) {
   if (initialCount > 0) return true;
 
   const timestamp = Date.now();
-  await page.click('button:has-text("新增標籤")');
+  await page.click('button:has-text("新增內容標籤")');
   await page.fill('input[name="name"]', `測試標籤 ${timestamp}`);
-  await page.locator('button[type="submit"]:has-text("新增標籤")').click();
+  await page.locator('button[type="submit"]:has-text("建立標籤")').click();
   await page.waitForTimeout(1500);
   return (await page.locator(".edit-tag-btn").count()) > 0;
 }
@@ -27,20 +27,21 @@ test.describe("標籤管理功能測試", () => {
     await expect(page.locator('main h1:has-text("標籤管理")')).toBeVisible();
 
     // 檢查新增標籤按鈕
-    await expect(page.locator('button:has-text("新增標籤")')).toBeVisible();
+    await expect(page.locator('button:has-text("新增內容標籤")')).toBeVisible();
   });
 
   test("應該顯示標籤列表或空狀態", async ({ adminPage: page }) => {
     // 檢查是否有標籤卡片或空狀態訊息
     const hasTags = (await page.locator(".grid").count()) > 0;
-    const hasEmptyState = (await page.locator("text=尚無標籤資料").count()) > 0;
+    const hasEmptyState =
+      (await page.locator("text=目前尚無任何標籤").count()) > 0;
 
     expect(hasTags || hasEmptyState).toBeTruthy();
   });
 
   test("點擊新增標籤應該顯示新增對話框", async ({ adminPage: page }) => {
     // 點擊新增標籤按鈕
-    await page.click('button:has-text("新增標籤")');
+    await page.click('button:has-text("新增內容標籤")');
 
     // 等待 modal 出現
     await page.waitForTimeout(500);
@@ -58,13 +59,13 @@ test.describe("標籤管理功能測試", () => {
     // 檢查按鈕
     await expect(page.locator("#cancelModalBtn")).toBeVisible();
     await expect(
-      page.locator('button[type="submit"]:has-text("新增標籤")'),
+      page.locator('button[type="submit"]:has-text("建立標籤")'),
     ).toBeVisible();
   });
 
   test("應該能夠取消新增標籤", async ({ adminPage: page }) => {
     // 開啟新增對話框
-    await page.click('button:has-text("新增標籤")');
+    await page.click('button:has-text("新增內容標籤")');
     await page.waitForTimeout(500);
 
     // 點擊取消
@@ -79,11 +80,11 @@ test.describe("標籤管理功能測試", () => {
 
   test("新增標籤時應該驗證必填欄位", async ({ adminPage: page }) => {
     // 開啟新增對話框
-    await page.click('button:has-text("新增標籤")');
+    await page.click('button:has-text("新增內容標籤")');
     await page.waitForTimeout(500);
 
     // 不填寫任何資料，直接提交
-    await page.locator('button[type="submit"]:has-text("新增標籤")').click();
+    await page.locator('button[type="submit"]:has-text("建立標籤")').click();
 
     // 因為有 HTML5 驗證，表單不會提交
     // 檢查 modal 仍然存在
@@ -94,7 +95,7 @@ test.describe("標籤管理功能測試", () => {
     const beforeCount = await page.locator(".edit-tag-btn").count();
 
     // 開啟新增對話框
-    await page.click('button:has-text("新增標籤")');
+    await page.click('button:has-text("新增內容標籤")');
     await page.waitForTimeout(500);
 
     // 填寫表單
@@ -105,7 +106,7 @@ test.describe("標籤管理功能測試", () => {
     await page.fill('textarea[name="description"]', "這是測試用的標籤描述");
 
     // 提交表單
-    await page.locator('button[type="submit"]:has-text("新增標籤")').click();
+    await page.locator('button[type="submit"]:has-text("建立標籤")').click();
 
     // Modal 應該關閉
     await expect(

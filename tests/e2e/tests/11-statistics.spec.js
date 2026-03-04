@@ -8,10 +8,9 @@ test.describe("系統統計頁面", () => {
   test.beforeEach(async ({ page }) => {
     // 登入系統
     await page.goto("/login");
-    await page.click("text=登入");
     await page.fill('input[type="email"]', TEST_USER.email);
     await page.fill('input[type="password"]', TEST_USER.password);
-    await page.click('button[type="submit"]:has-text("登入")');
+    await page.click("#login-btn");
     await page.waitForURL("**/admin/dashboard");
 
     // 前往統計頁面
@@ -37,7 +36,7 @@ test.describe("系統統計頁面", () => {
     const userCard = await page.locator("text=活躍使用者").first();
     await expect(userCard).toBeVisible();
 
-    const newUserCard = await page.locator("text=新使用者").first();
+    const newUserCard = await page.locator("text=新註冊").first();
     await expect(newUserCard).toBeVisible();
 
     const viewCard = await page.locator("text=總瀏覽量").first();
@@ -47,7 +46,7 @@ test.describe("系統統計頁面", () => {
   test("應該顯示流量趨勢圖表", async ({ page }) => {
     test.skip(!(await hasStatsData(page)), "目前環境無統計資料可驗證");
 
-    const chartTitle = await page.locator('h2:has-text("流量趨勢")');
+    const chartTitle = await page.locator('h2:has-text("全站流量趨勢分析")');
     await expect(chartTitle).toBeVisible();
 
     // 檢查 canvas 元素（Chart.js 使用 canvas）
@@ -65,7 +64,7 @@ test.describe("系統統計頁面", () => {
   test("應該顯示登入失敗統計", async ({ page }) => {
     test.skip(!(await hasStatsData(page)), "目前環境無統計資料可驗證");
 
-    const loginFailureTitle = await page.locator('h2:has-text("登入失敗統計")');
+    const loginFailureTitle = await page.locator('h2:has-text("異常登入統計")');
     await expect(loginFailureTitle).toBeVisible();
 
     // 檢查總失敗次數顯示
@@ -108,7 +107,7 @@ test.describe("系統統計頁面", () => {
     test.skip(!(await hasStatsData(page)), "目前環境無統計資料可驗證");
 
     // 找到並點擊刷新按鈕
-    const refreshButton = await page.locator('button:has-text("刷新")');
+    const refreshButton = await page.locator('button:has-text("更新數據")');
     await expect(refreshButton).toBeVisible();
 
     await refreshButton.click();
@@ -117,7 +116,7 @@ test.describe("系統統計頁面", () => {
     await page.waitForTimeout(1000);
 
     // 檢查是否有成功提示
-    const successMessage = await page.locator("text=統計資料已更新").first();
+    const successMessage = await page.locator("text=統計資料已刷新").first();
     if (await successMessage.isVisible()) {
       await expect(successMessage).toBeVisible();
     }

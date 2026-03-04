@@ -21,7 +21,9 @@ test.describe("首頁功能測試", () => {
   });
 
   test("應該顯示最新文章列表", async ({ page }) => {
-    await expect(page.locator('h3:has-text("最新文章")')).toBeVisible();
+    await expect(
+      page.locator('h3:has-text("最新文章"), h3:has-text("最新發布內容")'),
+    ).toBeVisible();
 
     await expect
       .poll(

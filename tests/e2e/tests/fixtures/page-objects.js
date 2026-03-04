@@ -7,7 +7,7 @@ const { SecureBasePage } = require("./secure-ui-base");
  */
 const TEST_USER = {
   email: "admin@example.com",
-  password: "password",
+  password: "Admin@123456",
 };
 
 /**

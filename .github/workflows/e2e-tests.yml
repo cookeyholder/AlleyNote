@@ -53,13 +53,21 @@ jobs:
       - name: Start PHP built-in server
         working-directory: backend
         run: |
-          php -S localhost:8081 -t public > /dev/null 2>&1 &
+          JWT_PRIVATE_KEY_PATH="$PWD/keys/private.pem" \
+          JWT_PUBLIC_KEY_PATH="$PWD/keys/public.pem" \
+          php -S localhost:8080 -t public > /dev/null 2>&1 &
           sleep 2
 
       - name: Start frontend server
         working-directory: frontend
         run: |
-          python3 -m http.server 3000 > /dev/null 2>&1 &
+          npx --yes live-server \
+            --host=127.0.0.1 \
+            --port=3000 \
+            --no-browser \
+            --quiet \
+            --entry-file=index.html \
+            --proxy=/api:http://127.0.0.1:8080/api > /dev/null 2>&1 &
           sleep 2
 
       - name: Install test dependencies
