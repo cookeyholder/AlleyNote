@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Setting\Repositories;
 
 use PDO;
+use Throwable;
 
 /**
  * 設定 Repository.
@@ -22,12 +23,16 @@ class SettingRepository
      */
     public function findAll(): array
     {
-        $sql = 'SELECT * FROM settings ORDER BY key ASC';
-        $stmt = $this->db->query($sql);
-        if ($stmt === false) {
+        try {
+            $sql = 'SELECT * FROM settings ORDER BY key ASC';
+            $stmt = $this->db->query($sql);
+            if ($stmt === false) {
+                return [];
+            }
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Throwable) {
             return [];
         }
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $result = [];
         foreach ($rows as $row) {
@@ -59,10 +64,14 @@ class SettingRepository
      */
     public function findByKey(string $key): ?array
     {
-        $sql = 'SELECT * FROM settings WHERE key = :key';
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute(['key' => $key]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        try {
+            $sql = 'SELECT * FROM settings WHERE key = :key';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute(['key' => $key]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Throwable) {
+            return null;
+        }
 
         if (!is_array($row)) {
             return null;
@@ -112,7 +121,7 @@ class SettingRepository
     {
         $storedValue = $this->prepareValue($value, $type);
 
-        $sql = 'INSERT INTO settings (key, value, type, description, created_at, updated_at) 
+        $sql = 'INSERT INTO settings (key, value, type, description, created_at, updated_at)
                 VALUES (:key, :value, :type, :description, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
