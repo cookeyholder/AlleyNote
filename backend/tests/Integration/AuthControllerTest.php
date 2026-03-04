@@ -211,7 +211,7 @@ class AuthControllerTest extends IntegrationTestCase
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
-        $this->assertEquals(400, $response->getStatusCode()); // 驗證失敗應該返回400
+        $this->assertEquals(422, $response->getStatusCode()); // 驗證失敗應該返回422
     }
 
     #[Test]

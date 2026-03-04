@@ -214,7 +214,8 @@ export async function renderHome() {
   if (siteNameNav) siteNameNav.textContent = safeSiteName;
   if (siteNameHero) siteNameHero.textContent = safeSiteName;
   if (siteNameFooter) siteNameFooter.textContent = safeSiteName;
-  if (siteDescriptionHero) siteDescriptionHero.textContent = safeSiteDescription;
+  if (siteDescriptionHero)
+    siteDescriptionHero.textContent = safeSiteDescription;
   if (footerCopyright) footerCopyright.textContent = safeFooterCopyright;
   if (adminUsername) adminUsername.textContent = safeUsername;
 
@@ -355,6 +356,13 @@ async function renderPostCard(post) {
   article.className =
     "group bg-white border border-modern-200 rounded-3xl p-8 hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden";
 
+  const postId = String(post.id ?? "");
+  const postHref = `/posts/${encodeURIComponent(postId)}`;
+  const postTitle = String(post.title ?? "");
+  const postExcerpt = String(excerpt ?? "");
+  const postDate = String(formattedDate.split(" ")[0] ?? "");
+  const postAuthor = String(post.author?.username || post.author || "Guest");
+
   // 背景裝飾
   article.innerHTML = `
     <div class="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
@@ -362,46 +370,75 @@ async function renderPostCard(post) {
     </div>
 
     <div class="relative z-10 flex flex-col h-full">
-      <div class="flex items-center gap-2 mb-4">
-        ${
-          post.tags && post.tags.length > 0
-            ? post.tags
-                .slice(0, 2)
-                .map(
-                  (tag) => `
-            <span class="px-2.5 py-1 bg-accent-50 text-accent-600 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
-          `,
-                )
-                .join("")
-            : '<span class="px-2.5 py-1 bg-modern-50 text-modern-400 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-modern-100">General</span>'
-        }
+      <div class="flex items-center gap-2 mb-4" data-role="tag-container">
       </div>
 
       <h4 class="text-xl font-bold text-modern-900 mb-3 group-hover:text-accent-600 transition-colors line-clamp-2">
-        <a href="/posts/${post.id}" data-navigo>${String(post.title ?? "")}</a>
+        <a data-role="title-link" data-navigo></a>
       </h4>
 
-      <p class="text-modern-500 text-sm mb-8 line-clamp-3 leading-relaxed flex-1">
-        ${String(excerpt ?? "")}
-      </p>
+      <p class="text-modern-500 text-sm mb-8 line-clamp-3 leading-relaxed flex-1" data-role="excerpt"></p>
 
       <div class="pt-6 border-t border-modern-100 flex items-center justify-between mt-auto">
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-1.5">
             <svg class="w-4 h-4 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            <time class="text-xs font-bold text-modern-500 tabular-nums">${String(formattedDate.split(" ")[0] ?? "")}</time>
+            <time class="text-xs font-bold text-modern-500 tabular-nums" data-role="date"></time>
           </div>
           <div class="flex items-center gap-1.5">
             <svg class="w-4 h-4 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-            <span class="text-xs font-bold text-modern-500">${String(post.author?.username || post.author || "Guest")}</span>
+            <span class="text-xs font-bold text-modern-500" data-role="author"></span>
           </div>
         </div>
-        <a href="/posts/${post.id}" data-navigo class="w-8 h-8 rounded-full bg-modern-50 text-modern-400 flex items-center justify-center group-hover:bg-accent-600 group-hover:text-white transition-all shadow-sm">
+        <a data-role="action-link" data-navigo class="w-8 h-8 rounded-full bg-modern-50 text-modern-400 flex items-center justify-center group-hover:bg-accent-600 group-hover:text-white transition-all shadow-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </a>
       </div>
     </div>
   `;
+
+  const tagContainer = article.querySelector('[data-role="tag-container"]');
+  const titleLink = article.querySelector('[data-role="title-link"]');
+  const excerptElement = article.querySelector('[data-role="excerpt"]');
+  const dateElement = article.querySelector('[data-role="date"]');
+  const authorElement = article.querySelector('[data-role="author"]');
+  const actionLink = article.querySelector('[data-role="action-link"]');
+
+  if (tagContainer) {
+    const rawTags = Array.isArray(post.tags) ? post.tags.slice(0, 2) : [];
+    const tags = rawTags.length > 0 ? rawTags : ["General"];
+
+    tags.forEach((tag, index) => {
+      const span = document.createElement("span");
+      span.className =
+        index < rawTags.length
+          ? "px-2.5 py-1 bg-accent-50 text-accent-600 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-accent-100"
+          : "px-2.5 py-1 bg-modern-50 text-modern-400 rounded-lg text-[10px] font-bold uppercase tracking-widest border border-modern-100";
+      span.textContent = String(tag ?? "");
+      tagContainer.appendChild(span);
+    });
+  }
+
+  if (titleLink) {
+    titleLink.setAttribute("href", postHref);
+    titleLink.textContent = postTitle;
+  }
+
+  if (excerptElement) {
+    excerptElement.textContent = postExcerpt;
+  }
+
+  if (dateElement) {
+    dateElement.textContent = postDate;
+  }
+
+  if (authorElement) {
+    authorElement.textContent = postAuthor;
+  }
+
+  if (actionLink) {
+    actionLink.setAttribute("href", postHref);
+  }
 
   return article;
 }
