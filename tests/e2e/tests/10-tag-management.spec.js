@@ -113,10 +113,15 @@ test.describe("標籤管理功能測試", () => {
     ).not.toBeVisible();
 
     const afterCount = await page.locator(".edit-tag-btn").count();
-    test.skip(afterCount <= beforeCount, "目前環境無法建立標籤（可能為唯讀資料或 API 限制）");
+    test.skip(
+      afterCount <= beforeCount,
+      "目前環境無法建立標籤（可能為唯讀資料或 API 限制）",
+    );
 
     // 頁面應該顯示新增的標籤
-    await expect(page.locator(`text=${tagName}`)).toBeVisible({ timeout: 10000 });
+    await expect(page.locator(`text=${tagName}`)).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test("應該能夠編輯標籤", async ({ adminPage: page }) => {
