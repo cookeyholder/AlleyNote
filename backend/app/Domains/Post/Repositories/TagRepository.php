@@ -9,6 +9,7 @@ use App\Domains\Post\Models\Tag;
 use DateTimeImmutable;
 use PDO;
 use RuntimeException;
+use Throwable;
 
 /**
  * 標籤資料存取實現.
@@ -277,7 +278,7 @@ class TagRepository implements TagRepositoryInterface
                     return true;
                 }
             }
-        } catch (\Throwable) {
+        } catch (Throwable) {
         }
 
         $this->usageCountColumnExists = false;

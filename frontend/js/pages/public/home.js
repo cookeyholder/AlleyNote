@@ -49,7 +49,7 @@ export async function renderHome() {
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-accent-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-accent-600/20">A</div>
               <a href="/" data-navigo class="text-2xl font-bold text-modern-900 hover:text-accent-600 transition-colors">
-                ${safeSiteName}
+                <span id="site-name-nav"></span>
               </a>
             </div>
             <div class="flex items-center gap-6">
@@ -76,7 +76,7 @@ export async function renderHome() {
                     <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    <span class="hidden sm:inline font-bold">${safeUsername}</span>
+                    <span id="admin-username" class="hidden sm:inline font-bold"></span>
                     <span class="sm:hidden font-bold">後台</span>
                   </a>
                 </div>
@@ -108,10 +108,10 @@ export async function renderHome() {
             企業級公布欄系統
           </div>
           <h2 class="text-5xl md:text-6xl font-bold text-modern-900 mb-6 tracking-tight">
-            ${safeSiteName}
+            <span id="site-name-hero"></span>
           </h2>
           <p class="max-w-2xl mx-auto text-xl text-modern-500 leading-relaxed">
-            ${safeSiteDescription}
+            <span id="site-description-hero"></span>
           </p>
         </div>
 
@@ -187,15 +187,13 @@ export async function renderHome() {
             <div>
               <div class="flex items-center gap-3 mb-6">
                 <div class="w-8 h-8 bg-accent-600 rounded-lg flex items-center justify-center text-white font-bold">A</div>
-                <span class="text-2xl font-bold tracking-tight">${safeSiteName}</span>
+                <span id="site-name-footer" class="text-2xl font-bold tracking-tight"></span>
               </div>
               <div id="footer-description" class="text-modern-400 text-sm leading-relaxed max-w-md"></div>
             </div>
             <div class="text-left md:text-right">
               <p class="text-modern-500 text-xs font-bold uppercase tracking-widest mb-2">Copyright Control</p>
-              <p class="text-modern-300 text-sm">
-                ${safeFooterCopyright}
-              </p>
+              <p id="footer-copyright" class="text-modern-300 text-sm"></p>
             </div>
           </div>
         </div>
@@ -205,6 +203,20 @@ export async function renderHome() {
 
   // 載入文章
   await loadPosts();
+
+  const siteNameNav = document.getElementById("site-name-nav");
+  const siteNameHero = document.getElementById("site-name-hero");
+  const siteNameFooter = document.getElementById("site-name-footer");
+  const siteDescriptionHero = document.getElementById("site-description-hero");
+  const footerCopyright = document.getElementById("footer-copyright");
+  const adminUsername = document.getElementById("admin-username");
+
+  if (siteNameNav) siteNameNav.textContent = safeSiteName;
+  if (siteNameHero) siteNameHero.textContent = safeSiteName;
+  if (siteNameFooter) siteNameFooter.textContent = safeSiteName;
+  if (siteDescriptionHero) siteDescriptionHero.textContent = safeSiteDescription;
+  if (footerCopyright) footerCopyright.textContent = safeFooterCopyright;
+  if (adminUsername) adminUsername.textContent = safeUsername;
 
   // 設置頁腳描述（純文字，避免 XSS）
   const footerDescElement = document.getElementById("footer-description");

@@ -53,6 +53,7 @@ trait HttpResponseTestTrait
     protected function assertJsonResponseMatches(ResponseInterface $response, array $expected): void
     {
         $body = (string) $response->getBody();
+
         try {
             $actual = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
@@ -236,6 +237,7 @@ trait HttpResponseTestTrait
     protected function assertResponseIsJson(ResponseInterface $response): void
     {
         $body = $response->getBody()->getContents();
+
         try {
             json_decode($body, true, 512, JSON_THROW_ON_ERROR);
             $this->assertTrue(true);
