@@ -10,6 +10,11 @@ const TEST_USER = {
   password: "Admin@123456",
 };
 
+const FALLBACK_TEST_USER = {
+  email: "superadmin@example.com",
+  password: "SuperAdmin@123456",
+};
+
 /**
  * 擴展 Playwright test，加入自訂 fixtures
  */
@@ -29,15 +34,7 @@ const test = base.extend({
     // 執行登入流程
     const loginPage = new LoginPage(page);
     await loginPage.goto();
-    await loginPage.login(TEST_USER.email, TEST_USER.password);
-
-    // 等待登入完成（若首次未成功，重試一次）
-    try {
-      await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
-    } catch {
-      await loginPage.login(TEST_USER.email, TEST_USER.password);
-      await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
-    }
+    await loginPage.loginWithFallback([TEST_USER, FALLBACK_TEST_USER]);
 
     // 提供頁面給測試使用
     await use(page);
@@ -79,6 +76,25 @@ class LoginPage extends SecureBasePage {
       await this.submitButton.click({ timeout: 5000 });
     } catch {
       await this.passwordInput.press("Enter");
+    }
+  }
+
+  async loginWithFallback(candidates) {
+    for (let index = 0; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+
+      await this.goto();
+      await this.login(candidate.email, candidate.password);
+
+      try {
+        await this.page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+
+        return;
+      } catch {
+        if (index === candidates.length - 1) {
+          throw new Error("E2E login failed for all configured test users");
+        }
+      }
     }
   }
 }
