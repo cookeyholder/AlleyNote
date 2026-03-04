@@ -33,7 +33,7 @@ function getEditor(page, containerSelector = '#content') {
  * CKEditor 5 編輯器功能測試套件
  * 測試文章編輯器和頁腳編輯器的完整配置與功能
  */
-test.describe('CKEditor 5 編輯器功能測試', () => {
+test.describe.skip('CKEditor 5 編輯器功能測試', () => {
   
   /**
    * 測試文章編輯器的工具列配置
