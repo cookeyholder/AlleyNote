@@ -26,7 +26,7 @@ module.exports = defineConfig({
   // 全域設定
   use: {
     // 基礎 URL
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:8081',
     
     // 截圖設定
     screenshot: 'only-on-failure',

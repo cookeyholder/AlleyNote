@@ -1,5 +1,5 @@
 // @ts-check
-const { test: base, expect } = require('@playwright/test');
+const { test: base, expect } = require("@playwright/test");
 
 /**
  * Secure-UI Spec 基礎頁面類別.
@@ -7,8 +7,8 @@ const { test: base, expect } = require('@playwright/test');
 class SecureBasePage {
   constructor(page) {
     this.page = page;
-    this.toast = page.locator('.toast');
-    this.errorAlert = page.locator('.alert-danger');
+    this.toast = page.locator(".toast-item");
+    this.errorAlert = page.locator(".toast-item.border-red-500");
   }
 
   /**
@@ -17,16 +17,16 @@ class SecureBasePage {
   async assertNoSensitiveInfoLeaked() {
     const content = await this.page.content();
     const sensitivePatterns = [
-        /Fatal error:/i,
-        /Stack trace:/i,
-        /Uncaught Error:/i,
-        /SQLSTATE/i,
-        /\[PDOException\]/i,
-        /Internal Server Error/i
+      /Fatal error:/i,
+      /Stack trace:/i,
+      /Uncaught Error:/i,
+      /SQLSTATE/i,
+      /\[PDOException\]/i,
+      /Internal Server Error/i,
     ];
-    
+
     for (const pattern of sensitivePatterns) {
-        await expect(this.page.locator('body')).not.toHaveText(pattern);
+      await expect(this.page.locator("body")).not.toHaveText(pattern);
     }
   }
 
@@ -45,15 +45,15 @@ class SecureBasePage {
     const element = this.page.locator(selector);
     // 檢查可見文字
     await expect(element).toContainText(expectedText);
-    
+
     // 檢查是否包含 HTML 標籤（確保不是 &lt;p&gt; 這種字串）
     const html = await element.innerHTML();
     for (const tag of expectedTags) {
-        expect(html).toContain(`<${tag}`);
+      expect(html).toContain(`<${tag}`);
     }
-    
+
     // 確保沒有原始標籤字串
-    expect(html).not.toContain('&lt;');
+    expect(html).not.toContain("&lt;");
   }
 }
 

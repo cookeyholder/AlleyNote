@@ -16,18 +16,18 @@
 
 ## 3. 整合測試接手（後續）
 
-- [ ] 3.1 新增 Password 規則矩陣整合測試
+- [x] 3.1 新增 Password 規則矩陣整合測試
   - AC: 覆蓋長度、字元集、黑名單、確認密碼一致性
-- [ ] 3.2 新增 Timezone 轉換與儲存一致性整合測試
+- [x] 3.2 新增 Timezone 轉換與儲存一致性整合測試
   - AC: 覆蓋網站時區↔UTC 轉換與 DB round-trip
-- [ ] 3.3 新增 Settings 持久化與跨頁生效整合測試
+- [x] 3.3 新增 Settings 持久化與跨頁生效整合測試
   - AC: 覆蓋 key 設定值寫入、讀取與跨模組反映
-- [ ] 3.4 新增 Statistics API 數據正確性整合測試
+- [x] 3.4 新增 Statistics API 數據正確性整合測試
   - AC: 覆蓋範圍切換、聚合、排序
 
 ## 4. 驗證與收斂
 
-- [ ] 4.1 執行 E2E 全套並確認無失敗（允許 skip）
+- [x] 4.1 執行 E2E 全套並確認無失敗（允許 skip）
   - AC: unexpected failures = 0
-- [ ] 4.2 補充 docs/testing 說明測試分層準則
+- [x] 4.2 補充 docs/testing 說明測試分層準則
   - AC: 開發者可依準則判斷新測試應放置層級
