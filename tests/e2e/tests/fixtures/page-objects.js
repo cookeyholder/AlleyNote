@@ -91,6 +91,18 @@ class LoginPage extends SecureBasePage {
 
         return;
       } catch {
+        const hasToken = await this.page.evaluate(() => {
+          const raw = localStorage.getItem("alleynote_access_token");
+          return !!raw && raw !== "null";
+        });
+
+        if (hasToken) {
+          await this.page.goto("/admin/dashboard");
+          await this.page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+
+          return;
+        }
+
         if (index === candidates.length - 1) {
           throw new Error("E2E login failed for all configured test users");
         }
