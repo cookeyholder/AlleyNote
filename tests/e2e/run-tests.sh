@@ -90,6 +90,13 @@ install_deps() {
     print_success "Playwright Chromium 已就緒"
 }
 
+# 準備 JWT 測試金鑰
+ensure_jwt_keys() {
+    print_info "準備 JWT 測試金鑰..."
+    ./tests/fixtures/generate-jwt-keys.sh
+    print_success "JWT 測試金鑰已就緒"
+}
+
 # 執行測試
 run_tests() {
     local mode="${1:-headless}"
@@ -152,6 +159,9 @@ main() {
 
         # 安裝依賴
         install_deps
+
+        # 準備測試 fixture
+        ensure_jwt_keys
     fi
 
     # 執行測試
