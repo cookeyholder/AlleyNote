@@ -1,44 +1,40 @@
 {
-    "name": "AlleyNote Dev Environment (Trixie)",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": "."
+  "name": "AlleyNote Dev Environment (Trixie)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
+      "version": "latest",
+      "enableNonRootDocker": "true",
+      "moby": "false"
     },
-    "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
-            "version": "latest",
-            "enableNonRootDocker": "true",
-            "moby": "false"
-        },
-        "ghcr.io/devcontainers/features/node:1.7.1": {
-            "version": "24"
-        },
-        "ghcr.io/devcontainers/features/github-cli:1.0.10": {}
+    "ghcr.io/devcontainers/features/node:1.7.1": {
+      "version": "24"
     },
-    "appPort": [8080],
-    "mounts": [
-        "source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
-    ],
-    "runArgs": [
-        "--privileged"
-    ],
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "bmewburn.vscode-intelephense-client",
-                "dbaeumer.vscode-eslint",
-                "bradlc.vscode-tailwindcss",
-                "esbenp.prettier-vscode",
-                "xdebug.php-debug",
-                "mhutchie.git-graph"
-            ],
-            "settings": {
-                "php.suggest.basic": false,
-                "editor.formatOnSave": true,
-                "editor.defaultFormatter": "esbenp.prettier-vscode"
-            }
-        }
-    },
-    "remoteUser": "vscode",
-    "postCreateCommand": "npm install"
+    "ghcr.io/devcontainers/features/github-cli:1.0.10": {}
+  },
+  "appPort": [8080],
+  "mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"],
+  "runArgs": ["--privileged"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "xdebug.php-debug",
+        "mhutchie.git-graph"
+      ],
+      "settings": {
+        "php.suggest.basic": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "npm install && npx playwright install --with-deps"
 }
