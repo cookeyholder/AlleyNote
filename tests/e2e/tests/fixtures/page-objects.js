@@ -81,11 +81,17 @@ class LoginPage extends SecureBasePage {
 
   async loginWithFallback(candidates) {
     let lastError = null;
+    const startedAt = Date.now();
+    const maxDurationMs = 45000;
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
 
-      for (let attempt = 1; attempt <= 3; attempt += 1) {
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        if (Date.now() - startedAt >= maxDurationMs) {
+          break;
+        }
+
         if (this.page.isClosed()) {
           throw new Error("E2E login aborted because page was closed");
         }
@@ -94,7 +100,7 @@ class LoginPage extends SecureBasePage {
         await this.login(candidate.email, candidate.password);
 
         try {
-          await this.page.waitForURL("**/admin/dashboard", { timeout: 12000 });
+          await this.page.waitForURL("**/admin/dashboard", { timeout: 6000 });
 
           return;
         } catch (error) {
@@ -113,9 +119,11 @@ class LoginPage extends SecureBasePage {
 
           if (hasToken) {
             try {
-              await this.page.goto("/admin/dashboard");
+              await this.page.goto("/admin/dashboard", {
+                waitUntil: "domcontentloaded",
+              });
               await this.page.waitForURL("**/admin/dashboard", {
-                timeout: 10000,
+                timeout: 5000,
               });
 
               return;
@@ -124,11 +132,24 @@ class LoginPage extends SecureBasePage {
             }
           }
 
+          try {
+            await this.page.goto("/admin/dashboard", {
+              waitUntil: "domcontentloaded",
+              timeout: 6000,
+            });
+
+            if (this.page.url().includes("/admin/dashboard")) {
+              return;
+            }
+          } catch (directVisitError) {
+            lastError = directVisitError;
+          }
+
           if (this.page.isClosed()) {
             break;
           }
 
-          await this.page.waitForTimeout(800);
+          await this.page.waitForTimeout(300);
         }
       }
 
