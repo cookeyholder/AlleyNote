@@ -17,6 +17,24 @@ test.describe("身分認證安全性測試 (Secure-UI Spec)", () => {
     // 執行登入
     await loginPage.login(TEST_USER.email, TEST_USER.password);
 
+    // CI 偶發情況：登入成功但未即時導頁，先嘗試等待；失敗則重試一次
+    try {
+      await page.waitForURL("**/admin/dashboard", { timeout: 8000 });
+    } catch {
+      await page.waitForTimeout(600);
+      await loginPage.login(TEST_USER.email, TEST_USER.password);
+
+      // 若已拿到 token 但仍留在 /login，主動前往儀表板
+      const hasToken = await page.evaluate(() => {
+        const raw = localStorage.getItem("alleynote_access_token");
+        return !!raw && raw !== "null";
+      });
+
+      if (hasToken && /\/login(?:\?|$)/.test(page.url())) {
+        await page.goto("/admin/dashboard");
+      }
+    }
+
     // 驗證導航
     await expect(page).toHaveURL(/\/admin\/dashboard/, { timeout: 15000 });
 

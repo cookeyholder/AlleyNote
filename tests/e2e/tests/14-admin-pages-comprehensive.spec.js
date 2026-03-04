@@ -31,7 +31,7 @@ test.describe.skip("管理後台頁面完整性測試", () => {
     // 登入
     await page.goto("/login");
     await page.fill('input[name="email"]', "admin@example.com");
-    await page.fill('input[name="password"]', "password");
+    await page.fill('input[name="password"]', "Admin@123456");
     await page.click('button[type="submit"]');
     await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
   });
@@ -178,7 +178,7 @@ test.describe("管理頁面核心功能測試", () => {
     // 登入
     await page.goto("/login");
     await page.fill('input[name="email"]', "admin@example.com");
-    await page.fill('input[name="password"]', "password");
+    await page.fill('input[name="password"]', "Admin@123456");
     await page.click('button[type="submit"]');
     await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
   });

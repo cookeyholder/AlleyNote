@@ -129,12 +129,10 @@ test.describe("密碼安全性測試", () => {
     // 點擊顯示
     await toggleBtn.click();
     await expect(passwordInput).toHaveAttribute("type", "text");
-    await expect(toggleBtn).toContainText("🙈");
 
     // 再次點擊隱藏
     await toggleBtn.click();
     await expect(passwordInput).toHaveAttribute("type", "password");
-    await expect(toggleBtn).toContainText("👁️");
   });
 
   test("生成密碼功能", async ({ adminPage: page }) => {

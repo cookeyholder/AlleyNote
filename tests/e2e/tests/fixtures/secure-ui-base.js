@@ -26,7 +26,7 @@ class SecureBasePage {
     ];
 
     for (const pattern of sensitivePatterns) {
-      await expect(this.page.locator("body")).not.toHaveText(pattern);
+      expect(content).not.toMatch(pattern);
     }
   }
 

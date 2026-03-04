@@ -31,8 +31,13 @@ const test = base.extend({
     await loginPage.goto();
     await loginPage.login(TEST_USER.email, TEST_USER.password);
 
-    // 等待登入完成
-    await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+    // 等待登入完成（若首次未成功，重試一次）
+    try {
+      await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+    } catch {
+      await loginPage.login(TEST_USER.email, TEST_USER.password);
+      await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
+    }
 
     // 提供頁面給測試使用
     await use(page);
@@ -68,7 +73,13 @@ class LoginPage extends SecureBasePage {
     if (remember) {
       await this.rememberCheckbox.check();
     }
-    await this.submitButton.click();
+
+    // 優先點擊送出；若按鈕狀態不穩定則退回 Enter 提交
+    try {
+      await this.submitButton.click({ timeout: 5000 });
+    } catch {
+      await this.passwordInput.press("Enter");
+    }
   }
 }
 

@@ -9,7 +9,7 @@ test.describe("批次刪除文章功能", () => {
     // 登入
     await page.goto("/login");
     await page.fill('input[name="email"]', "admin@example.com");
-    await page.fill('input[name="password"]', "password");
+    await page.fill('input[name="password"]', "Admin@123456");
     await page.click('button[type="submit"]');
     await page.waitForURL("**/admin/dashboard", { timeout: 10000 });
 
@@ -22,7 +22,7 @@ test.describe("批次刪除文章功能", () => {
   test("應該顯示批次刪除按鈕", async ({ page }) => {
     const batchBtn = page.locator("#batch-delete-btn");
     await expect(batchBtn).toBeVisible();
-    await expect(batchBtn).toHaveText(/批次刪除/);
+    await expect(batchBtn).toHaveText(/批次操作/);
   });
 
   test("點擊批次刪除按鈕應該進入批次模式", async ({ page }) => {
