@@ -97,7 +97,40 @@ class LoginPage extends SecureBasePage {
         }
 
         await this.goto();
+
+        const loginResponsePromise = this.page
+          .waitForResponse(
+            (response) =>
+              response.url().includes("/api/auth/login") &&
+              response.request().method() === "POST",
+            { timeout: 8000 },
+          )
+          .catch(() => null);
+
         await this.login(candidate.email, candidate.password);
+
+        const loginResponse = await loginResponsePromise;
+
+        if (loginResponse && loginResponse.ok()) {
+          try {
+            await this.page.waitForURL("**/admin/dashboard", { timeout: 4000 });
+
+            return;
+          } catch {
+            try {
+              await this.page.goto("/admin/dashboard", {
+                waitUntil: "domcontentloaded",
+                timeout: 6000,
+              });
+
+              if (this.page.url().includes("/admin/dashboard")) {
+                return;
+              }
+            } catch (directVisitAfterLoginError) {
+              lastError = directVisitAfterLoginError;
+            }
+          }
+        }
 
         try {
           await this.page.waitForURL("**/admin/dashboard", { timeout: 6000 });
