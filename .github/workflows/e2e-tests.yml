@@ -48,6 +48,13 @@ jobs:
         working-directory: backend
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Prepare backend environment file
+        working-directory: backend
+        run: |
+          if [ ! -f .env.development ]; then
+            cp .env.example .env.development
+          fi
+
       - name: Setup database
         working-directory: backend
         run: |
