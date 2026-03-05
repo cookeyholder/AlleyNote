@@ -227,6 +227,33 @@ try {
     ");
     echo "✓ token_blacklist 表已創建\n";
 
+    // 創建 roles 表（認證流程會查詢）
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS roles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR(50) NOT NULL UNIQUE,
+            display_name VARCHAR(100) NOT NULL,
+            description TEXT,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME
+        )
+    ");
+    echo "✓ roles 表已創建\n";
+
+    // 創建 user_roles 表（認證流程會查詢）
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS user_roles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            role_id INTEGER NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, role_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+        )
+    ");
+    echo "✓ user_roles 表已創建\n";
+
     // 創建索引
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id)");
@@ -237,6 +264,8 @@ try {
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_post_views_post ON post_views(post_id)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_token_blacklist_jti ON token_blacklist(jti)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_roles_user_id ON user_roles(user_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_roles_role_id ON user_roles(role_id)");
     echo "✓ 索引已創建\n";
 
     // 檢查是否已有使用者
@@ -263,6 +292,24 @@ try {
     } else {
         echo "\n資料庫已有使用者，跳過創建\n";
     }
+
+    // 建立預設角色
+    $pdo->exec("
+        INSERT OR IGNORE INTO roles (name, display_name, description) VALUES
+        ('admin', '管理員', '系統管理員'),
+        ('super_admin', '超級管理員', '最高權限管理員')
+    ");
+
+    // 指派預設角色給測試帳號
+    $pdo->exec("
+        INSERT OR IGNORE INTO user_roles (user_id, role_id)
+        SELECT u.id, r.id
+        FROM users u
+        JOIN roles r ON (
+            (u.username = 'admin' AND r.name = 'admin') OR
+            (u.username = 'superadmin' AND r.name = 'super_admin')
+        )
+    ");
 
     echo "\n✅ 資料庫初始化完成！\n";
     echo "\n您現在可以使用以下帳號登入：\n";
