@@ -36,6 +36,14 @@ try {
     ");
     echo "✓ users 表已創建\n";
 
+    // 補齊 users 表在新版認證流程需要的欄位
+    $userColumns = $pdo->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_ASSOC);
+    $userColumnNames = array_column($userColumns, 'name');
+    if (!in_array('last_login', $userColumnNames, true)) {
+        $pdo->exec("ALTER TABLE users ADD COLUMN last_login DATETIME");
+        echo "✓ users.last_login 欄位已補齊\n";
+    }
+
     // 創建 posts 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS posts (
