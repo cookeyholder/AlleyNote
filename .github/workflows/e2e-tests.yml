@@ -70,7 +70,7 @@ jobs:
           php -S 127.0.0.1:8080 -t public > /tmp/e2e-php-server.log 2>&1 &
 
           for i in {1..20}; do
-            if curl -fsS "http://127.0.0.1:8080/" >/dev/null; then
+            if curl -sS "http://127.0.0.1:8080/" >/dev/null; then
               echo "PHP server is ready"
               break
             fi
