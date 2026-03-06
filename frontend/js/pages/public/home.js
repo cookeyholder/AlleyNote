@@ -14,15 +14,6 @@ let siteSettings = {
   footer_description: "基於 Domain-Driven Design 的企業級公布欄系統",
 };
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
 /**
  * 渲染首頁
  */
@@ -33,10 +24,10 @@ export async function renderHome() {
   // 檢查使用者登入狀態
   const isAuthenticated = globalGetters.isAuthenticated();
   const user = globalGetters.getUser();
-  const safeSiteName = escapeHtml(siteSettings.site_name || "AlleyNote");
-  const safeSiteDescription = escapeHtml(siteSettings.site_description || "");
-  const safeFooterCopyright = escapeHtml(siteSettings.footer_copyright || "");
-  const safeUsername = escapeHtml(user?.username || "管理後台");
+  const safeSiteName = String(siteSettings.site_name || "AlleyNote");
+  const safeSiteDescription = String(siteSettings.site_description || "");
+  const safeFooterCopyright = String(siteSettings.footer_copyright || "");
+  const safeUsername = String(user?.username || "管理後台");
 
   const app = document.getElementById("app");
 
