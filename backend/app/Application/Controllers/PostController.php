@@ -222,38 +222,70 @@ class PostController extends BaseController
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
 
-            // 生成 UUID
-            $uuid = sprintf(
-                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-            );
+            // 動態判斷 posts 表欄位，避免不同環境 schema 差異造成新增失敗
+            $postColumns = $pdo->query('PRAGMA table_info(posts)')->fetchAll(PDO::FETCH_ASSOC);
+            $postColumnNames = array_column($postColumns, 'name');
 
-            // 獲取最新的 seq_number
-            $seqStmt = $pdo->query('SELECT MAX(seq_number) as max_seq FROM posts');
-            $maxSeq = $seqStmt->fetchColumn();
-            $seqNumber = ($maxSeq ?? 0) + 1;
+            $insertData = [
+                'title' => $title,
+                'content' => $content,
+                'status' => $status,
+            ];
 
-            // 插入新文章
-            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, publish_date, created_at)
-                    VALUES (:uuid, :seq_number, :title, :content, :user_id, :status, 0, 0, :publish_date, datetime('now'))";
+            if (in_array('user_id', $postColumnNames, true)) {
+                $insertData['user_id'] = $userId;
+            } elseif (in_array('author_id', $postColumnNames, true)) {
+                $insertData['author_id'] = $userId;
+            }
 
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':uuid' => $uuid,
-                ':seq_number' => $seqNumber,
-                ':title' => $title,
-                ':content' => $content,
-                ':user_id' => $userId,
-                ':status' => $status,
-                ':publish_date' => $publishDate,
-            ]);
+            if (in_array('publish_date', $postColumnNames, true)) {
+                $insertData['publish_date'] = $publishDate;
+            } elseif (in_array('published_at', $postColumnNames, true)) {
+                $insertData['published_at'] = $publishDate;
+            }
+
+            if (in_array('excerpt', $postColumnNames, true)) {
+                $insertData['excerpt'] = trim((string) ($body['excerpt'] ?? ''));
+            }
+
+            if (in_array('views', $postColumnNames, true)) {
+                $insertData['views'] = 0;
+            }
+
+            if (in_array('is_pinned', $postColumnNames, true)) {
+                $insertData['is_pinned'] = 0;
+            }
+
+            if (in_array('uuid', $postColumnNames, true)) {
+                $insertData['uuid'] = sprintf(
+                    '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0x0fff) | 0x4000,
+                    mt_rand(0, 0x3fff) | 0x8000,
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                );
+            }
+
+            if (in_array('seq_number', $postColumnNames, true)) {
+                $seqStmt = $pdo->query('SELECT MAX(seq_number) as max_seq FROM posts');
+                $maxSeq = $seqStmt->fetchColumn();
+                $insertData['seq_number'] = ((int) ($maxSeq ?: 0)) + 1;
+            }
+
+            $insertColumns = array_keys($insertData);
+            $insertSql = 'INSERT INTO posts (' . implode(', ', $insertColumns) . ') VALUES ('
+                . implode(', ', array_map(static fn (string $column): string => ':' . $column, $insertColumns))
+                . ')';
+
+            $stmt = $pdo->prepare($insertSql);
+            $stmt->execute(array_combine(
+                array_map(static fn (string $column): string => ':' . $column, $insertColumns),
+                array_values($insertData),
+            ));
 
             $postId = $pdo->lastInsertId();
 
@@ -279,8 +311,6 @@ class PostController extends BaseController
             // 回傳新建立的文章
             $post = [
                 'id' => (int) $postId,
-                'uuid' => $uuid,
-                'seq_number' => $seqNumber,
                 'title' => $title,
                 'content' => $content,
                 'user_id' => $userId,
@@ -289,6 +319,14 @@ class PostController extends BaseController
                 'created_at' => date('c'),
                 'tags' => [],
             ];
+
+            if (isset($insertData['uuid'])) {
+                $post['uuid'] = $insertData['uuid'];
+            }
+
+            if (isset($insertData['seq_number'])) {
+                $post['seq_number'] = $insertData['seq_number'];
+            }
 
             // 查詢並回傳標籤資訊
             if (isset($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
