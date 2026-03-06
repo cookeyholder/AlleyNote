@@ -39,9 +39,7 @@ class PostController extends BaseController
             $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
 
             // 建立查詢
             $where = ['p.deleted_at IS NULL'];
@@ -123,9 +121,7 @@ class PostController extends BaseController
             $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
 
             // 建立查詢條件
             $conditions = ['p.id = :id', 'p.deleted_at IS NULL'];
@@ -224,9 +220,7 @@ class PostController extends BaseController
             }
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
 
             // 生成 UUID
             $uuid = sprintf(
@@ -341,9 +335,7 @@ class PostController extends BaseController
             }
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
 
             // 檢查文章是否存在
             $checkSql = 'SELECT id FROM posts WHERE id = :id AND deleted_at IS NULL';
@@ -501,9 +493,7 @@ class PostController extends BaseController
     {
         try {
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
 
             // 檢查文章是否存在
             $checkSql = 'SELECT id, title FROM posts WHERE id = :id AND deleted_at IS NULL';
@@ -575,5 +565,32 @@ class PostController extends BaseController
                 ) WHERE id = :tag_id';
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':tag_id' => $tagId]);
+    }
+
+    /**
+     * 建立 SQLite 連線（支援相對/絕對 DB 路徑）.
+     */
+    private function createSqliteConnection(): PDO
+    {
+        $backendRoot = dirname(__DIR__, 3);
+        $configuredPath = getenv('DB_DATABASE') ?: ($_ENV['DB_DATABASE'] ?? 'database/alleynote.sqlite3');
+
+        if (!is_string($configuredPath) || $configuredPath === '') {
+            $configuredPath = 'database/alleynote.sqlite3';
+        }
+
+        $dbPath = str_starts_with($configuredPath, '/')
+            ? $configuredPath
+            : $backendRoot . '/' . ltrim($configuredPath, '/');
+
+        $dbDir = dirname($dbPath);
+        if (!is_dir($dbDir)) {
+            mkdir($dbDir, 0755, true);
+        }
+
+        $pdo = new PDO("sqlite:{$dbPath}");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
     }
 }
