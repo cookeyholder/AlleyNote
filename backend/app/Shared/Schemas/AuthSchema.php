@@ -52,13 +52,14 @@ use OpenApi\Attributes as OA;
     type: 'object',
     title: '登入請求',
     description: '使用者登入請求',
-    required: ['username', 'password'],
+    required: ['email', 'password'],
     properties: [
         new OA\Property(
-            property: 'username',
+            property: 'email',
             type: 'string',
-            description: '使用者名稱',
-            example: 'admin',
+            format: 'email',
+            description: '電子郵件',
+            example: 'admin@example.com',
         ),
         new OA\Property(
             property: 'password',
