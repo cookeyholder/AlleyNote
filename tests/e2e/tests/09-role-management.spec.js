@@ -23,8 +23,8 @@ test.beforeEach(async ({ page }) => {
   // 等待登入成功並導航到儀表板
   await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
 
-  // 導航到角色管理頁面
-  await page.click('a[href="/admin/roles"]');
+  // 直接導航到角色管理頁面，避免依賴側欄事件綁定時序
+  await page.goto("/admin/roles");
   await page.waitForURL("**/admin/roles");
 });
 
