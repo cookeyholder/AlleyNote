@@ -282,14 +282,23 @@ class PostController extends BaseController
                 $insertData['seq_number'] = ((int) ($maxSeq ?: 0)) + 1;
             }
 
+            $now = date('Y-m-d H:i:s');
+            if (in_array('created_at', $postColumnNames, true) && !array_key_exists('created_at', $insertData)) {
+                $insertData['created_at'] = $now;
+            }
+
+            if (in_array('updated_at', $postColumnNames, true) && !array_key_exists('updated_at', $insertData)) {
+                $insertData['updated_at'] = $now;
+            }
+
             $insertColumns = array_keys($insertData);
             $insertSql = 'INSERT INTO posts (' . implode(', ', $insertColumns) . ') VALUES ('
-                . implode(', ', array_map(static fn (string $column): string => ':' . $column, $insertColumns))
+                . implode(', ', array_map(static fn(string $column): string => ':' . $column, $insertColumns))
                 . ')';
 
             $stmt = $pdo->prepare($insertSql);
             $stmt->execute(array_combine(
-                array_map(static fn (string $column): string => ':' . $column, $insertColumns),
+                array_map(static fn(string $column): string => ':' . $column, $insertColumns),
                 array_values($insertData),
             ));
 
@@ -629,7 +638,7 @@ class PostController extends BaseController
 
         $dbDir = dirname($dbPath);
         if (!is_dir($dbDir)) {
-            mkdir($dbDir, 0755, true);
+            mkdir($dbDir, 0o755, true);
         }
 
         $pdo = new PDO("sqlite:{$dbPath}");

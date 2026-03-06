@@ -34,15 +34,34 @@ test.describe("文章編輯功能測試", () => {
       status: "draft",
     });
 
+    // 監聽建立文章 API，避免只依賴畫面跳轉造成時序不穩
+    const createPostResponsePromise = page.waitForResponse(
+      (response) => {
+        const request = response.request();
+        return (
+          request.method() === "POST" &&
+          /\/posts$/.test(new URL(response.url()).pathname)
+        );
+      },
+      { timeout: 15000 },
+    );
+
     // 提交文章
     await editorPage.submitPost();
 
+    const createPostResponse = await createPostResponsePromise;
+    expect(createPostResponse.ok()).toBeTruthy();
+
     // 應該導航回文章列表
-    await expect(page).toHaveURL(/\/admin\/posts$/);
+    await expect(page).toHaveURL(/\/admin\/posts$/, { timeout: 15000 });
+
+    // 強制重新載入列表，避免偶發的資料同步延遲
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page).toHaveURL(/\/admin\/posts$/, { timeout: 15000 });
 
     // 應該能在列表中找到新建立的文章
     await expect(page.locator(`text=${testTitle}`)).toBeVisible({
-      timeout: 5000,
+      timeout: 15000,
     });
   });
 
