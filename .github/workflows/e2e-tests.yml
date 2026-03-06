@@ -54,6 +54,7 @@ jobs:
           if [ ! -f .env.development ]; then
             cp .env.example .env.development
           fi
+          sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$PWD/database/alleynote.sqlite3|" .env.development
 
       - name: Setup database
         working-directory: backend
@@ -72,6 +73,8 @@ jobs:
       - name: Start PHP built-in server
         working-directory: backend
         run: |
+          APP_ENV=development \
+          DB_DATABASE="$PWD/database/alleynote.sqlite3" \
           JWT_PRIVATE_KEY_PATH="$PWD/keys/private.pem" \
           JWT_PUBLIC_KEY_PATH="$PWD/keys/public.pem" \
           php -S 127.0.0.1:8080 -t public > /tmp/e2e-php-server.log 2>&1 &
