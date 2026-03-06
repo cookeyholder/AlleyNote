@@ -249,7 +249,7 @@ describeRoleSuite("角色管理頁面", () => {
   });
 });
 
-test.describe("角色管理權限驗證", () => {
+describeRoleSuite("角色管理權限驗證", () => {
   test("新增角色時角色名稱和顯示名稱為必填", async ({ page }) => {
     // 點擊新增角色按鈕
     await page.click("#addRoleBtn");
