@@ -119,9 +119,9 @@ return function (RouterInterface $router): void {
     $postsUpdate->middleware(['jwt.auth', 'jwt.authorize']);
 
     // 刪除貼文 (需要認證和權限 - 只有作者或管理員)
-    $postsDestroy = $router->delete('/api/posts/{id}', [ApiPostController::class, 'destroy']);
-    $postsDestroy->setName('posts.destroy');
-    $postsDestroy->middleware(['jwt.auth', 'jwt.authorize']);
+    $postsDelete = $router->delete('/api/posts/{id}', [ApiPostController::class, 'delete']);
+    $postsDelete->setName('posts.delete');
+    $postsDelete->middleware(['jwt.auth', 'jwt.authorize']);
 
     // 發布貼文 (需要認證和權限)
     $postsPublish = $router->post('/api/posts/{id}/publish', [ApiPostController::class, 'publish']);

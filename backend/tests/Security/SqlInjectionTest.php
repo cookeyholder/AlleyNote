@@ -11,9 +11,9 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\SecureDDDTestCase;
 
-class SqlInjectionTest extends TestCase
+class SqlInjectionTest extends SecureDDDTestCase
 {
     protected PostRepository $repository;
 

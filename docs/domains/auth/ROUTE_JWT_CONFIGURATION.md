@@ -35,6 +35,7 @@ Authorized Routes (需要認證和授權的路由)
 負責驗證 JWT token 的有效性，並將使用者資訊注入到請求中。
 
 **配置範例**：
+
 ```php
 // 在 DI 容器中註冊
 $container->singleton('jwt.auth', function () use ($container) {
@@ -45,6 +46,7 @@ $container->singleton('jwt.auth', function () use ($container) {
 ```
 
 **功能**：
+
 - 從 Authorization header、query 參數或 cookie 提取 token
 - 驗證 token 有效性和到期時間
 - 檢查 token 是否被撤銷
@@ -55,6 +57,7 @@ $container->singleton('jwt.auth', function () use ($container) {
 檢查已認證使用者的角色和權限，確保有足夠權限執行操作。
 
 **配置範例**：
+
 ```php
 // 在 DI 容器中註冊
 $container->singleton('jwt.authorize', function () {
@@ -71,6 +74,7 @@ $container->singleton('jwt.authorize', function () {
 ```
 
 **功能**：
+
 - RBAC（基於角色的存取控制）
 - ABAC（基於屬性的存取控制）
 - 資源擁有者檢查
@@ -139,14 +143,14 @@ $router->group([
     // 管理員擁有所有權限
     'admin' => ['*'],
     'super_admin' => ['*'],
-    
+
     // 版主權限
     'moderator' => [
         'posts.*',      // 所有貼文操作
         'comments.*',   // 所有評論操作
         'users.show',   // 檢視使用者
     ],
-    
+
     // 一般使用者權限
     'user' => [
         'posts.show',     // 檢視貼文
@@ -156,7 +160,7 @@ $router->group([
         'comments.show',  // 檢視評論
         'comments.create', // 建立評論
     ],
-    
+
     // 訪客權限
     'guest' => [
         'posts.show',     // 僅能檢視貼文
@@ -184,10 +188,10 @@ $router->group([
 
 ```json
 {
-    "success": false,
-    "error": "使用者未認證",
-    "code": "NOT_AUTHENTICATED",
-    "timestamp": "2025-08-27T10:30:00Z"
+  "success": false,
+  "error": "使用者未認證",
+  "code": "NOT_AUTHENTICATED",
+  "timestamp": "2025-08-27T10:30:00Z"
 }
 ```
 
@@ -197,10 +201,10 @@ $router->group([
 
 ```json
 {
-    "success": false,
-    "error": "使用者無權限執行操作：create on posts",
-    "code": "INSUFFICIENT_PERMISSIONS",
-    "timestamp": "2025-08-27T10:30:00Z"
+  "success": false,
+  "error": "使用者無權限執行操作：create on posts",
+  "code": "INSUFFICIENT_PERMISSIONS",
+  "timestamp": "2025-08-27T10:30:00Z"
 }
 ```
 
@@ -222,7 +226,7 @@ curl -X GET http://localhost:8000/api/posts
 # 使用者登入
 curl -X POST http://localhost:8000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email": "user@example.com", "password": "password"}'
+    -d '{"email": "user@example.com", "password": "Example#Pass123!"}'
 
 # 取得使用者資訊（需要 token）
 curl -X GET http://localhost:8000/api/auth/me \

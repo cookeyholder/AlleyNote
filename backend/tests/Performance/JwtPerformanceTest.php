@@ -11,7 +11,7 @@ use App\Shared\Config\JwtConfig;
 use DI\ContainerBuilder;
 use Exception;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 
 /**
  * JWT 效能測試.
@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
  * 測試 JWT token 產生和驗證的效能
  */
 #[Group('performance')]
-class JwtPerformanceTest extends TestCase
+class JwtPerformanceTest extends SecureDDDTestCase
 {
     private JwtTokenServiceInterface $jwtTokenService;
 

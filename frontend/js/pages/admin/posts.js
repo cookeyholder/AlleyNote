@@ -16,33 +16,42 @@ let currentState = { posts: [], batchMode: false, selectedPosts: new Set() };
 export async function renderPostsList() {
   const content = `
     <div>
-      <div class="flex items-center justify-between mb-8">
-        <h1 class="text-3xl font-bold text-modern-900">文章管理</h1>
-        <div class="flex gap-2">
-          <button id="batch-delete-btn" class="btn-secondary">
-            📋 批次刪除
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h1 class="text-3xl font-bold text-modern-900">文章管理</h1>
+          <p class="text-sm text-modern-500 mt-1">管理與編輯系統內的所有文章內容</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <button id="batch-delete-btn" class="flex items-center gap-2 px-4 py-2 bg-white border border-modern-200 text-modern-700 font-bold rounded-xl hover:bg-modern-50 transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            批次操作
           </button>
-          <button id="create-post-btn" class="btn-primary">
-            ✏️ 新增文章
+          <button id="create-post-btn" class="flex items-center gap-2 px-4 py-2 bg-accent-600 text-white font-bold rounded-xl hover:bg-accent-700 shadow-sm hover:shadow-md transition-all">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            新增文章
           </button>
         </div>
       </div>
       
       <!-- 批次操作工具列 -->
-      <div id="batch-toolbar" class="card mb-6 hidden">
-        <div class="flex items-center justify-between">
-          <div class="flex items-center gap-4">
-            <span class="text-modern-700 font-medium">
-              已選擇 <span id="selected-count" class="text-accent-600 font-bold">0</span> 篇文章
-            </span>
-            <button id="select-all-btn" class="text-accent-600 hover:underline text-sm">全選</button>
-            <button id="deselect-all-btn" class="text-modern-600 hover:underline text-sm">取消全選</button>
+      <div id="batch-toolbar" class="bg-accent-50 border border-accent-100 rounded-2xl p-4 mb-6 hidden animate-slide-up">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-6">
+            <div class="flex items-center gap-2 text-accent-700 font-bold">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+              已選擇 <span id="selected-count" class="text-xl">0</span> 篇文章
+            </div>
+            <div class="flex gap-4">
+              <button id="select-all-btn" class="text-accent-600 hover:text-accent-800 text-sm font-bold">全選本頁</button>
+              <button id="deselect-all-btn" class="text-modern-500 hover:text-modern-700 text-sm font-bold">取消全選</button>
+            </div>
           </div>
-          <div class="flex gap-2">
-            <button id="confirm-batch-delete-btn" class="btn-danger">
-              🗑️ 刪除選中的文章
+          <div class="flex gap-3 w-full md:w-auto">
+            <button id="confirm-batch-delete-btn" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              刪除選中
             </button>
-            <button id="cancel-batch-btn" class="btn-secondary">
+            <button id="cancel-batch-btn" class="flex-1 md:flex-none px-4 py-2 bg-white border border-accent-200 text-accent-700 font-bold rounded-xl hover:bg-accent-100 transition-all">
               取消
             </button>
           </div>
@@ -50,27 +59,36 @@ export async function renderPostsList() {
       </div>
       
       <!-- 搜尋與篩選 -->
-      <div class="card mb-6">
-        <div class="flex flex-col md:flex-row gap-4">
-          <input
-            type="text"
-            id="search-input"
-            placeholder="搜尋文章標題..."
-            class="input-field flex-1"
-          />
-          <select id="status-filter" class="input-field md:w-48">
-            <option value="">所有狀態</option>
-            <option value="published">已發布</option>
-            <option value="draft">草稿</option>
-          </select>
-          <select id="sort-filter" class="input-field md:w-48">
-            <option value="-created_at">最新優先</option>
-            <option value="created_at">最舊優先</option>
-            <option value="title">標題 A-Z</option>
-            <option value="-title">標題 Z-A</option>
-          </select>
-          <button id="search-btn" class="btn-primary md:w-auto">搜尋</button>
-          <button id="reset-btn" class="btn-secondary md:w-auto">重置</button>
+      <div class="card bg-white border-modern-200 shadow-sm p-4 mb-6">
+        <div class="flex flex-col lg:flex-row gap-4">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-modern-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="搜尋文章標題或關鍵字..."
+              class="input-field pl-10 h-11 border-modern-200 focus:border-accent-600 transition-all"
+            />
+          </div>
+          <div class="flex flex-wrap md:flex-nowrap gap-3">
+            <select id="status-filter" class="input-field h-11 md:w-40 border-modern-200">
+              <option value="">所有狀態</option>
+              <option value="published">已發布</option>
+              <option value="draft">草稿</option>
+            </select>
+            <select id="sort-filter" class="input-field h-11 md:w-44 border-modern-200">
+              <option value="-created_at">最新優先</option>
+              <option value="created_at">最舊優先</option>
+              <option value="title">標題 A-Z</option>
+              <option value="-title">標題 Z-A</option>
+            </select>
+            <div class="flex gap-2 w-full md:w-auto">
+              <button id="search-btn" class="flex-1 md:flex-none px-6 h-11 bg-modern-900 text-white font-bold rounded-xl hover:bg-black transition-all">搜尋</button>
+              <button id="reset-btn" class="flex-1 md:flex-none px-6 h-11 bg-modern-50 text-modern-600 font-bold rounded-xl hover:bg-modern-100 transition-all">重置</button>
+            </div>
+          </div>
         </div>
       </div>
       
@@ -187,92 +205,107 @@ async function loadPosts() {
     }));
     
     container.innerHTML = `
-      <table class="w-full">
-        <thead class="bg-modern-50">
-          <tr>
-            ${currentState.batchMode ? `
-              <th class="px-6 py-3 text-left" style="width: 50px;">
-                <input 
-                  type="checkbox" 
-                  id="select-all-checkbox"
-                  class="w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
-                />
-              </th>
-            ` : ''}
-            <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">標題</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">狀態</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">作者</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-modern-500 uppercase tracking-wider">發布時間</th>
-            ${!currentState.batchMode ? `
-              <th class="px-6 py-3 text-right text-xs font-medium text-modern-500 uppercase tracking-wider">操作</th>
-            ` : ''}
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-modern-200">
-          ${postsWithFormattedDates.map((post) => `
-            <tr class="hover:bg-modern-50 ${currentState.selectedPosts.has(post.id) ? 'bg-accent-50' : ''}">
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="bg-modern-50/50 border-b border-modern-200">
               ${currentState.batchMode ? `
-                <td class="px-6 py-4">
+                <th class="px-6 py-4 text-left" style="width: 50px;">
                   <input 
                     type="checkbox" 
-                    class="post-checkbox w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
-                    data-post-id="${post.id}"
-                    ${currentState.selectedPosts.has(post.id) ? 'checked' : ''}
+                    id="select-all-checkbox"
+                    class="w-5 h-5 text-accent-600 border-modern-300 rounded-lg focus:ring-accent-500 transition-all cursor-pointer"
                   />
-                </td>
+                </th>
               ` : ''}
-              <td class="px-6 py-4">
-                <div class="text-sm font-medium text-modern-900">${post.title}</div>
-              </td>
-              <td class="px-6 py-4">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                  post.status === 'published'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }">
-                  ${post.status === 'published' ? '已發布' : '草稿'}
-                </span>
-              </td>
-              <td class="px-6 py-4 text-sm text-modern-600">${post.author || 'Unknown'}</td>
-              <td class="px-6 py-4 text-sm text-modern-600">
-                ${post.formattedDateTime}
-              </td>
+              <th class="px-6 py-4 text-left text-xs font-bold text-modern-500 uppercase tracking-widest">文章標題</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-modern-500 uppercase tracking-widest">狀態</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-modern-500 uppercase tracking-widest">作者</th>
+              <th class="px-6 py-4 text-left text-xs font-bold text-modern-500 uppercase tracking-widest">最後更新</th>
               ${!currentState.batchMode ? `
-                <td class="px-6 py-4 text-right text-sm">
-                  <div class="flex justify-end gap-2">
-                    <button 
-                      class="px-3 py-1 text-accent-600 hover:bg-accent-50 rounded transition-colors"
-                      data-action="edit"
-                      data-post-id="${post.id}"
-                    >
-                      編輯
-                    </button>
-                    <button 
-                      class="px-3 py-1 text-blue-600 hover:bg-blue-50 rounded transition-colors"
-                      data-action="toggle-status"
-                      data-post-id="${post.id}"
-                      data-current-status="${post.status}"
-                    >
-                      ${post.status === 'published' ? '轉草稿' : '發布'}
-                    </button>
-                    <button 
-                      class="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors"
-                      data-action="delete"
-                      data-post-id="${post.id}"
-                      data-post-title="${post.title}"
-                    >
-                      刪除
-                    </button>
-                  </div>
-                </td>
+                <th class="px-6 py-4 text-right text-xs font-bold text-modern-500 uppercase tracking-widest">操作</th>
               ` : ''}
             </tr>
-          `).join('')}
-        </tbody>
-      </table>
+          </thead>
+          <tbody class="divide-y divide-modern-100">
+            ${postsWithFormattedDates.map((post) => `
+              <tr class="group hover:bg-modern-50/80 transition-all duration-150 ${currentState.selectedPosts.has(post.id) ? 'bg-accent-50/50' : ''}">
+                ${currentState.batchMode ? `
+                  <td class="px-6 py-4">
+                    <input 
+                      type="checkbox" 
+                      class="post-checkbox w-5 h-5 text-accent-600 border-modern-300 rounded-lg focus:ring-accent-500 transition-all cursor-pointer"
+                      data-post-id="${post.id}"
+                      ${currentState.selectedPosts.has(post.id) ? 'checked' : ''}
+                    />
+                  </td>
+                ` : ''}
+                <td class="px-6 py-4">
+                  <div class="text-sm font-bold text-modern-900 group-hover:text-accent-700 transition-colors">${post.title}</div>
+                  <div class="text-xs text-modern-400 mt-0.5">ID: #${post.id}</div>
+                </td>
+                <td class="px-6 py-4">
+                  <span class="px-3 py-1 inline-flex text-xs font-bold rounded-full border ${
+                    post.status === 'published'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                      : 'bg-amber-50 text-amber-700 border-amber-100'
+                  }">
+                    ${post.status === 'published' ? '已發布' : '草稿'}
+                  </span>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-modern-100 rounded-full flex items-center justify-center text-[10px] font-bold text-modern-600">
+                      ${post.author ? post.author.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span class="text-sm font-medium text-modern-600">${post.author || '未知'}</span>
+                  </div>
+                </td>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-modern-600 tabular-nums">${post.formattedDateTime}</div>
+                </td>
+                ${!currentState.batchMode ? `
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex justify-end gap-1">
+                      <button 
+                        class="p-2 text-modern-400 hover:text-accent-600 hover:bg-accent-50 rounded-xl transition-all"
+                        title="編輯"
+                        data-action="edit"
+                        data-post-id="${post.id}"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                      </button>
+                      <button 
+                        class="p-2 text-modern-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                        title="${post.status === 'published' ? '轉為草稿' : '直接發布'}"
+                        data-action="toggle-status"
+                        data-post-id="${post.id}"
+                        data-current-status="${post.status}"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                      </button>
+                      <button 
+                        class="p-2 text-modern-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                        title="刪除"
+                        data-action="delete"
+                        data-post-id="${post.id}"
+                        data-post-title="${post.title}"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                ` : ''}
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
       
       <!-- 分頁 -->
-      ${renderPagination(pagination)}
+      <div class="px-6 py-6 bg-modern-50/30 border-t border-modern-100">
+        ${renderPagination(pagination)}
+      </div>
     `;
     
     // 綁定操作按鈕事件

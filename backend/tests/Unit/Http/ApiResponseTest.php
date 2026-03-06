@@ -7,9 +7,9 @@ namespace Tests\Unit\Http;
 use App\Shared\Http\ApiResponse;
 use DateTimeImmutable;
 use DateTimeInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class ApiResponseTest extends TestCase
+class ApiResponseTest extends UnitTestCase
 {
     public function testSuccessResponse(): void
     {
@@ -45,8 +45,9 @@ class ApiResponseTest extends TestCase
 
         $this->assertFalse($response['success']);
         $this->assertEquals($message, $response['message']);
-        $this->assertEquals($code, $response['error_code']);
-        $this->assertEquals($errors, $response['errors']);
+        $this->assertEquals($code, $response['error']['code']);
+        $this->assertEquals($message, $response['error']['message']);
+        $this->assertEquals($errors, $response['error']['details']);
         $this->assertArrayHasKey('timestamp', $response);
         $this->assertIsString($response['timestamp']);
     }
@@ -59,8 +60,8 @@ class ApiResponseTest extends TestCase
 
         $this->assertFalse($response['success']);
         $this->assertEquals($message, $response['message']);
-        $this->assertEquals(400, $response['error_code']);
-        $this->assertNull($response['errors']);
+        $this->assertEquals(400, $response['error']['code']);
+        $this->assertNull($response['error']['details']);
         $this->assertArrayHasKey('timestamp', $response);
     }
 

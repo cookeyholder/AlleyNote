@@ -59,13 +59,13 @@ frontend/
 
 ```bash
 # 啟動所有服務
-docker-compose up -d
+docker compose up -d
 
 # 訪問前端
 open http://localhost:3000
 
 # 查看 nginx 日誌
-docker-compose logs -f nginx
+docker compose logs -f nginx
 ```
 
 ### 本地開發（不推薦）
@@ -73,35 +73,34 @@ docker-compose logs -f nginx
 如果需要獨立運行前端進行測試：
 
 ```bash
-# 使用 Python 本地伺服器
+# 使用 SPA 靜態伺服器（支援 /login 等前端路由）
 cd frontend
-python3 -m http.server 3000
-
-# 或使用 PHP 內建伺服器
-php -S localhost:3000
+npx --yes serve -s . -l 3000
 ```
 
-**注意**：本地開發時需要修改 API URL 或設定 CORS。
+**注意**：避免使用 `python3 -m http.server`，因為它不會提供 SPA fallback，直接開 `/login` 會回傳 404。
 
 ## API 配置
 
-API 基礎 URL 在 `js/api/client.js` 中配置：
+API 基礎 URL 在 `js/api/config.js` 中配置：
 
 ```javascript
-getBaseURL() {
-    const protocol = window.location.protocol;
-    const hostname = window.location.hostname;
-    return `${protocol}//${hostname}:8080/api`;
-}
+const API_BASE_URL = "/api";
 ```
+
+目前設定邏輯：
+
+- 前端一律走同源 `/api`
+- DevContainer 本機模式：`localhost:3000` 由 `live-server --proxy` 轉發到 `localhost:8081`
+- Docker Compose 模式：`localhost:3000/api` 由 Nginx 轉發到 API（主機對外預設 `8081`，可用 `API_HOST_PORT` 覆寫）
 
 ## 路由
 
-路由在 `js/main.js` 中定義：
+路由在 `js/utils/router.js` 中定義：
 
 - `/` - 首頁
 - `/login` - 登入頁
-- `/post/:id` - 文章詳情
+- `/posts/:id` - 文章詳情
 - `/admin/dashboard` - 管理後台儀表板
 - `/admin/posts` - 文章管理
 - `/admin/users` - 使用者管理
@@ -125,10 +124,12 @@ getBaseURL() {
 ## 遷移說明
 
 舊的 Vite 前端已備份至：
+
 - `frontend_vite_backup_*` 目錄
 - `frontend_old` 目錄
 
 如需回滾：
+
 ```bash
 mv frontend frontend_new
 mv frontend_old frontend

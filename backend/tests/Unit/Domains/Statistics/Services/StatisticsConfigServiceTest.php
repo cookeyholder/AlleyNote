@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Services;
 
 use App\Domains\Statistics\Services\StatisticsConfigService;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * 統計配置服務測試.
  */
-final class StatisticsConfigServiceTest extends TestCase
+final class StatisticsConfigServiceTest extends UnitTestCase
 {
     private StatisticsConfigService $configService;
 

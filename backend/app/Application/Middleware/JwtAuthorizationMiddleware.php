@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Middleware;
 
+use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Exception;
-use App\Infrastructure\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

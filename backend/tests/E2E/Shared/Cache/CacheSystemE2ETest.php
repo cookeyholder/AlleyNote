@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Tests\E2E\Shared\Cache;
 
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Predis\Client;
+use Tests\SecureDDDTestCase;
 
 /**
  * End-to-End 快取系統測試.
  *
  * 這些測試驗證完整的快取系統在類似生產環境的條件下是否能正確運作
  */
-final class CacheSystemE2ETest extends TestCase
+final class CacheSystemE2ETest extends SecureDDDTestCase
 {
     private Client $redisClient;
 

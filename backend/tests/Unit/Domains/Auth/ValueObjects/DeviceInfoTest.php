@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Auth\ValueObjects;
 
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * Device Info Value Object 單元測試.
  */
-final class DeviceInfoTest extends TestCase
+final class DeviceInfoTest extends UnitTestCase
 {
     private string $validDeviceId;
 

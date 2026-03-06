@@ -10,7 +10,7 @@ use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTimeImmutable;
 use PDO;
 use PHPUnit\Framework\Attributes\Group;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * JWT Token Blacklist 整合測試.
@@ -20,7 +20,7 @@ use Tests\TestCase;
  */
 #[Group('integration')]
 #[Group('auth')]
-class JwtTokenBlacklistIntegrationTest extends TestCase
+class JwtTokenBlacklistIntegrationTest extends IntegrationTestCase
 {
     private TokenBlacklistRepository $tokenBlacklistRepository;
 

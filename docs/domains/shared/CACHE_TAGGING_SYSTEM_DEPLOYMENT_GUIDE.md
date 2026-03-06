@@ -243,7 +243,7 @@ LOG_LEVEL=info
 
 ```yaml
 # docker compose.cache.yml
-version: '3.8'
+version: "3.8"
 
 services:
   redis:
@@ -309,37 +309,37 @@ spec:
         app: redis-cache
     spec:
       containers:
-      - name: redis
-        image: redis:7-alpine
-        ports:
-        - containerPort: 6379
-        command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
-        env:
-        - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secret
-              key: password
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "250m"
-          limits:
-            memory: "2Gi"
-            cpu: "1000m"
-        volumeMounts:
-        - name: redis-config
-          mountPath: /usr/local/etc/redis/redis.conf
-          subPath: redis.conf
-        - name: redis-data
-          mountPath: /data
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379
+          command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: password
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          volumeMounts:
+            - name: redis-config
+              mountPath: /usr/local/etc/redis/redis.conf
+              subPath: redis.conf
+            - name: redis-data
+              mountPath: /data
       volumes:
-      - name: redis-config
-        configMap:
-          name: redis-config
-      - name: redis-data
-        persistentVolumeClaim:
-          claimName: redis-pvc
+        - name: redis-config
+          configMap:
+            name: redis-config
+        - name: redis-data
+          persistentVolumeClaim:
+            claimName: redis-pvc
 
 ---
 apiVersion: v1
@@ -368,15 +368,15 @@ global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'redis'
+  - job_name: "redis"
     static_configs:
-      - targets: ['localhost:6379']
+      - targets: ["localhost:6379"]
     metrics_path: /metrics
     scrape_interval: 5s
 
-  - job_name: 'alleynote-cache'
+  - job_name: "alleynote-cache"
     static_configs:
-      - targets: ['localhost:8080']
+      - targets: ["localhost:8081"] # Production-like 可改為 localhost:8080
     metrics_path: /metrics/cache
     scrape_interval: 10s
 
@@ -387,7 +387,7 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          - alertmanager:9093
+            - alertmanager:9093
 ```
 
 #### Redis 監控配置

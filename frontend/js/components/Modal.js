@@ -31,19 +31,21 @@ class ModalComponent {
     };
 
     modal.innerHTML = `
-      <div class="absolute inset-0 bg-black bg-opacity-50" data-modal-backdrop></div>
-      <div class="relative bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden">
-        <div class="flex items-center justify-between p-6 border-b border-modern-200">
-          <h3 class="text-xl font-semibold text-modern-900">${title}</h3>
+      <div class="absolute inset-0 bg-modern-900/40 backdrop-blur-md" data-modal-backdrop></div>
+      <div class="relative bg-white rounded-[2rem] shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden border border-modern-200 animate-slide-up">
+        <div class="flex items-center justify-between p-8 border-b border-modern-100">
+          <div>
+            <h3 class="text-2xl font-bold text-modern-900 tracking-tight">${title}</h3>
+          </div>
           ${showCloseButton ? `
-            <button type="button" class="text-modern-400 hover:text-modern-600 transition-colors" data-modal-close>
+            <button type="button" class="p-2 text-modern-400 hover:text-modern-900 hover:bg-modern-50 rounded-xl transition-all" data-modal-close>
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           ` : ''}
         </div>
-        <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <div class="p-8 overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar">
           ${content}
         </div>
       </div>
@@ -87,13 +89,13 @@ class ModalComponent {
    */
   confirm(title, message, onConfirm, onCancel = null) {
     const content = `
-      <div class="text-modern-700 mb-6">${message}</div>
-      <div class="flex justify-end gap-3">
-        <button type="button" class="btn-secondary px-6 py-2" data-action="cancel">
-          取消
+      <div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>
+      <div class="flex justify-end gap-3 border-t border-modern-100 pt-6">
+        <button type="button" class="px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors" data-action="cancel">
+          取消操作
         </button>
-        <button type="button" class="btn-primary px-6 py-2" data-action="confirm">
-          確定
+        <button type="button" class="px-8 py-2.5 bg-accent-600 text-white text-sm font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all" data-action="confirm">
+          確認執行
         </button>
       </div>
     `;
@@ -134,10 +136,10 @@ class ModalComponent {
    */
   alert(title, message, onClose = null) {
     const content = `
-      <div class="text-modern-700 mb-6">${message}</div>
-      <div class="flex justify-end">
-        <button type="button" class="btn-primary px-6 py-2" data-action="ok">
-          確定
+      <div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>
+      <div class="flex justify-end border-t border-modern-100 pt-6">
+        <button type="button" class="px-10 py-2.5 bg-accent-600 text-white text-sm font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all" data-action="ok">
+          我知道了
         </button>
       </div>
     `;

@@ -8,15 +8,15 @@ use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Infrastructure\Statistics\Commands\StatisticsRecalculationCommand;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsRecalculationCommand 單元測試.
  */
-final class StatisticsRecalculationCommandTest extends TestCase
+final class StatisticsRecalculationCommandTest extends UnitTestCase
 {
     private StatisticsRecalculationCommand $command;
 

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
-class FileSystemBackupTest extends TestCase
+class FileSystemBackupTest extends IntegrationTestCase
 {
     private string $testDir;
 

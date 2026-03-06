@@ -7,9 +7,9 @@ namespace Tests\Unit\Services\Security;
 use App\Domains\Auth\Services\SessionSecurityService;
 use App\Domains\User\Entities\User;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class SessionSecurityServiceTest extends TestCase
+class SessionSecurityServiceTest extends UnitTestCase
 {
     private SessionSecurityService $service;
 

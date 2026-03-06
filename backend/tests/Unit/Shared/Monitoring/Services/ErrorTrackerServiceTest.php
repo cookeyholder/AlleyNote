@@ -6,13 +6,13 @@ namespace Tests\Unit\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Services\ErrorTrackerService;
 use Exception;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 /**
  * ErrorTrackerService 測試類別。
  */
-class ErrorTrackerServiceTest extends TestCase
+class ErrorTrackerServiceTest extends UnitTestCase
 {
     private ErrorTrackerService $errorTracker;
 

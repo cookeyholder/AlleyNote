@@ -13,8 +13,8 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsApplicationService 單元測試.
@@ -25,7 +25,7 @@ use RuntimeException;
  * - 快取策略實作
  * - 錯誤處理
  */
-final class StatisticsApplicationServiceTest extends TestCase
+final class StatisticsApplicationServiceTest extends UnitTestCase
 {
     private StatisticsApplicationService $service;
 

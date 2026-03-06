@@ -21,6 +21,9 @@ use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\Services\StatisticsExportService;
 use App\Domains\Statistics\Services\UserAgentParserService;
 use App\Infrastructure\Services\CacheService;
+use App\Infrastructure\Statistics\Adapters\StatisticsQueryAdapter;
+use App\Infrastructure\Statistics\Processors\CategoryProcessor;
+use App\Infrastructure\Statistics\Processors\TimeSeriesProcessor;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use App\Infrastructure\Statistics\Repositories\StatisticsRepository;
 use App\Infrastructure\Statistics\Repositories\UserStatisticsRepository;
@@ -157,11 +160,11 @@ class StatisticsServiceProvider
             // 視覺化服務
             StatisticsVisualizationServiceInterface::class => \DI\factory(function (ContainerInterface $container): StatisticsVisualizationServiceInterface {
                 return new StatisticsVisualizationService(
-                    $container->get(\App\Infrastructure\Statistics\Adapters\StatisticsQueryAdapter::class),
-                    $container->get(\App\Infrastructure\Statistics\Processors\CategoryProcessor::class),
-                    $container->get(\App\Infrastructure\Statistics\Processors\TimeSeriesProcessor::class),
+                    $container->get(StatisticsQueryAdapter::class),
+                    $container->get(CategoryProcessor::class),
+                    $container->get(TimeSeriesProcessor::class),
                     $container->get(StatisticsCacheServiceInterface::class),
-                    $container->get(PostStatisticsRepositoryInterface::class)
+                    $container->get(PostStatisticsRepositoryInterface::class),
                 );
             }),
 

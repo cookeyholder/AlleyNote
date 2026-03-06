@@ -7,8 +7,10 @@ namespace Tests\Integration;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Exceptions\NotFoundException;
 use InvalidArgumentException;
 use Mockery;
@@ -16,9 +18,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
-class PostControllerTest extends TestCase
+class PostControllerTest extends IntegrationTestCase
 {
     private PostServiceInterface $postService;
 
@@ -134,8 +136,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->index($this->request, $this->response);
 
@@ -178,8 +180,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->show($this->request, $this->response, ['id' => '1']);
 
@@ -221,8 +223,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -264,8 +266,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->store($this->request, $this->response);
 
@@ -299,8 +301,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->update($this->request, $this->response, ['id' => '1']);
 
@@ -342,8 +344,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->update($this->request, $this->response, ['id' => '999']);
 
@@ -370,8 +372,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->destroy($this->request, $this->response, ['id' => '1']);
 
@@ -406,8 +408,8 @@ class PostControllerTest extends TestCase
             $this->postService,
             $this->xssProtection,
             $this->csrfProtection,
-            Mockery::mock(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class),
-            Mockery::mock(\App\Domains\Statistics\Services\PostViewStatisticsService::class)
+            Mockery::mock(ActivityLoggingServiceInterface::class),
+            Mockery::mock(PostViewStatisticsService::class),
         );
         $response = $controller->destroy($this->request, $this->response, ['id' => '999']);
 

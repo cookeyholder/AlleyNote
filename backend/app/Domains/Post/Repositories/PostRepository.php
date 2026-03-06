@@ -435,7 +435,7 @@ class PostRepository implements PostRepositoryInterface
         // 資料已在 DTO 層級完成驗證，這裡直接處理
 
         // 更新時間戳記
-        // // $data ? $data->updated_at : null)) = format_datetime(); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
+        $data['updated_at'] = format_datetime();
 
         // 準備更新欄位 - 只允許安全的欄位
         $sets = [];
@@ -770,7 +770,7 @@ class PostRepository implements PostRepositoryInterface
                 WHERE tag_id IN ({$placeholders}) 
                 GROUP BY tag_id
             ";
-            
+
             $stmt = $this->db->prepare($sql);
             $stmt->execute($tagIds);
             $counts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);

@@ -6,6 +6,7 @@ namespace App\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeInterface;
 
 /**
  * 文章統計查詢 Repository 介面.
@@ -148,16 +149,18 @@ interface PostStatisticsRepositoryInterface
     public function getPostActivitySummary(StatisticsPeriod $period): array;
 
     /**
-     * 取得瀏覽量時間序列統計.
+     * 取得瀏覽量時間序列數據.
      *
-     * @param \DateTimeInterface $startDate 開始日期
-     * @param \DateTimeInterface $endDate 結束日期
-     * @param string $granularity 時間粒度
+     * 取得指定時間範圍內，按指定粒度（如：日、時）聚合的文章瀏覽與訪客統計數據。
+     *
+     * @param DateTimeInterface $startDate 開始日期
+     * @param DateTimeInterface $endDate 結束日期
+     * @param string $granularity 聚合粒度 (day, hour)
      * @return array<int, array{date: string, views: int, visitors: int}> 統計數據陣列
      */
     public function getViewTimeSeriesData(
-        \DateTimeInterface $startDate,
-        \DateTimeInterface $endDate,
-        string $granularity
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity,
     ): array;
 }

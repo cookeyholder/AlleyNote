@@ -8,12 +8,14 @@
 ## 1. 系統需求
 
 ### 1.1 硬體需求
+
 - CPU: 4 核心以上 (推薦 8 核心)
 - 記憶體: 8GB 以上 (推薦 16GB)
 - 硬碟空間: 50GB 以上 (推薦 100GB NVMe SSD)
 - 網路頻寬: 1Gbps 以上
 
 ### 1.2 軟體需求
+
 - **作業系統**: Debian 12 (強烈推薦) / Ubuntu 24.04 LTS
 - **後端**: PHP 8.4.12+ (Docker 容器內自動提供)
 - **前端**: 原生 HTML/JavaScript/CSS + Node.js 20.x LTS
@@ -23,6 +25,7 @@
 - **測試**: PHPUnit 11.5.34 (138 檔案, 1,372 通過測試)
 
 ### 1.3 網路需求
+
 - 固定 IP 位址或 FQDN
 - 支援 HTTPS (443 埠)
 - 支援 HTTP (80 埠)
@@ -33,6 +36,7 @@
 ## 2. 安裝步驟
 
 ### 2.1 基礎環境安裝
+
 ```bash
 # 更新系統套件
 apt update && apt upgrade -y
@@ -99,7 +103,9 @@ npm ci
 docker compose ps
 
 # 驗證後端 API
-curl -i http://localhost:8080/api/health
+API_HOST=http://localhost:8081
+# API_HOST=http://localhost:8080
+curl -i $API_HOST/api/health
 
 # 執行後端測試 (1,372 個測試)
 docker compose exec web ./vendor/bin/phpunit
@@ -127,6 +133,7 @@ echo "0 12 * * * /usr/bin/certbot renew --quiet" | crontab -
 ## 3. 環境設定
 
 ### 3.1 NGINX 設定 (前後端分離)
+
 ```nginx
 # 前端 (原生 HTML/JavaScript/CSS)
 server {
@@ -152,7 +159,7 @@ server {
 
     # 後端 API 代理
     location /api/ {
-        proxy_pass http://localhost:8080;
+      proxy_pass http://localhost:8081;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -174,6 +181,7 @@ server {
 ```
 
 ### 3.2 PHP 8.4.12 設定
+
 ```ini
 ; php.ini 設定 (針對 PHP 8.4.12)
 memory_limit = 512M
@@ -198,9 +206,10 @@ realpath_cache_ttl=600
 ```
 
 ### 3.3 Docker Compose v2.39.2 設定
+
 ```yaml
 # docker compose.production.yml
-version: '3.8'
+version: "3.8"
 
 services:
   # 後端 API 服務
@@ -259,6 +268,7 @@ networks:
 ## 4. 部署流程 (前後端分離)
 
 ### 4.1 自動化部署腳本 (v4.0)
+
 ```bash
 #!/bin/bash
 # deploy.sh - 前後端分離部署腳本
@@ -302,7 +312,7 @@ docker compose -f docker compose.production.yml up -d
 # 健康檢查
 echo "執行健康檢查..."
 sleep 10
-curl -f http://localhost:8080/api/health || exit 1
+curl -f $API_HOST/api/health || exit 1
 curl -f http://localhost:3000 || exit 1
 
 # 執行後端測試 (1,372 個測試)
@@ -310,11 +320,12 @@ echo "執行後端測試..."
 docker compose exec web ./vendor/bin/phpunit
 
 echo "✅ 部署完成！"
-echo "後端 API: http://localhost:8080"
+echo "後端 API: $API_HOST"
 echo "前端介面: http://localhost:3000"
 ```
 
 ### 4.2 回滾程序 (v4.0)
+
 ```bash
 #!/bin/bash
 # rollback.sh - 前後端分離回滾腳本
@@ -352,13 +363,14 @@ docker compose -f docker compose.production.yml up -d
 # 驗證回滾
 echo "驗證回滾..."
 sleep 15
-curl -f http://localhost:8080/api/health || echo "⚠️ 後端健康檢查失敗"
+curl -f $API_HOST/api/health || echo "⚠️ 後端健康檢查失敗"
 curl -f http://localhost:3000 || echo "⚠️ 前端健康檢查失敗"
 
 echo "✅ 回滾完成！"
 ```
 
 ### 4.3 藍綠部署 (Zero Downtime)
+
 ```bash
 #!/bin/bash
 # blue-green-deploy.sh - 零停機部署
@@ -375,7 +387,7 @@ docker compose -f docker compose.$TARGET_ENV.yml up -d --build
 sleep 30
 
 # 健康檢查
-if curl -f http://localhost:8080/api/health && curl -f http://localhost:3000; then
+if curl -f $API_HOST/api/health && curl -f http://localhost:3000; then
     echo "✅ 目標環境健康檢查通過"
 
     # 切換流量
@@ -395,6 +407,7 @@ fi
 ## 5. 維護與監控 (v4.0)
 
 ### 5.1 定期維護工作
+
 ```bash
 # 每日維護腳本
 #!/bin/bash
@@ -422,6 +435,7 @@ echo "✅ 每日維護完成"
 ```
 
 ### 5.2 系統監控
+
 ```bash
 # monitor.sh - 系統監控腳本
 #!/bin/bash
@@ -436,7 +450,7 @@ docker stats --no-stream
 
 # API 健康檢查
 echo "=== API 健康檢查 ==="
-curl -s http://localhost:8080/api/health | jq .
+curl -s $API_HOST/api/health | jq .
 
 # 前端可用性
 echo "=== 前端可用性 ==="
@@ -452,6 +466,7 @@ docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT * FRO
 ```
 
 ### 5.3 效能優化 (PHP 8.4.12)
+
 ```bash
 # performance-tuning.sh
 #!/bin/bash
@@ -490,6 +505,7 @@ echo "✅ 效能優化完成"
 ### 5.4 故障排除指南
 
 #### 5.4.1 常見問題診斷
+
 ```bash
 # troubleshoot.sh - 故障診斷腳本
 #!/bin/bash
@@ -509,7 +525,7 @@ docker compose logs --tail=50 frontend
 
 # 檢查網路連線
 echo "=== 網路連線測試 ==="
-curl -I http://localhost:8080/api/health
+curl -I $API_HOST/api/health
 curl -I http://localhost:3000
 
 # 檢查系統資源
@@ -531,6 +547,7 @@ echo "✅ 診斷完成"
 ```
 
 #### 5.4.2 效能問題排查
+
 ```bash
 # performance-debug.sh
 #!/bin/bash
@@ -562,6 +579,7 @@ npm run analyze
 ### 5.5 安全性維護
 
 #### 5.5.1 安全檢查腳本
+
 ```bash
 # security-check.sh
 #!/bin/bash
@@ -594,6 +612,7 @@ echo "✅ 安全檢查完成"
 ```
 
 #### 5.5.2 防火牆設定
+
 ```bash
 # 設定 UFW 防火牆
 ufw --force reset
@@ -615,9 +634,10 @@ ufw status verbose
 ## 6. 擴展與升級
 
 ### 6.1 水平擴展 (Load Balancing)
+
 ```yaml
 # docker compose.scale.yml
-version: '3.8'
+version: "3.8"
 
 services:
   # 負載均衡器
@@ -664,6 +684,7 @@ volumes:
 ```
 
 ### 6.2 升級程序
+
 ```bash
 # upgrade.sh - 系統升級腳本
 #!/bin/bash
@@ -703,6 +724,7 @@ echo "✅ 升級完成"
 ## 7. 備份與還原
 
 ### 7.1 完整備份策略
+
 ```bash
 # full-backup.sh
 #!/bin/bash
@@ -742,6 +764,7 @@ echo "✅ 備份完成: $BACKUP_DIR"
 ```
 
 ### 7.2 還原程序
+
 ```bash
 # restore.sh
 #!/bin/bash
@@ -788,6 +811,7 @@ echo "✅ 還原完成"
 ## 📝 部署檢查清單
 
 ### 部署前檢查
+
 - [ ] 系統需求確認 (Docker 28.3.3+, Docker Compose v2.39.2+)
 - [ ] 網域名稱設定完成
 - [ ] SSL 憑證準備就緒
@@ -796,6 +820,7 @@ echo "✅ 還原完成"
 - [ ] 備份策略制定完成
 
 ### 部署過程檢查
+
 - [ ] 後端容器正常啟動
 - [ ] 前端容器正常啟動
 - [ ] 資料庫遷移成功
@@ -804,6 +829,7 @@ echo "✅ 還原完成"
 - [ ] 所有測試通過 (1,372 個測試)
 
 ### 部署後檢查
+
 - [ ] 使用者可正常登入
 - [ ] 公告功能正常運作
 - [ ] 檔案上傳功能正常
@@ -814,6 +840,7 @@ echo "✅ 還原完成"
 ---
 
 **維護聯絡資訊**:
+
 - 技術支援: [your-email@domain.com]
 - 緊急聯絡: [emergency-contact]
 - 專案文件: `/docs/` 目錄

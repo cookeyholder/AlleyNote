@@ -12,14 +12,14 @@ use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * JwtTokenService 單元測試.
  *
  * 測試 JWT Token 服務的核心功能。
  */
-final class JwtTokenServiceSimpleTest extends TestCase
+final class JwtTokenServiceSimpleTest extends UnitTestCase
 {
     private JwtTokenService $service;
 

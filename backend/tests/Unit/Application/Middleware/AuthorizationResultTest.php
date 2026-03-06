@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\AuthorizationResult;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * 授權結果測試.
@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  * @author GitHub Copilot
  * @since 1.0.0
  */
-class AuthorizationResultTest extends TestCase
+class AuthorizationResultTest extends UnitTestCase
 {
     public function testCanCreateAllowedResult(): void
     {

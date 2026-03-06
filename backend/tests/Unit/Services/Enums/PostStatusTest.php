@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Services\Enums;
 
 use App\Domains\Post\Enums\PostStatus;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostStatusTest extends TestCase
+class PostStatusTest extends UnitTestCase
 {
     public function testGetLabel(): void
     {

@@ -9,12 +9,14 @@
 ### 1. DTO 驗證整合測試 (`DTOValidationIntegrationTest`)
 
 #### 測試項目：
+
 - **CreatePostDTO 驗證整合**：測試文章建立 DTO 的完整驗證流程
 - **CreateAttachmentDTO 驗證整合**：測試附件建立 DTO 的驗證機制
 - **RegisterUserDTO 驗證整合**：測試使用者註冊 DTO 的驗證規則
 - **CreateIpRuleDTO 驗證整合**：測試 IP 規則建立 DTO 的驗證邏輯
 
 #### 驗證功能：
+
 - 必填欄位驗證
 - 資料型別驗證
 - 長度限制驗證
@@ -25,6 +27,7 @@
 ### 2. DTO Controller 整合測試 (`DTOControllerIntegrationTest`)
 
 #### 測試項目：
+
 - **Controller 與 DTO 整合**：測試 DTO 在 Controller 中的使用
 - **資料清理功能**：測試 DTO 的自動資料清理
 - **型別轉換**：測試資料型別的自動轉換
@@ -35,6 +38,7 @@
 ## 測試資料範例
 
 ### CreatePostDTO 測試資料
+
 ```php
 $validData = [
     'title' => '測試文章標題',
@@ -46,6 +50,7 @@ $validData = [
 ```
 
 ### CreateAttachmentDTO 測試資料
+
 ```php
 $validData = [
     'post_id' => 1,
@@ -59,17 +64,19 @@ $validData = [
 ```
 
 ### RegisterUserDTO 測試資料
+
 ```php
 $validData = [
     'username' => 'testuser',
     'email' => 'test@example.com',
-    'password' => 'SecurePassword123!',
-    'confirm_password' => 'SecurePassword123!',
+    'password' => 'Example#Pass123!',
+    'confirm_password' => 'Example#Pass123!',
     'user_ip' => '192.168.1.1',
 ];
 ```
 
 ### CreateIpRuleDTO 測試資料
+
 ```php
 $validData = [
     'ip_address' => '192.168.1.1',
@@ -82,11 +89,13 @@ $validData = [
 ## 執行測試
 
 ### 執行所有 DTO 整合測試
+
 ```bash
 docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/
 ```
 
 ### 執行特定測試檔案
+
 ```bash
 # DTO 驗證整合測試
 docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOValidationIntegrationTest.php
@@ -98,6 +107,7 @@ docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOControllerI
 ## 驗證規則
 
 ### 通用驗證規則
+
 - `required`：必填欄位
 - `string`：字串型別
 - `integer`：整數型別
@@ -105,6 +115,7 @@ docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOControllerI
 - `boolean`：布林型別
 
 ### 自訂驗證規則
+
 - `post_title`：文章標題驗證（長度、內容檢查）
 - `post_content`：文章內容驗證（最小長度、內容檢查）
 - `user_id`：使用者 ID 驗證（正整數）
@@ -115,12 +126,14 @@ docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOControllerI
 ## 錯誤處理
 
 ### ValidationException
+
 - 當驗證失敗時拋出
 - 包含詳細的錯誤訊息
 - 支援繁體中文錯誤訊息
 - 提供多欄位錯誤詳情
 
 ### 錯誤訊息範例
+
 ```
 文章標題長度必須介於 1 和 255 個字元之間，且包含有效內容
 文章內容長度不能少於 1 個字元，且必須包含有效內容
@@ -131,11 +144,13 @@ docker compose exec web vendor/bin/phpunit tests/Integration/DTOs/DTOControllerI
 ## 效能考量
 
 ### 記憶體使用
+
 - 每個 DTO 實例記憶體占用低於 10KB
 - 批次處理 100 個 DTO 總記憶體低於 1MB
 - 支援大量 DTO 並行處理
 
 ### 序列化效能
+
 - 支援高效的 JSON 序列化
 - 自動資料清理和型別轉換
 - 保持資料完整性

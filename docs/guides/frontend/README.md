@@ -9,11 +9,13 @@
 ### 🎨 核心規劃文件
 
 #### 1. [介面設計規範](./FRONTEND_INTERFACE_DESIGN_SPECIFICATION.md)
+
 **必讀 ⭐⭐⭐**
 
 定義 AlleyNote 前端的整體設計哲學、技術選型、佈局規劃與各角色介面設計。
 
 **包含內容**:
+
 - 設計風格與色彩系統
 - 技術棧選擇（原生 HTML/JavaScript/CSS + Tailwind CSS CDN）
 - 公開佈局 vs 管理後台佈局
@@ -25,11 +27,13 @@
 ---
 
 #### 2. [待辦清單](./FRONTEND_TODO_LIST.md)
+
 **必讀 ⭐⭐⭐**
 
 完整的開發任務清單，從環境設定到部署上線的所有步驟。
 
 **包含內容**:
+
 - 9 個開發階段（基礎建設 → 優化收尾 → 文件撰寫）
 - 每個階段的詳細任務項目
 - 檢查清單與驗收標準
@@ -42,11 +46,13 @@
 ### 🔧 技術實作指南
 
 #### 3. [API 整合指南](./API_INTEGRATION_GUIDE.md)
+
 **必讀 ⭐⭐⭐**
 
 前端與後端 API 整合的完整架構與實作細節。
 
 **包含內容**:
+
 - API Client 架構設計
 - JWT Token 管理
 - CSRF Token 管理
@@ -60,11 +66,13 @@
 ---
 
 #### 4. [狀態管理策略](./STATE_MANAGEMENT_STRATEGY.md)
+
 **必讀 ⭐⭐**
 
 輕量級狀態管理方案，不使用 Vuex/Redux 等大型庫。
 
 **包含內容**:
+
 - 狀態分類（全域、頁面、組件、暫存）
 - 自訂 Store 實作
 - 本地儲存策略（LocalStorage/SessionStorage）
@@ -79,11 +87,13 @@
 ### 🛡️ 安全與品質保證
 
 #### 5. [安全檢查清單](./SECURITY_CHECKLIST.md)
+
 **必讀 ⭐⭐⭐**
 
 前端安全規範與檢查項目，確保應用程式免受 Web 安全威脅。
 
 **包含內容**:
+
 - XSS 防護（DOMPurify、輸出編碼）
 - CSRF 防護（CSRF Token、SameSite Cookie）
 - 認證與授權（JWT 安全儲存、權限檢查）
@@ -97,11 +107,13 @@
 ---
 
 #### 6. [測試策略](./TESTING_STRATEGY.md)
+
 **必讀 ⭐⭐**
 
 完整的測試方案，包含 E2E、整合、單元測試。
 
 **包含內容**:
+
 - 測試金字塔架構
 - E2E 測試（Playwright）
 - 整合測試（瀏覽器原生測試）
@@ -118,11 +130,13 @@
 ### 🚀 部署與維運
 
 #### 7. [部署指南](./DEPLOYMENT_GUIDE.md)
+
 **必讀 ⭐⭐**
 
 從構建到部署的完整流程與最佳實踐。
 
 **包含內容**:
+
 - Docker + Nginx 部署配置
 - 環境變數管理
 - 部署方案（Docker + Nginx 靜態文件服務）
@@ -141,7 +155,7 @@
 
 如果你是第一次接觸 AlleyNote 前端專案，建議按照以下順序閱讀：
 
-1. **第一天**: 
+1. **第一天**:
    - ✅ [介面設計規範](./FRONTEND_INTERFACE_DESIGN_SPECIFICATION.md) - 了解整體設計
    - ✅ [待辦清單](./FRONTEND_TODO_LIST.md) - 了解開發流程
 
@@ -156,7 +170,7 @@
 4. **開始開發前**:
    - ✅ 閱讀後端 API 文件：`docs/guides/developer/API_DOCUMENTATION.md`
    - ✅ 確認 Docker 已安裝並運行
-   - ✅ Clone 專案並執行 `docker-compose up -d`
+     - ✅ Clone 專案並執行 `docker compose up -d`
    - ✅ 閱讀前端遷移記錄：`frontend/MIGRATION_NOTES.md`
 
 ---
@@ -172,9 +186,10 @@
 5. **部署**: Docker + Nginx（無需構建）
 
 然後直接開始：
+
 ```bash
 # 啟動 Docker 服務
-docker-compose up -d
+docker compose up -d
 
 # 訪問前端
 open http://localhost:3000
@@ -278,6 +293,7 @@ open http://localhost:3000
 ### 為什麼選擇原生 HTML/JavaScript/CSS？
 
 ✅ **優點**:
+
 - 零構建時間，修改即時生效
 - 無需 Node.js 環境和 npm 套件管理
 - 學習曲線低，對初學者友善
@@ -286,6 +302,7 @@ open http://localhost:3000
 - 直接使用瀏覽器原生特性，效能優異
 
 ❌ **不選擇 Vite/React/Vue 的原因**:
+
 - 專案規模適中，不需要複雜的構建流程
 - 後端已有成熟的 DDD 架構
 - 團隊希望保持技術棧簡單
@@ -294,12 +311,14 @@ open http://localhost:3000
 ### 為什麼不使用 Vuex/Redux？
 
 ✅ **輕量級狀態管理的優勢**:
+
 - 學習曲線低
 - 程式碼量少
 - 易於除錯
 - 滿足專案需求
 
 ✅ **自訂 Store 的特點**:
+
 - 簡單的訂閱/通知機制
 - 支援持久化到 LocalStorage/SessionStorage
 - 配合事件系統實現組件通訊
@@ -366,6 +385,7 @@ frontend/
 ```
 
 **注意**: 不再需要以下文件/目錄：
+
 - ❌ `package.json` (無需 npm)
 - ❌ `（無需配置檔案）` (無構建工具)
 - ❌ `node_modules/` (無依賴目錄)
@@ -450,11 +470,8 @@ AlleyNote 前端專案採用**原生技術、簡單直接**的開發方式，確
 
 ---
 
-**📌 重要提醒**: 
+**📌 重要提醒**:
 
-前端已從 Vite 改為純原生技術，請參考 [frontend/MIGRATION_NOTES.md](../../frontend/MIGRATION_NOTES.md) 了解遷移詳情。
-3. ✅ **安全性**: XSS/CSRF 防護、安全標頭
-4. ✅ **效能**: Code Splitting、懶加載、快取策略
-5. ✅ **可維護性**: 清晰的架構、完整的文件
+前端已從 Vite 改為純原生技術，請參考 [frontend/MIGRATION_NOTES.md](../../frontend/MIGRATION_NOTES.md) 了解遷移詳情。3. ✅ **安全性**: XSS/CSRF 防護、安全標頭 4. ✅ **效能**: Code Splitting、懶加載、快取策略5. ✅ **可維護性**: 清晰的架構、完整的文件
 
 **開始開發前，請務必閱讀本目錄下的所有文件。祝開發順利！** 🚀

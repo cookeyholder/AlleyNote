@@ -1,16 +1,20 @@
 name: E2E Tests
 
+permissions:
+  contents: read
+  issues: write
+
 on:
   push:
-    branches: [ main, develop, feature/* ]
+    branches: [main, develop, feature/*]
   pull_request:
-    branches: [ main, develop ]
-  workflow_dispatch:  # 允許手動觸發
+    branches: [main, develop]
+  workflow_dispatch: # 允許手動觸發
 
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    
+
     services:
       redis:
         image: redis:alpine
@@ -29,14 +33,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '18'
-          cache: 'npm'
+          node-version: "18"
+          cache: "npm"
           cache-dependency-path: tests/e2e/package-lock.json
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: "8.4"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
           coverage: none
 
@@ -44,22 +48,62 @@ jobs:
         working-directory: backend
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Prepare backend environment file
+        working-directory: backend
+        run: |
+          if [ ! -f .env.development ]; then
+            cp .env.example .env.development
+          fi
+          sed -i "s|^DB_DATABASE=.*|DB_DATABASE=$PWD/database/alleynote.sqlite3|" .env.development
+
       - name: Setup database
         working-directory: backend
         run: |
           mkdir -p database
           php init_db.php
 
+      - name: Generate JWT keys for CI
+        working-directory: backend
+        run: |
+          mkdir -p keys
+          openssl genrsa -out keys/private.pem 2048
+          openssl rsa -in keys/private.pem -pubout -out keys/public.pem
+          chmod 600 keys/private.pem
+
       - name: Start PHP built-in server
         working-directory: backend
         run: |
-          php -S localhost:8080 -t public > /dev/null 2>&1 &
-          sleep 2
+          APP_ENV=development \
+          DB_DATABASE="$PWD/database/alleynote.sqlite3" \
+          JWT_PRIVATE_KEY_PATH="$PWD/keys/private.pem" \
+          JWT_PUBLIC_KEY_PATH="$PWD/keys/public.pem" \
+          php -S 127.0.0.1:8080 -t public > /tmp/e2e-php-server.log 2>&1 &
+
+          for i in {1..20}; do
+            if curl -sS "http://127.0.0.1:8080/" >/dev/null; then
+              echo "PHP server is ready"
+              break
+            fi
+
+            if [ "$i" -eq 20 ]; then
+              echo "PHP server failed to start"
+              tail -n 200 /tmp/e2e-php-server.log || true
+              exit 1
+            fi
+
+            sleep 1
+          done
 
       - name: Start frontend server
         working-directory: frontend
         run: |
-          python3 -m http.server 3000 > /dev/null 2>&1 &
+          npx --yes live-server \
+            --host=127.0.0.1 \
+            --port=3000 \
+            --no-browser \
+            --quiet \
+            --entry-file=index.html \
+            --proxy=/api:http://127.0.0.1:8080/api > /dev/null 2>&1 &
           sleep 2
 
       - name: Install test dependencies
@@ -92,6 +136,7 @@ jobs:
 
       - name: Comment PR with results
         if: github.event_name == 'pull_request' && always()
+        continue-on-error: true
         uses: actions/github-script@v6
         with:
           script: |
@@ -99,22 +144,22 @@ jobs:
             const testResults = fs.existsSync('tests/e2e/test-results.json')
               ? JSON.parse(fs.readFileSync('tests/e2e/test-results.json', 'utf8'))
               : null;
-            
+
             if (testResults) {
               const { stats } = testResults;
               const passed = stats.expected || 0;
               const failed = stats.unexpected || 0;
               const total = passed + failed;
-              
+
               const body = `## 🎭 E2E Test Results
-              
+
               - ✅ Passed: ${passed}
               - ❌ Failed: ${failed}
               - 📊 Total: ${total}
-              
+
               ${failed > 0 ? '⚠️ Some tests failed. Check the artifacts for details.' : '🎉 All tests passed!'}
               `;
-              
+
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,

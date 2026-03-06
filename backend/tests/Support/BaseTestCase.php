@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Support;
 
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use Tests\Support\Traits\HttpRequestTestTrait;
+use Tests\Support\Traits\HttpResponseTestTrait;
 
 /**
  * 基礎測試類別，所有測試類別的共同祖先.
@@ -13,6 +15,9 @@ use PHPUnit\Framework\TestCase as PHPUnitTestCase;
  */
 abstract class BaseTestCase extends PHPUnitTestCase
 {
+    use HttpRequestTestTrait;
+    use HttpResponseTestTrait;
+
     protected function setUp(): void
     {
         parent::setUp();

@@ -77,27 +77,29 @@ Content-Type: application/json
 
 {
     "email": "admin@example.com",
-    "password": "secure_password"
+    "password": "Example#Pass123!"
 }
 ```
 
 回應：
+
 ```json
 {
-    "success": true,
-    "data": {
-        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
-        "expires_in": 3600,
-        "user": {
-            "id": 1,
-            "email": "admin@example.com",
-            "role": "admin"
-        }
+  "success": true,
+  "data": {
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+    "expires_in": 3600,
+    "user": {
+      "id": 1,
+      "email": "admin@example.com",
+      "role": "admin"
     }
+  }
 }
 ```
 
 使用 JWT Token：
+
 ```http
 GET /api/posts
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...
@@ -127,15 +129,15 @@ Authorization: Bearer your-jwt-token
 
 ```json
 {
-    "success": true,
-    "message": "操作成功",
-    "data": {
-        // 回應資料
-    },
-    "meta": {
-        "timestamp": "YYYY-MM-DDTHH:mm:ssZ",
-        "request_id": "req_123456"
-    }
+  "success": true,
+  "message": "操作成功",
+  "data": {
+    // 回應資料
+  },
+  "meta": {
+    "timestamp": "YYYY-MM-DDTHH:mm:ssZ",
+    "request_id": "req_123456"
+  }
 }
 ```
 
@@ -143,18 +145,18 @@ Authorization: Bearer your-jwt-token
 
 ```json
 {
-    "success": true,
-    "data": [
-        // 資料項目
-    ],
-    "pagination": {
-        "current_page": 1,
-        "per_page": 20,
-        "total": 100,
-        "total_pages": 5,
-        "has_next": true,
-        "has_prev": false
-    }
+  "success": true,
+  "data": [
+    // 資料項目
+  ],
+  "pagination": {
+    "current_page": 1,
+    "per_page": 20,
+    "total": 100,
+    "total_pages": 5,
+    "has_next": true,
+    "has_prev": false
+  }
 }
 ```
 
@@ -162,16 +164,16 @@ Authorization: Bearer your-jwt-token
 
 ```json
 {
-    "success": false,
-    "message": "操作失敗",
-    "error": "ERROR_CODE",
-    "errors": {
-        "field": ["錯誤訊息"]
-    },
-    "meta": {
-        "timestamp": "YYYY-MM-DDTHH:mm:ssZ",
-        "request_id": "req_123456"
-    }
+  "success": false,
+  "message": "操作失敗",
+  "error": "ERROR_CODE",
+  "errors": {
+    "field": ["錯誤訊息"]
+  },
+  "meta": {
+    "timestamp": "YYYY-MM-DDTHH:mm:ssZ",
+    "request_id": "req_123456"
+  }
 }
 ```
 
@@ -185,35 +187,28 @@ AlleyNote v2.0 使用新的驗證系統，提供詳細的驗證錯誤訊息。
 
 ```json
 {
-    "success": false,
-    "message": "資料驗證失敗",
-    "error": "VALIDATION_FAILED",
-    "errors": {
-        "title": [
-            "此欄位為必填",
-            "最少需要 5 個字元"
-        ],
-        "email": [
-            "請輸入有效的電子郵件地址"
-        ],
-        "content": [
-            "此欄位為必填"
-        ]
-    }
+  "success": false,
+  "message": "資料驗證失敗",
+  "error": "VALIDATION_FAILED",
+  "errors": {
+    "title": ["此欄位為必填", "最少需要 5 個字元"],
+    "email": ["請輸入有效的電子郵件地址"],
+    "content": ["此欄位為必填"]
+  }
 }
 ```
 
 ### 支援的驗證規則
 
-| 規則 | 說明 | 錯誤訊息範例 |
-|------|------|-------------|
-| `required` | 必填欄位 | "此欄位為必填" |
-| `email` | 電子郵件格式 | "請輸入有效的電子郵件地址" |
-| `min_length:5` | 最少字元數 | "最少需要 5 個字元" |
-| `max_length:255` | 最多字元數 | "最多只能 255 個字元" |
-| `integer` | 整數型別 | "必須為整數" |
-| `unique:table,column` | 唯一性檢查 | "此電子郵件已被使用" |
-| `exists:table,column` | 存在性檢查 | "指定的文章不存在" |
+| 規則                  | 說明         | 錯誤訊息範例               |
+| --------------------- | ------------ | -------------------------- |
+| `required`            | 必填欄位     | "此欄位為必填"             |
+| `email`               | 電子郵件格式 | "請輸入有效的電子郵件地址" |
+| `min_length:5`        | 最少字元數   | "最少需要 5 個字元"        |
+| `max_length:255`      | 最多字元數   | "最多只能 255 個字元"      |
+| `integer`             | 整數型別     | "必須為整數"               |
+| `unique:table,column` | 唯一性檢查   | "此電子郵件已被使用"       |
+| `exists:table,column` | 存在性檢查   | "指定的文章不存在"         |
 
 ---
 
@@ -227,42 +222,42 @@ GET /api/posts?page=1&limit=20&search=關鍵字&category=announcement
 
 **查詢參數:**
 
-| 參數 | 類型 | 必填 | 說明 | 預設值 |
-|------|------|------|------|--------|
-| `page` | integer | 否 | 頁碼 | 1 |
-| `limit` | integer | 否 | 每頁筆數 (1-100) | 20 |
-| `search` | string | 否 | 搜尋關鍵字 | - |
-| `category` | string | 否 | 分類篩選 | - |
-| `status` | string | 否 | 狀態篩選 (published, draft, archived) | - |
+| 參數       | 類型    | 必填 | 說明                                  | 預設值 |
+| ---------- | ------- | ---- | ------------------------------------- | ------ |
+| `page`     | integer | 否   | 頁碼                                  | 1      |
+| `limit`    | integer | 否   | 每頁筆數 (1-100)                      | 20     |
+| `search`   | string  | 否   | 搜尋關鍵字                            | -      |
+| `category` | string  | 否   | 分類篩選                              | -      |
+| `status`   | string  | 否   | 狀態篩選 (published, draft, archived) | -      |
 
 **回應範例:**
 
 ```json
 {
-    "success": true,
-    "data": [
-        {
-            "id": 1,
-            "title": "重要公告",
-            "content": "這是一則重要公告...",
-            "category": "announcement",
-            "status": "published",
-            "author_id": 1,
-            "author_name": "管理員",
-            "created_at": "YYYY-MM-DDTHH:mm:ssZ",
-            "updated_at": "YYYY-MM-DDTHH:mm:ssZ",
-            "is_pinned": false,
-            "attachments_count": 2
-        }
-    ],
-    "pagination": {
-        "current_page": 1,
-        "per_page": 20,
-        "total": 50,
-        "total_pages": 3,
-        "has_next": true,
-        "has_prev": false
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "重要公告",
+      "content": "這是一則重要公告...",
+      "category": "announcement",
+      "status": "published",
+      "author_id": 1,
+      "author_name": "管理員",
+      "created_at": "YYYY-MM-DDTHH:mm:ssZ",
+      "updated_at": "YYYY-MM-DDTHH:mm:ssZ",
+      "is_pinned": false,
+      "attachments_count": 2
     }
+  ],
+  "pagination": {
+    "current_page": 1,
+    "per_page": 20,
+    "total": 50,
+    "total_pages": 3,
+    "has_next": true,
+    "has_prev": false
+  }
 }
 ```
 
@@ -273,35 +268,36 @@ GET /api/posts/{id}
 ```
 
 **路徑參數:**
+
 - `id` (integer): 文章 ID
 
 **回應範例:**
 
 ```json
 {
-    "success": true,
-    "data": {
-        "id": 1,
-        "title": "重要公告",
-        "content": "這是一則重要公告的完整內容...",
-        "category": "announcement",
-        "status": "published",
-        "author_id": 1,
-        "author_name": "管理員",
-        "created_at": "YYYY-MM-DDTHH:mm:ssZ",
-        "updated_at": "YYYY-MM-DDTHH:mm:ssZ",
-        "is_pinned": false,
-        "view_count": 156,
-        "attachments": [
-            {
-                "id": "uuid-123",
-                "filename": "document.pdf",
-                "size": 2048,
-                "mime_type": "application/pdf",
-                "download_url": "/api/attachments/uuid-123/download"
-            }
-        ]
-    }
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "重要公告",
+    "content": "這是一則重要公告的完整內容...",
+    "category": "announcement",
+    "status": "published",
+    "author_id": 1,
+    "author_name": "管理員",
+    "created_at": "YYYY-MM-DDTHH:mm:ssZ",
+    "updated_at": "YYYY-MM-DDTHH:mm:ssZ",
+    "is_pinned": false,
+    "view_count": 156,
+    "attachments": [
+      {
+        "id": "uuid-123",
+        "filename": "document.pdf",
+        "size": 2048,
+        "mime_type": "application/pdf",
+        "download_url": "/api/attachments/uuid-123/download"
+      }
+    ]
+  }
 }
 ```
 
@@ -322,29 +318,29 @@ X-CSRF-TOKEN: token_here
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `title` | string | 是 | required, string, min_length:5, max_length:255 | 文章標題 |
-| `content` | string | 是 | required, string, min_length:10 | 文章內容 |
-| `category` | string | 否 | sometimes, string, in:announcement,news,general | 文章分類 |
-| `is_pinned` | boolean | 否 | sometimes, boolean | 是否置頂 |
+| 欄位        | 類型    | 必填 | 驗證規則                                        | 說明     |
+| ----------- | ------- | ---- | ----------------------------------------------- | -------- |
+| `title`     | string  | 是   | required, string, min_length:5, max_length:255  | 文章標題 |
+| `content`   | string  | 是   | required, string, min_length:10                 | 文章內容 |
+| `category`  | string  | 否   | sometimes, string, in:announcement,news,general | 文章分類 |
+| `is_pinned` | boolean | 否   | sometimes, boolean                              | 是否置頂 |
 
 **成功回應 (201):**
 
 ```json
 {
-    "success": true,
-    "message": "文章建立成功",
-    "data": {
-        "id": 123,
-        "title": "新文章標題",
-        "content": "文章內容...",
-        "category": "announcement",
-        "status": "published",
-        "author_id": 1,
-        "created_at": "YYYY-MM-DDTHH:mm:ssZ",
-        "is_pinned": false
-    }
+  "success": true,
+  "message": "文章建立成功",
+  "data": {
+    "id": 123,
+    "title": "新文章標題",
+    "content": "文章內容...",
+    "category": "announcement",
+    "status": "published",
+    "author_id": 1,
+    "created_at": "YYYY-MM-DDTHH:mm:ssZ",
+    "is_pinned": false
+  }
 }
 ```
 
@@ -352,18 +348,13 @@ X-CSRF-TOKEN: token_here
 
 ```json
 {
-    "success": false,
-    "message": "資料驗證失敗",
-    "error": "VALIDATION_FAILED",
-    "errors": {
-        "title": [
-            "此欄位為必填",
-            "最少需要 5 個字元"
-        ],
-        "content": [
-            "此欄位為必填"
-        ]
-    }
+  "success": false,
+  "message": "資料驗證失敗",
+  "error": "VALIDATION_FAILED",
+  "errors": {
+    "title": ["此欄位為必填", "最少需要 5 個字元"],
+    "content": ["此欄位為必填"]
+  }
 }
 ```
 
@@ -382,12 +373,12 @@ X-CSRF-TOKEN: token_here
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `title` | string | 否 | sometimes, string, min_length:5, max_length:255 | 文章標題 |
-| `content` | string | 否 | sometimes, string, min_length:10 | 文章內容 |
-| `category` | string | 否 | sometimes, string, in:announcement,news,general | 文章分類 |
-| `is_pinned` | boolean | 否 | sometimes, boolean | 是否置頂 |
+| 欄位        | 類型    | 必填 | 驗證規則                                        | 說明     |
+| ----------- | ------- | ---- | ----------------------------------------------- | -------- |
+| `title`     | string  | 否   | sometimes, string, min_length:5, max_length:255 | 文章標題 |
+| `content`   | string  | 否   | sometimes, string, min_length:10                | 文章內容 |
+| `category`  | string  | 否   | sometimes, string, in:announcement,news,general | 文章分類 |
+| `is_pinned` | boolean | 否   | sometimes, boolean                              | 是否置頂 |
 
 ### 刪除文章
 
@@ -400,8 +391,8 @@ X-CSRF-TOKEN: token_here
 
 ```json
 {
-    "success": true,
-    "message": "文章刪除成功"
+  "success": true,
+  "message": "文章刪除成功"
 }
 ```
 
@@ -417,35 +408,35 @@ Content-Type: application/json
 
 {
     "username": "admin",
-    "password": "password123",
+    "password": "Example#Pass123!",
     "remember_me": false
 }
 ```
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `username` | string | 是 | required, string, min_length:3 | 使用者名稱或電子郵件 |
-| `password` | string | 是 | required, string, min_length:6 | 密碼 |
-| `remember_me` | boolean | 否 | sometimes, boolean | 記住登入狀態 |
+| 欄位          | 類型    | 必填 | 驗證規則                       | 說明                 |
+| ------------- | ------- | ---- | ------------------------------ | -------------------- |
+| `username`    | string  | 是   | required, string, min_length:3 | 使用者名稱或電子郵件 |
+| `password`    | string  | 是   | required, string, min_length:6 | 密碼                 |
+| `remember_me` | boolean | 否   | sometimes, boolean             | 記住登入狀態         |
 
 **成功回應 (200):**
 
 ```json
 {
-    "success": true,
-    "message": "登入成功",
-    "data": {
-        "user": {
-            "id": 1,
-            "username": "admin",
-            "email": "admin@example.com",
-            "role": "admin"
-        },
-        "session_id": "sess_123456",
-        "csrf_token": "csrf_abc123"
-    }
+  "success": true,
+  "message": "登入成功",
+  "data": {
+    "user": {
+      "id": 1,
+      "username": "admin",
+      "email": "admin@example.com",
+      "role": "admin"
+    },
+    "session_id": "sess_123456",
+    "csrf_token": "csrf_abc123"
+  }
 }
 ```
 
@@ -453,9 +444,9 @@ Content-Type: application/json
 
 ```json
 {
-    "success": false,
-    "message": "登入失敗",
-    "error": "INVALID_CREDENTIALS"
+  "success": false,
+  "message": "登入失敗",
+  "error": "INVALID_CREDENTIALS"
 }
 ```
 
@@ -468,19 +459,19 @@ Content-Type: application/json
 {
     "username": "newuser",
     "email": "user@example.com",
-    "password": "password123",
-    "password_confirmation": "password123"
+    "password": "Example#Pass123!",
+    "password_confirmation": "Example#Pass123!"
 }
 ```
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `username` | string | 是 | required, string, min_length:3, max_length:50, unique:users,username | 使用者名稱 |
-| `email` | string | 是 | required, email, unique:users,email | 電子郵件 |
-| `password` | string | 是 | required, string, min_length:8 | 密碼 |
-| `password_confirmation` | string | 是 | required, confirmed | 確認密碼 |
+| 欄位                    | 類型   | 必填 | 驗證規則                                                             | 說明       |
+| ----------------------- | ------ | ---- | -------------------------------------------------------------------- | ---------- |
+| `username`              | string | 是   | required, string, min_length:3, max_length:50, unique:users,username | 使用者名稱 |
+| `email`                 | string | 是   | required, email, unique:users,email                                  | 電子郵件   |
+| `password`              | string | 是   | required, string, min_length:8                                       | 密碼       |
+| `password_confirmation` | string | 是   | required, confirmed                                                  | 確認密碼   |
 
 ### 使用者登出
 
@@ -499,15 +490,15 @@ GET /api/auth/me
 
 ```json
 {
-    "success": true,
-    "data": {
-        "id": 1,
-        "username": "admin",
-        "email": "admin@example.com",
-        "role": "admin",
-        "created_at": "YYYY-MM-DDTHH:mm:ssZ",
-        "last_login": "YYYY-MM-DDTHH:mm:ssZ"
-    }
+  "success": true,
+  "data": {
+    "id": 1,
+    "username": "admin",
+    "email": "admin@example.com",
+    "role": "admin",
+    "created_at": "YYYY-MM-DDTHH:mm:ssZ",
+    "last_login": "YYYY-MM-DDTHH:mm:ssZ"
+  }
 }
 ```
 
@@ -528,27 +519,27 @@ description: "檔案說明"
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `file` | file | 是 | file_required, file_max_size:10240, file_mime_types:image/*,application/pdf | 上傳檔案 |
-| `description` | string | 否 | sometimes, string, max_length:500 | 檔案說明 |
+| 欄位          | 類型   | 必填 | 驗證規則                                                                     | 說明     |
+| ------------- | ------ | ---- | ---------------------------------------------------------------------------- | -------- |
+| `file`        | file   | 是   | file_required, file_max_size:10240, file_mime_types:image/\*,application/pdf | 上傳檔案 |
+| `description` | string | 否   | sometimes, string, max_length:500                                            | 檔案說明 |
 
 **成功回應 (201):**
 
 ```json
 {
-    "success": true,
-    "message": "檔案上傳成功",
-    "data": {
-        "id": "uuid-123",
-        "filename": "document.pdf",
-        "original_name": "重要文件.pdf",
-        "size": 2048,
-        "mime_type": "application/pdf",
-        "description": "檔案說明",
-        "download_url": "/api/attachments/uuid-123/download",
-        "created_at": "YYYY-MM-DDTHH:mm:ssZ"
-    }
+  "success": true,
+  "message": "檔案上傳成功",
+  "data": {
+    "id": "uuid-123",
+    "filename": "document.pdf",
+    "original_name": "重要文件.pdf",
+    "size": 2048,
+    "mime_type": "application/pdf",
+    "description": "檔案說明",
+    "download_url": "/api/attachments/uuid-123/download",
+    "created_at": "YYYY-MM-DDTHH:mm:ssZ"
+  }
 }
 ```
 
@@ -556,16 +547,12 @@ description: "檔案說明"
 
 ```json
 {
-    "success": false,
-    "message": "檔案驗證失敗",
-    "error": "VALIDATION_FAILED",
-    "errors": {
-        "file": [
-            "請選擇檔案",
-            "檔案大小不能超過 10MB",
-            "只允許 PDF 和圖片檔案"
-        ]
-    }
+  "success": false,
+  "message": "檔案驗證失敗",
+  "error": "VALIDATION_FAILED",
+  "errors": {
+    "file": ["請選擇檔案", "檔案大小不能超過 10MB", "只允許 PDF 和圖片檔案"]
+  }
 }
 ```
 
@@ -604,11 +591,11 @@ GET /api/ip-rules?type=blacklist&page=1&limit=20
 
 **查詢參數:**
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| `type` | string | 否 | 規則類型 (blacklist, whitelist) |
-| `page` | integer | 否 | 頁碼 |
-| `limit` | integer | 否 | 每頁筆數 |
+| 參數    | 類型    | 必填 | 說明                            |
+| ------- | ------- | ---- | ------------------------------- |
+| `type`  | string  | 否   | 規則類型 (blacklist, whitelist) |
+| `page`  | integer | 否   | 頁碼                            |
+| `limit` | integer | 否   | 每頁筆數                        |
 
 ### 新增 IP 規則
 
@@ -626,11 +613,11 @@ X-CSRF-TOKEN: token_here
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `ip_address` | string | 是 | required, ip | IP 位址 |
-| `type` | string | 是 | required, in:blacklist,whitelist | 規則類型 |
-| `reason` | string | 否 | sometimes, string, max_length:255 | 規則原因 |
+| 欄位         | 類型   | 必填 | 驗證規則                          | 說明     |
+| ------------ | ------ | ---- | --------------------------------- | -------- |
+| `ip_address` | string | 是   | required, ip                      | IP 位址  |
+| `type`       | string | 是   | required, in:blacklist,whitelist  | 規則類型 |
+| `reason`     | string | 否   | sometimes, string, max_length:255 | 規則原因 |
 
 ---
 
@@ -668,31 +655,31 @@ Content-Type: application/json
 
 ```json
 {
-    "success": true,
-    "message": "Activity logged successfully",
-    "data": {
-        "id": 12345,
-        "uuid": "550e8400-e29b-41d4-a716-446655440000",
-        "action_type": "auth.login.success",
-        "action_category": "authentication",
-        "user_id": 123,
-        "status": "success",
-        "description": "使用者登入成功",
-        "created_at": "2024-12-27T10:30:00Z"
-    }
+  "success": true,
+  "message": "Activity logged successfully",
+  "data": {
+    "id": 12345,
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "action_type": "auth.login.success",
+    "action_category": "authentication",
+    "user_id": 123,
+    "status": "success",
+    "description": "使用者登入成功",
+    "created_at": "2024-12-27T10:30:00Z"
+  }
 }
 ```
 
 **請求欄位:**
 
-| 欄位 | 類型 | 必填 | 驗證規則 | 說明 |
-|------|------|------|----------|------|
-| `action_type` | string | 是 | required, valid_activity_type | 活動類型 (21 種預定義類型) |
-| `user_id` | integer | 否 | sometimes, integer | 使用者 ID，匿名活動可省略 |
-| `target_type` | string | 否 | sometimes, string, max_length:50 | 目標類型 (如 post, user, file) |
-| `target_id` | string | 否 | sometimes, string, max_length:255 | 目標 ID |
-| `description` | string | 否 | sometimes, string, max_length:1000 | 活動描述 |
-| `metadata` | object | 否 | sometimes, array | 額外的元資料 |
+| 欄位          | 類型    | 必填 | 驗證規則                           | 說明                           |
+| ------------- | ------- | ---- | ---------------------------------- | ------------------------------ |
+| `action_type` | string  | 是   | required, valid_activity_type      | 活動類型 (21 種預定義類型)     |
+| `user_id`     | integer | 否   | sometimes, integer                 | 使用者 ID，匿名活動可省略      |
+| `target_type` | string  | 否   | sometimes, string, max_length:50   | 目標類型 (如 post, user, file) |
+| `target_id`   | string  | 否   | sometimes, string, max_length:255  | 目標 ID                        |
+| `description` | string  | 否   | sometimes, string, max_length:1000 | 活動描述                       |
+| `metadata`    | object  | 否   | sometimes, array                   | 額外的元資料                   |
 
 ### 📦 批次記錄活動
 
@@ -724,27 +711,27 @@ Content-Type: application/json
 
 ```json
 {
-    "success": true,
-    "message": "Batch logging completed",
-    "data": {
-        "processed": 2,
-        "successful": 2,
-        "failed": 0,
-        "results": [
-            {
-                "index": 0,
-                "success": true,
-                "id": 12346,
-                "uuid": "550e8400-e29b-41d4-a716-446655440001"
-            },
-            {
-                "index": 1,
-                "success": true,
-                "id": 12347,
-                "uuid": "550e8400-e29b-41d4-a716-446655440002"
-            }
-        ]
-    }
+  "success": true,
+  "message": "Batch logging completed",
+  "data": {
+    "processed": 2,
+    "successful": 2,
+    "failed": 0,
+    "results": [
+      {
+        "index": 0,
+        "success": true,
+        "id": 12346,
+        "uuid": "550e8400-e29b-41d4-a716-446655440001"
+      },
+      {
+        "index": 1,
+        "success": true,
+        "id": 12347,
+        "uuid": "550e8400-e29b-41d4-a716-446655440002"
+      }
+    ]
+  }
 }
 ```
 
@@ -756,22 +743,22 @@ GET /api/v1/activity-logs?user_id=123&limit=50&page=1&action_category=authentica
 
 **查詢參數:**
 
-| 參數 | 類型 | 必填 | 說明 |
-|------|------|------|------|
-| `user_id` | integer | 否 | 過濾特定使用者的活動 |
-| `action_type` | string | 否 | 過濾特定活動類型 |
-| `action_category` | string | 否 | 過濾活動類別 (authentication, content, file_management, security) |
-| `status` | string | 否 | 過濾狀態 (success, failed, error, blocked) |
-| `date_from` | string | 否 | 起始日期 (YYYY-MM-DD) |
-| `date_to` | string | 否 | 結束日期 (YYYY-MM-DD) |
-| `limit` | integer | 否 | 每頁記錄數 (預設 20，最大 100) |
-| `page` | integer | 否 | 頁碼 (預設 1) |
-| `order_by` | string | 否 | 排序欄位 (occurred_at, created_at) |
-| `order` | string | 否 | 排序方向 (asc, desc) |
+| 參數              | 類型    | 必填 | 說明                                                              |
+| ----------------- | ------- | ---- | ----------------------------------------------------------------- |
+| `user_id`         | integer | 否   | 過濾特定使用者的活動                                              |
+| `action_type`     | string  | 否   | 過濾特定活動類型                                                  |
+| `action_category` | string  | 否   | 過濾活動類別 (authentication, content, file_management, security) |
+| `status`          | string  | 否   | 過濾狀態 (success, failed, error, blocked)                        |
+| `date_from`       | string  | 否   | 起始日期 (YYYY-MM-DD)                                             |
+| `date_to`         | string  | 否   | 結束日期 (YYYY-MM-DD)                                             |
+| `limit`           | integer | 否   | 每頁記錄數 (預設 20，最大 100)                                    |
+| `page`            | integer | 否   | 頁碼 (預設 1)                                                     |
+| `order_by`        | string  | 否   | 排序欄位 (occurred_at, created_at)                                |
+| `order`           | string  | 否   | 排序方向 (asc, desc)                                              |
 
 **回應範例:**
 
-```json
+````json
 {
     "success": true,
     "data": {
@@ -984,7 +971,7 @@ GET /api/v1/activity-logs?user_id=123&limit=50&page=1&action_category=authentica
         }
     }
 }
-```
+````
 
 ### 📊 活動統計分析
 
@@ -996,27 +983,27 @@ GET /api/v1/activity-logs/stats?user_id=123&period=7d
 
 ```json
 {
-    "success": true,
-    "data": {
-        "period": "7d",
-        "total_activities": 1250,
-        "success_rate": 98.4,
-        "categories": {
-            "authentication": 125,
-            "content": 800,
-            "file_management": 250,
-            "security": 75
-        },
-        "daily_trend": [
-            {"date": "2024-12-21", "count": 150},
-            {"date": "2024-12-22", "count": 180},
-            {"date": "2024-12-23", "count": 200}
-        ],
-        "top_activities": [
-            {"type": "post.viewed", "count": 400},
-            {"type": "attachment.downloaded", "count": 200}
-        ]
-    }
+  "success": true,
+  "data": {
+    "period": "7d",
+    "total_activities": 1250,
+    "success_rate": 98.4,
+    "categories": {
+      "authentication": 125,
+      "content": 800,
+      "file_management": 250,
+      "security": 75
+    },
+    "daily_trend": [
+      { "date": "2024-12-21", "count": 150 },
+      { "date": "2024-12-22", "count": 180 },
+      { "date": "2024-12-23", "count": 200 }
+    ],
+    "top_activities": [
+      { "type": "post.viewed", "count": 400 },
+      { "type": "attachment.downloaded", "count": 200 }
+    ]
+  }
 }
 ```
 
@@ -1037,72 +1024,72 @@ Content-Type: application/json
 
 ```json
 {
-    "success": true,
-    "data": {
-        "is_suspicious": true,
-        "risk_score": 85,
-        "analysis_time": "2024-12-27T10:30:00Z",
-        "detected_patterns": [
-            {
-                "type": "high_failure_rate",
-                "description": "登入失敗率異常 (60% 在過去 1 小時)",
-                "risk_score": 75,
-                "details": {
-                    "failure_rate": 0.6,
-                    "threshold": 0.3,
-                    "failed_attempts": 12,
-                    "total_attempts": 20
-                }
-            },
-            {
-                "type": "unusual_activity_frequency",
-                "description": "活動頻率異常高",
-                "risk_score": 65,
-                "details": {
-                    "current_rate": "5 actions/minute",
-                    "normal_rate": "1 action/minute",
-                    "deviation": "400%"
-                }
-            }
-        ],
-        "recommendations": [
-            "考慮暫時限制該使用者的操作",
-            "增強身份驗證要求",
-            "監控後續活動模式"
-        ]
-    }
+  "success": true,
+  "data": {
+    "is_suspicious": true,
+    "risk_score": 85,
+    "analysis_time": "2024-12-27T10:30:00Z",
+    "detected_patterns": [
+      {
+        "type": "high_failure_rate",
+        "description": "登入失敗率異常 (60% 在過去 1 小時)",
+        "risk_score": 75,
+        "details": {
+          "failure_rate": 0.6,
+          "threshold": 0.3,
+          "failed_attempts": 12,
+          "total_attempts": 20
+        }
+      },
+      {
+        "type": "unusual_activity_frequency",
+        "description": "活動頻率異常高",
+        "risk_score": 65,
+        "details": {
+          "current_rate": "5 actions/minute",
+          "normal_rate": "1 action/minute",
+          "deviation": "400%"
+        }
+      }
+    ],
+    "recommendations": [
+      "考慮暫時限制該使用者的操作",
+      "增強身份驗證要求",
+      "監控後續活動模式"
+    ]
+  }
 }
 ```
 
 ### 📋 支援的活動類型
 
-| 類型 | 類別 | 描述 |
-|------|------|------|
-| `auth.login.success` | authentication | 登入成功 |
-| `auth.login.failed` | authentication | 登入失敗 |
-| `auth.logout` | authentication | 登出 |
-| `auth.password.changed` | authentication | 密碼變更 |
-| `post.created` | content | 文章建立 |
-| `post.updated` | content | 文章更新 |
-| `post.deleted` | content | 文章刪除 |
-| `post.viewed` | content | 文章檢視 |
-| `attachment.uploaded` | file_management | 附件上傳 |
-| `attachment.downloaded` | file_management | 附件下載 |
-| `attachment.deleted` | file_management | 附件刪除 |
-| `security.access_denied` | security | 存取被拒 |
-| `security.ip_blocked` | security | IP 被封鎖 |
-| `security.suspicious_activity` | security | 可疑活動 |
+| 類型                           | 類別            | 描述      |
+| ------------------------------ | --------------- | --------- |
+| `auth.login.success`           | authentication  | 登入成功  |
+| `auth.login.failed`            | authentication  | 登入失敗  |
+| `auth.logout`                  | authentication  | 登出      |
+| `auth.password.changed`        | authentication  | 密碼變更  |
+| `post.created`                 | content         | 文章建立  |
+| `post.updated`                 | content         | 文章更新  |
+| `post.deleted`                 | content         | 文章刪除  |
+| `post.viewed`                  | content         | 文章檢視  |
+| `attachment.uploaded`          | file_management | 附件上傳  |
+| `attachment.downloaded`        | file_management | 附件下載  |
+| `attachment.deleted`           | file_management | 附件刪除  |
+| `security.access_denied`       | security        | 存取被拒  |
+| `security.ip_blocked`          | security        | IP 被封鎖 |
+| `security.suspicious_activity` | security        | 可疑活動  |
 
 ### ⚠️ 錯誤處理
 
 ```json
 {
-    "success": false,
-    "message": "Validation failed",
-    "errors": {
-        "action_type": ["活動類型必須是有效的預定義類型之一"]
-    },
-    "error_code": 422
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "action_type": ["活動類型必須是有效的預定義類型之一"]
+  },
+  "error_code": 422
 }
 ```
 
@@ -1145,6 +1132,7 @@ docker compose exec web php scripts/unified-scripts.php swagger:serve
 ### 自動化整合
 
 API 文件會在以下情況自動更新：
+
 - CI/CD 流程執行時
 - 執行完整測試套件時
 - 手動執行文件產生指令時
@@ -1166,31 +1154,31 @@ API 文件會在以下情況自動更新：
 
 ### 通用錯誤代碼
 
-| 代碼 | 說明 | HTTP 狀態 |
-|------|------|-----------|
-| `VALIDATION_FAILED` | 資料驗證失敗 | 400 |
-| `UNAUTHORIZED` | 未授權存取 | 401 |
-| `FORBIDDEN` | 權限不足 | 403 |
-| `NOT_FOUND` | 資源不存在 | 404 |
-| `METHOD_NOT_ALLOWED` | 方法不允許 | 405 |
-| `CONFLICT` | 資源衝突 | 409 |
-| `UNPROCESSABLE_ENTITY` | 無法處理的實體 | 422 |
-| `TOO_MANY_REQUESTS` | 請求過於頻繁 | 429 |
-| `INTERNAL_ERROR` | 伺服器內部錯誤 | 500 |
+| 代碼                   | 說明           | HTTP 狀態 |
+| ---------------------- | -------------- | --------- |
+| `VALIDATION_FAILED`    | 資料驗證失敗   | 400       |
+| `UNAUTHORIZED`         | 未授權存取     | 401       |
+| `FORBIDDEN`            | 權限不足       | 403       |
+| `NOT_FOUND`            | 資源不存在     | 404       |
+| `METHOD_NOT_ALLOWED`   | 方法不允許     | 405       |
+| `CONFLICT`             | 資源衝突       | 409       |
+| `UNPROCESSABLE_ENTITY` | 無法處理的實體 | 422       |
+| `TOO_MANY_REQUESTS`    | 請求過於頻繁   | 429       |
+| `INTERNAL_ERROR`       | 伺服器內部錯誤 | 500       |
 
 ### 業務邏輯錯誤代碼
 
-| 代碼 | 說明 | HTTP 狀態 |
-|------|------|-----------|
-| `INVALID_CREDENTIALS` | 登入憑證無效 | 401 |
-| `ACCOUNT_LOCKED` | 帳號被鎖定 | 423 |
-| `EMAIL_ALREADY_EXISTS` | 電子郵件已存在 | 409 |
-| `USERNAME_ALREADY_EXISTS` | 使用者名稱已存在 | 409 |
-| `POST_NOT_FOUND` | 文章不存在 | 404 |
-| `ATTACHMENT_NOT_FOUND` | 附件不存在 | 404 |
-| `FILE_TOO_LARGE` | 檔案過大 | 413 |
-| `INVALID_FILE_TYPE` | 檔案類型無效 | 415 |
-| `IP_BLOCKED` | IP 被封鎖 | 403 |
+| 代碼                      | 說明             | HTTP 狀態 |
+| ------------------------- | ---------------- | --------- |
+| `INVALID_CREDENTIALS`     | 登入憑證無效     | 401       |
+| `ACCOUNT_LOCKED`          | 帳號被鎖定       | 423       |
+| `EMAIL_ALREADY_EXISTS`    | 電子郵件已存在   | 409       |
+| `USERNAME_ALREADY_EXISTS` | 使用者名稱已存在 | 409       |
+| `POST_NOT_FOUND`          | 文章不存在       | 404       |
+| `ATTACHMENT_NOT_FOUND`    | 附件不存在       | 404       |
+| `FILE_TOO_LARGE`          | 檔案過大         | 413       |
+| `INVALID_FILE_TYPE`       | 檔案類型無效     | 415       |
+| `IP_BLOCKED`              | IP 被封鎖        | 403       |
 
 ---
 
@@ -1200,11 +1188,11 @@ AlleyNote API 實施速率限制以防止濫用：
 
 ### 限制規則
 
-| 端點類型 | 限制 | 範圍 |
-|----------|------|------|
-| 認證相關 | 10 次/分鐘 | 每個 IP |
-| 文章操作 | 60 次/分鐘 | 每個使用者 |
-| 檔案上傳 | 5 次/分鐘 | 每個使用者 |
+| 端點類型 | 限制        | 範圍       |
+| -------- | ----------- | ---------- |
+| 認證相關 | 10 次/分鐘  | 每個 IP    |
+| 文章操作 | 60 次/分鐘  | 每個使用者 |
+| 檔案上傳 | 5 次/分鐘   | 每個使用者 |
 | 一般 API | 120 次/分鐘 | 每個使用者 |
 
 ### 速率限制標頭
@@ -1219,10 +1207,10 @@ X-RateLimit-Reset: 1642234567
 
 ```json
 {
-    "success": false,
-    "message": "請求過於頻繁，請稍後再試",
-    "error": "TOO_MANY_REQUESTS",
-    "retry_after": 60
+  "success": false,
+  "message": "請求過於頻繁，請稍後再試",
+  "error": "TOO_MANY_REQUESTS",
+  "retry_after": 60
 }
 ```
 
@@ -1264,18 +1252,21 @@ X-CSRF-TOKEN: abc123def456
 ### v2.0
 
 **新增功能:**
+
 - 🔍 新驗證系統（29 種驗證規則）
 - 🏗️ DTO 資料傳輸物件
 - 🧪 100% 測試通過率
 - ⚡ 效能優化與快取
 
 **改進項目:**
+
 - 📝 統一錯誤訊息格式
 - 🔒 增強安全性防護
 - 📊 詳細的驗證錯誤回應
 - 🌏 繁體中文錯誤訊息
 
 **重大變更:**
+
 - 驗證錯誤回應格式更新
 - 新增更多驗證規則
 - CSRF Token 成為必需
@@ -1283,6 +1274,7 @@ X-CSRF-TOKEN: abc123def456
 ### v1.0
 
 **初始版本:**
+
 - 基本文章 CRUD 操作
 - 使用者認證系統
 - 附件上傳功能
@@ -1321,6 +1313,6 @@ X-CSRF-TOKEN: abc123def456
 
 ---
 
-*API 版本: v2.0*
-*文件版本: v2.0*
-*維護者: AlleyNote 開發團隊*
+_API 版本: v2.0_
+_文件版本: v2.0_
+_維護者: AlleyNote 開發團隊_

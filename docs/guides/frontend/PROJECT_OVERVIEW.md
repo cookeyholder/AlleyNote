@@ -256,14 +256,16 @@ VITE_SENTRY_SAMPLE_RATE=1.0
 
 ```javascript
 // 配置
-VITE_GA_TRACKING_ID=UA-XXXXX-X
-
-// 追蹤項目
-- 頁面瀏覽
-- 使用者互動
-- 表單提交
-- 搜尋行為
-- 轉換事件
+VITE_GA_TRACKING_ID =
+  UA -
+  XXXXX -
+  X -
+  // 追蹤項目
+  頁面瀏覽 -
+  使用者互動 -
+  表單提交 -
+  搜尋行為 -
+  轉換事件;
 ```
 
 ### 3. Web Vitals 監控
@@ -284,6 +286,8 @@ INP - Interaction to Next Paint
 
 ## 🚀 部署配置
 
+> ⚠️ 備註：下方以現行「Docker + Nginx 靜態站點」流程為主。舊版 `dist/` 與 preview 描述不再適用。
+
 ### 開發環境
 
 ```bash
@@ -291,53 +295,25 @@ INP - Interaction to Next Paint
 直接編輯文件並刷新瀏覽器
 
 # 訪問
-http://localhost:5173
+http://localhost:3000
 ```
 
 ### 建構生產版本
 
 ```bash
-# 建構
-無需構建（已移除）
-
-# 預覽
-npm run preview
-
-# 產物位置
-dist/
-├── assets/
-│   ├── index-[hash].js
-│   ├── index-[hash].css
-│   └── ...
-├── index.html
-└── ...
+# 前端目前無獨立 build 產物
+# 由 Docker Nginx 直接提供 frontend/ 內容
+docker compose up -d
 ```
 
 ### Docker 部署
 
 ```dockerfile
-# Dockerfile（多階段建構）
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
-RUN 無需構建（已移除）
-
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# 目前部署由專案根目錄 docker-compose.yml 管理
+# 前端服務對外端口為 3000
 ```
 
 ```bash
-# 建構映像
-docker build -t alleynote-frontend .
-
-# 執行容器
-docker run -p 80:80 alleynote-frontend
-
 # 使用 Docker Compose
 docker compose up -d
 ```
@@ -349,22 +325,22 @@ server {
     listen 80;
     server_name localhost;
     root /usr/share/nginx/html;
-    
+
     # Gzip 壓縮
     gzip on;
     gzip_types text/css application/javascript application/json;
-    
+
     # SPA 路由支援
     location / {
         try_files $uri $uri/ /index.html;
     }
-    
+
     # 靜態資源快取
     location /assets/ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
-    
+
     # 安全標頭
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -556,7 +532,7 @@ perf: 效能優化
 window.__STORE__ = globalStore;
 
 // 檢視效能報告
-import { getPerformanceReport } from './utils/webVitals.js';
+import { getPerformanceReport } from "./utils/webVitals.js";
 console.log(getPerformanceReport());
 
 // 檢視快取
@@ -597,6 +573,6 @@ MIT License
 
 ---
 
-**最後更新**: 2024年10月3日  
-**文件版本**: 1.0.0  
+**最後更新**: 2024年10月3日
+**文件版本**: 1.0.0
 **專案狀態**: ✅ 生產就緒
