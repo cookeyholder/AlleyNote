@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Statistics\Models;
 
 use App\Domains\Statistics\Models\StatisticsSnapshot;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsSnapshot 模型測試.
  */
-class StatisticsSnapshotTest extends TestCase
+class StatisticsSnapshotTest extends UnitTestCase
 {
     /**
      * @return array<string, array{0: array<string, mixed>}>

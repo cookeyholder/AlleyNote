@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Statistics\Events;
 
 use App\Domains\Statistics\Events\PostViewed;
 use DateTimeImmutable;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * PostViewed 事件單元測試.
  */
-class PostViewedTest extends TestCase
+class PostViewedTest extends UnitTestCase
 {
     public function testCreateAnonymousPostViewedEvent(): void
     {

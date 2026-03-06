@@ -19,12 +19,18 @@ class LoadingComponent {
     // 建立載入容器
     this.container = document.createElement('div');
     this.container.id = 'loading-overlay';
-    this.container.className = 'fixed inset-0 bg-white bg-opacity-90 z-50 flex items-center justify-center';
+    this.container.className = 'fixed inset-0 bg-white/60 backdrop-blur-md z-[100] flex items-center justify-center animate-fade-in';
     
     this.container.innerHTML = `
-      <div class="text-center">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-600 mx-auto mb-4"></div>
-        <p class="text-modern-600">${message}</p>
+      <div class="text-center p-10 bg-white/40 rounded-3xl border border-white shadow-2xl">
+        <div class="relative w-20 h-20 mx-auto mb-6">
+          <div class="absolute inset-0 border-4 border-modern-100 rounded-full"></div>
+          <div class="absolute inset-0 border-4 border-accent-600 rounded-full border-t-transparent animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center text-accent-600 font-bold text-xs uppercase tracking-widest">
+            A
+          </div>
+        </div>
+        <p class="text-modern-900 font-bold text-sm tracking-widest uppercase animate-pulse">${message}</p>
       </div>
     `;
 

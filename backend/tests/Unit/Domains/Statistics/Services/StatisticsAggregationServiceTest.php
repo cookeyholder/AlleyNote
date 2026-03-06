@@ -15,9 +15,9 @@ use App\Shared\Events\Contracts\EventDispatcherInterface;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsAggregationService 單元測試.
@@ -25,7 +25,7 @@ use RuntimeException;
  * 測試統計聚合服務的各項功能，確保領域邏輯正確實作。
  * 使用 Mock 對象模擬依賴，專注於服務邏輯的測試。
  */
-class StatisticsAggregationServiceTest extends TestCase
+class StatisticsAggregationServiceTest extends UnitTestCase
 {
     private StatisticsAggregationService $service;
 

@@ -8,9 +8,9 @@ use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class CreatePostDTOTest extends TestCase
+class CreatePostDTOTest extends UnitTestCase
 {
     private Validator $validator;
 

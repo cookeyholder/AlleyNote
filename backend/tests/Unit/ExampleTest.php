@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit;
 
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class ExampleTest extends TestCase
+class ExampleTest extends UnitTestCase
 {
     #[Test]
     public function testBasicTest(): void

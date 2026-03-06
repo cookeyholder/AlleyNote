@@ -6,82 +6,84 @@ export function render403() {
     const app = document.getElementById('app');
 
     app.innerHTML = `
-        <div class="min-h-screen bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center px-4">
-            <div class="max-w-2xl w-full text-center">
+        <div class="min-h-screen bg-modern-50 flex items-center justify-center p-6 relative overflow-hidden">
+            <!-- 品牌裝飾背景 -->
+            <div class="absolute -top-24 -right-24 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-20"></div>
+            <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-amber-100 rounded-full blur-3xl opacity-20"></div>
+
+            <div class="max-w-2xl w-full text-center relative z-10 animate-fade-in">
                 <!-- 錯誤圖示 -->
-                <div class="mb-8">
-                    <div class="inline-flex items-center justify-center w-32 h-32 bg-red-100 rounded-full mb-6 animate-bounce">
-                        <i class="fas fa-lock text-6xl text-red-500"></i>
+                <div class="mb-10">
+                    <div class="inline-flex items-center justify-center w-24 h-24 bg-white border border-modern-200 rounded-3xl shadow-xl mb-8 rotate-[-12deg]">
+                        <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                     </div>
-                    <h1 class="text-8xl font-bold text-red-600 mb-4">403</h1>
-                    <h2 class="text-3xl font-bold text-gray-900 mb-4">
-                        禁止訪問
-                    </h2>
+                    <h1 class="text-[8rem] font-bold text-modern-900 leading-none tracking-tighter opacity-10 select-none">403</h1>
+                    <div class="-mt-16">
+                        <h2 class="text-4xl font-bold text-modern-900 mb-4 tracking-tight">存取權限受限</h2>
+                        <p class="text-lg text-modern-500 max-w-md mx-auto leading-relaxed">
+                            抱歉，您的帳戶目前不具備進入此區域的授權資格。
+                        </p>
+                    </div>
                 </div>
 
-                <!-- 錯誤訊息 -->
-                <div class="bg-white rounded-2xl border border-red-200 p-8 mb-8 shadow-xl">
-                    <p class="text-xl text-gray-700 mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-                        您沒有權限訪問此頁面
-                    </p>
-                    <p class="text-gray-600 mb-6">
-                        這個頁面需要特定的權限才能訪問。如果您認為這是一個錯誤，請聯繫系統管理員。
-                    </p>
+                <!-- 錯誤訊息卡片 -->
+                <div class="bg-white rounded-3xl border border-modern-200 p-10 mb-10 shadow-2xl shadow-modern-200/50">
+                    <div class="flex items-center justify-center gap-2 text-red-600 font-bold uppercase tracking-widest text-xs mb-6">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Access Denied
+                    </div>
                     
-                    <!-- 可能的原因 -->
-                    <div class="text-left bg-gray-50 rounded-lg p-6 mb-6">
-                        <h3 class="font-semibold text-gray-900 mb-3">
-                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                            可能的原因：
-                        </h3>
-                        <ul class="space-y-2 text-gray-700">
-                            <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-gray-400 mt-1.5 mr-2"></i>
-                                <span>您的帳號權限不足</span>
+                    <div class="text-left bg-modern-50 rounded-2xl p-6 mb-8 border border-modern-100">
+                        <h3 class="font-bold text-modern-900 mb-4 text-sm uppercase tracking-widest">可能的原因分析：</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-3">
+                                <div class="mt-1 w-4 h-4 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-red-600"></div>
+                                </div>
+                                <span class="text-sm font-medium text-modern-600 leading-relaxed">您的職能角色不包含此項資源的操作權限。</span>
                             </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-gray-400 mt-1.5 mr-2"></i>
-                                <span>此頁面僅限主管理員訪問</span>
+                            <li class="flex items-start gap-3">
+                                <div class="mt-1 w-4 h-4 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-red-600"></div>
+                                </div>
+                                <span class="text-sm font-medium text-modern-600 leading-relaxed">此功能僅限「系統超級管理員」進行維護與設定。</span>
                             </li>
-                            <li class="flex items-start">
-                                <i class="fas fa-circle text-xs text-gray-400 mt-1.5 mr-2"></i>
-                                <span>您的登入狀態已過期</span>
+                            <li class="flex items-start gap-3">
+                                <div class="mt-1 w-4 h-4 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-red-600"></div>
+                                </div>
+                                <span class="text-sm font-medium text-modern-600 leading-relaxed">系統認證狀態已失效，請嘗試重新進行身份驗證。</span>
                             </li>
                         </ul>
                     </div>
 
                     <!-- 操作按鈕 -->
-                    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
                         <button
                             onclick="history.back()"
-                            class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors font-medium"
+                            class="px-8 py-3 bg-modern-50 text-modern-700 rounded-xl hover:bg-modern-100 transition-all font-bold text-sm"
                         >
-                            <i class="fas fa-arrow-left mr-2"></i>
                             返回上一頁
                         </button>
                         <a
                             href="/"
-                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium inline-block"
+                            class="px-8 py-3 bg-modern-900 text-white rounded-xl hover:bg-black transition-all font-bold text-sm shadow-lg shadow-modern-200"
                         >
-                            <i class="fas fa-home mr-2"></i>
-                            返回首頁
+                            返回系統首頁
                         </a>
                         <a
                             href="/login"
-                            class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium inline-block"
+                            class="px-8 py-3 bg-accent-600 text-white rounded-xl hover:bg-accent-700 transition-all font-bold text-sm shadow-lg shadow-accent-600/20"
                         >
-                            <i class="fas fa-sign-in-alt mr-2"></i>
-                            重新登入
+                            重新登入驗證
                         </a>
                     </div>
                 </div>
 
                 <!-- 聯絡資訊 -->
-                <p class="text-gray-600">
-                    <i class="fas fa-envelope mr-2"></i>
-                    需要協助？請聯絡
-                    <a href="mailto:support@alleynote.com" class="text-blue-600 hover:text-blue-700 font-medium">
+                <p class="text-modern-400 text-sm font-medium">
+                    如有疑問請洽系統技術支援：
+                    <a href="mailto:support@alleynote.com" class="text-accent-600 hover:text-accent-700 font-bold transition-colors">
                         support@alleynote.com
                     </a>
                 </p>

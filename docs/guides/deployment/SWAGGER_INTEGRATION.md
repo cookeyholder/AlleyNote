@@ -63,7 +63,7 @@ docker compose exec web composer install
 
 # 前端依賴安裝
 cd ../frontend
-docker-compose up -d @openapitools/openapi-generator-cli
+npm install
 ```
 
 ### 2. 設定 API 路由 (後端)
@@ -103,6 +103,7 @@ php scripts/generate-swagger-docs.php
 目前已為以下 API 端點加入文件：
 
 #### Posts API
+
 - `GET /api/posts` - 取得貼文列表（支援分頁、搜尋、篩選）
 - `GET /api/posts/{id}` - 取得單一貼文
 - `POST /api/posts` - 建立新貼文（需要授權）

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Validation;
 
 use App\Shared\Validation\ValidationResult;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * ValidationResult 單元測試.
  *
  * 測試驗證結果類的所有功能，包括建立、查詢、合併和序列化
  */
-class ValidationResultTest extends TestCase
+class ValidationResultTest extends UnitTestCase
 {
     /**
      * 測試建立成功的驗證結果.

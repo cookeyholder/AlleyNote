@@ -11,14 +11,14 @@ use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Shared\Events\AbstractDomainEvent;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * PostViewedListener 單元測試.
  */
-class PostViewedListenerTest extends TestCase
+class PostViewedListenerTest extends UnitTestCase
 {
     private PostViewedListener $listener;
 

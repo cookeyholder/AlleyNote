@@ -1,6 +1,6 @@
 # AlleyNote API 開發者指南
 
-**版本**: 1.0.0  
+**版本**: 1.0.0
 **最後更新**: 2025-10-11
 
 ---
@@ -34,6 +34,22 @@
 
 ## 開發環境設置
 
+> 埠對照（2026-03）：
+>
+> - DevContainer 本機模式：API 使用 `http://localhost:8081`
+> - Production / 覆寫模式：可使用 `http://localhost:8080`
+> - 下方若出現 `localhost:8080` 指令，於 DevContainer 請替換為 `localhost:8081`
+>
+> 建議先設定：
+>
+> ```bash
+> # DevContainer 本機模式
+> export API_HOST=http://localhost:8081
+>
+> # Production-like 覆寫模式
+> # export API_HOST=http://localhost:8080
+> ```
+
 ### 1. 啟動 Docker 容器
 
 ```bash
@@ -48,12 +64,13 @@ docker compose up -d
 docker compose ps
 
 # 測試 API
-curl http://localhost:8080/api/health
+curl $API_HOST/api/health
 ```
 
 ### 3. 開發工具
 
 推薦使用以下工具：
+
 - **IDE**: PhpStorm 或 VS Code
 - **API 測試**: Postman 或 Insomnia
 - **Git 客戶端**: SourceTree 或命令列
@@ -85,6 +102,7 @@ curl http://localhost:8080/api/health
 - 確定錯誤處理方式
 
 **範例**:
+
 ```
 端點: GET /api/products
 功能: 取得產品列表
@@ -106,7 +124,7 @@ return [
         'middleware' => ['auth'],
         'name' => 'products.index'
     ],
-    
+
     'products.store' => [
         'methods' => ['POST'],
         'path' => '/api/products',
@@ -114,7 +132,7 @@ return [
         'middleware' => ['auth'],
         'name' => 'products.store'
     ],
-    
+
     // ... 其他路由
 ];
 ```
@@ -449,11 +467,11 @@ docker compose exec -T web ./vendor/bin/phpunit tests/Integration/Api/ProductCon
 
 ```bash
 # 測試 GET 端點
-curl -X GET "http://localhost:8080/api/products?page=1&per_page=10" \
+curl -X GET "$API_HOST/api/products?page=1&per_page=10" \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # 測試 POST 端點
-curl -X POST http://localhost:8080/api/products \
+curl -X POST $API_HOST/api/products \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"name": "Product Name", "price": 99.99}'
@@ -517,11 +535,12 @@ docker compose exec -T web composer ci
 
 ### Q1: 如何查看 OpenAPI 文件？
 
-**A**: 訪問 http://localhost:8080/api/docs/ui 查看 Swagger UI。
+**A**: 訪問 $API_HOST/api/docs/ui 查看 Swagger UI。
 
 ### Q2: 為什麼我的端點沒有出現在 Swagger UI 中？
 
 **A**: 確認以下幾點：
+
 1. 路由是否正確註冊
 2. Controller 是否有 OpenAPI 註解
 3. OpenAPI 註解語法是否正確
@@ -529,7 +548,8 @@ docker compose exec -T web composer ci
 
 ### Q3: 如何測試需要認證的端點？
 
-**A**: 
+**A**:
+
 1. 先呼叫 `/api/auth/login` 取得 Token
 2. 在後續請求中加入 `Authorization: Bearer YOUR_TOKEN` header
 
@@ -564,7 +584,8 @@ requestBody: new OA\RequestBody(
 
 ### Q7: PHPStan 報錯怎麼辦？
 
-**A**: 
+**A**:
+
 1. 仔細閱讀錯誤訊息
 2. 確保所有變數都有正確的型別宣告
 3. 使用 PHPStan 的註解協助型別推斷（如必要）
@@ -575,12 +596,14 @@ requestBody: new OA\RequestBody(
 ## 參考資源
 
 ### 內部文件
+
 - [OpenAPI 驗證報告](./OPENAPI_VERIFICATION_REPORT.md)
 - [API 使用指南](./API_USAGE_GUIDE.md)
 - [DDD 架構設計](../domains/shared/DDD_ARCHITECTURE_DESIGN.md)
 - [路由系統架構](../domains/shared/ROUTING_SYSTEM_ARCHITECTURE.md)
 
 ### 外部資源
+
 - [OpenAPI 3.0 規範](https://swagger.io/specification/)
 - [PHP PSR 標準](https://www.php-fig.org/psr/)
 - [PHPStan 文件](https://phpstan.org/user-guide/getting-started)
@@ -614,6 +637,7 @@ feat: 新增產品管理 API 端點
 ```
 
 類型：
+
 - `feat`: 新功能
 - `fix`: 錯誤修復
 - `docs`: 文件更新

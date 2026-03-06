@@ -6,9 +6,9 @@ namespace Tests\Unit\Domains\Post\ValueObjects;
 
 use App\Domains\Post\ValueObjects\PostContent;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostContentTest extends TestCase
+class PostContentTest extends UnitTestCase
 {
     public function test_can_create_valid_post_content(): void
     {

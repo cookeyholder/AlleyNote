@@ -19,9 +19,9 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\UploadedFileInterface;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class AttachmentServiceTest extends TestCase
+class AttachmentServiceTest extends UnitTestCase
 {
     protected AttachmentService $service;
 

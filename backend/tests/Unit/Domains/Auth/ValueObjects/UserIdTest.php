@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Auth\ValueObjects;
 
 use App\Domains\Auth\ValueObjects\UserId;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * UserId 值物件測試.
  */
-class UserIdTest extends TestCase
+class UserIdTest extends UnitTestCase
 {
     public function test_can_create_valid_user_id(): void
     {

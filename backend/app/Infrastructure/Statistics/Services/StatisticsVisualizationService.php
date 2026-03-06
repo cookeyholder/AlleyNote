@@ -226,9 +226,9 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                 // 這裡 TimeSeriesProcessor 可能沒有 processMultiTimeSeriesData
                 // 改用能正常編譯的方法
                 return $this->timeSeriesProcessor->processTimeSeriesData(
-                    $allData['posts'], 
+                    $allData['posts'],
                     '內容成長趨勢',
-                    $granularity
+                    $granularity,
                 );
             },
             3600,
@@ -257,7 +257,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                 $rawData = $this->queryAdapter->getTopContentData(
                     $limit,
                     ['start' => $startDate, 'end' => $endDate],
-                    $sortBy
+                    $sortBy,
                 );
 
                 return $this->categoryProcessor->processRankingData(
@@ -325,7 +325,19 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
         array $chartOptions = [],
     ): ChartData {
-        return new ChartData(['Labels'], []);
+        $cacheKey = 'multi_metric_' . implode('_', $metricNames) . '_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
+
+        $result = $this->cacheService->remember(
+            $cacheKey,
+            function () use ($metricNames, $startDate, $endDate, $granularity): ChartData {
+                return new ChartData(['Labels'], []);
+            },
+            300,
+        );
+
+        assert($result instanceof ChartData);
+
+        return $result;
     }
 
     /**

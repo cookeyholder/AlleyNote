@@ -6,9 +6,9 @@ namespace Tests\Unit\Domains\Post\ValueObjects;
 
 use App\Domains\Post\ValueObjects\PostSlug;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostSlugTest extends TestCase
+class PostSlugTest extends UnitTestCase
 {
     public function test_can_create_valid_post_slug(): void
     {

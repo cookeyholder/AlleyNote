@@ -11,6 +11,7 @@ use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
+use App\Shared\Helpers\NetworkHelper;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -112,7 +113,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         // 1. IP 地址驗證（如果 payload 包含 IP 資訊）
         $tokenIpAddress = $payload->getCustomClaim('ip_address');
         if ($tokenIpAddress !== null) {
-            $currentIp = $this->getClientIpAddress($request);
+            $currentIp = NetworkHelper::getClientIp($request);
             if ($tokenIpAddress !== $currentIp) {
                 throw new InvalidTokenException('Token 的 IP 地址不匹配');
             }
@@ -158,24 +159,6 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             ],
             body: json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '',
         );
-    }
-
-    /**
-     * 取得客戶端真實 IP 位址.
-     *
-     * 注意：為了安全，預設優先使用 REMOTE_ADDR。
-     * 只有在確定專案部署於信任的代理伺服器（如 Nginx, Cloudflare）後方時，才應考慮啟用 X-Forwarded-For 解析。
-     */
-    private function getClientIpAddress(ServerRequestInterface $request): string
-    {
-        $serverParams = $request->getServerParams();
-
-        // 在本地開發與標準部署中，REMOTE_ADDR 是最可靠的來源
-        if (!empty($serverParams['REMOTE_ADDR'])) {
-            return (string) $serverParams['REMOTE_ADDR'];
-        }
-
-        return '127.0.0.1';
     }
 
     /**

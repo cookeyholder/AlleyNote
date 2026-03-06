@@ -15,9 +15,9 @@ use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Domains\Auth\ValueObjects\TokenPair;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-final class AuthenticationServiceTest extends TestCase
+final class AuthenticationServiceTest extends UnitTestCase
 {
     private AuthenticationService $authenticationService;
 

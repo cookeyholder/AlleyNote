@@ -9,9 +9,9 @@ use DateTime;
 use PDO;
 use PDOException;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class UserRepositoryTest extends TestCase
+class UserRepositoryTest extends UnitTestCase
 {
     private PDO $db;
 

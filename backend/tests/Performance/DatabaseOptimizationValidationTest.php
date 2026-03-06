@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Performance;
 
 use PDO;
-use Tests\TestCase;
+use Tests\SecureDDDTestCase;
 
-class DatabaseOptimizationValidationTest extends TestCase
+class DatabaseOptimizationValidationTest extends SecureDDDTestCase
 {
     protected PDO $db;
 

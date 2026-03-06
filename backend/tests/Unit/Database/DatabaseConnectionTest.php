@@ -7,9 +7,9 @@ namespace Tests\Unit\Database;
 use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class DatabaseConnectionTest extends TestCase
+class DatabaseConnectionTest extends UnitTestCase
 {
     protected function setUp(): void
     {

@@ -11,15 +11,15 @@ use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * 統計匯出服務單元測試.
  *
  * 測試統計資料匯出功能的各種情境。
  */
-final class StatisticsExportServiceTest extends TestCase
+final class StatisticsExportServiceTest extends UnitTestCase
 {
     private StatisticsExportService $exportService;
 

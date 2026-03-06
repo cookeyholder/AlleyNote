@@ -6,7 +6,6 @@ namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
@@ -27,16 +26,14 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 #[Group('integration')]
-class AuthControllerTest extends TestCase
+class AuthControllerTest extends IntegrationTestCase
 {
     private AuthService|MockInterface $authService;
 
     private AuthenticationServiceInterface|MockInterface $authenticationService;
-
-    private JwtTokenServiceInterface|MockInterface $jwtTokenService;
 
     private ValidatorInterface|MockInterface $validator;
 
@@ -59,7 +56,6 @@ class AuthControllerTest extends TestCase
         parent::setUp();
         $this->authService = Mockery::mock(AuthService::class);
         $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
-        $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->activityLoggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->activityLoggingService->shouldReceive('log')->byDefault()->andReturn(true);
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
@@ -159,7 +155,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -207,11 +203,11 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
-        $this->assertEquals(400, $response->getStatusCode()); // 驗證失敗應該返回400
+        $this->assertEquals(422, $response->getStatusCode()); // 驗證失敗應該返回422
     }
 
     #[Test]
@@ -283,7 +279,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -311,7 +307,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -346,7 +342,7 @@ class AuthControllerTest extends TestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應

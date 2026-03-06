@@ -16,10 +16,10 @@ use PDOStatement;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(ActivityLogRepository::class)]
-class ActivityLogRepositoryTest extends TestCase
+class ActivityLogRepositoryTest extends UnitTestCase
 {
     private PDO|MockObject $pdo;
 

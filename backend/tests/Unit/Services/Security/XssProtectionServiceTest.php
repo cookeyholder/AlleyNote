@@ -7,9 +7,9 @@ namespace Tests\Unit\Services\Security;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class XssProtectionServiceTest extends TestCase
+class XssProtectionServiceTest extends UnitTestCase
 {
     private XssProtectionService $service;
 

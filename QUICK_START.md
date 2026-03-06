@@ -55,9 +55,11 @@ cp backend/.env.example backend/.env
 ```
 
 **重要環境變數**：
+
 ```env
-# JWT 金鑰（建議修改為隨機字串）
-JWT_SECRET=your-secret-key-here
+# JWT 金鑰路徑（預設使用 backend/keys）
+JWT_PRIVATE_KEY_PATH=keys/private.pem
+JWT_PUBLIC_KEY_PATH=keys/public.pem
 
 # 資料庫路徑
 DATABASE_PATH=/var/www/html/backend/database/alleynote.sqlite3
@@ -69,8 +71,12 @@ APP_ENV=development
 ### 步驟 3：啟動 Docker 容器
 
 ```bash
+# 開發環境（預設 API 對外埠為 8081，避免多專案 devcontainer 衝突）
 # 啟動所有服務
 docker compose up -d
+
+# 若是單一正式環境（可使用 8080）
+# API_HOST_PORT=8080 docker compose up -d
 
 # 等待容器啟動完成（約 10-20 秒）
 # 檢查容器狀態
@@ -78,9 +84,10 @@ docker compose ps
 ```
 
 **預期輸出**：
+
 ```
 NAME                COMMAND                  SERVICE   STATUS    PORTS
-alleynote-nginx-1   "/docker-entrypoint.…"   nginx     Up        0.0.0.0:3000->80/tcp, 0.0.0.0:8080->8080/tcp
+alleynote-nginx-1   "/docker-entrypoint.…"   nginx     Up        0.0.0.0:3000->80/tcp, 0.0.0.0:8081->8080/tcp
 alleynote-web-1     "docker-php-entrypoi…"   web       Up        9000/tcp
 ```
 
@@ -90,11 +97,15 @@ alleynote-web-1     "docker-php-entrypoi…"   web       Up        9000/tcp
 # 執行資料庫遷移
 docker compose exec web php vendor/bin/phinx migrate
 
-# 載入測試資料（包含預設帳號）
+# 載入測試資料（角色、權限、活動紀錄等）
 docker compose exec web php vendor/bin/phinx seed:run
+
+# 建立/重設管理員登入帳號（保證可登入）
+php scripts/reset_admin.php
 ```
 
 **成功訊息**：
+
 ```
 All Done. Took X.XXXs
 ```
@@ -104,20 +115,19 @@ All Done. Took X.XXXs
 開啟瀏覽器，訪問以下網址：
 
 - **前端應用**：http://localhost:3000
-- **API 文件**：http://localhost:8080/api/docs
-- **健康檢查**：http://localhost:8080/api/health
+- **API 文件**：`$API_HOST/api/docs`（預設 `API_HOST=http://localhost:8081`；production-like 可設 `http://localhost:8080`）
+- **健康檢查**：`$API_HOST/api/health`（預設 `API_HOST=http://localhost:8081`；production-like 可設 `http://localhost:8080`）
 
 ---
 
 ## 🔑 預設帳號
 
-系統提供三個測試帳號，對應不同權限等級：
+快速開始流程保證以下管理員帳號可登入：
 
-| 角色 | 電子郵件 | 密碼 | 權限 |
-|------|----------|------|------|
-| **超級管理員** | admin@example.com | Admin@123456 | 完整系統權限 |
-| **管理員** | manager@example.com | Manager@123 | 文章管理、使用者管理 |
-| **編輯者** | editor@example.com | Editor@123 | 文章發布、編輯 |
+| 角色         | 電子郵件               | 密碼              | 權限           |
+| ------------ | ---------------------- | ----------------- | -------------- |
+| **管理員**   | admin@example.com      | Admin@123456      | 可登入後台管理 |
+| **主管理員** | superadmin@example.com | SuperAdmin@123456 | 最高權限管理   |
 
 **⚠️ 重要**：正式環境請立即更改預設密碼！
 
@@ -132,8 +142,12 @@ All Done. Took X.XXXs
 ### 2. 檢查 API
 
 ```bash
+# 雙模式擇一
+export API_HOST=http://localhost:8081
+# export API_HOST=http://localhost:8080
+
 # 測試健康檢查端點
-curl http://localhost:8080/api/health
+curl $API_HOST/api/health
 
 # 預期回應
 {"status":"ok","timestamp":"2025-10-13T..."}
@@ -212,6 +226,7 @@ docker compose exec web php vendor/bin/phinx status
 ### 問題 1：端口已被佔用
 
 **錯誤訊息**：
+
 ```
 Error: bind: address already in use
 ```
@@ -221,7 +236,7 @@ Error: bind: address already in use
 ```bash
 # 檢查端口佔用（macOS/Linux）
 lsof -i :3000
-lsof -i :8080
+lsof -i :8081
 
 # 終止佔用端口的程序
 kill -9 <PID>
@@ -273,18 +288,21 @@ docker compose exec web php vendor/bin/phinx seed:run -e development
 **可能原因與解決**：
 
 1. **JWT 金鑰未設定**
+
    ```bash
    # 檢查 .env 檔案
    cat backend/.env | grep JWT_SECRET
-   
+
    # 設定隨機金鑰
    echo "JWT_SECRET=$(openssl rand -hex 32)" >> backend/.env
    docker compose restart web
    ```
 
 2. **種子資料未載入**
+
    ```bash
    docker compose exec web php vendor/bin/phinx seed:run
+   php scripts/reset_admin.php
    ```
 
 3. **瀏覽器快取**
@@ -294,6 +312,7 @@ docker compose exec web php vendor/bin/phinx seed:run -e development
 ### 問題 5：權限錯誤
 
 **錯誤訊息**：
+
 ```
 Permission denied
 ```
@@ -329,16 +348,19 @@ chmod 666 backend/database/alleynote.sqlite3
 ### 開發模式 vs 生產模式
 
 **開發模式**（預設）：
+
 - 詳細的錯誤訊息
 - 不啟用快取
 - 自動重載程式碼
 
 **生產模式**：
+
 ```env
 # 修改 backend/.env
 APP_ENV=production
 APP_DEBUG=false
 ```
+
 - 隱藏錯誤細節
 - 啟用所有快取
 - 優化效能

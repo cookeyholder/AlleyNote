@@ -9,9 +9,9 @@ use App\Infrastructure\Services\RateLimitService;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use RuntimeException;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class RateLimitServiceTest extends TestCase
+class RateLimitServiceTest extends UnitTestCase
 {
     private RateLimitService $rateLimitService;
 

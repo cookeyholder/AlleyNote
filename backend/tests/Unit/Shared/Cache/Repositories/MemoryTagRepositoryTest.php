@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Cache\Repositories;
 
 use App\Shared\Cache\Repositories\MemoryTagRepository;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * MemoryTagRepository 測試（修正版）.
  */
-class MemoryTagRepositoryTest extends TestCase
+class MemoryTagRepositoryTest extends UnitTestCase
 {
     private MemoryTagRepository $repository;
 

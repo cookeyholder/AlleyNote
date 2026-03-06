@@ -12,7 +12,7 @@ use App\Infrastructure\Auth\Jwt\FirebaseJwtProvider;
 use App\Shared\Config\JwtConfig;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * FirebaseJwtProvider 單元測試.
@@ -20,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  * 測試 Firebase JWT Provider 的所有功能，包括 token 產生、驗證、解析等
  */
 #[CoversClass(FirebaseJwtProvider::class)]
-final class FirebaseJwtProviderTest extends TestCase
+final class FirebaseJwtProviderTest extends UnitTestCase
 {
     private string $validPrivateKey;
 
@@ -496,7 +496,7 @@ final class FirebaseJwtProviderTest extends TestCase
     /**
      * 建立測試用的 RSA 金鑰對.
      */
-    private function generateTestKeys(): void
+    protected function generateTestKeys(): void
     {
         $config = [
             'digest_alg' => 'sha256',
