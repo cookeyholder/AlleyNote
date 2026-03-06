@@ -23,8 +23,9 @@ test.beforeEach(async ({ page }) => {
   // 等待登入成功並導航到儀表板
   await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
 
-  // 直接導航到角色管理頁面，避免依賴側欄事件綁定時序
-  await page.goto("/admin/roles");
+  // 透過側欄 data-navigo 連結進行 SPA 導航，避免 full reload 遺失登入狀態
+  await expect(page.locator("aside")).toBeVisible({ timeout: 15000 });
+  await page.locator('aside a[href="/admin/roles"][data-navigo]').first().click();
   await page.waitForURL("**/admin/roles");
 });
 
