@@ -15,28 +15,31 @@
 **描述**: 即時驗證密碼強度和安全性，提供詳細的驗證結果和改進建議。
 
 **請求標頭**:
+
 ```http
 Content-Type: application/json
 ```
 
 **請求參數**:
 
-| 參數 | 類型 | 必填 | 描述 |
-|------|------|------|------|
-| `password` | string | 是 | 要驗證的密碼 |
-| `username` | string | 否 | 使用者名稱（用於個人資訊檢查） |
-| `email` | string | 否 | 電子郵件（用於個人資訊檢查） |
+| 參數       | 類型   | 必填 | 描述                           |
+| ---------- | ------ | ---- | ------------------------------ |
+| `password` | string | 是   | 要驗證的密碼                   |
+| `username` | string | 否   | 使用者名稱（用於個人資訊檢查） |
+| `email`    | string | 否   | 電子郵件（用於個人資訊檢查）   |
 
 **請求範例**:
+
 ```json
 {
-  "password": "MySecure@Pass123",
+  "password": "Example#Pass123!",
   "username": "john_doe",
   "email": "john@example.com"
 }
 ```
 
 **成功回應**: `200 OK`
+
 ```json
 {
   "valid": true,
@@ -80,13 +83,12 @@ Content-Type: application/json
       "message": "不包含個人資訊"
     }
   },
-  "suggestions": [
-    "密碼強度良好，可以使用"
-  ]
+  "suggestions": ["密碼強度良好，可以使用"]
 }
 ```
 
 **失敗回應**: `200 OK` (驗證失敗但請求成功)
+
 ```json
 {
   "valid": false,
@@ -128,6 +130,7 @@ Content-Type: application/json
 ```
 
 **錯誤回應**: `422 Unprocessable Entity`
+
 ```json
 {
   "message": "驗證失敗",
@@ -178,15 +181,16 @@ Content-Type: application/json
 
 密碼強度評分範圍：0-100 分
 
-| 分數範圍 | 強度等級 | 顏色代碼 | 描述 |
-|---------|---------|---------|------|
-| 0-19    | very-weak | 深紅色 | 極弱，不可使用 |
-| 20-39   | weak    | 紅色   | 弱，建議改善 |
-| 40-59   | medium  | 黃色   | 中等，可接受 |
-| 60-79   | strong  | 淺綠色 | 強，良好 |
-| 80-100  | very-strong | 深綠色 | 很強，優秀 |
+| 分數範圍 | 強度等級    | 顏色代碼 | 描述           |
+| -------- | ----------- | -------- | -------------- |
+| 0-19     | very-weak   | 深紅色   | 極弱，不可使用 |
+| 20-39    | weak        | 紅色     | 弱，建議改善   |
+| 40-59    | medium      | 黃色     | 中等，可接受   |
+| 60-79    | strong      | 淺綠色   | 強，良好       |
+| 80-100   | very-strong | 深綠色   | 很強，優秀     |
 
 **評分計算**:
+
 - 長度達標：+20 分
 - 包含小寫字母：+15 分
 - 包含大寫字母：+15 分
@@ -208,38 +212,39 @@ Content-Type: application/json
 ```javascript
 async function validatePassword(password, username = null, email = null) {
   try {
-    const response = await fetch('/api/auth/validate-password', {
-      method: 'POST',
+    const response = await fetch("/api/auth/validate-password", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         password,
         username,
-        email
-      })
+        email,
+      }),
     });
 
     const result = await response.json();
-    
+
     if (result.valid) {
-      console.log('密碼有效，強度:', result.strength);
+      console.log("密碼有效，強度:", result.strength);
     } else {
-      console.log('密碼無效:', result.suggestions);
+      console.log("密碼無效:", result.suggestions);
     }
-    
+
     return result;
   } catch (error) {
-    console.error('驗證失敗:', error);
+    console.error("驗證失敗:", error);
     throw error;
   }
 }
 
 // 使用範例
-validatePassword('MySecure@Pass123', 'john_doe', 'john@example.com')
-  .then(result => {
-    console.log('驗證結果:', result);
-  });
+validatePassword("Example#Pass123!", "john_doe", "john@example.com").then(
+  (result) => {
+    console.log("驗證結果:", result);
+  },
+);
 ```
 
 ### PHP (Guzzle)
@@ -252,7 +257,7 @@ use GuzzleHttp\Client;
 function validatePassword(string $password, ?string $username = null, ?string $email = null): array
 {
     $client = new Client();
-    
+
     $response = $client->post('http://your-domain.com/api/auth/validate-password', [
         'json' => [
             'password' => $password,
@@ -260,12 +265,12 @@ function validatePassword(string $password, ?string $username = null, ?string $e
             'email' => $email,
         ],
     ]);
-    
+
     return json_decode($response->getBody()->getContents(), true);
 }
 
 // 使用範例
-$result = validatePassword('MySecure@Pass123', 'john_doe', 'john@example.com');
+$result = validatePassword('Example#Pass123!', 'john_doe', 'john@example.com');
 
 if ($result['valid']) {
     echo "密碼有效，強度: " . $result['strength'];
@@ -280,7 +285,7 @@ if ($result['valid']) {
 curl -X POST http://your-domain.com/api/auth/validate-password \
   -H "Content-Type: application/json" \
   -d '{
-    "password": "MySecure@Pass123",
+    "password": "Example#Pass123!",
     "username": "john_doe",
     "email": "john@example.com"
   }'
@@ -295,24 +300,24 @@ curl -X POST http://your-domain.com/api/auth/validate-password \
 前端提供了完整的密碼驗證工具和 UI 組件：
 
 ```javascript
-import { PasswordValidator } from './utils/passwordValidator.js';
-import { PasswordStrengthIndicator } from './components/PasswordStrengthIndicator.js';
+import { PasswordValidator } from "./utils/passwordValidator.js";
+import { PasswordStrengthIndicator } from "./components/PasswordStrengthIndicator.js";
 
 // 初始化密碼強度指示器
 const indicator = new PasswordStrengthIndicator(
-  document.querySelector('#password-input'),
-  document.querySelector('#strength-indicator')
+  document.querySelector("#password-input"),
+  document.querySelector("#strength-indicator"),
 );
 
 // 本地驗證
 const result = PasswordValidator.validate(password, {
-  username: 'john_doe',
-  email: 'john@example.com'
+  username: "john_doe",
+  email: "john@example.com",
 });
 
-console.log('密碼強度:', result.strength);
-console.log('驗證錯誤:', result.errors);
-console.log('改進建議:', result.suggestions);
+console.log("密碼強度:", result.strength);
+console.log("驗證錯誤:", result.errors);
+console.log("改進建議:", result.suggestions);
 ```
 
 ---
@@ -361,6 +366,7 @@ console.log('改進建議:', result.suggestions);
 ### Q1: 為什麼我的密碼被拒絕？
 
 **A**: 密碼可能違反了以下一或多個規則：
+
 - 長度不足（少於 8 字元）
 - 缺少大寫字母、小寫字母或數字
 - 包含連續字元（如 abc, 123）
@@ -373,6 +379,7 @@ console.log('改進建議:', result.suggestions);
 ### Q2: 如何生成一個安全的密碼？
 
 **A**: 可以使用以下方法：
+
 1. 使用系統提供的密碼生成器（UI 中的「生成密碼」按鈕）
 2. 使用密碼管理器（如 1Password, LastPass）
 3. 遵循以下規則手動建立：
@@ -384,6 +391,7 @@ console.log('改進建議:', result.suggestions);
 ### Q3: 密碼驗證 API 有速率限制嗎？
 
 **A**: 是的，為防止濫用：
+
 - 未認證請求：每分鐘最多 10 次
 - 已認證請求：每分鐘最多 60 次
 
@@ -392,6 +400,7 @@ console.log('改進建議:', result.suggestions);
 ### Q4: 如何自訂密碼政策？
 
 **A**: 目前密碼政策是固定的。未來版本將支援管理員自訂密碼政策，包括：
+
 - 最小長度要求
 - 複雜度要求
 - 密碼過期時間
@@ -400,6 +409,7 @@ console.log('改進建議:', result.suggestions);
 ### Q5: 支援哪些特殊符號？
 
 **A**: 支援以下特殊符號：
+
 ```
 ! @ # $ % ^ & * ( ) _ + - = [ ] { } | ; : ' , . < > ? / ~ `
 ```
@@ -407,6 +417,7 @@ console.log('改進建議:', result.suggestions);
 ### Q6: 為什麼需要提供 username 和 email？
 
 **A**: 這是為了防止密碼包含個人資訊，這會大大降低密碼安全性。例如：
+
 - 如果使用者名稱是 "john_doe"，密碼不能包含 "john" 或 "doe"
 - 如果 email 是 "mary@example.com"，密碼不能包含 "mary"
 
@@ -417,6 +428,7 @@ console.log('改進建議:', result.suggestions);
 ## 版本歷史
 
 ### v1.0.0 (2025-10-11)
+
 - ✅ 初始版本發布
 - ✅ 基本密碼驗證規則
 - ✅ 連續和重複字元檢查
@@ -426,6 +438,7 @@ console.log('改進建議:', result.suggestions);
 - ✅ 前端整合
 
 ### 未來計劃
+
 - [ ] 密碼歷史記錄
 - [ ] 可配置的密碼政策
 - [ ] Have I Been Pwned 整合
@@ -443,6 +456,6 @@ console.log('改進建議:', result.suggestions);
 
 ---
 
-**維護者**: AlleyNote 開發團隊  
-**最後更新**: 2025-10-11  
+**維護者**: AlleyNote 開發團隊
+**最後更新**: 2025-10-11
 **回饋**: 如有問題或建議，請開啟 Issue

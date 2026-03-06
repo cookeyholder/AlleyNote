@@ -27,10 +27,10 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 #[Group('integration')]
-class AuthControllerTest extends TestCase
+class AuthControllerTest extends IntegrationTestCase
 {
     private AuthService|MockInterface $authService;
 
@@ -211,7 +211,7 @@ class AuthControllerTest extends TestCase
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
-        $this->assertEquals(400, $response->getStatusCode()); // 驗證失敗應該返回400
+        $this->assertEquals(422, $response->getStatusCode()); // 驗證失敗應該返回422
     }
 
     #[Test]

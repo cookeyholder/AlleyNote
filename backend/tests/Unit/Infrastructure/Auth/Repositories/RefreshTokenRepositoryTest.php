@@ -13,7 +13,7 @@ use PDO;
 use PDOException;
 use PDOStatement;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * RefreshTokenRepository 單元測試.
@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
  * - 批量操作與統計功能
  * - 錯誤處理與例外情況
  */
-final class RefreshTokenRepositoryTest extends TestCase
+final class RefreshTokenRepositoryTest extends UnitTestCase
 {
     private RefreshTokenRepository $repository;
 

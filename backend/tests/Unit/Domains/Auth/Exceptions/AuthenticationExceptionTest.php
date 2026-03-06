@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Auth\Exceptions;
 
 use App\Domains\Auth\Exceptions\AuthenticationException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * 身份驗證失敗例外單元測試.
@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
  * @author GitHub Copilot
  * @since 1.0.0
  */
-class AuthenticationExceptionTest extends TestCase
+class AuthenticationExceptionTest extends UnitTestCase
 {
     /**
      * 測試基本建構功能.

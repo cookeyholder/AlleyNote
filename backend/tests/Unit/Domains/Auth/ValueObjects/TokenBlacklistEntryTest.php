@@ -8,12 +8,12 @@ use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * Token Blacklist Entry Value Object 單元測試.
  */
-final class TokenBlacklistEntryTest extends TestCase
+final class TokenBlacklistEntryTest extends UnitTestCase
 {
     private DateTimeImmutable $now;
 

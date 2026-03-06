@@ -6,12 +6,12 @@ namespace Tests\Unit\Shared\Cache\ValueObjects;
 
 use App\Shared\Cache\ValueObjects\CacheTag;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * CacheTag 值物件測試（修正版）.
  */
-class CacheTagTest extends TestCase
+class CacheTagTest extends UnitTestCase
 {
     public function testCreateUserTag(): void
     {

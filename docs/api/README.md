@@ -8,42 +8,58 @@
 
 ### 📖 使用者文件
 
-| 文件 | 說明 | 適合對象 |
-|-----|------|---------|
-| [API 使用指南](./API_USAGE_GUIDE.md) | 完整的 API 使用說明，包含範例 | API 使用者、前端開發者 |
-| [OpenAPI 驗證報告](./OPENAPI_VERIFICATION_REPORT.md) | OpenAPI 規格驗證與測試結果 | 技術經理、QA 工程師 |
+| 文件                                                 | 說明                          | 適合對象               |
+| ---------------------------------------------------- | ----------------------------- | ---------------------- |
+| [API 使用指南](./API_USAGE_GUIDE.md)                 | 完整的 API 使用說明，包含範例 | API 使用者、前端開發者 |
+| [OpenAPI 驗證報告](./OPENAPI_VERIFICATION_REPORT.md) | OpenAPI 規格驗證與測試結果    | 技術經理、QA 工程師    |
 
 ### 👨‍💻 開發者文件
 
-| 文件 | 說明 | 適合對象 |
-|-----|------|---------|
-| [開發者指南](./DEVELOPER_GUIDE.md) | API 開發規範與最佳實踐 | 後端開發者 |
-| [錯誤碼說明](./ERROR_CODES.md) | 完整的錯誤碼定義與處理 | 所有開發者 |
-| [使用率限制](./RATE_LIMITS.md) | API 使用率限制詳細說明 | 所有開發者 |
-| [API 版本控制](./API_VERSIONING.md) | 版本策略與遷移指南 | 所有開發者 |
+| 文件                                | 說明                   | 適合對象   |
+| ----------------------------------- | ---------------------- | ---------- |
+| [開發者指南](./DEVELOPER_GUIDE.md)  | API 開發規範與最佳實踐 | 後端開發者 |
+| [錯誤碼說明](./ERROR_CODES.md)      | 完整的錯誤碼定義與處理 | 所有開發者 |
+| [使用率限制](./RATE_LIMITS.md)      | API 使用率限制詳細說明 | 所有開發者 |
+| [API 版本控制](./API_VERSIONING.md) | 版本策略與遷移指南     | 所有開發者 |
 
 ---
 
 ## 🚀 快速開始
+
+> 埠對照（2026-03）：
+>
+> - DevContainer 本機模式：API 使用 `http://localhost:8081`
+> - Production / 單機覆寫模式：可使用 `http://localhost:8080`
+> - 本文件中的 `localhost:8080` 範例可視為 production-like 參考
+>
+> 可先設定（雙模式）
+>
+> ```bash
+> # DevContainer 本機模式
+> export API_HOST=http://localhost:8081
+>
+> # Production-like 覆寫模式
+> # export API_HOST=http://localhost:8080
+> ```
 
 ### 1. 查看 API 文件
 
 在瀏覽器中開啟 Swagger UI：
 
 ```
-http://localhost:8080/api/docs/ui
+$API_HOST/api/docs/ui
 ```
 
 ### 2. 取得 OpenAPI 規格
 
 ```bash
-curl http://localhost:8080/api/docs
+curl $API_HOST/api/docs
 ```
 
 ### 3. 測試 API 健康狀態
 
 ```bash
-curl http://localhost:8080/api/health
+curl $API_HOST/api/health
 ```
 
 ---
@@ -58,60 +74,70 @@ curl http://localhost:8080/api/health
 
 ### API 統計
 
-| 項目 | 數量 |
-|-----|------|
-| **API Tags** | 12 個 |
-| **API 端點** | 45+ 個 |
+| 項目         | 數量      |
+| ------------ | --------- |
+| **API Tags** | 12 個     |
+| **API 端點** | 45+ 個    |
 | **認證方式** | JWT Token |
 
 ### 主要功能模組
 
 #### 🔐 認證授權（Auth）
+
 - 使用者註冊
 - 登入/登出
 - Token 刷新
 - 使用者資訊查詢
 
 #### 👥 使用者管理（Users）⭐ 新增
+
 - 使用者 CRUD 操作
 - 角色分配
 - 帳號狀態管理（啟用/停用）
 - 密碼重設
 
 #### 🎭 角色管理（Roles）⭐ 新增
+
 - 角色 CRUD 操作
 - 權限管理
 - 角色與權限關聯
 
 #### 🔑 權限管理（Permissions）⭐ 新增
+
 - 權限查詢
 - 權限分組查詢
 - 權限詳細資訊
 
 #### ⚙️ 系統設定（Settings）⭐ 新增
+
 - 系統設定 CRUD
 - 批量更新設定
 - 時區管理
 
 #### 📝 文章管理（Posts）
+
 - 文章 CRUD 操作
 - 文章發布控制
 - 文章置頂管理
 
 #### 🏷️ 標籤管理（Tags）
+
 - 標籤 CRUD 操作
 - 標籤統計
 
 #### 📎 附件管理（Attachments）
+
 - 檔案上傳
 - 檔案下載
 
 #### 📊 統計數據（Statistics）
+
 - 文章統計
 - 使用者統計
 - 標籤統計
 
 #### 📋 活動日誌（Activity Log）
+
 - 活動日誌查詢
 - 日誌篩選
 
@@ -170,7 +196,7 @@ sequenceDiagram
     API->>Auth: 驗證帳號密碼
     Auth-->>API: 驗證成功
     API-->>Client: 返回 JWT Token
-    
+
     Client->>API: GET /api/users (with Token)
     API->>Auth: 驗證 Token
     Auth-->>API: Token 有效
@@ -180,7 +206,7 @@ sequenceDiagram
 ### 標準請求格式
 
 ```bash
-curl -X {METHOD} http://localhost:8080/api/{endpoint} \
+curl -X {METHOD} $API_HOST/api/{endpoint} \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"key": "value"}'
@@ -204,9 +230,10 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 
 最直觀的 API 文件瀏覽與測試工具。
 
-**訪問方式**: http://localhost:8080/api/docs/ui
+**訪問方式**: $API_HOST/api/docs/ui
 
 **功能特色**:
+
 - 📱 互動式 API 文件
 - 🧪 線上測試功能
 - 📋 自動產生程式碼範例
@@ -216,9 +243,10 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 
 標準的 OpenAPI 3.0 規格文件，可用於自動生成客戶端 SDK。
 
-**訪問方式**: http://localhost:8080/api/docs
+**訪問方式**: $API_HOST/api/docs
 
 **用途**:
+
 - 自動生成 API 客戶端
 - 整合到 CI/CD 流程
 - API 版本管理
@@ -229,12 +257,14 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 ## 🔗 相關連結
 
 ### 線上資源
-- **Swagger UI**: http://localhost:8080/api/docs/ui
-- **OpenAPI JSON**: http://localhost:8080/api/docs
-- **API 資訊**: http://localhost:8080/api
-- **健康檢查**: http://localhost:8080/api/health
+
+- **Swagger UI**: $API_HOST/api/docs/ui
+- **OpenAPI JSON**: $API_HOST/api/docs
+- **API 資訊**: $API_HOST/api
+- **健康檢查**: $API_HOST/api/health
 
 ### 開發資源
+
 - [PHP 官方文件](https://www.php.net/)
 - [OpenAPI 規範](https://swagger.io/specification/)
 - [PSR 標準](https://www.php-fig.org/psr/)
@@ -288,17 +318,20 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 ### v1.0.1 (2025-10-11)
 
 #### 新增文件
+
 - 📝 錯誤碼說明文件（ERROR_CODES.md）
 - 📝 API 使用率限制文件（RATE_LIMITS.md）
 - 📝 API 版本控制策略（API_VERSIONING.md）
 
 #### 新增功能
+
 - ✨ 統一的錯誤碼系統（ErrorCode Enum）
 - ✨ API 使用率限制配置（ApiRateLimits）
 - ✨ 完整的錯誤處理說明
 - ✨ 詳細的使用率限制規範
 
 #### 改進
+
 - 🔧 更新 API 文件索引
 - 🔧 補充版本控制說明
 - 🔧 添加遷移指南
@@ -306,18 +339,21 @@ curl -X {METHOD} http://localhost:8080/api/{endpoint} \
 ### v1.0.0 (2025-10-11)
 
 #### 新增功能
+
 - ✨ Users Management API（9 個端點）
 - ✨ Roles Management API（6 個端點）
 - ✨ Permissions Management API（3 個端點）
 - ✨ Settings Management API（5 個端點）
 
 #### 文件更新
+
 - 📝 完整的 OpenAPI 註解
 - 📝 API 使用指南
 - 📝 開發者指南
 - 📝 驗證報告
 
 #### 改進
+
 - 🔧 統一的錯誤處理
 - 🔧 完善的分頁機制
 - 🔧 豐富的範例資料

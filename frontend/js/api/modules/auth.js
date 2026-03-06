@@ -22,9 +22,13 @@ class AuthAPI {
     if (response.refresh_token) {
       storage.set('refresh_token', response.refresh_token);
     }
+
+    // 取得完整的用戶資訊
+    const userResponse = await this.me();
+    globalActions.setUser(userResponse);
     
-    // 回傳回應，讓呼叫方處理使用者資訊
-    return response;
+    // 回傳包含 user 的完整回應
+    return { ...response, user: userResponse };
   }
 
   /**

@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Post\ValueObjects;
 
 use App\Domains\Post\ValueObjects\PostTitle;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * PostTitle 值物件測試.
  */
-class PostTitleTest extends TestCase
+class PostTitleTest extends UnitTestCase
 {
     public function test_can_create_valid_title(): void
     {

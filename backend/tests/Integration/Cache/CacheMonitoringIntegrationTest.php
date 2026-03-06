@@ -8,10 +8,10 @@ use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Strategies\DefaultCacheStrategy;
 use App\Shared\Monitoring\Services\CacheMonitor;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Tests\Support\IntegrationTestCase;
 
-class CacheMonitoringIntegrationTest extends TestCase
+class CacheMonitoringIntegrationTest extends IntegrationTestCase
 {
     private CacheManager $cacheManager;
 

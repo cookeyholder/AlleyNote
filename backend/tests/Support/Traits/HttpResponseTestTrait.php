@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Support\Traits;
 
+use App\Infrastructure\Http\Response;
+use App\Infrastructure\Http\Stream;
+use JsonException;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,6 +19,74 @@ use Psr\Http\Message\StreamInterface;
  */
 trait HttpResponseTestTrait
 {
+    /**
+     * 建立帶有 JSON 內容的真實回應實體.
+     *
+     * @param array<string, mixed> $data 欲編碼的資料
+     * @param int $statusCode HTTP 狀態碼
+     */
+    protected function createJsonResponse(array $data, int $statusCode = 200): ResponseInterface
+    {
+        try {
+            $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $this->fail('JSON 編碼失敗：' . $e->getMessage());
+            $json = '{}';
+        }
+
+        $stream = new Stream(fopen('php://temp', 'r+'));
+        $stream->write($json);
+
+        return new Response(
+            statusCode: $statusCode,
+            headers: ['Content-Type' => 'application/json'],
+            body: $stream,
+        );
+    }
+
+    /**
+     * 斷言 JSON 回應符合預期的部分結構與內容.
+     *
+     * @param ResponseInterface $response 回應實體
+     * @param array $expected 預期的部分資料結構
+     */
+    protected function assertJsonResponseMatches(ResponseInterface $response, array $expected): void
+    {
+        $body = (string) $response->getBody();
+
+        try {
+            $actual = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $this->fail('無法解析回應主體為 JSON：' . $e->getMessage() . '，原始內容：' . $body);
+
+            return;
+        }
+
+        if (!is_array($actual)) {
+            $this->fail('JSON 回應內容必須為物件或陣列。');
+
+            return;
+        }
+
+        $this->assertArraySubsetRecursive($expected, $actual, 'JSON 回應內容不符合預期結構。');
+    }
+
+    /**
+     * 輔助方法：遞迴比對陣列子集.
+     */
+    private function assertArraySubsetRecursive(array $subset, array $full, string $message = ''): void
+    {
+        foreach ($subset as $key => $value) {
+            $this->assertArrayHasKey($key, $full, $message . " 缺少鍵 [{$key}]");
+
+            if (is_array($value) && is_array($full[$key])) {
+                $this->assertArraySubsetRecursive($value, $full[$key], $message . " [{$key}] 內部結構不符：");
+            } else {
+                $this->assertEquals($value, $full[$key], $message . " 鍵 [{$key}] 的值不符。");
+            }
+        }
+    }
+
     /**
      * 建立 HTTP 回應的模擬物件.
      */
@@ -78,13 +149,15 @@ trait HttpResponseTestTrait
         $response->shouldReceive('getStatusCode')
             ->andReturn($statusCode);
 
+        $json = $this->encodeJsonForTest($data);
+
         // 建立 Stream 模擬物件
         /** @var StreamInterface|MockInterface $stream */
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('getContents')
-            ->andReturn(json_encode($data));
+            ->andReturn($json);
         $stream->shouldReceive('__toString')
-            ->andReturn(json_encode($data));
+            ->andReturn($json);
 
         $response->shouldReceive('getBody')
             ->andReturn($stream);
@@ -164,10 +237,13 @@ trait HttpResponseTestTrait
     protected function assertResponseIsJson(ResponseInterface $response): void
     {
         $body = $response->getBody()->getContents();
-        $decoded = json_decode($body, true);
 
-        $this->assertNotNull($decoded, '回應內容應該是有效的 JSON');
-        $this->assertEquals(JSON_ERROR_NONE, json_last_error(), 'JSON 解析不應該有錯誤');
+        try {
+            json_decode($body, true, 512, JSON_THROW_ON_ERROR);
+            $this->assertTrue(true);
+        } catch (JsonException $e) {
+            $this->fail('回應內容應該是有效的 JSON：' . $e->getMessage());
+        }
     }
 
     /**
@@ -178,9 +254,23 @@ trait HttpResponseTestTrait
         $this->assertResponseIsJson($response);
 
         $body = $response->getBody()->getContents();
-        $data = json_decode($body, true);
+        $data = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertArrayHasKey($key, $data, "JSON 回應應該包含鍵: {$key}");
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function encodeJsonForTest(array $data): string
+    {
+        try {
+            return json_encode($data, JSON_THROW_ON_ERROR);
+        } catch (JsonException $e) {
+            $this->fail('JSON 編碼失敗：' . $e->getMessage());
+
+            return '{}';
+        }
     }
 
     /**

@@ -58,15 +58,17 @@ export async function renderPost(postId) {
     app.innerHTML = `
       <div class="min-h-screen bg-modern-50">
         <!-- 導航列 -->
-        <nav class="bg-white shadow-sm border-b border-modern-200">
-          <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
-              <div class="flex items-center">
-                <a href="/" class="text-2xl font-bold text-accent-600">AlleyNote</a>
+        <nav class="bg-white border-b border-modern-200 sticky top-0 z-30">
+          <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-accent-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-accent-600/20">A</div>
+                <a href="/" data-navigo class="text-2xl font-bold text-modern-900">AlleyNote</a>
               </div>
               <div>
-                <a href="/" class="text-modern-600 hover:text-modern-900">
-                  ← 返回首頁
+                <a href="/" data-navigo class="flex items-center gap-2 px-4 py-2 bg-modern-50 text-modern-600 font-bold rounded-xl hover:bg-modern-100 transition-all">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                  返回首頁
                 </a>
               </div>
             </div>
@@ -74,70 +76,75 @@ export async function renderPost(postId) {
         </nav>
         
         <!-- 文章內容 -->
-        <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <article class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <!-- 文章標頭 -->
-          <header class="mb-8">
-            <h1 class="text-4xl font-bold text-modern-900 mb-4 animate-fade-in">
+          <header class="mb-12">
+            <div class="flex items-center gap-2 mb-6 animate-fade-in">
+              ${post.tags && post.tags.length > 0 ? 
+                post.tags.map(tag => `
+                  <span class="px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
+                `).join('') : 
+                '<span class="px-3 py-1 bg-modern-50 text-modern-400 rounded-lg text-xs font-bold uppercase tracking-widest border border-modern-100">General News</span>'
+              }
+            </div>
+
+            <h1 class="text-4xl md:text-5xl font-bold text-modern-900 mb-8 tracking-tight leading-tight animate-fade-in">
               ${post.title}
             </h1>
             
-            <div class="flex items-center gap-6 text-sm text-modern-600">
-              <div class="flex items-center gap-2">
-                <span>👤</span>
-                <span>${post.author?.name || '匿名'}</span>
+            <div class="flex flex-wrap items-center gap-y-4 gap-x-8 text-sm font-bold text-modern-500 uppercase tracking-widest border-b border-modern-200 pb-8">
+              <div class="flex items-center gap-2 text-accent-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>${post.author?.username || post.author?.name || 'Anonymous'}</span>
               </div>
               <div class="flex items-center gap-2">
-                <span>📅</span>
-                <time datetime="${dateString}">
-                  ${formattedDate}
-                </time>
+                <svg class="w-5 h-5 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <time datetime="${dateString}" class="tabular-nums">${formattedDate}</time>
               </div>
               <div class="flex items-center gap-2">
-                <span>🌏</span>
+                <svg class="w-5 h-5 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 012.5 2.5v.5m-9-11a9 9 0 1118 0 9 9 0 01-18 0z"/></svg>
                 <span title="${siteTimezone}">${timezoneDisplay}</span>
               </div>
               ${post.views ? `
-                <div class="flex items-center gap-2">
-                  <span>👁️</span>
-                  <span>${post.views} 次瀏覽</span>
+                <div class="flex items-center gap-2 text-blue-600">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                  <span class="tabular-nums">${post.views.toLocaleString()} VIEWS</span>
                 </div>
               ` : ''}
             </div>
           </header>
           
           <!-- 文章內容 -->
-          <div class="card animate-slide-up">
-            <div class="prose prose-modern max-w-none">
+          <div class="card bg-white border border-modern-200 shadow-xl shadow-modern-200/50 p-8 md:p-12 animate-slide-up">
+            <div class="prose prose-modern prose-lg max-w-none prose-headings:text-modern-900 prose-p:text-modern-700 prose-a:text-accent-600 hover:prose-a:text-accent-700 transition-all">
               ${cleanContent}
             </div>
           </div>
           
-          <!-- 標籤 -->
-          ${post.tags && post.tags.length > 0 ? `
-            <div class="mt-8 flex flex-wrap gap-2">
-              ${post.tags.map(tag => `
-                <span class="px-3 py-1 bg-accent-100 text-accent-700 rounded-full text-sm">
-                  #${tag}
-                </span>
-              `).join('')}
+          <!-- 文章導航 -->
+          <div class="mt-20">
+            <div class="flex items-center gap-3 mb-8">
+              <div class="w-1.5 h-6 bg-accent-600 rounded-full"></div>
+              <h2 class="text-2xl font-bold text-modern-900">延展閱讀導航</h2>
             </div>
-          ` : ''}
-          
-          <!-- 上一篇/下一篇 -->
-          <div class="mt-12">
-            <h2 class="text-2xl font-bold text-modern-900 mb-6">文章導航</h2>
-            <div id="post-navigation" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div class="text-center py-8 text-modern-600">載入中...</div>
+            <div id="post-navigation" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div class="col-span-full flex items-center justify-center py-12">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-600"></div>
+              </div>
             </div>
           </div>
         </article>
         
         <!-- 頁腳 -->
-        <footer class="bg-white border-t border-modern-200 mt-20">
-          <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <p class="text-center text-modern-600">
-              © 2024 AlleyNote. All rights reserved.
-            </p>
+        <footer class="bg-modern-900 text-white mt-32">
+          <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+            <div class="flex flex-col items-center gap-6">
+              <div class="w-12 h-12 bg-accent-600 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-accent-600/20">A</div>
+              <div>
+                <p class="text-modern-400 text-sm mb-2 uppercase tracking-widest font-bold">Official Communication Board</p>
+                <p class="text-modern-300">© 2024 AlleyNote. All rights reserved.</p>
+              </div>
+            </div>
           </div>
         </footer>
       </div>
@@ -206,58 +213,50 @@ async function loadPostNavigation(currentPostId, currentPost) {
     
     container.innerHTML = `
       ${prevPost ? `
-        <a href="/posts/${prevPost.id}" class="card card-hover block group">
-          <div class="flex items-start gap-3 mb-3">
-            <span class="text-2xl">←</span>
-            <div class="flex-1">
-              <p class="text-sm text-modern-500 mb-1">上一篇</p>
-              <h3 class="text-lg font-semibold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2">
+        <a href="/posts/${prevPost.id}" data-navigo class="group card bg-white border border-modern-200 p-8 rounded-3xl hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 bg-modern-50 text-modern-400 rounded-xl flex items-center justify-center group-hover:bg-accent-600 group-hover:text-white transition-all shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">Previous Post</p>
+              <h3 class="text-lg font-bold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2 leading-snug">
                 ${prevPost.title}
               </h3>
+              <div class="mt-4 flex items-center gap-2 text-modern-400 font-bold text-[10px] tabular-nums">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                ${prevDate}
+              </div>
             </div>
-          </div>
-          ${prevPost.excerpt ? `
-            <p class="text-modern-600 text-sm line-clamp-2 ml-9">
-              ${prevPost.excerpt}
-            </p>
-          ` : ''}
-          <div class="mt-3 ml-9 text-sm text-modern-500">
-            ${prevDate}
           </div>
         </a>
       ` : `
-        <div class="card opacity-50">
-          <div class="text-center py-8 text-modern-500">
-            沒有更早的文章了
-          </div>
+        <div class="card bg-modern-50/50 border border-dashed border-modern-200 p-8 rounded-3xl flex flex-col items-center justify-center text-center opacity-60">
+          <p class="text-xs font-bold text-modern-400 uppercase tracking-widest">No earlier articles</p>
         </div>
       `}
       
       ${nextPost ? `
-        <a href="/posts/${nextPost.id}" class="card card-hover block group">
-          <div class="flex items-start gap-3 mb-3">
-            <div class="flex-1 text-right">
-              <p class="text-sm text-modern-500 mb-1">下一篇</p>
-              <h3 class="text-lg font-semibold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2">
+        <a href="/posts/${nextPost.id}" data-navigo class="group card bg-white border border-modern-200 p-8 rounded-3xl hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden text-right">
+          <div class="flex items-start gap-4">
+            <div class="flex-1 min-w-0">
+              <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">Next Post</p>
+              <h3 class="text-lg font-bold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2 leading-snug">
                 ${nextPost.title}
               </h3>
+              <div class="mt-4 flex items-center justify-end gap-2 text-modern-400 font-bold text-[10px] tabular-nums">
+                ${nextDate}
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              </div>
             </div>
-            <span class="text-2xl">→</span>
-          </div>
-          ${nextPost.excerpt ? `
-            <p class="text-modern-600 text-sm line-clamp-2 mr-9 text-right">
-              ${nextPost.excerpt}
-            </p>
-          ` : ''}
-          <div class="mt-3 mr-9 text-sm text-modern-500 text-right">
-            ${nextDate}
+            <div class="w-10 h-10 bg-modern-50 text-modern-400 rounded-xl flex items-center justify-center group-hover:bg-accent-600 group-hover:text-white transition-all shrink-0 order-last">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </div>
           </div>
         </a>
       ` : `
-        <div class="card opacity-50">
-          <div class="text-center py-8 text-modern-500">
-            沒有更新的文章了
-          </div>
+        <div class="card bg-modern-50/50 border border-dashed border-modern-200 p-8 rounded-3xl flex flex-col items-center justify-center text-center opacity-60">
+          <p class="text-xs font-bold text-modern-400 uppercase tracking-widest">No newer articles</p>
         </div>
       `}
     `;

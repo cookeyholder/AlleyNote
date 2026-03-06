@@ -5,6 +5,10 @@ RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
+    build-essential \
+    g++ \
+    pkg-config \
+    libicu-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \

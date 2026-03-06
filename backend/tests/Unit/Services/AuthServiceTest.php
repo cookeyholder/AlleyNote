@@ -14,9 +14,9 @@ use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class AuthServiceTest extends TestCase
+class AuthServiceTest extends UnitTestCase
 {
     private UserRepository|MockInterface $userRepository;
 

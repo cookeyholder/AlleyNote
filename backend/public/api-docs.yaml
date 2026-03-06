@@ -1227,42 +1227,41 @@ components:
           description: 請求是否成功
           type: boolean
           example: false
-        error:
-          description: 主要錯誤訊息
+        message:
+          description: 主要錯誤訊息（與 error.message 相同，供前端快速讀取）
           type: string
           example: 資料驗證失敗
-        message:
-          description: 詳細錯誤描述
-          type: string
-          example: 提交的資料包含驗證錯誤，請檢查以下欄位並重新提交
-        errors:
-          description: 各欄位的具體驗證錯誤訊息
+        error:
+          description: 詳細錯誤資訊
           type: object
-          example:
-            title:
-              - 標題不能為空
-              - '標題長度不能超過 255 字元'
-            content:
-              - 內容不能為空
-              - '內容長度不能超過 10000 字元'
-            email:
-              - 電子郵件格式不正確
-            password:
-              - '密碼長度至少需要 8 字元'
-              - 密碼必須包含至少一個數字
-            category:
-              - '分類必須是以下值之一：general, announcement, urgent, notice'
-          additionalProperties:
-            description: 該欄位的所有錯誤訊息列表
-            type: array
-            items:
+          required:
+            - code
+            - message
+          properties:
+            code:
+              description: 'HTTP 狀態碼'
+              type: integer
+              example: 400
+            message:
+              description: 錯誤描述
               type: string
-        code:
-          description: 'HTTP 狀態碼'
-          type: integer
-          example: 400
+              example: 資料驗證失敗
+            details:
+              description: 各欄位的具體驗證錯誤訊息
+              type: object
+              example:
+                title:
+                  - 標題不能為空
+                  - '標題長度不能超過 255 字元'
+                content:
+                  - 內容不能為空
+              additionalProperties:
+                description: 該欄位的所有錯誤訊息列表
+                type: array
+                items:
+                  type: string
         meta:
-          description: 額外的錯誤資訊
+          description: 額外的元數據
           properties:
             timestamp:
               type: string
@@ -1271,30 +1270,20 @@ components:
             request_id:
               type: string
               example: req_550e8400e29b41d4a716446655440000
-            validation_rules:
-              description: 驗證規則參考
-              type: object
           type: object
       type: object
       example:
         success: false
-        error: 資料驗證失敗
-        message: 提交的資料包含驗證錯誤，請檢查以下欄位並重新提交
-        errors:
-          title:
-            - 標題不能為空
-            - '標題長度不能超過 255 字元'
-          content:
-            - 內容不能為空
-          email:
-            - 電子郵件格式不正確
-          password:
-            - '密碼長度至少需要 8 字元'
-            - 密碼必須包含至少一個數字
-        code: 400
-        meta:
-          timestamp: '2025-01-15T10:30:00+08:00'
-          request_id: req_550e8400e29b41d4a716446655440000
+        message: 資料驗證失敗
+        error:
+          code: 400
+          message: 資料驗證失敗
+          details:
+            title:
+              - 標題不能為空
+            content:
+              - 內容不能為空
+        timestamp: '2025-03-03T15:30:00+08:00'
     Post:
       title: 貼文
       description: 貼文資料結構

@@ -7,8 +7,8 @@ namespace Tests\Unit\Domains\Auth\Contracts;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
 /**
  * Token Blacklist Repository 介面測試.
@@ -16,7 +16,7 @@ use ReflectionClass;
  * 驗證TokenBlacklistRepositoryInterface的介面定義和契約正確性。
  * 確保所有方法簽名、參數類型、回傳類型正確。
  */
-class TokenBlacklistRepositoryInterfaceTest extends TestCase
+class TokenBlacklistRepositoryInterfaceTest extends UnitTestCase
 {
     private ReflectionClass $interfaceReflection;
 

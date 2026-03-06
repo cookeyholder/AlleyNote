@@ -10,7 +10,7 @@ use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use DateTimeImmutable;
 use PDO;
 use PDOException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\IntegrationTestCase;
 use Tests\Support\Traits\DatabaseTestTrait;
 
 /**
@@ -18,7 +18,7 @@ use Tests\Support\Traits\DatabaseTestTrait;
  *
  * 測試索引建立前後的查詢效能差異，確保索引最佳化有效。
  */
-final class StatisticsIndexOptimizationTest extends TestCase
+final class StatisticsIndexOptimizationTest extends IntegrationTestCase
 {
     use DatabaseTestTrait;
 
@@ -361,7 +361,7 @@ final class StatisticsIndexOptimizationTest extends TestCase
         }
     }
 
-    private function generateRandomDateTime(): string
+    protected function generateRandomDateTime(): string
     {
         $start = strtotime('2025-01-01');
         $end = strtotime('2025-12-31');
@@ -370,7 +370,7 @@ final class StatisticsIndexOptimizationTest extends TestCase
         return date('Y-m-d H:i:s', $randomTime);
     }
 
-    private function generateRandomIp(): string
+    protected function generateRandomIp(): string
     {
         return rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255);
     }
@@ -384,7 +384,7 @@ final class StatisticsIndexOptimizationTest extends TestCase
     /**
      * 產生測試 UUID.
      */
-    private function generateTestUuid(): string
+    protected function generateTestUuid(): string
     {
         return 'test-uuid-' . uniqid();
     }
@@ -392,7 +392,7 @@ final class StatisticsIndexOptimizationTest extends TestCase
     /**
      * 產生隨機字串.
      */
-    private function generateRandomString(int $length = 10): string
+    private function createLocalRandomString(int $length = 10): string
     {
         return substr(str_shuffle('abcdefghijklmnopqrstuvwxyz0123456789'), 0, $length);
     }
@@ -400,8 +400,8 @@ final class StatisticsIndexOptimizationTest extends TestCase
     /**
      * 產生測試電子郵件.
      */
-    private function generateTestEmail(): string
+    protected function generateTestEmail(): string
     {
-        return 'test' . $this->generateRandomString(6) . '@example.com';
+        return 'test' . $this->createLocalRandomString(6) . '@example.com';
     }
 }

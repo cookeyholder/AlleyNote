@@ -7,14 +7,14 @@ namespace Tests\Unit\Infrastructure\Statistics\Services;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
 use DateTime;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * 統計監控服務單元測試.
  *
  * 測試統計功能的監控、健康檢查和日誌記錄功能。
  */
-final class StatisticsMonitoringServiceTest extends TestCase
+final class StatisticsMonitoringServiceTest extends UnitTestCase
 {
     private StatisticsMonitoringService $monitoringService;
 

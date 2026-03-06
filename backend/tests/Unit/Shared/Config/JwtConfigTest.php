@@ -6,9 +6,9 @@ namespace Tests\Unit\Shared\Config;
 
 use App\Shared\Config\JwtConfig;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class JwtConfigTest extends TestCase
+class JwtConfigTest extends UnitTestCase
 {
     /**
      * @var array<string, string|null>

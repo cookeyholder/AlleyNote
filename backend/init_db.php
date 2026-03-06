@@ -9,18 +9,18 @@ declare(strict_types=1);
 
 try {
     $dbPath = __DIR__ . '/database/alleynote.sqlite3';
-    
+
     // 確保資料庫目錄存在
     if (!is_dir(dirname($dbPath))) {
         mkdir(dirname($dbPath), 0755, true);
     }
-    
+
     // 連接資料庫
     $pdo = new PDO('sqlite:' . $dbPath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
+
     echo "正在初始化資料庫...\n";
-    
+
     // 創建 users 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS users (
@@ -35,7 +35,15 @@ try {
         )
     ");
     echo "✓ users 表已創建\n";
-    
+
+    // 補齊 users 表在新版認證流程需要的欄位
+    $userColumns = $pdo->query("PRAGMA table_info(users)")->fetchAll(PDO::FETCH_ASSOC);
+    $userColumnNames = array_column($userColumns, 'name');
+    if (!in_array('last_login', $userColumnNames, true)) {
+        $pdo->exec("ALTER TABLE users ADD COLUMN last_login DATETIME");
+        echo "✓ users.last_login 欄位已補齊\n";
+    }
+
     // 創建 posts 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS posts (
@@ -53,7 +61,7 @@ try {
         )
     ");
     echo "✓ posts 表已創建\n";
-    
+
     // 創建 tags 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS tags (
@@ -65,7 +73,7 @@ try {
         )
     ");
     echo "✓ tags 表已創建\n";
-    
+
     // 創建 post_tags 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS post_tags (
@@ -77,7 +85,7 @@ try {
         )
     ");
     echo "✓ post_tags 表已創建\n";
-    
+
     // 創建 attachments 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS attachments (
@@ -96,7 +104,7 @@ try {
         )
     ");
     echo "✓ attachments 表已創建\n";
-    
+
     // 創建 refresh_tokens 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -123,7 +131,7 @@ try {
         )
     ");
     echo "✓ refresh_tokens 表已創建\n";
-    
+
     // 創建 ip_lists 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS ip_lists (
@@ -138,7 +146,7 @@ try {
         )
     ");
     echo "✓ ip_lists 表已創建\n";
-    
+
     // 創建 user_activity_logs 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS user_activity_logs (
@@ -157,7 +165,7 @@ try {
         )
     ");
     echo "✓ user_activity_logs 表已創建\n";
-    
+
     // 創建 comments 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS comments (
@@ -178,7 +186,7 @@ try {
         )
     ");
     echo "✓ comments 表已創建\n";
-    
+
     // 創建 post_views 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS post_views (
@@ -194,7 +202,7 @@ try {
         )
     ");
     echo "✓ post_views 表已創建\n";
-    
+
     // 創建 statistics_snapshots 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS statistics_snapshots (
@@ -209,7 +217,7 @@ try {
         )
     ");
     echo "✓ statistics_snapshots 表已創建\n";
-    
+
     // 創建 token_blacklist 表
     $pdo->exec("
         CREATE TABLE IF NOT EXISTS token_blacklist (
@@ -226,7 +234,34 @@ try {
         )
     ");
     echo "✓ token_blacklist 表已創建\n";
-    
+
+    // 創建 roles 表（認證流程會查詢）
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS roles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR(50) NOT NULL UNIQUE,
+            display_name VARCHAR(100) NOT NULL,
+            description TEXT,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME
+        )
+    ");
+    echo "✓ roles 表已創建\n";
+
+    // 創建 user_roles 表（認證流程會查詢）
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS user_roles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            role_id INTEGER NOT NULL,
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(user_id, role_id),
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+        )
+    ");
+    echo "✓ user_roles 表已創建\n";
+
     // 創建索引
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_author ON posts(author_id)");
@@ -237,38 +272,58 @@ try {
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_comments_post ON comments(post_id)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_post_views_post ON post_views(post_id)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_token_blacklist_jti ON token_blacklist(jti)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_roles_user_id ON user_roles(user_id)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_user_roles_role_id ON user_roles(role_id)");
     echo "✓ 索引已創建\n";
-    
+
     // 檢查是否已有使用者
     $stmt = $pdo->query("SELECT COUNT(*) FROM users");
     $userCount = $stmt->fetchColumn();
-    
+
     if ($userCount == 0) {
         echo "\n正在創建測試使用者...\n";
-        
+
         // 插入管理員使用者
-        // 密碼: password (使用 password_hash)
-        $adminPassword = password_hash('password', PASSWORD_BCRYPT);
-        $superAdminPassword = password_hash('admin123', PASSWORD_BCRYPT);
-        
+        // 預設密碼：Admin@123456 / SuperAdmin@123456 (使用 password_hash)
+        $adminPassword = password_hash('Admin@123456', PASSWORD_BCRYPT);
+        $superAdminPassword = password_hash('SuperAdmin@123456', PASSWORD_BCRYPT);
+
         $pdo->exec("
             INSERT INTO users (username, email, password, role, is_active) VALUES
             ('admin', 'admin@example.com', '$adminPassword', 'admin', 1),
             ('superadmin', 'superadmin@example.com', '$superAdminPassword', 'super_admin', 1)
         ");
-        
+
         echo "✓ 已創建以下測試帳號：\n";
-        echo "  1. admin@example.com / password (管理員)\n";
-        echo "  2. superadmin@example.com / admin123 (主管理員)\n";
+        echo "  1. admin@example.com / Admin@123456 (管理員)\n";
+        echo "  2. superadmin@example.com / SuperAdmin@123456 (主管理員)\n";
     } else {
         echo "\n資料庫已有使用者，跳過創建\n";
     }
-    
+
+    // 建立預設角色
+    $pdo->exec("
+        INSERT OR IGNORE INTO roles (name, display_name, description) VALUES
+        ('admin', '管理員', '系統管理員'),
+        ('super_admin', '超級管理員', '最高權限管理員')
+    ");
+
+    // 指派預設角色給測試帳號
+    $pdo->exec("
+        INSERT OR IGNORE INTO user_roles (user_id, role_id)
+        SELECT u.id, r.id
+        FROM users u
+        JOIN roles r ON (
+            (u.username = 'admin' AND r.name = 'admin') OR
+            (u.username = 'superadmin' AND r.name = 'super_admin')
+        )
+    ");
+
     echo "\n✅ 資料庫初始化完成！\n";
     echo "\n您現在可以使用以下帳號登入：\n";
-    echo "  - admin@example.com / password\n";
-    echo "  - superadmin@example.com / admin123\n";
-    
+    echo "  - admin@example.com / Admin@123456\n";
+    echo "  - superadmin@example.com / SuperAdmin@123456\n";
+
 } catch (PDOException $e) {
     echo "❌ 錯誤: " . $e->getMessage() . "\n";
     exit(1);

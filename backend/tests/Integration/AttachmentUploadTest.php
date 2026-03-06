@@ -20,10 +20,10 @@ use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 #[Group('failing')]
-class AttachmentUploadTest extends TestCase
+class AttachmentUploadTest extends IntegrationTestCase
 {
     protected AttachmentService $attachmentService;
 

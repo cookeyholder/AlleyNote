@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Services;
 
 use App\Domains\Statistics\Services\UserAgentParserService;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * UserAgentParserService 單元測試.
  */
-class UserAgentParserServiceTest extends TestCase
+class UserAgentParserServiceTest extends UnitTestCase
 {
     private UserAgentParserService $parser;
 

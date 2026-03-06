@@ -15,9 +15,9 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use Tests\Factory\PostFactory;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostRepositoryTest extends TestCase
+class PostRepositoryTest extends UnitTestCase
 {
     private PostRepository $repository;
 

@@ -8,7 +8,7 @@ use Exception;
 use PDO;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 use Tests\Support\Cache\ArrayCacheAdapter;
 use Tests\Support\Statistics\StatisticsTestSeeder;
 
@@ -24,7 +24,7 @@ use Tests\Support\Statistics\StatisticsTestSeeder;
 #[Group('performance')]
 #[Group('statistics')]
 #[Group('concurrent')]
-class StatisticsApiConcurrencyTest extends TestCase
+class StatisticsApiConcurrencyTest extends SecureDDDTestCase
 {
     private PDO $pdo;
 
@@ -488,7 +488,7 @@ class StatisticsApiConcurrencyTest extends TestCase
     }
 
     // 輔助方法
-    private function generateRandomParams(): array
+    protected function generateRandomParams(): array
     {
         $periods = ['daily', 'weekly', 'monthly'];
 
@@ -499,7 +499,7 @@ class StatisticsApiConcurrencyTest extends TestCase
         ];
     }
 
-    private function generateCacheTestQueries(int $count): array
+    protected function generateCacheTestQueries(int $count): array
     {
         $queries = [];
         for ($i = 0; $i < $count; $i++) {
@@ -653,7 +653,7 @@ class StatisticsApiConcurrencyTest extends TestCase
         return ['web' => rand(500, 800), 'mobile' => rand(300, 600), 'api' => rand(100, 200)];
     }
 
-    private function generateUuid(): string
+    protected function generateUuid(): string
     {
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

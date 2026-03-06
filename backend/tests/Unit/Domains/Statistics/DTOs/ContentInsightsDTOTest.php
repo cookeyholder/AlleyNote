@@ -7,9 +7,9 @@ namespace Tests\Unit\Domains\Statistics\DTOs;
 use App\Domains\Statistics\DTOs\ContentInsightsDTO;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class ContentInsightsDTOTest extends TestCase
+class ContentInsightsDTOTest extends UnitTestCase
 {
     /** @var array<string, mixed> */
     private array $validData;

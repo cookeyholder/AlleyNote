@@ -18,7 +18,7 @@ use Exception;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * AuthService 單元測試.
@@ -29,7 +29,7 @@ use Tests\TestCase;
  * @author GitHub Copilot
  * @since 1.0.0
  */
-class AuthServiceTest extends TestCase
+class AuthServiceTest extends UnitTestCase
 {
     use MockeryPHPUnitIntegration;
 

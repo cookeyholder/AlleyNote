@@ -15,7 +15,7 @@ use Exception;
 use PDO;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 use Tests\Support\Statistics\StatisticsTestSeeder;
 
 /**
@@ -29,7 +29,7 @@ use Tests\Support\Statistics\StatisticsTestSeeder;
  */
 #[Group('performance')]
 #[Group('statistics')]
-class StatisticsPerformanceTest extends TestCase
+class StatisticsPerformanceTest extends SecureDDDTestCase
 {
     private PDO $pdo;
 
@@ -504,7 +504,7 @@ class StatisticsPerformanceTest extends TestCase
     /**
      * 生成 UUID.
      */
-    private function generateUuid(): string
+    protected function generateUuid(): string
     {
         return sprintf(
             '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',

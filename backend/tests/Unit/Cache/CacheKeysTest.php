@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Cache;
 
 use App\Infrastructure\Cache\CacheKeys;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class CacheKeysTest extends TestCase
+class CacheKeysTest extends UnitTestCase
 {
     public function testPostCacheKey(): void
     {

@@ -7,12 +7,12 @@ namespace Tests\Unit\Domains\Statistics\ValueObjects;
 use App\Domains\Statistics\ValueObjects\StatisticsMetric;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsMetric 值物件單元測試.
  */
-final class StatisticsMetricTest extends TestCase
+final class StatisticsMetricTest extends UnitTestCase
 {
     #[Test]
     public function it_can_be_created_with_valid_parameters(): void

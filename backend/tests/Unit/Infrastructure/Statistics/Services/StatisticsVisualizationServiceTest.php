@@ -13,14 +13,14 @@ use App\Infrastructure\Statistics\Processors\TimeSeriesProcessor;
 use App\Infrastructure\Statistics\Services\StatisticsVisualizationService;
 use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsVisualizationService 簡化單元測試.
  *
  * 專注於測試服務的核心邏輯和方法調用，而不深入快取機制的複雜性。
  */
-final class StatisticsVisualizationServiceTest extends TestCase
+final class StatisticsVisualizationServiceTest extends UnitTestCase
 {
     private StatisticsVisualizationService $service;
 

@@ -10,12 +10,12 @@ use App\Shared\Enums\DatabaseAction;
 use DateTime;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\SecureDDDTestCase;
 
 /**
  * PostController 活動記錄功能測試.
  */
-class PostControllerActivityLoggingTest extends TestCase
+class PostControllerActivityLoggingTest extends SecureDDDTestCase
 {
     private PDO $pdo;
 

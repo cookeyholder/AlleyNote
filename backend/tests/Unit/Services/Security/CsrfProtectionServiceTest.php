@@ -8,9 +8,9 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Services\Core\CsrfProtectionService;
 use App\Shared\Exceptions\CsrfTokenException;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class CsrfProtectionServiceTest extends TestCase
+class CsrfProtectionServiceTest extends UnitTestCase
 {
     private CsrfProtectionService $service;
 

@@ -31,6 +31,26 @@ date_default_timezone_set('Asia/Taipei');
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
+// 開發/測試環境 CORS（供前端靜態伺服器與 E2E 使用）
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+$allowedOrigins = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+];
+
+if (in_array($origin, $allowedOrigins, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+    header('Access-Control-Allow-Credentials: true');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept');
+    header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+}
+
+if ($requestMethod === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
 // 移除查詢參數
 $path = parse_url($requestUri, PHP_URL_PATH);
 

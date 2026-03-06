@@ -10,13 +10,13 @@ use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(SettingController::class)]
-class SettingControllerTest extends TestCase
+class SettingControllerTest extends UnitTestCase
 {
     private SettingController $controller;
 
