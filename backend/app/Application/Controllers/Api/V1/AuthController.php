@@ -6,7 +6,6 @@ namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
@@ -36,7 +35,6 @@ class AuthController extends BaseController
     public function __construct(
         private AuthService $authService,
         private AuthenticationServiceInterface $authenticationService,
-        private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
         private ActivityLoggingServiceInterface $activityLoggingService,
         private UserRepositoryInterface $userRepository,
