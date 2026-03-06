@@ -42,6 +42,9 @@ class PostController extends BaseController
             $pdo = $this->createSqliteConnection();
             $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
             $postUserColumn = $this->resolvePostsUserColumn($pdo);
+            $postPublishColumn = $this->resolvePostsPublishColumn($pdo);
+            $hasCreatedAt = $this->hasTableColumn($pdo, 'posts', 'created_at');
+            $hasUpdatedAt = $this->hasTableColumn($pdo, 'posts', 'updated_at');
 
             // 建立查詢
             $where = [];
@@ -63,8 +66,8 @@ class PostController extends BaseController
             // 根據 include_future 參數決定是否過濾未來文章
             // 預設為 false（過濾未來文章，用於首頁等公開頁面）
             // 設為 true 時顯示所有文章（用於文章管理頁面）
-            if (!$includeFuture) {
-                $where[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
+            if (!$includeFuture && $postPublishColumn !== null) {
+                $where[] = "(p.{$postPublishColumn} IS NULL OR p.{$postPublishColumn} <= datetime('now'))";
             }
 
             $whereClause = empty($where) ? '1=1' : implode(' AND ', $where);
@@ -79,12 +82,27 @@ class PostController extends BaseController
             $offset = ($page - 1) * $perPage;
             $userIdSelect = $postUserColumn !== null ? "p.{$postUserColumn} as user_id" : 'NULL as user_id';
             $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
-            $sql = "SELECT p.id, p.title, p.content, p.status, {$userIdSelect}, p.created_at, p.updated_at, p.publish_date,
+
+            $publishDateSelect = $postPublishColumn !== null ? "p.{$postPublishColumn} as publish_date" : 'NULL as publish_date';
+            $createdAtSelect = $hasCreatedAt ? 'p.created_at' : 'NULL as created_at';
+            $updatedAtSelect = $hasUpdatedAt ? 'p.updated_at' : 'NULL as updated_at';
+
+            if ($postPublishColumn !== null && $hasCreatedAt) {
+                $orderBy = "COALESCE(p.{$postPublishColumn}, p.created_at) DESC";
+            } elseif ($postPublishColumn !== null) {
+                $orderBy = "p.{$postPublishColumn} DESC";
+            } elseif ($hasCreatedAt) {
+                $orderBy = 'p.created_at DESC';
+            } else {
+                $orderBy = 'p.id DESC';
+            }
+
+            $sql = "SELECT p.id, p.title, p.content, p.status, {$userIdSelect}, {$createdAtSelect}, {$updatedAtSelect}, {$publishDateSelect},
                            u.username as author
                     FROM posts p
                     {$userJoin}
                     WHERE {$whereClause}
-                    ORDER BY COALESCE(p.publish_date, p.created_at) DESC
+                    ORDER BY {$orderBy}
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $pdo->prepare($sql);
@@ -131,6 +149,7 @@ class PostController extends BaseController
             $pdo = $this->createSqliteConnection();
             $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
             $postUserColumn = $this->resolvePostsUserColumn($pdo);
+            $postPublishColumn = $this->resolvePostsPublishColumn($pdo);
 
             // 建立查詢條件
             $conditions = ['p.id = :id'];
@@ -144,7 +163,9 @@ class PostController extends BaseController
             // - 過濾未來的文章
             if (!$includeFuture) {
                 $conditions[] = "p.status = 'published'";
-                $conditions[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
+                if ($postPublishColumn !== null) {
+                    $conditions[] = "(p.{$postPublishColumn} IS NULL OR p.{$postPublishColumn} <= datetime('now'))";
+                }
             }
 
             $whereClause = implode(' AND ', $conditions);
@@ -673,6 +694,22 @@ class PostController extends BaseController
 
         if ($this->hasTableColumn($pdo, 'posts', 'author_id')) {
             return 'author_id';
+        }
+
+        return null;
+    }
+
+    /**
+     * 解析 posts 發布時間欄位，支援 publish_date / published_at schema 差異.
+     */
+    private function resolvePostsPublishColumn(PDO $pdo): ?string
+    {
+        if ($this->hasTableColumn($pdo, 'posts', 'publish_date')) {
+            return 'publish_date';
+        }
+
+        if ($this->hasTableColumn($pdo, 'posts', 'published_at')) {
+            return 'published_at';
         }
 
         return null;
