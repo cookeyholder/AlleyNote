@@ -1,44 +1,59 @@
 {
-    "name": "AlleyNote Dev Environment (Trixie)",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "context": "."
+  "name": "AlleyNote Dev Environment (Trixie)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
+      "version": "latest",
+      "enableNonRootDocker": "true",
+      "moby": "false"
     },
-    "features": {
-        "ghcr.io/devcontainers/features/docker-in-docker:2.16.0": {
-            "version": "latest",
-            "enableNonRootDocker": "true",
-            "moby": "false"
-        },
-        "ghcr.io/devcontainers/features/node:1.7.1": {
-            "version": "24"
-        },
-        "ghcr.io/devcontainers/features/github-cli:1.0.10": {}
+    "ghcr.io/devcontainers/features/node:1.7.1": {
+      "version": "24"
     },
-    "appPort": [8080],
-    "mounts": [
-        "source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
-    ],
-    "runArgs": [
-        "--privileged"
-    ],
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "bmewburn.vscode-intelephense-client",
-                "dbaeumer.vscode-eslint",
-                "bradlc.vscode-tailwindcss",
-                "esbenp.prettier-vscode",
-                "xdebug.php-debug",
-                "mhutchie.git-graph"
-            ],
-            "settings": {
-                "php.suggest.basic": false,
-                "editor.formatOnSave": true,
-                "editor.defaultFormatter": "esbenp.prettier-vscode"
-            }
-        }
+    "ghcr.io/devcontainers/features/github-cli:1.0.10": {}
+  },
+  "appPort": [3000, 8081, 8080],
+  "forwardPorts": [3000, 8081, 8080],
+  "portsAttributes": {
+    "3000": {
+      "label": "Frontend",
+      "onAutoForward": "openBrowser"
     },
-    "remoteUser": "vscode",
-    "postCreateCommand": "npm install"
+    "8081": {
+      "label": "Backend API (DevContainer local)",
+      "onAutoForward": "openBrowser"
+    },
+    "8080": {
+      "label": "Backend API (Production / override)",
+      "onAutoForward": "openBrowser"
+    }
+  },
+  "mounts": ["source=dind-var-lib-docker,target=/var/lib/docker,type=volume"],
+  "runArgs": ["--privileged"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "bmewburn.vscode-intelephense-client",
+        "dbaeumer.vscode-eslint",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "xdebug.php-debug",
+        "mhutchie.git-graph",
+        "jraylan.seamless-agent",
+        "GitHub.copilot-chat"
+      ],
+      "settings": {
+        "php.suggest.basic": false,
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+      }
+    }
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "SUDO='' && if command -v sudo >/dev/null 2>&1; then SUDO='sudo'; elif [ \"$(id -u)\" -ne 0 ]; then echo 'Error: sudo not found and current user is not root.'; exit 1; fi && $SUDO apt-get update && $SUDO apt-get install -y ripgrep lsof iproute2 jq fd-find bat tree fzf htop ncdu && $SUDO ln -sf /usr/bin/fdfind /usr/local/bin/fd && (command -v batcat >/dev/null && $SUDO ln -sf /usr/bin/batcat /usr/local/bin/bat || true) && npm install && npx playwright install --with-deps chromium",
+  "postStartCommand": "bash .devcontainer/start-services.sh",
+  "postAttachCommand": "echo 'Frontend: http://localhost:3000' && echo 'Backend API (DevContainer local): http://localhost:8081' && echo 'Backend API (Production / override): http://localhost:8080' && echo 'API Docs UI (DevContainer local): http://localhost:8081/api/docs/ui' && echo 'API Docs UI (Production / override): http://localhost:8080/api/docs/ui'"
 }

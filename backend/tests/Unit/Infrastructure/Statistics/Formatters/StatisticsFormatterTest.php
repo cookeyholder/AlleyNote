@@ -7,15 +7,15 @@ namespace Tests\Unit\Infrastructure\Statistics\Formatters;
 use App\Infrastructure\Statistics\Formatters\CSVStatisticsFormatter;
 use App\Infrastructure\Statistics\Formatters\JSONStatisticsFormatter;
 use App\Infrastructure\Statistics\Formatters\PDFStatisticsFormatter;
-use PHPUnit\Framework\TestCase;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * 統計格式化器單元測試.
  *
  * 測試各種統計資料格式化器的功能。
  */
-final class StatisticsFormatterTest extends TestCase
+final class StatisticsFormatterTest extends UnitTestCase
 {
     public function testJSON格式化器應該正確格式化資料(): void
     {

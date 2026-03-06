@@ -10,9 +10,9 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class AttachmentRepositoryTest extends TestCase
+class AttachmentRepositoryTest extends UnitTestCase
 {
     protected AttachmentRepository $repository;
 

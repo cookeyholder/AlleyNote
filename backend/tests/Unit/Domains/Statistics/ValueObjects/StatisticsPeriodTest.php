@@ -9,12 +9,12 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsPeriod 值物件單元測試.
  */
-final class StatisticsPeriodTest extends TestCase
+final class StatisticsPeriodTest extends UnitTestCase
 {
     #[Test]
     public function it_can_be_created_with_valid_parameters(): void

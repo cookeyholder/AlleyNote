@@ -10,9 +10,11 @@
 ## 1. 概述
 
 ### 1.1 目標
+
 將 AlleyNote 前後端分離架構的認證系統實作為現代 JWT (JSON Web Token) 認證機制，為 原生 HTML/JavaScript/CSS 前端和 PHP 8.4.12 DDD 後端提供安全、可擴展且無狀態的使用者認證。
 
 ### 1.2 範圍
+
 - 實作前後端分離的 JWT token 產生、驗證和管理
 - 原生 HTML/JavaScript/CSS Composition API 認證狀態管理
 - PHP 8.4.12 後端 API 認證系統
@@ -22,7 +24,9 @@
 - 前後端完整的測試覆蓋 (1,372 後端測試)
 
 ### 1.3 架構原則
+
 遵循 DDD (Domain-Driven Design) 原則和前後端分離最佳實踐：
+
 - **Domain Layer**: JWT 相關的業務邏輯和規則
 - **Application Layer**: API 控制器和應用服務
 - **Infrastructure Layer**: JWT 函式庫整合和持久化
@@ -34,6 +38,7 @@
 ### 2.1 JWT 結構設計 (API 優先)
 
 #### 2.1.1 Header
+
 ```json
 {
   "alg": "RS256",
@@ -42,6 +47,7 @@
 ```
 
 #### 2.1.2 Payload (Access Token) - API 優化
+
 ```json
 {
   "iss": "alleynote-api",
@@ -62,6 +68,7 @@
 ```
 
 #### 2.1.3 Payload (Refresh Token)
+
 ```json
 {
   "iss": "alleynote-api",
@@ -78,11 +85,13 @@
 ```
 
 ### 2.2 Token 生命週期
+
 - **Access Token**: 1 小時 (3600 秒)
 - **Refresh Token**: 30 天 (2592000 秒)
 - **記住我**: Refresh token 延長至 90 天
 
 ### 2.3 安全性設計
+
 - 使用 RS256 演算法 (RSA SHA-256)
 - RSA 金鑰對從環境變數載入 (私鑰用於簽章，公鑰用於驗證)
 - 支援 token 黑名單機制
@@ -95,10 +104,11 @@
 ### 3.1 登入 API (POST /auth/login)
 
 #### 請求
+
 ```json
 {
   "email": "user@example.com",
-  "password": "password123",
+  "password": "Example#Pass123!",
   "remember_me": false,
   "device_info": {
     "name": "Chrome Browser",
@@ -108,6 +118,7 @@
 ```
 
 #### 成功回應 (200)
+
 ```json
 {
   "success": true,
@@ -134,6 +145,7 @@
 ### 3.2 刷新 Token API (POST /auth/refresh)
 
 #### 請求
+
 ```json
 {
   "refresh_token": "eyJ0eXAiOiJKV1Q..."
@@ -141,6 +153,7 @@
 ```
 
 #### 成功回應 (200)
+
 ```json
 {
   "success": true,
@@ -157,11 +170,13 @@
 ### 3.3 登出 API (POST /auth/logout)
 
 #### 請求 Header
+
 ```
 Authorization: Bearer eyJ0eXAiOiJKV1Q...
 ```
 
 #### 請求 Body (可選)
+
 ```json
 {
   "logout_all_devices": false
@@ -169,6 +184,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1Q...
 ```
 
 #### 成功回應 (200)
+
 ```json
 {
   "success": true,
@@ -179,11 +195,13 @@ Authorization: Bearer eyJ0eXAiOiJKV1Q...
 ### 3.4 取得使用者資訊 API (GET /auth/me)
 
 #### 請求 Header
+
 ```
 Authorization: Bearer eyJ0eXAiOiJKV1Q...
 ```
 
 #### 成功回應 (200)
+
 ```json
 {
   "success": true,
@@ -202,40 +220,48 @@ Authorization: Bearer eyJ0eXAiOiJKV1Q...
 ## 4. 領域模型設計
 
 ### 4.1 Value Objects
+
 - `JwtPayload`: JWT payload 資料
 - `TokenPair`: Access token 和 refresh token 組合
 - `DeviceInfo`: 裝置資訊
 - `TokenBlacklistEntry`: 黑名單項目
 
 ### 4.2 Entities
+
 - `User`: 使用者實體 (現有)
 - `RefreshToken`: Refresh token 實體
 
 ### 4.3 Domain Services
+
 - `JwtTokenService`: JWT token 核心服務
 - `TokenBlacklistService`: Token 黑名單服務
 - `RefreshTokenService`: Refresh token 管理服務
 
 ### 4.4 Repositories
+
 - `RefreshTokenRepositoryInterface`: Refresh token 持久化
 - `TokenBlacklistRepositoryInterface`: 黑名單持久化
 
 ### 4.5 Application Services
+
 - `JwtAuthService`: JWT 認證應用服務
 - `TokenManagementService`: Token 管理服務
 
 ### 4.6 Infrastructure
+
 - `FirebaseJwtProvider`: Firebase JWT 函式庫包裝
 - `RefreshTokenRepository`: Refresh token 資料存取
 - `TokenBlacklistRepository`: 黑名單資料存取
 
 ### 4.7 Middleware
+
 - `JwtAuthenticationMiddleware`: JWT 認證中介軟體
 - `JwtAuthorizationMiddleware`: JWT 授權中介軟體
 
 ## 5. 資料庫設計
 
 ### 5.1 refresh_tokens 表
+
 ```sql
 CREATE TABLE refresh_tokens (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -255,6 +281,7 @@ CREATE INDEX idx_refresh_tokens_expires_at ON refresh_tokens(expires_at);
 ```
 
 ### 5.2 token_blacklist 表
+
 ```sql
 CREATE TABLE token_blacklist (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -274,6 +301,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 6. 錯誤處理
 
 ### 6.1 錯誤碼定義
+
 - `JWT_001`: Token 格式無效
 - `JWT_002`: Token 已過期
 - `JWT_003`: Token 簽章無效
@@ -284,6 +312,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 - `JWT_008`: Token 受眾無效
 
 ### 6.2 HTTP 狀態碼
+
 - `200`: 操作成功
 - `400`: 請求格式錯誤
 - `401`: 認證失敗或 token 無效
@@ -294,6 +323,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 7. 安全性考量
 
 ### 7.1 Token 安全
+
 - 使用 RSA 2048 位元金鑰對
 - 私鑰安全存儲，僅用於 token 簽章
 - 公鑰可以共享，用於 token 驗證
@@ -302,6 +332,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 - 支援強制登出所有裝置
 
 ### 7.2 防護措施
+
 - 驗證 token 的 iss、aud、exp 等標準聲明
 - 檢查 token 是否在黑名單
 - IP 地址驗證 (可選)
@@ -309,6 +340,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 - 頻率限制
 
 ### 7.3 資料保護
+
 - Refresh token 加密存儲
 - 定期清理過期 token
 - 記錄安全相關事件
@@ -316,11 +348,13 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 8. 效能考量
 
 ### 8.1 快取策略
+
 - RSA 公鑰快取
 - 黑名單快取 (Redis 可選)
 - 使用者權限快取
 
 ### 8.2 最佳化
+
 - 非同步清理過期 token
 - 批次處理黑名單檢查
 - 資料庫索引最佳化
@@ -328,11 +362,13 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 9. 向後相容性
 
 ### 9.1 遷移策略
+
 - 保持現有 AuthService 介面不變
 - 內部實作逐步切換至 JWT
 - 提供設定開關控制認證方式
 
 ### 9.2 部署計劃
+
 - 階段 1: 實作 JWT 系統並測試
 - 階段 2: 平行運行兩套認證系統
 - 階段 3: 逐步遷移用戶到 JWT
@@ -341,6 +377,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 10. 測試策略
 
 ### 10.1 單元測試
+
 - JWT token 產生和驗證
 - Token 黑名單操作
 - Refresh token 管理
@@ -348,12 +385,14 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 - 錯誤處理
 
 ### 10.2 整合測試
+
 - API 端點測試
 - 資料庫操作測試
 - 認證流程測試
 - 安全性測試
 
 ### 10.3 測試覆蓋率目標
+
 - 程式碼覆蓋率 >= 95%
 - 分支覆蓋率 >= 90%
 - 所有錯誤情況都有測試
@@ -361,12 +400,14 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 ## 11. 文件需求
 
 ### 11.1 技術文件
+
 - API 規格文件更新
 - 系統架構圖
 - 部署指南更新
 - 故障排除指南
 
 ### 11.2 開發文件
+
 - 程式碼註解
 - README 更新
 - CHANGELOG 記錄
@@ -377,6 +418,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 每個功能模組都必須滿足以下標準：
 
 ### 12.1 功能性標準
+
 - ✅ 所有 API 端點正常運作
 - ✅ JWT token 正確產生和驗證
 - ✅ Refresh token 機制正常
@@ -384,6 +426,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 - ✅ 錯誤處理完整
 
 ### 12.2 非功能性標準
+
 - ✅ 程式碼符合 PSR 標準
 - ✅ 通過 PHPStan level 8 檢查
 - ✅ 單元測試覆蓋率 >= 95%
@@ -391,6 +434,7 @@ CREATE INDEX idx_token_blacklist_expires_at ON token_blacklist(expires_at);
 - ✅ 效能測試通過
 
 ### 12.3 安全性標準
+
 - ✅ Token 簽章驗證正確
 - ✅ 過期 token 被拒絕
 - ✅ 黑名單 token 被拒絕

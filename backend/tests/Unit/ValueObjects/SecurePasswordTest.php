@@ -6,9 +6,9 @@ namespace Tests\Unit\ValueObjects;
 
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\ValueObjects\SecurePassword;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-final class SecurePasswordTest extends TestCase
+final class SecurePasswordTest extends UnitTestCase
 {
     public function testValidPassword(): void
     {

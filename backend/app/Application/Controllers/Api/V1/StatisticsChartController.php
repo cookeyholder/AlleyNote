@@ -9,7 +9,6 @@ use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
 use Exception;
-use PDO;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;

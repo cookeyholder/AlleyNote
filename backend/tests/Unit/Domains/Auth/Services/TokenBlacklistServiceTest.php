@@ -11,14 +11,14 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * TokenBlacklistService 單元測試.
  */
-final class TokenBlacklistServiceTest extends TestCase
+final class TokenBlacklistServiceTest extends UnitTestCase
 {
     private TokenBlacklistRepositoryInterface&MockInterface $repository;
 

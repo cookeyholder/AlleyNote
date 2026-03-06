@@ -7,9 +7,9 @@ namespace Tests\Unit\Domains\Statistics\DTOs;
 use App\Domains\Statistics\DTOs\PostStatisticsDTO;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostStatisticsDTOTest extends TestCase
+class PostStatisticsDTOTest extends UnitTestCase
 {
     /** @var array<string, mixed> */
     private array $validData;

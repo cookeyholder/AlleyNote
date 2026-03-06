@@ -15,9 +15,9 @@ use InvalidArgumentException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class IpControllerTest extends TestCase
+class IpControllerTest extends UnitTestCase
 {
     use MockeryPHPUnitIntegration;
 

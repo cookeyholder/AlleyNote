@@ -13,14 +13,14 @@ use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use DateTime;
 use DateTimeImmutable;
 use PHPUnit\Framework\Attributes\Group;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * JWT 認證系統整合測試 - 簡化版本
  * 專注於測試各 Repository 和 Service 間的協作.
  */
 #[Group('integration')]
-class JwtAuthenticationIntegrationTest extends TestCase
+class JwtAuthenticationIntegrationTest extends IntegrationTestCase
 {
     private RefreshTokenRepository $refreshTokenRepository;
 

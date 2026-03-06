@@ -12,14 +12,14 @@ use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * DTO 驗證單元測試.
  *
  * 測試所有 DTO 類的驗證邏輯和邊界條件
  */
-class DTOValidationTest extends TestCase
+class DTOValidationTest extends UnitTestCase
 {
     private ValidatorInterface $validator;
 

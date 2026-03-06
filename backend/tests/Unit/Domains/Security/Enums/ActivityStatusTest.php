@@ -6,10 +6,10 @@ namespace Tests\Unit\Domains\Security\Enums;
 
 use App\Domains\Security\Enums\ActivityStatus;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(ActivityStatus::class)]
-class ActivityStatusTest extends TestCase
+class ActivityStatusTest extends UnitTestCase
 {
     public function testEnumValues(): void
     {

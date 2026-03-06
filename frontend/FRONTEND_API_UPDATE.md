@@ -1,6 +1,6 @@
 # 前端 API 更新記錄
 
-**日期**: 2025-10-11  
+**日期**: 2025-10-11
 **版本**: v1.0.1
 
 ---
@@ -9,11 +9,17 @@
 
 前端已更新為使用最新的 API v1 端點，確保與後端 API 規範一致。
 
+> 連線埠對照（補充）：
+>
+> - DevContainer 本機模式：`API_HOST=http://localhost:8081`
+> - Production-like 覆寫模式：`API_HOST=http://localhost:8080`
+> - 本文件中的 URL 以 `$API_HOST` 表示，依模式切換為 `8081/8080`
+
 ### 主要變更
 
 1. **API 基礎 URL 更新**
-   - 舊: `http://localhost:8080/api`
-   - 新: `http://localhost:8080/api/v1`
+   - 舊: `$API_HOST/api`
+   - 新: `$API_HOST/api/v1`
 
 2. **統一 API 版本控制**
    - 所有 API 呼叫現在都經過 `/api/v1` 前綴
@@ -29,13 +35,14 @@
 ### 1. `js/api/config.js`
 
 **變更內容**:
+
 ```javascript
 // 舊的配置
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = "$API_HOST/api";
 
 // 新的配置
-const API_VERSION = 'v1';
-const API_BASE_URL = `http://localhost:8080/api/${API_VERSION}`;
+const API_VERSION = "v1";
+const API_BASE_URL = `${API_HOST}/api/${API_VERSION}`;
 ```
 
 **影響範圍**: 所有 API 呼叫的基礎 URL
@@ -45,6 +52,7 @@ const API_BASE_URL = `http://localhost:8080/api/${API_VERSION}`;
 ### 2. `js/api/modules/users.js`
 
 **變更內容**:
+
 ```javascript
 // 舊的呼叫方式（錯誤 - 重複路徑）
 async getRoles() {
@@ -58,6 +66,7 @@ async getRoles() {
 ```
 
 **修正的方法**:
+
 - `getRoles()`
 - `createRole()`
 - `updateRole()`
@@ -76,41 +85,46 @@ async getRoles() {
 ## 📊 當前 API 端點對應
 
 ### 認證 API
-| 前端路徑 | 完整 URL | 狀態 |
-|---------|---------|------|
-| `/auth/login` | `http://localhost:8080/api/v1/auth/login` | ✅ |
-| `/auth/logout` | `http://localhost:8080/api/v1/auth/logout` | ✅ |
-| `/auth/me` | `http://localhost:8080/api/v1/auth/me` | ✅ |
-| `/auth/register` | `http://localhost:8080/api/v1/auth/register` | ✅ |
-| `/auth/refresh` | `http://localhost:8080/api/v1/auth/refresh` | ✅ |
+
+| 前端路徑         | 完整 URL                         | 狀態 |
+| ---------------- | -------------------------------- | ---- |
+| `/auth/login`    | `$API_HOST/api/v1/auth/login`    | ✅   |
+| `/auth/logout`   | `$API_HOST/api/v1/auth/logout`   | ✅   |
+| `/auth/me`       | `$API_HOST/api/v1/auth/me`       | ✅   |
+| `/auth/register` | `$API_HOST/api/v1/auth/register` | ✅   |
+| `/auth/refresh`  | `$API_HOST/api/v1/auth/refresh`  | ✅   |
 
 ### 使用者 API
-| 前端路徑 | 完整 URL | 狀態 |
-|---------|---------|------|
-| `/users` | `http://localhost:8080/api/v1/users` | ⚠️ 待後端實作 |
-| `/users/{id}` | `http://localhost:8080/api/v1/users/{id}` | ⚠️ 待後端實作 |
-| `/admin/users/{id}/activate` | `http://localhost:8080/api/v1/admin/users/{id}/activate` | ⚠️ 待後端實作 |
+
+| 前端路徑                     | 完整 URL                                     | 狀態          |
+| ---------------------------- | -------------------------------------------- | ------------- |
+| `/users`                     | `$API_HOST/api/v1/users`                     | ⚠️ 待後端實作 |
+| `/users/{id}`                | `$API_HOST/api/v1/users/{id}`                | ⚠️ 待後端實作 |
+| `/admin/users/{id}/activate` | `$API_HOST/api/v1/admin/users/{id}/activate` | ⚠️ 待後端實作 |
 
 ### 角色 API
-| 前端路徑 | 完整 URL | 狀態 |
-|---------|---------|------|
-| `/roles` | `http://localhost:8080/api/v1/roles` | ✅ |
-| `/roles/{id}` | `http://localhost:8080/api/v1/roles/{id}` | ✅ |
-| `/roles/{id}/permissions` | `http://localhost:8080/api/v1/roles/{id}/permissions` | ✅ |
+
+| 前端路徑                  | 完整 URL                                  | 狀態 |
+| ------------------------- | ----------------------------------------- | ---- |
+| `/roles`                  | `$API_HOST/api/v1/roles`                  | ✅   |
+| `/roles/{id}`             | `$API_HOST/api/v1/roles/{id}`             | ✅   |
+| `/roles/{id}/permissions` | `$API_HOST/api/v1/roles/{id}/permissions` | ✅   |
 
 ### 文章 API
-| 前端路徑 | 完整 URL | 狀態 |
-|---------|---------|------|
-| `/posts` | `http://localhost:8080/api/v1/posts` | ✅ |
-| `/posts/{id}` | `http://localhost:8080/api/v1/posts/{id}` | ✅ |
-| `/posts/{id}/pin` | `http://localhost:8080/api/v1/posts/{id}/pin` | ✅ |
+
+| 前端路徑          | 完整 URL                          | 狀態 |
+| ----------------- | --------------------------------- | ---- |
+| `/posts`          | `$API_HOST/api/v1/posts`          | ✅   |
+| `/posts/{id}`     | `$API_HOST/api/v1/posts/{id}`     | ✅   |
+| `/posts/{id}/pin` | `$API_HOST/api/v1/posts/{id}/pin` | ✅   |
 
 ### 統計 API
-| 前端路徑 | 完整 URL | 狀態 |
-|---------|---------|------|
-| `/statistics/overview` | `http://localhost:8080/api/v1/statistics/overview` | ✅ |
-| `/statistics/posts` | `http://localhost:8080/api/v1/statistics/posts` | ✅ |
-| `/statistics/users` | `http://localhost:8080/api/v1/statistics/users` | ✅ |
+
+| 前端路徑               | 完整 URL                               | 狀態 |
+| ---------------------- | -------------------------------------- | ---- |
+| `/statistics/overview` | `$API_HOST/api/v1/statistics/overview` | ✅   |
+| `/statistics/posts`    | `$API_HOST/api/v1/statistics/posts`    | ✅   |
+| `/statistics/users`    | `$API_HOST/api/v1/statistics/users`    | ✅   |
 
 ---
 
@@ -143,16 +157,18 @@ open http://localhost:3000
 ### 3. 預期結果
 
 所有 API 請求應該使用以下格式：
+
 ```
-http://localhost:8080/api/v1/{endpoint}
+$API_HOST/api/v1/{endpoint}
 ```
 
 例如：
-- ✅ `http://localhost:8080/api/v1/auth/login`
-- ✅ `http://localhost:8080/api/v1/posts`
-- ✅ `http://localhost:8080/api/v1/roles`
-- ❌ `http://localhost:8080/api/auth/login` (舊格式)
-- ❌ `http://localhost:8080/api/api/v1/roles` (重複錯誤)
+
+- ✅ `$API_HOST/api/v1/auth/login`
+- ✅ `$API_HOST/api/v1/posts`
+- ✅ `$API_HOST/api/v1/roles`
+- ❌ `$API_HOST/api/auth/login` (舊格式)
+- ❌ `$API_HOST/api/api/v1/roles` (重複錯誤)
 
 ---
 
@@ -204,15 +220,15 @@ http://localhost:8080/api/v1/{endpoint}
 
 ```javascript
 // ✅ 正確的使用方式
-import { apiClient } from './api/client.js';
+import { apiClient } from "./api/client.js";
 
-// baseURL = 'http://localhost:8080/api/v1'
-const users = await apiClient.get('/users');
-// 實際請求: http://localhost:8080/api/v1/users
+// baseURL = '$API_HOST/api/v1'
+const users = await apiClient.get("/users");
+// 實際請求: $API_HOST/api/v1/users
 
 // ❌ 錯誤的使用方式
-const users = await apiClient.get('/api/v1/users');
-// 實際請求: http://localhost:8080/api/v1/api/v1/users (重複!)
+const users = await apiClient.get("/api/v1/users");
+// 實際請求: $API_HOST/api/v1/api/v1/users (重複!)
 ```
 
 ---
@@ -254,13 +270,13 @@ const users = await apiClient.get('/api/v1/users');
 
 ## 🔗 快速連結
 
-- **Swagger UI**: http://localhost:8080/api/docs/ui
-- **OpenAPI JSON**: http://localhost:8080/api/docs
-- **API 健康檢查**: http://localhost:8080/api/health
+- **Swagger UI**: $API_HOST/api/docs/ui
+- **OpenAPI JSON**: $API_HOST/api/docs
+- **API 健康檢查**: $API_HOST/api/health
 - **前端開發伺服器**: http://localhost:3000
 
 ---
 
-**最後更新**: 2025-10-11  
-**更新者**: GitHub Copilot CLI  
+**最後更新**: 2025-10-11
+**更新者**: GitHub Copilot CLI
 **狀態**: ✅ 已完成

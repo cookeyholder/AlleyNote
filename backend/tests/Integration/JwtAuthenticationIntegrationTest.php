@@ -31,14 +31,14 @@ use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Group;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * JWT 認證系統整合測試
  * 驗證各元件間的協作與端到端流程.
  */
 #[Group('integration')]
-class JwtAuthenticationIntegrationTest extends TestCase
+class JwtAuthenticationIntegrationTest extends IntegrationTestCase
 {
     use MockeryPHPUnitIntegration;
 
@@ -480,7 +480,7 @@ class JwtAuthenticationIntegrationTest extends TestCase
     /**
      * 產生測試用私鑰.
      */
-    private function generateTestPrivateKey(): string
+    protected function generateTestPrivateKey(): string
     {
         return '-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEA4f5wg5l2hKsTeNem/V41fGnJm6gOdrj8ym3rFkEjWT2btYEt
@@ -498,7 +498,7 @@ x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7x7
     /**
      * 產生測試用公鑰.
      */
-    private function generateTestPublicKey(): string
+    protected function generateTestPublicKey(): string
     {
         return '-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4f5wg5l2hKsTeNem/V41

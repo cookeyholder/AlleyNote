@@ -29,7 +29,8 @@
 ### API 基礎資訊
 
 - **基礎 URL**: 由環境變數決定
-  - 開發環境: `http://localhost:8080/api`
+  - 開發環境（DevContainer）: `$API_HOST/api`（`API_HOST=http://localhost:8081`）
+  - Production-like: `$API_HOST/api`（`API_HOST=http://localhost:8080`）
   - 測試環境: `http://test.alleynote.com/api`
   - 生產環境: `https://alleynote.com/api`
 - **API 版本**: v4.0
@@ -75,8 +76,12 @@ src/api/
 建立 `.env` 檔案（根目錄）：
 
 ```bash
+# 雙模式擇一
+# API_HOST=http://localhost:8081   # DevContainer
+# API_HOST=http://localhost:8080   # Production-like
+
 # API 配置
-VITE_API_BASE_URL=http://localhost:8080/api
+VITE_API_BASE_URL=$API_HOST/api
 VITE_API_TIMEOUT=30000
 
 # 功能開關
@@ -108,37 +113,38 @@ VITE_CSRF_COOKIE_NAME=csrf_token
  */
 export const API_CONFIG = {
   // 基礎 URL
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+
   // 請求超時時間（毫秒）
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT) || 30000,
-  
+
   // 請求標頭
   headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'X-Requested-With': 'XMLHttpRequest',
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
   },
-  
+
   // 是否攜帶憑證（Cookie）
   withCredentials: true,
-  
+
   // JWT 配置
   jwt: {
-    storageKey: import.meta.env.VITE_JWT_STORAGE_KEY || 'alleynote_token',
-    refreshThreshold: parseInt(import.meta.env.VITE_JWT_REFRESH_THRESHOLD) || 300, // 5分鐘
+    storageKey: import.meta.env.VITE_JWT_STORAGE_KEY || "alleynote_token",
+    refreshThreshold:
+      parseInt(import.meta.env.VITE_JWT_REFRESH_THRESHOLD) || 300, // 5分鐘
   },
-  
+
   // CSRF 配置
   csrf: {
-    headerName: import.meta.env.VITE_CSRF_HEADER_NAME || 'X-CSRF-TOKEN',
-    cookieName: import.meta.env.VITE_CSRF_COOKIE_NAME || 'csrf_token',
+    headerName: import.meta.env.VITE_CSRF_HEADER_NAME || "X-CSRF-TOKEN",
+    cookieName: import.meta.env.VITE_CSRF_COOKIE_NAME || "csrf_token",
   },
-  
+
   // 功能開關
   features: {
-    enableMock: import.meta.env.VITE_ENABLE_API_MOCK === 'true',
-    enableLogger: import.meta.env.VITE_ENABLE_API_LOGGER === 'true',
+    enableMock: import.meta.env.VITE_ENABLE_API_MOCK === "true",
+    enableLogger: import.meta.env.VITE_ENABLE_API_LOGGER === "true",
   },
 };
 
@@ -148,43 +154,43 @@ export const API_CONFIG = {
 export const API_ENDPOINTS = {
   // 認證
   AUTH: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
-    ME: '/auth/me',
+    LOGIN: "/auth/login",
+    LOGOUT: "/auth/logout",
+    REFRESH: "/auth/refresh",
+    ME: "/auth/me",
   },
-  
+
   // 文章
   POSTS: {
-    LIST: '/posts',
+    LIST: "/posts",
     DETAIL: (id) => `/posts/${id}`,
-    CREATE: '/posts',
+    CREATE: "/posts",
     UPDATE: (id) => `/posts/${id}`,
     DELETE: (id) => `/posts/${id}`,
     PUBLISH: (id) => `/posts/${id}/publish`,
     DRAFT: (id) => `/posts/${id}/draft`,
   },
-  
+
   // 附件
   ATTACHMENTS: {
-    UPLOAD: '/attachments/upload',
+    UPLOAD: "/attachments/upload",
     DELETE: (id) => `/attachments/${id}`,
   },
-  
+
   // 使用者
   USERS: {
-    LIST: '/users',
+    LIST: "/users",
     DETAIL: (id) => `/users/${id}`,
-    CREATE: '/users',
+    CREATE: "/users",
     UPDATE: (id) => `/users/${id}`,
     DELETE: (id) => `/users/${id}`,
   },
-  
+
   // 統計
   STATISTICS: {
-    OVERVIEW: '/statistics/overview',
-    POSTS: '/statistics/posts',
-    VIEWS: '/statistics/views',
+    OVERVIEW: "/statistics/overview",
+    POSTS: "/statistics/posts",
+    VIEWS: "/statistics/views",
   },
 };
 ```
@@ -198,7 +204,7 @@ export const API_ENDPOINTS = {
 **`src/utils/tokenManager.js`**
 
 ```javascript
-import { API_CONFIG } from '../api/config.js';
+import { API_CONFIG } from "../api/config.js";
 
 /**
  * JWT Token 管理器
@@ -216,12 +222,12 @@ class TokenManager {
    */
   setToken(token, expiresIn = 3600) {
     const expiresAt = Date.now() + expiresIn * 1000;
-    
+
     const tokenData = {
       token,
       expiresAt,
     };
-    
+
     // 使用 SessionStorage（更安全，關閉瀏覽器即清除）
     sessionStorage.setItem(this.storageKey, JSON.stringify(tokenData));
   }
@@ -249,7 +255,7 @@ class TokenManager {
   isValid() {
     const tokenData = this._getTokenData();
     if (!tokenData) return false;
-    
+
     return Date.now() < tokenData.expiresAt;
   }
 
@@ -260,7 +266,7 @@ class TokenManager {
   shouldRefresh() {
     const tokenData = this._getTokenData();
     if (!tokenData) return false;
-    
+
     const timeRemaining = (tokenData.expiresAt - Date.now()) / 1000;
     return timeRemaining > 0 && timeRemaining < this.refreshThreshold;
   }
@@ -274,7 +280,7 @@ class TokenManager {
       const data = sessionStorage.getItem(this.storageKey);
       return data ? JSON.parse(data) : null;
     } catch (error) {
-      console.error('Failed to parse token data:', error);
+      console.error("Failed to parse token data:", error);
       return null;
     }
   }
@@ -288,7 +294,7 @@ export const tokenManager = new TokenManager();
 **`src/utils/csrfManager.js`**
 
 ```javascript
-import { API_CONFIG } from '../api/config.js';
+import { API_CONFIG } from "../api/config.js";
 
 /**
  * CSRF Token 管理器
@@ -303,15 +309,15 @@ class CSRFManager {
    * @returns {string|null}
    */
   getToken() {
-    const cookies = document.cookie.split(';');
-    
+    const cookies = document.cookie.split(";");
+
     for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
+      const [name, value] = cookie.trim().split("=");
       if (name === this.cookieName) {
         return decodeURIComponent(value);
       }
     }
-    
+
     return null;
   }
 
@@ -334,9 +340,9 @@ export const csrfManager = new CSRFManager();
 **`src/api/interceptors/request.js`**
 
 ```javascript
-import { tokenManager } from '../../utils/tokenManager.js';
-import { csrfManager } from '../../utils/csrfManager.js';
-import { API_CONFIG } from '../config.js';
+import { tokenManager } from "../../utils/tokenManager.js";
+import { csrfManager } from "../../utils/csrfManager.js";
+import { API_CONFIG } from "../config.js";
 
 /**
  * 請求攔截器 - 自動加入認證 Token
@@ -349,10 +355,10 @@ export function requestInterceptor(config) {
   }
 
   // 加入 CSRF Token（POST, PUT, PATCH, DELETE）
-  const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
-    config.method?.toLowerCase()
+  const needsCsrf = ["post", "put", "patch", "delete"].includes(
+    config.method?.toLowerCase(),
   );
-  
+
   if (needsCsrf) {
     const csrfToken = csrfManager.getToken();
     if (csrfToken) {
@@ -362,7 +368,7 @@ export function requestInterceptor(config) {
 
   // 開發環境記錄請求
   if (API_CONFIG.features.enableLogger) {
-    console.log('[API Request]', {
+    console.log("[API Request]", {
       method: config.method?.toUpperCase(),
       url: config.url,
       data: config.data,
@@ -378,9 +384,9 @@ export function requestInterceptor(config) {
  */
 export function requestErrorInterceptor(error) {
   if (API_CONFIG.features.enableLogger) {
-    console.error('[API Request Error]', error);
+    console.error("[API Request Error]", error);
   }
-  
+
   return Promise.reject(error);
 }
 ```
@@ -392,9 +398,9 @@ export function requestErrorInterceptor(error) {
 **`src/api/interceptors/response.js`**
 
 ```javascript
-import { tokenManager } from '../../utils/tokenManager.js';
-import { API_CONFIG } from '../config.js';
-import { APIError, handleAPIError } from '../errors.js';
+import { tokenManager } from "../../utils/tokenManager.js";
+import { API_CONFIG } from "../config.js";
+import { APIError, handleAPIError } from "../errors.js";
 
 /**
  * 回應攔截器 - 統一處理回應格式
@@ -402,7 +408,7 @@ import { APIError, handleAPIError } from '../errors.js';
 export function responseInterceptor(response) {
   // 開發環境記錄回應
   if (API_CONFIG.features.enableLogger) {
-    console.log('[API Response]', {
+    console.log("[API Response]", {
       status: response.status,
       url: response.config.url,
       data: response.data,
@@ -411,7 +417,7 @@ export function responseInterceptor(response) {
 
   // 檢查 Token 是否需要刷新
   if (tokenManager.shouldRefresh()) {
-    console.warn('[API] Token is about to expire, should refresh');
+    console.warn("[API] Token is about to expire, should refresh");
     // 可以在這裡觸發 Token 刷新邏輯
   }
 
@@ -424,15 +430,15 @@ export function responseInterceptor(response) {
  */
 export function responseErrorInterceptor(error) {
   if (API_CONFIG.features.enableLogger) {
-    console.error('[API Response Error]', error);
+    console.error("[API Response Error]", error);
   }
 
   // 沒有回應（網路錯誤）
   if (!error.response) {
     const networkError = new APIError(
-      'NETWORK_ERROR',
-      '網路連線失敗，請檢查您的網路連線',
-      0
+      "NETWORK_ERROR",
+      "網路連線失敗，請檢查您的網路連線",
+      0,
     );
     return Promise.reject(networkError);
   }
@@ -442,28 +448,29 @@ export function responseErrorInterceptor(error) {
   // 401 未授權 - Token 過期或無效
   if (status === 401) {
     tokenManager.removeToken();
-    
+
     // 如果不是登入頁面，導向登入
-    if (!window.location.pathname.includes('/login')) {
-      window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
+    if (!window.location.pathname.includes("/login")) {
+      window.location.href =
+        "/login?redirect=" + encodeURIComponent(window.location.pathname);
     }
-    
+
     return Promise.reject(
-      new APIError('UNAUTHORIZED', '登入已過期，請重新登入', status)
+      new APIError("UNAUTHORIZED", "登入已過期，請重新登入", status),
     );
   }
 
   // 403 禁止訪問
   if (status === 403) {
     return Promise.reject(
-      new APIError('FORBIDDEN', '您沒有權限執行此操作', status)
+      new APIError("FORBIDDEN", "您沒有權限執行此操作", status),
     );
   }
 
   // 404 找不到資源
   if (status === 404) {
     return Promise.reject(
-      new APIError('NOT_FOUND', '請求的資源不存在', status)
+      new APIError("NOT_FOUND", "請求的資源不存在", status),
     );
   }
 
@@ -471,27 +478,32 @@ export function responseErrorInterceptor(error) {
   if (status === 422) {
     const validationErrors = data.errors || {};
     return Promise.reject(
-      new APIError('VALIDATION_ERROR', '資料驗證失敗', status, validationErrors)
+      new APIError(
+        "VALIDATION_ERROR",
+        "資料驗證失敗",
+        status,
+        validationErrors,
+      ),
     );
   }
 
   // 429 請求過於頻繁
   if (status === 429) {
     return Promise.reject(
-      new APIError('RATE_LIMIT', '請求過於頻繁，請稍後再試', status)
+      new APIError("RATE_LIMIT", "請求過於頻繁，請稍後再試", status),
     );
   }
 
   // 500+ 伺服器錯誤
   if (status >= 500) {
     return Promise.reject(
-      new APIError('SERVER_ERROR', '伺服器錯誤，請稍後再試', status)
+      new APIError("SERVER_ERROR", "伺服器錯誤，請稍後再試", status),
     );
   }
 
   // 其他錯誤
-  const message = data.message || '發生未知錯誤';
-  return Promise.reject(new APIError('UNKNOWN_ERROR', message, status));
+  const message = data.message || "發生未知錯誤";
+  return Promise.reject(new APIError("UNKNOWN_ERROR", message, status));
 }
 ```
 
@@ -508,7 +520,7 @@ export function responseErrorInterceptor(error) {
 export class APIError extends Error {
   constructor(code, message, status, details = null) {
     super(message);
-    this.name = 'APIError';
+    this.name = "APIError";
     this.code = code;
     this.status = status;
     this.details = details;
@@ -518,21 +530,21 @@ export class APIError extends Error {
    * 是否為驗證錯誤
    */
   isValidationError() {
-    return this.code === 'VALIDATION_ERROR' && this.details !== null;
+    return this.code === "VALIDATION_ERROR" && this.details !== null;
   }
 
   /**
    * 是否為網路錯誤
    */
   isNetworkError() {
-    return this.code === 'NETWORK_ERROR';
+    return this.code === "NETWORK_ERROR";
   }
 
   /**
    * 是否為認證錯誤
    */
   isAuthError() {
-    return this.code === 'UNAUTHORIZED';
+    return this.code === "UNAUTHORIZED";
   }
 
   /**
@@ -555,31 +567,31 @@ export class APIError extends Error {
  */
 export const ERROR_CODES = {
   // 網路相關
-  NETWORK_ERROR: 'NETWORK_ERROR',
-  TIMEOUT: 'TIMEOUT',
-  
+  NETWORK_ERROR: "NETWORK_ERROR",
+  TIMEOUT: "TIMEOUT",
+
   // 認證相關
-  UNAUTHORIZED: 'UNAUTHORIZED',
-  FORBIDDEN: 'FORBIDDEN',
-  
+  UNAUTHORIZED: "UNAUTHORIZED",
+  FORBIDDEN: "FORBIDDEN",
+
   // 資源相關
-  NOT_FOUND: 'NOT_FOUND',
-  CONFLICT: 'CONFLICT',
-  
+  NOT_FOUND: "NOT_FOUND",
+  CONFLICT: "CONFLICT",
+
   // 驗證相關
-  VALIDATION_ERROR: 'VALIDATION_ERROR',
-  
+  VALIDATION_ERROR: "VALIDATION_ERROR",
+
   // 伺服器相關
-  SERVER_ERROR: 'SERVER_ERROR',
-  RATE_LIMIT: 'RATE_LIMIT',
-  
+  SERVER_ERROR: "SERVER_ERROR",
+  RATE_LIMIT: "RATE_LIMIT",
+
   // 其他
-  UNKNOWN_ERROR: 'UNKNOWN_ERROR',
+  UNKNOWN_ERROR: "UNKNOWN_ERROR",
 };
 
 /**
  * 處理 API 錯誤
- * @param {APIError} error 
+ * @param {APIError} error
  * @param {Object} options - 處理選項
  */
 export function handleAPIError(error, options = {}) {
@@ -592,7 +604,7 @@ export function handleAPIError(error, options = {}) {
 
   // 記錄錯誤
   if (logError) {
-    console.error('[API Error]', {
+    console.error("[API Error]", {
       code: error.code,
       message: error.message,
       status: error.status,
@@ -627,16 +639,16 @@ export function handleAPIError(error, options = {}) {
 **`src/api/client.js`**
 
 ```javascript
-import axios from 'axios';
-import { API_CONFIG } from './config.js';
+import axios from "axios";
+import { API_CONFIG } from "./config.js";
 import {
   requestInterceptor,
   requestErrorInterceptor,
-} from './interceptors/request.js';
+} from "./interceptors/request.js";
 import {
   responseInterceptor,
   responseErrorInterceptor,
-} from './interceptors/response.js';
+} from "./interceptors/response.js";
 
 /**
  * 建立 Axios 實例
@@ -651,17 +663,14 @@ const apiClient = axios.create({
 /**
  * 註冊請求攔截器
  */
-apiClient.interceptors.request.use(
-  requestInterceptor,
-  requestErrorInterceptor
-);
+apiClient.interceptors.request.use(requestInterceptor, requestErrorInterceptor);
 
 /**
  * 註冊回應攔截器
  */
 apiClient.interceptors.response.use(
   responseInterceptor,
-  responseErrorInterceptor
+  responseErrorInterceptor,
 );
 
 export default apiClient;
@@ -672,9 +681,9 @@ export default apiClient;
 **`src/api/modules/auth.js`**
 
 ```javascript
-import apiClient from '../client.js';
-import { API_ENDPOINTS } from '../config.js';
-import { tokenManager } from '../../utils/tokenManager.js';
+import apiClient from "../client.js";
+import { API_ENDPOINTS } from "../config.js";
+import { tokenManager } from "../../utils/tokenManager.js";
 
 /**
  * 認證 API
@@ -688,13 +697,16 @@ export const authAPI = {
    * @returns {Promise<Object>}
    */
   async login(credentials) {
-    const response = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
-    
+    const response = await apiClient.post(
+      API_ENDPOINTS.AUTH.LOGIN,
+      credentials,
+    );
+
     // 儲存 Token
     if (response.data && response.data.token) {
       tokenManager.setToken(response.data.token, response.data.expires_in);
     }
-    
+
     return response.data;
   },
 
@@ -726,11 +738,11 @@ export const authAPI = {
    */
   async refresh() {
     const response = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH);
-    
+
     if (response.data && response.data.token) {
       tokenManager.setToken(response.data.token, response.data.expires_in);
     }
-    
+
     return response.data;
   },
 
@@ -749,8 +761,8 @@ export const authAPI = {
 **`src/api/modules/posts.js`**
 
 ```javascript
-import apiClient from '../client.js';
-import { API_ENDPOINTS } from '../config.js';
+import apiClient from "../client.js";
+import { API_ENDPOINTS } from "../config.js";
 
 /**
  * 文章 API
@@ -840,8 +852,8 @@ export const postsAPI = {
 **`src/api/modules/attachments.js`**
 
 ```javascript
-import apiClient from '../client.js';
-import { API_ENDPOINTS } from '../config.js';
+import apiClient from "../client.js";
+import { API_ENDPOINTS } from "../config.js";
 
 /**
  * 附件 API
@@ -855,11 +867,11 @@ export const attachmentsAPI = {
    */
   async upload(file, onProgress = null) {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     };
 
@@ -867,7 +879,7 @@ export const attachmentsAPI = {
     if (onProgress) {
       config.onUploadProgress = (progressEvent) => {
         const percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
+          (progressEvent.loaded * 100) / progressEvent.total,
         );
         onProgress(percentCompleted);
       };
@@ -876,9 +888,9 @@ export const attachmentsAPI = {
     const response = await apiClient.post(
       API_ENDPOINTS.ATTACHMENTS.UPLOAD,
       formData,
-      config
+      config,
     );
-    
+
     return response.data;
   },
 
@@ -900,23 +912,22 @@ export const attachmentsAPI = {
 ### 登入流程
 
 ```javascript
-import { authAPI } from './api/modules/auth.js';
-import { handleAPIError } from './api/errors.js';
+import { authAPI } from "./api/modules/auth.js";
+import { handleAPIError } from "./api/errors.js";
 
 async function handleLogin(email, password) {
   try {
     const result = await authAPI.login({ email, password });
-    
-    console.log('登入成功', result.user);
-    
+
+    console.log("登入成功", result.user);
+
     // 導向後台
-    window.location.href = '/admin/dashboard';
-    
+    window.location.href = "/admin/dashboard";
   } catch (error) {
     handleAPIError(error, {
       onValidationError: (errors) => {
         // 顯示驗證錯誤
-        Object.keys(errors).forEach(field => {
+        Object.keys(errors).forEach((field) => {
           showFieldError(field, errors[field][0]);
         });
       },
@@ -928,22 +939,21 @@ async function handleLogin(email, password) {
 ### 取得文章列表
 
 ```javascript
-import { postsAPI } from './api/modules/posts.js';
+import { postsAPI } from "./api/modules/posts.js";
 
 async function loadPosts(page = 1) {
   try {
     const result = await postsAPI.list({
       page,
       per_page: 10,
-      status: 'published',
+      status: "published",
     });
-    
+
     renderPosts(result.data);
     renderPagination(result.pagination);
-    
   } catch (error) {
-    console.error('載入文章失敗', error);
-    showToast('載入文章失敗，請稍後再試', 'error');
+    console.error("載入文章失敗", error);
+    showToast("載入文章失敗，請稍後再試", "error");
   }
 }
 ```
@@ -951,22 +961,21 @@ async function loadPosts(page = 1) {
 ### 建立文章
 
 ```javascript
-import { postsAPI } from './api/modules/posts.js';
-import { handleAPIError } from './api/errors.js';
+import { postsAPI } from "./api/modules/posts.js";
+import { handleAPIError } from "./api/errors.js";
 
 async function createPost(formData) {
   try {
     const result = await postsAPI.create({
       title: formData.title,
       content: formData.content,
-      status: 'draft',
+      status: "draft",
     });
-    
-    showToast('文章建立成功', 'success');
-    
+
+    showToast("文章建立成功", "success");
+
     // 導向編輯頁
     window.location.href = `/admin/posts/${result.id}/edit`;
-    
   } catch (error) {
     handleAPIError(error, {
       onValidationError: (errors) => {
@@ -980,24 +989,23 @@ async function createPost(formData) {
 ### 上傳圖片（含進度）
 
 ```javascript
-import { attachmentsAPI } from './api/modules/attachments.js';
+import { attachmentsAPI } from "./api/modules/attachments.js";
 
 async function uploadImage(file) {
-  const progressBar = document.getElementById('upload-progress');
-  
+  const progressBar = document.getElementById("upload-progress");
+
   try {
     const result = await attachmentsAPI.upload(file, (progress) => {
       // 更新進度條
       progressBar.style.width = `${progress}%`;
       progressBar.textContent = `${progress}%`;
     });
-    
-    console.log('上傳成功', result.url);
+
+    console.log("上傳成功", result.url);
     return result.url;
-    
   } catch (error) {
-    console.error('上傳失敗', error);
-    showToast('圖片上傳失敗', 'error');
+    console.error("上傳失敗", error);
+    showToast("圖片上傳失敗", "error");
     throw error;
   }
 }
@@ -1023,14 +1031,14 @@ async function loadData() {
 
 // ❌ 避免的做法
 function loadData() {
-  postsAPI.list()
-    .then(posts => {
-      statisticsAPI.overview()
-        .then(stats => {
-          // 巢狀 Promise
-        });
+  postsAPI
+    .list()
+    .then((posts) => {
+      statisticsAPI.overview().then((stats) => {
+        // 巢狀 Promise
+      });
     })
-    .catch(error => {
+    .catch((error) => {
       // 錯誤處理
     });
 }
@@ -1086,9 +1094,9 @@ export async function getPosts() {
   if (postsPromise) {
     return postsPromise;
   }
-  
+
   postsPromise = postsAPI.list();
-  
+
   try {
     const result = await postsPromise;
     return result;
@@ -1101,21 +1109,21 @@ export async function getPosts() {
 ### 5. 請求取消
 
 ```javascript
-import axios from 'axios';
+import axios from "axios";
 
 // 建立可取消的請求
 const controller = new AbortController();
 
 async function searchPosts(keyword) {
   try {
-    const result = await apiClient.get('/posts', {
+    const result = await apiClient.get("/posts", {
       params: { search: keyword },
       signal: controller.signal,
     });
     return result;
   } catch (error) {
     if (axios.isCancel(error)) {
-      console.log('請求已取消');
+      console.log("請求已取消");
     }
     throw error;
   }
@@ -1135,23 +1143,25 @@ controller.abort();
  */
 async function requestWithRetry(requestFn, maxRetries = 3) {
   let lastError;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await requestFn();
     } catch (error) {
       lastError = error;
-      
+
       // 只重試網路錯誤或 5xx 錯誤
       if (!error.isNetworkError() && error.status < 500) {
         throw error;
       }
-      
+
       // 等待後重試（指數退避）
-      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, i)));
+      await new Promise((resolve) =>
+        setTimeout(resolve, 1000 * Math.pow(2, i)),
+      );
     }
   }
-  
+
   throw lastError;
 }
 

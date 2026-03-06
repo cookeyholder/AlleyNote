@@ -35,4 +35,9 @@ interface OutputSanitizerInterface
      * 清理並截斷文字，用於摘要顯示.
      */
     public function sanitizeAndTruncate(string $content, int $length = 150): string;
+
+    /**
+     * 清理富文本內容，保留安全的 HTML 標籤.
+     */
+    public function sanitizeRichText(string $content): string;
 }

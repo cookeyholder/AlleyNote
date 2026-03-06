@@ -6,12 +6,12 @@ namespace Tests\Unit\Domains\Shared\ValueObjects;
 
 use App\Domains\Shared\ValueObjects\Email;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * Email 值物件測試.
  */
-class EmailTest extends TestCase
+class EmailTest extends UnitTestCase
 {
     public function test_can_create_valid_email(): void
     {

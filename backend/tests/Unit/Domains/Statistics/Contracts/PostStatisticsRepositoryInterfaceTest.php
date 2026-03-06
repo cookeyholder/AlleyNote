@@ -7,10 +7,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
-class PostStatisticsRepositoryInterfaceTest extends TestCase
+class PostStatisticsRepositoryInterfaceTest extends UnitTestCase
 {
     public function testInterfaceExists(): void
     {
@@ -141,7 +141,7 @@ class PostStatisticsRepositoryInterfaceTest extends TestCase
 
             // 檢查文章統計相關的方法文件
             $this->assertTrue(
-                str_contains($docComment, '文章') || str_contains($docComment, 'Post') || str_contains($docComment, '熱門') || str_contains($docComment, '置頂') || str_contains($docComment, '檢查'),
+                str_contains($docComment, '文章') || str_contains($docComment, 'Post') || str_contains($docComment, '熱門') || str_contains($docComment, '置頂') || str_contains($docComment, '檢查') || str_contains($docComment, '瀏覽量') || str_contains($docComment, '時間序列'),
                 "Method {$method->getName()} should have appropriate documentation",
             );
         }
@@ -196,7 +196,9 @@ class PostStatisticsRepositoryInterfaceTest extends TestCase
                            || strpos($methodName, 'Popular') !== false
                            || strpos($methodName, 'Pinned') !== false
                            || strpos($methodName, 'hasData') !== false
-                           || strpos($methodName, 'Summary') !== false;
+                           || strpos($methodName, 'Summary') !== false
+                           || strpos($methodName, 'View') !== false
+                           || strpos($methodName, 'TimeSeries') !== false;
 
             $this->assertTrue($isPostRelated, "Method {$methodName} should be related to post statistics");
         }

@@ -8,10 +8,10 @@ use App\Shared\Cache\Drivers\FileCacheDriver;
 use App\Shared\Cache\Drivers\MemoryCacheDriver;
 use App\Shared\Cache\Services\CacheManager;
 use App\Shared\Cache\Services\DefaultCacheStrategy;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Tests\SecureDDDTestCase;
 
-class CacheSystemTest extends TestCase
+class CacheSystemTest extends SecureDDDTestCase
 {
     private CacheManager $cacheManager;
 

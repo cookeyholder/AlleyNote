@@ -28,6 +28,7 @@
 ### 系統完全無法訪問
 
 #### 診斷步驟
+
 ```bash
 # 1. 檢查系統是否活動
 ping your-server-ip
@@ -47,10 +48,13 @@ free -h
 curl -I http://localhost:3000
 
 # 6. 檢查後端 API (PHP 8.4.12)
-curl -I http://localhost:8080/api/health
+API_HOST=http://localhost:8081
+# API_HOST=http://localhost:8080
+curl -I $API_HOST/api/health
 ```
 
 #### 緊急恢復程序
+
 ```bash
 # 1. 強制重啟所有容器 (前後端分離)
 docker compose -f docker compose.production.yml down --remove-orphans
@@ -77,6 +81,7 @@ sudo reboot
 ### 資料庫連線問題
 
 #### SQLite3 故障排除 (預設推薦)
+
 ```bash
 # 1. 檢查 SQLite3 檔案權限
 ls -la /var/www/html/database/alleynote.sqlite3
@@ -93,6 +98,7 @@ sqlite3 /var/www/html/database/alleynote.sqlite3 "PRAGMA integrity_check;"
 ```
 
 #### PostgreSQL 故障排除 (大型部署)
+
 ```bash
 # 1. 停止所有服務
 docker compose -f docker compose.production.yml down
@@ -123,6 +129,7 @@ docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "SELECT versi
 ### SSL 憑證過期
 
 #### 快速修復
+
 ```bash
 # 1. 檢查憑證狀態
 openssl x509 -in ssl-data/live/yourdomain.com/fullchain.pem -text -noout | grep "Not After"
@@ -147,6 +154,7 @@ curl -I https://yourdomain.com
 ### 網站回應緩慢
 
 #### 診斷流程
+
 ```bash
 # 1. 檢查系統負載
 uptime
@@ -177,11 +185,12 @@ time_starttransfer: %{time_starttransfer}\n
 time_total:       %{time_total}\n"
 
 # 7. 檢查後端 API 效能
-curl -w "@/dev/stdin" -o /dev/null -s http://localhost:8080/api/health <<< "
+curl -w "@/dev/stdin" -o /dev/null -s $API_HOST/api/health <<< "
 time_total: %{time_total}\n"
 ```
 
 #### 解決方案
+
 ```bash
 # 清理系統快取
 sudo sync && sudo sysctl vm.drop_caches=3
@@ -208,6 +217,7 @@ docker compose exec db psql -U ${DB_USERNAME} -d ${DB_DATABASE} -c "REINDEX DATA
 ### 404 錯誤頻發
 
 #### 檢查項目
+
 ```bash
 # 1. 檢查 Nginx 配置
 docker compose exec nginx nginx -t
@@ -227,6 +237,7 @@ include 'vendor/autoload.php';
 ```
 
 #### 修復步驟
+
 ```bash
 # 1. 修復檔案權限
 docker compose exec web chown -R www-data:www-data /var/www/html
@@ -244,6 +255,7 @@ docker compose exec nginx nginx -s reload
 ### 500 內部伺服器錯誤
 
 #### 日誌檢查
+
 ```bash
 # 1. 檢查 PHP 錯誤日誌
 docker compose logs web | tail -50
@@ -259,6 +271,7 @@ sudo journalctl -u docker.service --since "1 hour ago"
 ```
 
 #### 常見原因和修復
+
 ```bash
 # PHP 記憶體不足
 # 編輯 docker/php/php.ini
@@ -279,6 +292,7 @@ docker compose up -d --build
 ### 資料庫連線失敗
 
 #### 診斷步驟
+
 ```bash
 # 1. 檢查資料庫檔案
 ls -la database/alleynote.sqlite3
@@ -294,6 +308,7 @@ lsof database/alleynote.sqlite3
 ```
 
 #### 修復方法
+
 ```bash
 # 1. 修復檔案權限
 docker compose exec web chown www-data:www-data database/alleynote.sqlite3
@@ -316,6 +331,7 @@ docker compose exec web sqlite3 database/alleynote.sqlite3 "REINDEX;"
 ### 建立監控腳本
 
 #### 系統健康檢查腳本
+
 ```bash
 #!/bin/bash
 # /usr/local/bin/alleynote-health-check.sh
@@ -406,6 +422,7 @@ main "$@"
 ```
 
 #### 設定定期檢查
+
 ```bash
 # 加入 crontab
 crontab -e
@@ -420,6 +437,7 @@ crontab -e
 ### 效能監控
 
 #### CPU 和記憶體監控
+
 ```bash
 #!/bin/bash
 # 效能監控腳本
@@ -571,6 +589,7 @@ echo "=== 每月維護完成 ==="
 ### 網站回應緩慢
 
 #### 診斷工具
+
 ```bash
 # 1. 檢查回應時間
 curl -w "@curl-format.txt" -o /dev/null -s "http://yourdomain.com/"
@@ -595,6 +614,7 @@ docker compose exec redis redis-cli info stats | grep hit
 ```
 
 #### 優化策略
+
 ```bash
 # 1. 啟用 OPcache
 # 編輯 docker/php/php.ini
@@ -626,6 +646,7 @@ CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
 ### 記憶體洩漏問題
 
 #### 檢測方法
+
 ```bash
 # 1. 監控記憶體使用趨勢
 while true; do
@@ -644,6 +665,7 @@ docker compose exec web php -i | grep memory_limit
 ```
 
 #### 解決方案
+
 ```bash
 # 1. 重啟容器釋放記憶體
 docker compose restart web
@@ -665,6 +687,7 @@ gc_collect_cycles();
 ### 可疑活動檢測
 
 #### 監控指標
+
 ```bash
 # 1. 檢查失敗登入
 docker compose exec web sqlite3 database/alleynote.sqlite3 "
@@ -691,6 +714,7 @@ ORDER BY uploads DESC;
 ```
 
 #### 自動封鎖腳本
+
 ```bash
 #!/bin/bash
 # 自動封鎖可疑 IP
@@ -720,6 +744,7 @@ done
 ### 惡意檔案檢測
 
 #### 掃描腳本
+
 ```bash
 #!/bin/bash
 # 惡意檔案掃描
@@ -750,6 +775,7 @@ done
 ### 資料庫恢復
 
 #### 完整恢復程序
+
 ```bash
 #!/bin/bash
 # 資料庫恢復腳本
@@ -802,6 +828,7 @@ echo "=== 資料恢復程序完成 ==="
 ### 檔案恢復
 
 #### 檔案恢復腳本
+
 ```bash
 #!/bin/bash
 # 檔案恢復腳本
@@ -843,6 +870,7 @@ echo "=== 檔案恢復程序完成 ==="
 ### 系統加固
 
 #### 安全設定檢查清單
+
 ```bash
 #!/bin/bash
 # 安全設定檢查
@@ -879,6 +907,7 @@ echo "=== 安全檢查完成 ==="
 ### 效能監控儀表板
 
 #### 建立監控腳本
+
 ```bash
 #!/bin/bash
 # 效能監控儀表板
@@ -927,6 +956,7 @@ tail -10 logs/error.log 2>/dev/null || echo "無錯誤日誌"
 ### 自動化監控設定
 
 #### 建立 Systemd 服務
+
 ```bash
 # /etc/systemd/system/alleynote-monitor.service
 [Unit]
@@ -973,7 +1003,9 @@ sudo systemctl start alleynote-monitor.service
 
 ### 錯誤訊息
 ```
+
 [貼上完整錯誤訊息]
+
 ```
 
 ### 已嘗試的解決方案
