@@ -6,7 +6,6 @@ namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
-use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
@@ -36,7 +35,6 @@ class AuthController extends BaseController
     public function __construct(
         private AuthService $authService,
         private AuthenticationServiceInterface $authenticationService,
-        private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
         private ActivityLoggingServiceInterface $activityLoggingService,
         private UserRepositoryInterface $userRepository,
@@ -63,8 +61,16 @@ class AuthController extends BaseController
             ),
         ),
         responses: [
-            new OA\Response(response: 201, description: '註冊成功'),
-            new OA\Response(response: 400, description: '註冊資料驗證失敗'),
+            new OA\Response(
+                response: 201,
+                description: '註冊成功',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
+            new OA\Response(
+                response: 400,
+                description: '註冊資料驗證失敗',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function register(Request $request, Response $response): Response
@@ -122,8 +128,16 @@ class AuthController extends BaseController
             content: new OA\JsonContent(ref: '#/components/schemas/LoginRequest'),
         ),
         responses: [
-            new OA\Response(response: 200, description: '登入成功'),
-            new OA\Response(response: 401, description: '登入失敗'),
+            new OA\Response(
+                response: 200,
+                description: '登入成功',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
+            new OA\Response(
+                response: 401,
+                description: '登入失敗',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function login(Request $request, Response $response): Response
@@ -182,7 +196,11 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(response: 200, description: '登出成功'),
+            new OA\Response(
+                response: 200,
+                description: '登出成功',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function logout(Request $request, Response $response): Response
@@ -234,7 +252,11 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(response: 200, description: '成功取得使用者資訊'),
+            new OA\Response(
+                response: 200,
+                description: '成功取得使用者資訊',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function me(Request $request, Response $response): Response
@@ -281,7 +303,11 @@ class AuthController extends BaseController
         summary: '刷新認證 Token',
         tags: ['auth'],
         responses: [
-            new OA\Response(response: 200, description: 'Token 刷新成功'),
+            new OA\Response(
+                response: 200,
+                description: 'Token 刷新成功',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function refresh(Request $request, Response $response): Response
@@ -340,7 +366,11 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(response: 200, description: '更新成功'),
+            new OA\Response(
+                response: 200,
+                description: '更新成功',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function updateProfile(Request $request, Response $response): Response
@@ -383,7 +413,11 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(response: 200, description: '密碼變更成功'),
+            new OA\Response(
+                response: 200,
+                description: '密碼變更成功',
+                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
+            ),
         ],
     )]
     public function changePassword(Request $request, Response $response): Response
