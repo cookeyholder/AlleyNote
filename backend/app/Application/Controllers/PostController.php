@@ -232,6 +232,12 @@ class PostController extends BaseController
                 'status' => $status,
             ];
 
+            if (in_array('slug', $postColumnNames, true)) {
+                $slugBase = preg_replace('/[^a-z0-9]+/i', '-', strtolower(trim($title))) ?: 'post';
+                $slugBase = trim($slugBase, '-');
+                $insertData['slug'] = $slugBase . '-' . time();
+            }
+
             if (in_array('user_id', $postColumnNames, true)) {
                 $insertData['user_id'] = $userId;
             } elseif (in_array('author_id', $postColumnNames, true)) {
