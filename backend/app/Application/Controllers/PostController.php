@@ -41,6 +41,7 @@ class PostController extends BaseController
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
             $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
+            $postUserColumn = $this->resolvePostsUserColumn($pdo);
 
             // 建立查詢
             $where = [];
@@ -76,10 +77,12 @@ class PostController extends BaseController
 
             // 獲取資料
             $offset = ($page - 1) * $perPage;
-            $sql = "SELECT p.id, p.title, p.content, p.status, p.user_id, p.created_at, p.updated_at, p.publish_date,
+            $userIdSelect = $postUserColumn !== null ? "p.{$postUserColumn} as user_id" : 'NULL as user_id';
+            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
+            $sql = "SELECT p.id, p.title, p.content, p.status, {$userIdSelect}, p.created_at, p.updated_at, p.publish_date,
                            u.username as author
                     FROM posts p
-                    LEFT JOIN users u ON p.user_id = u.id
+                    {$userJoin}
                     WHERE {$whereClause}
                     ORDER BY COALESCE(p.publish_date, p.created_at) DESC
                     LIMIT :limit OFFSET :offset";
@@ -127,6 +130,7 @@ class PostController extends BaseController
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
             $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
+            $postUserColumn = $this->resolvePostsUserColumn($pdo);
 
             // 建立查詢條件
             $conditions = ['p.id = :id'];
@@ -146,9 +150,10 @@ class PostController extends BaseController
             $whereClause = implode(' AND ', $conditions);
 
             // 查詢文章
+            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
             $sql = "SELECT p.*, u.username as author
                     FROM posts p
-                    LEFT JOIN users u ON p.user_id = u.id
+                    {$userJoin}
                     WHERE {$whereClause}";
 
             $stmt = $pdo->prepare($sql);
@@ -519,9 +524,11 @@ class PostController extends BaseController
             }
 
             // 取得更新後的文章
+            $postUserColumn = $this->resolvePostsUserColumn($pdo);
+            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
             $getSql = 'SELECT p.*, u.username as author
                        FROM posts p
-                       LEFT JOIN users u ON p.user_id = u.id
+                       ' . $userJoin . '
                        WHERE p.id = :id';
             $getStmt = $pdo->prepare($getSql);
             $getStmt->execute([':id' => $id]);
@@ -653,6 +660,22 @@ class PostController extends BaseController
         $columnNames = array_column($columns, 'name');
 
         return in_array($column, $columnNames, true);
+    }
+
+    /**
+     * 解析 posts 與 users 的關聯欄位，支援 user_id / author_id schema 差異.
+     */
+    private function resolvePostsUserColumn(PDO $pdo): ?string
+    {
+        if ($this->hasTableColumn($pdo, 'posts', 'user_id')) {
+            return 'user_id';
+        }
+
+        if ($this->hasTableColumn($pdo, 'posts', 'author_id')) {
+            return 'author_id';
+        }
+
+        return null;
     }
 
     /**
