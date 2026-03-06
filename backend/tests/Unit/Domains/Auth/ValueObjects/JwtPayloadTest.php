@@ -8,12 +8,12 @@ use App\Domains\Auth\ValueObjects\JwtPayload;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * JWT Payload Value Object 單元測試.
  */
-final class JwtPayloadTest extends TestCase
+final class JwtPayloadTest extends UnitTestCase
 {
     private DateTimeImmutable $baseTime;
 

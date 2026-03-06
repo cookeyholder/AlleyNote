@@ -20,14 +20,14 @@
 
 ### 安全威脅分類
 
-| 威脅類型 | 風險等級 | 防護策略 |
-|---------|---------|---------|
-| XSS (跨站腳本攻擊) | 🔴 高 | 輸入淨化、CSP |
-| CSRF (跨站請求偽造) | 🔴 高 | CSRF Token、SameSite Cookie |
-| Injection | 🟠 中 | 輸入驗證、參數化查詢 |
-| 敏感資料洩漏 | 🟠 中 | HTTPS、安全儲存 |
-| 點擊劫持 | 🟡 低 | X-Frame-Options |
-| 依賴套件漏洞 | 🟡 低 | 定期更新、掃描 |
+| 威脅類型            | 風險等級 | 防護策略                    |
+| ------------------- | -------- | --------------------------- |
+| XSS (跨站腳本攻擊)  | 🔴 高    | 輸入淨化、CSP               |
+| CSRF (跨站請求偽造) | 🔴 高    | CSRF Token、SameSite Cookie |
+| Injection           | 🟠 中    | 輸入驗證、參數化查詢        |
+| 敏感資料洩漏        | 🟠 中    | HTTPS、安全儲存             |
+| 點擊劫持            | 🟡 低    | X-Frame-Options             |
+| 依賴套件漏洞        | 🟡 低    | 定期更新、掃描              |
 
 ---
 
@@ -61,13 +61,15 @@ element.appendChild(textNode);
 **安裝**
 
 ```bash
-docker-compose up -d dompurify
+# 本專案前端採用 CDN 載入 DOMPurify（預設無需安裝）
+# 若需本地安裝：
+npm install dompurify
 ```
 
 **使用範例**
 
 ```javascript
-import DOMPurify from 'dompurify';
+import DOMPurify from "dompurify";
 
 /**
  * 淨化 HTML 內容（用於顯示 CKEditor 產生的內容）
@@ -77,17 +79,35 @@ import DOMPurify from 'dompurify';
 function sanitizeHTML(dirtyHTML) {
   return DOMPurify.sanitize(dirtyHTML, {
     ALLOWED_TAGS: [
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'p', 'br', 'hr',
-      'strong', 'em', 'u', 's', 'code', 'pre',
-      'a', 'img',
-      'ul', 'ol', 'li',
-      'blockquote',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "br",
+      "hr",
+      "strong",
+      "em",
+      "u",
+      "s",
+      "code",
+      "pre",
+      "a",
+      "img",
+      "ul",
+      "ol",
+      "li",
+      "blockquote",
+      "table",
+      "thead",
+      "tbody",
+      "tr",
+      "th",
+      "td",
     ],
-    ALLOWED_ATTR: [
-      'href', 'src', 'alt', 'title', 'class', 'id',
-    ],
+    ALLOWED_ATTR: ["href", "src", "alt", "title", "class", "id"],
     ALLOW_DATA_ATTR: false, // 不允許 data-* 屬性
   });
 }
@@ -105,16 +125,16 @@ contentElement.innerHTML = articleContent;
  */
 function buildURL(base, params) {
   const url = new URL(base);
-  
+
   Object.entries(params).forEach(([key, value]) => {
     url.searchParams.set(key, value); // 自動編碼
   });
-  
+
   return url.toString();
 }
 
 // 使用範例
-const searchURL = buildURL('/posts', {
+const searchURL = buildURL("/posts", {
   search: userInput, // 自動編碼特殊字元
   page: 1,
 });
@@ -126,14 +146,14 @@ const searchURL = buildURL('/posts', {
 
 ```javascript
 // 不要動態建立事件處理器字串
-element.setAttribute('onclick', `doSomething('${userInput}')`);
+element.setAttribute("onclick", `doSomething('${userInput}')`);
 ```
 
 **✅ 安全做法**
 
 ```javascript
 // 使用 addEventListener
-element.addEventListener('click', () => {
+element.addEventListener("click", () => {
   doSomething(userInput);
 });
 ```
@@ -148,23 +168,23 @@ element.addEventListener('click', () => {
 
 ```javascript
 // src/api/interceptors/request.js
-import { csrfManager } from '../../utils/csrfManager.js';
+import { csrfManager } from "../../utils/csrfManager.js";
 
 export function requestInterceptor(config) {
   // 對於 POST, PUT, PATCH, DELETE 請求加入 CSRF Token
-  const needsCsrf = ['post', 'put', 'patch', 'delete'].includes(
-    config.method?.toLowerCase()
+  const needsCsrf = ["post", "put", "patch", "delete"].includes(
+    config.method?.toLowerCase(),
   );
-  
+
   if (needsCsrf) {
     const csrfToken = csrfManager.getToken();
     if (csrfToken) {
-      config.headers['X-CSRF-TOKEN'] = csrfToken;
+      config.headers["X-CSRF-TOKEN"] = csrfToken;
     } else {
-      console.error('Missing CSRF Token!');
+      console.error("Missing CSRF Token!");
     }
   }
-  
+
   return config;
 }
 ```
@@ -183,7 +203,7 @@ Set-Cookie: session=abc123; SameSite=Strict; Secure; HttpOnly
 // 開發環境檢查 CSRF Token 是否存在
 if (import.meta.env.DEV) {
   if (!csrfManager.hasToken()) {
-    console.warn('CSRF Token not found! Check backend cookie settings.');
+    console.warn("CSRF Token not found! Check backend cookie settings.");
   }
 }
 ```
@@ -197,20 +217,20 @@ if (import.meta.env.DEV) {
 function generateCSRFToken() {
   // 產生隨機 Token
   const token = crypto.randomUUID();
-  
+
   // 存到 Cookie
   document.cookie = `csrf_token=${token}; SameSite=Strict; Secure`;
-  
+
   return token;
 }
 
 // 在請求中同時送出
 function makeSecureRequest(url, data) {
-  const token = getCookie('csrf_token') || generateCSRFToken();
-  
+  const token = getCookie("csrf_token") || generateCSRFToken();
+
   return axios.post(url, data, {
     headers: {
-      'X-CSRF-TOKEN': token,
+      "X-CSRF-TOKEN": token,
     },
   });
 }
@@ -226,14 +246,14 @@ function makeSecureRequest(url, data) {
 
 ```javascript
 // ❌ 容易受到 XSS 攻擊
-localStorage.setItem('token', jwt);
+localStorage.setItem("token", jwt);
 ```
 
 **✅ 較安全 - SessionStorage**
 
 ```javascript
 // ✅ 關閉瀏覽器即清除
-sessionStorage.setItem('token', jwt);
+sessionStorage.setItem("token", jwt);
 ```
 
 **🔒 最安全 - HttpOnly Cookie（建議後端設定）**
@@ -250,7 +270,7 @@ Set-Cookie: token=jwt_value; HttpOnly; Secure; SameSite=Strict
  */
 function isTokenExpired(token) {
   try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
+    const payload = JSON.parse(atob(token.split(".")[1]));
     const expiresAt = payload.exp * 1000; // 轉為毫秒
     return Date.now() >= expiresAt;
   } catch {
@@ -263,13 +283,13 @@ function isTokenExpired(token) {
  */
 async function refreshTokenIfNeeded() {
   const token = tokenManager.getToken();
-  
+
   if (!token || isTokenExpired(token)) {
     try {
       await authAPI.refresh();
     } catch (error) {
       // Token 無法重新整理，導向登入頁
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
   }
 }
@@ -285,30 +305,30 @@ setInterval(refreshTokenIfNeeded, 5 * 60 * 1000);
  * 權限檢查中介軟體
  */
 function requireAuth(requiredRole = null) {
-  return function(next) {
+  return function (next) {
     // 檢查是否已登入
     if (!globalGetters.isAuthenticated()) {
-      window.location.href = '/login';
+      window.location.href = "/login";
       return;
     }
-    
+
     // 檢查角色權限
     if (requiredRole) {
       const userRole = globalGetters.getUserRole();
-      if (userRole !== requiredRole && userRole !== 'super_admin') {
-        showToast('您沒有權限訪問此頁面', 'error');
-        window.location.href = '/admin/dashboard';
+      if (userRole !== requiredRole && userRole !== "super_admin") {
+        showToast("您沒有權限訪問此頁面", "error");
+        window.location.href = "/admin/dashboard";
         return;
       }
     }
-    
+
     // 執行下一步
     next();
   };
 }
 
 // 使用範例
-router.on('/admin/users', requireAuth('super_admin'), () => {
+router.on("/admin/users", requireAuth("super_admin"), () => {
   loadUsersPage();
 });
 ```
@@ -321,20 +341,20 @@ router.on('/admin/users', requireAuth('super_admin'), () => {
  */
 async function deletePost(postId) {
   const confirmed = await showConfirmDialog({
-    title: '確認刪除',
-    message: '此操作無法復原，確定要刪除這篇文章嗎？',
-    confirmText: '刪除',
-    cancelText: '取消',
-    type: 'danger',
+    title: "確認刪除",
+    message: "此操作無法復原，確定要刪除這篇文章嗎？",
+    confirmText: "刪除",
+    cancelText: "取消",
+    type: "danger",
   });
-  
+
   if (!confirmed) {
     return;
   }
-  
+
   try {
     await postsAPI.delete(postId);
-    showToast('文章已刪除', 'success');
+    showToast("文章已刪除", "success");
   } catch (error) {
     handleAPIError(error);
   }
@@ -348,7 +368,7 @@ async function deletePost(postId) {
 ### 1. 前端驗證（UX 優化）
 
 ```javascript
-import validator from 'validator';
+import validator from "validator";
 
 /**
  * 安全的輸入驗證
@@ -358,65 +378,69 @@ const secureValidators = {
    * Email 驗證
    */
   email: (value) => {
-    if (!value) return '電子郵件為必填';
-    
+    if (!value) return "電子郵件為必填";
+
     // 使用專業驗證庫
     if (!validator.isEmail(value)) {
-      return '請輸入有效的電子郵件';
+      return "請輸入有效的電子郵件";
     }
-    
+
     // 額外檢查長度
     if (value.length > 255) {
-      return '電子郵件過長';
+      return "電子郵件過長";
     }
-    
+
     return true;
   },
-  
+
   /**
    * 密碼強度驗證
    */
   password: (value) => {
-    if (!value) return '密碼為必填';
-    
+    if (!value) return "密碼為必填";
+
     if (value.length < 8) {
-      return '密碼至少需要 8 個字元';
+      return "密碼至少需要 8 個字元";
     }
-    
+
     if (value.length > 128) {
-      return '密碼過長';
+      return "密碼過長";
     }
-    
+
     // 檢查是否包含大小寫字母、數字
-    if (!validator.isStrongPassword(value, {
-      minLength: 8,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 0,
-    })) {
-      return '密碼需包含大小寫字母和數字';
+    if (
+      !validator.isStrongPassword(value, {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minNumbers: 1,
+        minSymbols: 0,
+      })
+    ) {
+      return "密碼需包含大小寫字母和數字";
     }
-    
+
     return true;
   },
-  
+
   /**
    * URL 驗證
    */
   url: (value) => {
     if (!value) return true; // 選填
-    
-    if (!validator.isURL(value, {
-      protocols: ['http', 'https'],
-      require_protocol: true,
-    })) {
-      return '請輸入有效的 URL';
+
+    if (
+      !validator.isURL(value, {
+        protocols: ["http", "https"],
+        require_protocol: true,
+      })
+    ) {
+      return "請輸入有效的 URL";
     }
-    
+
     return true;
   },
-  
+
   /**
    * 防止 SQL Injection 字元
    */
@@ -426,13 +450,13 @@ const secureValidators = {
       /(--|;|\/\*|\*\/)/,
       /(\bOR\b|\bAND\b).*=.*=/i,
     ];
-    
+
     for (const pattern of dangerousPatterns) {
       if (pattern.test(value)) {
-        return '輸入包含不允許的字元';
+        return "輸入包含不允許的字元";
       }
     }
-    
+
     return true;
   },
 };
@@ -446,9 +470,18 @@ const secureValidators = {
  */
 class FileUploadValidator {
   constructor(options = {}) {
-    this.allowedTypes = options.allowedTypes || ['image/jpeg', 'image/png', 'image/gif'];
+    this.allowedTypes = options.allowedTypes || [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+    ];
     this.maxSize = options.maxSize || 5 * 1024 * 1024; // 5MB
-    this.allowedExtensions = options.allowedExtensions || ['.jpg', '.jpeg', '.png', '.gif'];
+    this.allowedExtensions = options.allowedExtensions || [
+      ".jpg",
+      ".jpeg",
+      ".png",
+      ".gif",
+    ];
   }
 
   /**
@@ -456,28 +489,32 @@ class FileUploadValidator {
    */
   validate(file) {
     const errors = [];
-    
+
     // 檢查檔案大小
     if (file.size > this.maxSize) {
       errors.push(`檔案大小不能超過 ${this.maxSize / 1024 / 1024}MB`);
     }
-    
+
     // 檢查 MIME 類型
     if (!this.allowedTypes.includes(file.type)) {
       errors.push(`不支援的檔案類型: ${file.type}`);
     }
-    
+
     // 檢查副檔名
-    const extension = '.' + file.name.split('.').pop().toLowerCase();
+    const extension = "." + file.name.split(".").pop().toLowerCase();
     if (!this.allowedExtensions.includes(extension)) {
       errors.push(`不允許的副檔名: ${extension}`);
     }
-    
+
     // 檢查檔案名稱（防止路徑遍歷攻擊）
-    if (file.name.includes('..') || file.name.includes('/') || file.name.includes('\\')) {
-      errors.push('檔案名稱包含不允許的字元');
+    if (
+      file.name.includes("..") ||
+      file.name.includes("/") ||
+      file.name.includes("\\")
+    ) {
+      errors.push("檔案名稱包含不允許的字元");
     }
-    
+
     return {
       valid: errors.length === 0,
       errors,
@@ -491,10 +528,10 @@ class FileUploadValidator {
     return new Promise((resolve, reject) => {
       const img = new Image();
       const url = URL.createObjectURL(file);
-      
+
       img.onload = () => {
         URL.revokeObjectURL(url);
-        
+
         if (img.width > maxWidth || img.height > maxHeight) {
           resolve({
             valid: false,
@@ -504,12 +541,12 @@ class FileUploadValidator {
           resolve({ valid: true, errors: [] });
         }
       };
-      
+
       img.onerror = () => {
         URL.revokeObjectURL(url);
-        reject(new Error('無法讀取圖片'));
+        reject(new Error("無法讀取圖片"));
       };
-      
+
       img.src = url;
     });
   }
@@ -517,7 +554,7 @@ class FileUploadValidator {
 
 // 使用範例
 const validator = new FileUploadValidator({
-  allowedTypes: ['image/jpeg', 'image/png'],
+  allowedTypes: ["image/jpeg", "image/png"],
   maxSize: 2 * 1024 * 1024, // 2MB
 });
 
@@ -525,21 +562,21 @@ async function handleFileUpload(file) {
   // 基本驗證
   const basicValidation = validator.validate(file);
   if (!basicValidation.valid) {
-    showToast(basicValidation.errors.join(', '), 'error');
+    showToast(basicValidation.errors.join(", "), "error");
     return;
   }
-  
+
   // 圖片尺寸驗證
   const dimensionValidation = await validator.validateImageDimensions(file);
   if (!dimensionValidation.valid) {
-    showToast(dimensionValidation.errors.join(', '), 'error');
+    showToast(dimensionValidation.errors.join(", "), "error");
     return;
   }
-  
+
   // 上傳檔案
   try {
     const result = await attachmentsAPI.upload(file);
-    showToast('上傳成功', 'success');
+    showToast("上傳成功", "success");
     return result;
   } catch (error) {
     handleAPIError(error);
@@ -556,31 +593,33 @@ async function handleFileUpload(file) {
 在 HTML 中設定 CSP（或由後端設定）：
 
 ```html
-<meta http-equiv="Content-Security-Policy" 
-      content="
+<meta
+  http-equiv="Content-Security-Policy"
+  content="
         default-src 'self';
         script-src 'self' https://cdn.ckeditor.com https://cdn.tailwindcss.com;
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
         font-src 'self' https://fonts.gstatic.com;
         img-src 'self' data: https:;
         connect-src 'self' https://api.alleynote.com;
-      ">
+      "
+/>
 ```
 
 ### 2. 其他安全標頭
 
 ```html
 <!-- 防止點擊劫持 -->
-<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="X-Frame-Options" content="DENY" />
 
 <!-- 防止 MIME 類型嗅探 -->
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Content-Type-Options" content="nosniff" />
 
 <!-- XSS 防護 -->
-<meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
 
 <!-- Referrer 政策 -->
-<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="referrer" content="strict-origin-when-cross-origin" />
 ```
 
 ### 3. 檢查安全標頭
@@ -592,12 +631,12 @@ async function handleFileUpload(file) {
 function checkSecurityHeaders(response) {
   if (import.meta.env.DEV) {
     const requiredHeaders = [
-      'X-Content-Type-Options',
-      'X-Frame-Options',
-      'X-XSS-Protection',
+      "X-Content-Type-Options",
+      "X-Frame-Options",
+      "X-XSS-Protection",
     ];
-    
-    requiredHeaders.forEach(header => {
+
+    requiredHeaders.forEach((header) => {
       if (!response.headers[header.toLowerCase()]) {
         console.warn(`Missing security header: ${header}`);
       }
@@ -639,7 +678,7 @@ export default {
     fs: {
       // 限制可訪問的檔案範圍
       strict: true,
-      allow: ['./src', './public'],
+      allow: ["./src", "./public"],
     },
   },
 };
@@ -649,11 +688,11 @@ export default {
 
 ```html
 <!-- 使用 CDN 時加入 integrity 屬性 -->
-<script 
+<script
   src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"
   integrity="sha384-..."
-  crossorigin="anonymous">
-</script>
+  crossorigin="anonymous"
+></script>
 ```
 
 ---
@@ -703,7 +742,7 @@ function merge(target, source) {
   for (let key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
       // 防止 __proto__ 污染
-      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
+      if (key === "__proto__" || key === "constructor" || key === "prototype") {
         continue;
       }
       target[key] = source[key];

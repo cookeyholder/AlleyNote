@@ -9,14 +9,14 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Factory\ValidatorFactory;
 use DI\Container;
 use DI\ContainerBuilder;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * DI 容器驗證服務整合測試.
  *
  * 測試 DI 容器中的驗證服務是否正確配置和注入
  */
-class DIValidationIntegrationTest extends TestCase
+class DIValidationIntegrationTest extends IntegrationTestCase
 {
     private Container $container;
 

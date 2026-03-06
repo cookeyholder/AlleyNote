@@ -6,9 +6,9 @@ namespace Tests\Unit\Services;
 
 use App\Infrastructure\Services\CacheService;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class CacheServiceTest extends TestCase
+class CacheServiceTest extends UnitTestCase
 {
     private CacheService $cacheService;
 

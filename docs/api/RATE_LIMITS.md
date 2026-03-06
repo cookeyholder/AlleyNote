@@ -1,6 +1,6 @@
 # API 使用率限制說明
 
-**版本**: 1.0.0  
+**版本**: 1.0.0
 **最後更新**: 2025-10-11
 
 ---
@@ -18,6 +18,22 @@
 
 ## 概述
 
+> 埠對照（2026-03）：
+>
+> - DevContainer 本機模式：API 使用 `http://localhost:8081`
+> - Production / 覆寫模式：可使用 `http://localhost:8080`
+> - 本文件中的 `localhost:8080` 範例為 production-like 參考
+>
+> 建議先設定：
+>
+> ```bash
+> # DevContainer 本機模式
+> export API_HOST=http://localhost:8081
+>
+> # Production-like 覆寫模式
+> # export API_HOST=http://localhost:8080
+> ```
+
 為了確保系統穩定性和公平性，AlleyNote API 對所有端點實施使用率限制（Rate Limiting）。限制基於以下維度：
 
 - **每分鐘請求次數**
@@ -25,6 +41,7 @@
 - **每天請求次數**
 
 限制會根據以下因素調整：
+
 - 端點類型（讀取/寫入/認證）
 - 使用者角色（訪客/一般使用者/管理員）
 - 操作敏感度
@@ -36,10 +53,10 @@
 ### 預設限制
 
 | 時間範圍 | 未認證使用者 | 已認證使用者 | 管理員 |
-|---------|------------|------------|--------|
-| 每分鐘 | 30 | 60 | 200 |
-| 每小時 | 300 | 1,000 | 5,000 |
-| 每天 | 3,000 | 10,000 | 50,000 |
+| -------- | ------------ | ------------ | ------ |
+| 每分鐘   | 30           | 60           | 200    |
+| 每小時   | 300          | 1,000        | 5,000  |
+| 每天     | 3,000        | 10,000       | 50,000 |
 
 ### 回應標頭
 
@@ -51,11 +68,11 @@ X-RateLimit-Remaining: 45
 X-RateLimit-Reset: 1633036800
 ```
 
-| 標頭 | 說明 |
-|-----|------|
-| X-RateLimit-Limit | 時間窗口內的請求限制 |
-| X-RateLimit-Remaining | 剩餘可用請求次數 |
-| X-RateLimit-Reset | 限制重置時間（Unix 時間戳） |
+| 標頭                  | 說明                        |
+| --------------------- | --------------------------- |
+| X-RateLimit-Limit     | 時間窗口內的請求限制        |
+| X-RateLimit-Remaining | 剩餘可用請求次數            |
+| X-RateLimit-Reset     | 限制重置時間（Unix 時間戳） |
 
 ---
 
@@ -67,13 +84,14 @@ X-RateLimit-Reset: 1633036800
 
 #### 登入端點 (POST /api/auth/login)
 
-| 時間範圍 | 限制次數 | 說明 |
-|---------|---------|------|
-| 每分鐘 | 5 | 防止暴力破解 |
-| 每小時 | 20 | - |
-| 每天 | 100 | - |
+| 時間範圍 | 限制次數 | 說明         |
+| -------- | -------- | ------------ |
+| 每分鐘   | 5        | 防止暴力破解 |
+| 每小時   | 20       | -            |
+| 每天     | 100      | -            |
 
 **超過限制回應**:
+
 ```json
 {
   "success": false,
@@ -85,19 +103,19 @@ X-RateLimit-Reset: 1633036800
 
 #### 註冊端點 (POST /api/auth/register)
 
-| 時間範圍 | 限制次數 | 說明 |
-|---------|---------|------|
-| 每分鐘 | 3 | 防止惡意註冊 |
-| 每小時 | 10 | - |
-| 每天 | 50 | - |
+| 時間範圍 | 限制次數 | 說明         |
+| -------- | -------- | ------------ |
+| 每分鐘   | 3        | 防止惡意註冊 |
+| 每小時   | 10       | -            |
+| 每天     | 50       | -            |
 
 #### Token 刷新端點 (POST /api/auth/refresh)
 
 | 時間範圍 | 限制次數 |
-|---------|---------|
-| 每分鐘 | 10 |
-| 每小時 | 100 |
-| 每天 | 500 |
+| -------- | -------- |
+| 每分鐘   | 10       |
+| 每小時   | 100      |
+| 每天     | 500      |
 
 ---
 
@@ -108,18 +126,18 @@ X-RateLimit-Reset: 1633036800
 #### 列表查詢 (GET /api/users, /api/posts, etc.)
 
 | 時間範圍 | 未認證 | 已認證 | 管理員 |
-|---------|-------|--------|--------|
-| 每分鐘 | 30 | 100 | 200 |
-| 每小時 | 500 | 2,000 | 5,000 |
-| 每天 | 5,000 | 20,000 | 50,000 |
+| -------- | ------ | ------ | ------ |
+| 每分鐘   | 30     | 100    | 200    |
+| 每小時   | 500    | 2,000  | 5,000  |
+| 每天     | 5,000  | 20,000 | 50,000 |
 
 #### 詳細資訊查詢 (GET /api/users/{id}, etc.)
 
 | 時間範圍 | 未認證 | 已認證 | 管理員 |
-|---------|-------|--------|--------|
-| 每分鐘 | 40 | 120 | 200 |
-| 每小時 | 800 | 3,000 | 5,000 |
-| 每天 | 8,000 | 30,000 | 50,000 |
+| -------- | ------ | ------ | ------ |
+| 每分鐘   | 40     | 120    | 200    |
+| 每小時   | 800    | 3,000  | 5,000  |
+| 每天     | 8,000  | 30,000 | 50,000 |
 
 ---
 
@@ -129,27 +147,27 @@ X-RateLimit-Reset: 1633036800
 
 #### 建立資源 (POST /api/users, /api/posts, etc.)
 
-| 時間範圍 | 限制次數 | 說明 |
-|---------|---------|------|
-| 每分鐘 | 20 | 防止濫用 |
-| 每小時 | 200 | - |
-| 每天 | 1,000 | - |
+| 時間範圍 | 限制次數 | 說明     |
+| -------- | -------- | -------- |
+| 每分鐘   | 20       | 防止濫用 |
+| 每小時   | 200      | -        |
+| 每天     | 1,000    | -        |
 
 #### 更新資源 (PUT /api/users/{id}, etc.)
 
 | 時間範圍 | 限制次數 |
-|---------|---------|
-| 每分鐘 | 30 |
-| 每小時 | 300 |
-| 每天 | 2,000 |
+| -------- | -------- |
+| 每分鐘   | 30       |
+| 每小時   | 300      |
+| 每天     | 2,000    |
 
 #### 刪除資源 (DELETE /api/users/{id}, etc.)
 
-| 時間範圍 | 限制次數 | 說明 |
-|---------|---------|------|
-| 每分鐘 | 10 | 刪除操作較敏感 |
-| 每小時 | 100 | - |
-| 每天 | 500 | - |
+| 時間範圍 | 限制次數 | 說明           |
+| -------- | -------- | -------------- |
+| 每分鐘   | 10       | 刪除操作較敏感 |
+| 每小時   | 100      | -              |
+| 每天     | 500      | -              |
 
 ---
 
@@ -160,10 +178,10 @@ X-RateLimit-Reset: 1633036800
 #### 搜尋 (GET /api/users?search=, etc.)
 
 | 時間範圍 | 未認證 | 已認證 | 管理員 |
-|---------|-------|--------|--------|
-| 每分鐘 | 10 | 30 | 100 |
-| 每小時 | 100 | 500 | 2,000 |
-| 每天 | 1,000 | 5,000 | 20,000 |
+| -------- | ------ | ------ | ------ |
+| 每分鐘   | 10     | 30     | 100    |
+| 每小時   | 100    | 500    | 2,000  |
+| 每天     | 1,000  | 5,000  | 20,000 |
 
 ---
 
@@ -173,21 +191,23 @@ X-RateLimit-Reset: 1633036800
 
 #### 上傳附件 (POST /api/attachments)
 
-| 時間範圍 | 限制次數 | 說明 |
-|---------|---------|------|
-| 每分鐘 | 5 | 防止濫用儲存空間 |
-| 每小時 | 30 | - |
-| 每天 | 100 | - |
+| 時間範圍 | 限制次數 | 說明             |
+| -------- | -------- | ---------------- |
+| 每分鐘   | 5        | 防止濫用儲存空間 |
+| 每小時   | 30       | -                |
+| 每天     | 100      | -                |
 
 **額外限制**:
+
 - 單檔大小上限: 10 MB
-- 允許的檔案類型: 
+- 允許的檔案類型:
   - 圖片: `image/jpeg`, `image/png`, `image/gif`
   - 文件: `application/pdf`
 
 **範例請求**:
+
 ```bash
-curl -X POST http://localhost:8080/api/attachments \
+curl -X POST $API_HOST/api/attachments \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -F "file=@/path/to/image.jpg"
 ```
@@ -200,38 +220,40 @@ curl -X POST http://localhost:8080/api/attachments \
 
 以下端點可在未認證的情況下訪問，但仍受限制：
 
-| 端點 | 方法 | 限制 |
-|-----|------|------|
-| /api/health | GET | 每分鐘 100 次 |
-| /api/docs | GET | 每分鐘 60 次 |
-| /api/docs/ui | GET | 每分鐘 60 次|
-| /api/posts | GET | 每分鐘 30 次 |
-| /api/posts/{id} | GET | 每分鐘 40 次 |
-| /api/tags | GET | 每分鐘 30 次 |
-| /api/settings | GET | 每分鐘 30 次 |
+| 端點            | 方法 | 限制          |
+| --------------- | ---- | ------------- |
+| /api/health     | GET  | 每分鐘 100 次 |
+| /api/docs       | GET  | 每分鐘 60 次  |
+| /api/docs/ui    | GET  | 每分鐘 60 次  |
+| /api/posts      | GET  | 每分鐘 30 次  |
+| /api/posts/{id} | GET  | 每分鐘 40 次  |
+| /api/tags       | GET  | 每分鐘 30 次  |
+| /api/settings   | GET  | 每分鐘 30 次  |
 
 ### 需要認證的端點
 
 大多數寫入操作和管理功能需要認證：
 
-| 操作類型 | 認證要求 | 權限要求 |
-|---------|---------|---------|
-| 查詢公開資源 | ❌ | - |
-| 查詢個人資源 | ✅ | - |
-| 建立資源 | ✅ | 對應權限 |
-| 更新資源 | ✅ | 對應權限 |
-| 刪除資源 | ✅ | 對應權限 |
-| 管理員操作 | ✅ | Admin 角色 |
+| 操作類型     | 認證要求 | 權限要求   |
+| ------------ | -------- | ---------- |
+| 查詢公開資源 | ❌       | -          |
+| 查詢個人資源 | ✅       | -          |
+| 建立資源     | ✅       | 對應權限   |
+| 更新資源     | ✅       | 對應權限   |
+| 刪除資源     | ✅       | 對應權限   |
+| 管理員操作   | ✅       | Admin 角色 |
 
 ### Token 使用
 
 **標準請求格式**:
+
 ```bash
-curl -X GET http://localhost:8080/api/users \
+curl -X GET $API_HOST/api/users \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 **Token 過期處理**:
+
 1. 使用 Refresh Token 刷新
 2. 或重新登入取得新 Token
 
@@ -292,10 +314,10 @@ Content-Type: application/json
 企業用戶可享有更高的限制：
 
 | 時間範圍 | 企業方案 |
-|---------|---------|
-| 每分鐘 | 500 |
-| 每小時 | 15,000 |
-| 每天 | 150,000 |
+| -------- | -------- |
+| 每分鐘   | 500      |
+| 每小時   | 15,000   |
+| 每天     | 150,000  |
 
 ### 最佳實踐
 
@@ -306,16 +328,18 @@ async function fetchWithRetry(url, options, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
     try {
       const response = await fetch(url, options);
-      
+
       if (response.status === 429) {
-        const retryAfter = parseInt(response.headers.get('Retry-After') || '60');
+        const retryAfter = parseInt(
+          response.headers.get("Retry-After") || "60",
+        );
         const waitTime = Math.min(retryAfter * Math.pow(2, i), 300); // 最多等 5 分鐘
-        
+
         console.log(`Rate limited. Waiting ${waitTime} seconds...`);
-        await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+        await new Promise((resolve) => setTimeout(resolve, waitTime * 1000));
         continue;
       }
-      
+
       return response;
     } catch (error) {
       if (i === maxRetries - 1) throw error;
@@ -335,19 +359,19 @@ const CACHE_TTL = 60000; // 1 分鐘
 async function fetchWithCache(url, options) {
   const cacheKey = `${url}_${JSON.stringify(options)}`;
   const cached = cache.get(cacheKey);
-  
+
   if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
     return cached.data;
   }
-  
+
   const response = await fetch(url, options);
   const data = await response.json();
-  
+
   cache.set(cacheKey, {
     data,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   });
-  
+
   return data;
 }
 ```
@@ -363,9 +387,9 @@ for (const userId of userIds) {
 }
 
 // 好的做法：單次批次請求（如果 API 支援）
-await fetch('/api/users/batch', {
-  method: 'POST',
-  body: JSON.stringify({ ids: userIds })
+await fetch("/api/users/batch", {
+  method: "POST",
+  body: JSON.stringify({ ids: userIds }),
 });
 ```
 
@@ -375,14 +399,15 @@ await fetch('/api/users/batch', {
 
 ```javascript
 function checkRateLimitHeaders(response) {
-  const limit = response.headers.get('X-RateLimit-Limit');
-  const remaining = response.headers.get('X-RateLimit-Remaining');
-  const reset = response.headers.get('X-RateLimit-Reset');
-  
+  const limit = response.headers.get("X-RateLimit-Limit");
+  const remaining = response.headers.get("X-RateLimit-Remaining");
+  const reset = response.headers.get("X-RateLimit-Reset");
+
   console.log(`Rate limit: ${remaining}/${limit}`);
-  
-  if (remaining < limit * 0.1) { // 剩餘少於 10%
-    console.warn('Approaching rate limit!');
+
+  if (remaining < limit * 0.1) {
+    // 剩餘少於 10%
+    console.warn("Approaching rate limit!");
   }
 }
 ```
@@ -394,6 +419,7 @@ function checkRateLimitHeaders(response) {
 ### Q: 為什麼我的請求被限制了？
 
 **A**: 檢查以下幾點：
+
 1. 確認您的請求頻率是否超過限制
 2. 檢查是否有多個客戶端使用同一個帳號
 3. 確認是否有自動化腳本在背景執行
@@ -408,7 +434,8 @@ function checkRateLimitHeaders(response) {
 
 ### Q: 限制是針對 IP 還是使用者？
 
-**A**: 
+**A**:
+
 - 未認證請求：基於 IP 位址
 - 已認證請求：基於使用者 ID
 - 這樣可以避免共享 IP（如公司網路）的影響
@@ -423,5 +450,5 @@ function checkRateLimitHeaders(response) {
 
 ---
 
-**最後更新**: 2025-10-11  
+**最後更新**: 2025-10-11
 **維護者**: AlleyNote 開發團隊

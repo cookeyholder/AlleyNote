@@ -6,7 +6,7 @@ namespace Tests\Unit\Domains\Auth\Exceptions;
 
 use App\Domains\Auth\Exceptions\JwtException;
 use Exception;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * JWT 基礎例外類別單元測試.
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
  * @author GitHub Copilot
  * @since 1.0.0
  */
-class JwtExceptionTest extends TestCase
+class JwtExceptionTest extends UnitTestCase
 {
     /**
      * 建立測試用的具體實作類別.

@@ -16,9 +16,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
-class AttachmentControllerTest extends TestCase
+class AttachmentControllerTest extends IntegrationTestCase
 {
     private AttachmentService&MockInterface $attachmentService;
 

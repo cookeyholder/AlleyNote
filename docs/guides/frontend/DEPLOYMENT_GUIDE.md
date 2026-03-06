@@ -29,16 +29,18 @@
 
 ## 構建流程
 
+> ⚠️ 備註：本專案前端現行為「無建置工具」架構，以下若出現 Vite 或 `dist/` 內容屬歷史參考，實際請以 `frontend/README.md` 的流程為準。
+
 ### 1. 開發環境建構
 
 ```bash
-# 安裝依賴
-docker-compose up -d
+# 啟動服務
+docker compose up -d
 
 # 啟動開發伺服器（瀏覽器原生刷新）
 直接編輯文件並刷新瀏覽器
 
-# 開啟在 http://localhost:5173
+# 開啟在 http://localhost:3000
 ```
 
 ### 2. 生產環境建構
@@ -47,8 +49,8 @@ docker-compose up -d
 # 建構生產版本
 無需構建（已移除）
 
-# 預覽建構結果
-npm run preview
+# 驗證服務
+curl -I http://localhost:3000
 ```
 
 ### 3. 建構產物
@@ -71,87 +73,86 @@ dist/
 **`（無需配置檔案）`**
 
 ```javascript
-
-import { resolve } from 'path';
+import { resolve } from "path";
 
 export default defineConfig({
   // 基礎路徑
-  base: '/',
-  
+  base: "/",
+
   // 建構選項
   build: {
     // 輸出目錄
-    outDir: 'dist',
-    
+    outDir: "dist",
+
     // 資源目錄
-    assetsDir: 'assets',
-    
+    assetsDir: "assets",
+
     // 生成 source map（僅開發環境）
-    sourcemap: process.env.NODE_ENV === 'development',
-    
+    sourcemap: process.env.NODE_ENV === "development",
+
     // 壓縮選項
-    minify: 'terser',
+    minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: true,  // 移除 console.log
+        drop_console: true, // 移除 console.log
         drop_debugger: true, // 移除 debugger
       },
     },
-    
+
     // Code Splitting
     rollupOptions: {
       output: {
         // 手動 chunk 分割
         manualChunks: {
           // 將 vendor 套件單獨打包
-          vendor: ['axios', 'dompurify', 'validator'],
-          
+          vendor: ["axios", "dompurify", "validator"],
+
           // 將 CKEditor 單獨打包（較大）
-          editor: ['@ckeditor/ckeditor5-build-classic'],
+          editor: ["@ckeditor/ckeditor5-build-classic"],
         },
-        
+
         // 資源命名
-        chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]',
+        chunkFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name]-[hash].js",
+        assetFileNames: "assets/[name]-[hash].[ext]",
       },
     },
-    
+
     // 檔案大小警告限制（500KB）
     chunkSizeWarningLimit: 500,
-    
+
     // 清空輸出目錄
     emptyOutDir: true,
   },
-  
+
   // 伺服器選項
   server: {
     port: 5173,
     host: true,
-    
+
     // API 代理
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      "/api": {
+        target: process.env.API_HOST || "http://localhost:8081",
         changeOrigin: true,
       },
     },
   },
-  
+
   // 預覽伺服器選項
   preview: {
     port: 4173,
     host: true,
   },
-  
+
   // 路徑別名
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@api': resolve(__dirname, 'src/api'),
-      '@components': resolve(__dirname, 'src/components'),
-      '@utils': resolve(__dirname, 'src/utils'),
-      '@store': resolve(__dirname, 'src/store'),
+      "@": resolve(__dirname, "src"),
+      "@api": resolve(__dirname, "src/api"),
+      "@components": resolve(__dirname, "src/components"),
+      "@utils": resolve(__dirname, "src/utils"),
+      "@store": resolve(__dirname, "src/store"),
     },
   },
 });
@@ -167,7 +168,9 @@ export default defineConfig({
 
 ```bash
 # 開發環境配置
-VITE_API_BASE_URL=http://localhost:8080/api
+# API_HOST=http://localhost:8081   # DevContainer
+# API_HOST=http://localhost:8080   # Production-like
+VITE_API_BASE_URL=$API_HOST/api
 VITE_API_TIMEOUT=30000
 VITE_ENABLE_API_LOGGER=true
 VITE_ENABLE_API_MOCK=false
@@ -204,8 +207,8 @@ VITE_ENABLE_API_MOCK=false
 export const env = {
   apiBaseURL: import.meta.env.VITE_API_BASE_URL,
   apiTimeout: parseInt(import.meta.env.VITE_API_TIMEOUT),
-  enableLogger: import.meta.env.VITE_ENABLE_API_LOGGER === 'true',
-  enableMock: import.meta.env.VITE_ENABLE_API_MOCK === 'true',
+  enableLogger: import.meta.env.VITE_ENABLE_API_LOGGER === "true",
+  enableMock: import.meta.env.VITE_ENABLE_API_MOCK === "true",
   isDevelopment: import.meta.env.DEV,
   isProduction: import.meta.env.PROD,
 };
@@ -261,32 +264,32 @@ CMD ["nginx", "-g", "daemon off;"]
 server {
     listen 80;
     server_name alleynote.com;
-    
+
     # 根目錄
     root /usr/share/nginx/html;
     index index.html;
-    
+
     # Gzip 壓縮
     gzip on;
     gzip_vary on;
     gzip_min_length 1024;
-    gzip_types text/plain text/css text/xml text/javascript 
-               application/x-javascript application/xml+rss 
+    gzip_types text/plain text/css text/xml text/javascript
+               application/x-javascript application/xml+rss
                application/json application/javascript;
-    
+
     # 安全標頭
     add_header X-Frame-Options "DENY" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header X-XSS-Protection "1; mode=block" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
     add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.ckeditor.com https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.alleynote.com;" always;
-    
+
     # 快取策略
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
         expires 1y;
         add_header Cache-Control "public, immutable";
     }
-    
+
     # API 代理
     location /api {
         proxy_pass http://backend:8080;
@@ -295,12 +298,12 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
     }
-    
+
     # SPA 路由（History API）
     location / {
         try_files $uri $uri/ /index.html;
     }
-    
+
     # 健康檢查
     location /health {
         access_log off;
@@ -313,7 +316,7 @@ server {
 #### Docker Compose
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   frontend:
@@ -406,7 +409,7 @@ networks:
 
 ```bash
 # 安裝 Vercel CLI
-docker-compose up -d -g vercel
+npm install -g vercel
 
 # 登入
 vercel login
@@ -454,12 +457,12 @@ echo "✅ 部署完成！"
 
 ```javascript
 // 路由懶加載
-const AdminDashboard = () => import('./pages/admin/Dashboard.js');
-const PostEditor = () => import('./pages/admin/PostEditor.js');
+const AdminDashboard = () => import("./pages/admin/Dashboard.js");
+const PostEditor = () => import("./pages/admin/PostEditor.js");
 
 // 條件載入
-if (userRole === 'admin') {
-  const { AdminPanel } = await import('./components/AdminPanel.js');
+if (userRole === "admin") {
+  const { AdminPanel } = await import("./components/AdminPanel.js");
   renderAdminPanel(AdminPanel);
 }
 ```
@@ -471,20 +474,20 @@ if (userRole === 'admin') {
  * 圖片懶加載
  */
 function setupLazyLoading() {
-  const images = document.querySelectorAll('img[data-src]');
-  
+  const images = document.querySelectorAll("img[data-src]");
+
   const imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         const img = entry.target;
         img.src = img.dataset.src;
-        img.removeAttribute('data-src');
+        img.removeAttribute("data-src");
         imageObserver.unobserve(img);
       }
     });
   });
-  
-  images.forEach(img => imageObserver.observe(img));
+
+  images.forEach((img) => imageObserver.observe(img));
 }
 
 // 初始化
@@ -496,20 +499,27 @@ setupLazyLoading();
 ```html
 <!DOCTYPE html>
 <html lang="zh-TW">
-<head>
+  <head>
     <!-- DNS 預解析 -->
-    <link rel="dns-prefetch" href="https://api.alleynote.com">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    
+    <link rel="dns-prefetch" href="https://api.alleynote.com" />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+
     <!-- 預連線 -->
-    <link rel="preconnect" href="https://api.alleynote.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
+    <link rel="preconnect" href="https://api.alleynote.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <!-- 預載入關鍵資源 -->
-    <link rel="preload" href="/assets/main.js" as="script">
-    <link rel="preload" href="/assets/main.css" as="style">
-    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-</head>
+    <link rel="preload" href="/assets/main.js" as="script" />
+    <link rel="preload" href="/assets/main.css" as="style" />
+    <link
+      rel="preload"
+      href="/fonts/inter-var.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+</html>
 ```
 
 ### 4. Service Worker（PWA）
@@ -517,25 +527,25 @@ setupLazyLoading();
 **`public/sw.js`**
 
 ```javascript
-const CACHE_NAME = 'alleynote-v1';
+const CACHE_NAME = "alleynote-v1";
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/assets/main.js',
-  '/assets/main.css',
+  "/",
+  "/index.html",
+  "/assets/main.js",
+  "/assets/main.css",
 ];
 
 // 安裝
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS);
-    })
+    }),
   );
 });
 
 // 啟用
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -543,19 +553,19 @@ self.addEventListener('activate', (event) => {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName);
           }
-        })
+        }),
       );
-    })
+    }),
   );
 });
 
 // 攔截請求
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       // 快取優先策略
       return response || fetch(event.request);
-    })
+    }),
   );
 });
 ```
@@ -564,14 +574,15 @@ self.addEventListener('fetch', (event) => {
 
 ```javascript
 // src/main.js
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('SW registered:', registration);
+if ("serviceWorker" in navigator && import.meta.env.PROD) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("SW registered:", registration);
       })
-      .catch(error => {
-        console.error('SW registration failed:', error);
+      .catch((error) => {
+        console.error("SW registration failed:", error);
       });
   });
 }
@@ -583,19 +594,19 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
 /**
  * Web Vitals 監控
  */
-import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from "web-vitals";
 
 function sendToAnalytics(metric) {
   // 發送到分析服務（如 Google Analytics）
   if (window.gtag) {
-    gtag('event', metric.name, {
-      event_category: 'Web Vitals',
+    gtag("event", metric.name, {
+      event_category: "Web Vitals",
       value: Math.round(metric.value),
       event_label: metric.id,
       non_interaction: true,
     });
   }
-  
+
   console.log(metric.name, metric.value);
 }
 
@@ -614,12 +625,12 @@ getTTFB(sendToAnalytics);
 ### 1. Sentry 錯誤追蹤
 
 ```bash
-docker-compose up -d @sentry/browser
+npm install @sentry/browser
 ```
 
 ```javascript
 // src/utils/monitoring.js
-import * as Sentry from '@sentry/browser';
+import * as Sentry from "@sentry/browser";
 
 export function initMonitoring() {
   if (import.meta.env.PROD) {
@@ -627,25 +638,25 @@ export function initMonitoring() {
       dsn: import.meta.env.VITE_SENTRY_DSN,
       environment: import.meta.env.MODE,
       release: `alleynote-frontend@${__APP_VERSION__}`,
-      
+
       // 取樣率
       tracesSampleRate: 0.1,
-      
+
       // 忽略特定錯誤
       ignoreErrors: [
-        'ResizeObserver loop limit exceeded',
-        'Non-Error promise rejection captured',
+        "ResizeObserver loop limit exceeded",
+        "Non-Error promise rejection captured",
       ],
-      
+
       // 面包屑（Breadcrumbs）
       beforeBreadcrumb(breadcrumb) {
         // 過濾敏感資訊
-        if (breadcrumb.category === 'console') {
+        if (breadcrumb.category === "console") {
           return null;
         }
         return breadcrumb;
       },
-      
+
       // 事件前處理
       beforeSend(event, hint) {
         // 移除敏感資訊
@@ -663,7 +674,7 @@ export function captureError(error, context = {}) {
   if (import.meta.env.PROD) {
     Sentry.captureException(error, { extra: context });
   } else {
-    console.error('Error:', error, context);
+    console.error("Error:", error, context);
   }
 }
 ```
@@ -674,18 +685,18 @@ export function captureError(error, context = {}) {
 // src/utils/analytics.js
 export function initAnalytics() {
   if (import.meta.env.PROD) {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.src = `https://www.googletagmanager.com/gtag/js?id=${import.meta.env.VITE_GA_TRACKING_ID}`;
     script.async = true;
     document.head.appendChild(script);
-    
+
     window.dataLayer = window.dataLayer || [];
     function gtag() {
       dataLayer.push(arguments);
     }
-    gtag('js', new Date());
-    gtag('config', import.meta.env.VITE_GA_TRACKING_ID);
-    
+    gtag("js", new Date());
+    gtag("config", import.meta.env.VITE_GA_TRACKING_ID);
+
     window.gtag = gtag;
   }
 }
@@ -695,7 +706,7 @@ export function initAnalytics() {
  */
 export function trackPageView(path) {
   if (window.gtag) {
-    gtag('config', import.meta.env.VITE_GA_TRACKING_ID, {
+    gtag("config", import.meta.env.VITE_GA_TRACKING_ID, {
       page_path: path,
     });
   }
@@ -706,7 +717,7 @@ export function trackPageView(path) {
  */
 export function trackEvent(action, category, label, value) {
   if (window.gtag) {
-    gtag('event', action, {
+    gtag("event", action, {
       event_category: category,
       event_label: label,
       value: value,
@@ -735,28 +746,28 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          node-version: "18"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run linter
         run: npm run lint
-      
+
       - name: Run unit tests
         run: npm run test:coverage
-      
+
       - name: Run E2E tests
         run: npm run test:e2e
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
 
@@ -764,25 +775,25 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          cache: 'npm'
-      
+          node-version: "18"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: 無需構建（已移除）
         env:
           VITE_API_BASE_URL: ${{ secrets.API_BASE_URL }}
           VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
-      
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -793,14 +804,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: dist
           path: dist/
-      
+
       - name: Deploy to production
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -820,6 +831,7 @@ jobs:
 **原因**: JavaScript 載入失敗或執行錯誤
 
 **解決方式**:
+
 ```bash
 # 檢查 Console 錯誤
 # 檢查網路請求是否成功
@@ -831,9 +843,10 @@ jobs:
 **原因**: CORS 配置錯誤或 API URL 錯誤
 
 **解決方式**:
+
 ```javascript
 // 檢查環境變數
-console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
+console.log("API Base URL:", import.meta.env.VITE_API_BASE_URL);
 
 // 檢查後端 CORS 設定
 // Access-Control-Allow-Origin: https://alleynote.com
@@ -844,6 +857,7 @@ console.log('API Base URL:', import.meta.env.VITE_API_BASE_URL);
 **原因**: Nginx 未正確配置 History API
 
 **解決方式**:
+
 ```nginx
 # 確保有這行配置
 location / {
@@ -856,6 +870,7 @@ location / {
 **原因**: 舊版本被快取
 
 **解決方式**:
+
 ```bash
 # 清除 CloudFront 快取
 aws cloudfront create-invalidation --distribution-id XXX --paths "/*"

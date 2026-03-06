@@ -41,8 +41,8 @@ check_docker() {
 # 檢查應用程式是否執行
 check_app() {
     print_info "檢查應用程式狀態..."
-    
-    if curl -s http://localhost:3000 > /dev/null; then
+
+    if curl -s http://localhost:8081 > /dev/null; then
         print_success "應用程式執行中"
         return 0
     else
@@ -56,18 +56,18 @@ start_app() {
     print_info "啟動應用程式..."
     cd ../.. # 回到專案根目錄
     docker compose up -d
-    
+
     # 等待服務啟動
     print_info "等待服務啟動（最多 60 秒）..."
     for i in {1..60}; do
-        if curl -s http://localhost:3000 > /dev/null; then
+        if curl -s http://localhost:8081 > /dev/null; then
             print_success "應用程式啟動成功"
             cd - > /dev/null
             return 0
         fi
         sleep 1
     done
-    
+
     print_error "應用程式啟動逾時"
     cd - > /dev/null
     exit 1
@@ -76,7 +76,7 @@ start_app() {
 # 安裝依賴
 install_deps() {
     print_info "檢查依賴..."
-    
+
     if [ ! -d "node_modules" ]; then
         print_info "安裝 npm 依賴..."
         npm install
@@ -84,19 +84,23 @@ install_deps() {
     else
         print_success "依賴已安裝"
     fi
-    
-    # 檢查 Playwright 瀏覽器
-    if ! npx playwright --version > /dev/null 2>&1; then
-        print_info "安裝 Playwright 瀏覽器..."
-        npx playwright install
-        print_success "Playwright 瀏覽器安裝完成"
-    fi
+
+    print_info "安裝/確認 Playwright Chromium 瀏覽器..."
+    npx playwright install chromium > /dev/null 2>&1
+    print_success "Playwright Chromium 已就緒"
+}
+
+# 準備 JWT 測試金鑰
+ensure_jwt_keys() {
+    print_info "準備 JWT 測試金鑰..."
+    ./tests/fixtures/generate-jwt-keys.sh
+    print_success "JWT 測試金鑰已就緒"
 }
 
 # 執行測試
 run_tests() {
     local mode="${1:-headless}"
-    
+
     case $mode in
         headed)
             print_info "執行測試（有頭模式）..."
@@ -139,33 +143,36 @@ cleanup() {
 main() {
     print_info "🚀 AlleyNote E2E 測試執行器"
     echo ""
-    
+
     # 解析參數
     MODE="${1:-headless}"
     SKIP_SETUP="${2:-false}"
-    
+
     # 檢查 Docker
     check_docker
-    
+
     # 檢查並啟動應用程式
     if [ "$SKIP_SETUP" != "skip-setup" ]; then
         if ! check_app; then
             start_app
         fi
-        
+
         # 安裝依賴
         install_deps
+
+        # 準備測試 fixture
+        ensure_jwt_keys
     fi
-    
+
     # 執行測試
     echo ""
     run_tests "$MODE"
-    
+
     # 測試結果
     echo ""
     if [ $? -eq 0 ]; then
         print_success "所有測試通過！"
-        
+
         # 詢問是否查看報告
         read -p "是否開啟測試報告？(y/N) " -n 1 -r
         echo

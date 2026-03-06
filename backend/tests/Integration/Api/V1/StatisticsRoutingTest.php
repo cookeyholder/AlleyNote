@@ -9,8 +9,8 @@ use App\Infrastructure\Http\ServerRequestFactory;
 use Exception;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\SkippedTest;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
+use Tests\Support\IntegrationTestCase;
 use Throwable;
 
 /**
@@ -25,7 +25,7 @@ use Throwable;
 #[Group('integration')]
 #[Group('api')]
 #[Group('statistics')]
-class StatisticsRoutingTest extends TestCase
+class StatisticsRoutingTest extends IntegrationTestCase
 {
     private Application $app;
 
@@ -45,7 +45,7 @@ class StatisticsRoutingTest extends TestCase
     /**
      * 建立 HTTP 請求.
      */
-    private function createRequest(
+    private function createLocalRequest(
         string $method,
         string $path,
         ?array $body = null,
@@ -195,7 +195,7 @@ class StatisticsRoutingTest extends TestCase
         string $failurePrefix,
     ): void {
         try {
-            $response = $this->createRequest($method, $path);
+            $response = $this->createLocalRequest($method, $path);
             $statusCode = $response->getStatusCode();
 
             $this->assertNotEquals(404, $statusCode, $assertMessage);
@@ -227,7 +227,7 @@ class StatisticsRoutingTest extends TestCase
 
         foreach ($routes as $route) {
             try {
-                $response = $this->createRequest('GET', $route);
+                $response = $this->createLocalRequest('GET', $route);
                 $statusCode = $response->getStatusCode();
 
                 // 路由應該存在但需要認證 (401) 或權限不足 (403)
@@ -251,7 +251,7 @@ class StatisticsRoutingTest extends TestCase
 
         foreach ($routes as [$method, $route]) {
             try {
-                $response = $this->createRequest($method, $route);
+                $response = $this->createLocalRequest($method, $route);
                 $statusCode = $response->getStatusCode();
 
                 // 管理路由應該要求認證和管理員權限 (401 或 403)
@@ -275,7 +275,7 @@ class StatisticsRoutingTest extends TestCase
 
         foreach ($nonExistentRoutes as $route) {
             try {
-                $response = $this->createRequest('GET', $route);
+                $response = $this->createLocalRequest('GET', $route);
                 $statusCode = $response->getStatusCode();
 
                 $this->assertEquals(404, $statusCode, "不存在的路由 {$route} 應該回傳 404");
@@ -302,7 +302,7 @@ class StatisticsRoutingTest extends TestCase
 
         foreach ($getRoutes as $route) {
             try {
-                $response = $this->createRequest('POST', $route);
+                $response = $this->createLocalRequest('POST', $route);
                 $statusCode = $response->getStatusCode();
 
                 // 應該是 405 Method Not Allowed 或 404
@@ -317,7 +317,7 @@ class StatisticsRoutingTest extends TestCase
 
         // POST 路由不應該支援 GET
         try {
-            $response = $this->createRequest('GET', '/api/admin/statistics/refresh');
+            $response = $this->createLocalRequest('GET', '/api/admin/statistics/refresh');
             $statusCode = $response->getStatusCode();
 
             $this->assertContains($statusCode, [405, 404], 'POST 路由 /api/admin/statistics/refresh 不應該支援 GET');
@@ -329,7 +329,7 @@ class StatisticsRoutingTest extends TestCase
 
         // DELETE 路由不應該支援 GET
         try {
-            $response = $this->createRequest('GET', '/api/admin/statistics/cache');
+            $response = $this->createLocalRequest('GET', '/api/admin/statistics/cache');
             $statusCode = $response->getStatusCode();
 
             $this->assertContains($statusCode, [405, 404], 'DELETE 路由 /api/admin/statistics/cache 不應該支援 GET');

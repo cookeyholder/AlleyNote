@@ -38,6 +38,7 @@ cd tests/e2e
 ```
 
 這會自動：
+
 - 檢查 Node.js 版本
 - 安裝 npm 依賴
 - 下載 Playwright 瀏覽器
@@ -86,19 +87,20 @@ npm run test:debug
 
 ## 📊 測試涵蓋範圍
 
-| 測試檔案 | 功能 | 測試數量 | 狀態 |
-|---------|------|---------|------|
-| 01-home.spec.js | 首頁功能 | 5 | ✅ |
-| 02-auth.spec.js | 登入認證 | 5 | ✅ |
-| 03-dashboard.spec.js | 儀表板 | 8 | ✅ |
-| 04-posts-management.spec.js | 文章管理 | 6 | ✅ |
-| 05-post-editor.spec.js | 文章編輯 | 8 | ✅ |
-| 06-timezone.spec.js | 時區轉換 | 3 | ✅ |
-| **總計** | | **35+** | ✅ |
+| 測試檔案                    | 功能     | 測試數量 | 狀態 |
+| --------------------------- | -------- | -------- | ---- |
+| 01-home.spec.js             | 首頁功能 | 5        | ✅   |
+| 02-auth.spec.js             | 登入認證 | 5        | ✅   |
+| 03-dashboard.spec.js        | 儀表板   | 8        | ✅   |
+| 04-posts-management.spec.js | 文章管理 | 6        | ✅   |
+| 05-post-editor.spec.js      | 文章編輯 | 8        | ✅   |
+| 06-timezone.spec.js         | 時區轉換 | 3        | ✅   |
+| **總計**                    |          | **35+**  | ✅   |
 
 ## 🔍 主要功能測試
 
 ### ✅ 首頁 (Home)
+
 - 標題和導航顯示
 - 文章列表載入
 - 搜尋功能
@@ -106,6 +108,7 @@ npm run test:debug
 - 頁腳資訊
 
 ### ✅ 登入認證 (Auth)
+
 - 登入表單元素顯示
 - 成功登入流程
 - 錯誤密碼處理
@@ -113,6 +116,7 @@ npm run test:debug
 - 忘記密碼連結
 
 ### ✅ 儀表板 (Dashboard)
+
 - 統計卡片 (文章數、瀏覽量等)
 - 最近發布文章列表
 - 快速操作連結
@@ -120,6 +124,7 @@ npm run test:debug
 - 使用者資訊顯示
 
 ### ✅ 文章管理 (Posts Management)
+
 - 文章列表顯示
 - 搜尋和重置
 - 狀態篩選
@@ -127,6 +132,7 @@ npm run test:debug
 - 編輯/刪除/發布按鈕
 
 ### ✅ 文章編輯器 (Post Editor)
+
 - 新增文章流程
 - 編輯現有文章
 - 發布時間設定（含時區）
@@ -136,6 +142,7 @@ npm run test:debug
 - 摘要功能
 
 ### ✅ 時區功能 (Timezone)
+
 - 網站時區顯示
 - 發布時間轉換正確性
 - UTC 儲存驗證
@@ -147,18 +154,23 @@ npm run test:debug
 
 ```javascript
 // 引入 Page Objects
-const { LoginPage, DashboardPage, PostEditorPage } = require('./fixtures/page-objects');
+const {
+  LoginPage,
+  DashboardPage,
+  PostEditorPage,
+} = require("./fixtures/page-objects");
 
 // 使用範例
-test('登入測試', async ({ page }) => {
+test("登入測試", async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.goto();
-  await loginPage.login('admin@example.com', 'password');
+  await loginPage.login("admin@example.com", "Admin@123456");
   // ...
 });
 ```
 
 可用的 Page Objects：
+
 - `LoginPage` - 登入頁面
 - `DashboardPage` - 儀表板
 - `PostsManagementPage` - 文章管理
@@ -169,9 +181,9 @@ test('登入測試', async ({ page }) => {
 自動登入功能，無需每個測試都重複登入：
 
 ```javascript
-test('需要登入的測試', async ({ authenticatedPage }) => {
+test("需要登入的測試", async ({ authenticatedPage }) => {
   // authenticatedPage 已經完成登入
-  await authenticatedPage.goto('/admin/dashboard');
+  await authenticatedPage.goto("/admin/dashboard");
   // 直接開始測試邏輯
 });
 ```
@@ -186,6 +198,7 @@ npm run test:report
 ```
 
 報告包含：
+
 - ✅ 通過的測試
 - ❌ 失敗的測試（含截圖和影片）
 - ⏱️ 執行時間統計
@@ -194,18 +207,22 @@ npm run test:report
 ## 🐛 除錯工具
 
 ### UI 模式（推薦）
+
 ```bash
 npm run test:ui
 ```
+
 - 視覺化介面
 - 逐步執行
 - 時光旅行除錯
 - 檢視 DOM 狀態
 
 ### 錄製新測試
+
 ```bash
 npm run test:codegen
 ```
+
 自動生成測試程式碼！
 
 ## 🔄 CI/CD 整合
@@ -213,11 +230,13 @@ npm run test:codegen
 已設定 GitHub Actions (`.github/workflows/e2e-tests.yml`)：
 
 **觸發時機：**
+
 - Push 到 main/develop 分支
 - Pull Request
 - 手動觸發
 
 **執行流程：**
+
 1. 自動設定環境
 2. 啟動應用程式
 3. 執行所有測試
@@ -230,23 +249,23 @@ npm run test:codegen
 ### 範本
 
 ```javascript
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require("@playwright/test");
 
-test.describe('新功能測試', () => {
+test.describe("新功能測試", () => {
   test.beforeEach(async ({ page }) => {
     // 每個測試前的設定
-    await page.goto('/path');
+    await page.goto("/path");
   });
 
-  test('應該能夠執行某操作', async ({ page }) => {
+  test("應該能夠執行某操作", async ({ page }) => {
     // Arrange - 準備
-    const button = page.locator('button.action');
-    
+    const button = page.locator("button.action");
+
     // Act - 執行
     await button.click();
-    
+
     // Assert - 驗證
-    await expect(page.locator('.result')).toBeVisible();
+    await expect(page.locator(".result")).toBeVisible();
   });
 });
 ```
@@ -298,41 +317,51 @@ npx playwright test --grep "登入"
 ## ✨ 特色功能
 
 ### 1. 自動登入
+
 無需每次測試都登入，使用 `authenticatedPage` fixture
 
 ### 2. 智慧等待
+
 Playwright 自動等待元素可見/可用
 
 ### 3. 失敗重試
+
 CI 環境自動重試 2 次
 
 ### 4. 完整報告
+
 HTML 報告 + 截圖 + 影片
 
 ### 5. 時區測試
+
 專門測試時區轉換功能
 
 ### 6. Page Objects
+
 提高測試可維護性
 
 ## 🎯 使用情境
 
 ### 開發時
+
 ```bash
 # 監控前端改動
 npm run test:ui
 ```
 
 ### 提交前
+
 ```bash
 # 快速驗證
 ./run-tests.sh headless skip-setup
 ```
 
 ### CI/CD
+
 自動執行，無需手動操作
 
 ### 除錯
+
 ```bash
 # 互動式除錯
 npm run test:ui
@@ -358,8 +387,8 @@ npm run test:codegen
 
 ---
 
-**測試框架版本：** 1.0.0  
-**建立日期：** 2025-10-11  
+**測試框架版本：** 1.0.0
+**建立日期：** 2025-10-11
 **Playwright 版本：** 1.40.0
 
 🎉 開始使用吧！

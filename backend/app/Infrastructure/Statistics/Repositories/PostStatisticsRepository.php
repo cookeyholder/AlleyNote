@@ -7,6 +7,7 @@ namespace App\Infrastructure\Statistics\Repositories;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeInterface;
 use Exception;
 use InvalidArgumentException;
 use PDO;
@@ -536,9 +537,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     }
 
     public function getViewTimeSeriesData(
-        \DateTimeInterface $startDate,
-        \DateTimeInterface $endDate,
-        string $granularity
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+        string $granularity,
     ): array {
         try {
             // 根據粒度決定 SQLite 的 strftime 格式

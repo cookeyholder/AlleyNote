@@ -15,9 +15,9 @@ use Mockery;
 use Mockery\MockInterface;
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\SecureDDDTestCase;
 
-class PasswordHashingTest extends TestCase
+class PasswordHashingTest extends SecureDDDTestCase
 {
     protected AuthService $authService;
 

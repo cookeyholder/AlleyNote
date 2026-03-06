@@ -13,15 +13,15 @@ use App\Shared\Events\Contracts\EventDispatcherInterface;
 use Exception;
 use Mockery;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Tests\Support\UnitTestCase;
 
 /**
  * PostViewController 單元測試.
  */
-class PostViewControllerTest extends TestCase
+class PostViewControllerTest extends UnitTestCase
 {
     private PostViewController $controller;
 

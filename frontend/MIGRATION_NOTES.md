@@ -80,55 +80,64 @@ frontend/
 ### 模組導入方式
 
 **舊方式（Vite）**:
+
 ```javascript
-import { authApi } from './api/auth.js';
-import Modal from './components/Modal.js';
+import { authApi } from "./api/auth.js";
+import Modal from "./components/Modal.js";
 ```
 
 **新方式（原生 ES Modules）**:
+
 ```javascript
-import { authApi } from './api/auth.js';
-import { Modal } from './components/Modal.js';
+import { authApi } from "./api/auth.js";
+import { Modal } from "./components/Modal.js";
 
 // 在 HTML 中使用 type="module"
-<script type="module" src="./js/main.js"></script>
+<script type="module" src="./js/main.js"></script>;
 ```
 
 ### CSS 載入方式
 
 **舊方式（Vite）**:
+
 ```javascript
-import './styles/main.css';
+import "./styles/main.css";
 ```
 
 **新方式（原生）**:
+
 ```html
-<link rel="stylesheet" href="./css/main.css">
+<link rel="stylesheet" href="./css/main.css" />
 ```
 
 ### 環境變數
 
 **舊方式（Vite）**:
+
 ```javascript
 const apiUrl = import.meta.env.VITE_API_URL;
 ```
 
 **新方式（原生）**:
+
 ```javascript
-// 直接在程式碼中配置或從 window 物件讀取
-const apiUrl = window.location.hostname === 'localhost' 
-  ? 'http://localhost:8080/api'
-  : '/api';
+// 一律使用同源 API 路徑，由執行環境代理
+const apiUrl = "/api";
 ```
+
+> 備註：DevContainer 本機模式由 `localhost:3000 -> localhost:8081` 代理；
+> Docker Compose 模式由 Nginx 將 `localhost:3000/api` 代理至 API（主機預設對外埠 `8081`）。
 
 ### 第三方套件
 
 **舊方式（npm）**:
+
 ```bash
 npm install axios chart.js ckeditor5
 ```
 
 **新方式（CDN）**:
+
 ```html
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -146,15 +155,15 @@ npm install
 # 2. 構建專案
 npm run build
 
-# 3. 部署 dist/ 目錄
-docker-compose up -d
+# 3. 啟動服務（前端由 nginx 直接提供）
+docker compose up -d
 ```
 
 ### 新部署流程（原生）
 
 ```bash
 # 直接啟動，無需構建
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Docker 配置變更
@@ -184,14 +193,14 @@ nginx:
 npm run dev
 
 # 開發時有 HMR（熱模組替換）
-# 訪問 http://localhost:5173
+# 訪問 http://localhost:3000
 ```
 
 ### 新開發流程
 
 ```bash
 # 啟動 Docker
-docker-compose up -d
+docker compose up -d
 
 # 直接編輯檔案，刷新瀏覽器即可
 # 訪問 http://localhost:3000

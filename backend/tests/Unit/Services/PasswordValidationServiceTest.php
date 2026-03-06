@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Services;
 
 use App\Shared\Services\PasswordValidationService;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-final class PasswordValidationServiceTest extends TestCase
+final class PasswordValidationServiceTest extends UnitTestCase
 {
     private PasswordValidationService $service;
 

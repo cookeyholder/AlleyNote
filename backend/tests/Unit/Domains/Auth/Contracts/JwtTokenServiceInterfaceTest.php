@@ -8,8 +8,8 @@ use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Domains\Auth\ValueObjects\TokenPair;
-use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use Tests\Support\UnitTestCase;
 
 /**
  * JWT Token Service 介面測試.
@@ -17,7 +17,7 @@ use ReflectionClass;
  * 驗證JwtTokenServiceInterface的介面定義和契約正確性。
  * 確保所有方法簽名、參數類型、回傳類型和例外定義正確。
  */
-class JwtTokenServiceInterfaceTest extends TestCase
+class JwtTokenServiceInterfaceTest extends UnitTestCase
 {
     private ReflectionClass $interfaceReflection;
 

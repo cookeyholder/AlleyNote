@@ -9,12 +9,15 @@ use App\Domains\Post\Models\Tag;
 use DateTimeImmutable;
 use PDO;
 use RuntimeException;
+use Throwable;
 
 /**
  * 標籤資料存取實現.
  */
 class TagRepository implements TagRepositoryInterface
 {
+    private ?bool $usageCountColumnExists = null;
+
     public function __construct(
         private readonly PDO $db,
     ) {}
@@ -43,7 +46,8 @@ class TagRepository implements TagRepositoryInterface
 
         // 查詢標籤
         $offset = ($page - 1) * $perPage;
-        $sql = "SELECT * FROM tags {$whereClause} ORDER BY usage_count DESC, name ASC LIMIT :limit OFFSET :offset";
+        $orderBy = $this->hasUsageCountColumn() ? 'usage_count DESC, name ASC' : 'name ASC';
+        $sql = "SELECT * FROM tags {$whereClause} ORDER BY {$orderBy} LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
 
         foreach ($params as $key => $value) {
@@ -123,20 +127,36 @@ class TagRepository implements TagRepositoryInterface
     {
         $now = new DateTimeImmutable()->format('Y-m-d H:i:s');
 
-        $stmt = $this->db->prepare('
-            INSERT INTO tags (name, slug, description, color, usage_count, created_at, updated_at)
-            VALUES (:name, :slug, :description, :color, :usage_count, :created_at, :updated_at)
-        ');
+        if ($this->hasUsageCountColumn()) {
+            $stmt = $this->db->prepare('
+                INSERT INTO tags (name, slug, description, color, usage_count, created_at, updated_at)
+                VALUES (:name, :slug, :description, :color, :usage_count, :created_at, :updated_at)
+            ');
 
-        $stmt->execute([
-            ':name' => $data['name'],
-            ':slug' => $data['slug'] ?? null,
-            ':description' => $data['description'] ?? null,
-            ':color' => $data['color'] ?? null,
-            ':usage_count' => $data['usage_count'] ?? 0,
-            ':created_at' => $now,
-            ':updated_at' => $now,
-        ]);
+            $stmt->execute([
+                ':name' => $data['name'],
+                ':slug' => $data['slug'] ?? null,
+                ':description' => $data['description'] ?? null,
+                ':color' => $data['color'] ?? null,
+                ':usage_count' => $data['usage_count'] ?? 0,
+                ':created_at' => $now,
+                ':updated_at' => $now,
+            ]);
+        } else {
+            $stmt = $this->db->prepare('
+                INSERT INTO tags (name, slug, description, color, created_at, updated_at)
+                VALUES (:name, :slug, :description, :color, :created_at, :updated_at)
+            ');
+
+            $stmt->execute([
+                ':name' => $data['name'],
+                ':slug' => $data['slug'] ?? null,
+                ':description' => $data['description'] ?? null,
+                ':color' => $data['color'] ?? null,
+                ':created_at' => $now,
+                ':updated_at' => $now,
+            ]);
+        }
 
         $id = (int) $this->db->lastInsertId();
         $tag = $this->findById($id);
@@ -156,7 +176,10 @@ class TagRepository implements TagRepositoryInterface
         $updates = [];
         $params = [':id' => $id];
 
-        $allowedFields = ['name', 'slug', 'description', 'color', 'usage_count'];
+        $allowedFields = ['name', 'slug', 'description', 'color'];
+        if ($this->hasUsageCountColumn()) {
+            $allowedFields[] = 'usage_count';
+        }
 
         foreach ($allowedFields as $field) {
             if (array_key_exists($field, $data)) {
@@ -236,5 +259,30 @@ class TagRepository implements TagRepositoryInterface
             createdAt: new DateTimeImmutable($createdAtStr),
             updatedAt: $updatedAt ? new DateTimeImmutable($updatedAt) : null,
         );
+    }
+
+    private function hasUsageCountColumn(): bool
+    {
+        if ($this->usageCountColumnExists !== null) {
+            return $this->usageCountColumnExists;
+        }
+
+        try {
+            $stmt = $this->db->query('PRAGMA table_info(tags)');
+            $columns = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+
+            foreach ($columns as $column) {
+                if (isset($column['name']) && $column['name'] === 'usage_count') {
+                    $this->usageCountColumnExists = true;
+
+                    return true;
+                }
+            }
+        } catch (Throwable) {
+        }
+
+        $this->usageCountColumnExists = false;
+
+        return false;
     }
 }

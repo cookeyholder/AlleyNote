@@ -14,9 +14,9 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class IpServiceTest extends TestCase
+class IpServiceTest extends UnitTestCase
 {
     use MockeryPHPUnitIntegration;
 

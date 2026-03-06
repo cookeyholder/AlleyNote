@@ -6,9 +6,9 @@ namespace Tests\Unit\Cache;
 
 use App\Infrastructure\Cache\CacheKeys;
 use App\Infrastructure\Cache\CacheManager;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class CacheManagerTest extends TestCase
+class CacheManagerTest extends UnitTestCase
 {
     private CacheManager $cacheManager;
 

@@ -7,14 +7,14 @@ namespace Tests\Database\Seeds;
 use PDO;
 use PDOStatement;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\SecureDDDTestCase;
 
 /**
  * UserActivityLogsSeeder 測試.
  *
  * 驗證 Seeder 能夠正確建立測試資料，並確保資料品質和完整性
  */
-class UserActivityLogsSeederTest extends TestCase
+class UserActivityLogsSeederTest extends SecureDDDTestCase
 {
     private PDO $pdo;
 

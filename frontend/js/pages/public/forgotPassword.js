@@ -11,59 +11,74 @@ export function renderForgotPassword() {
   const app = document.getElementById('app');
   
   app.innerHTML = `
-    <div class="min-h-screen bg-gradient-to-br from-accent-50 to-accent-100 flex items-center justify-center p-4">
-      <div class="card max-w-md w-full animate-fade-in">
-        <div class="text-center mb-8">
-          <div class="inline-flex items-center justify-center w-16 h-16 bg-accent-100 rounded-full mb-4">
-            <svg class="w-8 h-8 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-            </svg>
-          </div>
-          <h1 class="text-3xl font-bold text-modern-900 mb-2">忘記密碼</h1>
-          <p class="text-modern-600">請輸入您的電子郵件地址，我們將發送重設密碼連結給您</p>
+    <div class="min-h-screen bg-modern-50 flex items-center justify-center p-6 relative overflow-hidden">
+      <!-- 品牌裝飾背景 -->
+      <div class="absolute top-0 left-0 w-full h-1 bg-accent-600"></div>
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-accent-100 rounded-full blur-3xl opacity-20"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-100 rounded-full blur-3xl opacity-20"></div>
+
+      <div class="max-w-md w-full animate-fade-in relative z-10">
+        <!-- Logo 簡化版 -->
+        <div class="flex flex-col items-center mb-8">
+          <a href="/login" data-navigo class="w-12 h-12 bg-white border border-modern-200 rounded-xl flex items-center justify-center text-accent-600 font-bold text-xl shadow-sm hover:shadow-md transition-all mb-4">A</a>
         </div>
-        
-        <form id="forgot-password-form" class="space-y-6">
-          <div>
-            <label for="email" class="block text-sm font-medium text-modern-700 mb-2">
-              電子郵件 *
-            </label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              required
-              autocomplete="email"
-              class="input-field"
-              placeholder="your@email.com"
-            />
-            <p class="text-red-500 text-sm mt-1 hidden" data-error-for="email"></p>
+
+        <div class="bg-white border border-modern-200 rounded-3xl shadow-2xl shadow-modern-200/50 p-10">
+          <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-accent-50 text-accent-600 rounded-2xl mb-6">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+              </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-modern-900 mb-2">忘記密碼？</h1>
+            <p class="text-sm text-modern-500 leading-relaxed">請輸入您的註冊電子郵件，我們將為您發送安全的密碼重設連結</p>
           </div>
           
-          <button
-            type="submit"
-            class="btn-primary w-full"
-            id="submit-btn"
-          >
-            發送重設連結
-          </button>
-        </form>
-        
-        <div class="mt-6 text-center">
-          <a href="/login" class="text-sm text-accent-600 hover:text-accent-700">
-            ← 返回登入頁面
-          </a>
+          <form id="forgot-password-form" class="space-y-6">
+            <div>
+              <label for="email" class="block text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-2">
+                電子郵件地址 *
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                required
+                autocomplete="email"
+                class="w-full px-4 py-3.5 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
+                placeholder="your@email.com"
+              />
+              <p class="text-red-500 text-xs font-bold mt-2 hidden" data-error-for="email"></p>
+            </div>
+            
+            <button
+              type="submit"
+              class="w-full py-4 bg-accent-600 text-white font-bold rounded-xl hover:bg-accent-700 shadow-xl shadow-accent-600/20 transform transition-all active:scale-95 flex items-center justify-center gap-2"
+              id="submit-btn"
+            >
+              發送重設指令
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </button>
+          </form>
+          
+          <div class="mt-8 pt-8 border-t border-modern-100 text-center">
+            <a href="/login" data-navigo class="text-sm font-bold text-modern-500 hover:text-accent-600 transition-colors flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              返回成員登入
+            </a>
+          </div>
         </div>
-        
-        <div class="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p class="text-sm text-blue-800 mb-2">
-            <strong>注意：</strong>
-          </p>
-          <ul class="text-sm text-blue-700 space-y-1 list-disc list-inside">
-            <li>重設連結將在 24 小時內有效</li>
-            <li>如果沒有收到郵件，請檢查垃圾郵件資料夾</li>
-            <li>如需協助，請聯繫系統管理員</li>
-          </ul>
+
+        <div class="mt-10 p-6 bg-blue-50/50 border border-blue-100 rounded-2xl flex items-start gap-4">
+          <div class="p-2 bg-white rounded-xl shadow-sm text-blue-600 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-blue-900 mb-1">安全性提示</h4>
+            <p class="text-xs text-blue-700 leading-relaxed opacity-80">
+              重設連結有效期為 24 小時。若未收到郵件，請檢查垃圾信箱或聯繫系統管理員。
+            </p>
+          </div>
         </div>
       </div>
     </div>

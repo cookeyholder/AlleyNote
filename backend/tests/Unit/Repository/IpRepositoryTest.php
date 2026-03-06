@@ -10,9 +10,9 @@ use InvalidArgumentException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PDO;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-class IpRepositoryTest extends TestCase
+class IpRepositoryTest extends UnitTestCase
 {
     use MockeryPHPUnitIntegration;
 

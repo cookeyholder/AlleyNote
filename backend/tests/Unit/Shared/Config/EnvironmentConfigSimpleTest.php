@@ -6,9 +6,9 @@ namespace Tests\Unit\Shared\Config;
 
 use App\Shared\Config\EnvironmentConfig;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
-final class EnvironmentConfigSimpleTest extends TestCase
+final class EnvironmentConfigSimpleTest extends UnitTestCase
 {
     private string $testConfigPath;
 

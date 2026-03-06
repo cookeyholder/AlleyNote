@@ -8,12 +8,12 @@ use App\Domains\Auth\Entities\RefreshToken;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * RefreshToken Entity 單元測試.
  */
-class RefreshTokenTest extends TestCase
+class RefreshTokenTest extends UnitTestCase
 {
     private DeviceInfo $deviceInfo;
 

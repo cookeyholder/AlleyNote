@@ -6,9 +6,9 @@ namespace Tests\Integration;
 
 use PDO;
 use PHPUnit\Framework\Attributes\Test;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
-class DatabaseBackupTest extends TestCase
+class DatabaseBackupTest extends IntegrationTestCase
 {
     protected string $backupDir;
 
