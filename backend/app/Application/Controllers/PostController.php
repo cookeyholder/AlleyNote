@@ -40,9 +40,13 @@ class PostController extends BaseController
 
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
 
             // 建立查詢
-            $where = ['p.deleted_at IS NULL'];
+            $where = [];
+            if ($hasDeletedAt) {
+                $where[] = 'p.deleted_at IS NULL';
+            }
             $params = [];
 
             if (!empty($search)) {
@@ -122,9 +126,13 @@ class PostController extends BaseController
 
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
 
             // 建立查詢條件
-            $conditions = ['p.id = :id', 'p.deleted_at IS NULL'];
+            $conditions = ['p.id = :id'];
+            if ($hasDeletedAt) {
+                $conditions[] = 'p.deleted_at IS NULL';
+            }
 
             // 根據 include_future 參數決定是否過濾
             // 當 include_future=false（公開訪問）時：
@@ -389,9 +397,13 @@ class PostController extends BaseController
 
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
 
             // 檢查文章是否存在
-            $checkSql = 'SELECT id FROM posts WHERE id = :id AND deleted_at IS NULL';
+            $checkSql = 'SELECT id FROM posts WHERE id = :id';
+            if ($hasDeletedAt) {
+                $checkSql .= ' AND deleted_at IS NULL';
+            }
             $checkStmt = $pdo->prepare($checkSql);
             $checkStmt->execute([':id' => $id]);
 
@@ -547,9 +559,13 @@ class PostController extends BaseController
         try {
             // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
 
             // 檢查文章是否存在
-            $checkSql = 'SELECT id, title FROM posts WHERE id = :id AND deleted_at IS NULL';
+            $checkSql = 'SELECT id, title FROM posts WHERE id = :id';
+            if ($hasDeletedAt) {
+                $checkSql .= ' AND deleted_at IS NULL';
+            }
             $checkStmt = $pdo->prepare($checkSql);
             $checkStmt->execute([':id' => $id]);
             $post = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -578,8 +594,10 @@ class PostController extends BaseController
                 $tagRows,
             );
 
-            // 執行軟刪除（設定 deleted_at）
-            $sql = "UPDATE posts SET deleted_at = datetime('now') WHERE id = :id";
+            // 若 schema 支援 deleted_at，使用軟刪除；否則退化為硬刪除
+            $sql = $hasDeletedAt
+                ? "UPDATE posts SET deleted_at = datetime('now') WHERE id = :id"
+                : 'DELETE FROM posts WHERE id = :id';
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $id]);
 
@@ -614,10 +632,27 @@ class PostController extends BaseController
                     SELECT COUNT(*)
                     FROM post_tags pt
                     INNER JOIN posts p ON pt.post_id = p.id
-                    WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL
+                    WHERE pt.tag_id = :tag_id'
+            . ($this->hasTableColumn($pdo, 'posts', 'deleted_at') ? ' AND p.deleted_at IS NULL' : '')
+            . '
                 ) WHERE id = :tag_id';
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':tag_id' => $tagId]);
+    }
+
+    /**
+     * 檢查資料表是否包含指定欄位（用於跨 schema 相容）.
+     */
+    private function hasTableColumn(PDO $pdo, string $table, string $column): bool
+    {
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table) || !preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+            return false;
+        }
+
+        $columns = $pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_ASSOC);
+        $columnNames = array_column($columns, 'name');
+
+        return in_array($column, $columnNames, true);
     }
 
     /**
