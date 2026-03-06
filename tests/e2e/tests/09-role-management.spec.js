@@ -23,10 +23,27 @@ test.beforeEach(async ({ page }) => {
   // 等待登入成功並導航到儀表板
   await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
 
-  // 透過側欄 data-navigo 連結進行 SPA 導航，避免 full reload 遺失登入狀態
-  await expect(page.locator("aside")).toBeVisible({ timeout: 15000 });
-  await page.locator('aside a[href="/admin/roles"][data-navigo]').first().click();
-  await page.waitForURL("**/admin/roles");
+  // 透過側欄 data-navigo 連結進行 SPA 導航；CI 若遇到時序抖動，最多重試 3 次
+  const rolesPageHeading = page.locator('main h1:has-text("角色與權限")');
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await expect(page.locator("aside")).toBeVisible({ timeout: 15000 });
+    await page
+      .locator('aside a[href="/admin/roles"][data-navigo]')
+      .first()
+      .click();
+    await page.waitForURL("**/admin/roles", { timeout: 15000 });
+
+    if (await rolesPageHeading.isVisible()) {
+      break;
+    }
+
+    if (attempt < 2) {
+      await page.goto("/admin/dashboard");
+      await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
+    }
+  }
+
+  await expect(rolesPageHeading).toBeVisible({ timeout: 15000 });
 });
 
 test.describe("角色管理頁面", () => {
