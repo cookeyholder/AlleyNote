@@ -22,6 +22,9 @@ test.beforeEach(async ({ page }) => {
 
   // 等待登入成功並導航到儀表板
   await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
+  await expect(page.locator('main h1:has-text("儀表板")')).toBeVisible({
+    timeout: 15000,
+  });
 
   // 透過側欄 data-navigo 連結進行 SPA 導航；CI 若遇到時序抖動，最多重試 3 次
   const rolesPageHeading = page.locator('main h1:has-text("角色與權限")');
