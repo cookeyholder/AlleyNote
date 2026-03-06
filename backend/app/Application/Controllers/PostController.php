@@ -66,7 +66,7 @@ class PostController extends BaseController
                 $where[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
             }
 
-            $whereClause = implode(' AND ', $where);
+            $whereClause = empty($where) ? '1=1' : implode(' AND ', $where);
 
             // 計算總數
             $countSql = "SELECT COUNT(*) as total FROM posts p WHERE {$whereClause}";
