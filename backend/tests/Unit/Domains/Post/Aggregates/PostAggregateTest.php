@@ -13,14 +13,14 @@ use App\Domains\Post\ValueObjects\PostContent;
 use App\Domains\Post\ValueObjects\PostId;
 use App\Domains\Post\ValueObjects\PostTitle;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * PostAggregate 單元測試.
  *
  * @covers \App\Domains\Post\Aggregates\PostAggregate
  */
-final class PostAggregateTest extends TestCase
+final class PostAggregateTest extends UnitTestCase
 {
     public function test_可以建立新的文章聚合(): void
     {

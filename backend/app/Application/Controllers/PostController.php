@@ -39,47 +39,70 @@ class PostController extends BaseController
             $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
+            $postUserColumn = $this->resolvePostsUserColumn($pdo);
+            $postPublishColumn = $this->resolvePostsPublishColumn($pdo);
+            $hasCreatedAt = $this->hasTableColumn($pdo, 'posts', 'created_at');
+            $hasUpdatedAt = $this->hasTableColumn($pdo, 'posts', 'updated_at');
 
             // 建立查詢
-            $where = ['deleted_at IS NULL'];
+            $where = [];
+            if ($hasDeletedAt) {
+                $where[] = 'p.deleted_at IS NULL';
+            }
             $params = [];
 
             if (!empty($search)) {
-                $where[] = '(title LIKE :search OR content LIKE :search)';
+                $where[] = '(p.title LIKE :search OR p.content LIKE :search)';
                 $params[':search'] = "%{$search}%";
             }
 
             if (!empty($status)) {
-                $where[] = 'status = :status';
+                $where[] = 'p.status = :status';
                 $params[':status'] = $status;
             }
 
             // 根據 include_future 參數決定是否過濾未來文章
             // 預設為 false（過濾未來文章，用於首頁等公開頁面）
             // 設為 true 時顯示所有文章（用於文章管理頁面）
-            if (!$includeFuture) {
-                $where[] = "(publish_date IS NULL OR publish_date <= datetime('now'))";
+            if (!$includeFuture && $postPublishColumn !== null) {
+                $where[] = "(p.{$postPublishColumn} IS NULL OR p.{$postPublishColumn} <= datetime('now'))";
             }
 
-            $whereClause = implode(' AND ', $where);
+            $whereClause = empty($where) ? '1=1' : implode(' AND ', $where);
 
             // 計算總數
-            $countSql = "SELECT COUNT(*) as total FROM posts WHERE {$whereClause}";
+            $countSql = "SELECT COUNT(*) as total FROM posts p WHERE {$whereClause}";
             $countStmt = $pdo->prepare($countSql);
             $countStmt->execute($params);
             $total = (int) $countStmt->fetchColumn();
 
             // 獲取資料
             $offset = ($page - 1) * $perPage;
-            $sql = "SELECT p.id, p.title, p.content, p.status, p.user_id, p.created_at, p.updated_at, p.publish_date,
+            $userIdSelect = $postUserColumn !== null ? "p.{$postUserColumn} as user_id" : 'NULL as user_id';
+            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
+
+            $publishDateSelect = $postPublishColumn !== null ? "p.{$postPublishColumn} as publish_date" : 'NULL as publish_date';
+            $createdAtSelect = $hasCreatedAt ? 'p.created_at' : 'NULL as created_at';
+            $updatedAtSelect = $hasUpdatedAt ? 'p.updated_at' : 'NULL as updated_at';
+
+            if ($postPublishColumn !== null && $hasCreatedAt) {
+                $orderBy = "COALESCE(p.{$postPublishColumn}, p.created_at) DESC";
+            } elseif ($postPublishColumn !== null) {
+                $orderBy = "p.{$postPublishColumn} DESC";
+            } elseif ($hasCreatedAt) {
+                $orderBy = 'p.created_at DESC';
+            } else {
+                $orderBy = 'p.id DESC';
+            }
+
+            $sql = "SELECT p.id, p.title, p.content, p.status, {$userIdSelect}, {$createdAtSelect}, {$updatedAtSelect}, {$publishDateSelect},
                            u.username as author
                     FROM posts p
-                    LEFT JOIN users u ON p.user_id = u.id
-                    WHERE {$whereClause} 
-                    ORDER BY COALESCE(p.publish_date, p.created_at) DESC 
+                    {$userJoin}
+                    WHERE {$whereClause}
+                    ORDER BY {$orderBy}
                     LIMIT :limit OFFSET :offset";
 
             $stmt = $pdo->prepare($sql);
@@ -123,12 +146,16 @@ class PostController extends BaseController
             $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
+            $postUserColumn = $this->resolvePostsUserColumn($pdo);
+            $postPublishColumn = $this->resolvePostsPublishColumn($pdo);
 
             // 建立查詢條件
-            $conditions = ['p.id = :id', 'p.deleted_at IS NULL'];
+            $conditions = ['p.id = :id'];
+            if ($hasDeletedAt) {
+                $conditions[] = 'p.deleted_at IS NULL';
+            }
 
             // 根據 include_future 參數決定是否過濾
             // 當 include_future=false（公開訪問）時：
@@ -136,15 +163,18 @@ class PostController extends BaseController
             // - 過濾未來的文章
             if (!$includeFuture) {
                 $conditions[] = "p.status = 'published'";
-                $conditions[] = "(p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
+                if ($postPublishColumn !== null) {
+                    $conditions[] = "(p.{$postPublishColumn} IS NULL OR p.{$postPublishColumn} <= datetime('now'))";
+                }
             }
 
             $whereClause = implode(' AND ', $conditions);
 
             // 查詢文章
+            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
             $sql = "SELECT p.*, u.username as author
                     FROM posts p
-                    LEFT JOIN users u ON p.user_id = u.id
+                    {$userJoin}
                     WHERE {$whereClause}";
 
             $stmt = $pdo->prepare($sql);
@@ -162,7 +192,7 @@ class PostController extends BaseController
             $post['author'] ??= 'Unknown';
 
             // 查詢文章的標籤
-            $tagsSql = 'SELECT t.id, t.name 
+            $tagsSql = 'SELECT t.id, t.name
                        FROM tags t
                        INNER JOIN post_tags pt ON t.id = pt.tag_id
                        WHERE pt.post_id = :post_id
@@ -224,42 +254,87 @@ class PostController extends BaseController
             }
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
 
-            // 生成 UUID
-            $uuid = sprintf(
-                '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0x0fff) | 0x4000,
-                mt_rand(0, 0x3fff) | 0x8000,
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-                mt_rand(0, 0xffff),
-            );
+            // 動態判斷 posts 表欄位，避免不同環境 schema 差異造成新增失敗
+            $postColumns = $pdo->query('PRAGMA table_info(posts)')->fetchAll(PDO::FETCH_ASSOC);
+            $postColumnNames = array_column($postColumns, 'name');
 
-            // 獲取最新的 seq_number
-            $seqStmt = $pdo->query('SELECT MAX(seq_number) as max_seq FROM posts');
-            $maxSeq = $seqStmt->fetchColumn();
-            $seqNumber = ($maxSeq ?? 0) + 1;
+            $insertData = [
+                'title' => $title,
+                'content' => $content,
+                'status' => $status,
+            ];
 
-            // 插入新文章
-            $sql = "INSERT INTO posts (uuid, seq_number, title, content, user_id, status, views, is_pinned, publish_date, created_at) 
-                    VALUES (:uuid, :seq_number, :title, :content, :user_id, :status, 0, 0, :publish_date, datetime('now'))";
+            if (in_array('slug', $postColumnNames, true)) {
+                $slugBase = preg_replace('/[^a-z0-9]+/i', '-', strtolower(trim($title))) ?: 'post';
+                $slugBase = trim($slugBase, '-');
+                $insertData['slug'] = $slugBase . '-' . time();
+            }
 
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([
-                ':uuid' => $uuid,
-                ':seq_number' => $seqNumber,
-                ':title' => $title,
-                ':content' => $content,
-                ':user_id' => $userId,
-                ':status' => $status,
-                ':publish_date' => $publishDate,
-            ]);
+            if (in_array('user_id', $postColumnNames, true)) {
+                $insertData['user_id'] = $userId;
+            } elseif (in_array('author_id', $postColumnNames, true)) {
+                $insertData['author_id'] = $userId;
+            }
+
+            if (in_array('publish_date', $postColumnNames, true)) {
+                $insertData['publish_date'] = $publishDate;
+            } elseif (in_array('published_at', $postColumnNames, true)) {
+                $insertData['published_at'] = $publishDate;
+            }
+
+            if (in_array('excerpt', $postColumnNames, true)) {
+                $insertData['excerpt'] = trim((string) ($body['excerpt'] ?? ''));
+            }
+
+            if (in_array('views', $postColumnNames, true)) {
+                $insertData['views'] = 0;
+            }
+
+            if (in_array('is_pinned', $postColumnNames, true)) {
+                $insertData['is_pinned'] = 0;
+            }
+
+            if (in_array('uuid', $postColumnNames, true)) {
+                $insertData['uuid'] = sprintf(
+                    '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0x0fff) | 0x4000,
+                    mt_rand(0, 0x3fff) | 0x8000,
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                    mt_rand(0, 0xffff),
+                );
+            }
+
+            if (in_array('seq_number', $postColumnNames, true)) {
+                $seqStmt = $pdo->query('SELECT MAX(seq_number) as max_seq FROM posts');
+                $maxSeq = $seqStmt->fetchColumn();
+                $insertData['seq_number'] = ((int) ($maxSeq ?: 0)) + 1;
+            }
+
+            $now = date('Y-m-d H:i:s');
+            if (in_array('created_at', $postColumnNames, true) && !array_key_exists('created_at', $insertData)) {
+                $insertData['created_at'] = $now;
+            }
+
+            if (in_array('updated_at', $postColumnNames, true) && !array_key_exists('updated_at', $insertData)) {
+                $insertData['updated_at'] = $now;
+            }
+
+            $insertColumns = array_keys($insertData);
+            $insertSql = 'INSERT INTO posts (' . implode(', ', $insertColumns) . ') VALUES ('
+                . implode(', ', array_map(static fn(string $column): string => ':' . $column, $insertColumns))
+                . ')';
+
+            $stmt = $pdo->prepare($insertSql);
+            $stmt->execute(array_combine(
+                array_map(static fn(string $column): string => ':' . $column, $insertColumns),
+                array_values($insertData),
+            ));
 
             $postId = $pdo->lastInsertId();
 
@@ -285,8 +360,6 @@ class PostController extends BaseController
             // 回傳新建立的文章
             $post = [
                 'id' => (int) $postId,
-                'uuid' => $uuid,
-                'seq_number' => $seqNumber,
                 'title' => $title,
                 'content' => $content,
                 'user_id' => $userId,
@@ -296,9 +369,17 @@ class PostController extends BaseController
                 'tags' => [],
             ];
 
+            if (isset($insertData['uuid'])) {
+                $post['uuid'] = $insertData['uuid'];
+            }
+
+            if (isset($insertData['seq_number'])) {
+                $post['seq_number'] = $insertData['seq_number'];
+            }
+
             // 查詢並回傳標籤資訊
             if (isset($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
-                $tagsSql = 'SELECT t.id, t.name 
+                $tagsSql = 'SELECT t.id, t.name
                            FROM tags t
                            INNER JOIN post_tags pt ON t.id = pt.tag_id
                            WHERE pt.post_id = :post_id';
@@ -341,12 +422,14 @@ class PostController extends BaseController
             }
 
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
 
             // 檢查文章是否存在
-            $checkSql = 'SELECT id FROM posts WHERE id = :id AND deleted_at IS NULL';
+            $checkSql = 'SELECT id FROM posts WHERE id = :id';
+            if ($hasDeletedAt) {
+                $checkSql .= ' AND deleted_at IS NULL';
+            }
             $checkStmt = $pdo->prepare($checkSql);
             $checkStmt->execute([':id' => $id]);
 
@@ -462,16 +545,18 @@ class PostController extends BaseController
             }
 
             // 取得更新後的文章
+            $postUserColumn = $this->resolvePostsUserColumn($pdo);
+            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
             $getSql = 'SELECT p.*, u.username as author
                        FROM posts p
-                       LEFT JOIN users u ON p.user_id = u.id
+                       ' . $userJoin . '
                        WHERE p.id = :id';
             $getStmt = $pdo->prepare($getSql);
             $getStmt->execute([':id' => $id]);
             $post = $getStmt->fetch(PDO::FETCH_ASSOC);
 
             // 查詢文章的標籤
-            $tagsSql = 'SELECT t.id, t.name 
+            $tagsSql = 'SELECT t.id, t.name
                        FROM tags t
                        INNER JOIN post_tags pt ON t.id = pt.tag_id
                        WHERE pt.post_id = :post_id
@@ -501,12 +586,14 @@ class PostController extends BaseController
     {
         try {
             // 建立資料庫連接
-            $dbPath = $_ENV['DB_DATABASE'] ?? '/var/www/html/database/alleynote.sqlite3';
-            $pdo = new PDO("sqlite:{$dbPath}");
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = $this->createSqliteConnection();
+            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
 
             // 檢查文章是否存在
-            $checkSql = 'SELECT id, title FROM posts WHERE id = :id AND deleted_at IS NULL';
+            $checkSql = 'SELECT id, title FROM posts WHERE id = :id';
+            if ($hasDeletedAt) {
+                $checkSql .= ' AND deleted_at IS NULL';
+            }
             $checkStmt = $pdo->prepare($checkSql);
             $checkStmt->execute([':id' => $id]);
             $post = $checkStmt->fetch(PDO::FETCH_ASSOC);
@@ -535,8 +622,10 @@ class PostController extends BaseController
                 $tagRows,
             );
 
-            // 執行軟刪除（設定 deleted_at）
-            $sql = "UPDATE posts SET deleted_at = datetime('now') WHERE id = :id";
+            // 若 schema 支援 deleted_at，使用軟刪除；否則退化為硬刪除
+            $sql = $hasDeletedAt
+                ? "UPDATE posts SET deleted_at = datetime('now') WHERE id = :id"
+                : 'DELETE FROM posts WHERE id = :id';
             $stmt = $pdo->prepare($sql);
             $stmt->execute([':id' => $id]);
 
@@ -568,12 +657,88 @@ class PostController extends BaseController
     private function updateTagUsageCount(PDO $pdo, int $tagId): void
     {
         $sql = 'UPDATE tags SET usage_count = (
-                    SELECT COUNT(*) 
+                    SELECT COUNT(*)
                     FROM post_tags pt
                     INNER JOIN posts p ON pt.post_id = p.id
-                    WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL
+                    WHERE pt.tag_id = :tag_id'
+            . ($this->hasTableColumn($pdo, 'posts', 'deleted_at') ? ' AND p.deleted_at IS NULL' : '')
+            . '
                 ) WHERE id = :tag_id';
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':tag_id' => $tagId]);
+    }
+
+    /**
+     * 檢查資料表是否包含指定欄位（用於跨 schema 相容）.
+     */
+    private function hasTableColumn(PDO $pdo, string $table, string $column): bool
+    {
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table) || !preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+            return false;
+        }
+
+        $columns = $pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_ASSOC);
+        $columnNames = array_column($columns, 'name');
+
+        return in_array($column, $columnNames, true);
+    }
+
+    /**
+     * 解析 posts 與 users 的關聯欄位，支援 user_id / author_id schema 差異.
+     */
+    private function resolvePostsUserColumn(PDO $pdo): ?string
+    {
+        if ($this->hasTableColumn($pdo, 'posts', 'user_id')) {
+            return 'user_id';
+        }
+
+        if ($this->hasTableColumn($pdo, 'posts', 'author_id')) {
+            return 'author_id';
+        }
+
+        return null;
+    }
+
+    /**
+     * 解析 posts 發布時間欄位，支援 publish_date / published_at schema 差異.
+     */
+    private function resolvePostsPublishColumn(PDO $pdo): ?string
+    {
+        if ($this->hasTableColumn($pdo, 'posts', 'publish_date')) {
+            return 'publish_date';
+        }
+
+        if ($this->hasTableColumn($pdo, 'posts', 'published_at')) {
+            return 'published_at';
+        }
+
+        return null;
+    }
+
+    /**
+     * 建立 SQLite 連線（支援相對/絕對 DB 路徑）.
+     */
+    private function createSqliteConnection(): PDO
+    {
+        $backendRoot = dirname(__DIR__, 3);
+        $configuredPath = getenv('DB_DATABASE') ?: ($_ENV['DB_DATABASE'] ?? 'database/alleynote.sqlite3');
+
+        if (!is_string($configuredPath) || $configuredPath === '') {
+            $configuredPath = 'database/alleynote.sqlite3';
+        }
+
+        $dbPath = str_starts_with($configuredPath, '/')
+            ? $configuredPath
+            : $backendRoot . '/' . ltrim($configuredPath, '/');
+
+        $dbDir = dirname($dbPath);
+        if (!is_dir($dbDir)) {
+            mkdir($dbDir, 0o755, true);
+        }
+
+        $pdo = new PDO("sqlite:{$dbPath}");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
     }
 }

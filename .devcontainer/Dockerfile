@@ -13,6 +13,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     libwebp-dev \
     libzip-dev \
     openssh-client \
+    sudo \
     unzip \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -25,4 +26,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # 建立一個 vscode 使用者以符合 Dev Container 慣例
 RUN useradd -m vscode -s /bin/bash
+RUN usermod -aG sudo vscode \
+    && echo "vscode ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/vscode \
+    && chmod 0440 /etc/sudoers.d/vscode
 USER vscode

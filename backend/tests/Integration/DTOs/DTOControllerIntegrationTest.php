@@ -10,14 +10,14 @@ use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\Validator;
-use Tests\TestCase;
+use Tests\Support\IntegrationTestCase;
 
 /**
  * DTO 與 Controller 整合測試.
  *
  * 測試 DTO 在 Controller 中的使用是否正常
  */
-class DTOControllerIntegrationTest extends TestCase
+class DTOControllerIntegrationTest extends IntegrationTestCase
 {
     private ValidatorInterface $validator;
 

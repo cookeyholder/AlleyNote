@@ -8,12 +8,12 @@ use App\Domains\Auth\ValueObjects\TokenPair;
 use DateInterval;
 use DateTimeImmutable;
 use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * Token Pair Value Object 單元測試.
  */
-final class TokenPairTest extends TestCase
+final class TokenPairTest extends UnitTestCase
 {
     private DateTimeImmutable $now;
 

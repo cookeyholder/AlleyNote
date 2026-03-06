@@ -8,9 +8,9 @@ use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Models\Post;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Factory\PostFactory;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
-class PostTest extends TestCase
+class PostTest extends UnitTestCase
 {
     #[Test]
     public function correctlyInitializesWithValidData(): void

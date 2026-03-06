@@ -14,11 +14,11 @@ use InvalidArgumentException;
 use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(StatisticsDatabaseAdapterFactory::class)]
-final class StatisticsDatabaseAdapterFactoryTest extends TestCase
+final class StatisticsDatabaseAdapterFactoryTest extends UnitTestCase
 {
     private StatisticsRepositoryInterface&MockObject $mockRepository;
 

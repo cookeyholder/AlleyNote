@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Shared\Monitoring;
 
 use App\Shared\Monitoring\Services\CacheMonitor;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Tests\Support\UnitTestCase;
 
-class CacheMonitorTest extends TestCase
+class CacheMonitorTest extends UnitTestCase
 {
     private CacheMonitor $cacheMonitor;
 

@@ -139,22 +139,22 @@ tests/e2e/
 ### 使用 Page Object Model
 
 ```javascript
-const { test, expect, LoginPage } = require('./fixtures/page-objects');
+const { test, expect, LoginPage } = require("./fixtures/page-objects");
 
-test('登入測試', async ({ page }) => {
+test("登入測試", async ({ page }) => {
   const loginPage = new LoginPage(page);
   await loginPage.goto();
-  await loginPage.login('user@example.com', 'password');
-  await expect(page).toHaveURL('/dashboard');
+  await loginPage.login("admin@example.com", "Admin@123456");
+  await expect(page).toHaveURL("/dashboard");
 });
 ```
 
 ### 使用認證 Fixture
 
 ```javascript
-test('需要登入的測試', async ({ authenticatedPage }) => {
+test("需要登入的測試", async ({ authenticatedPage }) => {
   // authenticatedPage 已經登入
-  await authenticatedPage.goto('/admin/dashboard');
+  await authenticatedPage.goto("/admin/dashboard");
   // ... 測試邏輯
 });
 ```
@@ -169,20 +169,20 @@ test('需要登入的測試', async ({ authenticatedPage }) => {
 範例：
 
 ```javascript
-test.describe('新功能測試', () => {
+test.describe("新功能測試", () => {
   test.beforeEach(async ({ page }) => {
     // 設定
   });
 
-  test('應該能夠執行某個操作', async ({ page }) => {
+  test("應該能夠執行某個操作", async ({ page }) => {
     // Arrange - 準備測試資料和狀態
-    await page.goto('/some-page');
-    
+    await page.goto("/some-page");
+
     // Act - 執行操作
-    await page.click('button');
-    
+    await page.click("button");
+
     // Assert - 驗證結果
-    await expect(page.locator('.result')).toBeVisible();
+    await expect(page.locator(".result")).toBeVisible();
   });
 });
 ```
@@ -196,36 +196,36 @@ name: E2E Tests
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
-      
+          node-version: "18"
+
       - name: Start services
         run: docker compose up -d
-      
+
       - name: Install dependencies
         working-directory: tests/e2e
         run: npm ci
-      
+
       - name: Install Playwright
         working-directory: tests/e2e
         run: npx playwright install --with-deps
-      
+
       - name: Run tests
         working-directory: tests/e2e
         run: npm test
-      
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v3
@@ -243,6 +243,7 @@ npm run test:ui
 ```
 
 這會開啟互動式 UI，可以：
+
 - 逐步執行測試
 - 檢視每個步驟的截圖
 - 時光旅行除錯
@@ -254,6 +255,7 @@ npm run test:debug
 ```
 
 這會開啟 Playwright Inspector，可以：
+
 - 設定中斷點
 - 逐步執行
 - 檢視 DOM 狀態
@@ -283,6 +285,7 @@ npm run test:report
 ```
 
 報告包含：
+
 - 所有測試的執行結果
 - 失敗測試的截圖和影片
 - 詳細的錯誤堆疊
@@ -291,8 +294,15 @@ npm run test:report
 ## 🔑 測試帳號
 
 預設測試帳號：
+
 - Email: `admin@example.com`
-- Password: `password`
+- Password: `Admin@123456`
+
+若登入失敗，請先在專案根目錄執行：
+
+```bash
+php scripts/reset_admin.php
+```
 
 ## 📌 注意事項
 
@@ -305,6 +315,7 @@ npm run test:report
 ## 🤝 貢獻
 
 新增測試時請遵循：
+
 1. 使用 Page Object 模式
 2. 撰寫清晰的測試描述
 3. 添加適當的註解

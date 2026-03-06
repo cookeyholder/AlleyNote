@@ -12,13 +12,13 @@ use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(ActivityLogController::class)]
-class ActivityLogControllerTest extends TestCase
+class ActivityLogControllerTest extends UnitTestCase
 {
     private ActivityLogController $controller;
 

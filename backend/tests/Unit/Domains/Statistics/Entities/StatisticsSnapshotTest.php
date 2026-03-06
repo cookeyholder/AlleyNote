@@ -13,10 +13,10 @@ use DateTime;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 #[CoversClass(StatisticsSnapshot::class)]
-class StatisticsSnapshotTest extends TestCase
+class StatisticsSnapshotTest extends UnitTestCase
 {
     private array $validData;
 

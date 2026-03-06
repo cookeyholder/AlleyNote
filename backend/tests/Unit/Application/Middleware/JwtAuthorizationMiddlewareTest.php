@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\JwtAuthorizationMiddleware;
-use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Uri;
+use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Mockery;
 use Mockery\MockInterface;
-use Tests\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * JWT 授權中介軟體測試.
  */
-final class JwtAuthorizationMiddlewareTest extends TestCase
+final class JwtAuthorizationMiddlewareTest extends UnitTestCase
 {
     private JwtAuthorizationMiddleware $middleware;
 
@@ -39,7 +39,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
     public function testMiddlewareIsDisabledWhenNotEnabled(): void
     {
         $middleware = new JwtAuthorizationMiddleware(enabled: false);
-        $request = $this->createRequest('/api/v1/posts');
+        $request = $this->createLocalRequest('/api/v1/posts');
 
         $expectedResponse = new Response(200);
         $this->handler
@@ -55,7 +55,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
 
     public function testSkipsProcessingForNonApiPaths(): void
     {
-        $request = $this->createRequest('/home');
+        $request = $this->createLocalRequest('/home');
 
         $expectedResponse = new Response(200);
         $this->handler
@@ -71,7 +71,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
 
     public function testReturns403WhenUserNotAuthenticated(): void
     {
-        $request = $this->createRequest('/api/v1/posts');
+        $request = $this->createLocalRequest('/api/v1/posts');
 
         $this->handler->shouldNotReceive('handle');
 
@@ -166,7 +166,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
     /**
      * 建立基本請求.
      */
-    private function createRequest(string $path, string $method = 'GET'): ServerRequest
+    private function createLocalRequest(string $path, string $method = 'GET'): ServerRequest
     {
         return new ServerRequest($method, new Uri($path));
     }
@@ -176,7 +176,7 @@ final class JwtAuthorizationMiddlewareTest extends TestCase
      */
     private function createAuthenticatedRequest(string $path, string $method = 'GET'): ServerRequest
     {
-        return $this->createRequest($path, $method)
+        return $this->createLocalRequest($path, $method)
             ->withAttribute('authenticated', true)
             ->withAttribute('user_id', 1)
             ->withAttribute('role', 'user')

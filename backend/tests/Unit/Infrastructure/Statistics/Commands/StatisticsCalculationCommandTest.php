@@ -13,15 +13,15 @@ use App\Infrastructure\Statistics\Commands\StatisticsCalculationCommand;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Tests\Support\UnitTestCase;
 
 /**
  * StatisticsCalculationCommand 單元測試.
  */
 #[CoversClass(StatisticsCalculationCommand::class)]
-final class StatisticsCalculationCommandTest extends TestCase
+final class StatisticsCalculationCommandTest extends UnitTestCase
 {
     private StatisticsCalculationCommand $command;
 

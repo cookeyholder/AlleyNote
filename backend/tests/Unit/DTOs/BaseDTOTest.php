@@ -10,12 +10,12 @@ use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Mockery\MockInterface;
-use PHPUnit\Framework\TestCase;
+use Tests\Support\UnitTestCase;
 
 /**
  * BaseDTO 測試類.
  */
-class BaseDTOTest extends TestCase
+class BaseDTOTest extends UnitTestCase
 {
     use MockeryPHPUnitIntegration;
 
