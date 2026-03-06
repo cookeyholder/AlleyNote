@@ -41,8 +41,14 @@ test.beforeEach(async ({ page }) => {
     }
 
     if (attempt < 2) {
-      await page.goto("/admin/dashboard");
+      await page
+        .locator('aside a[href="/admin/dashboard"][data-navigo]')
+        .first()
+        .click();
       await page.waitForURL("**/admin/dashboard", { timeout: 15000 });
+      await expect(page.locator('main h1:has-text("儀表板")')).toBeVisible({
+        timeout: 15000,
+      });
     }
   }
 
