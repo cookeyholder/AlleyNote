@@ -3,7 +3,7 @@ import {
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
 import { usersAPI } from "../../api/modules/users.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { Modal, modal } from "../../components/Modal.js";
 import { PasswordStrengthIndicator } from "../../components/PasswordStrengthIndicator.js";
 import { PasswordGenerator } from "../../utils/passwordGenerator.js";
@@ -77,7 +77,9 @@ export default class UsersPage {
       this.render();
     } catch (error) {
       console.error("載入使用者列表失敗:", error);
-      toast.error("載入使用者列表失敗：" + (error.message || "未知錯誤"));
+      notification.error(
+        "載入使用者列表失敗：" + (error.message || "未知錯誤"),
+      );
       this.users = [];
       this.loading = false;
       this.render();
@@ -92,8 +94,8 @@ export default class UsersPage {
             <h1 class="text-3xl font-bold text-modern-900">使用者管理</h1>
             <p class="text-sm text-modern-500 mt-1">管理系統存取權限與維護使用者帳號資訊</p>
           </div>
-          <button 
-            id="addUserBtn" 
+          <button
+            id="addUserBtn"
             class="flex items-center justify-center gap-2 px-6 py-3 bg-accent-600 text-white rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all font-bold"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -197,14 +199,14 @@ export default class UsersPage {
         <td class="px-6 py-4 text-sm font-medium text-modern-500 tabular-nums">${this.formatDate(user.last_login)}</td>
         <td class="px-6 py-4 text-right">
           <div class="flex items-center justify-end gap-1">
-            <button 
+            <button
               class="edit-user-btn p-2 text-modern-400 hover:text-accent-600 hover:bg-accent-50 rounded-xl transition-all"
               title="編輯資料"
               data-user-id="${user.id}"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
             </button>
-            <button 
+            <button
               class="delete-user-btn p-2 text-modern-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
               title="移除使用者"
               data-user-id="${user.id}"
@@ -226,15 +228,15 @@ export default class UsersPage {
           第 ${this.currentPage} / ${this.totalPages} 頁
         </div>
         <div class="flex gap-2">
-          <button 
-            id="prevPageBtn" 
+          <button
+            id="prevPageBtn"
             class="px-4 py-2 text-sm font-bold text-modern-600 bg-white border border-modern-200 rounded-xl hover:bg-modern-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             ${this.currentPage <= 1 ? "disabled" : ""}
           >
             上一頁
           </button>
-          <button 
-            id="nextPageBtn" 
+          <button
+            id="nextPageBtn"
             class="px-4 py-2 text-sm font-bold text-modern-600 bg-white border border-modern-200 rounded-xl hover:bg-modern-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
             ${this.currentPage >= this.totalPages ? "disabled" : ""}
           >
@@ -530,9 +532,9 @@ export default class UsersPage {
               confirmPassword.value = generatedPassword;
             }
 
-            toast.success("已生成安全密碼！");
+            notification.success("已生成安全密碼！");
           } catch (error) {
-            toast.error("生成密碼失敗：" + error.message);
+            notification.error("生成密碼失敗：" + error.message);
           }
         });
       }
@@ -577,32 +579,32 @@ export default class UsersPage {
 
       // 驗證
       if (!data.username || data.username.length < 3) {
-        toast.error("使用者名稱至少需要 3 個字元");
+        notification.error("使用者名稱至少需要 3 個字元");
         return;
       }
 
       if (!data.email || !this.isValidEmail(data.email)) {
-        toast.error("請輸入有效的電子郵件");
+        notification.error("請輸入有效的電子郵件");
         return;
       }
 
       if (!data.password || data.password.length < 8) {
-        toast.error("密碼長度至少需要 8 個字元");
+        notification.error("密碼長度至少需要 8 個字元");
         return;
       }
 
       if (data.password !== data.password_confirmation) {
-        toast.error("密碼與確認密碼不符");
+        notification.error("密碼與確認密碼不符");
         return;
       }
 
       await usersAPI.create(data);
-      toast.success("使用者建立成功");
+      notification.success("使用者建立成功");
       this.modal.hide();
       await this.loadUsers(this.currentPage);
     } catch (error) {
       console.error("建立使用者失敗:", error);
-      toast.error(error.message || "建立使用者失敗");
+      notification.error(error.message || "建立使用者失敗");
     }
   }
 
@@ -616,22 +618,22 @@ export default class UsersPage {
 
       // 驗證
       if (!data.username || data.username.length < 3) {
-        toast.error("使用者名稱至少需要 3 個字元");
+        notification.error("使用者名稱至少需要 3 個字元");
         return;
       }
 
       if (!data.email || !this.isValidEmail(data.email)) {
-        toast.error("請輸入有效的電子郵件");
+        notification.error("請輸入有效的電子郵件");
         return;
       }
 
       await usersAPI.update(userId, data);
-      toast.success("使用者更新成功");
+      notification.success("使用者更新成功");
       this.modal.hide();
       await this.loadUsers(this.currentPage);
     } catch (error) {
       console.error("更新使用者失敗:", error);
-      toast.error(error.message || "更新使用者失敗");
+      notification.error(error.message || "更新使用者失敗");
     }
   }
 
@@ -639,17 +641,18 @@ export default class UsersPage {
     const user = this.users.find((u) => u.id === userId);
     if (!user) return;
 
-    if (!confirm(`確定要刪除使用者「${user.username}」嗎？此操作無法復原。`)) {
+    const confirmed = await notification.confirmDelete(user.username);
+    if (!confirmed) {
       return;
     }
 
     try {
       await usersAPI.delete(userId);
-      toast.success("使用者刪除成功");
+      notification.success("使用者刪除成功");
       await this.loadUsers(this.currentPage);
     } catch (error) {
       console.error("刪除使用者失敗:", error);
-      toast.error(error.message || "刪除使用者失敗");
+      notification.error(error.message || "刪除使用者失敗");
     }
   }
 

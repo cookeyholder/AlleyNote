@@ -3,7 +3,7 @@
  * 用於刪除操作等需要用戶確認的場景
  */
 
-import { modal } from "./Modal.js";
+import { notification } from "../utils/notification.js";
 
 /**
  * 顯示刪除確認對話框
@@ -12,20 +12,46 @@ import { modal } from "./Modal.js";
  * @param {Object} options - 額外選項
  * @returns {Object} Modal 實例
  */
-export function confirmDelete(itemName, onConfirm, options = {}) {
-  const { title = "確認刪除", message = null, type = "項目" } = options;
+export function confirmDelete(
+  itemName,
+  onConfirmOrOptions = null,
+  options = {},
+) {
+  const isLegacyCallback = typeof onConfirmOrOptions === "function";
+  const resolvedOptions = isLegacyCallback ? options : onConfirmOrOptions || {};
+  const { title = "確認刪除", message = null } = resolvedOptions;
 
   const defaultMessage = `確定要刪除「${itemName}」嗎？此操作無法復原。`;
   const finalMessage = message || defaultMessage;
 
-  return modal.confirm(
+  if (isLegacyCallback) {
+    return notification
+      .confirm({
+        title,
+        message: `
+        <div class="text-modern-700">
+          <p class="mb-2">${finalMessage}</p>
+          <p class="text-sm text-red-600">此操作無法復原</p>
+        </div>
+      `,
+        confirmText: "確認刪除",
+        cancelText: "保留",
+        tone: "danger",
+        html: true,
+      })
+      .then((confirmed) => {
+        if (confirmed) {
+          return onConfirmOrOptions();
+        }
+
+        return false;
+      });
+  }
+
+  return notification.confirmDelete(itemName, {
     title,
-    `<div class="text-modern-700">
-      <p class="mb-2">${finalMessage}</p>
-      <p class="text-sm text-red-600">⚠️ 此操作無法復原</p>
-    </div>`,
-    onConfirm,
-  );
+    message: finalMessage,
+  });
 }
 
 /**
@@ -37,7 +63,13 @@ export function confirmDelete(itemName, onConfirm, options = {}) {
  * @returns {Object} Modal 實例
  */
 export function confirm(title, message, onConfirm, onCancel = null) {
-  return modal.confirm(title, message, onConfirm, onCancel);
+  return notification.confirm({ title, message }).then((confirmed) => {
+    if (confirmed) {
+      return onConfirm?.();
+    }
+
+    return onCancel?.();
+  });
 }
 
 /**
@@ -48,7 +80,7 @@ export function confirm(title, message, onConfirm, onCancel = null) {
  * @returns {Object} Modal 實例
  */
 export function alert(title, message, onClose = null) {
-  return modal.alert(title, message, onClose);
+  return notification.notice({ title, message }).then(() => onClose?.());
 }
 
 /**
@@ -58,19 +90,54 @@ export function alert(title, message, onClose = null) {
  * @param {Object} options - 額外選項
  * @returns {Object} Modal 實例
  */
-export function confirmBatchDelete(count, onConfirm, options = {}) {
-  const { title = "確認批量刪除", type = "項目" } = options;
+export function confirmBatchDelete(
+  count,
+  onConfirmOrOptions = null,
+  options = {},
+) {
+  const isLegacyCallback = typeof onConfirmOrOptions === "function";
+  const resolvedOptions = isLegacyCallback ? options : onConfirmOrOptions || {};
+  const { title = "確認批量刪除", type = "項目" } = resolvedOptions;
 
   const message = `確定要刪除選中的 ${count} 個${type}嗎？此操作無法復原。`;
 
-  return modal.confirm(
+  if (isLegacyCallback) {
+    return notification
+      .confirm({
+        title,
+        message: `
+        <div class="text-modern-700">
+          <p class="mb-2">${message}</p>
+          <p class="text-sm text-red-600">此操作無法復原</p>
+        </div>
+      `,
+        confirmText: "確認刪除",
+        cancelText: "保留",
+        tone: "danger",
+        html: true,
+      })
+      .then((confirmed) => {
+        if (confirmed) {
+          return onConfirmOrOptions();
+        }
+
+        return false;
+      });
+  }
+
+  return notification.confirm({
     title,
-    `<div class="text-modern-700">
-      <p class="mb-2">${message}</p>
-      <p class="text-sm text-red-600">⚠️ 此操作無法復原</p>
-    </div>`,
-    onConfirm,
-  );
+    message: `
+      <div class="text-modern-700">
+        <p class="mb-2">${message}</p>
+        <p class="text-sm text-red-600">此操作無法復原</p>
+      </div>
+    `,
+    confirmText: "確認刪除",
+    cancelText: "保留",
+    tone: "danger",
+    html: true,
+  });
 }
 
 /**
@@ -79,18 +146,37 @@ export function confirmBatchDelete(count, onConfirm, options = {}) {
  * @param {Object} options - 額外選項
  * @returns {Object} Modal 實例
  */
-export function confirmDiscard(onConfirm, options = {}) {
+export function confirmDiscard(onConfirmOrOptions = null, options = {}) {
+  const isLegacyCallback = typeof onConfirmOrOptions === "function";
+  const resolvedOptions = isLegacyCallback ? options : onConfirmOrOptions || {};
   const {
     title = "確認放棄變更",
     message = "您有未保存的變更。確定要放棄這些變更嗎？",
-  } = options;
+  } = resolvedOptions;
 
-  return modal.confirm(
-    title,
-    `<div class="text-modern-700">
-      <p class="mb-2">${message}</p>
-      <p class="text-sm text-orange-600">⚠️ 未保存的變更將會遺失</p>
-    </div>`,
-    onConfirm,
-  );
+  if (isLegacyCallback) {
+    return notification
+      .confirm({
+        title,
+        message: `
+        <div class="text-modern-700">
+          <p class="mb-2">${message}</p>
+          <p class="text-sm text-orange-600">未保存的變更將會遺失</p>
+        </div>
+      `,
+        confirmText: "放棄變更",
+        cancelText: "繼續編輯",
+        tone: "warning",
+        html: true,
+      })
+      .then((confirmed) => {
+        if (confirmed) {
+          return onConfirmOrOptions();
+        }
+
+        return false;
+      });
+  }
+
+  return notification.confirmDiscard({ title, message });
 }

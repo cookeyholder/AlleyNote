@@ -12,7 +12,7 @@ import { initRouter } from "./utils/router.js";
 import { globalActions, globalGetters } from "./store/globalStore.js";
 import { authAPI } from "./api/modules/auth.js";
 import { loading } from "./components/Loading.js";
-import { toast } from "./utils/toast.js";
+import { notification } from "./utils/notification.js";
 
 /**
  * 初始化應用程式
@@ -49,7 +49,7 @@ async function initApp() {
   } catch (error) {
     console.error("❌ 應用程式啟動失敗:", error);
     loading.hide();
-    toast.error("應用程式啟動失敗，請重新整理頁面");
+    notification.error("應用程式啟動失敗，請重新整理頁面");
   }
 }
 
@@ -69,11 +69,19 @@ function setupGlobalListeners() {
 
   // 監聽線上/離線狀態
   window.addEventListener("online", () => {
-    toast.success("網路連線已恢復");
+    notification.banner.hide();
+    notification.success("網路連線已恢復");
   });
 
   window.addEventListener("offline", () => {
-    toast.warning("網路連線已中斷");
+    notification.banner.show(
+      "網路連線已中斷，部分功能可能暫時無法使用。",
+      "warning",
+      {
+        title: "連線狀態",
+        dismissible: false,
+      },
+    );
   });
 
   // 監聽視窗大小變化（用於響應式調整）

@@ -3,8 +3,7 @@ import {
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
 import { apiClient } from "../../api/client.js";
-import { toast } from "../../utils/toast.js";
-import { confirmDelete } from "../../components/ConfirmationDialog.js";
+import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { router } from "../../utils/router.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
@@ -35,7 +34,7 @@ export async function renderPostsList() {
           </button>
         </div>
       </div>
-      
+
       <!-- 批次操作工具列 -->
       <div id="batch-toolbar" class="bg-accent-50 border border-accent-100 rounded-2xl p-4 mb-6 hidden animate-slide-up">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
@@ -60,7 +59,7 @@ export async function renderPostsList() {
           </div>
         </div>
       </div>
-      
+
       <!-- 搜尋與篩選 -->
       <div class="card bg-white border-modern-200 shadow-sm p-4 mb-6">
         <div class="flex flex-col lg:flex-row gap-4">
@@ -94,7 +93,7 @@ export async function renderPostsList() {
           </div>
         </div>
       </div>
-      
+
       <!-- 文章列表 -->
       <div class="card">
         <div id="posts-table-container">
@@ -235,8 +234,8 @@ async function loadPosts() {
                 currentState.batchMode
                   ? `
                 <th class="px-6 py-4 text-left" style="width: 50px;">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     id="select-all-checkbox"
                     class="w-5 h-5 text-accent-600 border-modern-300 rounded-lg focus:ring-accent-500 transition-all cursor-pointer"
                   />
@@ -266,8 +265,8 @@ async function loadPosts() {
                   currentState.batchMode
                     ? `
                   <td class="px-6 py-4">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       class="post-checkbox w-5 h-5 text-accent-600 border-modern-300 rounded-lg focus:ring-accent-500 transition-all cursor-pointer"
                       data-post-id="${post.id}"
                       ${currentState.selectedPosts.has(post.id) ? "checked" : ""}
@@ -305,7 +304,7 @@ async function loadPosts() {
                     ? `
                   <td class="px-6 py-4 text-right">
                     <div class="flex justify-end gap-1">
-                      <button 
+                      <button
                         class="p-2 text-modern-400 hover:text-accent-600 hover:bg-accent-50 rounded-xl transition-all"
                         title="編輯"
                         data-action="edit"
@@ -313,7 +312,7 @@ async function loadPosts() {
                       >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                       </button>
-                      <button 
+                      <button
                         class="p-2 text-modern-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
                         title="${post.status === "published" ? "轉為草稿" : "直接發布"}"
                         data-action="toggle-status"
@@ -322,7 +321,7 @@ async function loadPosts() {
                       >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
                       </button>
-                      <button 
+                      <button
                         class="p-2 text-modern-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                         title="刪除"
                         data-action="delete"
@@ -343,7 +342,7 @@ async function loadPosts() {
           </tbody>
         </table>
       </div>
-      
+
       <!-- 分頁 -->
       <div class="px-6 py-6 bg-modern-50/30 border-t border-modern-100">
         ${renderPagination(pagination)}
@@ -425,7 +424,7 @@ function renderPagination(pagination) {
         第 ${current_page} 頁，共 ${total_pages} 頁
       </div>
       <div class="flex gap-2">
-        <button 
+        <button
           onclick="window.goToPage(${current_page - 1})"
           ${current_page === 1 ? "disabled" : ""}
           class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -438,7 +437,7 @@ function renderPagination(pagination) {
               return '<span class="px-3 py-1">...</span>';
             }
             return `
-            <button 
+            <button
               onclick="window.goToPage(${page})"
               class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 ${
                 page === current_page
@@ -451,7 +450,7 @@ function renderPagination(pagination) {
           `;
           })
           .join("")}
-        <button 
+        <button
           onclick="window.goToPage(${current_page + 1})"
           ${current_page === total_pages ? "disabled" : ""}
           class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -581,14 +580,24 @@ function updateSelectAllCheckbox() {
  */
 async function confirmBatchDelete() {
   if (currentState.selectedPosts.size === 0) {
-    toast.error("請至少選擇一篇文章");
+    notification.error("請至少選擇一篇文章");
     return;
   }
 
   const count = currentState.selectedPosts.size;
-  const confirmed = await confirmDelete(
-    `確定要刪除選中的 ${count} 篇文章嗎？此操作無法復原。`,
-  );
+  const confirmed = await notification.confirm({
+    title: "確認批次刪除",
+    message: `
+      <div class="text-modern-700">
+        <p class="mb-2">確定要刪除選中的 ${count} 篇文章嗎？此操作無法復原。</p>
+        <p class="text-sm text-red-600">此操作無法復原</p>
+      </div>
+    `,
+    confirmText: "確認刪除",
+    cancelText: "保留",
+    tone: "danger",
+    html: true,
+  });
 
   if (!confirmed) return;
 
@@ -612,13 +621,13 @@ async function confirmBatchDelete() {
     loading.hide();
 
     if (deletedCount === count) {
-      toast.success(`成功刪除 ${count} 篇文章`);
+      notification.success(`成功刪除 ${count} 篇文章`);
     } else if (deletedCount > 0) {
-      toast.success(
+      notification.success(
         `成功刪除 ${deletedCount} 篇文章，${count - deletedCount} 篇失敗`,
       );
     } else {
-      toast.error("批次刪除失敗");
+      notification.error("批次刪除失敗");
       return; // 不清除選擇，讓用戶可以重試
     }
 
@@ -629,7 +638,7 @@ async function confirmBatchDelete() {
     await loadPosts();
   } catch (error) {
     loading.hide();
-    toast.error("批次刪除失敗：" + error.message);
+    notification.error("批次刪除失敗：" + error.message);
   }
 }
 
@@ -658,7 +667,7 @@ function cancelBatchMode() {
  */
 async function deletePost(postId, postTitle) {
   // 先詢問使用者確認，只有確認後才刪除
-  const confirmed = await confirmDelete(postTitle || "此文章");
+  const confirmed = await notification.confirmDelete(postTitle || "此文章");
 
   // 如果用戶取消，直接返回
   if (!confirmed) {
@@ -671,11 +680,11 @@ async function deletePost(postId, postTitle) {
   try {
     await apiClient.delete(`/posts/${postId}`);
     loading.hide();
-    toast.success("文章已刪除");
+    notification.success("文章已刪除");
     await loadPosts();
   } catch (error) {
     loading.hide();
-    toast.error("刪除失敗：" + error.message);
+    notification.error("刪除失敗：" + error.message);
   }
 }
 
@@ -691,11 +700,11 @@ async function togglePostStatus(postId, currentStatus) {
   try {
     await apiClient.put(`/posts/${postId}`, { status: newStatus });
     loading.hide();
-    toast.success(`文章已${action}`);
+    notification.success(`文章已${action}`);
     await loadPosts();
   } catch (error) {
     loading.hide();
-    toast.error(`${action}失敗：` + error.message);
+    notification.error(`${action}失敗：` + error.message);
   }
 }
 

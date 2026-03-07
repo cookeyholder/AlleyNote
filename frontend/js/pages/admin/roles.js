@@ -6,7 +6,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { rolesAPI } from "../../api/modules/roles.js";
 
 /**
@@ -46,7 +46,7 @@ export default class RolesPage {
       this.render();
     } catch (error) {
       console.error("載入資料失敗:", error);
-      toast.error("載入資料失敗");
+      notification.error("載入資料失敗");
       this.loading = false;
       this.render();
     }
@@ -324,7 +324,7 @@ export default class RolesPage {
       this.render();
     } catch (error) {
       console.error("載入角色權限失敗:", error);
-      toast.error("載入角色權限失敗");
+      notification.error("載入角色權限失敗");
     }
   }
 
@@ -338,10 +338,10 @@ export default class RolesPage {
 
     try {
       await rolesAPI.updatePermissions(roleId, permissionIds);
-      toast.success("權限已更新");
+      notification.success("權限已更新");
     } catch (error) {
       console.error("更新權限失敗:", error);
-      toast.error("更新權限失敗");
+      notification.error("更新權限失敗");
     }
   }
 
@@ -496,11 +496,11 @@ export default class RolesPage {
       };
 
       await rolesAPI.create(data);
-      toast.success("角色建立成功");
+      notification.success("角色建立成功");
       await this.loadRolesAndPermissions();
     } catch (error) {
       console.error("建立角色失敗:", error);
-      toast.error(error.message || "建立角色失敗");
+      notification.error(error.message || "建立角色失敗");
     }
   }
 
@@ -513,27 +513,31 @@ export default class RolesPage {
       };
 
       await rolesAPI.update(roleId, data);
-      toast.success("角色更新成功");
+      notification.success("角色更新成功");
       await this.loadRolesAndPermissions();
     } catch (error) {
       console.error("更新角色失敗:", error);
-      toast.error(error.message || "更新角色失敗");
+      notification.error(error.message || "更新角色失敗");
     }
   }
 
   async deleteRole(id, name) {
-    if (!confirm(`確定要刪除角色「${name}」嗎？此操作無法復原。`)) {
+    const confirmed = await notification.confirmDelete(name, {
+      title: "確認刪除角色",
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       await rolesAPI.delete(id);
-      toast.success("角色已刪除");
+      notification.success("角色已刪除");
       await this.loadRolesAndPermissions();
       this.selectedRole = null;
     } catch (error) {
       console.error("刪除角色失敗:", error);
-      toast.error(error.response?.data?.message || "刪除角色失敗");
+      notification.error(error.response?.data?.message || "刪除角色失敗");
     }
   }
 

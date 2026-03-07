@@ -7,6 +7,14 @@ class ModalComponent {
     this.modals = [];
   }
 
+  createActionButton(text, className, action) {
+    return `
+      <button type="button" class="${className}" data-action="${action}">
+        ${text}
+      </button>
+    `;
+  }
+
   /**
    * 顯示 Modal
    */
@@ -92,16 +100,44 @@ class ModalComponent {
   /**
    * 確認對話框
    */
-  confirm(title, message, onConfirm, onCancel = null) {
+  confirmPromise(optionsOrTitle, messageArg = "", legacyOptions = {}) {
+    const options =
+      typeof optionsOrTitle === "object"
+        ? optionsOrTitle
+        : { title: optionsOrTitle, message: messageArg, ...legacyOptions };
+
+    const {
+      title,
+      message,
+      confirmText = "確認執行",
+      cancelText = "取消操作",
+      tone = "accent",
+      html = false,
+    } = options;
+
+    const toneClasses = {
+      accent: "bg-accent-600 hover:bg-accent-700 shadow-accent-600/20",
+      danger: "bg-red-600 hover:bg-red-700 shadow-red-600/20",
+      warning: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
+    };
+
+    const body = html
+      ? message
+      : `<div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>`;
+
     const content = `
-      <div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>
+      ${body}
       <div class="flex justify-end gap-3 border-t border-modern-100 pt-6">
-        <button type="button" class="px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors" data-action="cancel">
-          取消操作
-        </button>
-        <button type="button" class="px-8 py-2.5 bg-accent-600 text-white text-sm font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all" data-action="confirm">
-          確認執行
-        </button>
+        ${this.createActionButton(
+          cancelText,
+          "px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors",
+          "cancel",
+        )}
+        ${this.createActionButton(
+          confirmText,
+          `px-8 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
+          "confirm",
+        )}
       </div>
     `;
 
@@ -111,64 +147,104 @@ class ModalComponent {
       closeOnBackdrop: false,
     });
 
-    // 綁定按鈕事件
-    const cancelBtn = modalInstance.element.querySelector(
-      '[data-action="cancel"]',
-    );
-    const confirmBtn = modalInstance.element.querySelector(
-      '[data-action="confirm"]',
-    );
+    return new Promise((resolve) => {
+      const cancelBtn = modalInstance.element.querySelector(
+        '[data-action="cancel"]',
+      );
+      const confirmBtn = modalInstance.element.querySelector(
+        '[data-action="confirm"]',
+      );
 
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => {
+      cancelBtn?.addEventListener("click", () => {
         modalInstance.close();
-        if (onCancel) onCancel();
+        resolve(false);
       });
-    }
 
-    if (confirmBtn) {
-      confirmBtn.addEventListener("click", async () => {
-        try {
-          if (onConfirm) await onConfirm();
-          modalInstance.close();
-        } catch (error) {
-          console.error("Confirm action error:", error);
-        }
+      confirmBtn?.addEventListener("click", () => {
+        modalInstance.close();
+        resolve(true);
       });
-    }
+    });
+  }
 
-    return modalInstance;
+  /**
+   * 確認對話框
+   */
+  confirm(title, message, onConfirm, onCancel = null) {
+    this.confirmPromise(title, message).then((confirmed) => {
+      if (confirmed) {
+        onConfirm?.();
+        return;
+      }
+
+      onCancel?.();
+    });
+  }
+
+  /**
+   * Notice 對話框
+   */
+  noticePromise(optionsOrTitle, messageArg = "", legacyOptions = {}) {
+    const options =
+      typeof optionsOrTitle === "object"
+        ? optionsOrTitle
+        : { title: optionsOrTitle, message: messageArg, ...legacyOptions };
+
+    const {
+      title,
+      message,
+      confirmText = "我知道了",
+      tone = "accent",
+      html = false,
+    } = options;
+
+    const toneClasses = {
+      accent: "bg-accent-600 hover:bg-accent-700 shadow-accent-600/20",
+      warning: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
+      info: "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20",
+    };
+
+    const body = html
+      ? message
+      : `<div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>`;
+
+    const content = `
+      ${body}
+      <div class="flex justify-end border-t border-modern-100 pt-6">
+        ${this.createActionButton(
+          confirmText,
+          `px-10 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
+          "ok",
+        )}
+      </div>
+    `;
+
+    const modalInstance = this.show(title, content, {
+      size: "sm",
+      showCloseButton: false,
+      closeOnBackdrop: false,
+    });
+
+    return new Promise((resolve) => {
+      const okBtn = modalInstance.element.querySelector('[data-action="ok"]');
+      okBtn?.addEventListener("click", () => {
+        modalInstance.close();
+        resolve();
+      });
+    });
+  }
+
+  notice(title, message, onClose = null) {
+    this.noticePromise(title, message).then(() => {
+      onClose?.();
+    });
   }
 
   /**
    * 警告對話框
    */
   alert(title, message, onClose = null) {
-    const content = `
-      <div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>
-      <div class="flex justify-end border-t border-modern-100 pt-6">
-        <button type="button" class="px-10 py-2.5 bg-accent-600 text-white text-sm font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all" data-action="ok">
-          我知道了
-        </button>
-      </div>
-    `;
-
-    const modalInstance = this.show(title, content, {
-      size: "sm",
-      showCloseButton: false,
-      closeOnBackdrop: false,
-    });
-
-    // 綁定按鈕事件
-    const okBtn = modalInstance.element.querySelector('[data-action="ok"]');
-    if (okBtn) {
-      okBtn.addEventListener("click", () => {
-        modalInstance.close();
-        if (onClose) onClose();
-      });
-    }
-
-    return modalInstance;
+    return this.notice(title, message, onClose);
   }
 
   /**
