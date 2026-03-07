@@ -10,6 +10,8 @@ class CacheService implements CacheServiceInterface
 {
     private string $cachePath;
 
+    private string $bucketPath;
+
     private const TTL = 3600;
 
     /** @var array{hits: int, misses: int, sets: int, deletes: int, size: int} */
@@ -26,6 +28,11 @@ class CacheService implements CacheServiceInterface
         $this->cachePath = dirname(__DIR__, 2) . '/storage/cache';
         if (!is_dir($this->cachePath)) {
             mkdir($this->cachePath, 0o755, true);
+        }
+
+        $this->bucketPath = $this->cachePath . '/_index_buckets';
+        if (!is_dir($this->bucketPath)) {
+            mkdir($this->bucketPath, 0o755, true);
         }
     }
 
@@ -116,15 +123,11 @@ class CacheService implements CacheServiceInterface
             return $this->delete($pattern) ? 1 : 0;
         }
 
-        // 注意：此方法會遍歷索引中的所有 key，當 key 數量很大時會有 I/O 與 CPU 成本。
-        // 若需要高頻率/大量 pattern 刪除，建議改用支援原生 pattern matching 的快取驅動（例如 Redis）。
         $quotedPattern = preg_quote($pattern, '/');
         $regex = '/^' . str_replace('\\*', '.*', $quotedPattern) . '$/';
-
-        $index = $this->getIndex();
         $deletedCount = 0;
 
-        foreach ($index as $key) {
+        foreach ($this->getCandidateKeysForPattern($pattern) as $key) {
             if (preg_match($regex, $key)) {
                 if ($this->delete($key)) {
                     $deletedCount++;
@@ -260,6 +263,14 @@ class CacheService implements CacheServiceInterface
             $index[] = $key;
             file_put_contents($this->getIndexPath(), json_encode($index));
         }
+
+        foreach ($this->getNamespacePrefixes($key) as $prefix) {
+            $bucket = $this->getBucket($prefix);
+            if (!in_array($key, $bucket, true)) {
+                $bucket[] = $key;
+                file_put_contents($this->getBucketPath($prefix), json_encode(array_values($bucket)));
+            }
+        }
     }
 
     private function removeFromIndex(string $key): void
@@ -270,6 +281,25 @@ class CacheService implements CacheServiceInterface
             unset($index[$pos]);
             file_put_contents($this->getIndexPath(), json_encode(array_values($index)));
         }
+
+        foreach ($this->getNamespacePrefixes($key) as $prefix) {
+            $bucket = $this->getBucket($prefix);
+            $bucketPos = array_search($key, $bucket, true);
+            if ($bucketPos === false) {
+                continue;
+            }
+
+            unset($bucket[$bucketPos]);
+            $bucketPath = $this->getBucketPath($prefix);
+
+            if ($bucket === []) {
+                if (file_exists($bucketPath)) {
+                    unlink($bucketPath);
+                }
+            } else {
+                file_put_contents($bucketPath, json_encode(array_values($bucket)));
+            }
+        }
     }
 
     private function clearIndex(): void
@@ -277,6 +307,88 @@ class CacheService implements CacheServiceInterface
         if (file_exists($this->getIndexPath())) {
             unlink($this->getIndexPath());
         }
+
+        $bucketFiles = glob($this->bucketPath . '/*.json');
+        if ($bucketFiles !== false) {
+            foreach ($bucketFiles as $bucketFile) {
+                if (is_file($bucketFile)) {
+                    unlink($bucketFile);
+                }
+            }
+        }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getCandidateKeysForPattern(string $pattern): array
+    {
+        $prefix = strstr($pattern, '*', true);
+        if ($prefix === false || $prefix === '') {
+            return $this->getIndex();
+        }
+
+        $namespaceSeparatorPos = strrpos($prefix, ':');
+        if ($namespaceSeparatorPos === false) {
+            return $this->getIndex();
+        }
+
+        $namespacePrefix = substr($prefix, 0, $namespaceSeparatorPos + 1);
+        $bucket = $this->getBucket($namespacePrefix);
+
+        return $bucket === [] ? $this->getIndex() : $bucket;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getNamespacePrefixes(string $key): array
+    {
+        $parts = array_values(array_filter(explode(':', $key), static fn(string $part): bool => $part !== ''));
+        $prefixes = [];
+
+        if (count($parts) < 2) {
+            return $prefixes;
+        }
+
+        $current = '';
+        for ($index = 0; $index < count($parts) - 1; $index++) {
+            $current .= $parts[$index] . ':';
+            $prefixes[] = $current;
+        }
+
+        return $prefixes;
+    }
+
+    private function getBucketPath(string $prefix): string
+    {
+        return $this->bucketPath . '/' . hash('sha256', $prefix) . '.json';
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getBucket(string $prefix): array
+    {
+        $path = $this->getBucketPath($prefix);
+        if (!file_exists($path)) {
+            return [];
+        }
+
+        $contents = file_get_contents($path);
+        if ($contents === false) {
+            return [];
+        }
+
+        $decoded = json_decode($contents, true);
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn(mixed $value): ?string => is_string($value) ? $value : null,
+            $decoded,
+        )));
     }
 
     public function getStats(): array

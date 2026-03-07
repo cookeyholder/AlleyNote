@@ -79,4 +79,21 @@ class CacheServiceTest extends UnitTestCase
 
         $this->assertTrue($result);
     }
+
+    #[Test]
+    public function deletePatternRemovesOnlyMatchingNamespaceKeys(): void
+    {
+        $this->cacheService->set('alleynote:post:1', 'post1');
+        $this->cacheService->set('alleynote:post:2', 'post2');
+        $this->cacheService->set('alleynote:user:1', 'user1');
+        $this->cacheService->set('other:post:1', 'other');
+
+        $deleted = $this->cacheService->deletePattern('alleynote:post:*');
+
+        $this->assertSame(2, $deleted);
+        $this->assertFalse($this->cacheService->has('alleynote:post:1'));
+        $this->assertFalse($this->cacheService->has('alleynote:post:2'));
+        $this->assertTrue($this->cacheService->has('alleynote:user:1'));
+        $this->assertTrue($this->cacheService->has('other:post:1'));
+    }
 }

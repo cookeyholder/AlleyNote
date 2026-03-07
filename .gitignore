@@ -70,6 +70,7 @@ certbot-data/
 phpstan-errors.json
 backend/app/storage/cache/*.cache
 backend/app/storage/cache/_index.json
+backend/app/storage/cache/_index_buckets/
 backend/test_private_key.pem
 backend/test_public_key.pem
 /backend/keys/*.pem
