@@ -1,63 +1,63 @@
 {
-    "name": "alleynote/alleynote",
-    "type": "project",
-    "description": "A modern bulletin board system",
-    "keywords": [
-        "bulletin-board",
-        "php"
+  "name": "alleynote/alleynote",
+  "type": "project",
+  "description": "A modern bulletin board system",
+  "keywords": [
+    "bulletin-board",
+    "php"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=8.4",
+    "psr/http-message": "^1.1 || ^2.0",
+    "psr/http-server-handler": "^1.0",
+    "vlucas/phpdotenv": "^5.6",
+    "nikic/fast-route": "^1.3",
+    "monolog/monolog": "^2.9 || ^3.0",
+    "robmorgan/phinx": "^0.16.10",
+    "php-di/php-di": "^7.1",
+    "psr/http-server-middleware": "^1.0",
+    "firebase/php-jwt": "^6.11 || ^7.0",
+    "league/mime-type-detection": "^1.16",
+    "zircote/swagger-php": "^5.0 || ^6.0",
+    "ramsey/uuid": "^4.0",
+    "ezyang/htmlpurifier": "^4.16",
+    "guzzlehttp/guzzle": "^7.0",
+    "predis/predis": "^3.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11.0",
+    "mockery/mockery": "^1.6",
+    "phpstan/phpstan": "^2.0",
+    "friendsofphp/php-cs-fixer": "^3.64",
+    "phpstan/phpstan-mockery": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    },
+    "files": [
+      "app/Shared/Helpers/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit --no-coverage",
+    "test-coverage": "vendor/bin/phpunit",
+    "analyse": "vendor/bin/phpstan analyse --memory-limit=1G",
+    "cs-check": "vendor/bin/php-cs-fixer check --diff",
+    "cs-fix": "vendor/bin/php-cs-fixer fix",
+    "check-all": [
+      "@analyse",
+      "@cs-check",
+      "@test"
     ],
-    "license": "MIT",
-    "require": {
-        "php": ">=8.4",
-        "psr/http-message": "^1.1 || ^2.0",
-        "psr/http-server-handler": "^1.0",
-        "vlucas/phpdotenv": "^5.6",
-        "nikic/fast-route": "^1.3",
-        "monolog/monolog": "^2.9 || ^3.0",
-        "robmorgan/phinx": "^0.16.10",
-        "php-di/php-di": "^7.1",
-        "psr/http-server-middleware": "^1.0",
-        "firebase/php-jwt": "^6.11 || ^7.0",
-        "league/mime-type-detection": "^1.16",
-        "zircote/swagger-php": "^5.0 || ^6.0",
-        "ramsey/uuid": "^4.0",
-        "ezyang/htmlpurifier": "^4.16",
-        "guzzlehttp/guzzle": "^7.0",
-        "predis/predis": "^2.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^11.0",
-        "mockery/mockery": "^1.6",
-        "phpstan/phpstan": "^2.0",
-        "friendsofphp/php-cs-fixer": "^3.64",
-        "phpstan/phpstan-mockery": "^2.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "App\\": "app/"
-        },
-        "files": [
-            "app/Shared/Helpers/functions.php"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "scripts": {
-        "test": "vendor/bin/phpunit --no-coverage",
-        "test-coverage": "vendor/bin/phpunit",
-        "analyse": "vendor/bin/phpstan analyse --memory-limit=1G",
-        "cs-check": "vendor/bin/php-cs-fixer check --diff",
-        "cs-fix": "vendor/bin/php-cs-fixer fix",
-        "check-all": [
-            "@analyse",
-            "@cs-check",
-            "@test"
-        ],
-        "security-audit": "composer audit --format=json",
-        "audit-report": "composer audit --format=json > security-audit-report.json || true"
-    },
-    "minimum-stability": "stable"
+    "security-audit": "composer audit --format=json",
+    "audit-report": "composer audit --format=json > security-audit-report.json || true"
+  },
+  "minimum-stability": "stable"
 }
