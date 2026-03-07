@@ -164,14 +164,16 @@ test.describe("標籤管理功能測試", () => {
     // 獲取刪除前的標籤數量
     const beforeCount = await page.locator(".delete-tag-btn").count();
 
-    // 監聽對話框
-    page.on("dialog", async (dialog) => {
-      expect(dialog.type()).toBe("confirm");
-      await dialog.accept();
-    });
-
     // 點擊刪除按鈕
     await page.locator(".delete-tag-btn").first().click();
+    const confirmDialog = page.locator(
+      '.fixed.inset-0 h3:has-text("確認刪除標籤")',
+    );
+    await expect(confirmDialog).toBeVisible();
+    await page.locator('[data-action="confirm"]').click();
+
+    await page.waitForTimeout(1000);
+
     // 檢查標籤數量是否減少（或顯示空狀態）
     const afterCount = await page.locator(".delete-tag-btn").count();
     const hasEmptyState = (await page.locator("text=尚無標籤資料").count()) > 0;
