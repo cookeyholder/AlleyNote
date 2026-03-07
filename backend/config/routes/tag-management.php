@@ -463,7 +463,13 @@ return function (RouterInterface $router): void {
 
         // 清空單一標籤
         async function flushTag(tagName) {
-            if (!confirm(`確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`)) {
+            const confirmed = await confirmAction(
+                '確認清空標籤',
+                `確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`,
+                '確認清空'
+            );
+
+            if (!confirmed) {
                 return;
             }
 
@@ -516,7 +522,13 @@ return function (RouterInterface $router): void {
                 return;
             }
 
-            if (!confirm(`確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`)) {
+            const confirmed = await confirmAction(
+                '確認批量清空',
+                `確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`,
+                '確認清空'
+            );
+
+            if (!confirmed) {
                 return;
             }
 
@@ -554,6 +566,62 @@ return function (RouterInterface $router): void {
         function showLoading(show) {
             document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
             document.getElementById('tagsTable').style.display = show ? 'none' : 'table';
+        }
+
+        function confirmAction(title, message, confirmText = '確認') {
+            return new Promise((resolve) => {
+                const modalId = 'runtimeConfirmModal';
+                const existing = document.getElementById(modalId);
+                if (existing) {
+                    existing.remove();
+                }
+
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+                    <div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content border-0 shadow-lg">
+                                <div class="modal-header border-0 pb-0">
+                                    <h5 class="modal-title">${title}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-secondary pt-2">${message}</div>
+                                <div class="modal-footer border-0 pt-0">
+                                    <button type="button" class="btn btn-outline-secondary" data-action="cancel">取消</button>
+                                    <button type="button" class="btn btn-danger" data-action="confirm">${confirmText}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(wrapper.firstElementChild);
+                const element = document.getElementById(modalId);
+                const runtimeModal = new bootstrap.Modal(element);
+                let settled = false;
+
+                const finish = (result) => {
+                    if (settled) {
+                        return;
+                    }
+
+                    settled = true;
+                    resolve(result);
+                    runtimeModal.hide();
+                };
+
+                element.querySelector('[data-action="cancel"]').addEventListener('click', () => finish(false));
+                element.querySelector('[data-action="confirm"]').addEventListener('click', () => finish(true));
+                element.addEventListener('hidden.bs.modal', () => {
+                    if (!settled) {
+                        settled = true;
+                        resolve(false);
+                    }
+                    element.remove();
+                });
+
+                runtimeModal.show();
+            });
         }
 
         // 顯示警告訊息

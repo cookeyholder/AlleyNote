@@ -4,7 +4,7 @@ import {
 } from "../../layouts/DashboardLayout.js";
 import { authAPI } from "../../api/modules/auth.js";
 import { usersAPI } from "../../api/modules/users.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 
 /**
  * 個人資料頁面
@@ -28,7 +28,7 @@ export default class ProfilePage {
       this.render();
     } catch (error) {
       console.error("載入使用者資訊失敗:", error);
-      toast.error("載入使用者資訊失敗");
+      notification.error("載入使用者資訊失敗");
     }
   }
 
@@ -45,7 +45,7 @@ export default class ProfilePage {
           <div class="absolute top-0 right-0 p-8 opacity-5">
             <svg class="w-32 h-32 text-modern-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
           </div>
-          
+
           <div class="flex items-center justify-between mb-8 relative z-10">
             <div class="flex items-center gap-4">
               <div class="p-2.5 bg-accent-50 text-accent-600 rounded-xl">
@@ -53,8 +53,8 @@ export default class ProfilePage {
               </div>
               <h2 class="text-xl font-bold text-modern-900">基本通訊資訊</h2>
             </div>
-            <button 
-              id="editInfoBtn" 
+            <button
+              id="editInfoBtn"
               class="px-5 py-2 text-sm font-bold \${this.isEditingInfo ? 'text-modern-500 hover:text-modern-800' : 'bg-modern-50 text-modern-700 hover:bg-modern-100 rounded-xl transition-all'}"
             >
               \${this.isEditingInfo ? '取消編輯' : '編輯資料'}
@@ -75,8 +75,8 @@ export default class ProfilePage {
               </div>
               <h2 class="text-xl font-bold text-modern-900">登入安全與密碼</h2>
             </div>
-            <button 
-              id="editPasswordBtn" 
+            <button
+              id="editPasswordBtn"
               class="px-5 py-2 text-sm font-bold \${this.isEditingPassword ? 'text-modern-500 hover:text-modern-800' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-xl transition-all'}"
             >
               \${this.isEditingPassword ? '取消修改' : '變更密碼'}
@@ -320,26 +320,26 @@ export default class ProfilePage {
 
       // 驗證
       if (!data.username || data.username.length < 3) {
-        toast.error("使用者名稱至少需要 3 個字元");
+        notification.error("使用者名稱至少需要 3 個字元");
         return;
       }
 
       if (!data.email || !this.isValidEmail(data.email)) {
-        toast.error("請輸入有效的電子郵件");
+        notification.error("請輸入有效的電子郵件");
         return;
       }
 
       // 更新使用者資訊
       await usersAPI.update(this.user.id, data);
 
-      toast.success("個人資訊更新成功");
+      notification.success("個人資訊更新成功");
       this.isEditingInfo = false;
 
       // 重新載入使用者資訊
       await this.loadUserInfo();
     } catch (error) {
       console.error("更新個人資訊失敗:", error);
-      toast.error(error.message || "更新個人資訊失敗");
+      notification.error(error.message || "更新個人資訊失敗");
     }
   }
 
@@ -351,22 +351,22 @@ export default class ProfilePage {
 
       // 驗證
       if (!currentPassword) {
-        toast.error("請輸入目前密碼");
+        notification.error("請輸入目前密碼");
         return;
       }
 
       if (!newPassword || newPassword.length < 8) {
-        toast.error("新密碼長度至少需要 8 個字元");
+        notification.error("新密碼長度至少需要 8 個字元");
         return;
       }
 
       if (newPassword !== newPasswordConfirmation) {
-        toast.error("新密碼與確認密碼不符");
+        notification.error("新密碼與確認密碼不符");
         return;
       }
 
       if (currentPassword === newPassword) {
-        toast.error("新密碼不能與目前密碼相同");
+        notification.error("新密碼不能與目前密碼相同");
         return;
       }
 
@@ -377,12 +377,12 @@ export default class ProfilePage {
         password_confirmation: newPasswordConfirmation,
       });
 
-      toast.success("密碼修改成功");
+      notification.success("密碼修改成功");
       this.isEditingPassword = false;
       this.render();
     } catch (error) {
       console.error("修改密碼失敗:", error);
-      toast.error(error.message || "修改密碼失敗");
+      notification.error(error.message || "修改密碼失敗");
     }
   }
 

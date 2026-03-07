@@ -4,7 +4,7 @@
 
 import { globalGetters } from "../store/globalStore.js";
 import { authAPI } from "../api/modules/auth.js";
-import { toast } from "../utils/toast.js";
+import { notification } from "../utils/notification.js";
 import { router } from "../utils/router.js";
 
 /**
@@ -239,11 +239,11 @@ function bindDashboardEvents() {
     logoutBtn.addEventListener("click", async () => {
       try {
         await authAPI.logout();
-        toast.success("已成功登出");
+        notification.success("已成功登出");
         router.navigate("/");
       } catch (error) {
         console.error("Logout error:", error);
-        toast.error("登出失敗");
+        notification.error("登出失敗");
       }
     });
   }

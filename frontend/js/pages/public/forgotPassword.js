@@ -1,6 +1,6 @@
 import { authAPI } from "../../api/modules/auth.js";
 import { router } from "../../utils/router.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { FormValidator, ValidationRules } from "../../utils/validator.js";
 import { loading } from "../../components/Loading.js";
 
@@ -33,7 +33,7 @@ export function renderForgotPassword() {
             <h1 class="text-2xl font-bold text-modern-900 mb-2">忘記密碼？</h1>
             <p class="text-sm text-modern-500 leading-relaxed">請輸入您的註冊電子郵件，我們將為您發送安全的密碼重設連結</p>
           </div>
-          
+
           <form id="forgot-password-form" class="space-y-6">
             <div>
               <label for="email" class="block text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-2">
@@ -50,7 +50,7 @@ export function renderForgotPassword() {
               />
               <p class="text-red-500 text-xs font-bold mt-2 hidden" data-error-for="email"></p>
             </div>
-            
+
             <button
               type="submit"
               class="w-full py-4 bg-accent-600 text-white font-bold rounded-xl hover:bg-accent-700 shadow-xl shadow-accent-600/20 transform transition-all active:scale-95 flex items-center justify-center gap-2"
@@ -60,7 +60,7 @@ export function renderForgotPassword() {
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </button>
           </form>
-          
+
           <div class="mt-8 pt-8 border-t border-modern-100 text-center">
             <a href="/login" data-navigo class="text-sm font-bold text-modern-500 hover:text-accent-600 transition-colors flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
@@ -131,7 +131,7 @@ function bindForgotPasswordForm() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       loading.hide();
-      toast.success("重設密碼連結已發送至您的信箱，請查收");
+      notification.success("重設密碼連結已發送至您的信箱，請查收");
 
       // 顯示成功訊息
       showSuccessMessage(email);
@@ -162,7 +162,7 @@ function bindForgotPasswordForm() {
           errorMessage = error.message;
         }
 
-        toast.error(errorMessage);
+        notification.error(errorMessage);
       }
 
       // 重置按鈕
@@ -199,17 +199,17 @@ function showSuccessMessage(email) {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
         </div>
-        
+
         <h2 class="text-2xl font-bold text-modern-900 mb-4">郵件已發送</h2>
-        
+
         <p class="text-modern-600 mb-4">
           我們已將密碼重設連結發送至
         </p>
-        
+
         <p class="text-accent-600 font-semibold mb-6">
           ${escapeHtml(email)}
         </p>
-        
+
         <div class="bg-modern-50 p-4 rounded-lg mb-6 text-left">
           <p class="text-sm text-modern-700 mb-2">
             <strong>下一步：</strong>
@@ -220,7 +220,7 @@ function showSuccessMessage(email) {
             <li>設定新密碼並完成重設</li>
           </ol>
         </div>
-        
+
         <div class="space-y-3">
           <button
             onclick="window.location.href='/login'"
@@ -228,7 +228,7 @@ function showSuccessMessage(email) {
           >
             返回登入頁面
           </button>
-          
+
           <button
             onclick="window.location.href='/forgot-password'"
             class="btn-secondary w-full"

@@ -5,7 +5,7 @@
 
 import { API_CONFIG } from "./config.js";
 import { storage } from "../utils/storage.js";
-import { toast } from "../utils/toast.js";
+import { notification } from "../utils/notification.js";
 
 /**
  * API 錯誤類別
@@ -221,7 +221,7 @@ class ApiClient {
       if (!error.silent && error.status === 401) {
         // 401 錯誤不顯示，因為會自動處理登出
       } else if (!error.silent) {
-        toast.error(error.message);
+        notification.error(error.message);
       }
 
       throw error;
@@ -231,7 +231,7 @@ class ApiClient {
     if (error.name === "TypeError" && error.message === "Failed to fetch") {
       const networkError = new ApiError("網路連線失敗，請檢查您的網路設定", 0);
       if (!isSilent) {
-        toast.error(networkError.message);
+        notification.error(networkError.message);
       }
       throw networkError;
     }
@@ -240,7 +240,7 @@ class ApiClient {
     if (error.name === "AbortError") {
       const timeoutError = new ApiError("請求逾時，請稍後再試", 0);
       if (!isSilent) {
-        toast.error(timeoutError.message);
+        notification.error(timeoutError.message);
       }
       throw timeoutError;
     }
@@ -248,7 +248,7 @@ class ApiClient {
     // 其他錯誤
     const unknownError = new ApiError(error.message || "發生未知錯誤", 0);
     if (!isSilent) {
-      toast.error(unknownError.message);
+      notification.error(unknownError.message);
     }
     throw unknownError;
   }

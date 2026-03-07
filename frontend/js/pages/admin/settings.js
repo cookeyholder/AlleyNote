@@ -6,7 +6,7 @@ import {
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
 import { globalGetters } from "../../store/globalStore.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
 import { apiClient } from "../../api/client.js";
@@ -58,7 +58,7 @@ export async function renderSettings() {
           </div>
         </div>
       </div>
-      
+
       <!-- 文章與互動 -->
       <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
         <div class="flex items-center gap-3 mb-6">
@@ -78,7 +78,7 @@ export async function renderSettings() {
               <div class="w-12 h-6 bg-modern-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-modern-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
             </label>
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold text-modern-700 mb-2">每頁顯示文章數</label>
             <div class="flex items-center gap-4">
@@ -94,7 +94,7 @@ export async function renderSettings() {
           </div>
         </div>
       </div>
-      
+
       <!-- 國際化與時區 -->
       <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
         <div class="flex items-center gap-3 mb-6">
@@ -113,7 +113,7 @@ export async function renderSettings() {
               <option value="">載入中...</option>
             </select>
           </div>
-          
+
           <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-5 flex items-center gap-4">
             <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-blue-600">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -125,7 +125,7 @@ export async function renderSettings() {
           </div>
         </div>
       </div>
-      
+
       <!-- 安全與上傳 -->
       <div class="card bg-white border-modern-200 shadow-sm p-8 mb-6">
         <div class="flex items-center gap-3 mb-6">
@@ -145,7 +145,7 @@ export async function renderSettings() {
               <div class="w-12 h-6 bg-modern-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-modern-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
             </label>
           </div>
-          
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-bold text-modern-700 mb-2">單檔上傳上限 (MB)</label>
@@ -168,14 +168,14 @@ export async function renderSettings() {
               />
             </div>
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold text-modern-700 mb-4">允許上傳的檔案副檔名</label>
             <div id="file-types-container" class="space-y-6">
               <!-- 動態生成 -->
             </div>
           </div>
-          
+
           <div class="bg-amber-50/50 border border-amber-100 rounded-2xl p-5 flex items-start gap-4">
             <div class="p-2 bg-white rounded-xl shadow-sm text-amber-600">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -190,7 +190,7 @@ export async function renderSettings() {
           </div>
         </div>
       </div>
-      
+
       <!-- 頁腳客製化 -->
       <div class="card bg-white border-modern-200 shadow-sm p-8 mb-10">
         <div class="flex items-center gap-3 mb-6">
@@ -209,14 +209,14 @@ export async function renderSettings() {
               class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:ring-2 focus:ring-accent-500 transition-all outline-none"
             />
           </div>
-          
+
           <div>
             <label class="block text-sm font-bold text-modern-700 mb-2">頁腳描述內容 (富文本)</label>
             <div id="footer-description-editor" class="border border-modern-200 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent-500 transition-all"></div>
           </div>
         </div>
       </div>
-      
+
       <!-- 控制列 -->
       <div class="flex items-center justify-between p-6 bg-modern-900 rounded-2xl shadow-xl shadow-modern-200 animate-slide-up">
         <div class="text-modern-400 text-sm hidden md:block">
@@ -304,7 +304,7 @@ async function initFooterDescriptionEditor() {
     );
   } catch (error) {
     console.error("初始化頁腳描述編輯器失敗:", error);
-    toast.error("初始化編輯器失敗");
+    notification.error("初始化編輯器失敗");
   }
 }
 
@@ -386,7 +386,7 @@ async function loadSettings() {
   } catch (error) {
     loading.hide();
     console.error("載入設定失敗:", error);
-    toast.error("載入設定失敗");
+    notification.error("載入設定失敗");
   }
 }
 
@@ -466,9 +466,9 @@ async function loadFileTypesSettings(allowedTypes) {
             .map(
               (type) => `
             <label class="flex items-center gap-2 p-2 border border-modern-200 rounded hover:bg-modern-50 cursor-pointer">
-              <input 
-                type="checkbox" 
-                name="file-type" 
+              <input
+                type="checkbox"
+                name="file-type"
                 value="${type.value}"
                 ${allowedTypes.includes(type.value) ? "checked" : ""}
                 class="w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
@@ -522,7 +522,7 @@ async function loadTimezoneSettings() {
     setInterval(updateCurrentTime, 1000);
   } catch (error) {
     console.error("載入時區設定失敗:", error);
-    toast.error("載入時區設定失敗");
+    notification.error("載入時區設定失敗");
   }
 }
 
@@ -636,7 +636,7 @@ function resetSettings() {
     );
   }
 
-  toast.info("設定已重置為原始值");
+  notification.info("設定已重置為原始值");
 }
 
 /**
@@ -721,10 +721,10 @@ async function saveSettings() {
     currentSettings = { ...settings, allowed_file_types: allowedFileTypes };
 
     loading.hide();
-    toast.success("設定已儲存");
+    notification.success("設定已儲存");
   } catch (error) {
     loading.hide();
     console.error("儲存設定失敗:", error);
-    toast.error("儲存設定失敗：" + (error.message || "未知錯誤"));
+    notification.error("儲存設定失敗：" + (error.message || "未知錯誤"));
   }
 }

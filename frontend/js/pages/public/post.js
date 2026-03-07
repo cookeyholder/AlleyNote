@@ -1,6 +1,6 @@
 import { postsAPI } from "../../api/modules/posts.js?v=20251014";
 import { router } from "../../utils/router.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
 
@@ -112,7 +112,7 @@ export async function renderPost(postId) {
             </div>
           </div>
         </nav>
-        
+
         <!-- 文章內容 -->
         <article class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <!-- 文章標頭 -->
@@ -134,7 +134,7 @@ export async function renderPost(postId) {
             <h1 class="text-4xl md:text-5xl font-bold text-modern-900 mb-8 tracking-tight leading-tight animate-fade-in">
               ${post.title}
             </h1>
-            
+
             <div class="flex flex-wrap items-center gap-y-4 gap-x-8 text-sm font-bold text-modern-500 uppercase tracking-widest border-b border-modern-200 pb-8">
               <div class="flex items-center gap-2 text-accent-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -160,14 +160,14 @@ export async function renderPost(postId) {
               }
             </div>
           </header>
-          
+
           <!-- 文章內容 -->
           <div class="card bg-white border border-modern-200 shadow-xl shadow-modern-200/50 p-8 md:p-12 animate-slide-up">
             <div class="prose prose-modern prose-lg max-w-none prose-headings:text-modern-900 prose-p:text-modern-700 prose-a:text-accent-600 hover:prose-a:text-accent-700 transition-all">
               ${cleanContent}
             </div>
           </div>
-          
+
           <!-- 文章導航 -->
           <div class="mt-20">
             <div class="flex items-center gap-3 mb-8">
@@ -181,7 +181,7 @@ export async function renderPost(postId) {
             </div>
           </div>
         </article>
-        
+
         <!-- 頁腳 -->
         <footer class="bg-modern-900 text-white mt-32">
           <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
@@ -201,7 +201,7 @@ export async function renderPost(postId) {
     loadPostNavigation(postId, post);
   } catch (error) {
     loading.hide();
-    toast.error("載入文章失敗：" + error.message);
+    notification.error("載入文章失敗：" + error.message);
     router.navigate("/");
   }
 }
@@ -294,7 +294,7 @@ async function loadPostNavigation(currentPostId, currentPost) {
         </div>
       `
       }
-      
+
       ${
         nextPost
           ? `
