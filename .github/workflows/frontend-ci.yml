@@ -57,54 +57,16 @@ jobs:
           fi
 
           if [ "$HAS_PACKAGE" = "true" ]; then
-            HAS_LINT=$(python3 - <<'PY'
-            import json
-            from pathlib import Path
-            data = json.loads(Path('frontend/package.json').read_text())
-            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-            print('true' if 'lint' in scripts else 'false')
-            PY
-            )
-            HAS_FORMAT_CHECK=$(python3 - <<'PY'
-            import json
-            from pathlib import Path
-            data = json.loads(Path('frontend/package.json').read_text())
-            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-            print('true' if 'format:check' in scripts else 'false')
-            PY
-            )
-            HAS_TEST_RUN=$(python3 - <<'PY'
-            import json
-            from pathlib import Path
-            data = json.loads(Path('frontend/package.json').read_text())
-            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-            print('true' if 'test:run' in scripts else 'false')
-            PY
-            )
-            HAS_TEST_COVERAGE=$(python3 - <<'PY'
-            import json
-            from pathlib import Path
-            data = json.loads(Path('frontend/package.json').read_text())
-            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-            print('true' if 'test:coverage' in scripts else 'false')
-            PY
-            )
-            HAS_TEST_E2E=$(python3 - <<'PY'
-            import json
-            from pathlib import Path
-            data = json.loads(Path('frontend/package.json').read_text())
-            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-            print('true' if 'test:e2e' in scripts else 'false')
-            PY
-            )
-            HAS_BUILD=$(python3 - <<'PY'
-            import json
-            from pathlib import Path
-            data = json.loads(Path('frontend/package.json').read_text())
-            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-            print('true' if 'build' in scripts else 'false')
-            PY
-            )
+            script_exists() {
+              python3 -c "import json, sys; from pathlib import Path; data = json.loads(Path('frontend/package.json').read_text()); scripts = data.get('scripts', {}) if isinstance(data, dict) else {}; print('true' if sys.argv[1] in scripts else 'false')" "$1"
+            }
+
+            HAS_LINT=$(script_exists lint)
+            HAS_FORMAT_CHECK=$(script_exists format:check)
+            HAS_TEST_RUN=$(script_exists test:run)
+            HAS_TEST_COVERAGE=$(script_exists test:coverage)
+            HAS_TEST_E2E=$(script_exists test:e2e)
+            HAS_BUILD=$(script_exists build)
           fi
 
           echo "has_package=$HAS_PACKAGE" >> "$GITHUB_OUTPUT"
