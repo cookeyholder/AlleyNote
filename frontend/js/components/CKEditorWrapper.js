@@ -9,10 +9,10 @@
  * @param {string} initialContent - 初始內容
  * @returns {Promise<Object>} CKEditor 實例
  */
-export async function initCKEditor(elementId, initialContent = '') {
+export async function initCKEditor(elementId, initialContent = "") {
   // 等待 CKEditor 載入
-  const { 
-    ClassicEditor, 
+  const {
+    ClassicEditor,
     Essentials,
     Bold,
     Italic,
@@ -23,82 +23,115 @@ export async function initCKEditor(elementId, initialContent = '') {
     BlockQuote,
     Table,
     Indent,
-    Undo
+    Undo,
   } = window.CKEDITOR;
-  
+
   if (!ClassicEditor) {
-    throw new Error('CKEditor 尚未載入');
+    throw new Error("CKEditor 尚未載入");
   }
 
   try {
-    const editor = await ClassicEditor.create(document.getElementById(elementId), {
-      plugins: [
-        Essentials,
-        Bold,
-        Italic,
-        Link,
-        List,
-        Paragraph,
-        Heading,
-        BlockQuote,
-        Table,
-        Indent,
-        Undo
-      ],
-      toolbar: {
-        items: [
-          'heading',
-          '|',
-          'bold',
-          'italic',
-          'link',
-          'bulletedList',
-          'numberedList',
-          '|',
-          'outdent',
-          'indent',
-          '|',
-          'blockQuote',
-          'insertTable',
-          '|',
-          'undo',
-          'redo'
+    const editor = await ClassicEditor.create(
+      document.getElementById(elementId),
+      {
+        plugins: [
+          Essentials,
+          Bold,
+          Italic,
+          Link,
+          List,
+          Paragraph,
+          Heading,
+          BlockQuote,
+          Table,
+          Indent,
+          Undo,
         ],
-        shouldNotGroupWhenFull: true
-      },
-      language: 'zh',
-      heading: {
-        options: [
-          { model: 'paragraph', title: '段落', class: 'ck-heading_paragraph' },
-          { model: 'heading1', view: 'h1', title: '標題 1', class: 'ck-heading_heading1' },
-          { model: 'heading2', view: 'h2', title: '標題 2', class: 'ck-heading_heading2' },
-          { model: 'heading3', view: 'h3', title: '標題 3', class: 'ck-heading_heading3' },
-          { model: 'heading4', view: 'h4', title: '標題 4', class: 'ck-heading_heading4' },
-          { model: 'heading5', view: 'h5', title: '標題 5', class: 'ck-heading_heading5' },
-          { model: 'heading6', view: 'h6', title: '標題 6', class: 'ck-heading_heading6' }
-        ]
-      },
-      link: {
-        decorators: {
-          openInNewTab: {
-            mode: 'manual',
-            label: '在新分頁開啟',
-            attributes: {
-              target: '_blank',
-              rel: 'noopener noreferrer'
-            }
-          }
+        toolbar: {
+          items: [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "outdent",
+            "indent",
+            "|",
+            "blockQuote",
+            "insertTable",
+            "|",
+            "undo",
+            "redo",
+          ],
+          shouldNotGroupWhenFull: true,
         },
-        addTargetToExternalLinks: true
+        language: "zh",
+        heading: {
+          options: [
+            {
+              model: "paragraph",
+              title: "段落",
+              class: "ck-heading_paragraph",
+            },
+            {
+              model: "heading1",
+              view: "h1",
+              title: "標題 1",
+              class: "ck-heading_heading1",
+            },
+            {
+              model: "heading2",
+              view: "h2",
+              title: "標題 2",
+              class: "ck-heading_heading2",
+            },
+            {
+              model: "heading3",
+              view: "h3",
+              title: "標題 3",
+              class: "ck-heading_heading3",
+            },
+            {
+              model: "heading4",
+              view: "h4",
+              title: "標題 4",
+              class: "ck-heading_heading4",
+            },
+            {
+              model: "heading5",
+              view: "h5",
+              title: "標題 5",
+              class: "ck-heading_heading5",
+            },
+            {
+              model: "heading6",
+              view: "h6",
+              title: "標題 6",
+              class: "ck-heading_heading6",
+            },
+          ],
+        },
+        link: {
+          decorators: {
+            openInNewTab: {
+              mode: "manual",
+              label: "在新分頁開啟",
+              attributes: {
+                target: "_blank",
+                rel: "noopener noreferrer",
+              },
+            },
+          },
+          addTargetToExternalLinks: true,
+        },
+        table: {
+          contentToolbar: ["tableColumn", "tableRow", "mergeTableCells"],
+        },
       },
-      table: {
-        contentToolbar: [
-          'tableColumn',
-          'tableRow',
-          'mergeTableCells'
-        ]
-      }
-    });
+    );
 
     // 設定初始內容
     if (initialContent) {
@@ -106,12 +139,11 @@ export async function initCKEditor(elementId, initialContent = '') {
     }
 
     // 監聽內容變化
-    editor.model.document.on('change:data', () => {
-    });
+    editor.model.document.on("change:data", () => {});
 
     return editor;
   } catch (error) {
-    console.error('[CKEditor] 初始化失敗:', error);
+    console.error("[CKEditor] 初始化失敗:", error);
     throw error;
   }
 }
@@ -125,7 +157,7 @@ export async function destroyCKEditor(editor) {
     try {
       await editor.destroy();
     } catch (error) {
-      console.error('[CKEditor] 銷毀失敗:', error);
+      console.error("[CKEditor] 銷毀失敗:", error);
     }
   }
 }
@@ -137,7 +169,7 @@ export async function destroyCKEditor(editor) {
  */
 export function getEditorContent(editor) {
   if (!editor) {
-    return '';
+    return "";
   }
   return editor.getData();
 }
@@ -161,7 +193,7 @@ export class CKEditorWrapper {
     this.editor = null;
   }
 
-  async init(elementId, initialContent = '') {
+  async init(elementId, initialContent = "") {
     this.editor = await initCKEditor(elementId, initialContent);
     return this.editor;
   }

@@ -272,7 +272,7 @@ class TagRepository implements TagRepositoryInterface
             $columns = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
 
             foreach ($columns as $column) {
-                if (isset($column['name']) && $column['name'] === 'usage_count') {
+                if (is_array($column) && isset($column['name']) && is_string($column['name']) && $column['name'] === 'usage_count') {
                     $this->usageCountColumnExists = true;
 
                     return true;

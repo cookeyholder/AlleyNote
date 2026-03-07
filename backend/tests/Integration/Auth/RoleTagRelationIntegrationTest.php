@@ -6,6 +6,7 @@ namespace Tests\Integration\Auth;
 
 use App\Domains\Auth\Repositories\RoleRepository;
 use App\Domains\Post\Repositories\TagRepository;
+use PDOStatement;
 use PHPUnit\Framework\Attributes\Group;
 use Tests\Support\IntegrationTestCase;
 
@@ -96,8 +97,14 @@ final class RoleTagRelationIntegrationTest extends IntegrationTestCase
 
         $this->tagRepository->detachFromAllPosts(1);
 
-        $remainingTag1 = (int) $this->db->query('SELECT COUNT(*) FROM post_tags WHERE tag_id = 1')->fetchColumn();
-        $remainingTag2 = (int) $this->db->query('SELECT COUNT(*) FROM post_tags WHERE tag_id = 2')->fetchColumn();
+        $tag1CountStmt = $this->db->query('SELECT COUNT(*) FROM post_tags WHERE tag_id = 1');
+        $tag2CountStmt = $this->db->query('SELECT COUNT(*) FROM post_tags WHERE tag_id = 2');
+
+        self::assertInstanceOf(PDOStatement::class, $tag1CountStmt);
+        self::assertInstanceOf(PDOStatement::class, $tag2CountStmt);
+
+        $remainingTag1 = (int) $tag1CountStmt->fetchColumn();
+        $remainingTag2 = (int) $tag2CountStmt->fetchColumn();
 
         $this->assertSame(0, $remainingTag1);
         $this->assertSame(1, $remainingTag2);

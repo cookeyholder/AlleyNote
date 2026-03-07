@@ -3,9 +3,9 @@
  */
 
 export function render403() {
-    const app = document.getElementById('app');
+  const app = document.getElementById("app");
 
-    app.innerHTML = `
+  app.innerHTML = `
         <div class="min-h-screen bg-modern-50 flex items-center justify-center p-6 relative overflow-hidden">
             <!-- 品牌裝飾背景 -->
             <div class="absolute -top-24 -right-24 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-20"></div>

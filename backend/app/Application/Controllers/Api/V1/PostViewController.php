@@ -179,12 +179,11 @@ class PostViewController extends BaseController
             ], 404);
         } catch (Exception $e) {
             // 記錄詳細錯誤但不暴露給客戶端
-            error_log(sprintf(
-                'PostViewController::recordView error: %s in %s:%d',
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine(),
-            ));
+            app_log('error', 'PostViewController::recordView error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
             return $this->json($response, [
                 'success' => false,
@@ -195,12 +194,11 @@ class PostViewController extends BaseController
             ], 500);
         } catch (Throwable $e) {
             // 捕捉所有其他例外
-            error_log(sprintf(
-                'PostViewController::recordView critical error: %s in %s:%d',
-                $e->getMessage(),
-                $e->getFile(),
-                $e->getLine(),
-            ));
+            app_log('critical', 'PostViewController::recordView critical error', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
             return $this->json($response, [
                 'success' => false,

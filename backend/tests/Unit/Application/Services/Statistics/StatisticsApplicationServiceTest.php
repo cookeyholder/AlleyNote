@@ -8,6 +8,7 @@ use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -33,16 +34,35 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
 
     private StatisticsCacheServiceInterface|MockInterface $cacheService;
 
+    private StatisticsConfigService $configService;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->aggregationService = Mockery::mock(StatisticsAggregationServiceInterface::class);
         $this->cacheService = Mockery::mock(StatisticsCacheServiceInterface::class);
+        $this->configService = new StatisticsConfigService([
+            'cache' => [
+                'ttl' => [
+                    'short' => 1800,
+                    'medium' => 3600,
+                    'long' => 7200,
+                ],
+                'types' => [
+                    'overview' => 1800,
+                    'posts' => 3600,
+                    'users' => 3600,
+                    'popular' => 1800,
+                    'trends' => 3600,
+                ],
+            ],
+        ], 'production');
 
         $this->service = new StatisticsApplicationService(
             $this->aggregationService,
             $this->cacheService,
+            $this->configService,
         );
     }
 
@@ -415,7 +435,7 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
         $this->cacheService
             ->shouldReceive('remember')
             ->once()
-            ->with('statistics.posts.daily.2025-01-01', Mockery::type('callable'), 1800)
+            ->with('statistics.posts.daily.2025-01-01', Mockery::type('callable'), 3600)
             ->andReturn($expectedData);
 
         // Act

@@ -88,12 +88,11 @@ abstract class BaseController
     protected function handleException(Exception $e): string
     {
         // 記錄錯誤日誌
-        error_log(sprintf(
-            'API Error: %s in %s:%d',
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-        ));
+        app_log('error', 'API Error', [
+            'message' => $e->getMessage(),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]);
 
         $httpCode = $this->getHttpCodeFromException($e);
 

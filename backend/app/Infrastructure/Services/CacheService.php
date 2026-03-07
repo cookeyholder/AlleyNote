@@ -12,6 +12,7 @@ class CacheService implements CacheServiceInterface
 
     private const TTL = 3600;
 
+    /** @var array{hits: int, misses: int, sets: int, deletes: int, size: int} */
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -32,33 +33,44 @@ class CacheService implements CacheServiceInterface
     {
         $filename = $this->getCacheFilename($key);
         if (!file_exists($filename)) {
-            $this->stats['misses']++;
+            $this->incrementStat('misses');
 
             return null;
         }
 
         $data = file_get_contents($filename);
         if ($data === false) {
-            $this->stats['misses']++;
+            $this->incrementStat('misses');
 
             return null;
         }
 
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'], $cacheData['data'])) {
-            $this->stats['misses']++;
+            $this->incrementStat('misses');
 
             return null;
         }
 
-        if (time() > $cacheData['expiry']) {
+        $expiry = $cacheData['expiry'];
+        if (!is_int($expiry)) {
+            if (is_string($expiry) && ctype_digit($expiry)) {
+                $expiry = (int) $expiry;
+            } else {
+                $this->incrementStat('misses');
+
+                return null;
+            }
+        }
+
+        if (time() > $expiry) {
             $this->delete($key);
-            $this->stats['misses']++;
+            $this->incrementStat('misses');
 
             return null;
         }
 
-        $this->stats['hits']++;
+        $this->incrementStat('hits');
 
         return $cacheData['data'];
     }
@@ -66,7 +78,7 @@ class CacheService implements CacheServiceInterface
     public function set(string $key, mixed $value, int $ttl = 3600): bool
     {
         $filename = $this->getCacheFilename($key);
-        $this->stats['sets']++;
+        $this->incrementStat('sets');
 
         $cacheData = [
             'key' => $key,
@@ -92,7 +104,7 @@ class CacheService implements CacheServiceInterface
         $result = unlink($filename);
         if ($result) {
             $this->removeFromIndex($key);
-            $this->stats['deletes']++;
+            $this->incrementStat('deletes');
         }
 
         return $result;
@@ -163,7 +175,8 @@ class CacheService implements CacheServiceInterface
     {
         $result = [];
         foreach ($keys as $key) {
-            $result[(string) $key] = $this->get((string) $key);
+            $normalizedKey = $this->normalizeKey($key);
+            $result[$normalizedKey] = $this->get($normalizedKey);
         }
 
         return $result;
@@ -172,7 +185,7 @@ class CacheService implements CacheServiceInterface
     public function setMultiple(array $values, int $ttl = 3600): bool
     {
         foreach ($values as $key => $value) {
-            $this->set((string) $key, $value, $ttl);
+            $this->set($this->normalizeKey($key), $value, $ttl);
         }
 
         return true;
@@ -181,7 +194,7 @@ class CacheService implements CacheServiceInterface
     public function deleteMultiple(array $keys): bool
     {
         foreach ($keys as $key) {
-            $this->delete((string) $key);
+            $this->delete($this->normalizeKey($key));
         }
 
         return true;
@@ -199,6 +212,9 @@ class CacheService implements CacheServiceInterface
         return $this->cachePath . '/_index.json';
     }
 
+    /**
+     * @return array<int, string>
+     */
     private function getIndex(): array
     {
         $path = $this->getIndexPath();
@@ -206,7 +222,35 @@ class CacheService implements CacheServiceInterface
             return [];
         }
 
-        return json_decode(file_get_contents($path) ?: '[]', true) ?: [];
+        $contents = file_get_contents($path);
+        if ($contents === false) {
+            return [];
+        }
+
+        $decoded = json_decode($contents, true);
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn(mixed $value): ?string => is_string($value) ? $value : null,
+            $decoded,
+        )));
+    }
+
+    /** @param 'hits'|'misses'|'sets'|'deletes'|'size' $key */
+    private function incrementStat(string $key): void
+    {
+        $this->stats[$key]++;
+    }
+
+    private function normalizeKey(mixed $key): string
+    {
+        if (is_string($key) || is_int($key)) {
+            return (string) $key;
+        }
+
+        return '';
     }
 
     private function updateIndex(string $key): void

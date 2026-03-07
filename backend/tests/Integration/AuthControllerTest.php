@@ -79,6 +79,7 @@ class AuthControllerTest extends IntegrationTestCase
         // 設定 request 的預設行為
         $this->request->shouldReceive('hasHeader')->byDefault()->andReturn(false);
         $this->request->shouldReceive('getHeaderLine')->byDefault()->andReturn('');
+        $this->request->shouldReceive('getCookieParams')->byDefault()->andReturn([]);
         $this->request->shouldReceive('getServerParams')->byDefault()->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
         $this->request->shouldReceive('getAttribute')->byDefault()->andReturn(null);
 
@@ -94,6 +95,8 @@ class AuthControllerTest extends IntegrationTestCase
                 return $this->statusCode;
             });
         $this->response->shouldReceive('withHeader')
+            ->andReturnSelf();
+        $this->response->shouldReceive('withAddedHeader')
             ->andReturnSelf();
 
         $stream = Mockery::mock(StreamInterface::class);
@@ -277,7 +280,7 @@ class AuthControllerTest extends IntegrationTestCase
             ->andReturn($loginResponse);
 
         // Mock ActivityLoggingService
-        $this->activityLoggingService->shouldReceive('logActivity')
+        $this->activityLoggingService->shouldReceive('log')
             ->once()
             ->andReturn(true);
 
@@ -330,6 +333,7 @@ class AuthControllerTest extends IntegrationTestCase
 
         // 設定請求 mock
         $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
+        $this->request->shouldReceive('getAttribute')->with('access_token')->andReturn($logoutData['access_token']);
         $this->request->shouldReceive('getHeaderLine')
             ->with('Authorization')
             ->andReturn('Bearer ' . $logoutData['access_token']);
@@ -340,7 +344,7 @@ class AuthControllerTest extends IntegrationTestCase
             ->andReturn(true);
 
         // Mock ActivityLoggingService
-        $this->activityLoggingService->shouldReceive('logActivity')
+        $this->activityLoggingService->shouldReceive('log')
             ->once()
             ->andReturn(true);
 

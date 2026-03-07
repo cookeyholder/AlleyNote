@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Models\Post;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Ramsey\Uuid\Uuid;
 
 if (!function_exists('generate_uuid')) {
@@ -134,5 +136,38 @@ if (!function_exists('sanitize_post_array')) {
 
             return $post;
         }, $posts);
+    }
+}
+
+if (!function_exists('app_log')) {
+    /**
+     * 使用 Monolog 記錄應用程式日誌.
+     *
+     * @param array<mixed> $context
+     */
+    function app_log(string $level, string $message, array $context = []): void
+    {
+        static $logger = null;
+
+        if (!$logger instanceof Logger) {
+            $logDirectory = storage_path('logs');
+            if (!is_dir($logDirectory)) {
+                mkdir($logDirectory, 0o775, true);
+            }
+
+            $logger = new Logger('alleynote');
+            $logger->pushHandler(new StreamHandler($logDirectory . '/application.log', Logger::DEBUG));
+        }
+
+        try {
+            $normalizedLevel = match ($level) {
+                'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' => $level,
+                default => 'error',
+            };
+
+            $logger->log($normalizedLevel, $message, $context);
+        } catch (Throwable) {
+            // 記錄失敗時避免影響主流程
+        }
     }
 }

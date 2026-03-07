@@ -25,30 +25,33 @@ use Tests\Support\IntegrationTestCase;
 
 class PostControllerTest extends IntegrationTestCase
 {
-    private PostServiceInterface|MockInterface $postService;
+    private PostServiceInterface&MockInterface $postService;
 
-    private ValidatorInterface|MockInterface $validator;
+    private ValidatorInterface&MockInterface $validator;
 
-    private OutputSanitizerInterface|MockInterface $sanitizer;
+    private OutputSanitizerInterface&MockInterface $sanitizer;
 
-    private ActivityLoggingServiceInterface|MockInterface $activityLogger;
+    private ActivityLoggingServiceInterface&MockInterface $activityLogger;
 
-    private PostViewStatisticsService|MockInterface $postViewStatsService;
+    private PostViewStatisticsService&MockInterface $postViewStatsService;
 
-    private mixed $request;
+    private ServerRequestInterface&MockInterface $request;
 
-    private mixed $response;
+    private ResponseInterface&MockInterface $response;
 
-    private mixed $stream;
+    private StreamInterface&MockInterface $stream;
 
-    private mixed $currentResponseData;
+    /** @var array<string, mixed>|null */
+    private ?array $currentResponseData = null;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->postService = Mockery::mock(PostServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
-        $this->sanitizer = $this->mockOutputSanitizer();
+        /** @var OutputSanitizerInterface&MockInterface $sanitizer */
+        $sanitizer = $this->mockOutputSanitizer();
+        $this->sanitizer = $sanitizer;
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->postViewStatsService = Mockery::mock(PostViewStatisticsService::class);
 
@@ -96,7 +99,7 @@ class PostControllerTest extends IntegrationTestCase
         $response = $controller->show($this->request, $this->response, ['id' => (string) $postId]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('Test Title', $this->currentResponseData['data']['title']);
+        $this->assertResponseTitleEquals('Test Title');
     }
 
     #[Test]
@@ -124,7 +127,7 @@ class PostControllerTest extends IntegrationTestCase
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals('New Post', $this->currentResponseData['data']['title']);
+        $this->assertResponseTitleEquals('New Post');
     }
 
     #[Test]
@@ -154,7 +157,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->assertEquals(204, $response->getStatusCode());
     }
 
-    protected function createLocalRequestMock(): ServerRequestInterface|MockInterface
+    protected function createLocalRequestMock(): ServerRequestInterface&MockInterface
     {
         $request = Mockery::mock(ServerRequestInterface::class);
         $request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->byDefault();
@@ -165,11 +168,14 @@ class PostControllerTest extends IntegrationTestCase
         return $request;
     }
 
-    protected function createLocalStreamMock(): StreamInterface|MockInterface
+    protected function createLocalStreamMock(): StreamInterface&MockInterface
     {
         $stream = Mockery::mock(StreamInterface::class);
         $stream->shouldReceive('write')->andReturnUsing(function ($content) {
-            $this->currentResponseData = json_decode((string) $content, true);
+            /** @var array<string, mixed> $decoded */
+            $decoded = json_decode((string) $content, true, 512, JSON_THROW_ON_ERROR);
+            self::assertIsArray($decoded);
+            $this->currentResponseData = $decoded;
 
             return strlen((string) $content);
         });
@@ -177,7 +183,7 @@ class PostControllerTest extends IntegrationTestCase
         return $stream;
     }
 
-    protected function createLocalResponseMock(): ResponseInterface|MockInterface
+    protected function createLocalResponseMock(): ResponseInterface&MockInterface
     {
         $response = Mockery::mock(ResponseInterface::class);
         $response->shouldReceive('withHeader')->andReturnSelf();
@@ -189,5 +195,14 @@ class PostControllerTest extends IntegrationTestCase
         $response->shouldReceive('getBody')->andReturn($this->stream);
 
         return $response;
+    }
+
+    private function assertResponseTitleEquals(string $expectedTitle): void
+    {
+        self::assertIsArray($this->currentResponseData);
+        self::assertArrayHasKey('data', $this->currentResponseData);
+        self::assertIsArray($this->currentResponseData['data']);
+        self::assertArrayHasKey('title', $this->currentResponseData['data']);
+        self::assertSame($expectedTitle, $this->currentResponseData['data']['title']);
     }
 }

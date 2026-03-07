@@ -1,8 +1,8 @@
-import { postsAPI } from '../../api/modules/posts.js?v=20251014';
-import { router } from '../../utils/router.js';
-import { toast } from '../../utils/toast.js';
-import { loading } from '../../components/Loading.js';
-import { timezoneUtils } from '../../utils/timezoneUtils.js';
+import { postsAPI } from "../../api/modules/posts.js?v=20251014";
+import { router } from "../../utils/router.js";
+import { toast } from "../../utils/toast.js";
+import { loading } from "../../components/Loading.js";
+import { timezoneUtils } from "../../utils/timezoneUtils.js";
 
 // DOMPurify 從 CDN 全域載入
 const DOMPurify = window.DOMPurify;
@@ -11,28 +11,35 @@ const DOMPurify = window.DOMPurify;
  * 渲染文章內頁
  */
 export async function renderPost(postId) {
-  loading.show('載入文章中...');
-  
+  loading.show("載入文章中...");
+
   try {
     const response = await postsAPI.get(postId);
     const post = response.data; // 從響應中提取 data
     loading.hide();
-    
+
     // 記錄文章瀏覽（非阻塞式調用）
-    trackPostView(postId).catch(error => {
-      console.error('Failed to track view:', error);
+    trackPostView(postId).catch((error) => {
+      console.error("Failed to track view:", error);
     });
-    
+
     // 格式化時間
     const dateString = post.publish_date || post.created_at;
-    const formattedDate = await timezoneUtils.utcToSiteTimezone(dateString, 'datetime');
+    const formattedDate = await timezoneUtils.utcToSiteTimezone(
+      dateString,
+      "datetime",
+    );
     const siteTimezone = await timezoneUtils.getSiteTimezone();
-    
+
     // 格式化時區顯示名稱
-    let timezoneDisplay = '';
+    let timezoneDisplay = "";
     try {
       const timezoneInfo = await timezoneUtils.getTimezoneInfo();
-      if (timezoneInfo && timezoneInfo.common_timezones && timezoneInfo.common_timezones[siteTimezone]) {
+      if (
+        timezoneInfo &&
+        timezoneInfo.common_timezones &&
+        timezoneInfo.common_timezones[siteTimezone]
+      ) {
         timezoneDisplay = timezoneInfo.common_timezones[siteTimezone];
       } else {
         timezoneDisplay = siteTimezone;
@@ -40,21 +47,52 @@ export async function renderPost(postId) {
     } catch (e) {
       timezoneDisplay = siteTimezone;
     }
-    
+
     // 淨化 HTML 內容
     const cleanContent = DOMPurify.sanitize(post.content, {
       ALLOWED_TAGS: [
-        'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'p', 'br', 'strong', 'em', 'u', 's',
-        'a', 'img', 'ul', 'ol', 'li',
-        'blockquote', 'pre', 'code',
-        'table', 'thead', 'tbody', 'tr', 'th', 'td',
-        'div', 'span',
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "s",
+        "a",
+        "img",
+        "ul",
+        "ol",
+        "li",
+        "blockquote",
+        "pre",
+        "code",
+        "table",
+        "thead",
+        "tbody",
+        "tr",
+        "th",
+        "td",
+        "div",
+        "span",
       ],
-      ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+      ALLOWED_ATTR: [
+        "href",
+        "src",
+        "alt",
+        "title",
+        "class",
+        "id",
+        "target",
+        "rel",
+      ],
     });
-    
-    const app = document.getElementById('app');
+
+    const app = document.getElementById("app");
     app.innerHTML = `
       <div class="min-h-screen bg-modern-50">
         <!-- 導航列 -->
@@ -80,11 +118,16 @@ export async function renderPost(postId) {
           <!-- 文章標頭 -->
           <header class="mb-12">
             <div class="flex items-center gap-2 mb-6 animate-fade-in">
-              ${post.tags && post.tags.length > 0 ? 
-                post.tags.map(tag => `
+              ${
+                post.tags && post.tags.length > 0
+                  ? post.tags
+                      .map(
+                        (tag) => `
                   <span class="px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
-                `).join('') : 
-                '<span class="px-3 py-1 bg-modern-50 text-modern-400 rounded-lg text-xs font-bold uppercase tracking-widest border border-modern-100">General News</span>'
+                `,
+                      )
+                      .join("")
+                  : '<span class="px-3 py-1 bg-modern-50 text-modern-400 rounded-lg text-xs font-bold uppercase tracking-widest border border-modern-100">General News</span>'
               }
             </div>
 
@@ -95,7 +138,7 @@ export async function renderPost(postId) {
             <div class="flex flex-wrap items-center gap-y-4 gap-x-8 text-sm font-bold text-modern-500 uppercase tracking-widest border-b border-modern-200 pb-8">
               <div class="flex items-center gap-2 text-accent-600">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                <span>${post.author?.username || post.author?.name || 'Anonymous'}</span>
+                <span>${post.author?.username || post.author?.name || "Anonymous"}</span>
               </div>
               <div class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -105,12 +148,16 @@ export async function renderPost(postId) {
                 <svg class="w-5 h-5 text-modern-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 012.5 2.5v.5m-9-11a9 9 0 1118 0 9 9 0 01-18 0z"/></svg>
                 <span title="${siteTimezone}">${timezoneDisplay}</span>
               </div>
-              ${post.views ? `
+              ${
+                post.views
+                  ? `
                 <div class="flex items-center gap-2 text-blue-600">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                   <span class="tabular-nums">${post.views.toLocaleString()} VIEWS</span>
                 </div>
-              ` : ''}
+              `
+                  : ""
+              }
             </div>
           </header>
           
@@ -149,14 +196,13 @@ export async function renderPost(postId) {
         </footer>
       </div>
     `;
-    
+
     // 載入上一篇/下一篇文章
     loadPostNavigation(postId, post);
-    
   } catch (error) {
     loading.hide();
-    toast.error('載入文章失敗：' + error.message);
-    router.navigate('/');
+    toast.error("載入文章失敗：" + error.message);
+    router.navigate("/");
   }
 }
 
@@ -164,21 +210,23 @@ export async function renderPost(postId) {
  * 載入上一篇/下一篇文章
  */
 async function loadPostNavigation(currentPostId, currentPost) {
-  const container = document.getElementById('post-navigation');
-  
+  const container = document.getElementById("post-navigation");
+
   try {
     // 獲取所有已發布的文章，按發布日期排序
-    const result = await postsAPI.list({ 
-      status: 'published',
-      sort: '-publish_date,-created_at', // 優先使用 publish_date 排序
+    const result = await postsAPI.list({
+      status: "published",
+      sort: "-publish_date,-created_at", // 優先使用 publish_date 排序
       per_page: 100, // 取得足夠的文章來找到上一篇和下一篇
     });
-    
+
     const posts = result.data || [];
-    
+
     // 找到當前文章的索引
-    const currentIndex = posts.findIndex(post => post.id === parseInt(currentPostId));
-    
+    const currentIndex = posts.findIndex(
+      (post) => post.id === parseInt(currentPostId),
+    );
+
     if (currentIndex === -1) {
       container.innerHTML = `
         <div class="col-span-2 text-center py-8 text-modern-600">
@@ -187,20 +235,27 @@ async function loadPostNavigation(currentPostId, currentPost) {
       `;
       return;
     }
-    
-    const prevPost = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+
+    const prevPost =
+      currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
     const nextPost = currentIndex > 0 ? posts[currentIndex - 1] : null;
-    
+
     // 格式化相關文章的日期
-    let prevDate = '';
-    let nextDate = '';
+    let prevDate = "";
+    let nextDate = "";
     if (prevPost) {
-      prevDate = await timezoneUtils.utcToSiteTimezone(prevPost.publish_date || prevPost.created_at, 'date');
+      prevDate = await timezoneUtils.utcToSiteTimezone(
+        prevPost.publish_date || prevPost.created_at,
+        "date",
+      );
     }
     if (nextPost) {
-      nextDate = await timezoneUtils.utcToSiteTimezone(nextPost.publish_date || nextPost.created_at, 'date');
+      nextDate = await timezoneUtils.utcToSiteTimezone(
+        nextPost.publish_date || nextPost.created_at,
+        "date",
+      );
     }
-    
+
     // 如果沒有上一篇和下一篇
     if (!prevPost && !nextPost) {
       container.innerHTML = `
@@ -210,9 +265,11 @@ async function loadPostNavigation(currentPostId, currentPost) {
       `;
       return;
     }
-    
+
     container.innerHTML = `
-      ${prevPost ? `
+      ${
+        prevPost
+          ? `
         <a href="/posts/${prevPost.id}" data-navigo class="group card bg-white border border-modern-200 p-8 rounded-3xl hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden">
           <div class="flex items-start gap-4">
             <div class="w-10 h-10 bg-modern-50 text-modern-400 rounded-xl flex items-center justify-center group-hover:bg-accent-600 group-hover:text-white transition-all shrink-0">
@@ -230,13 +287,17 @@ async function loadPostNavigation(currentPostId, currentPost) {
             </div>
           </div>
         </a>
-      ` : `
+      `
+          : `
         <div class="card bg-modern-50/50 border border-dashed border-modern-200 p-8 rounded-3xl flex flex-col items-center justify-center text-center opacity-60">
           <p class="text-xs font-bold text-modern-400 uppercase tracking-widest">No earlier articles</p>
         </div>
-      `}
+      `
+      }
       
-      ${nextPost ? `
+      ${
+        nextPost
+          ? `
         <a href="/posts/${nextPost.id}" data-navigo class="group card bg-white border border-modern-200 p-8 rounded-3xl hover:shadow-xl hover:shadow-modern-200/50 transition-all duration-300 relative overflow-hidden text-right">
           <div class="flex items-start gap-4">
             <div class="flex-1 min-w-0">
@@ -254,14 +315,16 @@ async function loadPostNavigation(currentPostId, currentPost) {
             </div>
           </div>
         </a>
-      ` : `
+      `
+          : `
         <div class="card bg-modern-50/50 border border-dashed border-modern-200 p-8 rounded-3xl flex flex-col items-center justify-center text-center opacity-60">
           <p class="text-xs font-bold text-modern-400 uppercase tracking-widest">No newer articles</p>
         </div>
-      `}
+      `
+      }
     `;
   } catch (error) {
-    console.error('載入文章導航失敗:', error);
+    console.error("載入文章導航失敗:", error);
     container.innerHTML = `
       <div class="col-span-2 text-center py-8 text-modern-600">
         載入文章導航失敗
@@ -279,6 +342,6 @@ async function trackPostView(postId) {
     await postsAPI.recordView(postId);
   } catch (error) {
     // 靜默失敗，不影響使用者體驗
-    console.error('Failed to track post view:', error);
+    console.error("Failed to track post view:", error);
   }
 }

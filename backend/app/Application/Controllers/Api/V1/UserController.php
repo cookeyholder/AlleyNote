@@ -259,6 +259,9 @@ class UserController
     {
         try {
             $data = json_decode((string) $request->getBody(), true) ?? [];
+            if (!is_array($data)) {
+                $data = [];
+            }
 
             $dto = CreateUserDTO::fromArray($data);
             $user = $this->userManagementService->createUser($dto);
@@ -355,6 +358,9 @@ class UserController
         try {
             $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
+            if (!is_array($data)) {
+                $data = [];
+            }
 
             $dto = UpdateUserDTO::fromArray($data);
             $user = $this->userManagementService->updateUser($id, $dto);

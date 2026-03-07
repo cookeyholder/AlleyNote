@@ -14,11 +14,11 @@ class ToastManager {
    * 初始化 Toast 容器
    */
   init() {
-    this.container = document.getElementById('toast-container');
+    this.container = document.getElementById("toast-container");
     if (!this.container) {
-      this.container = document.createElement('div');
-      this.container.id = 'toast-container';
-      this.container.className = 'fixed top-4 right-4 z-50 space-y-2';
+      this.container = document.createElement("div");
+      this.container.id = "toast-container";
+      this.container.className = "fixed top-4 right-4 z-50 space-y-2";
       document.body.appendChild(this.container);
     }
   }
@@ -26,15 +26,15 @@ class ToastManager {
   /**
    * 顯示 Toast
    */
-  show(message, type = 'info', duration = 3000) {
-    const toast = document.createElement('div');
+  show(message, type = "info", duration = 3000) {
+    const toast = document.createElement("div");
     toast.className = `toast-item bg-white border-l-4 p-4 rounded-lg shadow-lg flex items-center gap-3 animate-fade-in min-w-[320px]`;
-    
+
     const colors = {
-      success: ['border-green-500', 'text-green-700'],
-      error: ['border-red-500', 'text-red-700'],
-      warning: ['border-yellow-500', 'text-yellow-700'],
-      info: ['border-blue-500', 'text-blue-700'],
+      success: ["border-green-500", "text-green-700"],
+      error: ["border-red-500", "text-red-700"],
+      warning: ["border-yellow-500", "text-yellow-700"],
+      info: ["border-blue-500", "text-blue-700"],
     };
 
     const icons = {
@@ -65,16 +65,16 @@ class ToastManager {
     this.toasts.push(toast);
 
     // 綁定關閉按鈕
-    const closeBtn = toast.querySelector('[data-toast-close]');
+    const closeBtn = toast.querySelector("[data-toast-close]");
     const removeToast = () => {
-      toast.classList.add('opacity-0', 'transform', 'translate-x-full');
+      toast.classList.add("opacity-0", "transform", "translate-x-full");
       setTimeout(() => {
         toast.remove();
-        this.toasts = this.toasts.filter(t => t !== toast);
+        this.toasts = this.toasts.filter((t) => t !== toast);
       }, 300);
     };
 
-    closeBtn.addEventListener('click', removeToast);
+    closeBtn.addEventListener("click", removeToast);
 
     // 自動關閉
     if (duration > 0) {
@@ -88,35 +88,35 @@ class ToastManager {
    * 成功訊息
    */
   success(message, duration) {
-    return this.show(message, 'success', duration);
+    return this.show(message, "success", duration);
   }
 
   /**
    * 錯誤訊息
    */
   error(message, duration) {
-    return this.show(message, 'error', duration);
+    return this.show(message, "error", duration);
   }
 
   /**
    * 警告訊息
    */
   warning(message, duration) {
-    return this.show(message, 'warning', duration);
+    return this.show(message, "warning", duration);
   }
 
   /**
    * 資訊訊息
    */
   info(message, duration) {
-    return this.show(message, 'info', duration);
+    return this.show(message, "info", duration);
   }
 
   /**
    * 清除所有 Toast
    */
   clearAll() {
-    this.toasts.forEach(toast => toast.remove());
+    this.toasts.forEach((toast) => toast.remove());
     this.toasts = [];
   }
 }

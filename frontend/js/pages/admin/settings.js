@@ -1,13 +1,20 @@
 /**
  * 系統設定頁面
  */
-import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
-import { globalGetters } from '../../store/globalStore.js';
-import { toast } from '../../utils/toast.js';
-import { loading } from '../../components/Loading.js';
-import { timezoneUtils } from '../../utils/timezoneUtils.js';
-import { apiClient } from '../../api/client.js';
-import { initRichTextEditor, destroyRichTextEditor, getRichTextEditorContent } from '../../components/RichTextEditor.js';
+import {
+  renderDashboardLayout,
+  bindDashboardLayoutEvents,
+} from "../../layouts/DashboardLayout.js";
+import { globalGetters } from "../../store/globalStore.js";
+import { toast } from "../../utils/toast.js";
+import { loading } from "../../components/Loading.js";
+import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { apiClient } from "../../api/client.js";
+import {
+  initRichTextEditor,
+  destroyRichTextEditor,
+  getRichTextEditorContent,
+} from "../../components/RichTextEditor.js";
 
 // 儲存原始設定值
 let originalSettings = {};
@@ -233,18 +240,18 @@ export async function renderSettings() {
     </div>
   `;
 
-  renderDashboardLayout(content, { title: '系統設定' });
+  renderDashboardLayout(content, { title: "系統設定" });
   bindDashboardLayoutEvents();
-  
+
   // 載入設定
   await loadSettings();
-  
+
   // 載入時區設定
   await loadTimezoneSettings();
-  
+
   // 初始化富文本編輯器
   await initFooterDescriptionEditor();
-  
+
   // 綁定事件
   bindSettingsEvents();
 }
@@ -256,43 +263,48 @@ async function initFooterDescriptionEditor() {
   try {
     // 先銷毀舊的編輯器實例（如果存在）
     if (footerDescriptionEditor) {
-      await destroyRichTextEditor('footer-description-editor');
+      await destroyRichTextEditor("footer-description-editor");
       footerDescriptionEditor = null;
     }
 
     // 創建新的編輯器實例
-    footerDescriptionEditor = await initRichTextEditor('footer-description-editor', {
-      placeholder: '請輸入頁腳描述...',
-      initialValue: originalSettings.footer_description || '基於 Domain-Driven Design 的企業級公布欄系統',
-      config: {
-        toolbar: {
-          items: [
-            'heading',
-            '|',
-            'bold',
-            'italic',
-            'underline',
-            '|',
-            'fontSize',
-            'fontColor',
-            '|',
-            'alignment',
-            '|',
-            'link',
-            'bulletedList',
-            'numberedList',
-            '|',
-            'removeFormat',
-            '|',
-            'undo',
-            'redo'
-          ]
-        }
-      }
-    });
+    footerDescriptionEditor = await initRichTextEditor(
+      "footer-description-editor",
+      {
+        placeholder: "請輸入頁腳描述...",
+        initialValue:
+          originalSettings.footer_description ||
+          "基於 Domain-Driven Design 的企業級公布欄系統",
+        config: {
+          toolbar: {
+            items: [
+              "heading",
+              "|",
+              "bold",
+              "italic",
+              "underline",
+              "|",
+              "fontSize",
+              "fontColor",
+              "|",
+              "alignment",
+              "|",
+              "link",
+              "bulletedList",
+              "numberedList",
+              "|",
+              "removeFormat",
+              "|",
+              "undo",
+              "redo",
+            ],
+          },
+        },
+      },
+    );
   } catch (error) {
-    console.error('初始化頁腳描述編輯器失敗:', error);
-    toast.error('初始化編輯器失敗');
+    console.error("初始化頁腳描述編輯器失敗:", error);
+    toast.error("初始化編輯器失敗");
   }
 }
 
@@ -301,67 +313,80 @@ async function initFooterDescriptionEditor() {
  */
 async function loadSettings() {
   try {
-    loading.show('載入設定中...');
-    
-    const response = await apiClient.get('/settings');
+    loading.show("載入設定中...");
+
+    const response = await apiClient.get("/settings");
     const settingsData = response.data || {};
-    
+
     // 提取設定值（API 回傳的是 {value, type, description} 結構）
     const settings = {};
-    Object.keys(settingsData).forEach(key => {
+    Object.keys(settingsData).forEach((key) => {
       const item = settingsData[key];
-      settings[key] = item && typeof item === 'object' && 'value' in item ? item.value : item;
+      settings[key] =
+        item && typeof item === "object" && "value" in item ? item.value : item;
     });
-    
+
     // 儲存原始設定
     originalSettings = { ...settings };
     currentSettings = { ...settings };
-    
+
     // 填充表單
-    const siteNameInput = document.getElementById('site-name');
-    const siteDescInput = document.getElementById('site-description');
-    const postsPerPageInput = document.getElementById('posts-per-page');
-    const enableCommentsInput = document.getElementById('enable-comments');
-    const enableRegistrationInput = document.getElementById('enable-registration');
-    const maxUploadSizeInput = document.getElementById('max-upload-size');
-    const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
-    const footerCopyrightInput = document.getElementById('footer-copyright');
-    
-    if (siteNameInput) siteNameInput.value = settings.site_name || 'AlleyNote';
-    if (siteDescInput) siteDescInput.value = settings.site_description || '';
-    if (postsPerPageInput) postsPerPageInput.value = settings.posts_per_page || '20';
-    if (enableCommentsInput) enableCommentsInput.checked = settings.enable_comments === true || settings.enable_comments === 1;
-    if (enableRegistrationInput) enableRegistrationInput.checked = settings.enable_registration === true || settings.enable_registration === 1;
-    
+    const siteNameInput = document.getElementById("site-name");
+    const siteDescInput = document.getElementById("site-description");
+    const postsPerPageInput = document.getElementById("posts-per-page");
+    const enableCommentsInput = document.getElementById("enable-comments");
+    const enableRegistrationInput = document.getElementById(
+      "enable-registration",
+    );
+    const maxUploadSizeInput = document.getElementById("max-upload-size");
+    const maxAttachmentsInput = document.getElementById(
+      "max-attachments-per-post",
+    );
+    const footerCopyrightInput = document.getElementById("footer-copyright");
+
+    if (siteNameInput) siteNameInput.value = settings.site_name || "AlleyNote";
+    if (siteDescInput) siteDescInput.value = settings.site_description || "";
+    if (postsPerPageInput)
+      postsPerPageInput.value = settings.posts_per_page || "20";
+    if (enableCommentsInput)
+      enableCommentsInput.checked =
+        settings.enable_comments === true || settings.enable_comments === 1;
+    if (enableRegistrationInput)
+      enableRegistrationInput.checked =
+        settings.enable_registration === true ||
+        settings.enable_registration === 1;
+
     // Footer 設定
-    if (footerCopyrightInput) footerCopyrightInput.value = settings.footer_copyright || '© 2024 AlleyNote. All rights reserved.';
-    
+    if (footerCopyrightInput)
+      footerCopyrightInput.value =
+        settings.footer_copyright || "© 2024 AlleyNote. All rights reserved.";
+
     // 頁腳描述會在編輯器初始化時設置
     // 但我們需要儲存這個值以供編輯器使用
     if (settings.footer_description) {
       originalSettings.footer_description = settings.footer_description;
     }
-    
+
     // 最大上傳檔案大小（轉換為 MB）
     if (maxUploadSizeInput) {
-      const sizeInBytes = parseInt(settings.max_upload_size || '10485760');
+      const sizeInBytes = parseInt(settings.max_upload_size || "10485760");
       const sizeInMB = Math.floor(sizeInBytes / 1048576);
       maxUploadSizeInput.value = sizeInMB.toString();
     }
-    
+
     // 單篇文章附件數量上限
     if (maxAttachmentsInput) {
-      maxAttachmentsInput.value = settings.max_attachments_per_post || '10';
+      maxAttachmentsInput.value = settings.max_attachments_per_post || "10";
     }
-    
+
     // 載入檔案類型設定
     await loadFileTypesSettings(settings.allowed_file_types || []);
-    
+
     loading.hide();
   } catch (error) {
     loading.hide();
-    console.error('載入設定失敗:', error);
-    toast.error('載入設定失敗');
+    console.error("載入設定失敗:", error);
+    toast.error("載入設定失敗");
   }
 }
 
@@ -369,87 +394,95 @@ async function loadSettings() {
  * 載入檔案類型設定
  */
 async function loadFileTypesSettings(allowedTypes) {
-  const container = document.getElementById('file-types-container');
+  const container = document.getElementById("file-types-container");
   if (!container) return;
-  
+
   // 所有可能的檔案類型（根據 API 文檔）
   const allFileTypes = [
     // 圖片
-    { value: 'jpg', label: 'JPG 圖片', category: '圖片' },
-    { value: 'jpeg', label: 'JPEG 圖片', category: '圖片' },
-    { value: 'png', label: 'PNG 圖片', category: '圖片' },
-    { value: 'gif', label: 'GIF 動圖', category: '圖片' },
-    { value: 'webp', label: 'WebP 圖片', category: '圖片' },
-    { value: 'svg', label: 'SVG 向量圖', category: '圖片' },
-    
+    { value: "jpg", label: "JPG 圖片", category: "圖片" },
+    { value: "jpeg", label: "JPEG 圖片", category: "圖片" },
+    { value: "png", label: "PNG 圖片", category: "圖片" },
+    { value: "gif", label: "GIF 動圖", category: "圖片" },
+    { value: "webp", label: "WebP 圖片", category: "圖片" },
+    { value: "svg", label: "SVG 向量圖", category: "圖片" },
+
     // PDF
-    { value: 'pdf', label: 'PDF 文件', category: '文件' },
-    
+    { value: "pdf", label: "PDF 文件", category: "文件" },
+
     // Microsoft Office
-    { value: 'doc', label: 'Word (.doc)', category: 'Microsoft Office' },
-    { value: 'docx', label: 'Word (.docx)', category: 'Microsoft Office' },
-    { value: 'xls', label: 'Excel (.xls)', category: 'Microsoft Office' },
-    { value: 'xlsx', label: 'Excel (.xlsx)', category: 'Microsoft Office' },
-    { value: 'ppt', label: 'PowerPoint (.ppt)', category: 'Microsoft Office' },
-    { value: 'pptx', label: 'PowerPoint (.pptx)', category: 'Microsoft Office' },
-    
+    { value: "doc", label: "Word (.doc)", category: "Microsoft Office" },
+    { value: "docx", label: "Word (.docx)", category: "Microsoft Office" },
+    { value: "xls", label: "Excel (.xls)", category: "Microsoft Office" },
+    { value: "xlsx", label: "Excel (.xlsx)", category: "Microsoft Office" },
+    { value: "ppt", label: "PowerPoint (.ppt)", category: "Microsoft Office" },
+    {
+      value: "pptx",
+      label: "PowerPoint (.pptx)",
+      category: "Microsoft Office",
+    },
+
     // LibreOffice
-    { value: 'odt', label: 'Writer 文件 (.odt)', category: 'LibreOffice' },
-    { value: 'ott', label: 'Writer 範本 (.ott)', category: 'LibreOffice' },
-    { value: 'ods', label: 'Calc 試算表 (.ods)', category: 'LibreOffice' },
-    { value: 'ots', label: 'Calc 範本 (.ots)', category: 'LibreOffice' },
-    { value: 'odp', label: 'Impress 簡報 (.odp)', category: 'LibreOffice' },
-    { value: 'otp', label: 'Impress 範本 (.otp)', category: 'LibreOffice' },
-    { value: 'odg', label: 'Draw 繪圖 (.odg)', category: 'LibreOffice' },
-    
+    { value: "odt", label: "Writer 文件 (.odt)", category: "LibreOffice" },
+    { value: "ott", label: "Writer 範本 (.ott)", category: "LibreOffice" },
+    { value: "ods", label: "Calc 試算表 (.ods)", category: "LibreOffice" },
+    { value: "ots", label: "Calc 範本 (.ots)", category: "LibreOffice" },
+    { value: "odp", label: "Impress 簡報 (.odp)", category: "LibreOffice" },
+    { value: "otp", label: "Impress 範本 (.otp)", category: "LibreOffice" },
+    { value: "odg", label: "Draw 繪圖 (.odg)", category: "LibreOffice" },
+
     // 純文字
-    { value: 'txt', label: '純文字檔', category: '文件' },
-    
+    { value: "txt", label: "純文字檔", category: "文件" },
+
     // 壓縮檔
-    { value: 'zip', label: 'ZIP 壓縮檔', category: '壓縮檔' },
-    { value: 'rar', label: 'RAR 壓縮檔', category: '壓縮檔' },
-    { value: '7z', label: '7Z 壓縮檔', category: '壓縮檔' },
-    
+    { value: "zip", label: "ZIP 壓縮檔", category: "壓縮檔" },
+    { value: "rar", label: "RAR 壓縮檔", category: "壓縮檔" },
+    { value: "7z", label: "7Z 壓縮檔", category: "壓縮檔" },
+
     // 媒體
-    { value: 'mp3', label: 'MP3 音訊', category: '媒體' },
-    { value: 'mp4', label: 'MP4 影片', category: '媒體' },
-    { value: 'avi', label: 'AVI 影片', category: '媒體' },
-    { value: 'mov', label: 'MOV 影片', category: '媒體' }
+    { value: "mp3", label: "MP3 音訊", category: "媒體" },
+    { value: "mp4", label: "MP4 影片", category: "媒體" },
+    { value: "avi", label: "AVI 影片", category: "媒體" },
+    { value: "mov", label: "MOV 影片", category: "媒體" },
   ];
-  
+
   // 按類別分組
   const categories = {};
-  allFileTypes.forEach(type => {
+  allFileTypes.forEach((type) => {
     if (!categories[type.category]) {
       categories[type.category] = [];
     }
     categories[type.category].push(type);
   });
-  
+
   // 生成 HTML
-  let html = '';
+  let html = "";
   Object.entries(categories).forEach(([category, types]) => {
     html += `
       <div class="mb-3">
         <h4 class="text-sm font-medium text-modern-700 mb-2">${category}</h4>
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-          ${types.map(type => `
+          ${types
+            .map(
+              (type) => `
             <label class="flex items-center gap-2 p-2 border border-modern-200 rounded hover:bg-modern-50 cursor-pointer">
               <input 
                 type="checkbox" 
                 name="file-type" 
                 value="${type.value}"
-                ${allowedTypes.includes(type.value) ? 'checked' : ''}
+                ${allowedTypes.includes(type.value) ? "checked" : ""}
                 class="w-4 h-4 text-accent-600 border-modern-300 rounded focus:ring-accent-500"
               />
               <span class="text-sm text-modern-700">${type.label}</span>
             </label>
-          `).join('')}
+          `,
+            )
+            .join("")}
         </div>
       </div>
     `;
   });
-  
+
   container.innerHTML = html;
 }
 
@@ -459,25 +492,25 @@ async function loadFileTypesSettings(allowedTypes) {
 async function loadTimezoneSettings() {
   try {
     // 從 API 載入所有時區列表
-    const response = await apiClient.get('/settings/timezone/info');
-    
-    const timezoneSelect = document.getElementById('site-timezone');
+    const response = await apiClient.get("/settings/timezone/info");
+
+    const timezoneSelect = document.getElementById("site-timezone");
     if (timezoneSelect && response.success && response.data) {
       const timezones = response.data.common_timezones || {};
-      
+
       // 轉換物件為陣列並排序
       const timezoneArray = Object.entries(timezones).map(([value, label]) => ({
         value,
-        label
+        label,
       }));
-      
+
       // 按標籤排序
       timezoneArray.sort((a, b) => a.label.localeCompare(b.label));
-      
+
       // 生成選項
-      timezoneSelect.innerHTML = timezoneArray.map(tz => 
-        `<option value="${tz.value}">${tz.label}</option>`
-      ).join('');
+      timezoneSelect.innerHTML = timezoneArray
+        .map((tz) => `<option value="${tz.value}">${tz.label}</option>`)
+        .join("");
 
       // 載入當前時區設定
       const currentTimezone = await timezoneUtils.getSiteTimezone();
@@ -488,8 +521,8 @@ async function loadTimezoneSettings() {
     updateCurrentTime();
     setInterval(updateCurrentTime, 1000);
   } catch (error) {
-    console.error('載入時區設定失敗:', error);
-    toast.error('載入時區設定失敗');
+    console.error("載入時區設定失敗:", error);
+    toast.error("載入時區設定失敗");
   }
 }
 
@@ -497,42 +530,42 @@ async function loadTimezoneSettings() {
  * 更新當前時間顯示
  */
 function updateCurrentTime() {
-  const timeElement = document.getElementById('current-site-time');
+  const timeElement = document.getElementById("current-site-time");
   if (timeElement) {
     const now = new Date();
-    const timeString = now.toLocaleString('zh-TW', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
+    const timeString = now.toLocaleString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
     });
     timeElement.textContent = timeString;
   }
 }
 
 function bindSettingsEvents() {
-  const saveBtn = document.getElementById('save-btn');
-  const resetBtn = document.getElementById('reset-btn');
-  const timezoneSelect = document.getElementById('site-timezone');
-  
+  const saveBtn = document.getElementById("save-btn");
+  const resetBtn = document.getElementById("reset-btn");
+  const timezoneSelect = document.getElementById("site-timezone");
+
   if (saveBtn) {
-    saveBtn.addEventListener('click', async () => {
+    saveBtn.addEventListener("click", async () => {
       await saveSettings();
     });
   }
-  
+
   if (resetBtn) {
-    resetBtn.addEventListener('click', () => {
+    resetBtn.addEventListener("click", () => {
       resetSettings();
     });
   }
 
   // 時區變更預覽
   if (timezoneSelect) {
-    timezoneSelect.addEventListener('change', () => {
+    timezoneSelect.addEventListener("change", () => {
       updateCurrentTime();
     });
   }
@@ -542,47 +575,68 @@ function bindSettingsEvents() {
  * 重置設定
  */
 function resetSettings() {
-  const siteNameInput = document.getElementById('site-name');
-  const siteDescInput = document.getElementById('site-description');
-  const postsPerPageInput = document.getElementById('posts-per-page');
-  const enableCommentsInput = document.getElementById('enable-comments');
-  const enableRegistrationInput = document.getElementById('enable-registration');
-  const maxUploadSizeInput = document.getElementById('max-upload-size');
-  const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
-  const timezoneSelect = document.getElementById('site-timezone');
-  
-  if (siteNameInput) siteNameInput.value = originalSettings.site_name || 'AlleyNote';
-  if (siteDescInput) siteDescInput.value = originalSettings.site_description || '';
-  if (postsPerPageInput) postsPerPageInput.value = originalSettings.posts_per_page || '20';
-  if (enableCommentsInput) enableCommentsInput.checked = originalSettings.enable_comments === '1' || originalSettings.enable_comments === true;
-  if (enableRegistrationInput) enableRegistrationInput.checked = originalSettings.enable_registration === '1' || originalSettings.enable_registration === true;
-  
+  const siteNameInput = document.getElementById("site-name");
+  const siteDescInput = document.getElementById("site-description");
+  const postsPerPageInput = document.getElementById("posts-per-page");
+  const enableCommentsInput = document.getElementById("enable-comments");
+  const enableRegistrationInput = document.getElementById(
+    "enable-registration",
+  );
+  const maxUploadSizeInput = document.getElementById("max-upload-size");
+  const maxAttachmentsInput = document.getElementById(
+    "max-attachments-per-post",
+  );
+  const timezoneSelect = document.getElementById("site-timezone");
+
+  if (siteNameInput)
+    siteNameInput.value = originalSettings.site_name || "AlleyNote";
+  if (siteDescInput)
+    siteDescInput.value = originalSettings.site_description || "";
+  if (postsPerPageInput)
+    postsPerPageInput.value = originalSettings.posts_per_page || "20";
+  if (enableCommentsInput)
+    enableCommentsInput.checked =
+      originalSettings.enable_comments === "1" ||
+      originalSettings.enable_comments === true;
+  if (enableRegistrationInput)
+    enableRegistrationInput.checked =
+      originalSettings.enable_registration === "1" ||
+      originalSettings.enable_registration === true;
+
   if (maxUploadSizeInput) {
-    const sizeInMB = Math.floor((parseInt(originalSettings.max_upload_size || '10485760')) / 1048576);
+    const sizeInMB = Math.floor(
+      parseInt(originalSettings.max_upload_size || "10485760") / 1048576,
+    );
     maxUploadSizeInput.value = sizeInMB.toString();
   }
-  
+
   if (maxAttachmentsInput) {
-    maxAttachmentsInput.value = originalSettings.max_attachments_per_post || '10';
+    maxAttachmentsInput.value =
+      originalSettings.max_attachments_per_post || "10";
   }
-  
+
   if (timezoneSelect && originalSettings.site_timezone) {
     timezoneSelect.value = originalSettings.site_timezone;
   }
-  
+
   // 重置檔案類型
   const allowedTypes = originalSettings.allowed_file_types || [];
-  const fileTypeCheckboxes = document.querySelectorAll('input[name="file-type"]');
-  fileTypeCheckboxes.forEach(cb => {
+  const fileTypeCheckboxes = document.querySelectorAll(
+    'input[name="file-type"]',
+  );
+  fileTypeCheckboxes.forEach((cb) => {
     cb.checked = allowedTypes.includes(cb.value);
   });
-  
+
   // 重置頁腳描述編輯器
   if (footerDescriptionEditor) {
-    footerDescriptionEditor.setData(originalSettings.footer_description || '基於 Domain-Driven Design 的企業級公布欄系統');
+    footerDescriptionEditor.setData(
+      originalSettings.footer_description ||
+        "基於 Domain-Driven Design 的企業級公布欄系統",
+    );
   }
-  
-  toast.info('設定已重置為原始值');
+
+  toast.info("設定已重置為原始值");
 }
 
 /**
@@ -590,70 +644,87 @@ function resetSettings() {
  */
 async function saveSettings() {
   try {
-    loading.show('儲存設定中...');
-    
-    const siteNameInput = document.getElementById('site-name');
-    const siteDescInput = document.getElementById('site-description');
-    const postsPerPageInput = document.getElementById('posts-per-page');
-    const enableCommentsInput = document.getElementById('enable-comments');
-    const enableRegistrationInput = document.getElementById('enable-registration');
-    const maxUploadSizeInput = document.getElementById('max-upload-size');
-    const maxAttachmentsInput = document.getElementById('max-attachments-per-post');
-    const timezoneSelect = document.getElementById('site-timezone');
-    const footerCopyrightInput = document.getElementById('footer-copyright');
-    
+    loading.show("儲存設定中...");
+
+    const siteNameInput = document.getElementById("site-name");
+    const siteDescInput = document.getElementById("site-description");
+    const postsPerPageInput = document.getElementById("posts-per-page");
+    const enableCommentsInput = document.getElementById("enable-comments");
+    const enableRegistrationInput = document.getElementById(
+      "enable-registration",
+    );
+    const maxUploadSizeInput = document.getElementById("max-upload-size");
+    const maxAttachmentsInput = document.getElementById(
+      "max-attachments-per-post",
+    );
+    const timezoneSelect = document.getElementById("site-timezone");
+    const footerCopyrightInput = document.getElementById("footer-copyright");
+
     // 收集設定
     const settings = {};
-    
+
     if (siteNameInput?.value) settings.site_name = siteNameInput.value;
-    if (siteDescInput?.value !== undefined) settings.site_description = siteDescInput.value;
-    if (postsPerPageInput?.value) settings.posts_per_page = postsPerPageInput.value;
-    if (enableCommentsInput !== null) settings.enable_comments = enableCommentsInput.checked ? '1' : '0';
-    if (enableRegistrationInput !== null) settings.enable_registration = enableRegistrationInput.checked ? '1' : '0';
+    if (siteDescInput?.value !== undefined)
+      settings.site_description = siteDescInput.value;
+    if (postsPerPageInput?.value)
+      settings.posts_per_page = postsPerPageInput.value;
+    if (enableCommentsInput !== null)
+      settings.enable_comments = enableCommentsInput.checked ? "1" : "0";
+    if (enableRegistrationInput !== null)
+      settings.enable_registration = enableRegistrationInput.checked
+        ? "1"
+        : "0";
     if (timezoneSelect?.value) settings.site_timezone = timezoneSelect.value;
-    
+
     // Footer 設定
-    if (footerCopyrightInput?.value !== undefined) settings.footer_copyright = footerCopyrightInput.value;
-    
+    if (footerCopyrightInput?.value !== undefined)
+      settings.footer_copyright = footerCopyrightInput.value;
+
     // 從富文本編輯器獲取頁腳描述
-    const footerDescription = getRichTextEditorContent('footer-description-editor');
+    const footerDescription = getRichTextEditorContent(
+      "footer-description-editor",
+    );
     if (footerDescription !== null) {
       settings.footer_description = footerDescription;
     }
-    
+
     // 最大上傳檔案大小（轉換為 bytes）
     if (maxUploadSizeInput?.value) {
       const sizeInBytes = parseInt(maxUploadSizeInput.value) * 1048576;
       settings.max_upload_size = sizeInBytes.toString();
     }
-    
+
     // 單篇文章附件數量上限
     if (maxAttachmentsInput?.value) {
       settings.max_attachments_per_post = maxAttachmentsInput.value;
     }
-    
+
     // 收集檔案類型設定
-    const fileTypeCheckboxes = document.querySelectorAll('input[name="file-type"]:checked');
-    const allowedFileTypes = Array.from(fileTypeCheckboxes).map(cb => cb.value);
+    const fileTypeCheckboxes = document.querySelectorAll(
+      'input[name="file-type"]:checked',
+    );
+    const allowedFileTypes = Array.from(fileTypeCheckboxes).map(
+      (cb) => cb.value,
+    );
     if (allowedFileTypes.length > 0) {
       settings.allowed_file_types = JSON.stringify(allowedFileTypes);
     }
-    
+
     // 批量更新設定
-    await apiClient.put('/settings', settings);
-    
+    await apiClient.put("/settings", settings);
+
     // 清除時區快取
     timezoneUtils.clearCache();
-    
+
     // 更新原始設定
     originalSettings = { ...settings, allowed_file_types: allowedFileTypes };
     currentSettings = { ...settings, allowed_file_types: allowedFileTypes };
-    
+
     loading.hide();
-    toast.success('設定已儲存');
+    toast.success("設定已儲存");
   } catch (error) {
     loading.hide();
-    console.error('儲存設定失敗:', error);
-    toast.error('儲存設定失敗：' + (error.message || '未知錯誤'));
+    console.error("儲存設定失敗:", error);
+    toast.error("儲存設定失敗：" + (error.message || "未知錯誤"));
   }
 }

@@ -113,11 +113,27 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         // 1. IP 地址驗證（如果 payload 包含 IP 資訊）
         $tokenIpAddress = $payload->getCustomClaim('ip_address');
         if ($tokenIpAddress !== null) {
-            $currentIp = NetworkHelper::getClientIp($request);
+            $currentIp = NetworkHelper::getClientIp($request, $this->getTrustedProxies());
             if ($tokenIpAddress !== $currentIp) {
                 throw new InvalidTokenException('Token 的 IP 地址不匹配');
             }
         }
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function getTrustedProxies(): array
+    {
+        $rawTrustedProxies = getenv('TRUSTED_PROXIES') ?: ($_ENV['TRUSTED_PROXIES'] ?? '');
+        if (!is_string($rawTrustedProxies) || trim($rawTrustedProxies) === '') {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn(string $proxy): string => trim($proxy),
+            explode(',', $rawTrustedProxies),
+        )));
     }
 
     /**

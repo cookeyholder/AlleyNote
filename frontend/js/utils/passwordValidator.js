@@ -1,6 +1,6 @@
 /**
  * 密碼驗證工具類別
- * 
+ *
  * 提供密碼強度驗證、評分和建議功能
  */
 export class PasswordValidator {
@@ -34,21 +34,21 @@ export class PasswordValidator {
 
     // 包含小寫字母
     if (!/[a-z]/.test(password)) {
-      errors.push('密碼必須包含至少一個小寫字母');
+      errors.push("密碼必須包含至少一個小寫字母");
     } else {
       score += 15;
     }
 
     // 包含大寫字母
     if (!/[A-Z]/.test(password)) {
-      errors.push('密碼必須包含至少一個大寫字母');
+      errors.push("密碼必須包含至少一個大寫字母");
     } else {
       score += 15;
     }
 
     // 包含數字
     if (!/[0-9]/.test(password)) {
-      errors.push('密碼必須包含至少一個數字');
+      errors.push("密碼必須包含至少一個數字");
     } else {
       score += 15;
     }
@@ -57,30 +57,30 @@ export class PasswordValidator {
     if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
       score += 20;
     } else {
-      warnings.push('建議包含至少一個特殊符號以增加安全性');
+      warnings.push("建議包含至少一個特殊符號以增加安全性");
     }
 
     // 連續字元檢查
     if (this.hasSequentialChars(password)) {
-      errors.push('密碼不能包含連續的英文字母或數字（如 abc, 123）');
+      errors.push("密碼不能包含連續的英文字母或數字（如 abc, 123）");
       score -= 10;
     }
 
     // 重複字元檢查
     if (this.hasRepeatingChars(password)) {
-      errors.push('密碼不能包含重複的字元（如 aaa, 111）');
+      errors.push("密碼不能包含重複的字元（如 aaa, 111）");
       score -= 10;
     }
 
     // 常見密碼檢查
     if (this.isCommonPassword(password)) {
-      errors.push('此密碼過於常見，請使用更安全的密碼');
+      errors.push("此密碼過於常見，請使用更安全的密碼");
       score -= 20;
     }
 
     // 個人資訊檢查
     if (this.containsPersonalInfo(password, username, email)) {
-      errors.push('密碼不能包含使用者名稱或電子郵件');
+      errors.push("密碼不能包含使用者名稱或電子郵件");
       score -= 15;
     }
 
@@ -97,7 +97,7 @@ export class PasswordValidator {
       strength: this.getStrengthLevel(score),
       errors,
       warnings,
-      suggestions: this.getSuggestions(errors, warnings)
+      suggestions: this.getSuggestions(errors, warnings),
     };
   }
 
@@ -106,18 +106,20 @@ export class PasswordValidator {
    */
   static hasSequentialChars(password) {
     const lower = password.toLowerCase();
-    
+
     for (let i = 0; i < lower.length - 2; i++) {
       const char1 = lower.charCodeAt(i);
       const char2 = lower.charCodeAt(i + 1);
       const char3 = lower.charCodeAt(i + 2);
-      
-      if ((char2 === char1 + 1 && char3 === char2 + 1) ||
-          (char2 === char1 - 1 && char3 === char2 - 1)) {
+
+      if (
+        (char2 === char1 + 1 && char3 === char2 + 1) ||
+        (char2 === char1 - 1 && char3 === char2 - 1)
+      ) {
         return true;
       }
     }
-    
+
     return false;
   }
 
@@ -133,16 +135,38 @@ export class PasswordValidator {
    */
   static isCommonPassword(password) {
     const commonPasswords = [
-      'password', 'password123', '12345678', 'qwerty', 
-      'abc123', 'monkey', '1234567890', 'letmein',
-      'trustno1', 'dragon', 'baseball', 'iloveyou',
-      'master', 'sunshine', 'ashley', 'bailey',
-      'welcome', 'login', 'admin', 'princess',
-      'solo', 'hello', 'freedom', 'whatever',
-      'qwertyuiop', 'passw0rd', 'password1',
-      'welcome123', 'admin123', 'test1234'
+      "password",
+      "password123",
+      "12345678",
+      "qwerty",
+      "abc123",
+      "monkey",
+      "1234567890",
+      "letmein",
+      "trustno1",
+      "dragon",
+      "baseball",
+      "iloveyou",
+      "master",
+      "sunshine",
+      "ashley",
+      "bailey",
+      "welcome",
+      "login",
+      "admin",
+      "princess",
+      "solo",
+      "hello",
+      "freedom",
+      "whatever",
+      "qwertyuiop",
+      "passw0rd",
+      "password1",
+      "welcome123",
+      "admin123",
+      "test1234",
     ];
-    
+
     return commonPasswords.includes(password.toLowerCase());
   }
 
@@ -151,22 +175,22 @@ export class PasswordValidator {
    */
   static containsPersonalInfo(password, username, email) {
     const lower = password.toLowerCase();
-    
+
     if (username && username.length >= 3) {
       if (lower.includes(username.toLowerCase())) {
         return true;
       }
     }
-    
+
     if (email) {
-      const emailPrefix = email.split('@')[0];
+      const emailPrefix = email.split("@")[0];
       if (emailPrefix && emailPrefix.length >= 3) {
         if (lower.includes(emailPrefix.toLowerCase())) {
           return true;
         }
       }
     }
-    
+
     return false;
   }
 
@@ -174,11 +198,11 @@ export class PasswordValidator {
    * 獲取強度等級
    */
   static getStrengthLevel(score) {
-    if (score >= 80) return 'very-strong';
-    if (score >= 60) return 'strong';
-    if (score >= 40) return 'medium';
-    if (score >= 20) return 'weak';
-    return 'very-weak';
+    if (score >= 80) return "very-strong";
+    if (score >= 60) return "strong";
+    if (score >= 40) return "medium";
+    if (score >= 20) return "weak";
+    return "very-weak";
   }
 
   /**
@@ -186,27 +210,27 @@ export class PasswordValidator {
    */
   static getSuggestions(errors, warnings) {
     const suggestions = [];
-    
-    if (errors.some(e => e.includes('長度'))) {
-      suggestions.push('使用更長的密碼（建議 12 個字元以上）');
+
+    if (errors.some((e) => e.includes("長度"))) {
+      suggestions.push("使用更長的密碼（建議 12 個字元以上）");
     }
-    
-    if (errors.some(e => e.includes('字母') || e.includes('數字'))) {
-      suggestions.push('混合使用大小寫字母、數字和特殊符號');
+
+    if (errors.some((e) => e.includes("字母") || e.includes("數字"))) {
+      suggestions.push("混合使用大小寫字母、數字和特殊符號");
     }
-    
-    if (errors.some(e => e.includes('連續') || e.includes('重複'))) {
-      suggestions.push('避免使用簡單的模式或重複字元');
+
+    if (errors.some((e) => e.includes("連續") || e.includes("重複"))) {
+      suggestions.push("避免使用簡單的模式或重複字元");
     }
-    
-    if (errors.some(e => e.includes('常見'))) {
-      suggestions.push('使用獨特的密碼組合，不要使用常見單字');
+
+    if (errors.some((e) => e.includes("常見"))) {
+      suggestions.push("使用獨特的密碼組合，不要使用常見單字");
     }
-    
+
     if (suggestions.length === 0 && warnings.length > 0) {
-      suggestions.push('已經很好！可以加入特殊符號讓密碼更安全');
+      suggestions.push("已經很好！可以加入特殊符號讓密碼更安全");
     }
-    
+
     return suggestions;
   }
 
@@ -215,13 +239,13 @@ export class PasswordValidator {
    */
   static getStrengthText(strength) {
     const texts = {
-      'very-weak': '非常弱',
-      'weak': '弱',
-      'medium': '中等',
-      'strong': '強',
-      'very-strong': '非常強'
+      "very-weak": "非常弱",
+      weak: "弱",
+      medium: "中等",
+      strong: "強",
+      "very-strong": "非常強",
     };
-    return texts[strength] || '未知';
+    return texts[strength] || "未知";
   }
 
   /**
@@ -229,12 +253,12 @@ export class PasswordValidator {
    */
   static getStrengthColor(strength) {
     const colors = {
-      'very-weak': 'bg-red-500',
-      'weak': 'bg-orange-500',
-      'medium': 'bg-yellow-500',
-      'strong': 'bg-blue-500',
-      'very-strong': 'bg-green-500'
+      "very-weak": "bg-red-500",
+      weak: "bg-orange-500",
+      medium: "bg-yellow-500",
+      strong: "bg-blue-500",
+      "very-strong": "bg-green-500",
     };
-    return colors[strength] || 'bg-gray-500';
+    return colors[strength] || "bg-gray-500";
   }
 }

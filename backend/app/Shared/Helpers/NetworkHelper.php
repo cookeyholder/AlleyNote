@@ -24,6 +24,9 @@ final class NetworkHelper
     {
         $serverParams = $request->getServerParams();
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        if (!is_string($remoteAddr)) {
+            $remoteAddr = '127.0.0.1';
+        }
 
         // 僅在有設定 trusted proxies 且來源為受信代理時才信任轉發標頭
         if (empty($trustedProxies) || !self::isIpInRanges($remoteAddr, $trustedProxies)) {
@@ -61,6 +64,10 @@ final class NetworkHelper
     private static function isIpInRanges(string $ip, array $ranges): bool
     {
         foreach ($ranges as $range) {
+            if (!is_string($range)) {
+                continue;
+            }
+
             if (str_contains($range, '/')) {
                 if (self::ipInNetwork($ip, $range)) {
                     return true;

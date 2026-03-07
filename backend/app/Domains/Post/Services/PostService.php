@@ -80,7 +80,7 @@ class PostService implements PostServiceInterface
         } catch (InvalidArgumentException $e) {
             throw new StateTransitionException($e->getMessage());
         } catch (Exception $e) {
-            error_log("刪除文章失敗 (ID: $id): " . $e->getMessage());
+            app_log('error', '刪除文章失敗', ['post_id' => $id, 'exception' => $e->getMessage()]);
 
             throw new RuntimeException('刪除文章時發生錯誤');
         }
@@ -134,7 +134,7 @@ class PostService implements PostServiceInterface
         } catch (InvalidArgumentException $e) {
             throw new StateTransitionException($e->getMessage());
         } catch (Exception $e) {
-            error_log("設定置頂狀態失敗 (ID: $id): " . $e->getMessage());
+            app_log('error', '設定置頂狀態失敗', ['post_id' => $id, 'exception' => $e->getMessage()]);
 
             throw new RuntimeException('設定置頂狀態時發生錯誤');
         }

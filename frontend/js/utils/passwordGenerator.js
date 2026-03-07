@@ -1,14 +1,14 @@
-import { PasswordValidator } from './passwordValidator.js';
+import { PasswordValidator } from "./passwordValidator.js";
 
 /**
  * 安全密碼生成器
  */
 export class PasswordGenerator {
   static DEFAULT_LENGTH = 12;
-  static LOWERCASE = 'abcdefghjkmnpqrstuvwxyz'; // 移除易混淆字元 i, l, o
-  static UPPERCASE = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // 移除易混淆字元 I, O
-  static NUMBERS = '23456789'; // 移除易混淆數字 0, 1
-  static SPECIAL = '!@#$%^&*()_+-=[]{}';
+  static LOWERCASE = "abcdefghjkmnpqrstuvwxyz"; // 移除易混淆字元 i, l, o
+  static UPPERCASE = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // 移除易混淆字元 I, O
+  static NUMBERS = "23456789"; // 移除易混淆數字 0, 1
+  static SPECIAL = "!@#$%^&*()_+-=[]{}";
 
   /**
    * 生成安全密碼
@@ -30,10 +30,10 @@ export class PasswordGenerator {
       numbers = true,
       special = true,
       username = null,
-      email = null
+      email = null,
     } = options;
 
-    let charset = '';
+    let charset = "";
     const requirements = [];
 
     if (lowercase) {
@@ -54,15 +54,15 @@ export class PasswordGenerator {
     }
 
     if (charset.length === 0) {
-      throw new Error('至少需要選擇一種字元類型');
+      throw new Error("至少需要選擇一種字元類型");
     }
 
     let attempts = 0;
     const maxAttempts = 100;
 
     while (attempts < maxAttempts) {
-      let password = '';
-      
+      let password = "";
+
       // 確保每種類型至少有一個字元
       for (const req of requirements) {
         password += req.charAt(Math.floor(Math.random() * req.length));
@@ -77,8 +77,11 @@ export class PasswordGenerator {
       password = this.shuffle(password);
 
       // 驗證密碼
-      const validation = PasswordValidator.validate(password, { username, email });
-      
+      const validation = PasswordValidator.validate(password, {
+        username,
+        email,
+      });
+
       if (validation.isValid) {
         return password;
       }
@@ -86,19 +89,19 @@ export class PasswordGenerator {
       attempts++;
     }
 
-    throw new Error('無法生成符合要求的密碼，請調整選項');
+    throw new Error("無法生成符合要求的密碼，請調整選項");
   }
 
   /**
    * 打亂字串
    */
   static shuffle(str) {
-    const arr = str.split('');
+    const arr = str.split("");
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
-    return arr.join('');
+    return arr.join("");
   }
 
   /**
@@ -110,7 +113,7 @@ export class PasswordGenerator {
       try {
         passwords.push(this.generate(options));
       } catch (error) {
-        console.error('生成密碼失敗:', error);
+        console.error("生成密碼失敗:", error);
       }
     }
     return passwords;
@@ -126,16 +129,16 @@ export class PasswordGenerator {
         return true;
       } else {
         // Fallback for older browsers
-        const textArea = document.createElement('textarea');
+        const textArea = document.createElement("textarea");
         textArea.value = text;
-        textArea.style.position = 'fixed';
-        textArea.style.left = '-999999px';
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
-        
+
         try {
-          const successful = document.execCommand('copy');
+          const successful = document.execCommand("copy");
           document.body.removeChild(textArea);
           return successful;
         } catch (err) {
@@ -144,7 +147,7 @@ export class PasswordGenerator {
         }
       }
     } catch (err) {
-      console.error('複製失敗:', err);
+      console.error("複製失敗:", err);
       return false;
     }
   }

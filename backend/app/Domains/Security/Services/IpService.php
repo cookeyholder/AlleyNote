@@ -97,7 +97,7 @@ class IpService implements IpServiceInterface
             $this->activityLogger->log($dto);
         } catch (Exception $e) {
             // 記錄失敗不應影響主要業務邏輯，靜默處理
-            error_log('Failed to log IP rule event: ' . $e->getMessage());
+            app_log('error', 'Failed to log IP rule event', ['exception' => $e->getMessage()]);
         }
     }
 }

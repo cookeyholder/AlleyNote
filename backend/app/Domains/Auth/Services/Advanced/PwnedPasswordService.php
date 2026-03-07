@@ -77,7 +77,7 @@ class PwnedPasswordService
             ];
         } catch (Exception $e) {
             // 記錄錯誤但不阻止使用者操作
-            error_log('PwnedPasswordService error: ' . $e->getMessage());
+            app_log('error', 'PwnedPasswordService error', ['exception' => $e->getMessage()]);
 
             return [
                 'is_leaked' => false,
@@ -103,7 +103,7 @@ class PwnedPasswordService
             return null;
         } catch (RequestException $e) {
             // 網路或 API 錯誤
-            error_log('HIBP API request failed: ' . $e->getMessage());
+            app_log('error', 'HIBP API request failed', ['exception' => $e->getMessage()]);
 
             return null;
         }

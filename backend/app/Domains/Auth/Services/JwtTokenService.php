@@ -203,7 +203,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
 
             return true;
         } catch (Throwable $e) {
-            error_log("JWT token revocation failed during {$reason}: " . $e->getMessage());
+            app_log('error', 'JWT token revocation failed', [
+                'reason' => $reason,
+                'exception' => $e->getMessage(),
+            ]);
 
             return false;
         }

@@ -151,7 +151,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         ];
 
         // 記錄到日誌檔案
-        error_log('CSP Violation: ' . (json_encode($logData) ?? ''));
+        app_log('warning', 'CSP Violation', $logData);
 
         // 如果設定了監控服務，也可以發送到那裡
         if (isset($this->config['csp']['monitoring_endpoint'])) {
@@ -178,7 +178,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
             file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
         } catch (Exception $e) {
-            error_log('Failed to send CSP violation to monitoring: ' . $e->getMessage());
+            app_log('error', 'Failed to send CSP violation to monitoring', ['exception' => $e->getMessage()]);
         }
     }
 

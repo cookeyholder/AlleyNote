@@ -71,7 +71,7 @@ try {
     exit;
 } catch (Exception $e) {
     // 錯誤處理
-    error_log("路由系統錯誤: " . $e->getMessage());
+    app_log('critical', '路由系統錯誤', ['exception' => $e->getMessage()]);
     header('Content-Type: application/json');
     http_response_code(500);
     echo json_encode([
