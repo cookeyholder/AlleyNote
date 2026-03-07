@@ -21,6 +21,8 @@ class ApiResponse
         return [
             'success' => false,
             'message' => $message,
+            'error_code' => $code,
+            'errors' => $errors,
             'error' => [
                 'code' => $code,
                 'message' => $message,

@@ -7,8 +7,8 @@
  * 403 禁止訪問頁面
  */
 export function render403() {
-  const app = document.getElementById('app');
-  
+  const app = document.getElementById("app");
+
   app.innerHTML = `
     <div class="min-h-screen bg-modern-50 flex items-center justify-center px-4">
       <div class="text-center animate-fade-in">
@@ -46,8 +46,8 @@ export function render403() {
  * 404 找不到頁面
  */
 export function render404() {
-  const app = document.getElementById('app');
-  
+  const app = document.getElementById("app");
+
   app.innerHTML = `
     <div class="min-h-screen bg-modern-50 flex items-center justify-center px-4">
       <div class="text-center animate-fade-in">
@@ -85,8 +85,8 @@ export function render404() {
  * 500 伺服器錯誤頁面
  */
 export function render500() {
-  const app = document.getElementById('app');
-  
+  const app = document.getElementById("app");
+
   app.innerHTML = `
     <div class="min-h-screen bg-modern-50 flex items-center justify-center px-4">
       <div class="text-center animate-fade-in">

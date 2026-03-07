@@ -240,7 +240,6 @@ trait HttpResponseTestTrait
 
         try {
             json_decode($body, true, 512, JSON_THROW_ON_ERROR);
-            $this->assertTrue(true);
         } catch (JsonException $e) {
             $this->fail('回應內容應該是有效的 JSON：' . $e->getMessage());
         }

@@ -148,7 +148,7 @@ class Application
             }
         } catch (Exception $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
-            error_log('Monitoring system error: ' . $monitoringException->getMessage());
+            app_log('error', 'Monitoring system error', ['exception' => $monitoringException->getMessage()]);
         }
 
         // 建立錯誤回應內容

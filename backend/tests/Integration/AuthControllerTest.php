@@ -6,6 +6,7 @@ namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
@@ -35,6 +36,8 @@ class AuthControllerTest extends IntegrationTestCase
 
     private AuthenticationServiceInterface|MockInterface $authenticationService;
 
+    private JwtTokenServiceInterface|MockInterface $jwtTokenService;
+
     private ValidatorInterface|MockInterface $validator;
 
     private ActivityLoggingServiceInterface|MockInterface $activityLoggingService;
@@ -56,6 +59,7 @@ class AuthControllerTest extends IntegrationTestCase
         parent::setUp();
         $this->authService = Mockery::mock(AuthService::class);
         $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
+        $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->activityLoggingService = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->activityLoggingService->shouldReceive('log')->byDefault()->andReturn(true);
         $this->userRepository = Mockery::mock(UserRepositoryInterface::class);
@@ -75,6 +79,7 @@ class AuthControllerTest extends IntegrationTestCase
         // 設定 request 的預設行為
         $this->request->shouldReceive('hasHeader')->byDefault()->andReturn(false);
         $this->request->shouldReceive('getHeaderLine')->byDefault()->andReturn('');
+        $this->request->shouldReceive('getCookieParams')->byDefault()->andReturn([]);
         $this->request->shouldReceive('getServerParams')->byDefault()->andReturn(['REMOTE_ADDR' => '127.0.0.1']);
         $this->request->shouldReceive('getAttribute')->byDefault()->andReturn(null);
 
@@ -90,6 +95,8 @@ class AuthControllerTest extends IntegrationTestCase
                 return $this->statusCode;
             });
         $this->response->shouldReceive('withHeader')
+            ->andReturnSelf();
+        $this->response->shouldReceive('withAddedHeader')
             ->andReturnSelf();
 
         $stream = Mockery::mock(StreamInterface::class);
@@ -155,7 +162,7 @@ class AuthControllerTest extends IntegrationTestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -203,7 +210,7 @@ class AuthControllerTest extends IntegrationTestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -273,13 +280,13 @@ class AuthControllerTest extends IntegrationTestCase
             ->andReturn($loginResponse);
 
         // Mock ActivityLoggingService
-        $this->activityLoggingService->shouldReceive('logActivity')
+        $this->activityLoggingService->shouldReceive('log')
             ->once()
             ->andReturn(true);
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -307,7 +314,7 @@ class AuthControllerTest extends IntegrationTestCase
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -326,6 +333,7 @@ class AuthControllerTest extends IntegrationTestCase
 
         // 設定請求 mock
         $this->request->shouldReceive('getParsedBody')->andReturn($logoutData);
+        $this->request->shouldReceive('getAttribute')->with('access_token')->andReturn($logoutData['access_token']);
         $this->request->shouldReceive('getHeaderLine')
             ->with('Authorization')
             ->andReturn('Bearer ' . $logoutData['access_token']);
@@ -336,13 +344,13 @@ class AuthControllerTest extends IntegrationTestCase
             ->andReturn(true);
 
         // Mock ActivityLoggingService
-        $this->activityLoggingService->shouldReceive('logActivity')
+        $this->activityLoggingService->shouldReceive('log')
             ->once()
             ->andReturn(true);
 
         // 建立控制器並執行
         /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應

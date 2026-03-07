@@ -7,6 +7,7 @@ namespace App\Application\Services\Statistics;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -28,12 +29,6 @@ use RuntimeException;
  */
 final class StatisticsApplicationService
 {
-    private const CACHE_TTL_SHORT = 1800; // 30 分鐘
-
-    private const CACHE_TTL_MEDIUM = 3600; // 1 小時
-
-    private const CACHE_TTL_LONG = 7200; // 2 小時
-
     private const VALID_SNAPSHOT_TYPES = [
         StatisticsSnapshot::TYPE_OVERVIEW,
         StatisticsSnapshot::TYPE_POSTS,
@@ -44,6 +39,7 @@ final class StatisticsApplicationService
     public function __construct(
         private readonly StatisticsAggregationServiceInterface $aggregationService,
         private readonly StatisticsCacheServiceInterface $cacheService,
+        private readonly StatisticsConfigService $configService,
     ) {}
 
     /**
@@ -236,16 +232,17 @@ final class StatisticsApplicationService
         StatisticsPeriod $currentPeriod,
         StatisticsPeriod $previousPeriod,
         string $snapshotType,
-        int $cacheTtl = self::CACHE_TTL_MEDIUM,
+        ?int $cacheTtl = null,
     ): array {
         // 生成快取鍵
         $cacheKey = $this->generateTrendsCacheKey($currentPeriod, $previousPeriod, $snapshotType);
+        $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl('trends');
 
         /** @var array<string, mixed> $result */
         $result = $this->cacheService->remember(
             $cacheKey,
             fn(): array => $this->aggregationService->calculateTrends($currentPeriod, $previousPeriod, $snapshotType),
-            $cacheTtl,
+            $resolvedCacheTtl,
         );
 
         return $result;
@@ -287,9 +284,10 @@ final class StatisticsApplicationService
     public function getCachedStatistics(
         string $snapshotType,
         StatisticsPeriod $period,
-        int $cacheTtl = self::CACHE_TTL_SHORT,
+        ?int $cacheTtl = null,
     ): array {
         $cacheKey = $this->generateStatisticsCacheKey($snapshotType, $period);
+        $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl($snapshotType);
 
         /** @var array<string, mixed> $result */
         $result = $this->cacheService->remember(
@@ -299,7 +297,7 @@ final class StatisticsApplicationService
                 // 或者呼叫領域服務獲取最新統計資料
                 return [];
             },
-            $cacheTtl,
+            $resolvedCacheTtl,
         );
 
         return $result;
@@ -320,7 +318,7 @@ final class StatisticsApplicationService
 
         foreach ($snapshotTypes as $type) {
             try {
-                $this->getCachedStatistics($type, $period, self::CACHE_TTL_LONG);
+                $this->getCachedStatistics($type, $period, $this->configService->getStatisticsTypeTtl($type));
                 $results[$type] = true;
             } catch (RuntimeException $e) {
                 $results[$type] = false;

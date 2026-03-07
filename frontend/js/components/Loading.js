@@ -11,16 +11,17 @@ class LoadingComponent {
   /**
    * 顯示載入指示器
    */
-  show(message = '載入中...') {
+  show(message = "載入中...") {
     if (this.isVisible) return;
 
     this.isVisible = true;
 
     // 建立載入容器
-    this.container = document.createElement('div');
-    this.container.id = 'loading-overlay';
-    this.container.className = 'fixed inset-0 bg-white/60 backdrop-blur-md z-[100] flex items-center justify-center animate-fade-in';
-    
+    this.container = document.createElement("div");
+    this.container.id = "loading-overlay";
+    this.container.className =
+      "fixed inset-0 bg-white/60 backdrop-blur-md z-[100] flex items-center justify-center animate-fade-in";
+
     this.container.innerHTML = `
       <div class="text-center p-10 bg-white/40 rounded-3xl border border-white shadow-2xl">
         <div class="relative w-20 h-20 mx-auto mb-6">

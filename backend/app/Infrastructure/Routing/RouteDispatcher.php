@@ -60,7 +60,10 @@ class RouteDispatcher
                 }
             } catch (Exception $e) {
                 // 記錄錯誤但繼續執行，避免因為中介軟體問題導致整個請求失敗
-                error_log("Failed to resolve middleware '{$middleware}': " . $e->getMessage());
+                app_log('error', 'Failed to resolve middleware', [
+                    'middleware' => (string) $middleware,
+                    'exception' => $e->getMessage(),
+                ]);
             }
         }
 

@@ -413,7 +413,7 @@ class AttachmentService implements AttachmentServiceInterface
         try {
             // 檢查 GD 擴充是否可用
             if (!extension_loaded('gd')) {
-                error_log('GD extension not available for image sanitization');
+                app_log('warning', 'GD extension not available for image sanitization');
 
                 return true; // 如果沒有 GD，跳過圖片處理
             }
@@ -483,7 +483,7 @@ class AttachmentService implements AttachmentServiceInterface
 
             return $result;
         } catch (Exception $e) {
-            error_log('Image sanitization failed: ' . $e->getMessage());
+            app_log('error', 'Image sanitization failed', ['exception' => $e->getMessage()]);
 
             throw ValidationException::fromSingleError('file', '圖片處理失敗：' . $e->getMessage());
         }
@@ -508,7 +508,7 @@ class AttachmentService implements AttachmentServiceInterface
 
         // ClamAV 回傳碼：0=乾淨, 1=感染, 2=錯誤
         if (intval($exitCode) === 1) {
-            error_log("Virus detected in file: {$filePath}");
+            app_log('warning', 'Virus detected in file', ['file_path' => $filePath]);
 
             return false;
         }

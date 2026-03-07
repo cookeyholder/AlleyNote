@@ -586,7 +586,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         } catch (Throwable $e) {
             // 事件分派失敗不應該影響統計功能的主流程
             // 只記錄錯誤但不重新拋出異常
-            error_log('Failed to dispatch StatisticsSnapshotCreated event: ' . $e->getMessage());
+            app_log('error', 'Failed to dispatch StatisticsSnapshotCreated event', ['exception' => $e->getMessage()]);
         }
     }
 }

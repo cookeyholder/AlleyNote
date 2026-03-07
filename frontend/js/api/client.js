@@ -36,7 +36,9 @@ class ApiClient {
    * 取得認證 Token
    */
   getAuthToken() {
-    return storage.get("access_token");
+    const token = storage.get("access_token");
+
+    return typeof token === "string" ? token : null;
   }
 
   /**
@@ -56,7 +58,7 @@ class ApiClient {
   /**
    * 建構請求標頭
    */
-  buildHeaders(customHeaders = {}) {
+  buildHeaders(customHeaders = {}, method = "GET") {
     const headers = { ...this.headers };
     const token = this.getAuthToken();
 
@@ -64,8 +66,11 @@ class ApiClient {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    // 從 Cookie 中獲取 CSRF Token (僅在非 GET 請求時需要)
-    const csrfToken = this.getCookie("csrf_token");
+    const normalizedMethod = String(method).toUpperCase();
+    const needsCsrf = ["POST", "PUT", "PATCH", "DELETE"].includes(
+      normalizedMethod,
+    );
+    const csrfToken = needsCsrf ? this.getCsrfToken() : null;
     if (csrfToken) {
       headers["X-CSRF-TOKEN"] = csrfToken;
     }
@@ -84,6 +89,16 @@ class ApiClient {
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(";").shift();
     return null;
+  }
+
+  getMetaContent(name) {
+    const metaTag = document.querySelector(`meta[name="${name}"]`);
+
+    return metaTag?.getAttribute("content") || null;
+  }
+
+  getCsrfToken() {
+    return this.getCookie("csrf_token") || this.getMetaContent("csrf-token");
   }
 
   /**
@@ -120,7 +135,6 @@ class ApiClient {
    * 處理錯誤
    */
   async handleError(error, originalRequest = null) {
-    console.error("API Error:", error);
     const isSilent = !!originalRequest?.options?.silent;
 
     if (error instanceof ApiError) {
@@ -147,13 +161,17 @@ class ApiClient {
 
           // 嘗試刷新 Token
           const refreshToken = storage.get("refresh_token");
-          if (refreshToken) {
+          const refreshPayload =
+            typeof refreshToken === "string" && refreshToken
+              ? { refresh_token: refreshToken }
+              : {};
+
+          if (refreshToken || this.withCredentials) {
             this._refreshPromise = fetch(`${this.baseURL}/auth/refresh`, {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ refresh_token: refreshToken }),
+              headers: this.buildHeaders({}, "POST"),
+              credentials: this.withCredentials ? "include" : "same-origin",
+              body: JSON.stringify(refreshPayload),
             });
 
             const response = await this._refreshPromise;
@@ -184,7 +202,6 @@ class ApiClient {
           this._refreshing = false;
           this._refreshPromise = null;
         } catch (refreshError) {
-          console.error("Token 刷新失敗:", refreshError);
           this._refreshing = false;
           this._refreshPromise = null;
         }
@@ -253,13 +270,6 @@ class ApiClient {
       // 建構完整 URL
       let fullUrl = `${this.baseURL}${url}`;
 
-      console.log("[API Client] 請求 URL:", {
-        baseURL: this.baseURL,
-        path: url,
-        fullUrl: fullUrl,
-        method: method,
-      });
-
       // 處理查詢參數
       if (params) {
         const searchParams = new URLSearchParams();
@@ -277,7 +287,7 @@ class ApiClient {
       // 建構請求設定
       const fetchOptions = {
         method,
-        headers: this.buildHeaders(headers),
+        headers: this.buildHeaders(headers, method),
         credentials: this.withCredentials ? "include" : "same-origin",
       };
 

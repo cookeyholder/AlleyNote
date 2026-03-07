@@ -744,7 +744,10 @@ class PostRepository implements PostRepositoryInterface
         } catch (Exception $e) {
             $this->db->rollBack();
             // 記錄錯誤並重新拋出，以便調用方能處理
-            error_log("Failed to set tags for post {$id}: " . $e->getMessage());
+            app_log('error', 'Failed to set tags for post', [
+                'post_id' => $id,
+                'exception' => $e->getMessage(),
+            ]);
 
             throw new RuntimeException('無法設定文章標籤: ' . $e->getMessage(), 0, $e);
         }
@@ -762,30 +765,23 @@ class PostRepository implements PostRepositoryInterface
         }
 
         try {
-            // 使用單一查詢獲取所有相關標籤的當前實際計數
-            $placeholders = implode(',', array_fill(0, count($tagIds), '?'));
+            $uniqueTagIds = array_values(array_unique(array_map('intval', $tagIds)));
+            $placeholders = implode(',', array_fill(0, count($uniqueTagIds), '?'));
             $sql = "
-                SELECT tag_id, COUNT(*) as count 
-                FROM post_tags 
-                WHERE tag_id IN ({$placeholders}) 
-                GROUP BY tag_id
+                UPDATE tags
+                SET usage_count = COALESCE((
+                    SELECT COUNT(*)
+                    FROM post_tags
+                    WHERE post_tags.tag_id = tags.id
+                ), 0)
+                WHERE id IN ({$placeholders})
             ";
 
             $stmt = $this->db->prepare($sql);
-            $stmt->execute($tagIds);
-            $counts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
-
-            // 批次更新 tags 表
-            $updateSql = 'UPDATE tags SET usage_count = ? WHERE id = ?';
-            $updateStmt = $this->db->prepare($updateSql);
-
-            foreach ($tagIds as $tagId) {
-                $count = $counts[$tagId] ?? 0;
-                $updateStmt->execute([$count, $tagId]);
-            }
+            $stmt->execute($uniqueTagIds);
         } catch (PDOException $e) {
             // 記錄錯誤但不中斷主流程
-            error_log('Failed to update tags usage count: ' . $e->getMessage());
+            app_log('error', 'Failed to update tags usage count', ['exception' => $e->getMessage()]);
         }
     }
 

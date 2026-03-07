@@ -3,7 +3,7 @@
  * 提供應用程式級別的狀態管理，包括使用者認證狀態等
  */
 
-import { storage } from '../utils/storage.js';
+import { storage } from "../utils/storage.js";
 
 /**
  * 全域狀態
@@ -18,7 +18,7 @@ class GlobalStore {
     };
 
     this.listeners = [];
-    
+
     // 從 localStorage 恢復狀態
     this.restoreState();
   }
@@ -27,10 +27,14 @@ class GlobalStore {
    * 恢復狀態
    */
   restoreState() {
-    const user = storage.get('user');
-    const token = storage.get('access_token');
-    
-    if (user && token) {
+    const user = storage.get("user");
+    const token = storage.get("access_token");
+    const refreshToken = storage.get("refresh_token");
+    const hasCookieSession =
+      typeof document !== "undefined" &&
+      document.cookie.includes("auth_mode=cookie");
+
+    if (user && (token || refreshToken || hasCookieSession)) {
       this.state.user = user;
       this.state.isAuthenticated = true;
     }
@@ -56,10 +60,10 @@ class GlobalStore {
    */
   subscribe(listener) {
     this.listeners.push(listener);
-    
+
     // 返回取消訂閱函數
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      this.listeners = this.listeners.filter((l) => l !== listener);
     };
   }
 
@@ -67,7 +71,7 @@ class GlobalStore {
    * 通知所有監聽者
    */
   notify() {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       listener(this.state);
     });
   }
@@ -78,7 +82,7 @@ class GlobalStore {
   setUser(user) {
     this.state.user = user;
     this.state.isAuthenticated = !!user;
-    storage.set('user', user);
+    storage.set("user", user);
     this.notify();
   }
 
@@ -88,8 +92,8 @@ class GlobalStore {
   clearUser() {
     this.state.user = null;
     this.state.isAuthenticated = false;
-    storage.remove('user');
-    storage.remove('access_token');
+    storage.remove("user");
+    storage.remove("access_token");
     this.notify();
   }
 
@@ -145,7 +149,7 @@ export const globalGetters = {
   isAdmin: () => {
     const user = globalStore.getUser();
     if (!user) return false;
-    return user.role === 'super_admin' || user.role === 'admin';
+    return user.role === "super_admin" || user.role === "admin";
   },
   getState: () => globalStore.getState(),
 };

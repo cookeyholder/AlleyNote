@@ -1,7 +1,10 @@
-import { renderDashboardLayout, bindDashboardLayoutEvents } from '../../layouts/DashboardLayout.js';
-import { authAPI } from '../../api/modules/auth.js';
-import { usersAPI } from '../../api/modules/users.js';
-import { toast } from '../../utils/toast.js';
+import {
+  renderDashboardLayout,
+  bindDashboardLayoutEvents,
+} from "../../layouts/DashboardLayout.js";
+import { authAPI } from "../../api/modules/auth.js";
+import { usersAPI } from "../../api/modules/users.js";
+import { toast } from "../../utils/toast.js";
 
 /**
  * 個人資料頁面
@@ -24,8 +27,8 @@ export default class ProfilePage {
       this.user = response;
       this.render();
     } catch (error) {
-      console.error('載入使用者資訊失敗:', error);
-      toast.error('載入使用者資訊失敗');
+      console.error("載入使用者資訊失敗:", error);
+      toast.error("載入使用者資訊失敗");
     }
   }
 
@@ -86,7 +89,8 @@ export default class ProfilePage {
     `;
 
     const app = document.getElementById("app");
-    renderDashboardLayout(content, { title: "個人資料" }); bindDashboardLayoutEvents();
+    renderDashboardLayout(content, { title: "個人資料" });
+    bindDashboardLayoutEvents();
     this.attachEventListeners();
   }
 
@@ -100,20 +104,20 @@ export default class ProfilePage {
         <div class="space-y-6">
           <div>
             <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">使用者名稱</p>
-            <p class="text-lg font-bold text-modern-900">${this.escapeHtml(this.user.username || '-')}</p>
+            <p class="text-lg font-bold text-modern-900">${this.escapeHtml(this.user.username || "-")}</p>
           </div>
           <div>
             <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">電子郵件地址</p>
-            <p class="text-lg font-bold text-modern-900">${this.escapeHtml(this.user.email || '-')}</p>
+            <p class="text-lg font-bold text-modern-900">${this.escapeHtml(this.user.email || "-")}</p>
           </div>
           <div>
             <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">帳戶權限角色</p>
             <span class="inline-flex items-center px-3 py-1 mt-1 rounded-full text-xs font-bold border ${
-              this.user.role === 'super_admin' 
-                ? 'bg-purple-50 text-purple-700 border-purple-100' 
-                : 'bg-blue-50 text-blue-700 border-blue-100'
+              this.user.role === "super_admin"
+                ? "bg-purple-50 text-purple-700 border-purple-100"
+                : "bg-blue-50 text-blue-700 border-blue-100"
             }">
-              ${this.user.role === 'super_admin' ? '系統主管理員' : '一般管理員'}
+              ${this.user.role === "super_admin" ? "系統主管理員" : "一般管理員"}
             </span>
           </div>
         </div>
@@ -132,7 +136,7 @@ export default class ProfilePage {
   }
 
   renderEditInfoForm() {
-    if (!this.user) return '';
+    if (!this.user) return "";
 
     return `
       <form id="editInfoForm" class="space-y-6 animate-fade-in">
@@ -145,7 +149,7 @@ export default class ProfilePage {
               type="text"
               id="username"
               name="username"
-              value="${this.escapeHtml(this.user.username || '')}"
+              value="${this.escapeHtml(this.user.username || "")}"
               class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all"
               required
             />
@@ -159,7 +163,7 @@ export default class ProfilePage {
               type="email"
               id="email"
               name="email"
-              value="${this.escapeHtml(this.user.email || '')}"
+              value="${this.escapeHtml(this.user.email || "")}"
               class="w-full px-4 py-3 bg-modern-50 border border-modern-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-accent-500 transition-all"
               required
             />
@@ -253,54 +257,54 @@ export default class ProfilePage {
 
   attachEventListeners() {
     // 編輯資訊按鈕
-    const editInfoBtn = document.getElementById('editInfoBtn');
+    const editInfoBtn = document.getElementById("editInfoBtn");
     if (editInfoBtn) {
-      editInfoBtn.addEventListener('click', () => {
+      editInfoBtn.addEventListener("click", () => {
         this.isEditingInfo = !this.isEditingInfo;
         this.render();
       });
     }
 
     // 取消編輯資訊
-    const cancelInfoBtn = document.getElementById('cancelInfoBtn');
+    const cancelInfoBtn = document.getElementById("cancelInfoBtn");
     if (cancelInfoBtn) {
-      cancelInfoBtn.addEventListener('click', () => {
+      cancelInfoBtn.addEventListener("click", () => {
         this.isEditingInfo = false;
         this.render();
       });
     }
 
     // 提交編輯資訊表單
-    const editInfoForm = document.getElementById('editInfoForm');
+    const editInfoForm = document.getElementById("editInfoForm");
     if (editInfoForm) {
-      editInfoForm.addEventListener('submit', async (e) => {
+      editInfoForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         await this.handleUpdateInfo(new FormData(editInfoForm));
       });
     }
 
     // 修改密碼按鈕
-    const editPasswordBtn = document.getElementById('editPasswordBtn');
+    const editPasswordBtn = document.getElementById("editPasswordBtn");
     if (editPasswordBtn) {
-      editPasswordBtn.addEventListener('click', () => {
+      editPasswordBtn.addEventListener("click", () => {
         this.isEditingPassword = !this.isEditingPassword;
         this.render();
       });
     }
 
     // 取消修改密碼
-    const cancelPasswordBtn = document.getElementById('cancelPasswordBtn');
+    const cancelPasswordBtn = document.getElementById("cancelPasswordBtn");
     if (cancelPasswordBtn) {
-      cancelPasswordBtn.addEventListener('click', () => {
+      cancelPasswordBtn.addEventListener("click", () => {
         this.isEditingPassword = false;
         this.render();
       });
     }
 
     // 提交修改密碼表單
-    const changePasswordForm = document.getElementById('changePasswordForm');
+    const changePasswordForm = document.getElementById("changePasswordForm");
     if (changePasswordForm) {
-      changePasswordForm.addEventListener('submit', async (e) => {
+      changePasswordForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         await this.handleChangePassword(new FormData(changePasswordForm));
       });
@@ -310,59 +314,59 @@ export default class ProfilePage {
   async handleUpdateInfo(formData) {
     try {
       const data = {
-        username: formData.get('username'),
-        email: formData.get('email'),
+        username: formData.get("username"),
+        email: formData.get("email"),
       };
 
       // 驗證
       if (!data.username || data.username.length < 3) {
-        toast.error('使用者名稱至少需要 3 個字元');
+        toast.error("使用者名稱至少需要 3 個字元");
         return;
       }
 
       if (!data.email || !this.isValidEmail(data.email)) {
-        toast.error('請輸入有效的電子郵件');
+        toast.error("請輸入有效的電子郵件");
         return;
       }
 
       // 更新使用者資訊
       await usersAPI.update(this.user.id, data);
-      
-      toast.success('個人資訊更新成功');
+
+      toast.success("個人資訊更新成功");
       this.isEditingInfo = false;
-      
+
       // 重新載入使用者資訊
       await this.loadUserInfo();
     } catch (error) {
-      console.error('更新個人資訊失敗:', error);
-      toast.error(error.message || '更新個人資訊失敗');
+      console.error("更新個人資訊失敗:", error);
+      toast.error(error.message || "更新個人資訊失敗");
     }
   }
 
   async handleChangePassword(formData) {
     try {
-      const currentPassword = formData.get('current_password');
-      const newPassword = formData.get('new_password');
-      const newPasswordConfirmation = formData.get('new_password_confirmation');
+      const currentPassword = formData.get("current_password");
+      const newPassword = formData.get("new_password");
+      const newPasswordConfirmation = formData.get("new_password_confirmation");
 
       // 驗證
       if (!currentPassword) {
-        toast.error('請輸入目前密碼');
+        toast.error("請輸入目前密碼");
         return;
       }
 
       if (!newPassword || newPassword.length < 8) {
-        toast.error('新密碼長度至少需要 8 個字元');
+        toast.error("新密碼長度至少需要 8 個字元");
         return;
       }
 
       if (newPassword !== newPasswordConfirmation) {
-        toast.error('新密碼與確認密碼不符');
+        toast.error("新密碼與確認密碼不符");
         return;
       }
 
       if (currentPassword === newPassword) {
-        toast.error('新密碼不能與目前密碼相同');
+        toast.error("新密碼不能與目前密碼相同");
         return;
       }
 
@@ -372,37 +376,37 @@ export default class ProfilePage {
         password: newPassword,
         password_confirmation: newPasswordConfirmation,
       });
-      
-      toast.success('密碼修改成功');
+
+      toast.success("密碼修改成功");
       this.isEditingPassword = false;
       this.render();
     } catch (error) {
-      console.error('修改密碼失敗:', error);
-      toast.error(error.message || '修改密碼失敗');
+      console.error("修改密碼失敗:", error);
+      toast.error(error.message || "修改密碼失敗");
     }
   }
 
   // 工具函式
   escapeHtml(text) {
     const map = {
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      '"': '&quot;',
-      "'": '&#039;',
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;",
     };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : '';
+    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 
   formatDate(dateString) {
-    if (!dateString) return '-';
+    if (!dateString) return "-";
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('zh-TW', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
+    return new Intl.DateTimeFormat("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   }
 

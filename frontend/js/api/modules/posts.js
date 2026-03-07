@@ -2,8 +2,8 @@
  * 文章 API 模組
  */
 
-import { apiClient } from '../client.js';
-import { globalGetters } from '../../store/globalStore.js';
+import { apiClient } from "../client.js";
+import { globalGetters } from "../../store/globalStore.js";
 
 class PostsAPI {
   /**
@@ -11,7 +11,7 @@ class PostsAPI {
    * 注意：後端 /posts 端點可以處理認證和非認證請求
    */
   async list(params = {}) {
-    return await apiClient.get('/posts', { params });
+    return await apiClient.get("/posts", { params });
   }
 
   /**
@@ -53,7 +53,7 @@ class PostsAPI {
    * 建立文章
    */
   async create(data) {
-    return await apiClient.post('/posts', data);
+    return await apiClient.post("/posts", data);
   }
 
   /**
@@ -83,7 +83,7 @@ class PostsAPI {
    */
   async unpin(id) {
     // TODO: 待後端實作 DELETE /posts/{id}/pin 或 PATCH /posts/{id}/unpin
-    console.warn('取消置頂功能尚未完全實作，嘗試使用 pin 端點');
+    console.warn("取消置頂功能尚未完全實作，嘗試使用 pin 端點");
     return await apiClient.patch(`/posts/${id}/pin`, { pinned: false });
   }
 
@@ -92,8 +92,8 @@ class PostsAPI {
    * 注意：後端尚未實作獨立的發布端點，使用 update 端點
    */
   async publish(id) {
-    console.warn('發布功能尚未實作為獨立端點，使用 update 端點');
-    return await this.update(id, { status: 'published' });
+    console.warn("發布功能尚未實作為獨立端點，使用 update 端點");
+    return await this.update(id, { status: "published" });
   }
 
   /**
@@ -101,8 +101,8 @@ class PostsAPI {
    * 注意：後端尚未實作獨立的取消發布端點，使用 update 端點
    */
   async unpublish(id) {
-    console.warn('取消發布功能尚未實作為獨立端點，使用 update 端點');
-    return await this.update(id, { status: 'draft' });
+    console.warn("取消發布功能尚未實作為獨立端點，使用 update 端點");
+    return await this.update(id, { status: "draft" });
   }
 
   /**
@@ -124,8 +124,8 @@ class PostsAPI {
    */
   async uploadAttachment(postId, file) {
     const formData = new FormData();
-    formData.append('file', file);
-    
+    formData.append("file", file);
+
     return await apiClient.post(`/posts/${postId}/attachments`, formData);
   }
 

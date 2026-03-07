@@ -21,7 +21,7 @@ export class FormValidator {
    * 驗證必填欄位
    */
   static isRequired(value) {
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       return value.trim().length > 0;
     }
     return value !== null && value !== undefined;
@@ -75,7 +75,7 @@ export class FormValidator {
    */
   static isSecurePassword(value, username = null, email = null) {
     // 導入 PasswordValidator（需要確保已載入）
-    if (typeof PasswordValidator !== 'undefined') {
+    if (typeof PasswordValidator !== "undefined") {
       const result = PasswordValidator.validate(value, { username, email });
       return result.isValid;
     }
@@ -93,19 +93,23 @@ export class FormValidator {
 
     // 使用傳入的 rules 或 constructor 中的 rules
     const validationRules = rules || this.rules;
-    
+
     // 如果沒有 rules 或 rules 不是有效的物件,直接返回 true
     if (!validationRules) {
       return true;
     }
-    
-    if (typeof validationRules !== 'object' || validationRules === null || Array.isArray(validationRules)) {
+
+    if (
+      typeof validationRules !== "object" ||
+      validationRules === null ||
+      Array.isArray(validationRules)
+    ) {
       return true;
     }
 
     for (const [field, validators] of Object.entries(validationRules)) {
       const value = formData.get(field);
-      
+
       // 確保 validators 是陣列
       if (!Array.isArray(validators)) {
         continue;
@@ -117,36 +121,36 @@ export class FormValidator {
         let valid = false;
 
         switch (rule) {
-          case 'required':
+          case "required":
             valid = FormValidator.isRequired(value);
             break;
-          case 'email':
+          case "email":
             valid = value ? FormValidator.isEmail(value) : true;
             break;
-          case 'minLength':
+          case "minLength":
             valid = FormValidator.minLength(value, params);
             break;
-          case 'maxLength':
+          case "maxLength":
             valid = FormValidator.maxLength(value, params);
             break;
-          case 'number':
+          case "number":
             valid = FormValidator.isNumber(value);
             break;
-          case 'url':
+          case "url":
             valid = value ? FormValidator.isUrl(value) : true;
             break;
-          case 'strongPassword':
+          case "strongPassword":
             valid = FormValidator.isStrongPassword(value);
             break;
-          case 'securePassword':
+          case "securePassword":
             // params 應該是 { username, email }
             valid = FormValidator.isSecurePassword(
               value,
               params?.username,
-              params?.email
+              params?.email,
             );
             break;
-          case 'custom':
+          case "custom":
             valid = params(value, formData);
             break;
           default:
@@ -170,13 +174,13 @@ export class FormValidator {
    */
   displayErrors() {
     // 清除所有錯誤訊息
-    this.form.querySelectorAll('[data-error-for]').forEach(el => {
-      el.textContent = '';
-      el.classList.add('hidden');
+    this.form.querySelectorAll("[data-error-for]").forEach((el) => {
+      el.textContent = "";
+      el.classList.add("hidden");
     });
 
-    this.form.querySelectorAll('.input-field').forEach(input => {
-      input.classList.remove('border-red-500');
+    this.form.querySelectorAll(".input-field").forEach((input) => {
+      input.classList.remove("border-red-500");
     });
 
     // 顯示新的錯誤訊息
@@ -185,12 +189,12 @@ export class FormValidator {
       const errorEl = this.form.querySelector(`[data-error-for="${field}"]`);
 
       if (input) {
-        input.classList.add('border-red-500');
+        input.classList.add("border-red-500");
       }
 
       if (errorEl) {
         errorEl.textContent = message;
-        errorEl.classList.remove('hidden');
+        errorEl.classList.remove("hidden");
       }
     }
   }
@@ -227,55 +231,57 @@ export class FormValidator {
  * 驗證規則快捷方式
  */
 export const ValidationRules = {
-  required: (message = '此欄位為必填') => ({
-    rule: 'required',
+  required: (message = "此欄位為必填") => ({
+    rule: "required",
     message,
   }),
-  
-  email: (message = '請輸入有效的電子郵件地址') => ({
-    rule: 'email',
+
+  email: (message = "請輸入有效的電子郵件地址") => ({
+    rule: "email",
     message,
   }),
-  
+
   minLength: (min, message = `至少需要 ${min} 個字元`) => ({
-    rule: 'minLength',
+    rule: "minLength",
     params: min,
     message,
   }),
-  
+
   // 別名：min -> minLength
   min: (min, message = `至少需要 ${min} 個字元`) => ({
-    rule: 'minLength',
+    rule: "minLength",
     params: min,
     message,
   }),
-  
+
   maxLength: (max, message = `最多 ${max} 個字元`) => ({
-    rule: 'maxLength',
+    rule: "maxLength",
     params: max,
     message,
   }),
-  
+
   // 別名：max -> maxLength
   max: (max, message = `最多 ${max} 個字元`) => ({
-    rule: 'maxLength',
+    rule: "maxLength",
     params: max,
     message,
   }),
-  
-  strongPassword: (message = '密碼至少需要 8 個字元，包含大小寫字母和數字') => ({
-    rule: 'strongPassword',
+
+  strongPassword: (
+    message = "密碼至少需要 8 個字元，包含大小寫字母和數字",
+  ) => ({
+    rule: "strongPassword",
     message,
   }),
-  
-  securePassword: (options = {}, message = '密碼不符合安全要求') => ({
-    rule: 'securePassword',
+
+  securePassword: (options = {}, message = "密碼不符合安全要求") => ({
+    rule: "securePassword",
     params: options,
     message,
   }),
-  
+
   custom: (validator, message) => ({
-    rule: 'custom',
+    rule: "custom",
     params: validator,
     message,
   }),

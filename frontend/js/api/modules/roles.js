@@ -2,14 +2,14 @@
  * 角色 API 模組
  */
 
-import { apiClient } from '../client.js';
+import { apiClient } from "../client.js";
 
 class RolesAPI {
   /**
    * 取得所有角色
    */
   async getAll(params = {}) {
-    return await apiClient.get('/roles', { params });
+    return await apiClient.get("/roles", { params });
   }
 
   /**
@@ -23,7 +23,7 @@ class RolesAPI {
    * 建立角色
    */
   async create(data) {
-    return await apiClient.post('/roles', data);
+    return await apiClient.post("/roles", data);
   }
 
   /**
@@ -45,7 +45,7 @@ class RolesAPI {
    */
   async updatePermissions(id, permissionIds) {
     return await apiClient.put(`/roles/${id}/permissions`, {
-      permission_ids: permissionIds
+      permission_ids: permissionIds,
     });
   }
 
@@ -53,14 +53,14 @@ class RolesAPI {
    * 取得所有權限
    */
   async getPermissions() {
-    return await apiClient.get('/permissions');
+    return await apiClient.get("/permissions");
   }
 
   /**
    * 取得分組的權限
    */
   async getGroupedPermissions() {
-    return await apiClient.get('/permissions/grouped');
+    return await apiClient.get("/permissions/grouped");
   }
 }
 

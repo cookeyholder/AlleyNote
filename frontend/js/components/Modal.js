@@ -12,22 +12,23 @@ class ModalComponent {
    */
   show(title, content, options = {}) {
     const {
-      size = 'md', // sm, md, lg, xl
+      size = "md", // sm, md, lg, xl
       onClose = null,
       showCloseButton = true,
       closeOnBackdrop = true,
     } = options;
 
     // 建立 Modal 容器
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in';
-    
+    const modal = document.createElement("div");
+    modal.className =
+      "fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in";
+
     const sizeClasses = {
-      sm: 'max-w-md',
-      md: 'max-w-lg',
-      lg: 'max-w-2xl',
-      xl: 'max-w-4xl',
-      full: 'max-w-full',
+      sm: "max-w-md",
+      md: "max-w-lg",
+      lg: "max-w-2xl",
+      xl: "max-w-4xl",
+      full: "max-w-full",
     };
 
     modal.innerHTML = `
@@ -37,13 +38,17 @@ class ModalComponent {
           <div>
             <h3 class="text-2xl font-bold text-modern-900 tracking-tight">${title}</h3>
           </div>
-          ${showCloseButton ? `
+          ${
+            showCloseButton
+              ? `
             <button type="button" class="p-2 text-modern-400 hover:text-modern-900 hover:bg-modern-50 rounded-xl transition-all" data-modal-close>
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
         <div class="p-8 overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar">
           ${content}
@@ -54,23 +59,23 @@ class ModalComponent {
     // 關閉函數
     const closeModal = () => {
       modal.remove();
-      this.modals = this.modals.filter(m => m !== modal);
+      this.modals = this.modals.filter((m) => m !== modal);
       if (onClose) onClose();
     };
 
     // 綁定關閉事件
     if (showCloseButton) {
-      const closeButton = modal.querySelector('[data-modal-close]');
+      const closeButton = modal.querySelector("[data-modal-close]");
       if (closeButton) {
-        closeButton.addEventListener('click', closeModal);
+        closeButton.addEventListener("click", closeModal);
       }
     }
 
     // 點擊背景關閉
     if (closeOnBackdrop) {
-      const backdrop = modal.querySelector('[data-modal-backdrop]');
+      const backdrop = modal.querySelector("[data-modal-backdrop]");
       if (backdrop) {
-        backdrop.addEventListener('click', closeModal);
+        backdrop.addEventListener("click", closeModal);
       }
     }
 
@@ -101,29 +106,33 @@ class ModalComponent {
     `;
 
     const modalInstance = this.show(title, content, {
-      size: 'sm',
+      size: "sm",
       showCloseButton: false,
       closeOnBackdrop: false,
     });
 
     // 綁定按鈕事件
-    const cancelBtn = modalInstance.element.querySelector('[data-action="cancel"]');
-    const confirmBtn = modalInstance.element.querySelector('[data-action="confirm"]');
+    const cancelBtn = modalInstance.element.querySelector(
+      '[data-action="cancel"]',
+    );
+    const confirmBtn = modalInstance.element.querySelector(
+      '[data-action="confirm"]',
+    );
 
     if (cancelBtn) {
-      cancelBtn.addEventListener('click', () => {
+      cancelBtn.addEventListener("click", () => {
         modalInstance.close();
         if (onCancel) onCancel();
       });
     }
 
     if (confirmBtn) {
-      confirmBtn.addEventListener('click', async () => {
+      confirmBtn.addEventListener("click", async () => {
         try {
           if (onConfirm) await onConfirm();
           modalInstance.close();
         } catch (error) {
-          console.error('Confirm action error:', error);
+          console.error("Confirm action error:", error);
         }
       });
     }
@@ -145,7 +154,7 @@ class ModalComponent {
     `;
 
     const modalInstance = this.show(title, content, {
-      size: 'sm',
+      size: "sm",
       showCloseButton: false,
       closeOnBackdrop: false,
     });
@@ -153,7 +162,7 @@ class ModalComponent {
     // 綁定按鈕事件
     const okBtn = modalInstance.element.querySelector('[data-action="ok"]');
     if (okBtn) {
-      okBtn.addEventListener('click', () => {
+      okBtn.addEventListener("click", () => {
         modalInstance.close();
         if (onClose) onClose();
       });
@@ -166,7 +175,7 @@ class ModalComponent {
    * 關閉所有 Modal
    */
   closeAll() {
-    this.modals.forEach(modal => modal.remove());
+    this.modals.forEach((modal) => modal.remove());
     this.modals = [];
   }
 }
@@ -182,8 +191,14 @@ export class Modal {
   }
 
   show() {
-    const { title, content, size = 'md', showFooter = true, onClose } = this.options;
-    
+    const {
+      title,
+      content,
+      size = "md",
+      showFooter = true,
+      onClose,
+    } = this.options;
+
     this.modalInstance = this.modalComponent.show(title, content, {
       size,
       onClose,

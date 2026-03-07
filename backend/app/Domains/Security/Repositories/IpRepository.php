@@ -275,7 +275,7 @@ class IpRepository implements IpRepositoryInterface
                     $params[] = $value;
                 } else {
                     // 記錄嘗試查詢不允許欄位的行為
-                    error_log("Attempt to query ip_lists with disallowed field: {$key}");
+                    app_log('warning', 'Attempt to query ip_lists with disallowed field', ['field' => $key]);
                 }
             }
         }

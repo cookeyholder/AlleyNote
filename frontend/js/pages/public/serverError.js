@@ -3,9 +3,9 @@
  */
 
 export function render500(errorMessage = null) {
-    const app = document.getElementById('app');
+  const app = document.getElementById("app");
 
-    app.innerHTML = `
+  app.innerHTML = `
         <div class="min-h-screen bg-modern-50 flex items-center justify-center p-6 relative overflow-hidden">
             <!-- 品牌裝飾背景 -->
             <div class="absolute -top-24 -right-24 w-96 h-96 bg-red-100 rounded-full blur-3xl opacity-20"></div>
@@ -34,8 +34,8 @@ export function render500(errorMessage = null) {
                     </div>
                     
                     ${
-                        errorMessage
-                            ? `
+                      errorMessage
+                        ? `
                         <div class="bg-red-50 border border-red-100 rounded-2xl p-6 mb-8 text-left relative overflow-hidden">
                             <div class="absolute top-0 right-0 p-4 opacity-10">
                                 <svg class="w-12 h-12 text-red-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
@@ -44,7 +44,7 @@ export function render500(errorMessage = null) {
                             <code class="block text-sm text-red-700 break-all font-mono">${escapeHtml(errorMessage)}</code>
                         </div>
                     `
-                            : ''
+                        : ""
                     }
                     
                     <div class="text-left bg-modern-50 rounded-2xl p-6 mb-10 border border-modern-100">
@@ -104,7 +104,7 @@ export function render500(errorMessage = null) {
  * 轉義 HTML 字元
  */
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
 }

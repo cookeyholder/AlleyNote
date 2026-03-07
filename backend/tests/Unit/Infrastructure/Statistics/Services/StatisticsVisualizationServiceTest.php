@@ -234,23 +234,20 @@ final class StatisticsVisualizationServiceTest extends UnitTestCase
         $this->assertInstanceOf(ChartData::class, $result);
     }
 
-    public function testGetMultiMetricChartDataCallsCorrectMethods(): void
+    public function testGetMultiMetricChartDataReturnsExplicitEmptyState(): void
     {
         // Arrange
         $metrics = ['views', 'likes', 'comments'];
         $granularity = 'day';
-        $expectedChartData = new ChartData(['2023-01-01'], []);
-
-        $this->mockCacheService
-            ->expects($this->once())
-            ->method('remember')
-            ->willReturn($expectedChartData);
 
         // Act
         $result = $this->service->getMultiMetricChartData($metrics, $this->startDate, $this->endDate, $granularity);
 
         // Assert
         $this->assertInstanceOf(ChartData::class, $result);
+        $this->assertTrue($result->isEmpty());
+        $this->assertSame($metrics, $result->options['requested_metrics']);
+        $this->assertFalse($result->options['empty_state']['implemented']);
     }
 
     public function testGetPerformanceMetricsDataCallsCorrectMethods(): void

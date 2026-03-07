@@ -103,7 +103,7 @@ class AuthEndpointTest extends IntegrationTestCase
             if ($response->getStatusCode() === 500) {
                 $this->assertIsArray($data, 'Response should be JSON even on error');
                 $this->assertArrayHasKey('error', $data, 'Error response should contain error field');
-                $this->markTestSkipped('Login endpoint configured but has internal error: ' . $data['error']);
+                $this->markTestSkipped('Login endpoint configured but has internal error: ' . $this->formatErrorMessage($data['error'] ?? 'unknown error'));
 
                 return;
             }
@@ -113,7 +113,7 @@ class AuthEndpointTest extends IntegrationTestCase
                 $this->assertIsArray($data, 'Response should be JSON');
                 $this->assertArrayHasKey('success', $data, 'Response should have success field');
                 $this->assertFalse($data['success'], 'Login should fail with test credentials');
-                $this->markTestSkipped('Login endpoint rejects test credentials (expected): ' . ($data['error'] ?? 'unknown error'));
+                $this->markTestSkipped('Login endpoint rejects test credentials (expected): ' . $this->formatErrorMessage($data['error'] ?? 'unknown error'));
 
                 return;
             }
@@ -130,6 +130,23 @@ class AuthEndpointTest extends IntegrationTestCase
         } catch (Exception $e) {
             $this->markTestSkipped('Login endpoint test failed: ' . $e->getMessage());
         }
+    }
+
+    private function formatErrorMessage(mixed $errorMessage): string
+    {
+        if (is_string($errorMessage)) {
+            return $errorMessage;
+        }
+
+        if (is_array($errorMessage)) {
+            return json_encode($errorMessage, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?: 'unknown error';
+        }
+
+        if (is_scalar($errorMessage)) {
+            return (string) $errorMessage;
+        }
+
+        return 'unknown error';
     }
 
     /**

@@ -2,14 +2,14 @@
  * 使用者 API 模組
  */
 
-import { apiClient } from '../client.js';
+import { apiClient } from "../client.js";
 
 class UsersAPI {
   /**
    * 取得所有使用者
    */
   async getAll(params = {}) {
-    return await apiClient.get('/users', { params });
+    return await apiClient.get("/users", { params });
   }
 
   /**
@@ -23,7 +23,7 @@ class UsersAPI {
    * 建立使用者（管理員）
    */
   async create(data) {
-    return await apiClient.post('/users', data);
+    return await apiClient.post("/users", data);
   }
 
   /**
@@ -65,14 +65,14 @@ class UsersAPI {
    * 取得角色列表
    */
   async getRoles() {
-    return await apiClient.get('/roles');
+    return await apiClient.get("/roles");
   }
 
   /**
    * 建立角色
    */
   async createRole(data) {
-    return await apiClient.post('/roles', data);
+    return await apiClient.post("/roles", data);
   }
 
   /**

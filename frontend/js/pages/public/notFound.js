@@ -1,11 +1,11 @@
-import { router } from '../../utils/router.js';
+import { router } from "../../utils/router.js";
 
 /**
  * 渲染 404 頁面
  */
 export function render404() {
-  const app = document.getElementById('app');
-  
+  const app = document.getElementById("app");
+
   app.innerHTML = `
     <div class="min-h-screen bg-modern-50 flex items-center justify-center p-6 relative overflow-hidden">
       <!-- 品牌裝飾背景 -->

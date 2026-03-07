@@ -59,51 +59,55 @@ class SecurityServiceProvider
     {
         $repository = $container->get(ActivityLogRepositoryInterface::class);
 
-        // 使用簡單的 error_log 作為 logger（暫時解決方案）
+        // 使用共用的 Monolog helper 作為 logger
         $logger = new class implements LoggerInterface {
             public function emergency(Stringable|string $message, array $context = []): void
             {
-                error_log("[EMERGENCY] $message");
+                app_log('emergency', (string) $message, $context);
             }
 
             public function alert(Stringable|string $message, array $context = []): void
             {
-                error_log("[ALERT] $message");
+                app_log('alert', (string) $message, $context);
             }
 
             public function critical(Stringable|string $message, array $context = []): void
             {
-                error_log("[CRITICAL] $message");
+                app_log('critical', (string) $message, $context);
             }
 
             public function error(Stringable|string $message, array $context = []): void
             {
-                error_log("[ERROR] $message");
+                app_log('error', (string) $message, $context);
             }
 
             public function warning(Stringable|string $message, array $context = []): void
             {
-                error_log("[WARNING] $message");
+                app_log('warning', (string) $message, $context);
             }
 
             public function notice(Stringable|string $message, array $context = []): void
             {
-                error_log("[NOTICE] $message");
+                app_log('notice', (string) $message, $context);
             }
 
             public function info(Stringable|string $message, array $context = []): void
             {
-                error_log("[INFO] $message");
+                app_log('info', (string) $message, $context);
             }
 
             public function debug(Stringable|string $message, array $context = []): void
             {
-                error_log("[DEBUG] $message");
+                app_log('debug', (string) $message, $context);
             }
 
             public function log($level, Stringable|string $message, array $context = []): void
             {
-                error_log("[$level] $message");
+                $normalizedLevel = is_string($level) || $level instanceof Stringable
+                    ? (string) $level
+                    : 'info';
+
+                app_log($normalizedLevel, (string) $message, $context);
             }
         };
 

@@ -31,19 +31,34 @@ date_default_timezone_set('Asia/Taipei');
 $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
 $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-// 開發/測試環境 CORS（供前端靜態伺服器與 E2E 使用）
+// 依環境與設定決定 CORS（供前端靜態伺服器與 E2E 使用）
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-$allowedOrigins = [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-];
+
+$appEnv = getenv('APP_ENV') ?: 'production';
+$corsAllowedOriginsEnv = getenv('CORS_ALLOWED_ORIGINS') ?: '';
+
+if ($corsAllowedOriginsEnv !== '') {
+    $allowedOrigins = array_values(array_filter(array_map('trim', explode(',', $corsAllowedOriginsEnv))));
+} elseif ($appEnv !== 'production') {
+    $allowedOrigins = [
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+    ];
+} else {
+    $allowedOrigins = [];
+}
 
 if (in_array($origin, $allowedOrigins, true)) {
     header('Access-Control-Allow-Origin: ' . $origin);
     header('Vary: Origin');
     header('Access-Control-Allow-Credentials: true');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, Accept, X-CSRF-Token');
     header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
+
+    if ($requestMethod === 'OPTIONS') {
+        http_response_code(204);
+        exit;
+    }
 }
 
 if ($requestMethod === 'OPTIONS') {
@@ -71,7 +86,7 @@ try {
     exit;
 } catch (Exception $e) {
     // 錯誤處理
-    error_log("路由系統錯誤: " . $e->getMessage());
+    app_log('critical', '路由系統錯誤', ['exception' => $e->getMessage()]);
     header('Content-Type: application/json');
     http_response_code(500);
     echo json_encode([

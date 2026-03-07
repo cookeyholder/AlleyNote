@@ -49,7 +49,7 @@ class RateLimitService
             ];
         } catch (Exception $e) {
             // 如果快取服務不可用，預設允許請求
-            error_log('速率限制檢查失敗: ' . $e->getMessage());
+            app_log('error', '速率限制檢查失敗', ['exception' => $e->getMessage()]);
 
             return [
                 'allowed' => true,

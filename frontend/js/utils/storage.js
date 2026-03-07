@@ -2,7 +2,7 @@
  * 本地儲存管理工具
  */
 
-const STORAGE_PREFIX = 'alleynote_';
+const STORAGE_PREFIX = "alleynote_";
 
 export const storage = {
   /**
@@ -14,7 +14,7 @@ export const storage = {
       localStorage.setItem(STORAGE_PREFIX + key, serialized);
       return true;
     } catch (error) {
-      console.error('Storage set error:', error);
+      console.error("Storage set error:", error);
       return false;
     }
   },
@@ -27,7 +27,7 @@ export const storage = {
       const item = localStorage.getItem(STORAGE_PREFIX + key);
       return item ? JSON.parse(item) : defaultValue;
     } catch (error) {
-      console.error('Storage get error:', error);
+      console.error("Storage get error:", error);
       return defaultValue;
     }
   },
@@ -40,7 +40,7 @@ export const storage = {
       localStorage.removeItem(STORAGE_PREFIX + key);
       return true;
     } catch (error) {
-      console.error('Storage remove error:', error);
+      console.error("Storage remove error:", error);
       return false;
     }
   },
@@ -51,14 +51,14 @@ export const storage = {
   clear() {
     try {
       const keys = Object.keys(localStorage);
-      keys.forEach(key => {
+      keys.forEach((key) => {
         if (key.startsWith(STORAGE_PREFIX)) {
           localStorage.removeItem(key);
         }
       });
       return true;
     } catch (error) {
-      console.error('Storage clear error:', error);
+      console.error("Storage clear error:", error);
       return false;
     }
   },

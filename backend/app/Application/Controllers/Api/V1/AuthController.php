@@ -6,6 +6,7 @@ namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
+use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
@@ -14,6 +15,7 @@ use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
+use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
@@ -35,6 +37,7 @@ class AuthController extends BaseController
     public function __construct(
         private AuthService $authService,
         private AuthenticationServiceInterface $authenticationService,
+        private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
         private ActivityLoggingServiceInterface $activityLoggingService,
         private UserRepositoryInterface $userRepository,
@@ -61,16 +64,8 @@ class AuthController extends BaseController
             ),
         ),
         responses: [
-            new OA\Response(
-                response: 201,
-                description: '註冊成功',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
-            new OA\Response(
-                response: 400,
-                description: '註冊資料驗證失敗',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 201, description: '註冊成功'),
+            new OA\Response(response: 400, description: '註冊資料驗證失敗'),
         ],
     )]
     public function register(Request $request, Response $response): Response
@@ -128,16 +123,8 @@ class AuthController extends BaseController
             content: new OA\JsonContent(ref: '#/components/schemas/LoginRequest'),
         ),
         responses: [
-            new OA\Response(
-                response: 200,
-                description: '登入成功',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
-            new OA\Response(
-                response: 401,
-                description: '登入失敗',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 200, description: '登入成功'),
+            new OA\Response(response: 401, description: '登入失敗'),
         ],
     )]
     public function login(Request $request, Response $response): Response
@@ -175,11 +162,13 @@ class AuthController extends BaseController
 
             $this->activityLoggingService->log($activityDto);
 
-            return $this->json($response, [
+            $response = $this->json($response, [
                 'success' => true,
                 'message' => '登入成功',
                 ...$loginResponse->toArray(),
             ], 200);
+
+            return $this->withAuthCookies($response, $loginResponse->tokens);
         } catch (Exception $e) {
             if (isset($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
@@ -196,11 +185,7 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: '登出成功',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 200, description: '登出成功'),
         ],
     )]
     public function logout(Request $request, Response $response): Response
@@ -208,9 +193,11 @@ class AuthController extends BaseController
         try {
             $requestData = $request->getParsedBody();
             $accessToken = $request->getAttribute('access_token');
+            $cookies = $request->getCookieParams();
+            $refreshToken = $cookies['refresh_token'] ?? null;
 
             if (is_array($requestData)) {
-                $refreshToken = $requestData['refresh_token'] ?? null;
+                $refreshToken = $requestData['refresh_token'] ?? $refreshToken;
             }
 
             $logoutRequest = LogoutRequestDTO::fromArray([
@@ -235,10 +222,12 @@ class AuthController extends BaseController
 
             $this->activityLoggingService->log($activityDto);
 
-            return $this->json($response, [
+            $response = $this->json($response, [
                 'success' => true,
                 'message' => '登出成功',
             ], 200);
+
+            return $this->expireAuthCookies($response);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
 
@@ -252,11 +241,7 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: '成功取得使用者資訊',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 200, description: '成功取得使用者資訊'),
         ],
     )]
     public function me(Request $request, Response $response): Response
@@ -303,19 +288,24 @@ class AuthController extends BaseController
         summary: '刷新認證 Token',
         tags: ['auth'],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Token 刷新成功',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 200, description: 'Token 刷新成功'),
         ],
     )]
     public function refresh(Request $request, Response $response): Response
     {
         try {
             $requestData = $request->getParsedBody();
+            $cookies = $request->getCookieParams();
 
-            if (!is_array($requestData) || !isset($requestData['refresh_token'])) {
+            if (!is_array($requestData)) {
+                $requestData = [];
+            }
+
+            if (!isset($requestData['refresh_token']) && !empty($cookies['refresh_token']) && is_string($cookies['refresh_token'])) {
+                $requestData['refresh_token'] = $cookies['refresh_token'];
+            }
+
+            if (!isset($requestData['refresh_token'])) {
                 return $this->json($response, ['success' => false, 'error' => '缺少必要的 refresh_token'], 400);
             }
 
@@ -327,11 +317,13 @@ class AuthController extends BaseController
 
             $refreshResponse = $this->authenticationService->refresh($refreshRequest, $deviceInfo);
 
-            return $this->json($response, [
+            $response = $this->json($response, [
                 'success' => true,
                 'message' => 'Token 刷新成功',
                 ...$refreshResponse->toArray(),
             ], 200);
+
+            return $this->withAuthCookies($response, $refreshResponse->tokens);
         } catch (Exception $e) {
             $responseData = json_decode($this->handleException($e), true);
 
@@ -356,7 +348,7 @@ class AuthController extends BaseController
 
             $this->activityLoggingService->log($activityDto);
         } catch (Exception $e) {
-            error_log('Failed to log login failure activity: ' . $e->getMessage());
+            app_log('error', 'Failed to log login failure activity', ['exception' => $e->getMessage()]);
         }
     }
 
@@ -366,11 +358,7 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: '更新成功',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 200, description: '更新成功'),
         ],
     )]
     public function updateProfile(Request $request, Response $response): Response
@@ -386,7 +374,22 @@ class AuthController extends BaseController
                 return $this->json($response, ['success' => false, 'error' => '無效的請求資料格式'], 400);
             }
 
-            $this->userRepository->update($userId, array_intersect_key($data, array_flip(['username', 'email', 'name'])));
+            $allowedFields = ['username', 'email', 'name'];
+            $unexpectedFields = array_values(array_diff(array_keys($data), $allowedFields));
+            if ($unexpectedFields !== []) {
+                app_log('warning', 'Unsupported profile update fields received', [
+                    'user_id' => $userId,
+                    'fields' => $unexpectedFields,
+                ]);
+
+                return $this->json($response, [
+                    'success' => false,
+                    'error' => '包含未支援的欄位',
+                    'unsupported_fields' => $unexpectedFields,
+                ], 400);
+            }
+
+            $this->userRepository->update($userId, array_intersect_key($data, array_flip($allowedFields)));
             $user = $this->userRepository->findByIdWithRoles($userId);
 
             return $this->json($response, [
@@ -413,11 +416,7 @@ class AuthController extends BaseController
         tags: ['auth'],
         security: [['bearerAuth' => []]],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: '密碼變更成功',
-                content: new OA\JsonContent(ref: '#/components/schemas/ApiResponse'),
-            ),
+            new OA\Response(response: 200, description: '密碼變更成功'),
         ],
     )]
     public function changePassword(Request $request, Response $response): Response
@@ -459,5 +458,37 @@ class AuthController extends BaseController
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
         }
+    }
+
+    private function withAuthCookies(Response $response, TokenPair $tokens): Response
+    {
+        return $response
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true))
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', $tokens->getRefreshToken(), $tokens->getRefreshTokenExpiresAt()->getTimestamp(), true))
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false));
+    }
+
+    private function expireAuthCookies(Response $response): Response
+    {
+        return $response
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', '', time() - 3600, true))
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', '', time() - 3600, true))
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', '', time() - 3600, false));
+    }
+
+    private function buildCookieHeader(string $name, string $value, int $expiresAt, bool $httpOnly): string
+    {
+        $isSecure = ($_ENV['APP_ENV'] ?? 'production') === 'production';
+        $cookie = sprintf(
+            '%s=%s; Path=/; Expires=%s; Max-Age=%d; SameSite=Lax%s%s',
+            $name,
+            rawurlencode($value),
+            gmdate('D, d M Y H:i:s T', $expiresAt),
+            max(0, $expiresAt - time()),
+            $isSecure ? '; Secure' : '',
+            $httpOnly ? '; HttpOnly' : '',
+        );
+
+        return $cookie;
     }
 }

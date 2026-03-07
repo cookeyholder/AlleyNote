@@ -59,7 +59,7 @@ class AuthService
                 ];
             } catch (TokenGenerationException $e) {
                 // 如果 JWT 產生失敗，回傳傳統格式但記錄錯誤
-                error_log('JWT token generation failed during registration: ' . $e->getMessage());
+                app_log('error', 'JWT token generation failed during registration', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -128,7 +128,7 @@ class AuthService
                 ];
             } catch (TokenGenerationException $e) {
                 // 如果 JWT 產生失敗，回傳傳統格式但記錄錯誤
-                error_log('JWT token generation failed during login: ' . $e->getMessage());
+                app_log('error', 'JWT token generation failed during login', ['exception' => $e->getMessage()]);
             }
         }
 
@@ -154,7 +154,7 @@ class AuthService
                 ];
             } catch (Exception $e) {
                 // 如果撤銷失敗，記錄錯誤但仍然回傳成功（使用者體驗優先）
-                error_log('JWT token revocation failed during logout: ' . $e->getMessage());
+                app_log('error', 'JWT token revocation failed during logout', ['exception' => $e->getMessage()]);
             }
         }
 

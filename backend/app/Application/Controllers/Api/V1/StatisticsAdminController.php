@@ -192,7 +192,10 @@ class StatisticsAdminController extends BaseController
                         $refreshedTypes[] = $type;
                     } catch (Throwable $e) {
                         // 記錄錯誤但繼續處理其他類型
-                        error_log("Failed to refresh statistics type '{$type}': " . $e->getMessage());
+                        app_log('error', 'Failed to refresh statistics type', [
+                            'type' => $type,
+                            'exception' => $e->getMessage(),
+                        ]);
                     }
                 }
             } else {
@@ -594,15 +597,13 @@ class StatisticsAdminController extends BaseController
             $userIdString = (string) $userId;
         }
 
-        // 記錄管理操作（這裡簡化為 error_log，實際應該使用專門的審計日誌系統）
-        error_log(sprintf(
-            'ADMIN_ACTION: user_id=%s, action=%s, ip=%s, user_agent=%s, details=%s',
-            $userIdString,
-            $action,
-            $ipAddress,
-            $userAgent,
-            json_encode($details),
-        ));
+        app_log('info', 'ADMIN_ACTION', [
+            'user_id' => $userIdString,
+            'action' => $action,
+            'ip' => $ipAddress,
+            'user_agent' => $userAgent,
+            'details' => $details,
+        ]);
     }
 
     /**

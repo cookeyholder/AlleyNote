@@ -1,4 +1,4 @@
-import { PasswordValidator } from '../utils/passwordValidator.js';
+import { PasswordValidator } from "../utils/passwordValidator.js";
 
 /**
  * 密碼強度指示器組件
@@ -16,9 +16,9 @@ export class PasswordStrengthIndicator {
       email: null,
       showRequirements: true,
       showSuggestions: true,
-      ...options
+      ...options,
     };
-    
+
     this.container = null;
     this.init();
   }
@@ -35,8 +35,8 @@ export class PasswordStrengthIndicator {
    * 建立指示器 HTML
    */
   createIndicator() {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'password-strength-indicator mt-2';
+    const wrapper = document.createElement("div");
+    wrapper.className = "password-strength-indicator mt-2";
     wrapper.innerHTML = `
       <div class="strength-bar-container hidden">
         <div class="flex justify-between items-center mb-1">
@@ -48,7 +48,9 @@ export class PasswordStrengthIndicator {
         </div>
       </div>
       
-      ${this.options.showRequirements ? `
+      ${
+        this.options.showRequirements
+          ? `
         <div class="requirements-list hidden mt-3">
           <p class="text-sm font-medium text-modern-700 mb-2">密碼要求：</p>
           <ul class="space-y-1">
@@ -82,18 +84,27 @@ export class PasswordStrengthIndicator {
             </li>
           </ul>
         </div>
-      ` : ''}
+      `
+          : ""
+      }
 
-      ${this.options.showSuggestions ? `
+      ${
+        this.options.showSuggestions
+          ? `
         <div class="suggestions-container hidden mt-3">
           <p class="text-sm font-medium text-modern-700 mb-2">建議：</p>
           <ul class="suggestions-list space-y-1"></ul>
         </div>
-      ` : ''}
+      `
+          : ""
+      }
     `;
 
     // 插入到密碼輸入框後面
-    this.passwordInput.parentNode.insertBefore(wrapper, this.passwordInput.nextSibling);
+    this.passwordInput.parentNode.insertBefore(
+      wrapper,
+      this.passwordInput.nextSibling,
+    );
     this.container = wrapper;
   }
 
@@ -101,10 +112,10 @@ export class PasswordStrengthIndicator {
    * 附加事件監聽器
    */
   attachEventListeners() {
-    this.passwordInput.addEventListener('input', () => this.updateIndicator());
-    this.passwordInput.addEventListener('focus', () => this.show());
+    this.passwordInput.addEventListener("input", () => this.updateIndicator());
+    this.passwordInput.addEventListener("focus", () => this.show());
     // 當失去焦點且密碼為空時隱藏
-    this.passwordInput.addEventListener('blur', () => {
+    this.passwordInput.addEventListener("blur", () => {
       if (!this.passwordInput.value) {
         this.hide();
       }
@@ -116,7 +127,7 @@ export class PasswordStrengthIndicator {
    */
   updateIndicator() {
     const password = this.passwordInput.value;
-    
+
     if (!password) {
       this.hide();
       return;
@@ -126,7 +137,7 @@ export class PasswordStrengthIndicator {
 
     const result = PasswordValidator.validate(password, {
       username: this.options.username,
-      email: this.options.email
+      email: this.options.email,
     });
 
     this.updateStrengthBar(result);
@@ -142,14 +153,14 @@ export class PasswordStrengthIndicator {
    * 更新強度條
    */
   updateStrengthBar(result) {
-    const bar = this.container.querySelector('.strength-bar');
-    const text = this.container.querySelector('.strength-text');
+    const bar = this.container.querySelector(".strength-bar");
+    const text = this.container.querySelector(".strength-text");
     const color = PasswordValidator.getStrengthColor(result.strength);
-    
+
     bar.style.width = `${result.score}%`;
     bar.className = `strength-bar h-full transition-all duration-300 ${color}`;
     text.textContent = PasswordValidator.getStrengthText(result.strength);
-    text.className = `text-sm font-medium strength-text ${color.replace('bg-', 'text-')}`;
+    text.className = `text-sm font-medium strength-text ${color.replace("bg-", "text-")}`;
   }
 
   /**
@@ -157,27 +168,27 @@ export class PasswordStrengthIndicator {
    */
   updateRequirements(password, result) {
     const requirements = {
-      'length': password.length >= 8,
-      'lowercase': /[a-z]/.test(password),
-      'uppercase': /[A-Z]/.test(password),
-      'number': /[0-9]/.test(password),
-      'special': /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
-      'no-sequential': !PasswordValidator.hasSequentialChars(password),
-      'no-repeating': !PasswordValidator.hasRepeatingChars(password)
+      length: password.length >= 8,
+      lowercase: /[a-z]/.test(password),
+      uppercase: /[A-Z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      "no-sequential": !PasswordValidator.hasSequentialChars(password),
+      "no-repeating": !PasswordValidator.hasRepeatingChars(password),
     };
 
     Object.entries(requirements).forEach(([rule, isMet]) => {
       const item = this.container.querySelector(`[data-rule="${rule}"]`);
       if (item) {
-        const icon = item.querySelector('.requirement-icon');
+        const icon = item.querySelector(".requirement-icon");
         if (isMet) {
-          item.classList.add('text-green-600');
-          item.classList.remove('text-modern-600');
-          icon.textContent = '✓';
+          item.classList.add("text-green-600");
+          item.classList.remove("text-modern-600");
+          icon.textContent = "✓";
         } else {
-          item.classList.remove('text-green-600');
-          item.classList.add('text-modern-600');
-          icon.textContent = '○';
+          item.classList.remove("text-green-600");
+          item.classList.add("text-modern-600");
+          icon.textContent = "○";
         }
       }
     });
@@ -187,16 +198,18 @@ export class PasswordStrengthIndicator {
    * 更新建議
    */
   updateSuggestions(result) {
-    const suggestionsContainer = this.container.querySelector('.suggestions-container');
-    const suggestionsList = this.container.querySelector('.suggestions-list');
+    const suggestionsContainer = this.container.querySelector(
+      ".suggestions-container",
+    );
+    const suggestionsList = this.container.querySelector(".suggestions-list");
 
     if (result.suggestions.length > 0) {
       suggestionsList.innerHTML = result.suggestions
-        .map(s => `<li class="text-sm text-modern-600">• ${s}</li>`)
-        .join('');
-      suggestionsContainer.classList.remove('hidden');
+        .map((s) => `<li class="text-sm text-modern-600">• ${s}</li>`)
+        .join("");
+      suggestionsContainer.classList.remove("hidden");
     } else {
-      suggestionsContainer.classList.add('hidden');
+      suggestionsContainer.classList.add("hidden");
     }
   }
 
@@ -204,9 +217,13 @@ export class PasswordStrengthIndicator {
    * 顯示指示器
    */
   show() {
-    this.container.querySelector('.strength-bar-container')?.classList.remove('hidden');
+    this.container
+      .querySelector(".strength-bar-container")
+      ?.classList.remove("hidden");
     if (this.options.showRequirements) {
-      this.container.querySelector('.requirements-list')?.classList.remove('hidden');
+      this.container
+        .querySelector(".requirements-list")
+        ?.classList.remove("hidden");
     }
   }
 
@@ -214,9 +231,13 @@ export class PasswordStrengthIndicator {
    * 隱藏指示器
    */
   hide() {
-    this.container.querySelector('.strength-bar-container')?.classList.add('hidden');
-    this.container.querySelector('.requirements-list')?.classList.add('hidden');
-    this.container.querySelector('.suggestions-container')?.classList.add('hidden');
+    this.container
+      .querySelector(".strength-bar-container")
+      ?.classList.add("hidden");
+    this.container.querySelector(".requirements-list")?.classList.add("hidden");
+    this.container
+      .querySelector(".suggestions-container")
+      ?.classList.add("hidden");
   }
 
   /**

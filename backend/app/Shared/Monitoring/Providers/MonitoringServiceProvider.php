@@ -172,14 +172,14 @@ class MonitoringServiceProvider
         $errorTracker->addNotificationHandler(function (string $level, string $message, array $context, ?Throwable $exception) {
             if ($level === 'critical') {
                 // 這裡可以整合電子郵件、Slack、Discord 等通知系統
-                error_log("CRITICAL ERROR: {$message}");
+                app_log('critical', $message, $context);
 
                 // 如果是在開發環境，可以顯示詳細資訊
                 if (($_ENV['APP_ENV'] ?? 'production') === 'development') {
                     if ($exception) {
-                        error_log('Exception details: ' . $exception->__toString());
+                        app_log('debug', 'Exception details', ['exception' => $exception->__toString()]);
                     }
-                    error_log('Context: ' . json_encode($context, JSON_PRETTY_PRINT));
+                    app_log('debug', 'Context', ['context' => $context]);
                 }
             }
         });

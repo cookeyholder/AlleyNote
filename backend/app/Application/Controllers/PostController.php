@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
+use App\Domains\Post\Repositories\AdminPostReadRepository;
 use DateTime;
 use Exception;
 use PDO;
+use PDOStatement;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -38,89 +40,11 @@ class PostController extends BaseController
             $status = $queryParams['status'] ?? '';
             $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-            // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
-            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
-            $postUserColumn = $this->resolvePostsUserColumn($pdo);
-            $postPublishColumn = $this->resolvePostsPublishColumn($pdo);
-            $hasCreatedAt = $this->hasTableColumn($pdo, 'posts', 'created_at');
-            $hasUpdatedAt = $this->hasTableColumn($pdo, 'posts', 'updated_at');
-
-            // 建立查詢
-            $where = [];
-            if ($hasDeletedAt) {
-                $where[] = 'p.deleted_at IS NULL';
-            }
-            $params = [];
-
-            if (!empty($search)) {
-                $where[] = '(p.title LIKE :search OR p.content LIKE :search)';
-                $params[':search'] = "%{$search}%";
-            }
-
-            if (!empty($status)) {
-                $where[] = 'p.status = :status';
-                $params[':status'] = $status;
-            }
-
-            // 根據 include_future 參數決定是否過濾未來文章
-            // 預設為 false（過濾未來文章，用於首頁等公開頁面）
-            // 設為 true 時顯示所有文章（用於文章管理頁面）
-            if (!$includeFuture && $postPublishColumn !== null) {
-                $where[] = "(p.{$postPublishColumn} IS NULL OR p.{$postPublishColumn} <= datetime('now'))";
-            }
-
-            $whereClause = empty($where) ? '1=1' : implode(' AND ', $where);
-
-            // 計算總數
-            $countSql = "SELECT COUNT(*) as total FROM posts p WHERE {$whereClause}";
-            $countStmt = $pdo->prepare($countSql);
-            $countStmt->execute($params);
-            $total = (int) $countStmt->fetchColumn();
-
-            // 獲取資料
-            $offset = ($page - 1) * $perPage;
-            $userIdSelect = $postUserColumn !== null ? "p.{$postUserColumn} as user_id" : 'NULL as user_id';
-            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
-
-            $publishDateSelect = $postPublishColumn !== null ? "p.{$postPublishColumn} as publish_date" : 'NULL as publish_date';
-            $createdAtSelect = $hasCreatedAt ? 'p.created_at' : 'NULL as created_at';
-            $updatedAtSelect = $hasUpdatedAt ? 'p.updated_at' : 'NULL as updated_at';
-
-            if ($postPublishColumn !== null && $hasCreatedAt) {
-                $orderBy = "COALESCE(p.{$postPublishColumn}, p.created_at) DESC";
-            } elseif ($postPublishColumn !== null) {
-                $orderBy = "p.{$postPublishColumn} DESC";
-            } elseif ($hasCreatedAt) {
-                $orderBy = 'p.created_at DESC';
-            } else {
-                $orderBy = 'p.id DESC';
-            }
-
-            $sql = "SELECT p.id, p.title, p.content, p.status, {$userIdSelect}, {$createdAtSelect}, {$updatedAtSelect}, {$publishDateSelect},
-                           u.username as author
-                    FROM posts p
-                    {$userJoin}
-                    WHERE {$whereClause}
-                    ORDER BY {$orderBy}
-                    LIMIT :limit OFFSET :offset";
-
-            $stmt = $pdo->prepare($sql);
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value);
-            }
-            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-
-            $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            // 確保每個 post 都有 author 欄位
-            $posts = array_map(function ($post) {
-                $post['author'] ??= 'Unknown';
-
-                return $post;
-            }, $posts);
+            $postReadRepository = new AdminPostReadRepository($pdo);
+            $result = $postReadRepository->paginate($page, $perPage, (string) $search, (string) $status, $includeFuture);
+            $posts = $result['items'];
+            $total = $result['total'];
 
             // 格式化回應
             $responseData = $this->paginatedResponse($posts, $total, $page, $perPage);
@@ -145,63 +69,15 @@ class PostController extends BaseController
             $queryParams = $request->getQueryParams();
             $includeFuture = filter_var($queryParams['include_future'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
-            // 建立資料庫連接
             $pdo = $this->createSqliteConnection();
-            $hasDeletedAt = $this->hasTableColumn($pdo, 'posts', 'deleted_at');
-            $postUserColumn = $this->resolvePostsUserColumn($pdo);
-            $postPublishColumn = $this->resolvePostsPublishColumn($pdo);
-
-            // 建立查詢條件
-            $conditions = ['p.id = :id'];
-            if ($hasDeletedAt) {
-                $conditions[] = 'p.deleted_at IS NULL';
-            }
-
-            // 根據 include_future 參數決定是否過濾
-            // 當 include_future=false（公開訪問）時：
-            // - 只顯示已發布的文章
-            // - 過濾未來的文章
-            if (!$includeFuture) {
-                $conditions[] = "p.status = 'published'";
-                if ($postPublishColumn !== null) {
-                    $conditions[] = "(p.{$postPublishColumn} IS NULL OR p.{$postPublishColumn} <= datetime('now'))";
-                }
-            }
-
-            $whereClause = implode(' AND ', $conditions);
-
-            // 查詢文章
-            $userJoin = $postUserColumn !== null ? "LEFT JOIN users u ON p.{$postUserColumn} = u.id" : 'LEFT JOIN users u ON 1 = 0';
-            $sql = "SELECT p.*, u.username as author
-                    FROM posts p
-                    {$userJoin}
-                    WHERE {$whereClause}";
-
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':id' => $id]);
-            $post = $stmt->fetch(PDO::FETCH_ASSOC);
+            $postReadRepository = new AdminPostReadRepository($pdo);
+            $post = $postReadRepository->findById($id, $includeFuture);
 
             if (!$post) {
                 $errorResponse = $this->errorResponse('找不到指定的文章', 404);
                 $response->getBody()->write($errorResponse);
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-            }
-
-            // 確保 author 欄位存在
-            $post['author'] ??= 'Unknown';
-
-            // 查詢文章的標籤
-            $tagsSql = 'SELECT t.id, t.name
-                       FROM tags t
-                       INNER JOIN post_tags pt ON t.id = pt.tag_id
-                       WHERE pt.post_id = :post_id
-                       ORDER BY t.name';
-            $tagsStmt = $pdo->prepare($tagsSql);
-            $tagsStmt->execute([':post_id' => $id]);
-            $tags = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
-            if (is_array($post)) {
-                $post['tags'] = $tags;
             }
 
             $response->getBody()->write($this->successResponse($post));
@@ -222,10 +98,13 @@ class PostController extends BaseController
     {
         try {
             $body = $request->getParsedBody();
+            if (!is_array($body)) {
+                $body = [];
+            }
 
             // 驗證必要欄位
-            $title = $body['title'] ?? null;
-            $content = $body['content'] ?? null;
+            $title = isset($body['title']) && is_string($body['title']) ? trim($body['title']) : '';
+            $content = isset($body['content']) && is_string($body['content']) ? $body['content'] : '';
 
             if (empty($title) || empty($content)) {
                 $errorResponse = $this->errorResponse('標題和內容為必填欄位', 422);
@@ -236,13 +115,14 @@ class PostController extends BaseController
 
             // 獲取使用者 ID（從 JWT token）
             $userId = $request->getAttribute('user_id') ?? 1;
-            $status = $body['status'] ?? 'draft';
+            $status = isset($body['status']) && is_string($body['status']) ? $body['status'] : 'draft';
+            $publishDateRaw = $body['publish_date'] ?? null;
 
             // 處理發布日期
             $publishDate = null;
-            if (!empty($body['publish_date'])) {
+            if (is_string($publishDateRaw) && $publishDateRaw !== '') {
                 try {
-                    $date = new DateTime($body['publish_date']);
+                    $date = new DateTime($publishDateRaw);
                     $publishDate = $date->format('Y-m-d H:i:s');
                 } catch (Exception $e) {
                     // 如果日期格式錯誤，使用當前時間
@@ -257,8 +137,7 @@ class PostController extends BaseController
             $pdo = $this->createSqliteConnection();
 
             // 動態判斷 posts 表欄位，避免不同環境 schema 差異造成新增失敗
-            $postColumns = $pdo->query('PRAGMA table_info(posts)')->fetchAll(PDO::FETCH_ASSOC);
-            $postColumnNames = array_column($postColumns, 'name');
+            $postColumnNames = $this->loadTableColumnNames($pdo, 'posts');
 
             $insertData = [
                 'title' => $title,
@@ -285,7 +164,8 @@ class PostController extends BaseController
             }
 
             if (in_array('excerpt', $postColumnNames, true)) {
-                $insertData['excerpt'] = trim((string) ($body['excerpt'] ?? ''));
+                $excerpt = $body['excerpt'] ?? '';
+                $insertData['excerpt'] = trim(is_string($excerpt) ? $excerpt : '');
             }
 
             if (in_array('views', $postColumnNames, true)) {
@@ -312,16 +192,16 @@ class PostController extends BaseController
 
             if (in_array('seq_number', $postColumnNames, true)) {
                 $seqStmt = $pdo->query('SELECT MAX(seq_number) as max_seq FROM posts');
-                $maxSeq = $seqStmt->fetchColumn();
+                $maxSeq = $seqStmt instanceof PDOStatement ? $seqStmt->fetchColumn() : null;
                 $insertData['seq_number'] = ((int) ($maxSeq ?: 0)) + 1;
             }
 
             $now = date('Y-m-d H:i:s');
-            if (in_array('created_at', $postColumnNames, true) && !array_key_exists('created_at', $insertData)) {
+            if (in_array('created_at', $postColumnNames, true)) {
                 $insertData['created_at'] = $now;
             }
 
-            if (in_array('updated_at', $postColumnNames, true) && !array_key_exists('updated_at', $insertData)) {
+            if (in_array('updated_at', $postColumnNames, true)) {
                 $insertData['updated_at'] = $now;
             }
 
@@ -339,7 +219,7 @@ class PostController extends BaseController
             $postId = $pdo->lastInsertId();
 
             // 處理標籤關聯
-            $bodyArray = is_array($body) ? $body : [];
+            $bodyArray = $body;
             if (isset($bodyArray['tag_ids']) && is_array($bodyArray['tag_ids']) && !empty($bodyArray['tag_ids'])) {
                 $tagInsertSql = "INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (:post_id, :tag_id, datetime('now'))";
                 $tagStmt = $pdo->prepare($tagInsertSql);
@@ -673,14 +553,39 @@ class PostController extends BaseController
      */
     private function hasTableColumn(PDO $pdo, string $table, string $column): bool
     {
-        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table) || !preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
             return false;
         }
 
-        $columns = $pdo->query("PRAGMA table_info({$table})")->fetchAll(PDO::FETCH_ASSOC);
-        $columnNames = array_column($columns, 'name');
+        $columnNames = $this->loadTableColumnNames($pdo, $table);
 
         return in_array($column, $columnNames, true);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function loadTableColumnNames(PDO $pdo, string $table): array
+    {
+        if (!preg_match('/^[a-zA-Z0-9_]+$/', $table)) {
+            return [];
+        }
+
+        $stmt = $pdo->query("PRAGMA table_info({$table})");
+        if (!$stmt instanceof PDOStatement) {
+            return [];
+        }
+
+        $columns = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $columnNames = [];
+
+        foreach ($columns as $column) {
+            if (is_array($column) && isset($column['name']) && is_string($column['name'])) {
+                $columnNames[] = $column['name'];
+            }
+        }
+
+        return $columnNames;
     }
 
     /**

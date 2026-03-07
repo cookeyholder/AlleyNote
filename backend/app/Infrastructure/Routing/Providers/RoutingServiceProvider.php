@@ -132,7 +132,7 @@ class RoutingServiceProvider
             $routeLoader->loadRoutes($router);
         } catch (Throwable $e) {
             // 記錄路由載入錯誤並回退到基本配置
-            error_log('路由載入失敗: ' . $e->getMessage());
+            app_log('error', '路由載入失敗', ['exception' => $e->getMessage()]);
 
             // 嘗試載入舊版路由檔案作為回退
             $legacyRoutesFile = __DIR__ . '/../../../../config/routes.php';

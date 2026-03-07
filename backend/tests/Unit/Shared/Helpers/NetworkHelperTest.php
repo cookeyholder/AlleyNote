@@ -8,12 +8,11 @@ use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Http\Uri;
 use App\Shared\Helpers\NetworkHelper;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\SecureDDDTestCase;
 
-/**
- * @covers \App\Shared\Helpers\NetworkHelper
- */
+#[CoversClass(NetworkHelper::class)]
 class NetworkHelperTest extends SecureDDDTestCase
 {
     private function createNetworkRequest(string $method = 'GET', string $path = '/', array $headers = [], array $serverParams = []): ServerRequest

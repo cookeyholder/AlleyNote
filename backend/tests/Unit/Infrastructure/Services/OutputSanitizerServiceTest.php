@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Infrastructure\Services;
 
 use App\Infrastructure\Services\OutputSanitizerService;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\SecureDDDTestCase;
 
-/**
- * @covers \App\Infrastructure\Services\OutputSanitizerService
- */
+#[CoversClass(OutputSanitizerService::class)]
 class OutputSanitizerServiceTest extends SecureDDDTestCase
 {
     private OutputSanitizerService $sanitizer;

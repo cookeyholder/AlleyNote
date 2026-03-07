@@ -1,15 +1,15 @@
-import { authAPI } from '../../api/modules/auth.js';
-import { router } from '../../utils/router.js';
-import { toast } from '../../utils/toast.js';
-import { FormValidator, ValidationRules } from '../../utils/validator.js';
-import { loading } from '../../components/Loading.js';
+import { authAPI } from "../../api/modules/auth.js";
+import { router } from "../../utils/router.js";
+import { toast } from "../../utils/toast.js";
+import { FormValidator, ValidationRules } from "../../utils/validator.js";
+import { loading } from "../../components/Loading.js";
 
 /**
  * 渲染忘記密碼頁面
  */
 export function renderForgotPassword() {
-  const app = document.getElementById('app');
-  
+  const app = document.getElementById("app");
+
   app.innerHTML = `
     <div class="min-h-screen bg-modern-50 flex items-center justify-center p-6 relative overflow-hidden">
       <!-- 品牌裝飾背景 -->
@@ -92,88 +92,95 @@ export function renderForgotPassword() {
  * 綁定忘記密碼表單
  */
 function bindForgotPasswordForm() {
-  const form = document.getElementById('forgot-password-form');
-  const btn = document.getElementById('submit-btn');
-  
+  const form = document.getElementById("forgot-password-form");
+  const btn = document.getElementById("submit-btn");
+
   // 定義驗證規則
   const validator = new FormValidator(form, {
     email: [
-      ValidationRules.required('請輸入電子郵件'),
-      ValidationRules.email('請輸入有效的電子郵件格式'),
+      ValidationRules.required("請輸入電子郵件"),
+      ValidationRules.email("請輸入有效的電子郵件格式"),
     ],
   });
-  
-  form.addEventListener('submit', async (e) => {
+
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    
+
     // 清除舊錯誤
     validator.clearErrors();
-    
+
     // 驗證表單
     if (!validator.validate()) {
       validator.showErrors();
       return;
     }
-    
+
     const email = form.email.value;
-    
+
     // 禁用按鈕
     btn.disabled = true;
-    btn.textContent = '發送中...';
-    
-    loading.show('發送重設連結中...');
-    
+    btn.textContent = "發送中...";
+
+    loading.show("發送重設連結中...");
+
     try {
       // 模擬 API 呼叫（實際應該調用真實的 API）
       // await authAPI.forgotPassword({ email });
-      
+
       // 暫時使用 setTimeout 模擬
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       loading.hide();
-      toast.success('重設密碼連結已發送至您的信箱，請查收');
-      
+      toast.success("重設密碼連結已發送至您的信箱，請查收");
+
       // 顯示成功訊息
       showSuccessMessage(email);
-      
     } catch (error) {
       loading.hide();
-      
-      if (error && typeof error.isValidationError === 'function' && error.isValidationError()) {
+
+      if (
+        error &&
+        typeof error.isValidationError === "function" &&
+        error.isValidationError()
+      ) {
         const errors = error.getValidationErrors();
         Object.entries(errors).forEach(([field, messages]) => {
           const errorEl = document.querySelector(`[data-error-for="${field}"]`);
           if (errorEl) {
-            errorEl.textContent = Array.isArray(messages) ? messages[0] : messages;
-            errorEl.classList.remove('hidden');
+            errorEl.textContent = Array.isArray(messages)
+              ? messages[0]
+              : messages;
+            errorEl.classList.remove("hidden");
           }
         });
       } else {
-        let errorMessage = '發送失敗，請稍後再試';
-        
-        if (error && typeof error.getUserMessage === 'function') {
+        let errorMessage = "發送失敗，請稍後再試";
+
+        if (error && typeof error.getUserMessage === "function") {
           errorMessage = error.getUserMessage();
         } else if (error && error.message) {
           errorMessage = error.message;
         }
-        
+
         toast.error(errorMessage);
       }
-      
+
       // 重置按鈕
       btn.disabled = false;
-      btn.textContent = '發送重設連結';
+      btn.textContent = "發送重設連結";
     }
   });
-  
+
   // 輸入時清除錯誤
-  form.querySelectorAll('input').forEach(input => {
-    input.addEventListener('input', () => {
-      const errorEl = document.querySelector(`[data-error-for="${input.name}"]`);
+  form.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", () => {
+      const errorEl = document.querySelector(
+        `[data-error-for="${input.name}"]`,
+      );
       if (errorEl) {
-        errorEl.classList.add('hidden');
+        errorEl.classList.add("hidden");
       }
-      input.classList.remove('border-red-500');
+      input.classList.remove("border-red-500");
     });
   });
 }
@@ -182,8 +189,8 @@ function bindForgotPasswordForm() {
  * 顯示成功訊息
  */
 function showSuccessMessage(email) {
-  const app = document.getElementById('app');
-  
+  const app = document.getElementById("app");
+
   app.innerHTML = `
     <div class="min-h-screen bg-gradient-to-br from-accent-50 to-accent-100 flex items-center justify-center p-4">
       <div class="card max-w-md w-full animate-fade-in text-center">
@@ -238,7 +245,7 @@ function showSuccessMessage(email) {
  * HTML 轉義
  */
 function escapeHtml(text) {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
 }

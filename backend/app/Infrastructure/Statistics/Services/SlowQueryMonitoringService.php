@@ -356,7 +356,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             ]);
         } catch (PDOException $e) {
             // 記錄失敗不應該影響主要查詢，只記錄錯誤
-            error_log('記錄查詢效能失敗: ' . $e->getMessage());
+            app_log('error', '記錄查詢效能失敗', ['exception' => $e->getMessage()]);
         }
     }
 
@@ -387,7 +387,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (PDOException $e) {
-            error_log('記錄慢查詢失敗: ' . $e->getMessage());
+            app_log('error', '記錄慢查詢失敗', ['exception' => $e->getMessage()]);
         }
     }
 
@@ -416,7 +416,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                 'created_at' => date('Y-m-d H:i:s'),
             ]);
         } catch (PDOException $e) {
-            error_log('記錄失敗查詢失敗: ' . $e->getMessage());
+            app_log('error', '記錄失敗查詢失敗', ['exception' => $e->getMessage()]);
         }
     }
 
