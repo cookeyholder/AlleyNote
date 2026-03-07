@@ -58,53 +58,53 @@ jobs:
 
           if [ "$HAS_PACKAGE" = "true" ]; then
             HAS_LINT=$(python3 - <<'PY'
-import json
-from pathlib import Path
-data = json.loads(Path('frontend/package.json').read_text())
-scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-print('true' if 'lint' in scripts else 'false')
-PY
-)
+            import json
+            from pathlib import Path
+            data = json.loads(Path('frontend/package.json').read_text())
+            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
+            print('true' if 'lint' in scripts else 'false')
+            PY
+            )
             HAS_FORMAT_CHECK=$(python3 - <<'PY'
-import json
-from pathlib import Path
-data = json.loads(Path('frontend/package.json').read_text())
-scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-print('true' if 'format:check' in scripts else 'false')
-PY
-)
+            import json
+            from pathlib import Path
+            data = json.loads(Path('frontend/package.json').read_text())
+            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
+            print('true' if 'format:check' in scripts else 'false')
+            PY
+            )
             HAS_TEST_RUN=$(python3 - <<'PY'
-import json
-from pathlib import Path
-data = json.loads(Path('frontend/package.json').read_text())
-scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-print('true' if 'test:run' in scripts else 'false')
-PY
-)
+            import json
+            from pathlib import Path
+            data = json.loads(Path('frontend/package.json').read_text())
+            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
+            print('true' if 'test:run' in scripts else 'false')
+            PY
+            )
             HAS_TEST_COVERAGE=$(python3 - <<'PY'
-import json
-from pathlib import Path
-data = json.loads(Path('frontend/package.json').read_text())
-scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-print('true' if 'test:coverage' in scripts else 'false')
-PY
-)
+            import json
+            from pathlib import Path
+            data = json.loads(Path('frontend/package.json').read_text())
+            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
+            print('true' if 'test:coverage' in scripts else 'false')
+            PY
+            )
             HAS_TEST_E2E=$(python3 - <<'PY'
-import json
-from pathlib import Path
-data = json.loads(Path('frontend/package.json').read_text())
-scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-print('true' if 'test:e2e' in scripts else 'false')
-PY
-)
+            import json
+            from pathlib import Path
+            data = json.loads(Path('frontend/package.json').read_text())
+            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
+            print('true' if 'test:e2e' in scripts else 'false')
+            PY
+            )
             HAS_BUILD=$(python3 - <<'PY'
-import json
-from pathlib import Path
-data = json.loads(Path('frontend/package.json').read_text())
-scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
-print('true' if 'build' in scripts else 'false')
-PY
-)
+            import json
+            from pathlib import Path
+            data = json.loads(Path('frontend/package.json').read_text())
+            scripts = data.get('scripts', {}) if isinstance(data, dict) else {}
+            print('true' if 'build' in scripts else 'false')
+            PY
+            )
           fi
 
           echo "has_package=$HAS_PACKAGE" >> "$GITHUB_OUTPUT"
