@@ -34,5 +34,5 @@
   - **AC**: 測試案例數量不減少，且所有測試皆綠燈通過。
 - [x] 4.2 **[DEMO]** 重構 `PostActivityLoggingTest.php`
   - **AC**: 使用語義化斷言（如 `assertActivityLogged`）取代複雜的 Mockery 閉包比對。
-- [ ] 4.3 執行全案測試驗證
+- [x] 4.3 執行全案測試驗證
   - **AC**: `composer check-all` 執行通過，且錯誤（Errors）保持為 0。

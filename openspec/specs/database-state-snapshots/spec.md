@@ -1,4 +1,10 @@
-## ADDED Requirements
+# database-state-snapshots Specification
+
+## Purpose
+
+TBD - created by archiving change refactor-tests-to-match-project-state. Update Purpose after archive.
+
+## Requirements
 
 ### Requirement: Row level snapshot
 

@@ -1,4 +1,10 @@
-## ADDED Requirements
+# enhanced-data-factories Specification
+
+## Purpose
+
+TBD - created by archiving change refactor-tests-to-match-project-state. Update Purpose after archive.
+
+## Requirements
 
 ### Requirement: Persistent record creation
 
