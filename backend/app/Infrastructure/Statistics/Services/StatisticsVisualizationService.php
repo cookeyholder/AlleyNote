@@ -325,19 +325,22 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
         array $chartOptions = [],
     ): ChartData {
-        $cacheKey = 'multi_metric_' . implode('_', $metricNames) . '_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
-
-        $result = $this->cacheService->remember(
-            $cacheKey,
-            function () use ($metricNames, $startDate, $endDate, $granularity): ChartData {
-                return new ChartData(['Labels'], []);
-            },
-            300,
+        return new ChartData(
+            labels: [],
+            datasets: [],
+            options: array_merge($chartOptions, [
+                'empty_state' => [
+                    'implemented' => false,
+                    'message' => 'Multi-metric chart data is not implemented yet.',
+                ],
+                'requested_metrics' => $metricNames,
+                'range' => [
+                    'start' => $startDate->format(DateTimeInterface::ATOM),
+                    'end' => $endDate->format(DateTimeInterface::ATOM),
+                    'granularity' => $granularity,
+                ],
+            ]),
         );
-
-        assert($result instanceof ChartData);
-
-        return $result;
     }
 
     /**

@@ -374,7 +374,22 @@ class AuthController extends BaseController
                 return $this->json($response, ['success' => false, 'error' => '無效的請求資料格式'], 400);
             }
 
-            $this->userRepository->update($userId, array_intersect_key($data, array_flip(['username', 'email', 'name'])));
+            $allowedFields = ['username', 'email', 'name'];
+            $unexpectedFields = array_values(array_diff(array_keys($data), $allowedFields));
+            if ($unexpectedFields !== []) {
+                app_log('warning', 'Unsupported profile update fields received', [
+                    'user_id' => $userId,
+                    'fields' => $unexpectedFields,
+                ]);
+
+                return $this->json($response, [
+                    'success' => false,
+                    'error' => '包含未支援的欄位',
+                    'unsupported_fields' => $unexpectedFields,
+                ], 400);
+            }
+
+            $this->userRepository->update($userId, array_intersect_key($data, array_flip($allowedFields)));
             $user = $this->userRepository->findByIdWithRoles($userId);
 
             return $this->json($response, [

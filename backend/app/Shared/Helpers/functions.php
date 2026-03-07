@@ -155,8 +155,12 @@ if (!function_exists('app_log')) {
                 mkdir($logDirectory, 0o775, true);
             }
 
+            $appEnv = getenv('APP_ENV') ?: 'production';
+            $appDebug = filter_var(getenv('APP_DEBUG') ?: false, FILTER_VALIDATE_BOOL);
+            $defaultLogLevel = ($appDebug || $appEnv !== 'production') ? Logger::DEBUG : Logger::INFO;
+
             $logger = new Logger('alleynote');
-            $logger->pushHandler(new StreamHandler($logDirectory . '/application.log', Logger::DEBUG));
+            $logger->pushHandler(new StreamHandler($logDirectory . '/application.log', $defaultLogLevel));
         }
 
         try {

@@ -64,7 +64,15 @@ final class RoleTagRelationIntegrationTest extends IntegrationTestCase
 
         $this->db->exec('CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT NOT NULL
+            uuid TEXT,
+            seq_number INTEGER,
+            title TEXT NOT NULL,
+            content TEXT,
+            user_id INTEGER,
+            publish_date TEXT,
+            status TEXT,
+            created_at TEXT,
+            updated_at TEXT
         )');
 
         $this->roleRepository = new RoleRepository($this->db);

@@ -832,6 +832,11 @@ class PostController extends BaseController
         }
     }
 
+    public function destroy(Request $request, Response $response, array $args): Response
+    {
+        return $this->delete($request, $response, $args);
+    }
+
     #[OA\Patch(
         path: '/api/posts/{id}/pin',
         summary: '更新貼文置頂狀態',

@@ -85,12 +85,29 @@ final class NetworkHelper
      */
     private static function ipInNetwork(string $ip, string $range): bool
     {
-        [$subnet, $bits] = explode('/', $range);
+        $parts = explode('/', $range, 2);
+        if (count($parts) !== 2) {
+            return false;
+        }
+
+        [$subnet, $bits] = $parts;
         $bits = (int) $bits;
 
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            if ($bits < 0 || $bits > 32) {
+                return false;
+            }
+
             $ipAddr = ip2long($ip);
             $subnetAddr = ip2long($subnet);
+            if (!is_int($ipAddr) || !is_int($subnetAddr)) {
+                return false;
+            }
+
+            if ($bits === 0) {
+                return true;
+            }
+
             $mask = -1 << (32 - $bits);
             $subnetAddr &= $mask;
 
