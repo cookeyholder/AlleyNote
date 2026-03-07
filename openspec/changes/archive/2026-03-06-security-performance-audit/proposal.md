@@ -13,7 +13,6 @@ GitHub 回報了我們專案依賴套件中的資安漏洞（例如：針對 `mi
 ## Capabilities
 
 ### New Capabilities
-
 - `security-performance-standards`：定義專案所需的嚴謹資安規範、漏洞修復程序以及效能基準（benchmarks）。
 
 ### Modified Capabilities
