@@ -4,9 +4,8 @@ import {
 } from "../../layouts/DashboardLayout.js";
 import { apiClient } from "../../api/client.js";
 import { router } from "../../utils/router.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { CKEditorWrapper } from "../../components/CKEditorWrapper.js";
-import { confirmDiscard } from "../../components/ConfirmationDialog.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
 
@@ -66,7 +65,7 @@ export async function renderPostEditor(postId = null) {
       }
     } catch (error) {
       loading.hide();
-      toast.error("載入文章失敗");
+      notification.error("載入文章失敗");
       router.navigate("/admin/posts");
       return;
     }
@@ -90,7 +89,7 @@ export async function renderPostEditor(postId = null) {
           返回列表
         </a>
       </div>
-      
+
       <form id="post-form" class="space-y-8">
         <!-- 標題 -->
         <div class="card bg-white border-modern-200 shadow-sm p-8">
@@ -108,7 +107,7 @@ export async function renderPostEditor(postId = null) {
           />
           <p class="text-red-500 text-xs font-bold mt-2 hidden" data-error-for="title"></p>
         </div>
-        
+
         <!-- 內容編輯器 -->
         <div class="card bg-white border-modern-200 shadow-sm p-8">
           <div class="flex items-center justify-between mb-4">
@@ -128,7 +127,7 @@ export async function renderPostEditor(postId = null) {
           </div>
           <p class="text-red-500 text-xs font-bold mt-2 hidden" data-error-for="content"></p>
         </div>
-        
+
         <!-- 設定 -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div class="lg:col-span-2 space-y-8">
@@ -139,7 +138,7 @@ export async function renderPostEditor(postId = null) {
                 </div>
                 <h3 class="text-lg font-bold text-modern-900">內容摘要與分類</h3>
               </div>
-              
+
               <div class="space-y-6">
                 <div>
                   <label for="excerpt" class="block text-sm font-bold text-modern-700 mb-2">
@@ -153,7 +152,7 @@ export async function renderPostEditor(postId = null) {
                     placeholder="簡單介紹這篇文章，將顯示在列表與搜尋結果中..."
                   >${post?.excerpt || ""}</textarea>
                 </div>
-                
+
                 <div>
                   <label class="block text-sm font-bold text-modern-700 mb-3">
                     關聯標籤設定
@@ -182,7 +181,7 @@ export async function renderPostEditor(postId = null) {
                 </div>
                 <h3 class="text-lg font-bold text-modern-900">發布參數</h3>
               </div>
-              
+
               <div class="space-y-6">
                 <div>
                   <label for="status" class="block text-sm font-bold text-modern-700 mb-2">發布狀態</label>
@@ -191,7 +190,7 @@ export async function renderPostEditor(postId = null) {
                     <option value="published" ${post?.status === "published" ? "selected" : ""}>已發布 (對大眾公開)</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label for="publish_date" class="block text-sm font-bold text-modern-700 mb-2">排程發布時間</label>
                   <input
@@ -230,7 +229,7 @@ export async function renderPostEditor(postId = null) {
             </div>
           </div>
         </div>
-        
+
         <!-- 操作按鈕列 -->
         <div class="flex flex-col md:flex-row items-center justify-between p-6 bg-modern-900 rounded-3xl shadow-xl shadow-modern-200 animate-slide-up">
           <button type="button" id="cancel-btn" class="w-full md:w-auto px-8 py-3 text-modern-400 font-bold hover:text-white transition-colors">
@@ -285,7 +284,7 @@ async function initCKEditor(post) {
     }
   } catch (error) {
     console.error("[PostEditor] CKEditor 初始化失敗:", error);
-    toast.error("編輯器初始化失敗，請重新整理頁面");
+    notification.error("編輯器初始化失敗，請重新整理頁面");
   }
 }
 
@@ -312,7 +311,7 @@ function bindFormEvents(postId) {
   // 取消
   cancelBtn.addEventListener("click", async () => {
     if (hasUnsavedChanges) {
-      const confirmed = await confirmDiscard();
+      const confirmed = await notification.confirmDiscard();
 
       if (!confirmed) return;
     }
@@ -334,7 +333,7 @@ function bindFormEvents(postId) {
       }
 
       hasUnsavedChanges = false;
-      toast.info("已恢復原始內容");
+      notification.info("已恢復原始內容");
       return;
     }
 
@@ -453,11 +452,11 @@ async function savePost(postId, status) {
           publish_date: data.publish_date,
         }),
       );
-      toast.success("文章已更新");
+      notification.success("文章已更新");
     } else {
       const result = await apiClient.post("/posts", data);
       hasUnsavedChanges = false;
-      toast.success("文章已建立");
+      notification.success("文章已建立");
       // 清理編輯器並返回列表頁面，讓列表重新載入
       cleanupEditor();
       setTimeout(() => {
@@ -472,7 +471,7 @@ async function savePost(postId, status) {
     if (error.status === 422 && error.data && error.data.errors) {
       showValidationErrors(error.data.errors);
     } else {
-      toast.error(error.message || "儲存失敗");
+      notification.error(error.message || "儲存失敗");
     }
   } finally {
     submitBtn.disabled = false;
@@ -484,10 +483,7 @@ async function savePost(postId, status) {
  * 清除錯誤訊息
  */
 function clearErrors() {
-  document.querySelectorAll("[data-error-for]").forEach((el) => {
-    el.textContent = "";
-    el.classList.add("hidden");
-  });
+  notification.inline.clearAll();
 }
 
 /**
@@ -495,11 +491,10 @@ function clearErrors() {
  */
 function showValidationErrors(errors) {
   Object.entries(errors).forEach(([field, messages]) => {
-    const errorEl = document.querySelector(`[data-error-for="${field}"]`);
-    if (errorEl) {
-      errorEl.textContent = Array.isArray(messages) ? messages[0] : messages;
-      errorEl.classList.remove("hidden");
-    }
+    notification.inline.show(
+      `[data-error-for="${field}"]`,
+      Array.isArray(messages) ? messages[0] : messages,
+    );
   });
 }
 

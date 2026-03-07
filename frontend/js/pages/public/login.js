@@ -1,7 +1,7 @@
 import { authAPI } from "../../api/modules/auth.js";
 import { globalActions } from "../../store/globalStore.js";
 import { router } from "../../utils/router.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { FormValidator, ValidationRules } from "../../utils/validator.js";
 import { loading } from "../../components/Loading.js";
 
@@ -162,7 +162,7 @@ function bindLoginForm() {
       await authAPI.login({ email, password, remember });
 
       loading.hide();
-      toast.success("登入成功！歡迎回來");
+      notification.success("登入成功！歡迎回來");
 
       // 先恢復按鈕狀態，避免導向失敗時停留在「登入中...」
       btn.disabled = false;
@@ -178,7 +178,9 @@ function bindLoginForm() {
         } catch (navigateError) {
           console.error("登入後導向失敗:", navigateError);
           loading.hide();
-          toast.error("登入成功，但頁面導向失敗，請重新整理頁面再試一次");
+          notification.error(
+            "登入成功，但頁面導向失敗，請重新整理頁面再試一次",
+          );
         }
       }, 500);
     } catch (error) {
@@ -216,7 +218,7 @@ function bindLoginForm() {
           errorMessage = error;
         }
 
-        toast.error(errorMessage);
+        notification.error(errorMessage);
       }
 
       // 重置按鈕

@@ -4,7 +4,7 @@ import {
 } from "../../layouts/DashboardLayout.js";
 import { statisticsAPI } from "../../api/modules/statistics.js";
 import { apiClient } from "../../api/client.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 
 /**
  * 系統統計頁面（使用 Chart.js）
@@ -52,7 +52,7 @@ export default class StatisticsPage {
       this.initCharts();
     } catch (error) {
       console.error("載入統計資料失敗:", error);
-      toast.error("載入統計資料失敗");
+      notification.error("載入統計資料失敗");
       this.loading = false;
       this.render();
       this.bindEvents();
@@ -234,13 +234,15 @@ export default class StatisticsPage {
           if (response.success) {
             // 重新載入統計資料
             await this.loadStatistics();
-            toast.success("統計資料已刷新");
+            notification.success("統計資料已刷新");
           } else {
-            toast.error(response.error || "刷新統計資料失敗");
+            notification.error(response.error || "刷新統計資料失敗");
           }
         } catch (error) {
           console.error("刷新統計失敗:", error);
-          toast.error("刷新統計資料失敗：" + (error.message || "未知錯誤"));
+          notification.error(
+            "刷新統計資料失敗：" + (error.message || "未知錯誤"),
+          );
         } finally {
           // 恢復按鈕狀態
           refreshBtn.disabled = false;

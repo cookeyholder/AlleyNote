@@ -102,7 +102,7 @@ test.describe.skip("CKEditor 編輯器可用性測試", () => {
 
     // 確認刪除
     await page.waitForTimeout(500);
-    const confirmButton = page.locator('button:has-text("確定")').first();
+    const confirmButton = page.locator('[data-action="confirm"]').first();
     if (await confirmButton.isVisible()) {
       await confirmButton.click();
     }

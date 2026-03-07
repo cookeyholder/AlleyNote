@@ -2,7 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
-import { toast } from "../../utils/toast.js";
+import { notification } from "../../utils/notification.js";
 import { Modal } from "../../components/Modal.js";
 import { apiClient } from "../../api/client.js";
 
@@ -37,7 +37,7 @@ export default class TagsPage {
       this.render();
     } catch (error) {
       console.error("載入標籤列表失敗:", error);
-      toast.error("載入標籤列表失敗");
+      notification.error("載入標籤列表失敗");
       this.loading = false;
       this.render();
     }
@@ -330,17 +330,17 @@ export default class TagsPage {
 
       // 驗證
       if (!data.name || data.name.trim().length === 0) {
-        toast.error("請輸入標籤名稱");
+        notification.error("請輸入標籤名稱");
         return;
       }
 
       await apiClient.post("/tags", data);
-      toast.success("標籤建立成功");
+      notification.success("標籤建立成功");
       this.modal.hide();
       await this.loadTags();
     } catch (error) {
       console.error("建立標籤失敗:", error);
-      toast.error(error.message || "建立標籤失敗");
+      notification.error(error.message || "建立標籤失敗");
     }
   }
 
@@ -354,17 +354,17 @@ export default class TagsPage {
 
       // 驗證
       if (!data.name || data.name.trim().length === 0) {
-        toast.error("請輸入標籤名稱");
+        notification.error("請輸入標籤名稱");
         return;
       }
 
       await apiClient.put(`/tags/${tagId}`, data);
-      toast.success("標籤更新成功");
+      notification.success("標籤更新成功");
       this.modal.hide();
       await this.loadTags();
     } catch (error) {
       console.error("更新標籤失敗:", error);
-      toast.error(error.message || "更新標籤失敗");
+      notification.error(error.message || "更新標籤失敗");
     }
   }
 
@@ -376,20 +376,28 @@ export default class TagsPage {
     let confirmMessage = `確定要刪除標籤「${tag.name}」嗎？`;
 
     if (postCount > 0) {
-      confirmMessage += `\n\n此標籤目前有 ${postCount} 篇文章使用，刪除後這些文章將會移除此標籤。`;
+      confirmMessage += ` 刪除後，${postCount} 篇文章將會移除此標籤。`;
     }
 
-    if (!confirm(confirmMessage)) {
+    const confirmed = await notification.confirm({
+      title: "確認刪除標籤",
+      message: `${confirmMessage}\n\n此操作無法復原`,
+      confirmText: "確認刪除",
+      cancelText: "保留",
+      tone: "danger",
+    });
+
+    if (!confirmed) {
       return;
     }
 
     try {
       await apiClient.delete(`/tags/${tagId}`);
-      toast.success("標籤刪除成功");
+      notification.success("標籤刪除成功");
       await this.loadTags();
     } catch (error) {
       console.error("刪除標籤失敗:", error);
-      toast.error(error.message || "刪除標籤失敗");
+      notification.error(error.message || "刪除標籤失敗");
     }
   }
 

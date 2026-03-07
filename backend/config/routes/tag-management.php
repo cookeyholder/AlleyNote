@@ -463,7 +463,13 @@ return function (RouterInterface $router): void {
 
         // 清空單一標籤
         async function flushTag(tagName) {
-            if (!confirm(`確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`)) {
+            const confirmed = await confirmAction(
+                '確認清空標籤',
+                `確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`,
+                '確認清空'
+            );
+
+            if (!confirmed) {
                 return;
             }
 
@@ -516,7 +522,13 @@ return function (RouterInterface $router): void {
                 return;
             }
 
-            if (!confirm(`確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`)) {
+            const confirmed = await confirmAction(
+                '確認批量清空',
+                `確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`,
+                '確認清空'
+            );
+
+            if (!confirmed) {
                 return;
             }
 
@@ -556,14 +568,111 @@ return function (RouterInterface $router): void {
             document.getElementById('tagsTable').style.display = show ? 'none' : 'table';
         }
 
+        function confirmAction(title, message, confirmText = '確認') {
+            return new Promise((resolve) => {
+                const modalId = 'runtimeConfirmModal';
+                const existing = document.getElementById(modalId);
+                if (existing) {
+                    existing.remove();
+                }
+
+                const element = document.createElement('div');
+                element.className = 'modal fade';
+                element.id = modalId;
+                element.tabIndex = -1;
+                element.setAttribute('aria-hidden', 'true');
+
+                const dialog = document.createElement('div');
+                dialog.className = 'modal-dialog modal-dialog-centered';
+
+                const content = document.createElement('div');
+                content.className = 'modal-content border-0 shadow-lg';
+
+                const header = document.createElement('div');
+                header.className = 'modal-header border-0 pb-0';
+
+                const titleElement = document.createElement('h5');
+                titleElement.className = 'modal-title';
+                titleElement.textContent = title;
+
+                const closeButton = document.createElement('button');
+                closeButton.type = 'button';
+                closeButton.className = 'btn-close';
+                closeButton.setAttribute('data-bs-dismiss', 'modal');
+                closeButton.setAttribute('aria-label', 'Close');
+
+                header.appendChild(titleElement);
+                header.appendChild(closeButton);
+
+                const body = document.createElement('div');
+                body.className = 'modal-body text-secondary pt-2';
+                body.textContent = message;
+
+                const footer = document.createElement('div');
+                footer.className = 'modal-footer border-0 pt-0';
+
+                const cancelButton = document.createElement('button');
+                cancelButton.type = 'button';
+                cancelButton.className = 'btn btn-outline-secondary';
+                cancelButton.setAttribute('data-action', 'cancel');
+                cancelButton.textContent = '取消';
+
+                const confirmButton = document.createElement('button');
+                confirmButton.type = 'button';
+                confirmButton.className = 'btn btn-danger';
+                confirmButton.setAttribute('data-action', 'confirm');
+                confirmButton.textContent = confirmText;
+
+                footer.appendChild(cancelButton);
+                footer.appendChild(confirmButton);
+
+                content.appendChild(header);
+                content.appendChild(body);
+                content.appendChild(footer);
+                dialog.appendChild(content);
+                element.appendChild(dialog);
+
+                document.body.appendChild(element);
+                const runtimeModal = new bootstrap.Modal(element);
+                let settled = false;
+
+                const finish = (result) => {
+                    if (settled) {
+                        return;
+                    }
+
+                    settled = true;
+                    resolve(result);
+                    runtimeModal.hide();
+                };
+
+                element.querySelector('[data-action="cancel"]').addEventListener('click', () => finish(false));
+                element.querySelector('[data-action="confirm"]').addEventListener('click', () => finish(true));
+                element.addEventListener('hidden.bs.modal', () => {
+                    if (!settled) {
+                        settled = true;
+                        resolve(false);
+                    }
+                    element.remove();
+                });
+
+                runtimeModal.show();
+            });
+        }
+
         // 顯示警告訊息
         function showAlert(message, type = 'info') {
             const alertEl = document.createElement('div');
             alertEl.className = `alert alert-${type} alert-dismissible fade show`;
-            alertEl.innerHTML = `
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            `;
+
+            const messageNode = document.createTextNode(message);
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
+            closeButton.className = 'btn-close';
+            closeButton.setAttribute('data-bs-dismiss', 'alert');
+
+            alertEl.appendChild(messageNode);
+            alertEl.appendChild(closeButton);
 
             document.body.insertBefore(alertEl, document.body.firstChild);
 

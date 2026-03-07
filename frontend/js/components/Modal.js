@@ -7,6 +7,41 @@ class ModalComponent {
     this.modals = [];
   }
 
+  createActionButton(text, className, action) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = className;
+    button.dataset.action = action;
+    button.textContent = text;
+    return button;
+  }
+
+  createMessageBlock(message, options = {}) {
+    const {
+      supportingText = null,
+      supportingClass = "text-sm text-red-600",
+      messageClass = "text-modern-600 font-medium mb-10 text-lg leading-relaxed whitespace-pre-line",
+      wrapperClass = "text-modern-700",
+    } = options;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = wrapperClass;
+
+    const messageElement = document.createElement("div");
+    messageElement.className = messageClass;
+    messageElement.textContent = message;
+    wrapper.appendChild(messageElement);
+
+    if (supportingText) {
+      const supportingElement = document.createElement("p");
+      supportingElement.className = supportingClass;
+      supportingElement.textContent = supportingText;
+      wrapper.appendChild(supportingElement);
+    }
+
+    return wrapper;
+  }
+
   /**
    * 顯示 Modal
    */
@@ -36,7 +71,7 @@ class ModalComponent {
       <div class="relative bg-white rounded-[2rem] shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden border border-modern-200 animate-slide-up">
         <div class="flex items-center justify-between p-8 border-b border-modern-100">
           <div>
-            <h3 class="text-2xl font-bold text-modern-900 tracking-tight">${title}</h3>
+            <h3 class="text-2xl font-bold text-modern-900 tracking-tight" data-modal-title></h3>
           </div>
           ${
             showCloseButton
@@ -50,11 +85,23 @@ class ModalComponent {
               : ""
           }
         </div>
-        <div class="p-8 overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar">
-          ${content}
-        </div>
+        <div class="p-8 overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar" data-modal-content></div>
       </div>
     `;
+
+    const titleElement = modal.querySelector("[data-modal-title]");
+    if (titleElement) {
+      titleElement.textContent = title;
+    }
+
+    const contentElement = modal.querySelector("[data-modal-content]");
+    if (contentElement) {
+      if (content instanceof Node) {
+        contentElement.appendChild(content);
+      } else {
+        contentElement.innerHTML = content;
+      }
+    }
 
     // 關閉函數
     const closeModal = () => {
@@ -92,18 +139,59 @@ class ModalComponent {
   /**
    * 確認對話框
    */
-  confirm(title, message, onConfirm, onCancel = null) {
-    const content = `
-      <div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>
-      <div class="flex justify-end gap-3 border-t border-modern-100 pt-6">
-        <button type="button" class="px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors" data-action="cancel">
-          取消操作
-        </button>
-        <button type="button" class="px-8 py-2.5 bg-accent-600 text-white text-sm font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all" data-action="confirm">
-          確認執行
-        </button>
-      </div>
-    `;
+  confirmPromise(optionsOrTitle, messageArg = "", legacyOptions = {}) {
+    const options =
+      typeof optionsOrTitle === "object"
+        ? optionsOrTitle
+        : { title: optionsOrTitle, message: messageArg, ...legacyOptions };
+
+    const {
+      title,
+      message,
+      confirmText = "確認執行",
+      cancelText = "取消操作",
+      tone = "accent",
+      html = false,
+    } = options;
+
+    const toneClasses = {
+      accent: "bg-accent-600 hover:bg-accent-700 shadow-accent-600/20",
+      danger: "bg-red-600 hover:bg-red-700 shadow-red-600/20",
+      warning: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
+    };
+
+    const content = document.createElement("div");
+    const body = html
+      ? (() => {
+          const wrapper = document.createElement("div");
+          if (message instanceof Node) {
+            wrapper.appendChild(message);
+          } else {
+            wrapper.innerHTML = message;
+          }
+          return wrapper;
+        })()
+      : this.createMessageBlock(message);
+
+    const actionRow = document.createElement("div");
+    actionRow.className =
+      "flex justify-end gap-3 border-t border-modern-100 pt-6";
+
+    const cancelButton = this.createActionButton(
+      cancelText,
+      "px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors",
+      "cancel",
+    );
+    const confirmButton = this.createActionButton(
+      confirmText,
+      `px-8 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
+      "confirm",
+    );
+
+    actionRow.appendChild(cancelButton);
+    actionRow.appendChild(confirmButton);
+    content.appendChild(body);
+    content.appendChild(actionRow);
 
     const modalInstance = this.show(title, content, {
       size: "sm",
@@ -111,64 +199,114 @@ class ModalComponent {
       closeOnBackdrop: false,
     });
 
-    // 綁定按鈕事件
-    const cancelBtn = modalInstance.element.querySelector(
-      '[data-action="cancel"]',
-    );
-    const confirmBtn = modalInstance.element.querySelector(
-      '[data-action="confirm"]',
-    );
+    return new Promise((resolve) => {
+      const cancelBtn = modalInstance.element.querySelector(
+        '[data-action="cancel"]',
+      );
+      const confirmBtn = modalInstance.element.querySelector(
+        '[data-action="confirm"]',
+      );
 
-    if (cancelBtn) {
-      cancelBtn.addEventListener("click", () => {
+      cancelBtn?.addEventListener("click", () => {
         modalInstance.close();
-        if (onCancel) onCancel();
+        resolve(false);
       });
-    }
 
-    if (confirmBtn) {
-      confirmBtn.addEventListener("click", async () => {
-        try {
-          if (onConfirm) await onConfirm();
-          modalInstance.close();
-        } catch (error) {
-          console.error("Confirm action error:", error);
-        }
+      confirmBtn?.addEventListener("click", () => {
+        modalInstance.close();
+        resolve(true);
       });
-    }
+    });
+  }
 
-    return modalInstance;
+  /**
+   * 確認對話框
+   */
+  confirm(title, message, onConfirm, onCancel = null) {
+    this.confirmPromise(title, message).then((confirmed) => {
+      if (confirmed) {
+        onConfirm?.();
+        return;
+      }
+
+      onCancel?.();
+    });
+  }
+
+  /**
+   * Notice 對話框
+   */
+  noticePromise(optionsOrTitle, messageArg = "", legacyOptions = {}) {
+    const options =
+      typeof optionsOrTitle === "object"
+        ? optionsOrTitle
+        : { title: optionsOrTitle, message: messageArg, ...legacyOptions };
+
+    const {
+      title,
+      message,
+      confirmText = "我知道了",
+      tone = "accent",
+      html = false,
+    } = options;
+
+    const toneClasses = {
+      accent: "bg-accent-600 hover:bg-accent-700 shadow-accent-600/20",
+      warning: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
+      info: "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20",
+    };
+
+    const content = document.createElement("div");
+    const body = html
+      ? (() => {
+          const wrapper = document.createElement("div");
+          if (message instanceof Node) {
+            wrapper.appendChild(message);
+          } else {
+            wrapper.innerHTML = message;
+          }
+          return wrapper;
+        })()
+      : this.createMessageBlock(message);
+
+    const actionRow = document.createElement("div");
+    actionRow.className = "flex justify-end border-t border-modern-100 pt-6";
+    const okButton = this.createActionButton(
+      confirmText,
+      `px-10 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
+      "ok",
+    );
+
+    actionRow.appendChild(okButton);
+    content.appendChild(body);
+    content.appendChild(actionRow);
+
+    const modalInstance = this.show(title, content, {
+      size: "sm",
+      showCloseButton: false,
+      closeOnBackdrop: false,
+    });
+
+    return new Promise((resolve) => {
+      const okBtn = modalInstance.element.querySelector('[data-action="ok"]');
+      okBtn?.addEventListener("click", () => {
+        modalInstance.close();
+        resolve();
+      });
+    });
+  }
+
+  notice(title, message, onClose = null) {
+    this.noticePromise(title, message).then(() => {
+      onClose?.();
+    });
   }
 
   /**
    * 警告對話框
    */
   alert(title, message, onClose = null) {
-    const content = `
-      <div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>
-      <div class="flex justify-end border-t border-modern-100 pt-6">
-        <button type="button" class="px-10 py-2.5 bg-accent-600 text-white text-sm font-bold rounded-xl hover:bg-accent-700 shadow-lg shadow-accent-600/20 transition-all" data-action="ok">
-          我知道了
-        </button>
-      </div>
-    `;
-
-    const modalInstance = this.show(title, content, {
-      size: "sm",
-      showCloseButton: false,
-      closeOnBackdrop: false,
-    });
-
-    // 綁定按鈕事件
-    const okBtn = modalInstance.element.querySelector('[data-action="ok"]');
-    if (okBtn) {
-      okBtn.addEventListener("click", () => {
-        modalInstance.close();
-        if (onClose) onClose();
-      });
-    }
-
-    return modalInstance;
+    return this.notice(title, message, onClose);
   }
 
   /**

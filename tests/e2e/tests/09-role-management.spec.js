@@ -108,7 +108,11 @@ describeRoleSuite("角色管理頁面", () => {
     await page
       .locator(`.role-item:has-text("${displayName}") button[title="刪除角色"]`)
       .click();
-    await page.waitForTimeout(500); // 等待 confirm dialog
+    await expect(
+      page.locator('.fixed.inset-0 h3:has-text("確認刪除角色")'),
+    ).toBeVisible();
+    await page.locator('[data-action="confirm"]').click();
+    await expect(page.locator("text=角色已刪除")).toBeVisible();
   });
 
   test("應該能選擇角色並顯示權限設定", async ({ page }) => {
@@ -202,13 +206,15 @@ describeRoleSuite("角色管理頁面", () => {
     await page.click('#roleForm button[type="submit"]');
     await expect(page.locator("text=角色建立成功")).toBeVisible();
 
-    // 設置對話框處理器
-    page.on("dialog", (dialog) => dialog.accept());
-
     // 刪除角色
     await page
       .locator(`.role-item:has-text("${displayName}") button[title="刪除角色"]`)
       .click();
+
+    await expect(
+      page.locator('.fixed.inset-0 h3:has-text("確認刪除角色")'),
+    ).toBeVisible();
+    await page.locator('[data-action="confirm"]').click();
 
     // 等待刪除完成
     await page.waitForTimeout(1000);

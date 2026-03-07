@@ -185,14 +185,16 @@ test.describe("使用者管理功能測試", () => {
     const count = await deleteButtons.count();
 
     if (count > 0) {
-      // 監聽 confirm 對話框
-      page.once("dialog", async (dialog) => {
-        expect(dialog.message()).toContain("確定要刪除");
-        await dialog.dismiss(); // 取消刪除
-      });
-
       // 點擊刪除按鈕
       await deleteButtons.first().click();
+
+      const confirmDialog = page.locator(
+        '.fixed.inset-0 h3:has-text("確認刪除")',
+      );
+      await expect(confirmDialog).toBeVisible();
+
+      await page.locator('[data-action="cancel"]').click();
+      await expect(confirmDialog).not.toBeVisible();
     }
   });
 });
