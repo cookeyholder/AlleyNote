@@ -20,7 +20,7 @@ jobs:
 
         steps:
             - name: Checkout code
-              uses: actions/checkout@v6
+              uses: actions/checkout@v4
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -60,18 +60,18 @@ jobs:
                   else
                     echo "❌ .env.testing 檔案不存在，建立基本配置"
                     cat > .env.testing << 'EOF'
-                  APP_NAME=AlleyNote
-                  APP_ENV=testing
-                  APP_DEBUG=true
-                  DB_CONNECTION=sqlite
-                  DB_DATABASE=":memory:"
-                  JWT_ALGORITHM=HS256
-                  JWT_ISSUER=alleynote-api-test
-                  JWT_AUDIENCE=alleynote-client-test
-                  JWT_ACCESS_TOKEN_TTL=3600
-                  JWT_REFRESH_TOKEN_TTL=2592000
-                  JWT_SECRET=test-secret-key-for-ci-only
-                  EOF
+APP_NAME=AlleyNote
+APP_ENV=testing
+APP_DEBUG=true
+DB_CONNECTION=sqlite
+DB_DATABASE=":memory:"
+JWT_ALGORITHM=HS256
+JWT_ISSUER=alleynote-api-test
+JWT_AUDIENCE=alleynote-client-test
+JWT_ACCESS_TOKEN_TTL=3600
+JWT_REFRESH_TOKEN_TTL=2592000
+JWT_SECRET=test-secret-key-for-ci-only
+EOF
                   fi
 
             - name: Run Composer Security Audit
