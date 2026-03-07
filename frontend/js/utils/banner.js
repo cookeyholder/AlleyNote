@@ -54,19 +54,29 @@ class BannerManager {
     const colors = palette[type] || palette.info;
     const banner = document.createElement("div");
     banner.className = `pointer-events-auto w-full max-w-4xl rounded-2xl border shadow-lg shadow-modern-900/10 backdrop-blur-sm ${colors.shell}`;
-    banner.innerHTML = `
-      <div class="flex items-start gap-4 px-5 py-4">
-        <div class="mt-0.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] ${colors.badge}">
-          ${title}
-        </div>
-        <div class="min-w-0 flex-1">
-          <p class="text-sm font-semibold leading-6">${message}</p>
-        </div>
-        <div class="flex shrink-0 items-center gap-2" data-banner-actions></div>
-      </div>
-    `;
+    const wrapper = document.createElement("div");
+    wrapper.className = "flex items-start gap-4 px-5 py-4";
 
-    const actions = banner.querySelector("[data-banner-actions]");
+    const badge = document.createElement("div");
+    badge.className = `mt-0.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] ${colors.badge}`;
+    badge.textContent = title;
+
+    const content = document.createElement("div");
+    content.className = "min-w-0 flex-1";
+
+    const messageParagraph = document.createElement("p");
+    messageParagraph.className = "text-sm font-semibold leading-6";
+    messageParagraph.textContent = message;
+    content.appendChild(messageParagraph);
+
+    const actions = document.createElement("div");
+    actions.className = "flex shrink-0 items-center gap-2";
+    actions.setAttribute("data-banner-actions", "");
+
+    wrapper.appendChild(badge);
+    wrapper.appendChild(content);
+    wrapper.appendChild(actions);
+    banner.appendChild(wrapper);
 
     if (actionLabel && typeof onAction === "function") {
       const actionButton = document.createElement("button");

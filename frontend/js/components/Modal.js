@@ -8,11 +8,38 @@ class ModalComponent {
   }
 
   createActionButton(text, className, action) {
-    return `
-      <button type="button" class="${className}" data-action="${action}">
-        ${text}
-      </button>
-    `;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = className;
+    button.dataset.action = action;
+    button.textContent = text;
+    return button;
+  }
+
+  createMessageBlock(message, options = {}) {
+    const {
+      supportingText = null,
+      supportingClass = "text-sm text-red-600",
+      messageClass = "text-modern-600 font-medium mb-10 text-lg leading-relaxed whitespace-pre-line",
+      wrapperClass = "text-modern-700",
+    } = options;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = wrapperClass;
+
+    const messageElement = document.createElement("div");
+    messageElement.className = messageClass;
+    messageElement.textContent = message;
+    wrapper.appendChild(messageElement);
+
+    if (supportingText) {
+      const supportingElement = document.createElement("p");
+      supportingElement.className = supportingClass;
+      supportingElement.textContent = supportingText;
+      wrapper.appendChild(supportingElement);
+    }
+
+    return wrapper;
   }
 
   /**
@@ -44,7 +71,7 @@ class ModalComponent {
       <div class="relative bg-white rounded-[2rem] shadow-2xl ${sizeClasses[size]} w-full max-h-[90vh] overflow-hidden border border-modern-200 animate-slide-up">
         <div class="flex items-center justify-between p-8 border-b border-modern-100">
           <div>
-            <h3 class="text-2xl font-bold text-modern-900 tracking-tight">${title}</h3>
+            <h3 class="text-2xl font-bold text-modern-900 tracking-tight" data-modal-title></h3>
           </div>
           ${
             showCloseButton
@@ -58,11 +85,23 @@ class ModalComponent {
               : ""
           }
         </div>
-        <div class="p-8 overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar">
-          ${content}
-        </div>
+        <div class="p-8 overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar" data-modal-content></div>
       </div>
     `;
+
+    const titleElement = modal.querySelector("[data-modal-title]");
+    if (titleElement) {
+      titleElement.textContent = title;
+    }
+
+    const contentElement = modal.querySelector("[data-modal-content]");
+    if (contentElement) {
+      if (content instanceof Node) {
+        contentElement.appendChild(content);
+      } else {
+        contentElement.innerHTML = content;
+      }
+    }
 
     // 關閉函數
     const closeModal = () => {
@@ -121,25 +160,38 @@ class ModalComponent {
       warning: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
     };
 
+    const content = document.createElement("div");
     const body = html
-      ? message
-      : `<div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>`;
+      ? (() => {
+          const wrapper = document.createElement("div");
+          if (message instanceof Node) {
+            wrapper.appendChild(message);
+          } else {
+            wrapper.innerHTML = message;
+          }
+          return wrapper;
+        })()
+      : this.createMessageBlock(message);
 
-    const content = `
-      ${body}
-      <div class="flex justify-end gap-3 border-t border-modern-100 pt-6">
-        ${this.createActionButton(
-          cancelText,
-          "px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors",
-          "cancel",
-        )}
-        ${this.createActionButton(
-          confirmText,
-          `px-8 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
-          "confirm",
-        )}
-      </div>
-    `;
+    const actionRow = document.createElement("div");
+    actionRow.className =
+      "flex justify-end gap-3 border-t border-modern-100 pt-6";
+
+    const cancelButton = this.createActionButton(
+      cancelText,
+      "px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors",
+      "cancel",
+    );
+    const confirmButton = this.createActionButton(
+      confirmText,
+      `px-8 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
+      "confirm",
+    );
+
+    actionRow.appendChild(cancelButton);
+    actionRow.appendChild(confirmButton);
+    content.appendChild(body);
+    content.appendChild(actionRow);
 
     const modalInstance = this.show(title, content, {
       size: "sm",
@@ -204,20 +256,30 @@ class ModalComponent {
       info: "bg-sky-600 hover:bg-sky-700 shadow-sky-600/20",
     };
 
+    const content = document.createElement("div");
     const body = html
-      ? message
-      : `<div class="text-modern-600 font-medium mb-10 text-lg leading-relaxed">${message}</div>`;
+      ? (() => {
+          const wrapper = document.createElement("div");
+          if (message instanceof Node) {
+            wrapper.appendChild(message);
+          } else {
+            wrapper.innerHTML = message;
+          }
+          return wrapper;
+        })()
+      : this.createMessageBlock(message);
 
-    const content = `
-      ${body}
-      <div class="flex justify-end border-t border-modern-100 pt-6">
-        ${this.createActionButton(
-          confirmText,
-          `px-10 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
-          "ok",
-        )}
-      </div>
-    `;
+    const actionRow = document.createElement("div");
+    actionRow.className = "flex justify-end border-t border-modern-100 pt-6";
+    const okButton = this.createActionButton(
+      confirmText,
+      `px-10 py-2.5 text-sm font-bold text-white rounded-xl shadow-lg transition-all ${toneClasses[tone] || toneClasses.accent}`,
+      "ok",
+    );
+
+    actionRow.appendChild(okButton);
+    content.appendChild(body);
+    content.appendChild(actionRow);
 
     const modalInstance = this.show(title, content, {
       size: "sm",

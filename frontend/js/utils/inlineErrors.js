@@ -16,7 +16,10 @@ function resolveTarget(target, container = document) {
 
 class InlineErrorManager {
   show(target, message, options = {}) {
-    const { container = document, visibleClass = "hidden" } = options;
+    const {
+      container = document,
+      hiddenClass = options.visibleClass || "hidden",
+    } = options;
     const element = resolveTarget(target, container);
 
     if (!element) {
@@ -24,7 +27,7 @@ class InlineErrorManager {
     }
 
     element.textContent = message;
-    element.classList.remove(visibleClass);
+    element.classList.remove(hiddenClass);
     element.dataset.inlineErrorVisible = "true";
     return element;
   }

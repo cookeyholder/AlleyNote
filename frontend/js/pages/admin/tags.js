@@ -381,16 +381,10 @@ export default class TagsPage {
 
     const confirmed = await notification.confirm({
       title: "確認刪除標籤",
-      message: `
-        <div class="text-modern-700">
-          <p class="mb-2">${confirmMessage}</p>
-          <p class="text-sm text-red-600">此操作無法復原</p>
-        </div>
-      `,
+      message: `${confirmMessage}\n\n此操作無法復原`,
       confirmText: "確認刪除",
       cancelText: "保留",
       tone: "danger",
-      html: true,
     });
 
     if (!confirmed) {

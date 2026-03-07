@@ -63,16 +63,10 @@ class NotificationService {
 
     return this.confirm({
       title,
-      message: `
-        <div class="text-modern-700">
-          <p class="mb-2">${message}</p>
-          <p class="text-sm text-red-600">${dangerText}</p>
-        </div>
-      `,
+      message: `${message}\n\n${dangerText}`,
       confirmText,
       cancelText,
       tone: "danger",
-      html: true,
     });
   }
 
@@ -86,16 +80,10 @@ class NotificationService {
 
     return this.confirm({
       title,
-      message: `
-        <div class="text-modern-700">
-          <p class="mb-2">${message}</p>
-          <p class="text-sm text-orange-600">未保存的變更將會遺失</p>
-        </div>
-      `,
+      message: `${message}\n\n未保存的變更將會遺失`,
       confirmText,
       cancelText,
       tone: "warning",
-      html: true,
     });
   }
 }

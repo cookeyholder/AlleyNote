@@ -587,16 +587,10 @@ async function confirmBatchDelete() {
   const count = currentState.selectedPosts.size;
   const confirmed = await notification.confirm({
     title: "確認批次刪除",
-    message: `
-      <div class="text-modern-700">
-        <p class="mb-2">確定要刪除選中的 ${count} 篇文章嗎？此操作無法復原。</p>
-        <p class="text-sm text-red-600">此操作無法復原</p>
-      </div>
-    `,
+    message: `確定要刪除選中的 ${count} 篇文章嗎？此操作無法復原。`,
     confirmText: "確認刪除",
     cancelText: "保留",
     tone: "danger",
-    html: true,
   });
 
   if (!confirmed) return;

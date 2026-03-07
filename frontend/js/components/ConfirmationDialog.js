@@ -8,9 +8,9 @@ import { notification } from "../utils/notification.js";
 /**
  * 顯示刪除確認對話框
  * @param {string} itemName - 要刪除的項目名稱
- * @param {Function} onConfirm - 確認後的回調函數
- * @param {Object} options - 額外選項
- * @returns {Object} Modal 實例
+ * @param {Function|Object|null} onConfirmOrOptions - 舊版確認回調或新式選項
+ * @param {Object} options - 舊版回調模式的額外選項
+ * @returns {Promise<boolean|*>} Promise 化的確認結果
  */
 export function confirmDelete(
   itemName,
@@ -28,16 +28,10 @@ export function confirmDelete(
     return notification
       .confirm({
         title,
-        message: `
-        <div class="text-modern-700">
-          <p class="mb-2">${finalMessage}</p>
-          <p class="text-sm text-red-600">此操作無法復原</p>
-        </div>
-      `,
+        message: `${finalMessage}\n\n此操作無法復原`,
         confirmText: "確認刪除",
         cancelText: "保留",
         tone: "danger",
-        html: true,
       })
       .then((confirmed) => {
         if (confirmed) {
@@ -60,7 +54,7 @@ export function confirmDelete(
  * @param {string} message - 訊息內容
  * @param {Function} onConfirm - 確認後的回調函數
  * @param {Function} onCancel - 取消後的回調函數
- * @returns {Object} Modal 實例
+ * @returns {Promise<*>} Promise 化的確認流程
  */
 export function confirm(title, message, onConfirm, onCancel = null) {
   return notification.confirm({ title, message }).then((confirmed) => {
@@ -77,7 +71,7 @@ export function confirm(title, message, onConfirm, onCancel = null) {
  * @param {string} title - 對話框標題
  * @param {string} message - 訊息內容
  * @param {Function} onClose - 關閉後的回調函數
- * @returns {Object} Modal 實例
+ * @returns {Promise<void|*>} Promise 化的告知流程
  */
 export function alert(title, message, onClose = null) {
   return notification.notice({ title, message }).then(() => onClose?.());
@@ -86,9 +80,9 @@ export function alert(title, message, onClose = null) {
 /**
  * 顯示批量刪除確認對話框
  * @param {number} count - 要刪除的項目數量
- * @param {Function} onConfirm - 確認後的回調函數
- * @param {Object} options - 額外選項
- * @returns {Object} Modal 實例
+ * @param {Function|Object|null} onConfirmOrOptions - 舊版確認回調或新式選項
+ * @param {Object} options - 舊版回調模式的額外選項
+ * @returns {Promise<boolean|*>} Promise 化的確認結果
  */
 export function confirmBatchDelete(
   count,
@@ -105,16 +99,10 @@ export function confirmBatchDelete(
     return notification
       .confirm({
         title,
-        message: `
-        <div class="text-modern-700">
-          <p class="mb-2">${message}</p>
-          <p class="text-sm text-red-600">此操作無法復原</p>
-        </div>
-      `,
+        message: `${message}\n\n此操作無法復原`,
         confirmText: "確認刪除",
         cancelText: "保留",
         tone: "danger",
-        html: true,
       })
       .then((confirmed) => {
         if (confirmed) {
@@ -127,24 +115,18 @@ export function confirmBatchDelete(
 
   return notification.confirm({
     title,
-    message: `
-      <div class="text-modern-700">
-        <p class="mb-2">${message}</p>
-        <p class="text-sm text-red-600">此操作無法復原</p>
-      </div>
-    `,
+    message: `${message}\n\n此操作無法復原`,
     confirmText: "確認刪除",
     cancelText: "保留",
     tone: "danger",
-    html: true,
   });
 }
 
 /**
  * 顯示放棄變更確認對話框
- * @param {Function} onConfirm - 確認後的回調函數
- * @param {Object} options - 額外選項
- * @returns {Object} Modal 實例
+ * @param {Function|Object|null} onConfirmOrOptions - 舊版確認回調或新式選項
+ * @param {Object} options - 舊版回調模式的額外選項
+ * @returns {Promise<boolean|*>} Promise 化的確認結果
  */
 export function confirmDiscard(onConfirmOrOptions = null, options = {}) {
   const isLegacyCallback = typeof onConfirmOrOptions === "function";
@@ -158,16 +140,10 @@ export function confirmDiscard(onConfirmOrOptions = null, options = {}) {
     return notification
       .confirm({
         title,
-        message: `
-        <div class="text-modern-700">
-          <p class="mb-2">${message}</p>
-          <p class="text-sm text-orange-600">未保存的變更將會遺失</p>
-        </div>
-      `,
+        message: `${message}\n\n未保存的變更將會遺失`,
         confirmText: "放棄變更",
         cancelText: "繼續編輯",
         tone: "warning",
-        html: true,
       })
       .then((confirmed) => {
         if (confirmed) {
