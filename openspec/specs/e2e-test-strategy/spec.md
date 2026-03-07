@@ -1,5 +1,8 @@
-## ADDED Requirements
+# e2e-test-strategy Specification
 
+## Purpose
+TBD - created by archiving change refactor-e2e-to-integration-test-pyramid. Update Purpose after archive.
+## Requirements
 ### Requirement: E2E scope must focus on critical user journeys
 
 系統的 E2E 測試 MUST 主要覆蓋使用者關鍵流程（認證、導覽、核心 CRUD 成功路徑），而非資料規則矩陣或聚合正確性。
@@ -11,12 +14,12 @@
 
 ### Requirement: Business rules should be validated in integration tests
 
-密碼規則、時區轉換、統計聚合與設定持久化等規則型驗證 MUST 在整合測試層承擔主要覆蓋。
+系統 MUST 對每個被降級的 E2E 能力提供對應整合測試，且測試應覆蓋該能力的核心正確性規則。
 
-#### Scenario: Move rule assertions down
+#### Scenario: Backfill downgraded E2E responsibilities
 
-- **WHEN** 測試目標是資料正確性（非 UI 互動本身）
-- **THEN** 應優先以 PHP 整合測試驗證，E2E 僅保留最小 smoke
+- **WHEN** 任一 E2E 套件因環境依賴或重複性而被降級
+- **THEN** 對應的整合測試必須在同一變更中補齊，至少涵蓋一條成功路徑與一條邊界/錯誤路徑
 
 ### Requirement: Redundant E2E suites must be consolidated
 
@@ -35,3 +38,13 @@
 
 - **WHEN** 測試依賴項在當前環境不可用
 - **THEN** 測試應標示 skip 並由整合測試承接規則驗證責任
+
+### Requirement: Mapping between downgraded E2E and integration suites must be explicit
+
+測試策略 MUST 維持可追蹤對應關係，明確記錄「哪個降級 E2E」由「哪個整合測試」承接。
+
+#### Scenario: Traceability for maintenance
+
+- **WHEN** 開發者調整 E2E skip/smoke 策略
+- **THEN** 應可從 OpenSpec tasks 與整合測試檔案快速定位承接覆蓋
+
