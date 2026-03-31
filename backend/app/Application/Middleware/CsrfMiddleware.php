@@ -102,4 +102,9 @@ class CsrfMiddleware implements MiddlewareInterface
     {
         return self::MIDDLEWARE_NAME;
     }
+
+    public function shouldProcess(ServerRequestInterface $request): bool
+    {
+        return $this->enabled;
+    }
 }
