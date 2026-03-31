@@ -167,7 +167,7 @@ return array_merge(
         'api.version' => \DI\env('API_VERSION', 'v1'),
 
         // 安全配置
-        'security.jwt_secret' => \DI\env('JWT_SECRET', 'your-secret-key'),
+        'security.jwt_secret' => \DI\env('JWT_SECRET'),
         'security.session_lifetime' => \DI\env('SESSION_LIFETIME', 3600),
     ],
 

@@ -152,12 +152,15 @@ class Application
         }
 
         // 建立錯誤回應內容
+        $appEnv = getenv('APP_ENV') ?: 'production';
         $errorData = [
             'status' => 'error',
             'error' => 'Internal Server Error',
-            'message' => $e->getMessage(),
-            'code' => $e->getCode(),
+            'message' => $appEnv !== 'production' ? $e->getMessage() : '伺服器內部錯誤，請稍後再試',
         ];
+        if ($appEnv !== 'production') {
+            $errorData['code'] = $e->getCode();
+        }
 
         $json = json_encode($errorData, JSON_UNESCAPED_UNICODE) ?: '{"error": "Internal Server Error"}';
         $stream = new Stream($json);

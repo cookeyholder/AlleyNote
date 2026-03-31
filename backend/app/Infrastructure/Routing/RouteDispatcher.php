@@ -59,11 +59,12 @@ class RouteDispatcher
                     $resolvedMiddlewares[] = $middleware;
                 }
             } catch (Exception $e) {
-                // 記錄錯誤但繼續執行，避免因為中介軟體問題導致整個請求失敗
-                app_log('error', 'Failed to resolve middleware', [
+                // 中介軟體解析失敗時應阻止請求（fail-closed），避免安全防護被繞過
+                app_log('critical', 'Failed to resolve middleware — request blocked', [
                     'middleware' => (string) $middleware,
                     'exception' => $e->getMessage(),
                 ]);
+                throw $e;
             }
         }
 

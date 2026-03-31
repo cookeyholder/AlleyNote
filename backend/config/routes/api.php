@@ -48,6 +48,7 @@ return [
         'methods' => ['POST'],
         'path' => '/api/posts',
         'handler' => [PostController::class, 'store'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'posts.store'
     ],
 
@@ -55,6 +56,7 @@ return [
         'methods' => ['PUT', 'PATCH'],
         'path' => '/api/posts/{id}',
         'handler' => [PostController::class, 'update'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'posts.update'
     ],
 
@@ -62,6 +64,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/posts/{id}',
         'handler' => [PostController::class, 'destroy'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'posts.destroy'
     ],
 

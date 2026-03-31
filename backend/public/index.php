@@ -88,9 +88,10 @@ try {
     app_log('critical', '路由系統錯誤', ['exception' => $e->getMessage()]);
     header('Content-Type: application/json');
     http_response_code(500);
+    $appEnv = getenv('APP_ENV') ?: 'production';
     echo json_encode([
         'error' => 'Internal Server Error',
-        'message' => $e->getMessage(),
+        'message' => $appEnv !== 'production' ? $e->getMessage() : '伺服器內部錯誤，請稍後再試',
         'timestamp' => (new DateTime())->format('c')
     ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     exit;

@@ -276,8 +276,13 @@ class PostController extends BaseController
             }
 
             // 添加必需的欄位
-            $userId = $request->getAttribute('user_id') ?? 1;
-            $data['user_id'] = $userId;
+            $userId = $request->getAttribute('user_id');
+            if ($userId === null) {
+                $errorResponse = $this->errorResponse('需要身分驗證', 401);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
+            }
+            $data['user_id'] = (int) $userId;
             $data['user_ip'] = NetworkHelper::getClientIp($request);
 
             $dto = new CreatePostDTO($this->validator, $data);
@@ -578,6 +583,17 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
 
+            // 驗證操作者權限：僅文章作者或管理員可更新
+            $post = $this->postService->findById($id);
+            $userId = (int) $request->getAttribute('user_id');
+            $userRole = $request->getAttribute('role');
+            $authorId = (int) $post->getUserId();
+            if ($userId !== $authorId && !in_array($userRole, ['admin', 'super_admin'], true)) {
+                $errorResponse = $this->errorResponse('權限不足，僅文章作者或管理員可更新', 403);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
             $dto = new UpdatePostDTO($this->validator, $data);
 
             // 處理標籤更新（獨立於文章內容更新）
@@ -746,6 +762,16 @@ class PostController extends BaseController
             $post = $this->postService->findById($id);
             $postTitle = $post->getTitle();
             $postStatus = $post->getStatusValue();
+
+            // 驗證操作者權限：僅文章作者或管理員可刪除
+            $userId = (int) $request->getAttribute('user_id');
+            $userRole = $request->getAttribute('role');
+            $authorId = (int) $post->getUserId();
+            if ($userId !== $authorId && !in_array($userRole, ['admin', 'super_admin'], true)) {
+                $errorResponse = $this->errorResponse('權限不足，僅文章作者或管理員可刪除', 403);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
 
             $this->postService->deletePost($id);
 

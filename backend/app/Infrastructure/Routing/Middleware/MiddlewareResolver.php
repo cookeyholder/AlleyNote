@@ -25,6 +25,7 @@ class MiddlewareResolver
         'jwt.auth' => 'jwt.auth',
         'authorize' => 'jwt.authorize',
         'jwt.authorize' => 'jwt.authorize',
+        'csrf' => \App\Application\Middleware\CsrfMiddleware::class,
         'post_view_rate_limit' => PostViewRateLimitMiddleware::class,
     ];
 
