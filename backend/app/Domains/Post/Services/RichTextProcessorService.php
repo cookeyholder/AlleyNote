@@ -93,31 +93,30 @@ class RichTextProcessorService
     /**
      * 根據使用者層級處理富文本內容.
      */
-    public function processContent(string $content, string $userLevel = 'basic'): mixed
+    public function processContent(string $content, string $userLevel = 'basic'): array
     {
         // 根據使用者層級選擇處理器
-        $processedContent = match ($userLevel) {
-            'admin' => $content, // 暫時使用原內容 TODO: $this->adminPurifier->purify($content)
-            'extended' => $content, // 暫時使用原內容 TODO: $this->extendedPurifier->purify($content)
-            default => $content, // 暫時使用原內容 TODO: $this->basicPurifier->purify($content)
+        $purifier = match ($userLevel) {
+            'admin'    => $this->adminPurifier,
+            'extended' => $this->extendedPurifier,
+            default    => $this->basicPurifier,
         };
 
+        $processedContent = $purifier->purify($content);
+
         $result = [
-            'content' => $processedContent,
-            'warnings' => [],
+            'content'    => $processedContent,
+            'warnings'   => [],
             'statistics' => [],
         ];
-
-        // 生成統計資訊
-        // $result['statistics'] = $this->generateStatistics($content, $result['content']);
 
         // 檢查內容變化
         if ($content !== $result['content']) {
             $result['warnings'][] = [
-                'type' => 'content_modified',
-                'message' => '內容已被安全過濾器修改',
-                'original_length' => strlen($content),
-                'filtered_length' => strlen($result['content']),
+                'type'              => 'content_modified',
+                'message'           => '內容已被安全過濾器修改',
+                'original_length'   => strlen($content),
+                'filtered_length'   => strlen($result['content']),
             ];
         }
 
@@ -265,10 +264,9 @@ class RichTextProcessorService
      */
     private function getCachePath(): string
     {
-        $cachePath = '/tmp/htmlpurifier';
+        $cachePath = __DIR__ . '/../../../../../storage/cache/htmlpurifier';
 
         if (!is_dir($cachePath)) {
-            // @ 符號抑制錯誤，以處理多執行緒環境下的競爭條件
             @mkdir($cachePath, 0o750, true);
         }
 
