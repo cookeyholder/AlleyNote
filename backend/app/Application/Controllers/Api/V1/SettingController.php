@@ -61,7 +61,8 @@ class SettingController
     )]
     public function index(Request $request, Response $response): Response
     {
-        $settings = $this->settingManagementService->getAllSettings();
+        $authenticated = $request->getAttribute('authenticated', false);
+        $settings = $this->settingManagementService->getAllSettings($authenticated);
 
         $responseData = json_encode([
             'success' => true,
@@ -130,7 +131,8 @@ class SettingController
                 throw new InvalidArgumentException('Invalid setting key');
             }
             $key = $keyAttr;
-            $setting = $this->settingManagementService->getSetting($key);
+            $authenticated = $request->getAttribute('authenticated', false);
+            $setting = $this->settingManagementService->getSetting($key, $authenticated);
 
             $responseData = json_encode([
                 'success' => true,

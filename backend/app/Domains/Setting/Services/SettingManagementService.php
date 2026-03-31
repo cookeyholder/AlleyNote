@@ -15,6 +15,17 @@ use RuntimeException;
  */
 class SettingManagementService
 {
+    /**
+     * 可公開回傳的設定鍵白名單.
+     * 不在白名單中的設定鍵僅對已驗證使用者回傳.
+     */
+    private const PUBLIC_KEYS = [
+        'site_name',
+        'site_description',
+        'site_timezone',
+        'site_locale',
+    ];
+
     public function __construct(
         private readonly SettingRepository $settingRepository,
     ) {}
@@ -24,20 +35,27 @@ class SettingManagementService
      *
      * @return array<string, array<string, mixed>>
      */
-    public function getAllSettings(): array
+    public function getAllSettings(?bool $authenticated = false): array
     {
         $settings = $this->settingRepository->findAll();
 
         $result = [];
         foreach ($settings as $setting) {
             $key = is_string($setting['key'] ?? null) ? $setting['key'] : '';
-            if ($key !== '') {
-                $result[$key] = [
-                    'value' => $setting['value'],
-                    'type' => $setting['type'],
-                    'description' => $setting['description'],
-                ];
+            if ($key === '') {
+                continue;
             }
+
+            // 未驗證使用者僅回傳白名單中的設定
+            if (!$authenticated && !in_array($key, self::PUBLIC_KEYS, true)) {
+                continue;
+            }
+
+            $result[$key] = [
+                'value' => $setting['value'],
+                'type' => $setting['type'],
+                'description' => $setting['description'],
+            ];
         }
 
         return $result;
@@ -49,11 +67,16 @@ class SettingManagementService
      * @return array<string, mixed>
      * @throws NotFoundException
      */
-    public function getSetting(string $key): array
+    public function getSetting(string $key, ?bool $authenticated = false): array
     {
         $setting = $this->settingRepository->findByKey($key);
 
         if (!$setting) {
+            throw new NotFoundException("設定不存在 (Key: {$key})");
+        }
+
+        // 未驗證使用者僅能存取白名單中的設定
+        if (!$authenticated && !in_array($key, self::PUBLIC_KEYS, true)) {
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
 

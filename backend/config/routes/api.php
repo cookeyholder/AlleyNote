@@ -228,6 +228,7 @@ return [
         'methods' => ['GET'],
         'path' => '/api/settings',
         'handler' => [SettingController::class, 'index'],
+        'middleware' => ['auth'],
         'name' => 'settings.index'
     ],
 
@@ -235,6 +236,7 @@ return [
         'methods' => ['GET'],
         'path' => '/api/settings/{key}',
         'handler' => [SettingController::class, 'show'],
+        'middleware' => ['auth'],
         'name' => 'settings.show'
     ],
 
