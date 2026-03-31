@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
 
+use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use HTMLPurifier;
 use HTMLPurifier_Config;
@@ -220,7 +221,7 @@ class RichTextProcessorService
     /**
      * 檢查內容是否安全.
      */
-    public function validateSecurity(string $content): mixed
+    public function validateSecurity(string $content): array
     {
         $issues = [];
 
@@ -228,20 +229,20 @@ class RichTextProcessorService
         $xssDetection = $this->xssProtection->detectXss($content);
         if (!empty($xssDetection)) {
             $issues[] = [
-                'type' => 'xss_pattern',
-                'severity' => 'high',
-                'message' => '偵測到潛在的 XSS 攻擊模式',
-                'details' => $xssDetection,
+                'type'     => 'xss_pattern',
+                'severity' => ActivitySeverity::HIGH,
+                'message'  => '偵測到潛在的 XSS 攻擊模式',
+                'details'  => $xssDetection,
             ];
         }
 
         // 檢查過長的內容
         if (strlen($content) > 100000) { // 100KB
             $issues[] = [
-                'type' => 'content_too_long',
-                'severity' => 'medium',
-                'message' => '內容過長，可能影響效能',
-                'details' => ['length' => strlen($content)],
+                'type'     => 'content_too_long',
+                'severity' => ActivitySeverity::MEDIUM,
+                'message'  => '內容過長，可能影響效能',
+                'details'  => ['length' => strlen($content)],
             ];
         }
 
@@ -249,10 +250,10 @@ class RichTextProcessorService
         $tagCount = substr_count($content, '<');
         if ($tagCount > 1000) {
             $issues[] = [
-                'type' => 'too_many_tags',
-                'severity' => 'medium',
-                'message' => 'HTML 標籤過多，可能影響效能',
-                'details' => ['tag_count' => $tagCount],
+                'type'     => 'too_many_tags',
+                'severity' => ActivitySeverity::MEDIUM,
+                'message'  => 'HTML 標籤過多，可能影響效能',
+                'details'  => ['tag_count' => $tagCount],
             ];
         }
 

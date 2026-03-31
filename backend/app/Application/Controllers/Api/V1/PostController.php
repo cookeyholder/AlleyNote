@@ -1168,7 +1168,7 @@ class PostController extends BaseController
     #[OA\Delete(
         path: '/api/posts/batch',
         summary: '批次刪除文章',
-        description: '批次刪除多篇文章，需要 CSRF Token 驗證',
+        description: '批次刪除多篇文章，需要管理員權限與 CSRF Token 驗證',
         operationId: 'batchDeletePosts',
         tags: ['posts'],
         security: [['bearerAuth' => []], ['csrfToken' => []]],
@@ -1185,6 +1185,16 @@ class PostController extends BaseController
     )]
     public function batchDelete(Request $request, Response $response): Response
     {
+        $userId = (int) $request->getAttribute('user_id');
+        $userRole = $request->getAttribute('role');
+
+        // 僅允許管理員或超級管理員執行批次刪除
+        if (!in_array($userRole, ['admin', 'super_admin'], true)) {
+            $errorResponse = $this->errorResponse('權限不足，僅管理員可執行批次刪除', 403);
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+        }
+
         $body = json_decode($request->getBody()->getContents(), true);
         $ids = $body['ids'] ?? [];
 
@@ -1194,12 +1204,11 @@ class PostController extends BaseController
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
-        $userId = (int) $request->getAttribute('user_id');
         $deleted = 0;
 
         foreach ($ids as $id) {
             try {
-                $this->postService->deletePost((int) $id, $userId);
+                $this->postService->deletePost((int) $id);
                 $deleted++;
             } catch (\Throwable $e) {
                 // 繼續刪除其他文章

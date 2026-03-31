@@ -69,7 +69,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/posts/batch',
         'handler' => [PostController::class, 'batchDelete'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'posts.batch_delete'
     ],
 
