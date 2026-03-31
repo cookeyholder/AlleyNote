@@ -11,6 +11,15 @@ export class PasswordGenerator {
   static SPECIAL = "!@#$%^&*()_+-=[]{}";
 
   /**
+   * 密碼學安全的隨機數
+   */
+  static secureRandom(max) {
+    const array = new Uint32Array(1);
+    crypto.getRandomValues(array);
+    return array[0] % max;
+  }
+
+  /**
    * 生成安全密碼
    * @param {Object} options - 選項
    * @param {number} options.length - 密碼長度
@@ -65,12 +74,12 @@ export class PasswordGenerator {
 
       // 確保每種類型至少有一個字元
       for (const req of requirements) {
-        password += req.charAt(Math.floor(Math.random() * req.length));
+        password += req.charAt(this.secureRandom(req.length));
       }
 
       // 填充剩餘長度
       for (let i = password.length; i < length; i++) {
-        password += charset.charAt(Math.floor(Math.random() * charset.length));
+        password += charset.charAt(this.secureRandom(charset.length));
       }
 
       // 打亂順序
@@ -98,7 +107,7 @@ export class PasswordGenerator {
   static shuffle(str) {
     const arr = str.split("");
     for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
+      const j = this.secureRandom(i + 1);
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr.join("");

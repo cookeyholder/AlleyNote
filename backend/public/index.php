@@ -20,9 +20,9 @@ require __DIR__ . '/../bootstrap/load_env.php';
 use App\Application;
 use App\Infrastructure\Http\ServerRequestFactory;
 
-// 設定錯誤報告
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
+$appEnv = getenv('APP_ENV') ?: 'production';
+$displayErrors = filter_var($appEnv !== 'production', FILTER_VALIDATE_BOOLEAN);
+ini_set('display_errors', $displayErrors ? '1' : '0');
 
 // 設定時區
 date_default_timezone_set('Asia/Taipei');
@@ -34,7 +34,6 @@ $requestMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 // 依環境與設定決定 CORS（供前端靜態伺服器與 E2E 使用）
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
-$appEnv = getenv('APP_ENV') ?: 'production';
 $corsAllowedOriginsEnv = getenv('CORS_ALLOWED_ORIGINS') ?: '';
 
 if ($corsAllowedOriginsEnv !== '') {
