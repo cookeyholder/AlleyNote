@@ -1161,6 +1161,57 @@ class PostController extends BaseController
     }
 
     /**
+     * 批次刪除貼文.
+     *
+     * DELETE /api/posts/batch
+     */
+    #[OA\Delete(
+        path: '/api/posts/batch',
+        summary: '批次刪除文章',
+        description: '批次刪除多篇文章，需要 CSRF Token 驗證',
+        operationId: 'batchDeletePosts',
+        tags: ['posts'],
+        security: [['bearerAuth' => []], ['csrfToken' => []]],
+        requestBody: new OA\RequestBody(
+            description: '文章 ID 列表',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['ids'],
+                properties: [
+                    new OA\Property(property: 'ids', type: 'array', items: new OA\Items(type: 'integer')),
+                ]
+            )
+        )
+    )]
+    public function batchDelete(Request $request, Response $response): Response
+    {
+        $body = json_decode($request->getBody()->getContents(), true);
+        $ids = $body['ids'] ?? [];
+
+        if (empty($ids) || !is_array($ids)) {
+            $errorResponse = $this->errorResponse('請提供有效的文章 ID 列表', 400);
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
+        }
+
+        $userId = (int) $request->getAttribute('user_id');
+        $deleted = 0;
+
+        foreach ($ids as $id) {
+            try {
+                $this->postService->deletePost((int) $id, $userId);
+                $deleted++;
+            } catch (\Throwable $e) {
+                // 繼續刪除其他文章
+            }
+        }
+
+        $successResponse = $this->successResponse(['deleted' => $deleted, 'total' => count($ids)]);
+        $response->getBody()->write($successResponse);
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
+    }
+
+    /**
      * 取消置頂貼文.
      *
      * DELETE /api/posts/{id}/pin

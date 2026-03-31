@@ -65,6 +65,14 @@ return [
         'name' => 'posts.destroy'
     ],
 
+    'posts.batch_delete' => [
+        'methods' => ['DELETE'],
+        'path' => '/api/posts/batch',
+        'handler' => [PostController::class, 'batchDelete'],
+        'middleware' => ['auth'],
+        'name' => 'posts.batch_delete'
+    ],
+
     // API 資訊和文件
     'api.info' => [
         'methods' => ['GET'],

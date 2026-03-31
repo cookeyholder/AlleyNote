@@ -178,7 +178,21 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         }
 
         // 打亂字元順序
-        return str_shuffle($password);
+        return $this->secureShuffle($password);
+    }
+
+    /**
+     * 使用 CSPRNG 安全地打亂字串.
+     */
+    private function secureShuffle(string $string): string {
+        $bytes = random_bytes(strlen($string));
+        $array = str_split($string);
+        $indices = array_map(fn($b) => ord($b), str_split($bytes));
+        for ($i = count($array) - 1; $i > 0; $i--) {
+            $j = $indices[$i] % ($i + 1);
+            [$array[$i], $array[$j]] = [$array[$j], $array[$i]];
+        }
+        return implode('', $array);
     }
 
     public function calculatePasswordStrength(string $password): array

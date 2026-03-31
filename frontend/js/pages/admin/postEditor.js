@@ -372,12 +372,24 @@ function startAutoSave(postId) {
  * 設定離開頁面前提示
  */
 function setupBeforeUnload() {
-  window.addEventListener("beforeunload", (e) => {
-    if (hasUnsavedChanges) {
-      e.preventDefault();
-      e.returnValue = "";
-    }
-  });
+  window.addEventListener("beforeunload", handleBeforeUnload);
+}
+
+/**
+ * beforeunload 事件處理器
+ */
+function handleBeforeUnload(e) {
+  if (hasUnsavedChanges) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+}
+
+/**
+ * 移除 beforeunload 監聽器
+ */
+function removeBeforeUnload() {
+  window.removeEventListener("beforeunload", handleBeforeUnload);
 }
 
 /**
@@ -398,6 +410,9 @@ function cleanupEditor() {
   originalPostData = null; // 清除原始數據
   selectedTagIds = []; // 清除標籤選擇
   availableTags = []; // 清除標籤列表
+
+  // 移除 beforeunload 監聽器
+  removeBeforeUnload();
 }
 
 /**
