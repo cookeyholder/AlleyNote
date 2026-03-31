@@ -3,6 +3,7 @@ import { router } from "../../utils/router.js";
 import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 // DOMPurify 從 CDN 全域載入
 const DOMPurify = window.DOMPurify;
@@ -132,7 +133,7 @@ export async function renderPost(postId) {
             </div>
 
             <h1 class="text-4xl md:text-5xl font-bold text-modern-900 mb-8 tracking-tight leading-tight animate-fade-in">
-              ${post.title}
+              ${escapeHtml(post.title)}
             </h1>
 
             <div class="flex flex-wrap items-center gap-y-4 gap-x-8 text-sm font-bold text-modern-500 uppercase tracking-widest border-b border-modern-200 pb-8">

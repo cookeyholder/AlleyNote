@@ -7,6 +7,7 @@ import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { router } from "../../utils/router.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 let currentPage = 1;
 let currentFilters = {};
@@ -276,7 +277,7 @@ async function loadPosts() {
                     : ""
                 }
                 <td class="px-6 py-4">
-                  <div class="text-sm font-bold text-modern-900 group-hover:text-accent-700 transition-colors">${post.title}</div>
+                  <div class="text-sm font-bold text-modern-900 group-hover:text-accent-700 transition-colors">${escapeHtml(post.title)}</div>
                   <div class="text-xs text-modern-400 mt-0.5">ID: #${post.id}</div>
                 </td>
                 <td class="px-6 py-4">

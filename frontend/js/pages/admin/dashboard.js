@@ -7,6 +7,7 @@ import { router } from "../../utils/router.js";
 import { apiClient } from "../../api/client.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 /**
  * 渲染儀表板頁面
@@ -250,7 +251,7 @@ async function loadDashboardData() {
             return `
             <div class="flex items-center justify-between py-3 ${borderClass}">
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-modern-900 truncate">${post.title}</h3>
+                <h3 class="font-medium text-modern-900 truncate">${escapeHtml(post.title)}</h3>
                 <div class="flex items-center gap-2 mt-1">
                   <p class="text-sm text-modern-500">${post.formattedDateTime}</p>
                   ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ""}
