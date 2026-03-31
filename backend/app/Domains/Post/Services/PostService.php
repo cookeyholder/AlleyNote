@@ -30,7 +30,6 @@ class PostService implements PostServiceInterface
         $data = $dto->toArray();
 
         // 設定建立時間
-        // // $data ? $data->created_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         return $this->repository->create($data);
     }
@@ -68,7 +67,6 @@ class PostService implements PostServiceInterface
         }
 
         // 設定更新時間
-        // // $data ? $data->updated_at : null)) = new DateTimeImmutable()->format(DateTimeImmutable::RFC3339); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
 
         return $this->repository->update($id, $data);
     }

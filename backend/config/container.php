@@ -231,9 +231,6 @@ return array_merge(
         }),
     ],
 
-    // 快取服務
-    CacheServiceProvider::getDefinitions(),
-
     // 核心領域與共用服務
     [
         CacheService::class => \DI\autowire(CacheService::class),

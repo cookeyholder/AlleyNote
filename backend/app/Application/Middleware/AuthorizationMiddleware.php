@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Middleware;
 
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
+use App\Infrastructure\Http\Response;
 
 class AuthorizationMiddleware
 {
@@ -20,30 +21,36 @@ class AuthorizationMiddleware
         return $this->authorizationService->can($userId, $resource, $action);
     }
 
-    public function requirePermission(int $userId, string $resource, string $action): void
+    public function requirePermission(int $userId, string $resource, string $action): Response
     {
         if (!$this->checkPermission($userId, $resource, $action)) {
-            http_response_code(403);
-            header('Content-Type: application/json');
-            echo json_encode([
-                'error' => '您沒有權限執行此操作',
-                'code' => 'FORBIDDEN',
-            ]) ?? '';
-            exit;
+            return new Response(
+                statusCode: 403,
+                headers: ['Content-Type' => 'application/json'],
+                body: json_encode([
+                    'error' => '您沒有權限執行此操作',
+                    'code' => 'FORBIDDEN',
+                ], JSON_UNESCAPED_UNICODE),
+            );
         }
+
+        return new Response(statusCode: 200);
     }
 
-    public function requireRole(int $userId, string $roleName): void
+    public function requireRole(int $userId, string $roleName): Response
     {
         if (!$this->authorizationService->hasRole($userId, $roleName)) {
-            http_response_code(403);
-            header('Content-Type: application/json');
-            echo json_encode([
-                'error' => '需要特定角色才能執行此操作',
-                'code' => 'FORBIDDEN',
-            ]) ?? '';
-            exit;
+            return new Response(
+                statusCode: 403,
+                headers: ['Content-Type' => 'application/json'],
+                body: json_encode([
+                    'error' => '需要特定角色才能執行此操作',
+                    'code' => 'FORBIDDEN',
+                ], JSON_UNESCAPED_UNICODE),
+            );
         }
+
+        return new Response(statusCode: 200);
     }
 
     public function extractResourceFromPath(string $path): string
