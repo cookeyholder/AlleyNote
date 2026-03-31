@@ -1,4 +1,4 @@
-import { postsAPI } from "../../api/modules/posts.js?v=20251014";
+import { postsAPI } from "../../api/modules/posts.js";
 import { router } from "../../utils/router.js";
 import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";

@@ -7,6 +7,11 @@ import { API_CONFIG } from "./config.js";
 import { storage } from "../utils/storage.js";
 import { notification } from "../utils/notification.js";
 
+// 請求常數
+const DEFAULT_TIMEOUT = 30000;
+const DEFAULT_PAGE_SIZE = 20;
+const MAX_RETRIES = 3;
+
 /**
  * API 錯誤類別
  */
@@ -25,7 +30,7 @@ export class ApiError extends Error {
 class ApiClient {
   constructor(config = {}) {
     this.baseURL = config.baseURL || API_CONFIG.baseURL;
-    this.timeout = config.timeout || API_CONFIG.timeout;
+    this.timeout = config.timeout || DEFAULT_TIMEOUT;
     this.headers = { ...API_CONFIG.headers, ...config.headers };
     this.withCredentials = config.withCredentials ?? API_CONFIG.withCredentials;
     this._refreshing = false; // Token 刷新中標誌

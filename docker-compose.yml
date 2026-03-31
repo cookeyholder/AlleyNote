@@ -30,7 +30,7 @@ services:
       - alleynote-network
 
   nginx:
-    image: nginx:alpine
+    image: nginx:1.27-alpine
     container_name: alleynote_nginx
     restart: unless-stopped
     ports:
@@ -51,7 +51,7 @@ services:
       - alleynote-network
 
   certbot:
-    image: certbot/certbot
+    image: certbot/certbot:v2.11.0
     container_name: alleynote_certbot
     restart: unless-stopped
     volumes:
@@ -91,7 +91,7 @@ services:
       - alleynote-network
 
   redis:
-    image: redis:alpine
+    image: redis:7.4-alpine
     container_name: alleynote_redis
     restart: unless-stopped
     command: redis-server --requirepass redis_dev_password_2024
