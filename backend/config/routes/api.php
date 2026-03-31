@@ -8,7 +8,7 @@ declare(strict_types=1);
  * 這個檔案包含所有 API 相關的路由定義
  */
 
-use App\Application\Controllers\PostController;
+use App\Application\Controllers\Api\V1\PostController;
 use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
 use App\Application\Controllers\Api\V1\SettingController;
