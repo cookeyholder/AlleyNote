@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
 use App\Domains\Post\DTOs\UpdatePostDTO;
@@ -35,6 +36,7 @@ class PostController extends BaseController
         private readonly OutputSanitizerInterface $sanitizer,
         private readonly ActivityLoggingServiceInterface $activityLogger,
         private readonly PostViewStatisticsService $postViewStatsService,
+        private readonly AuthorizationServiceInterface $authService,
     ) {}
 
     #[OA\Get(
@@ -586,9 +588,7 @@ class PostController extends BaseController
             // 驗證操作者權限：僅文章作者或管理員可更新
             $post = $this->postService->findById($id);
             $userId = (int) $request->getAttribute('user_id');
-            $userRole = $request->getAttribute('role');
-            $authorId = (int) $post->getUserId();
-            if ($userId !== $authorId && !in_array($userRole, ['admin', 'super_admin'], true)) {
+            if (!$this->canManagePost($userId, $id) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足，僅文章作者或管理員可更新', 403);
                 $response->getBody()->write($errorResponse);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
@@ -765,9 +765,7 @@ class PostController extends BaseController
 
             // 驗證操作者權限：僅文章作者或管理員可刪除
             $userId = (int) $request->getAttribute('user_id');
-            $userRole = $request->getAttribute('role');
-            $authorId = (int) $post->getUserId();
-            if ($userId !== $authorId && !in_array($userRole, ['admin', 'super_admin'], true)) {
+            if (!$this->canManagePost($userId, $id) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足，僅文章作者或管理員可刪除', 403);
                 $response->getBody()->write($errorResponse);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
@@ -1114,7 +1112,6 @@ class PostController extends BaseController
         try {
             $postId = (int) $args['id'];
             $userId = (int) $request->getAttribute('user_id');
-            $userRole = $request->getAttribute('role');
 
             $post = $this->postService->getPostById($postId);
             if (!$post) {
@@ -1123,7 +1120,7 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            if (!in_array($userRole, ['admin', 'super_admin'], true) && $post->getAuthorId() !== $userId) {
+            if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
@@ -1189,7 +1186,6 @@ class PostController extends BaseController
         try {
             $postId = (int) $args['id'];
             $userId = (int) $request->getAttribute('user_id');
-            $userRole = $request->getAttribute('role');
 
             $post = $this->postService->getPostById($postId);
             if (!$post) {
@@ -1198,7 +1194,7 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            if (!in_array($userRole, ['admin', 'super_admin'], true) && $post->getAuthorId() !== $userId) {
+            if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
@@ -1248,10 +1244,9 @@ class PostController extends BaseController
     public function batchDelete(Request $request, Response $response): Response
     {
         $userId = (int) $request->getAttribute('user_id');
-        $userRole = $request->getAttribute('role');
 
         // 僅允許管理員或超級管理員執行批次刪除
-        if (!in_array($userRole, ['admin', 'super_admin'], true)) {
+        if (!$this->authService->can($userId, 'post', 'delete') && !$this->authService->can($userId, 'post', 'manage')) {
             $errorResponse = $this->errorResponse('權限不足，僅管理員可執行批次刪除', 403);
             $response->getBody()->write($errorResponse);
             return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
@@ -1332,7 +1327,6 @@ class PostController extends BaseController
         try {
             $postId = (int) $args['id'];
             $userId = (int) $request->getAttribute('user_id');
-            $userRole = $request->getAttribute('role');
 
             $post = $this->postService->findById($postId);
             if (!$post) {
@@ -1341,7 +1335,7 @@ class PostController extends BaseController
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
-            if (!in_array($userRole, ['admin', 'super_admin'], true) && $post->getAuthorId() !== $userId) {
+            if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
@@ -1364,5 +1358,14 @@ class PostController extends BaseController
 
             return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
         }
+    }
+
+    /**
+     * 檢查使用者是否有權限操作指定文章.
+     */
+    private function canManagePost(int $userId, int $postId): bool
+    {
+        return $this->authService->can($userId, 'post', 'manage')
+            || $this->authService->can($userId, 'post', 'update');
     }
 }
