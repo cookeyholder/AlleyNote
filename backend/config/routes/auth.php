@@ -17,7 +17,8 @@ return [
         'methods' => ['POST'],
         'path' => '/api/auth/login',
         'handler' => [AuthController::class, 'login'],
-        'name' => 'auth.login'
+        'name' => 'auth.login',
+        'middleware' => ['rate_limit']
     ],
 
     // 登出
