@@ -54,8 +54,25 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-      - name: Run npm Security Audit
-        run: npm audit --production || true
+      - name: Run npm Security Audit (High/Critical Gate)
+        run: |
+          npm audit --omit=dev --json > npm-audit.json || true
+          node -e "
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('npm-audit.json', 'utf8'));
+            const vulns = report.vulnerabilities || {};
+            let high = 0;
+            let critical = 0;
+            for (const vuln of Object.values(vulns)) {
+              if (vuln && vuln.severity === 'high') high += 1;
+              if (vuln && vuln.severity === 'critical') critical += 1;
+            }
+            console.log('npm audit summary => high=' + high + ', critical=' + critical);
+            if (high + critical > 0) {
+              console.error('❌ 發現 high/critical Node.js 漏洞');
+              process.exit(1);
+            }
+          "
 
       - name: Check for known security vulnerabilities
         run: |
@@ -82,7 +99,7 @@ jobs:
           echo "" >> ../security-report.md
           echo "## Node.js 相依套件漏洞" >> ../security-report.md
           cd ..
-          npm audit --production --json 2>/dev/null | jq -r '.vulnerabilities | to_entries[] | "- **\(.key)** (\(.value.severity)): \(.value.title)"' >> security-report.md || true
+          npm audit --omit=dev --json 2>/dev/null | jq -r '.vulnerabilities | to_entries[] | "- **\(.key)** (\(.value.severity)): \(.value.title)"' >> security-report.md || true
 
       - name: Upload security report
         if: failure()
