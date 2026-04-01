@@ -215,16 +215,24 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * 取得下一個序列號碼
+     * 取得下一個序列號碼（使用資料庫鎖避免競爭條件）.
      */
     private function getNextSeqNumber(): int
     {
-        $sql = 'SELECT COALESCE(MAX(seq_number), 0) + 1 as next_seq FROM posts';
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return (int) $result['next_seq'];
+        // 使用 IMMEDIATE 模式取得獨占鎖，確保序列號唯一
+        $this->db->exec('BEGIN IMMEDIATE');
+        try {
+            $sql = 'SELECT COALESCE(MAX(seq_number), 0) + 1 as next_seq FROM posts';
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $nextSeq = (int) $result['next_seq'];
+            $this->db->exec('COMMIT');
+            return $nextSeq;
+        } catch (\Throwable $e) {
+            $this->db->exec('ROLLBACK');
+            throw new RuntimeException('取得序列號失敗: ' . $e->getMessage(), 0, $e);
+        }
     }
 
     public function find(int $id): ?Post
