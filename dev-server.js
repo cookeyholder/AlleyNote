@@ -92,7 +92,7 @@ function proxyRequest(req, res, targetUrl) {
     console.error("[proxy error]", err.message);
     if (!res.headersSent) {
       res.writeHead(502, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Proxy error", message: err.message }));
+      res.end(JSON.stringify({ error: "Proxy error" }));
     }
   });
 
@@ -150,6 +150,16 @@ function main() {
     }
 
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      // 解析真實路徑，防止 symlink 繞過
+      const realPath = fs.realpathSync(filePath);
+      if (
+        realPath !== staticResolved &&
+        !realPath.startsWith(staticResolved + path.sep)
+      ) {
+        res.writeHead(403);
+        res.end("Forbidden");
+        return;
+      }
       serveStaticFile(res, filePath);
       return;
     }
