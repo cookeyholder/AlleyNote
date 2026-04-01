@@ -1113,14 +1113,32 @@ class PostController extends BaseController
     {
         try {
             $postId = (int) $args['id'];
+            $userId = (int) $request->getAttribute('user_id');
+            $userRole = $request->getAttribute('role');
 
-            // 更新貼文狀態為 published
-            $post = $this->postService->updatePostStatus($postId, 'published');
+            $post = $this->postService->getPostById($postId);
+            if (!$post) {
+                $errorResponse = $this->errorResponse('貼文不存在', 404);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
 
-            $responseData = $this->successResponse($post, '貼文已發布');
+            if (!in_array($userRole, ['admin', 'super_admin'], true) && $post->getAuthorId() !== $userId) {
+                $errorResponse = $this->errorResponse('權限不足', 403);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $updatedPost = $this->postService->updatePostStatus($postId, 'published');
+
+            $responseData = $this->successResponse($updatedPost, '貼文已發布');
             $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (\App\Domains\Post\Exceptions\PostNotFoundException $e) {
+            $errorResponse = $this->errorResponse('貼文不存在', 404);
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $responseData = $this->handleException($e);
             $response->getBody()->write($responseData);
@@ -1170,14 +1188,32 @@ class PostController extends BaseController
     {
         try {
             $postId = (int) $args['id'];
+            $userId = (int) $request->getAttribute('user_id');
+            $userRole = $request->getAttribute('role');
 
-            // 更新貼文狀態為 draft
-            $post = $this->postService->updatePostStatus($postId, 'draft');
+            $post = $this->postService->getPostById($postId);
+            if (!$post) {
+                $errorResponse = $this->errorResponse('貼文不存在', 404);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
 
-            $responseData = $this->successResponse($post, '貼文已取消發布');
+            if (!in_array($userRole, ['admin', 'super_admin'], true) && $post->getAuthorId() !== $userId) {
+                $errorResponse = $this->errorResponse('權限不足', 403);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $updatedPost = $this->postService->updatePostStatus($postId, 'draft');
+
+            $responseData = $this->successResponse($updatedPost, '貼文已取消發布');
             $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (\App\Domains\Post\Exceptions\PostNotFoundException $e) {
+            $errorResponse = $this->errorResponse('貼文不存在', 404);
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $responseData = $this->handleException($e);
             $response->getBody()->write($responseData);
@@ -1231,18 +1267,26 @@ class PostController extends BaseController
         }
 
         $deleted = 0;
+        $failed = [];
 
         foreach ($ids as $id) {
             try {
                 $this->postService->deletePost((int) $id);
                 $deleted++;
             } catch (\Throwable $e) {
-                // 繼續刪除其他文章
+                $failed[] = [
+                    'id' => $id,
+                    'error' => '刪除失敗',
+                ];
             }
         }
 
-        $successResponse = $this->successResponse(['deleted' => $deleted, 'total' => count($ids)]);
-        $response->getBody()->write($successResponse);
+        $responseData = $this->successResponse([
+            'deleted' => $deleted,
+            'total' => count($ids),
+            'failed' => $failed,
+        ]);
+        $response->getBody()->write($responseData);
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -1287,15 +1331,33 @@ class PostController extends BaseController
     {
         try {
             $postId = (int) $args['id'];
+            $userId = (int) $request->getAttribute('user_id');
+            $userRole = $request->getAttribute('role');
 
-            // 直接調用 togglePin 的內部邏輯或簡化處理
-            $this->postService->setPinned($postId, false);
             $post = $this->postService->findById($postId);
+            if (!$post) {
+                $errorResponse = $this->errorResponse('貼文不存在', 404);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+            }
 
-            $responseData = $this->successResponse($post->toSafeArray($this->sanitizer), '已取消置頂');
+            if (!in_array($userRole, ['admin', 'super_admin'], true) && $post->getAuthorId() !== $userId) {
+                $errorResponse = $this->errorResponse('權限不足', 403);
+                $response->getBody()->write($errorResponse);
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+            }
+
+            $this->postService->setPinned($postId, false);
+            $updatedPost = $this->postService->findById($postId);
+
+            $responseData = $this->successResponse($updatedPost->toSafeArray($this->sanitizer), '已取消置頂');
             $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
+        } catch (\App\Domains\Post\Exceptions\PostNotFoundException $e) {
+            $errorResponse = $this->errorResponse('貼文不存在', 404);
+            $response->getBody()->write($errorResponse);
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $responseData = $this->handleException($e);
             $response->getBody()->write($responseData);

@@ -101,11 +101,17 @@ return array_merge(
         \App\Application\Middleware\PostViewRateLimitMiddleware::class => \DI\autowire(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
         'post_view_rate_limit' => \DI\get(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
 
-        // CSRF 中介層（Secure flag 依環境決定：production 開啟，其餘關閉）
+        // CSRF 中介層（Secure flag 依環境變數 CSRF_COOKIE_SECURE 決定，預設 production 開啟）
         \App\Application\Middleware\CsrfMiddleware::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
             $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
+            $secureEnv = $config->get('CSRF_COOKIE_SECURE');
+            // 若未設定 CSRF_COOKIE_SECURE，則依環境名稱決定：production 開啟，其餘關閉
+            // 使用 FILTER_NULL_ON_FAILURE 避免非法值靜默降級為 false
+            $secureCookie = $secureEnv !== null
+                ? (filter_var($secureEnv, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? ($config->getEnvironment() === 'production'))
+                : $config->getEnvironment() === 'production';
             return new \App\Application\Middleware\CsrfMiddleware(
-                secureCookie: $config->getEnvironment() === 'production',
+                secureCookie: $secureCookie,
                 logger: $c->get(LoggerInterface::class),
             );
         }),

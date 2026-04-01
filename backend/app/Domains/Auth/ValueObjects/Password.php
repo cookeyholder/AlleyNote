@@ -41,7 +41,7 @@ final readonly class Password implements JsonSerializable
         // 檢查密碼強度
         self::validatePasswordStrength($plainPassword);
 
-        $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($plainPassword, PASSWORD_ARGON2ID);
 
         return new self($hashedPassword);
     }
@@ -95,7 +95,7 @@ final readonly class Password implements JsonSerializable
      */
     public function needsRehash(): bool
     {
-        return password_needs_rehash($this->hashedValue, PASSWORD_DEFAULT);
+        return password_needs_rehash($this->hashedValue, PASSWORD_ARGON2ID);
     }
 
     /**

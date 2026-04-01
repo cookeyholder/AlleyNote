@@ -105,13 +105,15 @@ class CsrfMiddleware implements MiddlewareInterface
         // 不設定 HttpOnly 讓前端 JS 可以讀取（以便放入 X-CSRF-TOKEN header）
         // SameSite=Strict 防止跨站請求攜帶 Cookie
         // Secure 依環境決定：HTTPS 環境必須開啟，HTTP 開發環境需關閉以免 cookie 無法寫入
-        $secureFlag = $this->secureCookie ? 'Secure' : '';
-        $cookieValue = sprintf(
-            '%s=%s; Path=/; SameSite=Strict; %s',
-            self::COOKIE_NAME,
-            $newToken,
-            $secureFlag
-        );
+        $attributes = [
+            self::COOKIE_NAME . '=' . $newToken,
+            'Path=/',
+            'SameSite=Strict',
+        ];
+        if ($this->secureCookie) {
+            $attributes[] = 'Secure';
+        }
+        $cookieValue = implode('; ', $attributes);
 
         // 保留既有 Set-Cookie headers
         $existingCookies = $response->getHeader('Set-Cookie');

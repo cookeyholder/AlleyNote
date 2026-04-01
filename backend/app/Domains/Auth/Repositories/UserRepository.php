@@ -334,6 +334,7 @@ class UserRepository
         }
 
         unset($row['role_ids'], $row['role_names'], $row['role_display_names']);
+        unset($row['password_hash'], $row['password']);
         $row['roles'] = $roles;
 
         return $row;

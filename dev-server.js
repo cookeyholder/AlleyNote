@@ -11,6 +11,7 @@
  */
 
 const http = require("http");
+const https = require("https");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
@@ -74,7 +75,8 @@ function serveStaticFile(res, filePath) {
 
 function proxyRequest(req, res, targetUrl) {
   const url = new URL(targetUrl);
-  const proxyReq = http.request(
+  const clientModule = url.protocol === "https:" ? https : http;
+  const proxyReq = clientModule.request(
     {
       hostname: url.hostname,
       port: url.port || (url.protocol === "https:" ? 443 : 80),
@@ -113,10 +115,11 @@ function main() {
       args.proxyPath &&
       (urlPath === args.proxyPath || urlPath.startsWith(args.proxyPath + "/"))
     ) {
-      const targetPath = urlPath.substring(args.proxyPath.length);
-      const targetUrl =
-        args.proxyTarget.replace(/\/$/, "") + args.proxyPath + targetPath;
-      proxyRequest(req, res, targetUrl + queryString);
+      // 從 proxyTarget 提取 origin（不含 path），避免路徑重複拼接
+      const targetUrl = new URL(args.proxyTarget);
+      const origin = targetUrl.origin;
+      const proxyUrl = origin + urlPath + queryString;
+      proxyRequest(req, res, proxyUrl);
       return;
     }
 

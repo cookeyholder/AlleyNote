@@ -229,28 +229,38 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function getRealClientIP(array $serverParams): string
     {
-        // 檢查代理伺服器的標頭
-        $headers = [
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_REAL_IP',
-            'HTTP_CLIENT_IP',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_X_FORWARDED',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-        ];
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
 
-        foreach ($headers as $header) {
-            if (!empty($serverParams[$header])) {
-                $ips = explode(',', $serverParams[$header]);
-                $ip = trim($ips[0]);
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
+        // 僅在請求來自可信代理（本地回環或私有網路）時才信任轉發標頭
+        $isTrustedProxy = filter_var(
+            $remoteAddr,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+        ) === false;
+
+        if ($isTrustedProxy) {
+            $headers = [
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_REAL_IP',
+                'HTTP_CLIENT_IP',
+                'HTTP_X_CLUSTER_CLIENT_IP',
+                'HTTP_X_FORWARDED',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+            ];
+
+            foreach ($headers as $header) {
+                if (!empty($serverParams[$header])) {
+                    $ips = explode(',', $serverParams[$header]);
+                    $ip = trim($ips[0]);
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                        return $ip;
+                    }
                 }
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        return $remoteAddr;
     }
 
     public function getPriority(): int
