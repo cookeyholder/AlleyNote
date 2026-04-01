@@ -127,7 +127,13 @@ function main() {
     const resolved = path.resolve(filePath);
     const staticResolved = path.resolve(args.staticDir);
 
-    if (!resolved.startsWith(staticResolved)) {
+    // 防止路徑穿越：確保解析後的路徑在靜態目錄內
+    // 使用 staticResolved + path.sep 避免同前綴路徑繞過
+    // 例如：/repo/frontend-secrets 不會被 /repo/frontend 匹配
+    if (
+      resolved !== staticResolved &&
+      !resolved.startsWith(staticResolved + path.sep)
+    ) {
       res.writeHead(403);
       res.end("Forbidden");
       return;
