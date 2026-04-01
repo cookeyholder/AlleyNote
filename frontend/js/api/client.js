@@ -8,8 +8,6 @@ import { storage } from "../utils/storage.js";
 import { notification } from "../utils/notification.js";
 
 const DEFAULT_TIMEOUT = 30000;
-const DEFAULT_PAGE_SIZE = 20;
-const MAX_RETRIES = 3;
 
 export class ApiError extends Error {
   constructor(message, status, data = null) {
@@ -28,6 +26,7 @@ class ApiClient {
     this.withCredentials = config.withCredentials ?? API_CONFIG.withCredentials;
     this._refreshing = false;
     this._refreshPromise = null;
+    this._csrfInitPromise = null;
   }
 
   getAuthToken() {
@@ -88,6 +87,27 @@ class ApiClient {
     return this.getCookie("csrf_token") || this.getMetaContent("csrf-token");
   }
 
+  async ensureCsrfToken() {
+    if (this.getCsrfToken()) {
+      return;
+    }
+
+    if (this._csrfInitPromise) {
+      await this._csrfInitPromise;
+      return;
+    }
+
+    this._csrfInitPromise = fetch(`${this.baseURL}/csrf-token`, {
+      method: "GET",
+      credentials: this.withCredentials ? "include" : "same-origin",
+      headers: this.buildHeaders({}, "GET"),
+    }).finally(() => {
+      this._csrfInitPromise = null;
+    });
+
+    await this._csrfInitPromise;
+  }
+
   async handleResponse(response) {
     const contentType = response.headers.get("content-type");
 
@@ -117,6 +137,22 @@ class ApiClient {
     const isSilent = !!originalRequest?.options?.silent;
 
     if (error instanceof ApiError) {
+      if (
+        error.status === 403 &&
+        originalRequest &&
+        !originalRequest.options?._csrfRetried &&
+        error.data?.code === "CSRF_INVALID"
+      ) {
+        try {
+          originalRequest.options = originalRequest.options || {};
+          originalRequest.options._csrfRetried = true;
+          await this.ensureCsrfToken();
+          return this.request(originalRequest.url, originalRequest.options);
+        } catch (csrfRetryError) {
+          // ignore and continue default error flow
+        }
+      }
+
       if (
         error.status === 401 &&
         originalRequest &&
@@ -185,8 +221,8 @@ class ApiClient {
         window.dispatchEvent(new CustomEvent("auth:logout"));
       }
 
-      if (!error.silent && error.status === 401) {
-      } else if (!error.silent) {
+      if (!isSilent && error.status === 401) {
+      } else if (!isSilent) {
         notification.error(error.message);
       }
 
@@ -240,6 +276,14 @@ class ApiClient {
         if (queryString) {
           fullUrl += `?${queryString}`;
         }
+      }
+
+      const normalizedMethod = String(method).toUpperCase();
+      if (
+        ["POST", "PUT", "PATCH", "DELETE"].includes(normalizedMethod) &&
+        !this.getCsrfToken()
+      ) {
+        await this.ensureCsrfToken();
       }
 
       const fetchOptions = {

@@ -7,6 +7,16 @@ class ModalComponent {
     this.modals = [];
   }
 
+  sanitizeHtml(html) {
+    if (typeof html !== "string") {
+      return "";
+    }
+    if (typeof DOMPurify !== "undefined" && DOMPurify?.sanitize) {
+      return DOMPurify.sanitize(html);
+    }
+    return html;
+  }
+
   createActionButton(text, className, action) {
     const button = document.createElement("button");
     button.type = "button";
@@ -167,7 +177,7 @@ class ModalComponent {
           if (message instanceof Node) {
             wrapper.appendChild(message);
           } else {
-            wrapper.innerHTML = message;
+            wrapper.innerHTML = this.sanitizeHtml(message);
           }
           return wrapper;
         })()
@@ -263,7 +273,7 @@ class ModalComponent {
           if (message instanceof Node) {
             wrapper.appendChild(message);
           } else {
-            wrapper.innerHTML = message;
+            wrapper.innerHTML = this.sanitizeHtml(message);
           }
           return wrapper;
         })()
