@@ -39,17 +39,17 @@ jobs:
           HAS_TEST_E2E=false
           HAS_BUILD=false
 
-          if [ -f "frontend/package.json" ]; then
+          if [ -f "package.json" ]; then
             HAS_PACKAGE=true
           fi
 
-          if [ -f "frontend/package-lock.json" ]; then
+          if [ -f "package-lock.json" ]; then
             HAS_LOCKFILE=true
           fi
 
           if [ "$HAS_PACKAGE" = "true" ]; then
             script_exists() {
-              python3 -c "import json, sys; from pathlib import Path; data = json.loads(Path('frontend/package.json').read_text()); scripts = data.get('scripts', {}) if isinstance(data, dict) else {}; print('true' if sys.argv[1] in scripts else 'false')" "$1"
+              python3 -c "import json, sys; from pathlib import Path; data = json.loads(Path('package.json').read_text()); scripts = data.get('scripts', {}) if isinstance(data, dict) else {}; print('true' if sys.argv[1] in scripts else 'false')" "$1"
             }
 
             HAS_LINT=$(script_exists lint)
@@ -85,16 +85,16 @@ jobs:
         with:
           node-version: "18"
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         if: ${{ steps.detect.outputs.has_package == 'true' && steps.detect.outputs.has_lockfile == 'true' }}
-        working-directory: ./frontend
+        working-directory: .
         run: npm ci
 
       - name: Run available frontend checks
         if: ${{ steps.detect.outputs.has_package == 'true' && steps.detect.outputs.has_lockfile == 'true' }}
-        working-directory: ./frontend
+        working-directory: .
         run: |
           if [ "${{ steps.detect.outputs.has_lint }}" = "true" ]; then
             npm run lint
@@ -159,7 +159,7 @@ jobs:
 
       - name: Run npm audit
         if: ${{ steps.detect.outputs.has_package == 'true' && steps.detect.outputs.has_lockfile == 'true' }}
-        working-directory: ./frontend
+        working-directory: .
         run: npm audit --audit-level=moderate
 
       - name: Docker build

@@ -268,8 +268,7 @@ class ApiClient {
 
       return await this.handleResponse(response);
     } catch (error) {
-      error.silent = silent;
-      return this.handleError(error, { url, options });
+      return this.handleError(error, { url, options: { ...options, silent } });
     }
   }
 

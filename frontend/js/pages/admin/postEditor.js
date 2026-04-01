@@ -360,6 +360,21 @@ function startAutoSave(postId) {
         excerpt: form.excerpt.value,
       };
 
+      // 加入標籤和發布日期以避免自動儲存遺失變更
+      const tagIdsInput = document.getElementById("tag-ids");
+      if (tagIdsInput && tagIdsInput.value) {
+        try {
+          data.tag_ids = JSON.parse(tagIdsInput.value);
+        } catch {
+          // 忽略解析錯誤
+        }
+      }
+
+      const publishDateInput = document.getElementById("publish-date");
+      if (publishDateInput && publishDateInput.value) {
+        data.publish_date = publishDateInput.value;
+      }
+
       await apiClient.put(`/posts/${postId}`, data);
       hasUnsavedChanges = false;
     } catch (error) {

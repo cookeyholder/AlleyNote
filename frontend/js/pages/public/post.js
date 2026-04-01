@@ -124,7 +124,7 @@ export async function renderPost(postId) {
                   ? post.tags
                       .map(
                         (tag) => `
-                  <span class="px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
+                  <span class="px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold uppercase tracking-widest border border-accent-100">${escapeHtml(typeof tag === "string" ? tag : tag.name || tag)}</span>
                 `,
                       )
                       .join("")
