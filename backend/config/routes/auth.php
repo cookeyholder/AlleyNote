@@ -26,7 +26,7 @@ return [
         'path' => '/api/auth/logout',
         'handler' => [AuthController::class, 'logout'],
         'name' => 'auth.logout',
-        'middleware' => ['auth'] // 需要認證的中間件
+        'middleware' => ['auth', 'csrf']
     ],
 
     // 註冊
@@ -99,7 +99,7 @@ return [
             ];
         },
         'name' => 'auth.password.update',
-        'middleware' => ['auth'] // 需要認證的中間件
+        'middleware' => ['auth', 'csrf']
     ],
 
     // 更新個人資料
@@ -108,7 +108,7 @@ return [
         'path' => '/api/auth/profile',
         'handler' => [AuthController::class, 'updateProfile'],
         'name' => 'auth.profile.update',
-        'middleware' => ['auth']
+        'middleware' => ['auth', 'csrf']
     ],
 
     // 變更密碼
@@ -117,6 +117,6 @@ return [
         'path' => '/api/auth/change-password',
         'handler' => [AuthController::class, 'changePassword'],
         'name' => 'auth.change-password',
-        'middleware' => ['auth']
+        'middleware' => ['auth', 'csrf']
     ]
 ];

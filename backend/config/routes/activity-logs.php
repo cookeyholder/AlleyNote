@@ -30,7 +30,7 @@ return [
         'path' => '/api/v1/activity-logs',
         'handler' => [ActivityLogController::class, 'store'],
         'name' => 'activity_logs.store',
-        'middleware' => ['jwt.auth']
+        'middleware' => ['jwt.auth', 'csrf']
     ],
 
     // 取得活動統計

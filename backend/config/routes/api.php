@@ -29,6 +29,20 @@ return [
         'name' => 'api.health'
     ],
 
+    // CSRF Token 發放端點（讓前端首次請求可取得 CSRF Cookie）
+    'api.csrf-token' => [
+        'methods' => ['GET'],
+        'path' => '/api/csrf-token',
+        'handler' => function () {
+            return [
+                'success' => true,
+                'message' => 'CSRF token issued in cookie',
+            ];
+        },
+        'middleware' => ['csrf'],
+        'name' => 'api.csrf-token'
+    ],
+
     // 貼文 CRUD 路由
     'posts.index' => [
         'methods' => ['GET'],
@@ -123,7 +137,7 @@ return [
         'methods' => ['POST'],
         'path' => '/api/users',
         'handler' => [UserController::class, 'store'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'users.store'
     ],
 
@@ -131,7 +145,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/users/{id}',
         'handler' => [UserController::class, 'update'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'users.update'
     ],
 
@@ -139,7 +153,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/users/{id}',
         'handler' => [UserController::class, 'destroy'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'users.destroy'
     ],
 
@@ -147,7 +161,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/users/{id}/roles',
         'handler' => [UserController::class, 'assignRoles'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'users.assign_roles'
     ],
 
@@ -174,7 +188,7 @@ return [
         'methods' => ['POST'],
         'path' => '/api/roles',
         'handler' => [RoleController::class, 'store'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'roles.store'
     ],
 
@@ -182,7 +196,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/roles/{id}',
         'handler' => [RoleController::class, 'update'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'roles.update'
     ],
 
@@ -190,7 +204,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/roles/{id}',
         'handler' => [RoleController::class, 'destroy'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'roles.destroy'
     ],
 
@@ -198,7 +212,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/roles/{id}/permissions',
         'handler' => [RoleController::class, 'updatePermissions'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'roles.update_permissions'
     ],
 
@@ -244,7 +258,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/settings',
         'handler' => [SettingController::class, 'update'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'settings.update'
     ],
 
@@ -252,7 +266,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/settings/{key}',
         'handler' => [SettingController::class, 'updateSingle'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'settings.update_single'
     ],
 
@@ -284,7 +298,7 @@ return [
         'methods' => ['POST'],
         'path' => '/api/tags',
         'handler' => [TagController::class, 'store'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'tags.store'
     ],
 
@@ -292,7 +306,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/tags/{id}',
         'handler' => [TagController::class, 'update'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'tags.update'
     ],
 
@@ -300,7 +314,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/tags/{id}',
         'handler' => [TagController::class, 'destroy'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'csrf'],
         'name' => 'tags.destroy'
     ]
 ];

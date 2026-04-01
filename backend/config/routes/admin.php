@@ -54,7 +54,7 @@ return [
         'path' => '/api/admin/users',
         'handler' => [UserController::class, 'store'],
         'name' => 'admin.users.store',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.users.update' => [
@@ -62,7 +62,7 @@ return [
         'path' => '/api/admin/users/{id}',
         'handler' => [UserController::class, 'update'],
         'name' => 'admin.users.update',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.users.destroy' => [
@@ -70,7 +70,7 @@ return [
         'path' => '/api/admin/users/{id}',
         'handler' => [UserController::class, 'destroy'],
         'name' => 'admin.users.destroy',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.users.activate' => [
@@ -78,7 +78,7 @@ return [
         'path' => '/api/admin/users/{id}/activate',
         'handler' => [UserController::class, 'activate'],
         'name' => 'admin.users.activate',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.users.deactivate' => [
@@ -86,7 +86,7 @@ return [
         'path' => '/api/admin/users/{id}/deactivate',
         'handler' => [UserController::class, 'deactivate'],
         'name' => 'admin.users.deactivate',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.users.reset-password' => [
@@ -94,7 +94,7 @@ return [
         'path' => '/api/admin/users/{id}/reset-password',
         'handler' => [UserController::class, 'resetPassword'],
         'name' => 'admin.users.reset-password',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     // 文章發布管理
@@ -103,7 +103,7 @@ return [
         'path' => '/api/posts/{id}/publish',
         'handler' => [PostController::class, 'publish'],
         'name' => 'admin.posts.publish',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.posts.unpublish' => [
@@ -111,7 +111,7 @@ return [
         'path' => '/api/posts/{id}/unpublish',
         'handler' => [PostController::class, 'unpublish'],
         'name' => 'admin.posts.unpublish',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     'admin.posts.unpin' => [
@@ -119,7 +119,7 @@ return [
         'path' => '/api/posts/{id}/pin',
         'handler' => [PostController::class, 'unpin'],
         'name' => 'admin.posts.unpin',
-        'middleware' => ['auth', 'admin']
+        'middleware' => ['auth', 'admin', 'csrf']
     ],
 
     // 系統資訊

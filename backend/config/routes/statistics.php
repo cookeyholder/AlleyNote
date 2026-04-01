@@ -88,7 +88,7 @@ return [
         'path' => '/api/admin/statistics/refresh',
         'handler' => [StatisticsAdminController::class, 'refresh'],
         'name' => 'statistics.admin.refresh',
-        'middleware' => ['jwt.auth']
+        'middleware' => ['jwt.auth', 'csrf']
     ],
 
     // 清除統計快取
@@ -97,7 +97,7 @@ return [
         'path' => '/api/admin/statistics/cache',
         'handler' => [StatisticsAdminController::class, 'clearCache'],
         'name' => 'statistics.admin.cache.clear',
-        'middleware' => ['jwt.auth']
+        'middleware' => ['jwt.auth', 'csrf']
     ],
 
     // 統計系統健康檢查
