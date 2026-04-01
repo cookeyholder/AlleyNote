@@ -42,6 +42,7 @@ services:
       - CHOWN
       - SETGID
       - SETUID
+    read_only: true
 
   nginx:
     image: nginx:1.27-alpine

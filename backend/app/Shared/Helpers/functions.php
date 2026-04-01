@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Post;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Ramsey\Uuid\Uuid;

@@ -803,9 +803,12 @@ class PostRepository implements PostRepositoryInterface
         );
     }
 
-    public function findByUserId(int $userId): ?Post
+    /**
+     * 搜尋使用者的最新一篇文章（命名已反映實際行為）.
+     */
+    public function findLatestByUserId(int $userId): ?Post
     {
-        $sql = $this->buildSelectQuery('p.user_id = :userId') . ' LIMIT 1';
+        $sql = $this->buildSelectQuery('p.user_id = :userId') . ' ORDER BY p.created_at DESC LIMIT 1';
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
@@ -816,6 +819,14 @@ class PostRepository implements PostRepositoryInterface
         }
 
         return Post::fromArray($this->preparePostData($result));
+    }
+
+    /**
+     * @deprecated 使用 findLatestByUserId() 取代
+     */
+    public function findByUserId(int $userId): ?Post
+    {
+        return $this->findLatestByUserId($userId);
     }
 
     public function search(string $keyword): mixed

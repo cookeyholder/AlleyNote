@@ -19,6 +19,7 @@ use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
+use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Helpers\NetworkHelper;
 use Exception;
@@ -42,6 +43,7 @@ class AuthController extends BaseController
         private ActivityLoggingServiceInterface $activityLoggingService,
         private UserRepositoryInterface $userRepository,
         private UserManagementService $userManagementService,
+        private EnvironmentConfig $config,
     ) {}
 
     #[OA\Post(
@@ -478,7 +480,7 @@ class AuthController extends BaseController
 
     private function buildCookieHeader(string $name, string $value, int $expiresAt, bool $httpOnly): string
     {
-        $isSecure = ($_ENV['APP_ENV'] ?? 'production') === 'production';
+        $isSecure = $this->config->getEnvironment() === 'production';
         $cookie = sprintf(
             '%s=%s; Path=/; Expires=%s; Max-Age=%d; SameSite=Lax%s%s',
             $name,

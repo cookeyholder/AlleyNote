@@ -15,9 +15,9 @@ abstract class BaseController
     /** @var array<string, HttpStatusCode> */
     private const EXCEPTION_HTTP_CODES = [
         'App\Domains\Post\Exceptions\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::BAD_REQUEST,
+        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
+        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Domains\Auth\Exceptions\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,

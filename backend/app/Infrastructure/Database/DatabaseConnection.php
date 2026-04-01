@@ -7,6 +7,12 @@ namespace App\Infrastructure\Database;
 use PDO;
 use RuntimeException;
 
+/**
+ * 資料庫連線工廠類別.
+ *
+ * @deprecated 請使用 DI 容器建立 PDO 實例（見 config/container.php）
+ *             此類別僅保留向後相容性與測試用途
+ */
 class DatabaseConnection
 {
     private static ?PDO $instance = null;
@@ -17,6 +23,9 @@ class DatabaseConnection
         PDO::ATTR_EMULATE_PREPARES => false,
     ];
 
+    /**
+     * @deprecated 使用 DI 容器建立 PDO 實例
+     */
     public static function getInstance(): PDO
     {
         if (self::$instance === null) {
@@ -24,7 +33,6 @@ class DatabaseConnection
             $connection = getenv('DB_CONNECTION') ?: 'sqlite';
             $database = getenv('DB_DATABASE');
 
-            // 如果測試環境指定了具體的資料庫檔案，使用該檔案，否則使用記憶體資料庫
             if ($env === 'testing' && ($database === ':memory:' || empty($database))) {
                 self::$instance = new PDO('sqlite::memory:', null, null, self::$options);
                 self::$instance->exec('PRAGMA foreign_keys = ON');

@@ -52,7 +52,8 @@ return [
         'methods' => ['POST'],
         'path' => '/api/auth/refresh',
         'handler' => [AuthController::class, 'refresh'],
-        'name' => 'auth.refresh'
+        'name' => 'auth.refresh',
+        'middleware' => ['csrf']
     ],
 
     // 密碼驗證
