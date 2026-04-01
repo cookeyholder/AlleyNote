@@ -103,26 +103,36 @@ function main() {
   const args = parseArgs(process.argv);
 
   const server = http.createServer((req, res) => {
-    if (args.proxyPath && req.url.startsWith(args.proxyPath)) {
-      const targetPath = req.url.substring(args.proxyPath.length);
+    // 解析 URL 以取得乾淨的路徑（不含查詢字串）
+    const parsedUrl = new URL(req.url, `http://localhost:${args.port}`);
+    const urlPath = parsedUrl.pathname;
+    const queryString = parsedUrl.search;
+
+    // 代理請求：精確匹配路徑前綴（避免 /api.evil.com 被誤判）
+    if (
+      args.proxyPath &&
+      (urlPath === args.proxyPath || urlPath.startsWith(args.proxyPath + "/"))
+    ) {
+      const targetPath = urlPath.substring(args.proxyPath.length);
       const targetUrl =
         args.proxyTarget.replace(/\/$/, "") + args.proxyPath + targetPath;
-      if (req.url.includes("?")) {
-        const queryString = req.url.substring(req.url.indexOf("?"));
-        const targetUrlBase =
-          args.proxyTarget.replace(/\/$/, "") +
-          args.proxyPath +
-          targetPath.split("?")[0];
-        proxyRequest(req, res, targetUrlBase + queryString);
-      } else {
-        proxyRequest(req, res, targetUrl);
-      }
+      proxyRequest(req, res, targetUrl + queryString);
+      return;
+    }
+
+    // 靜態檔案：先解碼 URL 再解析路徑，防止 %2e%2e 繞過
+    let decodedPath;
+    try {
+      decodedPath = decodeURIComponent(urlPath);
+    } catch {
+      res.writeHead(400);
+      res.end("Bad Request");
       return;
     }
 
     let filePath = path.join(
       args.staticDir,
-      req.url === "/" ? "index.html" : req.url,
+      decodedPath === "/" ? "index.html" : decodedPath,
     );
     const resolved = path.resolve(filePath);
     const staticResolved = path.resolve(args.staticDir);
