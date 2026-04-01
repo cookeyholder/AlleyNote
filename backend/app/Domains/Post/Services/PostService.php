@@ -180,10 +180,24 @@ class PostService implements PostServiceInterface
     {
         $post = $this->findById($id);
 
-        // 驗證狀態值
-        $validStatuses = ['draft', 'published', 'archived'];
-        if (!in_array($status, $validStatuses)) {
+        // 將字串狀態轉換為 PostStatus 枚舉
+        try {
+            $targetStatus = PostStatus::from($status);
+        } catch (\Throwable) {
             throw ValidationException::fromSingleError('status', '無效的狀態值');
+        }
+
+        // 使用狀態機驗證狀態轉換
+        /** @var PostStatus $currentStatus */
+        $currentStatus = $post->getStatus();
+        if (!$currentStatus->canTransitionTo($targetStatus)) {
+            throw new StateTransitionException(
+                sprintf(
+                    '無法將文章從「%s」狀態變更為「%s」',
+                    $currentStatus->getLabel(),
+                    $targetStatus->getLabel(),
+                ),
+            );
         }
 
         // 更新狀態
