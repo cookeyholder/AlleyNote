@@ -630,7 +630,7 @@ class PostController extends BaseController
                 metadata: [
                     'title' => $post->getTitle(),
                     'status' => $post->getStatusValue(),
-                    'changes' => $data, // 記錄變更的欄位
+                    'changed_fields' => is_array($data) ? array_keys($data) : [],
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );

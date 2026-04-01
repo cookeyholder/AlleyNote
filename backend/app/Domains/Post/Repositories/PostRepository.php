@@ -493,10 +493,6 @@ class PostRepository implements PostRepositoryInterface
         // 根據條件決定使用哪種快取鍵
         if (empty($conditions)) {
             $cacheKey = PostCacheKeyService::postList($page, 'published');
-            // } elseif (isset($data ? $conditions->status : null)))) { // isset 語法錯誤已註解
-            // $cacheKey = PostCacheKeyService::postList($page, (is_array($conditions) && isset($data ? $conditions->status : null)))) ? $data ? $conditions->status : null)) : null); // isset 語法錯誤已註解
-            // } elseif (isset($data ? $conditions->category : null)))) { // isset 語法錯誤已註解
-            // $cacheKey = PostCacheKeyService::postsByCategory((is_array($conditions) && isset($data ? $conditions->category : null)))) ? $data ? $conditions->category : null)) : null, $page); // isset 語法錯誤已註解
         } else {
             // 複雜查詢使用舊的方式
             $cacheKey = sprintf(

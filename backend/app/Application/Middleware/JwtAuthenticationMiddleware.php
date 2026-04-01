@@ -98,12 +98,18 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      */
     private function performSecurityChecks(ServerRequestInterface $request, JwtPayload $payload): void
     {
-        // 1. IP 地址驗證（如果 payload 包含 IP 資訊）
-        $tokenIpAddress = $payload->getCustomClaim('ip_address');
-        if ($tokenIpAddress !== null) {
-            $currentIp = NetworkHelper::getClientIp($request, $this->getTrustedProxies());
-            if ($tokenIpAddress !== $currentIp) {
-                throw new InvalidTokenException('Token 的 IP 地址不匹配');
+        // 1. IP 地址驗證（可配置，預設關閉以免影響行動網路/NAT 使用者）
+        $enableIpBinding = filter_var(
+            $_ENV['JWT_IP_BINDING_ENABLED'] ?? 'false',
+            FILTER_VALIDATE_BOOLEAN,
+        );
+        if ($enableIpBinding) {
+            $tokenIpAddress = $payload->getCustomClaim('ip_address');
+            if ($tokenIpAddress !== null) {
+                $currentIp = NetworkHelper::getClientIp($request, $this->getTrustedProxies());
+                if ($tokenIpAddress !== $currentIp) {
+                    throw new InvalidTokenException('Token 的 IP 地址不匹配');
+                }
             }
         }
     }
