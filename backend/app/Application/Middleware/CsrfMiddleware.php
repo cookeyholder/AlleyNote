@@ -31,6 +31,7 @@ class CsrfMiddleware implements MiddlewareInterface
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
         private ?LoggerInterface $logger = null,
+        private bool $secureCookie = true,
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -103,11 +104,13 @@ class CsrfMiddleware implements MiddlewareInterface
         // 使用 Set-Cookie header 附加 CSRF token
         // 不設定 HttpOnly 讓前端 JS 可以讀取（以便放入 X-CSRF-TOKEN header）
         // SameSite=Strict 防止跨站請求攜帶 Cookie
-        // Secure 僅在 HTTPS 連線下傳輸（生產環境必備）
+        // Secure 依環境決定：HTTPS 環境必須開啟，HTTP 開發環境需關閉以免 cookie 無法寫入
+        $secureFlag = $this->secureCookie ? 'Secure' : '';
         $cookieValue = sprintf(
-            '%s=%s; Path=/; SameSite=Strict; Secure',
+            '%s=%s; Path=/; SameSite=Strict; %s',
             self::COOKIE_NAME,
-            $newToken
+            $newToken,
+            $secureFlag
         );
 
         // 保留既有 Set-Cookie headers

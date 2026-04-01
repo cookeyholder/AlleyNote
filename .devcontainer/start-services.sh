@@ -28,6 +28,6 @@ start_if_not_listening \
 start_if_not_listening \
     "frontend" \
     "3000" \
-    npx live-server "${workspace_root}/frontend" --host=0.0.0.0 --port=3000 --no-browser --quiet --watch="${workspace_root}/frontend" --proxy=/api:http://127.0.0.1:8081/api
+    node "${workspace_root}/dev-server.js" "${workspace_root}/frontend" --port 3000 --proxy /api:http://127.0.0.1:8081/api
 
 echo "[devcontainer] services ready: frontend=http://localhost:3000 backend=http://localhost:8081"

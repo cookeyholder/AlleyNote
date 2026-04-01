@@ -101,6 +101,16 @@ return array_merge(
         \App\Application\Middleware\PostViewRateLimitMiddleware::class => \DI\autowire(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
         'post_view_rate_limit' => \DI\get(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
 
+        // CSRF 中介層（Secure flag 依環境決定：production 開啟，其餘關閉）
+        \App\Application\Middleware\CsrfMiddleware::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
+            return new \App\Application\Middleware\CsrfMiddleware(
+                secureCookie: $config->getEnvironment() === 'production',
+                logger: $c->get(LoggerInterface::class),
+            );
+        }),
+        'csrf' => \DI\get(\App\Application\Middleware\CsrfMiddleware::class),
+
         // 其他控制器
         \App\Application\Controllers\Api\V1\PostViewController::class => \DI\autowire(\App\Application\Controllers\Api\V1\PostViewController::class),
     ],

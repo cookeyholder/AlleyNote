@@ -1,12 +1,12 @@
 {
-    "scripts": {
-        "lint": "prettier --check \"frontend/js/**/*.js\" \"frontend/*.html\" \"tests/e2e/tests/**/*.js\"",
-        "lint:fix": "prettier --write \"frontend/js/**/*.js\" \"frontend/*.html\" \"tests/e2e/tests/**/*.js\""
-    },
-    "devDependencies": {
-        "@playwright/test": "^1.58.2",
-        "live-server": "^1.2.2",
-        "playwright": "^1.58.2",
-        "prettier": "^3.6.2"
-    }
+  "scripts": {
+    "dev": "node dev-server.js ./frontend --port 3000 --proxy /api:http://127.0.0.1:8081/api",
+    "lint": "prettier --check \"frontend/js/**/*.js\" \"frontend/*.html\" \"tests/e2e/tests/**/*.js\"",
+    "lint:fix": "prettier --write \"frontend/js/**/*.js\" \"frontend/*.html\" \"tests/e2e/tests/**/*.js\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "playwright": "^1.58.2",
+    "prettier": "^3.6.2"
+  }
 }

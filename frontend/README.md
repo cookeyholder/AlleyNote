@@ -91,7 +91,7 @@ const API_BASE_URL = "/api";
 目前設定邏輯：
 
 - 前端一律走同源 `/api`
-- DevContainer 本機模式：`localhost:3000` 由 `live-server --proxy` 轉發到 `localhost:8081`
+- DevContainer 本機模式：`localhost:3000` 由 `dev-server.js` 代理轉發到 `localhost:8081`
 - Docker Compose 模式：`localhost:3000/api` 由 Nginx 轉發到 API（主機對外預設 `8081`，可用 `API_HOST_PORT` 覆寫）
 
 ## 路由
