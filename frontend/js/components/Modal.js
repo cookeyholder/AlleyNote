@@ -98,8 +98,8 @@ class ModalComponent {
     if (contentElement) {
       if (content instanceof Node) {
         contentElement.appendChild(content);
-      } else {
-        contentElement.innerHTML = content;
+      } else if (typeof content === "string") {
+        contentElement.innerHTML = DOMPurify.sanitize(content);
       }
     }
 
