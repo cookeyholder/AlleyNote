@@ -6,147 +6,106 @@ namespace App\Domains\Post\Services;
 
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
-use App\Domains\Post\DTOs\CreatePostDTO;
-use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Enums\PostStatus;
+use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Domains\Post\Exceptions\StateTransitionException;
 use App\Domains\Post\Models\Post;
 use App\Shared\Exceptions\NotFoundException;
-use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
-use Exception;
-use InvalidArgumentException;
-use RuntimeException;
 use Throwable;
 
+/**
+ * 貼文領域服務.
+ */
 class PostService implements PostServiceInterface
 {
     public function __construct(
         private readonly PostRepositoryInterface $repository,
     ) {}
 
-    public function createPost(CreatePostDTO $dto): Post
+    /**
+     * 建立新貼文.
+     */
+    public function createPost(array $data): Post
     {
-        // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
-        $data = $dto->toArray();
+        $post = new Post($data);
+        $this->repository->store($post);
 
-        // 設定建立時間
-
-        return $this->repository->create($data);
+        return $post;
     }
 
-    public function updatePost(int $id, UpdatePostDTO $dto): Post
+    /**
+     * 更新貼文.
+     */
+    public function updatePost(int $id, array $data): Post
     {
-        $post = $this->repository->find($id);
-        if (!$post) {
-            throw new NotFoundException('找不到指定的文章');
-        }
+        $post = $this->findById($id);
+        $post->update($data);
+        $this->repository->update($post);
 
-        // 檢查是否有資料要更新
-        if (!$dto->hasChanges()) {
-            return $post;
-        }
-
-        // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
-        $data = $dto->toArray();
-
-        // 處理狀態轉換（如果有提供狀態）
-        if ($dto->status !== null) {
-            /** @var PostStatus $currentStatus */
-            $currentStatus = $post->getStatus();
-            $targetStatus = $dto->status;
-
-            if (!$currentStatus->canTransitionTo($targetStatus)) {
-                throw new StateTransitionException(
-                    sprintf(
-                        '無法將文章從「%s」狀態變更為「%s」',
-                        $currentStatus->getLabel(),
-                        $targetStatus->getLabel(),
-                    ),
-                );
-            }
-        }
-
-        // 設定更新時間
-
-        return $this->repository->update($id, $data);
+        return $post;
     }
 
-    public function deletePost(int $id): bool
+    /**
+     * 刪除貼文.
+     */
+    public function deletePost(int $id): void
     {
-        try {
-            return $this->repository->safeDelete($id);
-        } catch (InvalidArgumentException $e) {
-            throw new StateTransitionException($e->getMessage());
-        } catch (Exception $e) {
-            app_log('error', '刪除文章失敗', ['post_id' => $id, 'exception' => $e->getMessage()]);
-
-            throw new RuntimeException('刪除文章時發生錯誤');
-        }
+        $this->repository->delete($id);
     }
 
+    /**
+     * 取得單一貼文.
+     */
     public function findById(int $id): Post
     {
         $post = $this->repository->find($id);
         if (!$post) {
-            throw new NotFoundException('找不到指定的文章');
+            throw new PostNotFoundException($id);
         }
 
         return $post;
     }
 
     /**
-     * 取得文章列表.
-     * @param int $page 頁碼
-     * @param int $perPage 每頁筆數
-     * @param array $filters 篩選條件
-     * @return array<mixed>{items: Post[], total: int, page: int, per_page: int, last_page: int}
+     * 取得分頁貼文列表.
      */
-    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
+    public function listPosts(array $filters = [], int $page = 1, int $perPage = 15): array
     {
-        $result = $this->repository->paginate($page, $perPage, $filters);
-
-        // 確保回傳格式符合介面要求
-        return [
-            'items' => $result['items'] ?? [],
-            'total' => $result['total'] ?? 0,
-            'page' => $result['page'] ?? $page,
-            'per_page' => $result['perPage'] ?? $perPage,
-            'last_page' => $result['lastPage'] ?? 1,
-        ];
+        return $this->repository->paginate($filters, $page, $perPage);
     }
 
     /**
-     * 取得置頂文章列表.
-     * @param int $limit 取得筆數
-     * @return Post[]
+     * 取得置頂貼文.
      */
     public function getPinnedPosts(int $limit = 5): array
     {
-        return $this->repository->getPinnedPosts($limit);
-    }
-
-    public function setPinned(int $id, bool $isPinned): bool
-    {
-        try {
-            return $this->repository->safeSetPinned($id, $isPinned);
-        } catch (InvalidArgumentException $e) {
-            throw new StateTransitionException($e->getMessage());
-        } catch (Exception $e) {
-            app_log('error', '設定置頂狀態失敗', ['post_id' => $id, 'exception' => $e->getMessage()]);
-
-            throw new RuntimeException('設定置頂狀態時發生錯誤');
-        }
+        return $this->repository->getPinned($limit);
     }
 
     /**
-     * 設定文章標籤.
-     * @param int $id 文章 ID
-     * @param array $tagIds 標籤 ID 陣列
+     * 設定貼文置頂狀態.
      */
-    public function setTags(int $id, array $tagIds): void
+    public function setPinned(int $id, bool $isPinned): void
     {
-        $post = $this->repository->find($id);
-        if (!$post) {
+        $post = $this->findById($id);
+        $this->repository->setPinned($id, $isPinned);
+    }
+
+    /**
+     * 取得貼文標籤.
+     */
+    public function getPostTags(int $id): array
+    {
+        return $this->repository->getTags($id);
+    }
+
+    /**
+     * 設定貼文標籤.
+     */
+    public function setPostTags(int $id, array $tagIds): void
+    {
+        if (!$this->repository->find($id)) {
             throw new NotFoundException('找不到指定的文章');
         }
 
@@ -171,6 +130,8 @@ class PostService implements PostServiceInterface
         }
 
         return $this->repository->incrementViews($id, $userIp, $userId);
+    }
+
     /**
      * 更新貼文狀態.
      */
@@ -181,7 +142,7 @@ class PostService implements PostServiceInterface
         // 將字串狀態轉換為 PostStatus 枚舉
         try {
             $targetStatus = PostStatus::from($status);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             throw ValidationException::fromSingleError(
                 'status',
                 sprintf('無效的狀態值: "%s"。可接受的值有: %s', $status, implode(', ', array_map(fn($s) => $s->value, PostStatus::cases()))),
@@ -206,7 +167,14 @@ class PostService implements PostServiceInterface
 
         return $post;
     }
-        // 重新取得更新後的貼文
+
+    /**
+     * 置頂貼文.
+     */
+    public function pinPost(int $id): Post
+    {
+        $this->setPinned($id, true);
+
         return $this->findById($id);
     }
 

@@ -4,18 +4,17 @@ declare(strict_types=1);
 
 namespace Tests;
 
+use App\Application\Middleware\AuthorizationResult;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Http\Uri;
+use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use Mockery;
 use Mockery\MockInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Tests\Support\BaseTestCase;
-
-use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
-use App\Shared\Config\EnvironmentConfig;
-use App\Application\Middleware\AuthorizationResult;
 
 /**
  * Secure-DDD 模式專用測試基類.

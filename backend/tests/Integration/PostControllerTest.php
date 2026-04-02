@@ -64,8 +64,7 @@ class PostControllerTest extends IntegrationTestCase
             ]);
 
         // 3. 執行
-        $authService = Mockery::mock(AuthorizationServiceInterface::class);
-        $authService->shouldReceive('authorize')->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService = $this->mockAuthorizationService();
 
         $this->controller = new PostController(
             $this->postService,

@@ -116,6 +116,8 @@ function main() {
     const urlPath = parsedUrl.pathname;
     const queryString = parsedUrl.search;
 
+    console.log(`[request] ${req.method} ${req.url}`);
+
     // 代理請求：精確匹配路徑前綴（避免 /api.evil.com 被誤判）
     if (
       args.proxyPath &&
@@ -143,6 +145,8 @@ function main() {
       args.staticDir,
       decodedPath === "/" ? "index.html" : decodedPath,
     );
+
+    console.log(`[static] serving: ${filePath}`);
     const resolved = path.resolve(filePath);
     const staticResolved = path.resolve(args.staticDir);
 

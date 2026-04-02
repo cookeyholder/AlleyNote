@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Tests\Integration\Http;
 
 use App\Application\Controllers\Api\V1\PostController;
-use App\Application\Middleware\AuthorizationResult;
-use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;

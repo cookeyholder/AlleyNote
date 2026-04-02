@@ -98,7 +98,7 @@ jobs:
         working-directory: frontend
         run: |
           node ../dev-server.js . --port 3000 --proxy /api:http://127.0.0.1:8080/api &
-          sleep 5
+          sleep 10
 
       - name: Install test dependencies
         working-directory: tests/e2e
