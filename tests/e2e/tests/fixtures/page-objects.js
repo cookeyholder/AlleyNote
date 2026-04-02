@@ -143,14 +143,15 @@ class LoginPage extends SecureBasePage {
             break;
           }
 
-          const hasToken = await this.page
+          const isAuthenticated = await this.page
             .evaluate(() => {
-              const raw = localStorage.getItem("alleynote_access_token");
-              return !!raw && raw !== "null";
+              const hasToken = localStorage.getItem("alleynote_access_token");
+              const hasAuthMode = document.cookie.includes("auth_mode=cookie");
+              return (!!hasToken && hasToken !== "null") || hasAuthMode;
             })
             .catch(() => false);
 
-          if (hasToken) {
+          if (isAuthenticated) {
             try {
               await this.page.goto("/admin/dashboard", {
                 waitUntil: "domcontentloaded",

@@ -18,16 +18,18 @@ test.describe("登入全域狀態回歸測試", () => {
         async () =>
           await page.evaluate(() => {
             const rawUser = localStorage.getItem("alleynote_user");
-            if (!rawUser) {
-              return null;
+            const hasAuthCookie = document.cookie.includes("auth_mode=cookie");
+
+            if (rawUser) {
+              try {
+                const parsed = JSON.parse(rawUser);
+                return parsed?.email || parsed?.username || "present";
+              } catch {
+                return "invalid-json";
+              }
             }
 
-            try {
-              const parsed = JSON.parse(rawUser);
-              return parsed?.email || parsed?.username || "present";
-            } catch {
-              return "invalid-json";
-            }
+            return hasAuthCookie ? "cookie-active" : null;
           }),
         { timeout: 15000 },
       )

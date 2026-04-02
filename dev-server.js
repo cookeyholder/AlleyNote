@@ -85,7 +85,11 @@ function proxyRequest(req, res, targetUrl) {
       headers: { ...req.headers, host: url.host },
     },
     (proxyRes) => {
-      res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      res.writeHead(proxyRes.statusCode);
+      Object.keys(proxyRes.headers).forEach((key) => {
+        const value = proxyRes.headers[key];
+        res.setHeader(key, value);
+      });
       proxyRes.pipe(res);
     },
   );

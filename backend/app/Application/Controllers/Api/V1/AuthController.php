@@ -465,9 +465,9 @@ class AuthController extends BaseController
     private function withAuthCookies(Response $response, TokenPair $tokens): Response
     {
         return $response
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true))
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false))
             ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', $tokens->getRefreshToken(), $tokens->getRefreshTokenExpiresAt()->getTimestamp(), true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false));
+            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true));
     }
 
     private function expireAuthCookies(Response $response): Response
