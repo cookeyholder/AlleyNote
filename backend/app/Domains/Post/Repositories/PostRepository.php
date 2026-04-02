@@ -17,6 +17,7 @@ use InvalidArgumentException;
 use PDO;
 use PDOException;
 use RuntimeException;
+use Throwable;
 
 class PostRepository implements PostRepositoryInterface
 {
@@ -240,11 +241,12 @@ class PostRepository implements PostRepositoryInterface
             }
 
             return $nextSeq;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // 只有當事務是由此處開啟時才回滾
             if (!$inTransaction) {
                 $this->db->exec('ROLLBACK');
             }
+
             throw new RuntimeException('取得序列號失敗: ' . $e->getMessage(), 0, $e);
         }
     }

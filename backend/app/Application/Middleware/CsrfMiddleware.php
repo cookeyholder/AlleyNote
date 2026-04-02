@@ -23,8 +23,11 @@ use Psr\Log\LoggerInterface;
 class CsrfMiddleware implements MiddlewareInterface
 {
     private const DEFAULT_PRIORITY = 15;
+
     private const MIDDLEWARE_NAME = 'csrf';
+
     private const COOKIE_NAME = 'csrf_token';
+
     private const TOKEN_LENGTH = 32;
 
     public function __construct(
@@ -45,6 +48,7 @@ class CsrfMiddleware implements MiddlewareInterface
         // 安全方法：直接通過，但附加 CSRF Cookie
         if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
             $response = $handler->handle($request);
+
             return $this->attachCsrfCookie($request, $response);
         }
 
@@ -70,11 +74,13 @@ class CsrfMiddleware implements MiddlewareInterface
                     'code' => 'CSRF_INVALID',
                 ], JSON_UNESCAPED_UNICODE),
             );
+
             return $this->attachCsrfCookie($request, $errorResponse);
         }
 
         // 驗證通過，繼續處理請求並確保回應中仍有 CSRF Cookie
         $response = $handler->handle($request);
+
         return $this->attachCsrfCookie($request, $response);
     }
 

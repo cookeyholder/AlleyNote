@@ -184,7 +184,8 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
     /**
      * 使用 CSPRNG 安全地打亂字串.
      */
-    private function secureShuffle(string $string): string {
+    private function secureShuffle(string $string): string
+    {
         $bytes = random_bytes(strlen($string));
         $array = str_split($string);
         $indices = array_map(fn($b) => ord($b), str_split($bytes));
@@ -192,6 +193,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $j = $indices[$i] % ($i + 1);
             [$array[$i], $array[$j]] = [$array[$j], $array[$i]];
         }
+
         return implode('', $array);
     }
 

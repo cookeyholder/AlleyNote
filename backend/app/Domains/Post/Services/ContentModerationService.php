@@ -234,15 +234,15 @@ class ContentModerationService
     {
         $criticalIssues = array_filter(
             $result['issues'],
-            fn($issue) => $issue['severity'] === ActivitySeverity::CRITICAL
+            fn($issue) => $issue['severity'] === ActivitySeverity::CRITICAL,
         );
         $highIssues = array_filter(
             $result['issues'],
-            fn($issue) => $issue['severity'] === ActivitySeverity::HIGH
+            fn($issue) => $issue['severity'] === ActivitySeverity::HIGH,
         );
         $mediumIssues = array_filter(
             $result['issues'],
-            fn($issue) => $issue['severity'] === ActivitySeverity::MEDIUM
+            fn($issue) => $issue['severity'] === ActivitySeverity::MEDIUM,
         );
 
         if (!empty($criticalIssues)) {

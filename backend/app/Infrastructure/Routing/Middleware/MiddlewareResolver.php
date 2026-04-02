@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
 
+use App\Application\Middleware\CsrfMiddleware;
 use App\Application\Middleware\PostViewRateLimitMiddleware;
+use App\Application\Middleware\RateLimitMiddleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -25,8 +27,8 @@ class MiddlewareResolver
         'jwt.auth' => 'jwt.auth',
         'authorize' => 'jwt.authorize',
         'jwt.authorize' => 'jwt.authorize',
-        'csrf' => \App\Application\Middleware\CsrfMiddleware::class,
-        'rate_limit' => \App\Application\Middleware\RateLimitMiddleware::class,
+        'csrf' => CsrfMiddleware::class,
+        'rate_limit' => RateLimitMiddleware::class,
         'post_view_rate_limit' => PostViewRateLimitMiddleware::class,
     ];
 

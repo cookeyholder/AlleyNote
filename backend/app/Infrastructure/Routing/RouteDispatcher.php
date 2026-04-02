@@ -64,6 +64,7 @@ class RouteDispatcher
                     'middleware' => (string) $middleware,
                     'exception' => $e->getMessage(),
                 ]);
+
                 throw $e;
             }
         }

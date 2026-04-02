@@ -6,7 +6,6 @@ namespace Tests\Unit\Domains\Post\Services;
 
 use App\Domains\Post\Services\ContentModerationService;
 use App\Domains\Post\Services\RichTextProcessorService;
-use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;

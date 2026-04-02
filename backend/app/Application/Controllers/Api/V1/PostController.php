@@ -27,6 +27,7 @@ use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Throwable;
 
 class PostController extends BaseController
 {
@@ -282,6 +283,7 @@ class PostController extends BaseController
             if ($userId === null) {
                 $errorResponse = $this->errorResponse('需要身分驗證', 401);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
             }
             $data['user_id'] = (int) $userId;
@@ -591,6 +593,7 @@ class PostController extends BaseController
             if (!$this->canManagePost($userId, $id) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足，僅文章作者或管理員可更新', 403);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
@@ -768,6 +771,7 @@ class PostController extends BaseController
             if (!$this->canManagePost($userId, $id) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足，僅文章作者或管理員可刪除', 403);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
@@ -1117,12 +1121,14 @@ class PostController extends BaseController
             if (!$post) {
                 $errorResponse = $this->errorResponse('貼文不存在', 404);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
             if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
@@ -1132,9 +1138,10 @@ class PostController extends BaseController
             $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (\App\Domains\Post\Exceptions\PostNotFoundException $e) {
+        } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse('貼文不存在', 404);
             $response->getBody()->write($errorResponse);
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $responseData = $this->handleException($e);
@@ -1191,12 +1198,14 @@ class PostController extends BaseController
             if (!$post) {
                 $errorResponse = $this->errorResponse('貼文不存在', 404);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
             if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
@@ -1206,9 +1215,10 @@ class PostController extends BaseController
             $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (\App\Domains\Post\Exceptions\PostNotFoundException $e) {
+        } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse('貼文不存在', 404);
             $response->getBody()->write($errorResponse);
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $responseData = $this->handleException($e);
@@ -1237,9 +1247,9 @@ class PostController extends BaseController
                 required: ['ids'],
                 properties: [
                     new OA\Property(property: 'ids', type: 'array', items: new OA\Items(type: 'integer')),
-                ]
-            )
-        )
+                ],
+            ),
+        ),
     )]
     public function batchDelete(Request $request, Response $response): Response
     {
@@ -1249,6 +1259,7 @@ class PostController extends BaseController
         if (!$this->authService->can($userId, 'post', 'delete') && !$this->authService->can($userId, 'post', 'manage')) {
             $errorResponse = $this->errorResponse('權限不足，僅管理員可執行批次刪除', 403);
             $response->getBody()->write($errorResponse);
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
         }
 
@@ -1258,6 +1269,7 @@ class PostController extends BaseController
         if (empty($ids) || !is_array($ids)) {
             $errorResponse = $this->errorResponse('請提供有效的文章 ID 列表', 400);
             $response->getBody()->write($errorResponse);
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
         }
 
@@ -1268,7 +1280,7 @@ class PostController extends BaseController
             try {
                 $this->postService->deletePost((int) $id);
                 $deleted++;
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 $failed[] = [
                     'id' => $id,
                     'error' => '刪除失敗',
@@ -1282,6 +1294,7 @@ class PostController extends BaseController
             'failed' => $failed,
         ]);
         $response->getBody()->write($responseData);
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 
@@ -1332,12 +1345,14 @@ class PostController extends BaseController
             if (!$post) {
                 $errorResponse = $this->errorResponse('貼文不存在', 404);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
             }
 
             if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
             }
 
@@ -1348,9 +1363,10 @@ class PostController extends BaseController
             $response->getBody()->write($responseData);
 
             return $response->withStatus(200)->withHeader('Content-Type', 'application/json');
-        } catch (\App\Domains\Post\Exceptions\PostNotFoundException $e) {
+        } catch (PostNotFoundException $e) {
             $errorResponse = $this->errorResponse('貼文不存在', 404);
             $response->getBody()->write($errorResponse);
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (Exception $e) {
             $responseData = $this->handleException($e);

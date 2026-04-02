@@ -67,7 +67,7 @@ final class RichTextProcessorServiceTest extends UnitTestCase
             $this->assertStringNotContainsString(
                 '<script>',
                 $result['content'],
-                "等級 {$level} 不應該允許 script 標籤"
+                "等級 {$level} 不應該允許 script 標籤",
             );
         }
     }
@@ -82,7 +82,7 @@ final class RichTextProcessorServiceTest extends UnitTestCase
             $this->assertStringNotContainsString(
                 '<iframe>',
                 $result['content'],
-                "等級 {$level} 不應該允許 iframe 標籤"
+                "等級 {$level} 不應該允許 iframe 標籤",
             );
         }
     }
@@ -97,7 +97,7 @@ final class RichTextProcessorServiceTest extends UnitTestCase
             $this->assertStringNotContainsString(
                 '<object>',
                 $result['content'],
-                "等級 {$level} 不應該允許 object 標籤"
+                "等級 {$level} 不應該允許 object 標籤",
             );
         }
     }
@@ -112,7 +112,7 @@ final class RichTextProcessorServiceTest extends UnitTestCase
             $this->assertStringNotContainsString(
                 '<embed>',
                 $result['content'],
-                "等級 {$level} 不應該允許 embed 標籤"
+                "等級 {$level} 不應該允許 embed 標籤",
             );
         }
     }

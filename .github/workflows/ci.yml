@@ -14,7 +14,7 @@ jobs:
     name: Tests (PHP ${{ matrix.php-versions }})
 
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         php-versions: ["8.4"]
 

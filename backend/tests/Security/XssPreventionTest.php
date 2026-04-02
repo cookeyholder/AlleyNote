@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
+use App\Application\Middleware\AuthorizationResult;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -69,7 +71,7 @@ class XssPreventionTest extends SecureDDDTestCase
             $this->sanitizer,
             $this->activityLogger,
             Mockery::mock(PostViewStatisticsService::class),
-            Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class)->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->getMock(),
+            Mockery::mock(AuthorizationServiceInterface::class)->shouldReceive('authorize')->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))->getMock(),
         );
 
         $this->response->shouldReceive('getBody')->andReturn($this->stream);

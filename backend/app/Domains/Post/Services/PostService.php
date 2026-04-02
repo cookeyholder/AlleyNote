@@ -13,10 +13,10 @@ use App\Domains\Post\Models\Post;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
-use DateTimeImmutable;
 use Exception;
 use InvalidArgumentException;
 use RuntimeException;
+use Throwable;
 
 class PostService implements PostServiceInterface
 {
@@ -183,7 +183,7 @@ class PostService implements PostServiceInterface
         // 將字串狀態轉換為 PostStatus 枚舉
         try {
             $targetStatus = PostStatus::from($status);
-        } catch (\Throwable) {
+        } catch (Throwable) {
             throw ValidationException::fromSingleError('status', '無效的狀態值');
         }
 

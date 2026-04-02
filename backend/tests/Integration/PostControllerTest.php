@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
+use App\Application\Middleware\AuthorizationResult;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostService;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -62,8 +64,8 @@ class PostControllerTest extends IntegrationTestCase
             ]);
 
         // 3. 執行
-        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
-        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService = Mockery::mock(AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
 
         $this->controller = new PostController(
             $this->postService,
@@ -103,8 +105,8 @@ class PostControllerTest extends IntegrationTestCase
         $post = new Post(PostFactory::make(['id' => 123, 'title' => '重構標題']));
         $this->postService->shouldReceive('createPost')->once()->andReturn($post);
 
-        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
-        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService = Mockery::mock(AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
 
         $this->controller = new PostController(
             $this->postService,
