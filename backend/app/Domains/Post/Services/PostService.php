@@ -171,8 +171,6 @@ class PostService implements PostServiceInterface
         }
 
         return $this->repository->incrementViews($id, $userIp, $userId);
-    }
-
     /**
      * 更新貼文狀態.
      */
@@ -183,8 +181,11 @@ class PostService implements PostServiceInterface
         // 將字串狀態轉換為 PostStatus 枚舉
         try {
             $targetStatus = PostStatus::from($status);
-        } catch (Throwable) {
-            throw ValidationException::fromSingleError('status', '無效的狀態值');
+        } catch (\Throwable $e) {
+            throw ValidationException::fromSingleError(
+                'status',
+                sprintf('無效的狀態值: "%s"。可接受的值有: %s', $status, implode(', ', array_map(fn($s) => $s->value, PostStatus::cases()))),
+            );
         }
 
         // 使用狀態機驗證狀態轉換
@@ -193,16 +194,18 @@ class PostService implements PostServiceInterface
         if (!$currentStatus->canTransitionTo($targetStatus)) {
             throw new StateTransitionException(
                 sprintf(
-                    '無法將文章從「%s」狀態變更為「%s」',
+                    '狀態轉換失敗：無法從目前的「%s」狀態變更為目標「%s」狀態。',
                     $currentStatus->getLabel(),
                     $targetStatus->getLabel(),
                 ),
             );
         }
 
-        // 更新狀態
-        $this->repository->update($id, ['status' => $status]);
+        $post->updateStatus($targetStatus);
+        $this->repository->update($post);
 
+        return $post;
+    }
         // 重新取得更新後的貼文
         return $this->findById($id);
     }

@@ -74,6 +74,7 @@ function serveStaticFile(res, filePath) {
 }
 
 function proxyRequest(req, res, targetUrl) {
+  console.log(`[proxy] ${req.method} ${req.url} -> ${targetUrl}`);
   const url = new URL(targetUrl);
   const clientModule = url.protocol === "https:" ? https : http;
   const proxyReq = clientModule.request(
@@ -85,6 +86,7 @@ function proxyRequest(req, res, targetUrl) {
       headers: { ...req.headers, host: url.host },
     },
     (proxyRes) => {
+      console.log(`[proxy-res] ${req.url} -> ${proxyRes.statusCode}`);
       res.writeHead(proxyRes.statusCode);
       Object.keys(proxyRes.headers).forEach((key) => {
         const value = proxyRes.headers[key];
@@ -95,10 +97,10 @@ function proxyRequest(req, res, targetUrl) {
   );
 
   proxyReq.on("error", (err) => {
-    console.error("[proxy error]", err.message);
+    console.error(`[proxy-error] ${req.url} -> ${err.message}`);
     if (!res.headersSent) {
       res.writeHead(502, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: "Proxy error" }));
+      res.end(JSON.stringify({ error: "Proxy error", details: err.message }));
     }
   });
 

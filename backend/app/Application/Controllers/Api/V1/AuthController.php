@@ -481,16 +481,24 @@ class AuthController extends BaseController
     private function buildCookieHeader(string $name, string $value, int $expiresAt, bool $httpOnly): string
     {
         $isSecure = $this->config->getEnvironment() === 'production';
-        $cookie = sprintf(
-            '%s=%s; Path=/; Expires=%s; Max-Age=%d; SameSite=Lax%s%s',
-            $name,
-            rawurlencode($value),
-            gmdate('D, d M Y H:i:s T', $expiresAt),
-            max(0, $expiresAt - time()),
-            $isSecure ? '; Secure' : '',
-            $httpOnly ? '; HttpOnly' : '',
-        );
+        $maxAge = max(0, $expiresAt - time());
 
-        return $cookie;
+        $parts = [
+            sprintf('%s=%s', $name, rawurlencode($value)),
+            'Path=/',
+            sprintf('Expires=%s', gmdate('D, d M Y H:i:s T', $expiresAt)),
+            sprintf('Max-Age=%d', $maxAge),
+            'SameSite=Lax',
+        ];
+
+        if ($isSecure) {
+            $parts[] = 'Secure';
+        }
+
+        if ($httpOnly) {
+            $parts[] = 'HttpOnly';
+        }
+
+        return implode('; ', $parts);
     }
 }

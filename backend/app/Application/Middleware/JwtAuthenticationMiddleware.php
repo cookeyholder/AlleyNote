@@ -107,34 +107,19 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
     {
         // 1. IP 地址驗證（可配置，預設關閉以免影響行動網路/NAT 使用者）
         $enableIpBinding = filter_var(
-            $_ENV['JWT_IP_BINDING_ENABLED'] ?? 'false',
+            getenv('JWT_IP_BINDING_ENABLED') ?: ($_ENV['JWT_IP_BINDING_ENABLED'] ?? 'false'),
             FILTER_VALIDATE_BOOLEAN,
         );
+
         if ($enableIpBinding) {
             $tokenIpAddress = $payload->getCustomClaim('ip_address');
             if ($tokenIpAddress !== null) {
-                $currentIp = NetworkHelper::getClientIp($request, $this->getTrustedProxies());
+                $currentIp = NetworkHelper::getClientIp($request, NetworkHelper::getTrustedProxies());
                 if ($tokenIpAddress !== $currentIp) {
                     throw new InvalidTokenException('Token 的 IP 地址不匹配');
                 }
             }
         }
-    }
-
-    /**
-     * @return array<int, string>
-     */
-    private function getTrustedProxies(): array
-    {
-        $rawTrustedProxies = getenv('TRUSTED_PROXIES') ?: ($_ENV['TRUSTED_PROXIES'] ?? '');
-        if (!is_string($rawTrustedProxies) || trim($rawTrustedProxies) === '') {
-            return [];
-        }
-
-        return array_values(array_filter(array_map(
-            static fn(string $proxy): string => trim($proxy),
-            explode(',', $rawTrustedProxies),
-        )));
     }
 
     /**

@@ -72,8 +72,7 @@ class PostActivityLoggingTest extends IntegrationTestCase
         $this->activityLogger->shouldReceive('logSuccess')->once();
 
         // 4. 執行
-        $authService = Mockery::mock(AuthorizationServiceInterface::class);
-        $authService->shouldReceive('authorize')->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService = $this->mockAuthorizationService();
 
         $controller = new PostController(
             $this->postService,

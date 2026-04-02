@@ -13,6 +13,10 @@ use Mockery\MockInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Tests\Support\BaseTestCase;
 
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
+use App\Shared\Config\EnvironmentConfig;
+use App\Application\Middleware\AuthorizationResult;
+
 /**
  * Secure-DDD 模式專用測試基類.
  *
@@ -20,6 +24,33 @@ use Tests\Support\BaseTestCase;
  */
 abstract class SecureDDDTestCase extends BaseTestCase
 {
+    /**
+     * 模擬授權服務.
+     */
+    protected function mockAuthorizationService(): AuthorizationServiceInterface|MockInterface
+    {
+        $mock = Mockery::mock(AuthorizationServiceInterface::class);
+        $mock->shouldReceive('authorize')
+            ->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))
+            ->byDefault();
+        $mock->shouldReceive('can')
+            ->andReturn(true)
+            ->byDefault();
+
+        return $mock;
+    }
+
+    /**
+     * 模擬環境配置.
+     */
+    protected function mockEnvironmentConfig(string $env = 'testing'): EnvironmentConfig|MockInterface
+    {
+        // EnvironmentConfig 是 final 類別且沒有介面，通常直接使用實例
+        // 但為了測試靈活性，若有需要可以使用 Mock（需移除 final 或使用 Proxy）
+        // 這裡回傳一個預設為測試環境的實例
+        return new EnvironmentConfig();
+    }
+
     /**
      * 模擬 OutputSanitizer 服務.
      */

@@ -59,6 +59,24 @@ final class NetworkHelper
     }
 
     /**
+     * 從環境變數取得信任的代理伺服器清單.
+     *
+     * @return array<int, string>
+     */
+    public static function getTrustedProxies(): array
+    {
+        $rawTrustedProxies = getenv('TRUSTED_PROXIES') ?: ($_ENV['TRUSTED_PROXIES'] ?? '');
+        if (!is_string($rawTrustedProxies) || trim($rawTrustedProxies) === '') {
+            return [];
+        }
+
+        return array_values(array_filter(array_map(
+            static fn(string $proxy): string => trim($proxy),
+            explode(',', $rawTrustedProxies),
+        )));
+    }
+
+    /**
      * 檢查 IP 是否在指定的範圍內 (支援單一 IP 或 CIDR).
      */
     private static function isIpInRanges(string $ip, array $ranges): bool
