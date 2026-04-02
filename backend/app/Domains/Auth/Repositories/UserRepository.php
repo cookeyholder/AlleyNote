@@ -229,6 +229,7 @@ class UserRepository
                 ];
             }
 
+            /** @var array<string, mixed> $row */
             // 移除敏感欄位
             unset($row['role_ids'], $row['role_names'], $row['role_display_names'], $row['password_hash'], $row['password']);
             $row['roles'] = $roles;
@@ -333,6 +334,7 @@ class UserRepository
             ];
         }
 
+        /** @var array<string, mixed> $row */
         unset($row['role_ids'], $row['role_names'], $row['role_display_names']);
         unset($row['password_hash'], $row['password']);
         $row['roles'] = $roles;

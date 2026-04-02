@@ -82,6 +82,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
+        /** @phpstan-ignore-next-line */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->index($this->request, $this->response);
 
@@ -103,6 +104,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
+        /** @phpstan-ignore-next-line */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => (string) $postId]);
 
@@ -120,6 +122,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
+        /** @phpstan-ignore-next-line */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => '999']);
 
@@ -139,6 +142,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
+        /** @phpstan-ignore-next-line */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
@@ -157,6 +161,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
+        /** @phpstan-ignore-next-line */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
@@ -175,6 +180,7 @@ class PostControllerTest extends IntegrationTestCase
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
+        /** @phpstan-ignore-next-line */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->delete($this->request, $this->response, ['id' => (string) $postId]);
 

@@ -186,7 +186,12 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
      */
     private function secureShuffle(string $string): string
     {
-        $bytes = random_bytes(strlen($string));
+        $length = strlen($string);
+        if ($length <= 1) {
+            return $string;
+        }
+
+        $bytes = random_bytes($length);
         $array = str_split($string);
         $indices = array_map(fn($b) => ord($b), str_split($bytes));
         for ($i = count($array) - 1; $i > 0; $i--) {

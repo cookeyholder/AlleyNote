@@ -702,6 +702,25 @@ class PostRepository implements PostRepositoryInterface
         }
     }
 
+    /**
+     * 取得文章標籤.
+     * @return array<int, array<string, mixed>>
+     */
+    public function getPostTags(int $id): array
+    {
+        $sql = 'SELECT t.id, t.name
+               FROM tags t
+               INNER JOIN post_tags pt ON t.id = pt.tag_id
+               WHERE pt.post_id = :post_id
+               ORDER BY t.name';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([':post_id' => $id]);
+        $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        /** @var array<int, array<string, mixed>> */
+        return is_array($tags) ? $tags : [];
+    }
+
     public function setPinned(int $id, bool $isPinned): bool
     {
         $stmt = $this->db->prepare('UPDATE posts SET is_pinned = :is_pinned WHERE id = :id');

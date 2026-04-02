@@ -293,7 +293,7 @@ class PostController extends BaseController
             $post = $this->postService->createPost($dto);
 
             // 處理標籤
-            if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
+            if (isset($data['tag_ids']) && is_array($data['tag_ids'])) {
                 $tagIds = array_values(array_filter(array_map(function ($id) {
                     return is_numeric($id) ? (int) $id : null;
                 }, $data['tag_ids']), fn($id) => $id !== null));
@@ -601,7 +601,7 @@ class PostController extends BaseController
 
             // 處理標籤更新（獨立於文章內容更新）
             $hasTagUpdate = false;
-            if (is_array($data) && isset($data['tag_ids']) && is_array($data['tag_ids'])) {
+            if (isset($data['tag_ids']) && is_array($data['tag_ids'])) {
                 $tagIds = array_values(array_filter(array_map(function ($id) {
                     return is_numeric($id) ? (int) $id : null;
                 }, $data['tag_ids']), fn($id) => $id !== null));
@@ -633,7 +633,7 @@ class PostController extends BaseController
                 metadata: [
                     'title' => $post->getTitle(),
                     'status' => $post->getStatusValue(),
-                    'changed_fields' => is_array($data) ? array_keys($data) : [],
+                    'changed_fields' => array_keys($data),
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -1114,18 +1114,14 @@ class PostController extends BaseController
     public function publish(Request $request, Response $response, array $args): Response
     {
         try {
+            /** @phpstan-ignore-next-line */
             $postId = (int) $args['id'];
+            /** @phpstan-ignore-next-line */
             $userId = (int) $request->getAttribute('user_id');
 
-            $post = $this->postService->getPostById($postId);
-            if (!$post) {
-                $errorResponse = $this->errorResponse('貼文不存在', 404);
-                $response->getBody()->write($errorResponse);
+            $post = $this->postService->findById($postId);
 
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-            }
-
-            if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
+            if (!$this->canManagePost($userId, $postId) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
 
@@ -1191,18 +1187,14 @@ class PostController extends BaseController
     public function unpublish(Request $request, Response $response, array $args): Response
     {
         try {
+            /** @phpstan-ignore-next-line */
             $postId = (int) $args['id'];
+            /** @phpstan-ignore-next-line */
             $userId = (int) $request->getAttribute('user_id');
 
-            $post = $this->postService->getPostById($postId);
-            if (!$post) {
-                $errorResponse = $this->errorResponse('貼文不存在', 404);
-                $response->getBody()->write($errorResponse);
+            $post = $this->postService->findById($postId);
 
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-            }
-
-            if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
+            if (!$this->canManagePost($userId, $postId) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
 
@@ -1253,6 +1245,7 @@ class PostController extends BaseController
     )]
     public function batchDelete(Request $request, Response $response): Response
     {
+        /** @phpstan-ignore-next-line */
         $userId = (int) $request->getAttribute('user_id');
 
         // 僅允許管理員或超級管理員執行批次刪除
@@ -1264,6 +1257,7 @@ class PostController extends BaseController
         }
 
         $body = json_decode($request->getBody()->getContents(), true);
+        /** @phpstan-ignore-next-line */
         $ids = $body['ids'] ?? [];
 
         if (empty($ids) || !is_array($ids)) {
@@ -1278,6 +1272,7 @@ class PostController extends BaseController
 
         foreach ($ids as $id) {
             try {
+                /** @phpstan-ignore-next-line */
                 $this->postService->deletePost((int) $id);
                 $deleted++;
             } catch (Throwable $e) {
@@ -1338,18 +1333,14 @@ class PostController extends BaseController
     public function unpin(Request $request, Response $response, array $args): Response
     {
         try {
+            /** @phpstan-ignore-next-line */
             $postId = (int) $args['id'];
+            /** @phpstan-ignore-next-line */
             $userId = (int) $request->getAttribute('user_id');
 
             $post = $this->postService->findById($postId);
-            if (!$post) {
-                $errorResponse = $this->errorResponse('貼文不存在', 404);
-                $response->getBody()->write($errorResponse);
 
-                return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-            }
-
-            if (!$this->canManagePost($userId, $postId) && $post->getAuthorId() !== $userId) {
+            if (!$this->canManagePost($userId, $postId) && $post->getUserId() !== $userId) {
                 $errorResponse = $this->errorResponse('權限不足', 403);
                 $response->getBody()->write($errorResponse);
 

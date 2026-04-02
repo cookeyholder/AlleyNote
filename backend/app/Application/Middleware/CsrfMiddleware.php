@@ -68,7 +68,7 @@ class CsrfMiddleware implements MiddlewareInterface
             $errorResponse = new Response(
                 statusCode: 403,
                 headers: ['Content-Type' => 'application/json'],
-                body: json_encode([
+                body: (string) json_encode([
                     'success' => false,
                     'error' => 'CSRF Token 驗證失敗',
                     'code' => 'CSRF_INVALID',

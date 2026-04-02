@@ -27,7 +27,7 @@ class AuthorizationMiddleware
             return new Response(
                 statusCode: 403,
                 headers: ['Content-Type' => 'application/json'],
-                body: json_encode([
+                body: (string) json_encode([
                     'error' => '您沒有權限執行此操作',
                     'code' => 'FORBIDDEN',
                 ], JSON_UNESCAPED_UNICODE),
@@ -43,7 +43,7 @@ class AuthorizationMiddleware
             return new Response(
                 statusCode: 403,
                 headers: ['Content-Type' => 'application/json'],
-                body: json_encode([
+                body: (string) json_encode([
                     'error' => '需要特定角色才能執行此操作',
                     'code' => 'FORBIDDEN',
                 ], JSON_UNESCAPED_UNICODE),

@@ -95,16 +95,19 @@ final class AdminPostReadRepository
             $posts = [];
         }
 
+        $items = array_values(array_map(static function ($post): array {
+            if (!is_array($post)) {
+                return [];
+            }
+
+            /** @var array<string, mixed> $post */
+            $post['author'] ??= 'Unknown';
+
+            return $post;
+        }, $posts));
+
         return [
-            'items' => array_map(static function ($post): array {
-                if (!is_array($post)) {
-                    return [];
-                }
-
-                $post['author'] ??= 'Unknown';
-
-                return $post;
-            }, $posts),
+            'items' => $items,
             'total' => $total,
         ];
     }
@@ -147,6 +150,7 @@ final class AdminPostReadRepository
         $post['author'] ??= 'Unknown';
         $post['tags'] = $this->fetchTagsForPost($id);
 
+        /** @var array<string, mixed> */
         return $post;
     }
 
@@ -164,6 +168,7 @@ final class AdminPostReadRepository
         $tagsStmt->execute([':post_id' => $postId]);
         $tags = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
 
+        /** @var array<int, array<string, mixed>> */
         return is_array($tags) ? $tags : [];
     }
 

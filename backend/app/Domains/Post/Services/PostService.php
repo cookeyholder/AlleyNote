@@ -6,11 +6,12 @@ namespace App\Domains\Post\Services;
 
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\DTOs\CreatePostDTO;
+use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Exceptions\PostNotFoundException;
-use App\Domains\Post\Exceptions\StateTransitionException;
 use App\Domains\Post\Models\Post;
-use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use Throwable;
 
@@ -26,32 +27,25 @@ class PostService implements PostServiceInterface
     /**
      * 建立新貼文.
      */
-    public function createPost(array $data): Post
+    public function createPost(CreatePostDTO $dto): Post
     {
-        $post = new Post($data);
-        $this->repository->store($post);
-
-        return $post;
+        return $this->repository->create($dto->toArray());
     }
 
     /**
      * 更新貼文.
      */
-    public function updatePost(int $id, array $data): Post
+    public function updatePost(int $id, UpdatePostDTO $dto): Post
     {
-        $post = $this->findById($id);
-        $post->update($data);
-        $this->repository->update($post);
-
-        return $post;
+        return $this->repository->update($id, $dto->toArray());
     }
 
     /**
      * 刪除貼文.
      */
-    public function deletePost(int $id): void
+    public function deletePost(int $id): bool
     {
-        $this->repository->delete($id);
+        return $this->repository->delete($id);
     }
 
     /**
@@ -70,9 +64,9 @@ class PostService implements PostServiceInterface
     /**
      * 取得分頁貼文列表.
      */
-    public function listPosts(array $filters = [], int $page = 1, int $perPage = 15): array
+    public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
-        return $this->repository->paginate($filters, $page, $perPage);
+        return $this->repository->paginate($page, $perPage, $filters);
     }
 
     /**
@@ -80,16 +74,15 @@ class PostService implements PostServiceInterface
      */
     public function getPinnedPosts(int $limit = 5): array
     {
-        return $this->repository->getPinned($limit);
+        return $this->repository->getPinnedPosts($limit);
     }
 
     /**
      * 設定貼文置頂狀態.
      */
-    public function setPinned(int $id, bool $isPinned): void
+    public function setPinned(int $id, bool $isPinned): bool
     {
-        $post = $this->findById($id);
-        $this->repository->setPinned($id, $isPinned);
+        return $this->repository->setPinned($id, $isPinned);
     }
 
     /**
@@ -97,21 +90,14 @@ class PostService implements PostServiceInterface
      */
     public function getPostTags(int $id): array
     {
-        return $this->repository->getTags($id);
+        return $this->repository->getPostTags($id);
     }
 
     /**
      * 設定貼文標籤.
      */
-    public function setPostTags(int $id, array $tagIds): void
+    public function setTags(int $id, array $tagIds): void
     {
-        if (!$this->repository->find($id)) {
-            throw new NotFoundException('找不到指定的文章');
-        }
-
-        // 確保所有標籤 ID 都是整數
-        $tagIds = array_map('intval', array_unique($tagIds));
-
         $this->repository->setTags($id, $tagIds);
     }
 
@@ -162,10 +148,8 @@ class PostService implements PostServiceInterface
             );
         }
 
-        $post->updateStatus($targetStatus);
-        $this->repository->update($post);
-
-        return $post;
+        /** @var Post */
+        return $this->repository->update($id, ['status' => $targetStatus->value]);
     }
 
     /**
