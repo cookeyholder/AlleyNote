@@ -188,10 +188,11 @@ function main() {
   });
 
   server.listen(args.port, "0.0.0.0", () => {
-    console.log(`[dev-server] serving ${args.staticDir} on :${args.port}`);
+    console.log(`[dev-server] Listening on http://0.0.0.0:${args.port}`);
+    console.log(`[dev-server] Static directory: ${path.resolve(args.staticDir)}`);
     if (args.proxyPath) {
       console.log(
-        `[dev-server] proxy ${args.proxyPath} -> ${args.proxyTarget}`,
+        `[dev-server] Proxy: ${args.proxyPath} -> ${args.proxyTarget}`,
       );
     }
   });

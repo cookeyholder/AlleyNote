@@ -97,8 +97,12 @@ jobs:
       - name: Start frontend server
         working-directory: frontend
         run: |
-          node ../dev-server.js . --port 3000 --proxy /api:http://127.0.0.1:8080/api &
+          node ../dev-server.js . --port 3000 --proxy /api:http://127.0.0.1:8080/api > /tmp/frontend-server.log 2>&1 &
           sleep 10
+          echo "--- Frontend server log (startup) ---"
+          cat /tmp/frontend-server.log
+          echo "--- Checking port 3000 ---"
+          nc -zv 127.0.0.1 3000 || (echo "Frontend server failed to start!" && exit 1)
 
       - name: Install test dependencies
         working-directory: tests/e2e
@@ -111,6 +115,14 @@ jobs:
       - name: Run E2E tests
         working-directory: tests/e2e
         run: npm test
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "--- Frontend Server Log ---"
+          cat /tmp/frontend-server.log
+          echo "--- PHP Server Log ---"
+          cat /tmp/e2e-php-server.log
 
       - name: Upload test results
         if: always()

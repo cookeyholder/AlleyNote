@@ -163,13 +163,13 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
-        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
-        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
 
         // 建立控制器並執行
-        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        /** @var AuthController $controller */
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->register($this->request, $this->response);
 
@@ -218,13 +218,13 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
-        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
-        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
 
         // 建立控制器並執行
-        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        /** @var AuthController $controller */
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->register($this->request, $this->response);
 
@@ -301,13 +301,13 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
-        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
-        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
 
         // 建立控制器並執行
-        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        /** @var AuthController $controller */
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->login($this->request, $this->response);
 
@@ -336,13 +336,13 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
-        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
-        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
 
         // 建立控制器並執行
-        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        /** @var AuthController $controller */
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->login($this->request, $this->response);
 
@@ -379,13 +379,13 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
-        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
-        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
 
         // 建立控制器並執行
-        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        /** @var AuthController $controller */
         $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->logout($this->request, $this->response);
 
