@@ -78,6 +78,7 @@ class CsrfProtectionTest extends SecureDDDTestCase
             $this->sanitizer,
             $this->activityLogger,
             Mockery::mock(PostViewStatisticsService::class),
+            Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class)->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->getMock(),
         );
     }
 

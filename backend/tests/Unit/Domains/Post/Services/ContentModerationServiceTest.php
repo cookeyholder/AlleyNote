@@ -22,7 +22,7 @@ final class ContentModerationServiceTest extends UnitTestCase
         parent::setUp();
 
         $xssProtection = $this->createMock(XssProtectionService::class);
-        $xssProtection->method('detectXss')->willReturn([]);
+        $xssProtection->method('detectXss')->willReturn(false);
 
         $richTextProcessor = $this->createMock(RichTextProcessorService::class);
         $richTextProcessor->method('validateSecurity')->willReturn([]);

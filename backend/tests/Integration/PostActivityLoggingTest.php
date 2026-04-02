@@ -70,12 +70,16 @@ class PostActivityLoggingTest extends IntegrationTestCase
         $this->activityLogger->shouldReceive('logSuccess')->once();
 
         // 4. 執行
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+
         $controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
             Mockery::mock(PostViewStatisticsService::class),
+            $authService,
         );
 
         $response = $controller->store($request, new Response());

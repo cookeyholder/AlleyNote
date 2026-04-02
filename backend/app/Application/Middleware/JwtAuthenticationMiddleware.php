@@ -81,13 +81,20 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      */
     private function extractToken(ServerRequestInterface $request): ?string
     {
-        // 僅從 Authorization header 提取
+        // 1. 從 Authorization header 提取
         $authHeader = $request->getHeaderLine('Authorization');
         if (!empty($authHeader) && str_starts_with($authHeader, 'Bearer ')) {
             $token = trim(substr($authHeader, 7));
             if (!empty($token)) {
                 return $token;
             }
+        }
+
+        // 2. 從 Cookie 提取 (access_token)
+        $cookies = $request->getCookieParams();
+        $cookieToken = $cookies['access_token'] ?? null;
+        if (!empty($cookieToken) && is_string($cookieToken)) {
+            return $cookieToken;
         }
 
         return null;

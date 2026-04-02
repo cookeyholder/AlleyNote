@@ -219,18 +219,32 @@ class PostRepository implements PostRepositoryInterface
      */
     private function getNextSeqNumber(): int
     {
-        // 使用 IMMEDIATE 模式取得獨占鎖，確保序列號唯一
-        $this->db->exec('BEGIN IMMEDIATE');
+        // 檢查是否已在事務中，避免 SQLite 巢狀事務錯誤
+        $inTransaction = $this->db->inTransaction();
+
+        // 如果不在事務中，才手動開啟事務並取得獨占鎖
+        if (!$inTransaction) {
+            $this->db->exec('BEGIN IMMEDIATE');
+        }
+
         try {
             $sql = 'SELECT COALESCE(MAX(seq_number), 0) + 1 as next_seq FROM posts';
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             $nextSeq = (int) $result['next_seq'];
-            $this->db->exec('COMMIT');
+
+            // 只有當事務是由此處開啟時才提交
+            if (!$inTransaction) {
+                $this->db->exec('COMMIT');
+            }
+
             return $nextSeq;
         } catch (\Throwable $e) {
-            $this->db->exec('ROLLBACK');
+            // 只有當事務是由此處開啟時才回滾
+            if (!$inTransaction) {
+                $this->db->exec('ROLLBACK');
+            }
             throw new RuntimeException('取得序列號失敗: ' . $e->getMessage(), 0, $e);
         }
     }

@@ -78,7 +78,14 @@ class PostControllerTest extends IntegrationTestCase
         ]);
         $this->postViewStatsService->shouldReceive('getBatchPostViewStats')->once()->andReturn([]);
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService);
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService->shouldReceive('can')->andReturn(true)->zeroOrMoreTimes();
+
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
+        $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
+
+        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->index($this->request, $this->response);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -95,7 +102,14 @@ class PostControllerTest extends IntegrationTestCase
         $this->postService->shouldReceive('recordView')->once();
         $this->postViewStatsService->shouldReceive('getPostViewStats')->once()->andReturn(['views' => 10, 'unique_visitors' => 5]);
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService);
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService->shouldReceive('can')->andReturn(true)->zeroOrMoreTimes();
+
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
+        $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
+
+        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => (string) $postId]);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -108,7 +122,14 @@ class PostControllerTest extends IntegrationTestCase
         // 修正例外建立方式
         $this->postService->shouldReceive('findById')->once()->andThrow(new PostNotFoundException(999));
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService);
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService->shouldReceive('can')->andReturn(true)->zeroOrMoreTimes();
+
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
+        $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
+
+        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => '999']);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -123,7 +144,14 @@ class PostControllerTest extends IntegrationTestCase
         $createdPost = new Post(array_merge($postData, ['id' => 1, 'uuid' => 'uuid', 'seq_number' => 1]));
         $this->postService->shouldReceive('createPost')->once()->andReturn($createdPost);
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService);
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService->shouldReceive('can')->andReturn(true)->zeroOrMoreTimes();
+
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
+        $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
+
+        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -137,7 +165,14 @@ class PostControllerTest extends IntegrationTestCase
         // 確保 createPost 拋出 ValidationException
         $this->postService->shouldReceive('createPost')->once()->andThrow(new ValidationException(new ValidationResult(false, ['title' => ['Required']])));
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService);
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService->shouldReceive('can')->andReturn(true)->zeroOrMoreTimes();
+
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
+        $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
+
+        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -151,7 +186,14 @@ class PostControllerTest extends IntegrationTestCase
         $this->postService->shouldReceive('findById')->once()->with($postId)->andReturn($post);
         $this->postService->shouldReceive('deletePost')->once()->with($postId);
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService);
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+        $authService->shouldReceive('can')->andReturn(true)->zeroOrMoreTimes();
+
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
+        $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
+
+        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->delete($this->request, $this->response, ['id' => (string) $postId]);
 
         $this->assertEquals(204, $response->getStatusCode());

@@ -251,7 +251,7 @@ async function loadDashboardData() {
                 <h3 class="font-medium text-modern-900 truncate">${escapeHtml(post.title)}</h3>
                 <div class="flex items-center gap-2 mt-1">
                   <p class="text-sm text-modern-500">${post.formattedDateTime}</p>
-                  ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ""}
+                  ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${escapeHtml(post.author)}</p>` : ""}
                 </div>
               </div>
               <span class="ml-4 px-3 py-1 ${statusClass} text-sm rounded-full whitespace-nowrap">

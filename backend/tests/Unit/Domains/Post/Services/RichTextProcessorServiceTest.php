@@ -19,7 +19,7 @@ final class RichTextProcessorServiceTest extends UnitTestCase
     {
         parent::setUp();
         $xssProtection = $this->createMock(XssProtectionService::class);
-        $xssProtection->method('detectXss')->willReturn([]);
+        $xssProtection->method('detectXss')->willReturn(false);
         $this->service = new RichTextProcessorService($xssProtection);
     }
 

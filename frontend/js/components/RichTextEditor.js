@@ -247,10 +247,15 @@ export async function initRichTextEditor(elementId, options = {}) {
     htmlSupport: {
       allow: [
         {
-          name: /.*/,
+          name: /^(p|h1|h2|h3|h4|h5|h6|ul|ol|li|blockquote|strong|em|u|s|sub|sup|a|img|table|thead|tbody|tr|th|td|br|hr|span|div)$/,
           attributes: true,
           classes: true,
           styles: true,
+        },
+      ],
+      disallow: [
+        {
+          name: /^(script|iframe|object|embed|form|input|button|textarea|select|option|link|style)$/,
         },
       ],
     },

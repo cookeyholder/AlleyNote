@@ -30,15 +30,19 @@ class ApiClient {
   }
 
   getAuthToken() {
-    const cookieToken = this.getCookie("access_token");
-    if (cookieToken) return cookieToken;
+    // 若為 Cookie 認證模式，則不手動提取 token (讓瀏覽器自動處理 HttpOnly Cookie)
+    if (this.getCookie("auth_mode") === "cookie") {
+      return null;
+    }
+
     const token = storage.get("access_token");
     return typeof token === "string" ? token : null;
   }
 
   setAuthToken(token) {
-    const cookieToken = this.getCookie("access_token");
-    if (cookieToken !== null) {
+    // 若為 Cookie 認證模式，不需要手動存儲
+    if (this.getCookie("auth_mode") === "cookie") {
+      storage.remove("access_token");
       return;
     }
     storage.set("access_token", token);

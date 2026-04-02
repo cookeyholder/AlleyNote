@@ -115,13 +115,13 @@ return [
     ],
 
     // ========================================
-    // 使用者管理 API
+    // 使用者管理 API (管理員專用)
     // ========================================
     'users.index' => [
         'methods' => ['GET'],
         'path' => '/api/users',
         'handler' => [UserController::class, 'index'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'users.index'
     ],
 
@@ -129,7 +129,7 @@ return [
         'methods' => ['GET'],
         'path' => '/api/users/{id}',
         'handler' => [UserController::class, 'show'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'users.show'
     ],
 
@@ -137,7 +137,7 @@ return [
         'methods' => ['POST'],
         'path' => '/api/users',
         'handler' => [UserController::class, 'store'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'users.store'
     ],
 
@@ -145,7 +145,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/users/{id}',
         'handler' => [UserController::class, 'update'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'users.update'
     ],
 
@@ -153,7 +153,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/users/{id}',
         'handler' => [UserController::class, 'destroy'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'users.destroy'
     ],
 
@@ -161,18 +161,18 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/users/{id}/roles',
         'handler' => [UserController::class, 'assignRoles'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'users.assign_roles'
     ],
 
     // ========================================
-    // 角色管理 API
+    // 角色管理 API (管理員專用)
     // ========================================
     'roles.index' => [
         'methods' => ['GET'],
         'path' => '/api/roles',
         'handler' => [RoleController::class, 'index'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'roles.index'
     ],
 
@@ -180,7 +180,7 @@ return [
         'methods' => ['GET'],
         'path' => '/api/roles/{id}',
         'handler' => [RoleController::class, 'show'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'roles.show'
     ],
 
@@ -188,7 +188,7 @@ return [
         'methods' => ['POST'],
         'path' => '/api/roles',
         'handler' => [RoleController::class, 'store'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'roles.store'
     ],
 
@@ -196,7 +196,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/roles/{id}',
         'handler' => [RoleController::class, 'update'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'roles.update'
     ],
 
@@ -204,7 +204,7 @@ return [
         'methods' => ['DELETE'],
         'path' => '/api/roles/{id}',
         'handler' => [RoleController::class, 'destroy'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'roles.destroy'
     ],
 
@@ -212,18 +212,18 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/roles/{id}/permissions',
         'handler' => [RoleController::class, 'updatePermissions'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'roles.update_permissions'
     ],
 
     // ========================================
-    // 權限 API
+    // 權限 API (管理員專用)
     // ========================================
     'permissions.index' => [
         'methods' => ['GET'],
         'path' => '/api/permissions',
         'handler' => [RoleController::class, 'permissions'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'permissions.index'
     ],
 
@@ -231,18 +231,18 @@ return [
         'methods' => ['GET'],
         'path' => '/api/permissions/grouped',
         'handler' => [RoleController::class, 'permissionsGrouped'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'permissions.grouped'
     ],
 
     // ========================================
-    // 系統設定 API
+    // 系統設定 API (管理員專用)
     // ========================================
     'settings.index' => [
         'methods' => ['GET'],
         'path' => '/api/settings',
         'handler' => [SettingController::class, 'index'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'settings.index'
     ],
 
@@ -250,7 +250,7 @@ return [
         'methods' => ['GET'],
         'path' => '/api/settings/{key}',
         'handler' => [SettingController::class, 'show'],
-        'middleware' => ['auth'],
+        'middleware' => ['auth', 'admin'],
         'name' => 'settings.show'
     ],
 
@@ -258,7 +258,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/settings',
         'handler' => [SettingController::class, 'update'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'settings.update'
     ],
 
@@ -266,7 +266,7 @@ return [
         'methods' => ['PUT'],
         'path' => '/api/settings/{key}',
         'handler' => [SettingController::class, 'updateSingle'],
-        'middleware' => ['auth', 'csrf'],
+        'middleware' => ['auth', 'admin', 'csrf'],
         'name' => 'settings.update_single'
     ],
 

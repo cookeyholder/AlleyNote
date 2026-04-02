@@ -62,15 +62,19 @@ class PostControllerTest extends IntegrationTestCase
             ]);
 
         // 3. 執行
-        $controller = new PostController(
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+
+        $this->controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
             $this->statsService,
+            $authService,
         );
 
-        $response = $controller->index($request, new Response());
+        $response = $this->controller->index($request, new Response());
 
         // 4. 語義化斷言
         $this->assertResponseStatus($response, 200);
@@ -99,15 +103,19 @@ class PostControllerTest extends IntegrationTestCase
         $post = new Post(PostFactory::make(['id' => 123, 'title' => '重構標題']));
         $this->postService->shouldReceive('createPost')->once()->andReturn($post);
 
-        $controller = new PostController(
+        $authService = Mockery::mock(\App\Domains\Auth\Contracts\AuthorizationServiceInterface::class);
+        $authService->shouldReceive('authorize')->andReturn(new \App\Application\Middleware\AuthorizationResult(true, 'Allowed', 'SUCCESS'))->zeroOrMoreTimes();
+
+        $this->controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
             $this->statsService,
+            $authService,
         );
 
-        $response = $controller->store($request, new Response());
+        $response = $this->controller->store($request, new Response());
 
         $this->assertResponseStatus($response, 201);
         $this->assertJsonResponseMatches($response, [
