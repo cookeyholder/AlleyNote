@@ -50,9 +50,9 @@ final class ContentModerationServiceTest extends UnitTestCase
         $this->assertNotEmpty($result['issues']);
 
         $hasQualityIssue = false;
-        /** @phpstan-ignore-next-line */
-        foreach ($result['issues'] as $issue) {
-            /** @phpstan-ignore-next-line */
+        /** @var array<int, array{type: string}> $issues */
+        $issues = $result['issues'];
+        foreach ($issues as $issue) {
             if ($issue['type'] === 'quality_too_short') {
                 $hasQualityIssue = true;
                 break;
@@ -68,9 +68,9 @@ final class ContentModerationServiceTest extends UnitTestCase
         $result = $this->service->moderateContent('這包含髒話1和暴力詞1');
 
         $hasSensitiveWord = false;
-        /** @phpstan-ignore-next-line */
-        foreach ($result['issues'] as $issue) {
-            /** @phpstan-ignore-next-line */
+        /** @var array<int, array{type: string}> $issues */
+        $issues = $result['issues'];
+        foreach ($issues as $issue) {
             if ($issue['type'] === 'sensitive_word') {
                 $hasSensitiveWord = true;
                 break;
@@ -96,9 +96,9 @@ final class ContentModerationServiceTest extends UnitTestCase
         $result = $this->service->moderateContent('THIS IS ALL CAPS CONTENT WITH MORE THAN TEN CHARACTERS');
 
         $hasCapsIssue = false;
-        /** @phpstan-ignore-next-line */
-        foreach ($result['issues'] as $issue) {
-            /** @phpstan-ignore-next-line */
+        /** @var array<int, array{type: string}> $issues */
+        $issues = $result['issues'];
+        foreach ($issues as $issue) {
             if ($issue['type'] === 'quality_all_caps') {
                 $hasCapsIssue = true;
                 break;

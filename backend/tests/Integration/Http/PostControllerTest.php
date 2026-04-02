@@ -78,11 +78,13 @@ class PostControllerTest extends IntegrationTestCase
         ]);
         $this->postViewStatsService->shouldReceive('getBatchPostViewStats')->once()->andReturn([]);
 
-        $authService = $this->mockAuthorizationService();
+        $authServiceOrig = $this->mockAuthorizationService();
+        /** @var \App\Domains\Auth\Contracts\AuthorizationServiceInterface $authService */
+        $authService = $authServiceOrig;
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        /** @phpstan-ignore-next-line */
+        /** @var \App\Application\Controllers\Api\V1\PostController $controller */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->index($this->request, $this->response);
 
@@ -100,11 +102,13 @@ class PostControllerTest extends IntegrationTestCase
         $this->postService->shouldReceive('recordView')->once();
         $this->postViewStatsService->shouldReceive('getPostViewStats')->once()->andReturn(['views' => 10, 'unique_visitors' => 5]);
 
-        $authService = $this->mockAuthorizationService();
+        $authServiceOrig = $this->mockAuthorizationService();
+        /** @var \App\Domains\Auth\Contracts\AuthorizationServiceInterface $authService */
+        $authService = $authServiceOrig;
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        /** @phpstan-ignore-next-line */
+        /** @var \App\Application\Controllers\Api\V1\PostController $controller */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => (string) $postId]);
 
@@ -118,11 +122,13 @@ class PostControllerTest extends IntegrationTestCase
         // 修正例外建立方式
         $this->postService->shouldReceive('findById')->once()->andThrow(new PostNotFoundException(999));
 
-        $authService = $this->mockAuthorizationService();
+        $authServiceOrig = $this->mockAuthorizationService();
+        /** @var \App\Domains\Auth\Contracts\AuthorizationServiceInterface $authService */
+        $authService = $authServiceOrig;
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        /** @phpstan-ignore-next-line */
+        /** @var \App\Application\Controllers\Api\V1\PostController $controller */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => '999']);
 
@@ -138,11 +144,13 @@ class PostControllerTest extends IntegrationTestCase
         $createdPost = new Post(array_merge($postData, ['id' => 1, 'uuid' => 'uuid', 'seq_number' => 1]));
         $this->postService->shouldReceive('createPost')->once()->andReturn($createdPost);
 
-        $authService = $this->mockAuthorizationService();
+        $authServiceOrig = $this->mockAuthorizationService();
+        /** @var \App\Domains\Auth\Contracts\AuthorizationServiceInterface $authService */
+        $authService = $authServiceOrig;
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        /** @phpstan-ignore-next-line */
+        /** @var \App\Application\Controllers\Api\V1\PostController $controller */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
@@ -157,11 +165,13 @@ class PostControllerTest extends IntegrationTestCase
         // 確保 createPost 拋出 ValidationException
         $this->postService->shouldReceive('createPost')->once()->andThrow(new ValidationException(new ValidationResult(false, ['title' => ['Required']])));
 
-        $authService = $this->mockAuthorizationService();
+        $authServiceOrig = $this->mockAuthorizationService();
+        /** @var \App\Domains\Auth\Contracts\AuthorizationServiceInterface $authService */
+        $authService = $authServiceOrig;
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        /** @phpstan-ignore-next-line */
+        /** @var \App\Application\Controllers\Api\V1\PostController $controller */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
@@ -176,11 +186,13 @@ class PostControllerTest extends IntegrationTestCase
         $this->postService->shouldReceive('findById')->once()->with($postId)->andReturn($post);
         $this->postService->shouldReceive('deletePost')->once()->with($postId);
 
-        $authService = $this->mockAuthorizationService();
+        $authServiceOrig = $this->mockAuthorizationService();
+        /** @var \App\Domains\Auth\Contracts\AuthorizationServiceInterface $authService */
+        $authService = $authServiceOrig;
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        /** @phpstan-ignore-next-line */
+        /** @var \App\Application\Controllers\Api\V1\PostController $controller */
         $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
         $response = $controller->delete($this->request, $this->response, ['id' => (string) $postId]);
 

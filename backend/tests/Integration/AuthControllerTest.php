@@ -163,9 +163,14 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
+        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        $userRepository = $this->userRepository;
+        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        $userManagementService = $this->userManagementService;
+
         // 建立控制器並執行
-        /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $config);
+        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -213,9 +218,14 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
+        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        $userRepository = $this->userRepository;
+        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        $userManagementService = $this->userManagementService;
+
         // 建立控制器並執行
-        /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $config);
+        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->register($this->request, $this->response);
 
         // 驗證回應
@@ -291,9 +301,14 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
+        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        $userRepository = $this->userRepository;
+        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        $userManagementService = $this->userManagementService;
+
         // 建立控制器並執行
-        /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $config);
+        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應
@@ -321,9 +336,14 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
+        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        $userRepository = $this->userRepository;
+        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        $userManagementService = $this->userManagementService;
+
         // 建立控制器並執行
-        /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $config);
+        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->login($this->request, $this->response);
 
         // 驗證回應 - 當 AuthService 拋出 InvalidArgumentException 時，控制器返回 400
@@ -359,9 +379,14 @@ class AuthControllerTest extends IntegrationTestCase
 
         $config = new EnvironmentConfig();
 
+        /** @var \App\Domains\Auth\Contracts\UserRepositoryInterface $userRepository */
+        $userRepository = $this->userRepository;
+        /** @var \App\Domains\Auth\Services\UserManagementService $userManagementService */
+        $userManagementService = $this->userManagementService;
+
         // 建立控制器並執行
-        /** @phpstan-ignore-next-line */
-        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $this->userRepository, $this->userManagementService, $config);
+        /** @var \App\Application\Controllers\Api\V1\AuthController $controller */
+        $controller = new AuthController($this->authService, $this->authenticationService, $this->jwtTokenService, $this->validator, $this->activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->logout($this->request, $this->response);
 
         // 驗證回應

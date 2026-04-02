@@ -102,17 +102,13 @@ class ContentModerationService
 
         // 富文本安全檢查
         $richTextIssues = $this->richTextProcessor->validateSecurity($content);
-        /** @phpstan-ignore-next-line */
+        /** @var array<int, array{severity: ActivitySeverity, message: string, details?: string}> $richTextIssues */
         foreach ($richTextIssues as $issue) {
-            /** @phpstan-ignore-next-line */
             if ($issue['severity'] === ActivitySeverity::HIGH) {
                 $issues[] = [
                     'type'     => 'security_richtext',
-                    /** @phpstan-ignore-next-line */
                     'severity' => ActivitySeverity::HIGH,
-                    /** @phpstan-ignore-next-line */
                     'message'  => $issue['message'],
-                    /** @phpstan-ignore-next-line */
                     'details'  => $issue['details'] ?? '',
                 ];
             }
@@ -240,34 +236,39 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        /** @phpstan-ignore-next-line */
-        $criticalIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === ActivitySeverity::CRITICAL);
-        /** @phpstan-ignore-next-line */
-        $highIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === ActivitySeverity::HIGH);
-        /** @phpstan-ignore-next-line */
-        $mediumIssues = array_filter($result['issues'], fn($issue) => $issue['severity'] === ActivitySeverity::MEDIUM);
+        /** @var array<int, array{severity: ActivitySeverity}> $issues */
+        $issues = $result['issues'];
+
+        $criticalIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::CRITICAL);
+        $highIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::HIGH);
+        $mediumIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::MEDIUM);
 
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
             $result['confidence'] = 0;
-            /** @phpstan-ignore-next-line */
+            if (!isset($result['auto_actions']) || !is_array($result['auto_actions'])) {
+                $result['auto_actions'] = [];
+            }
             $result['auto_actions'][] = 'content_blocked';
         } elseif (count($highIssues) >= 2 || count($mediumIssues) >= 3) {
             $result['status'] = 'pending';
             $result['requires_human_review'] = true;
             $result['confidence'] = 30;
-            /** @phpstan-ignore-next-line */
+            if (!isset($result['auto_actions']) || !is_array($result['auto_actions'])) {
+                $result['auto_actions'] = [];
+            }
             $result['auto_actions'][] = 'flag_for_review';
         } elseif (!empty($highIssues) || !empty($mediumIssues)) {
             $result['status'] = 'conditional';
             $result['confidence'] = 70;
-            /** @phpstan-ignore-next-line */
+            if (!isset($result['recommendations']) || !is_array($result['recommendations'])) {
+                $result['recommendations'] = [];
+            }
             $result['recommendations'][] = '建議作者檢查並修正標記的問題';
         }
 
         // 根據問題數量調整信心度
-        /** @phpstan-ignore-next-line */
-        $totalIssues = count($result['issues']);
+        $totalIssues = count($issues);
         if ($totalIssues > 0 && $result['status'] === 'approved') {
             $result['confidence'] = max(50, 100 - ($totalIssues * 10));
         }

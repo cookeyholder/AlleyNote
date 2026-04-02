@@ -1114,10 +1114,15 @@ class PostController extends BaseController
     public function publish(Request $request, Response $response, array $args): Response
     {
         try {
-            /** @phpstan-ignore-next-line */
-            $postId = (int) $args['id'];
-            /** @phpstan-ignore-next-line */
-            $userId = (int) $request->getAttribute('user_id');
+            $postIdAttr = $args['id'] ?? null;
+            $userIdAttr = $request->getAttribute('user_id');
+
+            if (!is_numeric($postIdAttr) || !is_numeric($userIdAttr)) {
+                return $this->json($response, ['error' => '無效的請求參數'], 400);
+            }
+
+            $postId = (int) $postIdAttr;
+            $userId = (int) $userIdAttr;
 
             $post = $this->postService->findById($postId);
 
@@ -1187,10 +1192,15 @@ class PostController extends BaseController
     public function unpublish(Request $request, Response $response, array $args): Response
     {
         try {
-            /** @phpstan-ignore-next-line */
-            $postId = (int) $args['id'];
-            /** @phpstan-ignore-next-line */
-            $userId = (int) $request->getAttribute('user_id');
+            $postIdAttr = $args['id'] ?? null;
+            $userIdAttr = $request->getAttribute('user_id');
+
+            if (!is_numeric($postIdAttr) || !is_numeric($userIdAttr)) {
+                return $this->json($response, ['error' => '無效的請求參數'], 400);
+            }
+
+            $postId = (int) $postIdAttr;
+            $userId = (int) $userIdAttr;
 
             $post = $this->postService->findById($postId);
 
@@ -1245,8 +1255,11 @@ class PostController extends BaseController
     )]
     public function batchDelete(Request $request, Response $response): Response
     {
-        /** @phpstan-ignore-next-line */
-        $userId = (int) $request->getAttribute('user_id');
+        $userIdAttr = $request->getAttribute('user_id');
+        if (!is_numeric($userIdAttr)) {
+            return $this->json($response, ['error' => '未經授權的存取'], 401);
+        }
+        $userId = (int) $userIdAttr;
 
         // 僅允許管理員或超級管理員執行批次刪除
         if (!$this->authService->can($userId, 'post', 'delete') && !$this->authService->can($userId, 'post', 'manage')) {
@@ -1257,8 +1270,7 @@ class PostController extends BaseController
         }
 
         $body = json_decode($request->getBody()->getContents(), true);
-        /** @phpstan-ignore-next-line */
-        $ids = $body['ids'] ?? [];
+        $ids = is_array($body) ? ($body['ids'] ?? []) : [];
 
         if (empty($ids) || !is_array($ids)) {
             $errorResponse = $this->errorResponse('請提供有效的文章 ID 列表', 400);
@@ -1272,7 +1284,9 @@ class PostController extends BaseController
 
         foreach ($ids as $id) {
             try {
-                /** @phpstan-ignore-next-line */
+                if (!is_numeric($id)) {
+                    continue;
+                }
                 $this->postService->deletePost((int) $id);
                 $deleted++;
             } catch (Throwable $e) {
@@ -1333,10 +1347,15 @@ class PostController extends BaseController
     public function unpin(Request $request, Response $response, array $args): Response
     {
         try {
-            /** @phpstan-ignore-next-line */
-            $postId = (int) $args['id'];
-            /** @phpstan-ignore-next-line */
-            $userId = (int) $request->getAttribute('user_id');
+            $postIdAttr = $args['id'] ?? null;
+            $userIdAttr = $request->getAttribute('user_id');
+
+            if (!is_numeric($postIdAttr) || !is_numeric($userIdAttr)) {
+                return $this->json($response, ['error' => '無效的請求參數'], 400);
+            }
+
+            $postId = (int) $postIdAttr;
+            $userId = (int) $userIdAttr;
 
             $post = $this->postService->findById($postId);
 
