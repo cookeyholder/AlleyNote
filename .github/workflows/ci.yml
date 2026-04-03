@@ -74,6 +74,27 @@ jobs:
               > .env.testing
           fi
 
+      - name: Generate JWT test key pair
+        working-directory: backend
+        run: |
+          echo "🔐 產生 CI 測試 JWT 金鑰..."
+          openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out test_private_key.pem
+          openssl rsa -pubout -in test_private_key.pem -out test_public_key.pem
+          chmod 600 test_private_key.pem test_public_key.pem
+
+          # 強制覆蓋測試金鑰路徑，避免依賴未追蹤檔案
+          if grep -q '^JWT_PRIVATE_KEY_PATH=' .env.testing; then
+            sed -i 's#^JWT_PRIVATE_KEY_PATH=.*#JWT_PRIVATE_KEY_PATH=test_private_key.pem#' .env.testing
+          else
+            echo 'JWT_PRIVATE_KEY_PATH=test_private_key.pem' >> .env.testing
+          fi
+
+          if grep -q '^JWT_PUBLIC_KEY_PATH=' .env.testing; then
+            sed -i 's#^JWT_PUBLIC_KEY_PATH=.*#JWT_PUBLIC_KEY_PATH=test_public_key.pem#' .env.testing
+          else
+            echo 'JWT_PUBLIC_KEY_PATH=test_public_key.pem' >> .env.testing
+          fi
+
       - name: Run Composer Security Audit
         working-directory: backend
         run: |
