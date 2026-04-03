@@ -125,11 +125,15 @@ class PostController extends BaseController
             // 將 Post 對象正確序列化為數組
             /** @var array<int, Post> $postItems */
             $postItems = $result['items'];
-            $items = array_map(function (Post $post) {
-                return $post->toArray();
-            }, $postItems);
+            $items = array_map(
+                static fn(Post $post): array => $post->toArray(),
+                $postItems,
+            );
             // 批量獲取瀏覽統計
-            $postIds = array_map(fn(Post $post) => $post->getId(), $postItems);
+            $postIds = array_values(array_map(
+                static fn(Post $post): int => $post->getId(),
+                $postItems,
+            ));
             $viewStats = $this->postViewStatsService->getBatchPostViewStats($postIds);
             // 將瀏覽統計添加到每篇文章
             foreach ($items as &$item) {
@@ -146,7 +150,7 @@ class PostController extends BaseController
                 $items,
                 $result['total'],
                 $result['page'],
-                $result['per_page'],
+                $result['per_page'] ?? $result['perPage'] ?? $limit,
             );
             // 記錄成功的文章列表查看活動
             $userId = $request->getAttribute('user_id');

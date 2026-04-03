@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
 
+use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
+use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
+use DateTimeImmutable;
+use InvalidArgumentException;
+use PDO;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 

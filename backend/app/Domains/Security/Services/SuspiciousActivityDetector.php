@@ -37,6 +37,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /** 預設失敗閾值 */
     private const DEFAULT_FAILURE_THRESHOLDS = [
+        // 新版 enum value
+        'login_failed' => ['threshold' => 5, 'timeWindow' => 60],
+        'access_denied' => ['threshold' => 3, 'timeWindow' => 60],
+        'attachment_permission_denied' => ['threshold' => 10, 'timeWindow' => 60],
+        'attachment_virus_detected' => ['threshold' => 1, 'timeWindow' => 60],
+        // 舊版 action_type 相容（測試與歷史資料仍可能使用）
         'auth.login.failed' => ['threshold' => 5, 'timeWindow' => 60],
         'auth.password.failed' => ['threshold' => 3, 'timeWindow' => 60],
         'post.permission_denied' => ['threshold' => 10, 'timeWindow' => 60],
@@ -45,6 +51,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
     /** 預設頻率閾值 */
     private const DEFAULT_FREQUENCY_THRESHOLDS = [
+        // 新版 enum value
+        'login_success' => ['threshold' => 100, 'timeWindow' => 60],
+        'post_viewed' => ['threshold' => 500, 'timeWindow' => 60],
+        'attachment_downloaded' => ['threshold' => 200, 'timeWindow' => 60],
+        // 舊版 action_type 相容（測試與歷史資料仍可能使用）
         'auth.login.success' => ['threshold' => 100, 'timeWindow' => 60],
         'post.viewed' => ['threshold' => 500, 'timeWindow' => 60],
         'attachment.downloaded' => ['threshold' => 200, 'timeWindow' => 60],

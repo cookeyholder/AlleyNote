@@ -54,16 +54,27 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             $this->performSecurityChecks($request, $payload);
             // 4. 將使用者資訊注入到請求中
             $request = $this->injectUserContext($request, $payload, $accessToken);
-
-            // 5. 繼續執行後續中介軟體
-            return $handler->handle($request);
         } catch (TokenExpiredException $e) {
             return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
         } catch (InvalidTokenException $e) {
             return $this->createUnauthorizedResponse('Token 無效', 'TOKEN_INVALID');
         } catch (Throwable $e) {
-            return $this->createUnauthorizedResponse('認證驗證失敗', 'AUTH_FAILED');
+            if (function_exists('app_log')) {
+                app_log('error', 'JWT authentication failed', [
+                    'exception' => $e->getMessage(),
+                    'exception_class' => $e::class,
+                    'path' => $request->getUri()->getPath(),
+                ]);
+            }
+
+            $isProduction = (getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development')) === 'production';
+            $message = $isProduction ? '認證驗證失敗' : ('認證驗證失敗: ' . $e->getMessage());
+
+            return $this->createUnauthorizedResponse($message, 'AUTH_FAILED');
         }
+
+        // 5. 繼續執行後續中介軟體（認證成功後）
+        return $handler->handle($request);
     }
 
     /**

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Repositories;
 
+use App\Domains\Auth\Models\Role;
+use PDO;
 use RuntimeException;
 use Throwable;
 
@@ -22,9 +24,18 @@ class RoleRepository
     {
         $sql = 'SELECT * FROM roles ORDER BY id ASC';
         $stmt = $this->db->query($sql);
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to query roles');
+        }
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($rows)) {
+            return [];
+        }
 
-        return array_map(fn($row) => Role::fromArray($row), $rows);
+        return array_values(array_filter(array_map(
+            static fn(mixed $row): ?Role => is_array($row) ? Role::fromArray($row) : null,
+            $rows,
+        )));
     }
 
     /**
@@ -37,7 +48,7 @@ class RoleRepository
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row ? Role::fromArray($row) : null;
+        return is_array($row) ? Role::fromArray($row) : null;
     }
 
     /**
@@ -50,7 +61,7 @@ class RoleRepository
         $stmt->execute(['name' => $name]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row ? Role::fromArray($row) : null;
+        return is_array($row) ? Role::fromArray($row) : null;
     }
 
     /**
@@ -69,8 +80,14 @@ class RoleRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute($ids);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($rows)) {
+            return [];
+        }
 
-        return array_map(fn($row) => Role::fromArray($row), $rows);
+        return array_values(array_filter(array_map(
+            static fn(mixed $row): ?Role => is_array($row) ? Role::fromArray($row) : null,
+            $rows,
+        )));
     }
 
     /**

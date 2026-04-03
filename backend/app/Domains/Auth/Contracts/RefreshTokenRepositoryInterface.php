@@ -7,6 +7,11 @@ namespace App\Domains\Auth\Contracts;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 
+/**
+ * Refresh Token Repository 介面.
+ *
+ * 定義refresh token的資料存取操作。
+ */
 interface RefreshTokenRepositoryInterface
 {
     /**

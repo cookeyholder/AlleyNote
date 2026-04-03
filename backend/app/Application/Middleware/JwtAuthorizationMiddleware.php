@@ -70,9 +70,15 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return $this->createForbiddenResponse('使用者未認證', 'NOT_AUTHENTICATED');
             }
             // 2. 提取使用者資訊
-            $userRole = $request->getAttribute('role');
-            $userPermissions = $request->getAttribute('permissions', []);
-            $userId = $request->getAttribute('user_id');
+            $userRoleAttr = $request->getAttribute('role');
+            $userPermissionsAttr = $request->getAttribute('permissions', []);
+            $userIdAttr = $request->getAttribute('user_id');
+            $userRole = is_string($userRoleAttr) ? $userRoleAttr : null;
+            /** @var array<string> $userPermissions */
+            $userPermissions = is_array($userPermissionsAttr)
+                ? array_values(array_filter($userPermissionsAttr, 'is_string'))
+                : [];
+            $userId = is_numeric($userIdAttr) ? (int) $userIdAttr : 0;
             // 3. 判斷請求的資源和操作
             $resource = $this->extractResource($request);
             $action = $this->extractAction($request);

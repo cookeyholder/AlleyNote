@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Commands;
 
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\ValueObjects\PeriodType;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateInterval;
+use DateTimeImmutable;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 

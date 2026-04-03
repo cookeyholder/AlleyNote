@@ -10,6 +10,7 @@ use App\Shared\Cache\Contracts\CacheStrategyInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;

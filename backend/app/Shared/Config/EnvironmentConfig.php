@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
+use InvalidArgumentException;
 use RuntimeException;
 
 final class EnvironmentConfig

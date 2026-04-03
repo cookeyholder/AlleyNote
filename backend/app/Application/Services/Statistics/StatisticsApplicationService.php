@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
 
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Services\StatisticsConfigService;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeImmutable;
+use DateTimeInterface;
+use InvalidArgumentException;
 use RuntimeException;
 
 final class StatisticsApplicationService

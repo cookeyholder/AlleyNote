@@ -9,9 +9,11 @@ declare(strict_types=1);
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Auth\Repositories\RoleRepository;
 use App\Domains\Auth\Repositories\PermissionRepository;
 use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\Services\RoleManagementService;
 use App\Application\Controllers\Api\V1\UserController;
@@ -33,10 +35,12 @@ use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Services\CacheService;
+use App\Infrastructure\Services\OutputSanitizerService;
 use App\Infrastructure\Services\RateLimitService;
 use App\Shared\Cache\Providers\CacheServiceProvider;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\CacheServiceInterface;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
@@ -274,6 +278,10 @@ return array_merge(
         ValidatorFactory::class => \DI\autowire(ValidatorFactory::class),
         ValidatorInterface::class => \DI\factory(static fn (ValidatorFactory $factory) => $factory->createForDTO()),
         Validator::class => \DI\autowire(Validator::class),
+        OutputSanitizerInterface::class => \DI\autowire(OutputSanitizerService::class),
+        AuthorizationServiceInterface::class => \DI\autowire(AuthorizationService::class)
+            ->constructorParameter('db', \DI\get(\PDO::class))
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class)),
 
         // ========================================
         // 使用者管理模組

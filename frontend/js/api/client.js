@@ -30,21 +30,13 @@ class ApiClient {
   }
 
   getAuthToken() {
-    // 若為 Cookie 認證模式，則不手動提取 token (讓瀏覽器自動處理 HttpOnly Cookie)
-    if (this.getCookie("auth_mode") === "cookie") {
-      return null;
-    }
-
     const token = storage.get("access_token");
     return typeof token === "string" ? token : null;
   }
 
   setAuthToken(token) {
-    // 若為 Cookie 認證模式，不需要手動存儲
-    if (this.getCookie("auth_mode") === "cookie") {
-      storage.remove("access_token");
-      return;
-    }
+    // 即使使用 Cookie 模式仍保留一份 access token，
+    // 讓 API 請求可同時攜帶 Authorization header，避免瀏覽器 Cookie 行為差異造成 401。
     storage.set("access_token", token);
   }
 

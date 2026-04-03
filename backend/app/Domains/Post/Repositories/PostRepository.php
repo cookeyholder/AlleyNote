@@ -474,20 +474,7 @@ class PostRepository implements PostRepositoryInterface
 
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
-        // 根據條件決定使用哪種快取鍵
-        if (empty($conditions)) {
-            $cacheKey = PostCacheKeyService::postList($page, 'published');
-        } else {
-            // 複雜查詢使用舊的方式
-            $cacheKey = sprintf(
-                'posts:page:%d:per:%d:%s',
-                $page,
-                $perPage,
-                md5((json_encode($conditions) ?? '')),
-            );
-        }
-
-        return $this->cache->remember($cacheKey, function () use ($page, $perPage, $conditions) {
+        return (function () use ($page, $perPage, $conditions) {
             $offset = ($page - 1) * $perPage;
             // 建立查詢條件 - 只允許安全的欄位
             $where = [];
@@ -496,7 +483,7 @@ class PostRepository implements PostRepositoryInterface
                 foreach ($conditions as $key => $value) {
                     // 檢查欄位是否在允許的白名單中
                     if (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
-                        $where[] = "{$key} = :{$key}";
+                        $where[] = "p.{$key} = :{$key}";
                         $params[$key] = $value;
                     } else {
                         // 記錄嘗試查詢不允許欄位的行為
@@ -509,10 +496,10 @@ class PostRepository implements PostRepositoryInterface
                 }
             }
             // 計算總筆數
-            $baseWhere = empty($where) ? 'deleted_at IS NULL' : implode(' AND ', $where) . ' AND deleted_at IS NULL';
+            $baseWhere = empty($where) ? 'p.deleted_at IS NULL' : implode(' AND ', $where) . ' AND p.deleted_at IS NULL';
             // 對於已發布的文章，只顯示發布時間已到的
-            $publishTimeCheck = "AND (status != 'published' OR publish_date IS NULL OR publish_date <= datetime('now'))";
-            $countSql = 'SELECT COUNT(*) FROM posts WHERE ' . $baseWhere . ' ' . $publishTimeCheck;
+            $publishTimeCheck = "AND (p.status != 'published' OR p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
+            $countSql = 'SELECT COUNT(*) FROM posts p WHERE ' . $baseWhere . ' ' . $publishTimeCheck;
             $stmt = $this->db->prepare($countSql);
             $stmt->execute($params);
             $total = (int) $stmt->fetchColumn();
@@ -521,7 +508,7 @@ class PostRepository implements PostRepositoryInterface
                 . ' FROM posts p'
                 . ' LEFT JOIN users u ON p.user_id = u.id'
                 . ' WHERE ' . $baseWhere . ' ' . $publishTimeCheck
-                . ' ORDER BY p.is_pinned DESC, p.publish_date DESC LIMIT :offset, :limit';
+                . ' ORDER BY p.is_pinned DESC, p.publish_date DESC, p.created_at DESC, p.id DESC LIMIT :offset, :limit';
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
@@ -541,7 +528,7 @@ class PostRepository implements PostRepositoryInterface
                 'perPage' => $perPage,
                 'lastPage' => ceil($total / $perPage),
             ];
-        }, self::CACHE_TTL);
+        })();
     }
 
     public function getPinnedPosts(int $limit = 5): array
@@ -580,7 +567,7 @@ class PostRepository implements PostRepositoryInterface
             $sql = 'SELECT ' . str_replace('id, uuid, seq_number, title, content, user_id, user_ip, is_pinned, status, publish_date, views, created_at, updated_at', 'p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at', self::POST_SELECT_FIELDS) . ' FROM posts p '
                 . 'INNER JOIN post_tags pt ON p.id = pt.post_id '
                 . 'WHERE pt.tag_id = :tag_id AND p.deleted_at IS NULL ' . $publishTimeCheck . ' '
-                . 'ORDER BY p.is_pinned DESC, p.publish_date DESC '
+                . 'ORDER BY p.is_pinned DESC, p.publish_date DESC, p.created_at DESC, p.id DESC '
                 . 'LIMIT :offset, :limit';
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':tag_id', $tagId, PDO::PARAM_INT);

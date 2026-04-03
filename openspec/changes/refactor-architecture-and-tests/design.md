@@ -36,6 +36,16 @@
 - **流暢介面 (DSL)**：實作 `$this->json()`, `$this->withHeaders()`, `$this->assertDatabaseHas()` 等方法。
 - **高保真驗證 (Real JWT)**：`actingAs($user)` 將調用真實的 `JwtTokenService` 產生簽章 Token。
 - **自動化 Mock**：基類自動處理 PSR-7 基本屬性 (getServerParams, getCookieParams) 的 Mock，讓開發者專注於行為測試。
+- **單一連線原則 (Single PDO Source of Truth)**：
+  - `ApiTestCase` 的 `$this->db`
+  - 資料庫斷言 DSL (`assertDatabaseHas` / `assertDatabaseMissing`)
+  - 應用容器中的 `PDO::class`
+  
+  三者必須指向同一個 PDO 實例，以確保 API 寫入與 DSL 斷言觀測的是同一份 SQLite in-memory 狀態。
+- **事務策略 (Transaction Strategy)**：
+  - 每個測試案例使用外層 transaction 保障隔離性。
+  - DSL 僅負責查詢與斷言，不主動控制 transaction。
+  - 對 repository 內部交易或 savepoint 的行為，以回歸測試保證不造成 DSL 假陽性/假陰性。
 
 ## Risks / Trade-offs
 
@@ -60,8 +70,9 @@
 - **[Risk]** → `zircote/swagger-php` 可能不支援 Interface 註解繼承。
 - **[Mitigation]** → 在實作前先於 `PostController` 進行「單點實驗 (Spike)」，若失敗則改採「虛擬文件類別」方案。
 - **[Risk]** → 測試 DSL 的資料庫斷言在巢狀事務下失效。
-- **[Mitigation]** → 確保測試環境 DI 容器強制使用 PDO 單例連線，並在 `ApiTestCase` 基類統一管理事務生命週期。
-
+- **[Mitigation]** → 強制執行「單一連線原則」並以測試矩陣覆蓋 create/delete/rollback/巢狀交易情境。
+- **[Risk]** → 測試環境變數鍵值不一致（如 `DB_PATH` vs `DB_DATABASE`）導致容器連到檔案型 SQLite，與 `:memory:` 假設不符。
+- **[Mitigation]** → 統一測試配置契約，並新增「API 寫入可被 DSL 立即觀測」的整合測試作為守門條件。
 
 
 

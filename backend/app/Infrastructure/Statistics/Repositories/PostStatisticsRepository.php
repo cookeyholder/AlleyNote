@@ -8,6 +8,7 @@ use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;

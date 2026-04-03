@@ -11,6 +11,11 @@ use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Domains\Auth\ValueObjects\TokenPair;
 
+/**
+ * JWT Token 服務介面.
+ *
+ * 定義JWT token的核心操作方法。
+ */
 interface JwtTokenServiceInterface
 {
     /**

@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Interface-based Exception Mapping
-系統必須支援基於介面或動態註冊的例外處理機制，以解耦 `BaseController` 與具體的 Domain 例外類別。
+系統 MUST 支援基於介面或動態註冊的例外處理機制，以解耦 `BaseController` 與具體的 Domain 例外類別。
 
 #### Scenario: Handle Custom Domain Exception
 - **WHEN** 業務邏輯拋出一個實作了 `ApiExceptionInterface` 的例外

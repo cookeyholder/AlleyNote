@@ -61,7 +61,22 @@ class LoginPage extends SecureBasePage {
   }
 
   async goto() {
-    await this.page.goto("/login");
+    let lastError = null;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        await this.page.goto("/login", {
+          timeout: 20000,
+          waitUntil: "domcontentloaded",
+        });
+        return;
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) {
+          await this.page.waitForTimeout(800);
+        }
+      }
+    }
+    throw lastError;
   }
 
   async login(email, password, remember = false) {

@@ -72,7 +72,7 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
         $userId = (int) $this->db->lastInsertId();
 
         $logData = [
-            'action_type' => 'post.created',
+            'action_type' => 'post_created',
             'user_id' => $userId,
             'metadata' => [
                 'title' => 'Test Post',
@@ -93,14 +93,14 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
 
         // 驗證資料庫中是否有記錄
         $stmt = $this->db->prepare('SELECT * FROM user_activity_logs WHERE user_id = ? AND action_type = ?');
-        $stmt->execute([$userId, 'post.created']);
+        $stmt->execute([$userId, 'post_created']);
         $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $this->assertCount(1, $records, '應該有一筆活動記錄被建立');
 
         $record = $records[0];
         assert(is_array($record));
-        $this->assertEquals('post.created', $record['action_type']);
+        $this->assertEquals('post_created', $record['action_type']);
         $this->assertEquals($userId, $record['user_id']);
         $this->assertEquals('success', $record['status']);
 
@@ -134,7 +134,7 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
             [
                 'test-uuid-1',
                 $userId,
-                'post.created',
+                'post_created',
                 'post',
                 'post',
                 '1',
@@ -148,7 +148,7 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
             [
                 'test-uuid-2',
                 $userId,
-                'post.viewed',
+                'post_viewed',
                 'post',
                 'post',
                 '1',

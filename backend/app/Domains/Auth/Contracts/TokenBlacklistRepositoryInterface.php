@@ -7,6 +7,11 @@ namespace App\Domains\Auth\Contracts;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
 
+/**
+ * Token 黑名單 Repository 介面.
+ *
+ * 定義token黑名單的資料存取操作。
+ */
 interface TokenBlacklistRepositoryInterface
 {
     /**

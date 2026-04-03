@@ -20,6 +20,7 @@ class MiddlewareResolver
         'auth' => 'jwt.auth',
         'jwt' => 'jwt.auth',
         'jwt.auth' => 'jwt.auth',
+        'admin' => 'jwt.authorize',
         'authorize' => 'jwt.authorize',
         'jwt.authorize' => 'jwt.authorize',
         'csrf' => CsrfMiddleware::class,

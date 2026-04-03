@@ -9,6 +9,7 @@ use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
+use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
