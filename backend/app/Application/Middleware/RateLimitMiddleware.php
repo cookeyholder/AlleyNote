@@ -40,6 +40,8 @@ class RateLimitMiddleware implements MiddlewareInterface
         $maxRequests = $this->config['max_requests'] ?? 60;
         $timeWindow = $this->config['time_window'] ?? 60;
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
+        // RateLimitService 不會回傳 limit 欄位，統一在 middleware 補齊供 header/response 使用
+        $result['limit'] = $maxRequests;
         if (!$result['allowed']) {
             return $this->createRateLimitResponse($result, $request);
         }

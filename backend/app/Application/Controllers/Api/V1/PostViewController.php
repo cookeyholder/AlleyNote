@@ -6,8 +6,8 @@ namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
 use App\Domains\Post\Contracts\PostServiceInterface;
-use App\Domains\Statistics\Events\PostViewed;
 use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Domains\Statistics\Events\PostViewed;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;

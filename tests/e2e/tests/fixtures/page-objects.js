@@ -65,6 +65,12 @@ class LoginPage extends SecureBasePage {
   }
 
   async login(email, password, remember = false) {
+    // CI 偶發 SPA 尚未渲染登入表單，先做一次回復導向
+    if (!(await this.emailInput.isVisible().catch(() => false))) {
+      await this.goto();
+      await this.emailInput.waitFor({ state: "visible", timeout: 10000 });
+    }
+
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     if (remember) {

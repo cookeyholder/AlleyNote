@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-class UnauthorizedException extends \Exception
+use Exception;
+
+class UnauthorizedException extends Exception
 {
     public function __construct(string $message = '', int $code = 401)
     {
