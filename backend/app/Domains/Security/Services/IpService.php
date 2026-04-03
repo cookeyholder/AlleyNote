@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services;
+use RuntimeException;
 use Throwable;
 
 

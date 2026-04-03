@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
+use RuntimeException;
 use Throwable;
 
 

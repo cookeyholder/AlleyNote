@@ -22,10 +22,10 @@ use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Helpers\NetworkHelper;
-use Throwable;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Throwable;
 
 /**
  * JWT 認證 Controller.

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
+use RuntimeException;
 use Throwable;
 
 

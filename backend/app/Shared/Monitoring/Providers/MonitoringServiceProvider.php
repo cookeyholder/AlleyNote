@@ -3,6 +3,18 @@
 declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Providers;
+use App\Shared\Config\EnvironmentConfig;
+use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
+use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
+use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
+use App\Shared\Monitoring\Services\ErrorTrackerService;
+use App\Shared\Monitoring\Services\PerformanceMonitorService;
+use App\Shared\Monitoring\Services\SystemMonitorService;
+use DI\Container;
+use PDO;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Throwable;
 
 

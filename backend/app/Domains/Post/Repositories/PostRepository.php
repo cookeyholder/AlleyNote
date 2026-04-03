@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Repositories;
+use RuntimeException;
 use Throwable;
 
 

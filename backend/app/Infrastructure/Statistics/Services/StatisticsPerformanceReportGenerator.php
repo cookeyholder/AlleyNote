@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
-use Throwable;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
+use Throwable;
 
 /**
  * 統計效能測試報告生成器.

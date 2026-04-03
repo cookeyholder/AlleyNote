@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Admin;
+use RuntimeException;
 use Throwable;
 
 

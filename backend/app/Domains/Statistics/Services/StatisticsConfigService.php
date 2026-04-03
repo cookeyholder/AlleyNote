@@ -6,6 +6,7 @@ declare(strict_types=1);
 /* @phpstan-ignore-next-line */
 
 namespace App\Domains\Statistics\Services;
+use RuntimeException;
 
 
 /**
