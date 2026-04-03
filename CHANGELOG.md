@@ -2,6 +2,32 @@
 
 本專案遵循 [語意化版本](https://semver.org/lang/zh-TW/) 規範。
 
+## [未發佈] - 2026-04-04
+
+### 變更
+
+**🧭 文件整併（consolidate-project-documentation）**
+- 建立 canonical 文件入口：`docs/INDEX.md`
+- 將本機開發、CI/CD、安全流程整併為 runbooks：
+  - `docs/runbooks/DEVELOPMENT.md`
+  - `docs/runbooks/CI_CD.md`
+  - `docs/runbooks/SECURITY.md`
+- 精簡根文件入口：
+  - `README.md`
+  - `QUICK_START.md`
+  - `docs/README.md`
+  - `CONTRIBUTING.md`
+- 新增文件治理規則與審查清單：
+  - `docs/DOCUMENTATION_GOVERNANCE.md`
+  - `.github/pull_request_template.md`
+
+### 歸檔
+
+- 歸檔統計、流量、密碼安全與整合摘要舊文件到：
+  - `docs/archive/legacy-2026-04/`
+- 歸檔 code review 報告到：
+  - `docs/archive/reports/code-review/`
+
 ## [2.0.0] - 2025-10-13
 
 ### 重大變更
