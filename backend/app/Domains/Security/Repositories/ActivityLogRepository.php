@@ -4,6 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Repositories;
 
+use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
+use App\Domains\Security\DTOs\CreateActivityLogDTO;
+use App\Domains\Security\Entities\ActivityLog;
+use App\Domains\Security\Enums\ActivityCategory;
+use App\Domains\Security\Enums\ActivityType;
+use DateTimeInterface;
+use InvalidArgumentException;
+use PDO;
+use PDOException;
 use RuntimeException;
 
 class ActivityLogRepository implements ActivityLogRepositoryInterface

@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Application\Controllers\BaseController;
+use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
+use App\Shared\Exceptions\ValidationException;
+use DateTimeImmutable;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Throwable;
 

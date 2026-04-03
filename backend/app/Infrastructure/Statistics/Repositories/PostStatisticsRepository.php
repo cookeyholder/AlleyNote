@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
 
+use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
+use App\Domains\Statistics\ValueObjects\SourceType;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeInterface;
+use PDO;
+use PDOException;
+use PDOStatement;
 use RuntimeException;
 use Throwable;
 
@@ -65,6 +72,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 }
             }
 
+            /** @var array<string, int> $result */
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章狀態統計失敗: ' . $e->getMessage(), 0, $e);

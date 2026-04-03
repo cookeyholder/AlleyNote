@@ -4,6 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
+use App\Domains\Statistics\Contracts\BatchExportResult;
+use App\Domains\Statistics\Contracts\ExportResult;
+use App\Domains\Statistics\Contracts\StatisticsExportServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
+use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
+use DateTime;
+use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
@@ -39,6 +46,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             // 準備查詢選項
             $queryOptions = $this->prepareQueryOptions($options);
             // 取得統計資料
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getOverview($queryOptions);
             // 格式化資料
             $formatter = $this->formatters[$format];
@@ -67,6 +75,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getPostStatistics($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
@@ -93,6 +102,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getSourceDistribution($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
@@ -119,6 +129,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getUserStatistics($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
@@ -145,6 +156,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getPopularContent($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);

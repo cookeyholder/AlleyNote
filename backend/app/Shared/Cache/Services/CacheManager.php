@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Services;
 
+use App\Shared\Cache\Contracts\CacheDriverInterface;
+use App\Shared\Cache\Contracts\CacheManagerInterface;
+use App\Shared\Cache\Contracts\CacheStrategyInterface;
+use App\Shared\Cache\Contracts\TagRepositoryInterface;
+use App\Shared\Cache\Contracts\TaggedCacheInterface;
+use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
 use Throwable;
 

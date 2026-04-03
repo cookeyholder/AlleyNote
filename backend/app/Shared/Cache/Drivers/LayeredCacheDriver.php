@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Drivers;
 
+use App\Shared\Cache\Contracts\CacheDriverInterface;
+use InvalidArgumentException;
 use RuntimeException;
 
 class LayeredCacheDriver implements CacheDriverInterface

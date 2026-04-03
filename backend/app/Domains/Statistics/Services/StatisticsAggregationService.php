@@ -4,6 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
 
+use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\Events\StatisticsSnapshotCreated;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Shared\Events\Contracts\EventDispatcherInterface;
+use DateTimeInterface;
+use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 

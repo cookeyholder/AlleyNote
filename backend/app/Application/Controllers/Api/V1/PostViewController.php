@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Application\Controllers\BaseController;
+use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Statistics\Events\PostViewed;
+use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Shared\Events\Contracts\EventDispatcherInterface;
+use OpenApi\Attributes as OA;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 use Throwable;
 
@@ -42,7 +50,7 @@ class PostViewController extends BaseController
             required: false,
             content: new OA\JsonContent(
                 properties: [
-                    'referrer' => new OA\Property(
+                    new OA\Property(
                         property: 'referrer',
                         description: '來源頁面 URL',
                         type: 'string',
@@ -60,14 +68,14 @@ class PostViewController extends BaseController
                 description: '成功記錄瀏覽',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
-                        'message' => new OA\Property(property: 'message', type: 'string', example: '已記錄瀏覽'),
-                        'data' => new OA\Property(
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '已記錄瀏覽'),
+                        new OA\Property(
                             property: 'data',
                             properties: [
-                                'post_id' => new OA\Property(property: 'post_id', type: 'integer', example: 123),
-                                'viewed_at' => new OA\Property(property: 'viewed_at', type: 'string', format: 'date-time', example: '2025-09-25T10:30:00Z'),
-                                'is_authenticated' => new OA\Property(property: 'is_authenticated', type: 'boolean', example: true),
+                                new OA\Property(property: 'post_id', type: 'integer', example: 123),
+                                new OA\Property(property: 'viewed_at', type: 'string', format: 'date-time', example: '2025-09-25T10:30:00Z'),
+                                new OA\Property(property: 'is_authenticated', type: 'boolean', example: true),
                             ],
                             type: 'object',
                         ),
@@ -94,12 +102,12 @@ class PostViewController extends BaseController
                 description: '請求過於頻繁',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
-                        'error' => new OA\Property(
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(
                             property: 'error',
                             properties: [
-                                'message' => new OA\Property(property: 'message', type: 'string', example: '請求過於頻繁，請稍後再試'),
-                                'retry_after' => new OA\Property(property: 'retry_after', type: 'integer', example: 60),
+                                new OA\Property(property: 'message', type: 'string', example: '請求過於頻繁，請稍後再試'),
+                                new OA\Property(property: 'retry_after', type: 'integer', example: 60),
                             ],
                             type: 'object',
                         ),

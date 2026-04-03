@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Repositories;
 
+use App\Domains\Post\Contracts\PostRepositoryInterface;
+use App\Domains\Post\Models\Post;
 use RuntimeException;
 use Throwable;
 

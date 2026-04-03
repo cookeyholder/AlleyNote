@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
 
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeImmutable;
+use DateTimeInterface;
+use PDO;
 use RuntimeException;
 use Throwable;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-abstract class JwtException extends Exception
+abstract class JwtException extends \Exception
 {
     /**
      * 錯誤上下文資訊.
@@ -23,13 +23,13 @@ abstract class JwtException extends Exception
      *
      * @param string $message 錯誤訊息
      * @param int $code 錯誤碼
-     * @param Exception|null $previous 前一個例外
+     * @param \Throwable|null $previous 前一個例外
      * @param array<string, mixed> $context 錯誤上下文
      */
     public function __construct(
         string $message = '',
         int $code = 0,
-        ?Exception $previous = null,
+        ?\Throwable $previous = null,
         array $context = [],
     ) {
         parent::__construct($message, $code, $previous);

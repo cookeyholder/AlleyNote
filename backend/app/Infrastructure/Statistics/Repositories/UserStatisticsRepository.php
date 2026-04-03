@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
 
+use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use PDO;
+use PDOException;
+use PDOStatement;
 use RuntimeException;
 use Throwable;
 

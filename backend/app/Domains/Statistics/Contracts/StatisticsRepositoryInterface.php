@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
+use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use DateTimeInterface;
+use RuntimeException;
+
 interface StatisticsRepositoryInterface
 {
     /**

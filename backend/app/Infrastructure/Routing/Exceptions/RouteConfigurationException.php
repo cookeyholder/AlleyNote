@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Exceptions;
 
-class RouteConfigurationException extends Exception
+class RouteConfigurationException extends \Exception
 {
     /**
      * 建立檔案不存在的例外.

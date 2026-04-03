@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
+use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
+use DateTime;
+use PDO;
+use PDOException;
 use RuntimeException;
 use Throwable;
 
