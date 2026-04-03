@@ -85,11 +85,17 @@ function proxyRequest(req, res, targetUrl) {
     },
     (proxyRes) => {
       console.log(`[proxy-res] ${req.url} -> ${proxyRes.statusCode}`);
-      res.writeHead(proxyRes.statusCode);
+
+      // Filter problematic hop-by-hop headers and send all headers in a single writeHead call.
+      const responseHeaders = {};
       Object.keys(proxyRes.headers).forEach((key) => {
-        const value = proxyRes.headers[key];
-        res.setHeader(key, value);
+        if (key.toLowerCase() === "transfer-encoding") {
+          return;
+        }
+        responseHeaders[key] = proxyRes.headers[key];
       });
+
+      res.writeHead(proxyRes.statusCode || 502, responseHeaders);
       proxyRes.pipe(res);
     },
   );
