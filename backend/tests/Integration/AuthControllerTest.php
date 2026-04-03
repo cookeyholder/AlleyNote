@@ -8,6 +8,7 @@ use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\Exceptions\UnauthorizedException;
 use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\Services\UserManagementService;
@@ -169,15 +170,15 @@ class AuthControllerTest extends IntegrationTestCase
 
         $jwt = $this->getValidTestJwt();
         $tokens = new TokenPair($jwt, $jwt, new DateTimeImmutable('+1 hour'), new DateTimeImmutable('+30 days'));
-        
-        $loginResponse = new \App\Domains\Auth\DTOs\LoginResponseDTO(
+
+        $loginResponse = new LoginResponseDTO(
             tokens: $tokens,
             userId: 1,
             userEmail: 'test@example.com',
             expiresAt: $tokens->getAccessTokenExpiresAt()->getTimestamp(),
             userName: 'test',
             roles: [],
-            permissions: []
+            permissions: [],
         );
 
         $this->authenticationService->shouldReceive('login')

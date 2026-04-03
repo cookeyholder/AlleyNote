@@ -35,9 +35,13 @@ function parseArgs() {
     if (process.argv[i] === "--port") {
       args.port = parseInt(process.argv[++i], 10);
     } else if (process.argv[i] === "--proxy") {
-      const [p, t] = process.argv[++i].split(":");
-      args.proxyPath = p;
-      args.proxyTarget = t.startsWith("http") ? t : `http://${t}`;
+      const proxyArg = process.argv[++i];
+      const colonIndex = proxyArg.indexOf(":");
+      if (colonIndex !== -1) {
+        args.proxyPath = proxyArg.substring(0, colonIndex);
+        const t = proxyArg.substring(colonIndex + 1);
+        args.proxyTarget = t.startsWith("http") ? t : `http://${t}`;
+      }
     }
   }
   return args;

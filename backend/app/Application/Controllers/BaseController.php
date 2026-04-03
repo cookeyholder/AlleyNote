@@ -7,8 +7,8 @@ namespace App\Application\Controllers;
 use App\Shared\Enums\HttpStatusCode;
 use App\Shared\Enums\JsonFlag;
 use App\Shared\Http\ApiResponse;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 abstract class BaseController
 {
@@ -78,7 +78,7 @@ abstract class BaseController
         );
     }
 
-    protected function handleException(\Throwable $e): string
+    protected function handleException(Throwable $e): string
     {
         // 記錄錯誤日誌
         app_log('error', 'API Error', [
@@ -92,7 +92,7 @@ abstract class BaseController
         return $this->errorResponse($e->getMessage(), $httpCode);
     }
 
-    private function getHttpCodeFromException(\Throwable $e): HttpStatusCode
+    private function getHttpCodeFromException(Throwable $e): HttpStatusCode
     {
         $className = get_class($e);
         if (array_key_exists($className, self::EXCEPTION_HTTP_CODES)) {

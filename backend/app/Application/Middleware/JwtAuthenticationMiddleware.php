@@ -12,9 +12,9 @@ use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Shared\Helpers\NetworkHelper;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * JWT 認證中介軟體.
@@ -71,7 +71,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
         } catch (InvalidTokenException $e) {
             return $this->createUnauthorizedResponse('Token 無效', 'TOKEN_INVALID');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->createUnauthorizedResponse('認證驗證失敗', 'AUTH_FAILED');
         }
     }

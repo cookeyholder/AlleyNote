@@ -23,7 +23,6 @@ use App\Shared\Exceptions\ValidationException;
 use App\Shared\Helpers\NetworkHelper;
 use DateTime;
 use DateTimeZone;
-use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -191,7 +190,7 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄一般錯誤
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_VIEWED,
@@ -333,7 +332,7 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄一般錯誤
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_CREATED,
@@ -432,7 +431,7 @@ class PostController extends BaseController
                     try {
                         $dt = new DateTime($postData['publish_date'], new DateTimeZone('UTC'));
                         $postData['publish_date'] = $dt->format(DateTime::ATOM);
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         // 保持原值
                     }
                 }
@@ -463,7 +462,7 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄一般錯誤
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_VIEWED,
@@ -675,7 +674,7 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄一般錯誤
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_UPDATED,
@@ -841,7 +840,7 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄一般錯誤
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_DELETED,
@@ -1055,7 +1054,7 @@ class PostController extends BaseController
             $response->getBody()->write(($errorResponse ?: ''));
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄一般錯誤
             $this->activityLogger->logFailure(
                 actionType: ActivityType::POST_PINNED,
@@ -1144,7 +1143,7 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = $this->handleException($e);
             $response->getBody()->write($responseData);
 
@@ -1222,7 +1221,7 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = $this->handleException($e);
             $response->getBody()->write($responseData);
 
@@ -1378,7 +1377,7 @@ class PostController extends BaseController
             $response->getBody()->write($errorResponse);
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = $this->handleException($e);
             $response->getBody()->write($responseData);
 

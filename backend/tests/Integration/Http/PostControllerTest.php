@@ -9,8 +9,8 @@ use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
-use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Infrastructure\Http\Response;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
@@ -64,13 +64,14 @@ class PostControllerTest extends IntegrationTestCase
     }
 
     /**
-     * 輔助方法：獲取 JSON 回應內容
+     * 輔助方法：獲取 JSON 回應內容.
      */
     private function getJsonResponse(ResponseInterface $response): array
     {
         $body = (string) $response->getBody();
         /** @var array<mixed, mixed> $decoded */
         $decoded = json_decode($body, true) ?: [];
+
         return $decoded;
     }
 

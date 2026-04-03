@@ -13,10 +13,10 @@ use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use DI\ContainerBuilder;
-use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * 應用程式核心類別.
@@ -48,7 +48,7 @@ class Application
     {
         try {
             return $this->handleRequest($request);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->handleException($e);
         }
     }
@@ -72,7 +72,7 @@ class Application
         $config = $this->container->get(EnvironmentConfig::class);
 
         if (!$config instanceof EnvironmentConfig) {
-            throw new Exception('無法獲取有效的環境配置');
+            throw new \RuntimeException('無法獲取有效的環境配置');
         }
 
         // 驗證配置的完整性
@@ -80,7 +80,7 @@ class Application
         if (!empty($errors)) {
             $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
 
-            throw new Exception($errorMessage);
+            throw new \RuntimeException($errorMessage);
         }
     }
 
@@ -134,7 +134,7 @@ class Application
     /**
      * 處理例外狀況.
      */
-    private function handleException(Exception $e): ResponseInterface
+    private function handleException(Throwable $e): ResponseInterface
     {
         // 記錄錯誤到監控系統
         try {
@@ -146,7 +146,7 @@ class Application
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
                 ]);
             }
-        } catch (Exception $monitoringException) {
+        } catch (Throwable $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
             app_log('error', 'Monitoring system error', ['exception' => $monitoringException->getMessage()]);
         }
