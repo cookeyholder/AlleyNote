@@ -6,9 +6,6 @@ namespace App\Infrastructure\Http;
 
 use Psr\Http\Message\UriInterface;
 
-/**
- * 簡單的 PSR-7 URI 實作.
- */
 class Uri implements UriInterface
 {
     private string $scheme = '';
@@ -35,14 +32,12 @@ class Uri implements UriInterface
     private function parseUri(string $uri): void
     {
         $parts = parse_url($uri);
-
         $this->scheme = $parts['scheme'] ?? '';
         $this->host = $parts['host'] ?? '';
         $this->port = $parts['port'] ?? null;
         $this->path = $parts['path'] ?? '/';
         $this->query = $parts['query'] ?? '';
         $this->fragment = $parts['fragment'] ?? '';
-
         if (isset($parts['user'])) {
             $this->userInfo = $parts['user'];
             if (isset($parts['pass'])) {
@@ -59,13 +54,10 @@ class Uri implements UriInterface
     public function getAuthority(): string
     {
         $authority = '';
-
         if ($this->userInfo !== '') {
             $authority .= $this->userInfo . '@';
         }
-
         $authority .= $this->host;
-
         if ($this->port !== null && !$this->isDefaultPort()) {
             $authority .= ':' . $this->port;
         }
@@ -171,21 +163,16 @@ class Uri implements UriInterface
     public function __toString(): string
     {
         $uri = '';
-
         if ($this->scheme !== '') {
             $uri .= $this->scheme . ':';
         }
-
         if ($this->getAuthority() !== '') {
             $uri .= '//' . $this->getAuthority();
         }
-
         $uri .= $this->path;
-
         if ($this->query !== '') {
             $uri .= '?' . $this->query;
         }
-
         if ($this->fragment !== '') {
             $uri .= '#' . $this->fragment;
         }

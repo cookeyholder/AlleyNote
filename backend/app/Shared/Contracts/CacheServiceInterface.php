@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Contracts;
 
-/**
- * 快取服務介面.
- *
- * 定義快取操作的標準介面
- */
 interface CacheServiceInterface
 {
     /**

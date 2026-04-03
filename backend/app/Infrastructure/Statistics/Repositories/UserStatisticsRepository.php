@@ -6,18 +6,12 @@ namespace App\Infrastructure\Statistics\Repositories;
 
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
 use RuntimeException;
+use Throwable;
 
-/**
- * 使用者統計查詢 Repository 實作.
- *
- * 提供使用者活躍度與行為分析的統計查詢功能，使用原生 SQL 最佳化效能。
- * 專注於使用者相關的複雜統計查詢和活動分析。
- */
 final class UserStatisticsRepository implements UserStatisticsRepositoryInterface
 {
     public function __construct(
@@ -42,7 +36,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                 'comment' => 'SELECT COUNT(DISTINCT user_id) FROM comments
                              WHERE created_at >= :start_date AND created_at <= :end_date',
             };
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -59,7 +52,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         try {
             $sql = 'SELECT COUNT(*) FROM users
                     WHERE created_at >= :start_date AND created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -75,7 +67,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     {
         try {
             $sql = 'SELECT COUNT(*) FROM users WHERE created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
@@ -91,13 +82,12 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         try {
             $activityTypes = ['login', 'post', 'view', 'comment'];
             $result = [];
-
             foreach ($activityTypes as $type) {
                 $result[$type] = $this->getActiveUsersCount($period, $type);
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException('取得活動類型統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -107,7 +97,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         if ($limit <= 0 || $limit > 50) {
             throw new InvalidArgumentException('查詢數量必須在 1-50 之間');
         }
-
         $allowedMetrics = ['posts', 'views', 'logins', 'activity_score'];
         if (!in_array($metric, $allowedMetrics, true)) {
             throw new InvalidArgumentException('不支援的排序指標: ' . $metric);
@@ -170,13 +159,11 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                                     ORDER BY metric_value DESC
                                     LIMIT :limit',
             };
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[] = [
@@ -204,12 +191,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     FROM user_activity_logs
                     WHERE action_type = "login"
                     AND created_at >= :start_date AND created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $basicStats = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($basicStats)) {
                 return [
@@ -220,7 +205,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     'login_frequency_distribution' => [],
                 ];
             }
-
             // 取得登入高峰時間
             $sql = 'SELECT CAST(strftime("%H", created_at) AS INTEGER) as hour, COUNT(*) as count
                     FROM user_activity_logs
@@ -229,15 +213,12 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     GROUP BY CAST(strftime("%H", created_at) AS INTEGER)
                     ORDER BY count DESC
                     LIMIT 1';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $peakHourData = $stmt->fetch(PDO::FETCH_ASSOC);
             $peakHour = is_array($peakHourData) ? (int) $peakHourData['hour'] : 0;
-
             // 取得登入頻率分布
             $sql = 'SELECT
                         CASE
@@ -255,12 +236,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                         GROUP BY user_id
                     ) as user_logins
                     GROUP BY frequency_range';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $frequencyDistribution = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $frequencyDistribution[(string) $row['frequency_range']] = (int) $row['users_count'];
@@ -283,7 +262,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         try {
             $currentCount = $this->getNewUsersCount($currentPeriod);
             $previousCount = $this->getNewUsersCount($previousPeriod);
-
             $growthCount = $currentCount - $previousCount;
             $growthRate = $previousCount > 0 ? ($growthCount / $previousCount) * 100 : 0.0;
 
@@ -293,7 +271,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                 'growth_rate' => round($growthRate, 2),
                 'growth_count' => $growthCount,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException('取得使用者註冊趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -311,18 +289,15 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                 'day' => 'DATE(created_at)',
                 'week' => 'YEARWEEK(created_at)',
             };
-
             $sql = "SELECT {$groupByClause} as time_period, COUNT(DISTINCT user_id) as active_users
                     FROM user_activity_logs
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY {$groupByClause}
                     ORDER BY time_period";
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[(string) $row['time_period']] = (int) $row['active_users'];
@@ -345,14 +320,11 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $sql = 'SELECT COUNT(*) as cohort_size
                     FROM users
                     WHERE created_at >= :start_date AND created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $cohortPeriod->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $cohortPeriod->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $cohortSize = (int) $stmt->fetchColumn();
-
             if ($cohortSize === 0) {
                 return [
                     'cohort_size' => 0,
@@ -361,24 +333,20 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     'churn_rate' => 0.0,
                 ];
             }
-
             // 計算保留使用者數
             $retentionDate = $cohortPeriod->endTime->modify("+{$daysAfterRegistration} days");
-
             $sql = 'SELECT COUNT(DISTINCT u.id) as retained_users
                     FROM users u
                     INNER JOIN user_activity_logs al ON u.id = al.user_id
                     WHERE u.created_at >= :start_date AND u.created_at <= :end_date
                     AND al.created_at >= :retention_date
                     AND al.created_at <= :retention_end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $cohortPeriod->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $cohortPeriod->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':retention_date', $retentionDate->format('Y-m-d 00:00:00'), PDO::PARAM_STR);
             $stmt->bindValue(':retention_end_date', $retentionDate->format('Y-m-d 23:59:59'), PDO::PARAM_STR);
             $stmt->execute();
-
             $retainedUsers = (int) $stmt->fetchColumn();
             $retentionRate = ($retainedUsers / $cohortSize) * 100;
             $churnRate = 100 - $retentionRate;
@@ -402,11 +370,9 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     WHERE created_at <= :end_date
                     GROUP BY role
                     ORDER BY count DESC';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[(string) ($row['role'] ?? 'unknown')] = (int) $row['count'];
@@ -440,12 +406,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                                                      AND al.created_at <= :end_date
                     WHERE u.created_at <= :end_date
                     GROUP BY u.id';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $scores = [];
             $totalScore = 0;
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -453,7 +417,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                 $scores[] = $score;
                 $totalScore += $score;
             }
-
             $totalUsers = count($scores);
             if ($totalUsers === 0) {
                 return [
@@ -464,15 +427,12 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     'avg_engagement_score' => 0.0,
                 ];
             }
-
             $avgScore = $totalScore / $totalUsers;
-
             // 分類參與度
             $highEngagement = 0;
             $mediumEngagement = 0;
             $lowEngagement = 0;
             $inactive = 0;
-
             foreach ($scores as $score) {
                 if ($score >= 10) {
                     $highEngagement++;
@@ -505,12 +465,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY registration_source
                     ORDER BY count DESC';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $source = $row['registration_source'] ?? 'direct';
@@ -539,13 +497,11 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     GROUP BY location
                     ORDER BY users_count DESC
                     LIMIT :limit';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':total_end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[] = [
@@ -565,7 +521,6 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
     {
         try {
             $sql = 'SELECT COUNT(*) FROM users WHERE created_at >= :start_date AND created_at <= :end_date LIMIT 1';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -583,24 +538,19 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $totalUsers = $this->getTotalUsersCount($period);
             $newUsers = $this->getNewUsersCount($period);
             $activeUsers = $this->getActiveUsersCount($period, 'login');
-
             // 計算回訪使用者（有活動但非新註冊的使用者）
             $sql = 'SELECT COUNT(DISTINCT al.user_id) as returning_users
                     FROM user_activity_logs al
                     INNER JOIN users u ON al.user_id = u.id
                     WHERE al.created_at >= :start_date AND al.created_at <= :end_date
                     AND u.created_at < :start_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $returningUsers = (int) $stmt->fetchColumn();
-
             // 計算活動率
             $activityRate = $totalUsers > 0 ? ($activeUsers / $totalUsers) * 100 : 0.0;
-
             // 取得最活躍時段
             $sql = 'SELECT HOUR(created_at) as hour, COUNT(DISTINCT user_id) as active_users
                     FROM user_activity_logs
@@ -608,12 +558,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                     GROUP BY HOUR(created_at)
                     ORDER BY active_users DESC
                     LIMIT 3';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $topActiveHours = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $topActiveHours[] = (int) $row['hour'];

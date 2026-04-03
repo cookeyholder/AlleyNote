@@ -21,15 +21,6 @@ use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * Refresh Token 領域服務.
- *
- * 負責 refresh token 的完整業務邏輯管理，包括 token 生成、驗證、
- * 輪轉、撤銷和清理等功能。提供安全的 token 管理機制。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final class RefreshTokenService
 {
     /**
@@ -76,17 +67,13 @@ final class RefreshTokenService
         try {
             // 1. 檢查使用者 token 數量限制
             $this->enforceTokenLimits($userId);
-
             // 2. 產生新的 token pair
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo);
             $refreshPayload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
-
             // 3. 建立 refresh token 實體
             $expiresAt = new DateTime();
             $expiresAt->setTimestamp($refreshPayload->getExpiresAt()->getTimestamp());
-
             $tokenHash = hash('sha256', $tokenPair->getRefreshToken());
-
             // 4. 儲存到資料庫
             $success = $this->refreshTokenRepository->create(
                 $refreshPayload->getJti(),
@@ -96,11 +83,9 @@ final class RefreshTokenService
                 $deviceInfo,
                 $parentTokenJti,
             );
-
             if (!$success) {
                 throw new RefreshTokenException('Failed to create refresh token');
             }
-
             // 5. 建立 RefreshToken 實體
             $refreshToken = new RefreshToken(
                 null, // 新建立的 token，ID 由資料庫生成
@@ -116,7 +101,6 @@ final class RefreshTokenService
                 null, // created_at (由資料庫生成)
                 null, // updated_at (由資料庫生成)
             );
-
             $this->logger?->info('Refresh token created successfully', [
                 'user_id' => $userId,
                 'device_id' => $deviceInfo->getDeviceId(),
@@ -156,18 +140,15 @@ final class RefreshTokenService
         try {
             // 1. 驗證 refresh token
             $payload = $this->validateRefreshToken($refreshToken, $deviceInfo);
-
             // 2. 從資料庫取得 token 記錄
             $tokenData = $this->refreshTokenRepository->findByJti($payload->getJti());
             if ($tokenData === null) {
                 throw new InvalidTokenException('Refresh token not found in database');
             }
-
             // 3. 檢查 token 狀態
             if ($tokenData['status'] !== RefreshToken::STATUS_ACTIVE) {
                 throw new InvalidTokenException('Refresh token is not active');
             }
-
             // 4. 驗證裝置歸屬
             if (!$this->verifyDeviceMatchFromData($tokenData, $deviceInfo)) {
                 throw new AuthenticationException(
@@ -175,13 +156,11 @@ final class RefreshTokenService
                     'Device mismatch detected',
                 );
             }
-
             // 5. 產生新的 access token
             $newTokenPair = $this->jwtTokenService->generateTokenPair(
                 (int) $tokenData['user_id'],
                 $deviceInfo,
             );
-
             // 6. 進行 token 輪轉（如果需要）
             if ($rotateToken) {
                 $this->performTokenRotationFromData($tokenData, $deviceInfo);
@@ -189,7 +168,6 @@ final class RefreshTokenService
                 // 不輪轉時，更新使用時間
                 $this->refreshTokenRepository->updateLastUsed($tokenData['jti']);
             }
-
             $this->logger?->info('Access token refreshed successfully', [
                 'user_id' => $tokenData['user_id'],
                 'device_id' => $deviceInfo->getDeviceId(),
@@ -226,11 +204,9 @@ final class RefreshTokenService
         try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
             $result = $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
-
             if ($result) {
                 // 同時加入黑名單
                 $this->addToBlacklist($refreshToken, $reason);
-
                 $this->logger?->info('Refresh token revoked', [
                     'jti' => $payload->getJti(),
                     'reason' => $reason,
@@ -264,18 +240,15 @@ final class RefreshTokenService
         try {
             // 1. 取得使用者所有活躍 token
             $tokens = $this->refreshTokenRepository->findByUserId($userId);
-
             $revokedCount = 0;
             foreach ($tokens as $tokenData) {
                 if ($exceptJti !== null && $tokenData['jti'] === $exceptJti) {
                     continue;
                 }
-
                 if ($this->refreshTokenRepository->revoke($tokenData['jti'], $reason)) {
                     $revokedCount++;
                 }
             }
-
             $this->logger?->info('User tokens revoked', [
                 'user_id' => $userId,
                 'revoked_count' => $revokedCount,
@@ -304,7 +277,6 @@ final class RefreshTokenService
     {
         try {
             $revokedCount = $this->refreshTokenRepository->revokeAllByDevice(0, $deviceId, $reason);
-
             $this->logger?->info('Device tokens revoked', [
                 'device_id' => $deviceId,
                 'revoked_count' => $revokedCount,
@@ -331,7 +303,6 @@ final class RefreshTokenService
     {
         try {
             $cleanedCount = $this->refreshTokenRepository->cleanup();
-
             if ($cleanedCount > 0) {
                 $this->logger?->info('Expired refresh tokens cleaned up', [
                     'cleaned_count' => $cleanedCount,
@@ -358,19 +329,16 @@ final class RefreshTokenService
     {
         try {
             $tokens = $this->refreshTokenRepository->findByUserId($userId);
-
             $stats = [
                 'total' => count($tokens),
                 'by_device' => [],
                 'by_status' => [],
             ];
-
             foreach ($tokens as $tokenData) {
                 // 統計各裝置的 token 數量
                 $deviceIdValue = $tokenData['device_id'] ?? 'unknown';
                 $deviceId = is_scalar($deviceIdValue) ? (string) $deviceIdValue : 'unknown';
                 $stats['by_device'][$deviceId] = ($stats['by_device'][$deviceId] ?? 0) + 1;
-
                 // 統計各狀態的 token 數量
                 $statusValue = $tokenData['status'] ?? 'unknown';
                 $status = is_scalar($statusValue) ? (string) $statusValue : 'unknown';
@@ -399,18 +367,15 @@ final class RefreshTokenService
     {
         // 1. 基本 JWT 驗證
         $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
-
         // 2. 檢查 token 類型
         $tokenType = $payload->getCustomClaim('type');
         if ($tokenType !== 'refresh') {
             throw new InvalidTokenException('Token is not a refresh token');
         }
-
         // 3. 檢查是否在黑名單中
         if ($this->blacklistRepository->isBlacklisted($payload->getJti())) {
             throw new InvalidTokenException('Refresh token is blacklisted');
         }
-
         // 4. 檢查 IP 和裝置一致性（可選的安全檢查）
         if ($this->shouldVerifyDeviceConsistency()) {
             $this->verifyDeviceConsistency($payload, $deviceInfo);
@@ -425,12 +390,10 @@ final class RefreshTokenService
     private function enforceTokenLimits(int $userId): void
     {
         $activeTokens = $this->refreshTokenRepository->findByUserId($userId);
-
         if (count($activeTokens) >= self::MAX_TOKENS_PER_USER) {
             // 撤銷最舊的 token
             $oldestTokenData = $activeTokens[0]; // 假設已按時間排序
             $this->revokeToken($oldestTokenData['jti'], RefreshToken::REVOKE_REASON_MANUAL);
-
             $this->logger?->info('Token limit enforced, oldest token revoked', [
                 'user_id' => $userId,
                 'revoked_jti' => $oldestTokenData['jti'],
@@ -459,7 +422,6 @@ final class RefreshTokenService
                 $deviceInfo,
                 $tokenData['jti'], // 設定父 token JTI
             );
-
             // 2. 撤銷舊的 token（但給予寬限期）
             $this->refreshTokenRepository->revoke(
                 $tokenData['jti'],
@@ -485,14 +447,12 @@ final class RefreshTokenService
     {
         $tokenDeviceId = $payload->getCustomClaim('device_id');
         $tokenIpAddress = $payload->getCustomClaim('ip_address');
-
         if ($tokenDeviceId !== $deviceInfo->getDeviceId()) {
             throw new AuthenticationException(
                 AuthenticationException::REASON_INVALID_TOKEN,
                 'Device ID mismatch',
             );
         }
-
         if ($tokenIpAddress !== $deviceInfo->getIpAddress()) {
             throw new AuthenticationException(
                 AuthenticationException::REASON_INVALID_TOKEN,
@@ -510,7 +470,6 @@ final class RefreshTokenService
             $payload = $this->jwtTokenService->extractPayload($token);
             $expiresAt = new DateTimeImmutable();
             $expiresAt->setTimestamp($payload->getExpiresAt()->getTimestamp());
-
             $entry = new TokenBlacklistEntry(
                 $payload->getJti(),
                 TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
@@ -524,7 +483,6 @@ final class RefreshTokenService
                     'user_id' => $payload->getSubject(),
                 ],
             );
-
             $this->blacklistRepository->addToBlacklist($entry);
         } catch (Throwable $e) {
             $this->logger?->error('Failed to add token to blacklist', [

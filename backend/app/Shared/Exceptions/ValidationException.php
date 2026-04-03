@@ -8,8 +8,6 @@ use App\Shared\Validation\ValidationResult;
 use Exception;
 use Throwable;
 
-// Import ValidationResult
-
 class ValidationException extends Exception
 {
     protected ValidationResult $validationResult; // Store the ValidationResult
@@ -49,7 +47,6 @@ class ValidationException extends Exception
     {
         $errors = [$field => [$error]];
         $failedRules = $rule ? [$field => [$rule]] : [];
-
         $validationResult = ValidationResult::failure($errors, $failedRules);
 
         return new self($validationResult, $message);

@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * Email 值物件.
- *
- * 表示有效的電子郵件地址，確保電子郵件格式的正確性和一致性
- */
 final readonly class Email implements JsonSerializable, Stringable
 {
     private string $value;
@@ -20,20 +15,16 @@ final readonly class Email implements JsonSerializable, Stringable
     public function __construct(string $email)
     {
         $trimmedEmail = trim($email);
-
         if (empty($trimmedEmail)) {
             throw new InvalidArgumentException('Email 不能為空');
         }
-
         // 先檢查長度限制
         if (strlen($trimmedEmail) > 254) {
             throw new InvalidArgumentException('Email 長度不能超過 254 個字元');
         }
-
         if (!filter_var($trimmedEmail, FILTER_VALIDATE_EMAIL)) {
             throw new InvalidArgumentException("無效的 Email 格式: {$trimmedEmail}");
         }
-
         $this->value = strtolower($trimmedEmail); // 統一轉換為小寫
     }
 
@@ -89,7 +80,6 @@ final readonly class Email implements JsonSerializable, Stringable
         $parts = explode('@', $this->value);
         $local = $parts[0] ?? '';
         $domain = $parts[1] ?? '';
-
         if (strlen($local) <= 2) {
             return $local[0] . '***@' . $domain;
         }

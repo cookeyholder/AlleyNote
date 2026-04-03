@@ -8,11 +8,6 @@ use App\Domains\Security\Enums\ActivitySeverity;
 use DateTimeImmutable;
 use JsonSerializable;
 
-/**
- * 可疑活動分析結果 DTO.
- *
- * 封裝異常檢測結果的資料結構
- */
 class SuspiciousActivityAnalysisDTO implements JsonSerializable
 {
     /**
@@ -295,7 +290,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             'global' => '全域模式',
             default => '未知目標',
         };
-
         $status = $this->isSuspicious ? '可疑' : '正常';
         $totalActivities = $this->getTotalActivityCount();
         $totalFailures = $this->getTotalFailureCount();

@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Contracts;
 
-/**
- * 效能監控介面。
- *
- * 提供應用程式效能監控功能，包含請求追蹤、效能指標收集和分析
- */
 interface PerformanceMonitorInterface
 {
     /**

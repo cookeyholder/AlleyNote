@@ -64,9 +64,9 @@ final class SettingTimezoneIntegrationTest extends IntegrationTestCase
 
         $service->updateSetting('site_name', 'AlleyNote 2');
 
-        $siteName = $service->getSetting('site_name');
-        $maxAttachments = $service->getSetting('max_attachments_per_post');
-        $allowComments = $service->getSetting('allow_comments');
+        $siteName = $service->getSetting('site_name', true);
+        $maxAttachments = $service->getSetting('max_attachments_per_post', true);
+        $allowComments = $service->getSetting('allow_comments', true);
 
         $this->assertSame('AlleyNote 2', $siteName['value']);
         $this->assertSame(12, $maxAttachments['value']);

@@ -8,12 +8,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 來源分布統計 DTO.
- *
- * 封裝內容來源分布統計資料的傳輸物件，包含流量來源、推薦來源、搜尋引擎分析等。
- * 專門用於來源分析 API 的回應格式與內部資料傳遞。
- */
 class SourceDistributionDTO implements JsonSerializable
 {
     /**
@@ -230,15 +224,12 @@ class SourceDistributionDTO implements JsonSerializable
         if (!isset($this->searchEngines['engines']) || !is_array($this->searchEngines['engines'])) {
             return null;
         }
-
         $engines = $this->searchEngines['engines'];
         if (empty($engines)) {
             return null;
         }
-
         $maxCount = 0;
         $topEngine = null;
-
         foreach ($engines as $engine => $count) {
             if (is_string($engine) && is_numeric($count) && $count > $maxCount) {
                 $maxCount = (int) $count;
@@ -254,15 +245,12 @@ class SourceDistributionDTO implements JsonSerializable
         if (!isset($this->socialMedia['platforms']) || !is_array($this->socialMedia['platforms'])) {
             return null;
         }
-
         $platforms = $this->socialMedia['platforms'];
         if (empty($platforms)) {
             return null;
         }
-
         $maxCount = 0;
         $topPlatform = null;
-
         foreach ($platforms as $platform => $count) {
             if (is_string($platform) && is_numeric($count) && $count > $maxCount) {
                 $maxCount = (int) $count;
@@ -278,15 +266,12 @@ class SourceDistributionDTO implements JsonSerializable
         if (!isset($this->referralSites['sites']) || !is_array($this->referralSites['sites'])) {
             return null;
         }
-
         $sites = $this->referralSites['sites'];
         if (empty($sites)) {
             return null;
         }
-
         $maxCount = 0;
         $topSite = null;
-
         foreach ($sites as $site => $count) {
             if (is_string($site) && is_numeric($count) && $count > $maxCount) {
                 $maxCount = (int) $count;
@@ -331,7 +316,6 @@ class SourceDistributionDTO implements JsonSerializable
         if (empty($this->byGeographic)) {
             return null;
         }
-
         $maxCount = max($this->byGeographic);
         $topLocations = array_keys($this->byGeographic, $maxCount);
 
@@ -369,7 +353,6 @@ class SourceDistributionDTO implements JsonSerializable
         $organicPercentage = $this->getOrganicPercentage();
         $directPercentage = $this->getDirectPercentage();
         $socialPercentage = $this->getSocialPercentage();
-
         $qualityScore = $this->calculateQualityScore($organicPercentage, $directPercentage, $socialPercentage);
 
         return [
@@ -390,7 +373,6 @@ class SourceDistributionDTO implements JsonSerializable
     public function getChannelPerformanceAnalysis(): array
     {
         $totalTraffic = $this->getTotalTraffic();
-
         $channelPerformance = [];
         foreach ($this->byChannel as $channel => $traffic) {
             $percentage = $totalTraffic > 0 ? round(($traffic / $totalTraffic) * 100, 2) : 0.0;
@@ -400,7 +382,6 @@ class SourceDistributionDTO implements JsonSerializable
                 'rank' => 0, // 將在後續計算中設定
             ];
         }
-
         // 按流量排序並設定排名
         uasort($channelPerformance, static fn($a, $b) => $b['traffic'] <=> $a['traffic']);
         $rank = 1;
@@ -425,7 +406,6 @@ class SourceDistributionDTO implements JsonSerializable
         $mobilePercentage = $this->getMobilePercentage();
         $desktopPercentage = $this->getDesktopPercentage();
         $tabletPercentage = 100 - $mobilePercentage - $desktopPercentage;
-
         $pattern = match (true) {
             $mobilePercentage > 70 => 'mobile_first',
             $desktopPercentage > 60 => 'desktop_dominant',
@@ -498,11 +478,9 @@ class SourceDistributionDTO implements JsonSerializable
             'device_usage_pattern' => $this->getDeviceUsagePattern(),
             'trend_insights' => $this->getTrendInsights(),
         ];
-
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
         }
-
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
@@ -558,35 +536,30 @@ class SourceDistributionDTO implements JsonSerializable
                 throw new InvalidArgumentException('主要來源資料結構不正確');
             }
         }
-
         // 驗證流量類型統計
         foreach ($this->byTrafficType as $type => $count) {
             if (!is_string($type) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('流量類型統計資料格式不正確');
             }
         }
-
         // 驗證管道統計
         foreach ($this->byChannel as $channel => $count) {
             if (!is_string($channel) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('管道統計資料格式不正確');
             }
         }
-
         // 驗證裝置統計
         foreach ($this->byDevice as $device => $count) {
             if (!is_string($device) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('裝置統計資料格式不正確');
             }
         }
-
         // 驗證地理統計
         foreach ($this->byGeographic as $location => $count) {
             if (!is_string($location) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('地理統計資料格式不正確');
             }
         }
-
         // 驗證內容類型統計
         foreach ($this->contentTypes as $type => $count) {
             if (!is_string($type) || !is_int($count) || $count < 0) {
@@ -633,15 +606,12 @@ class SourceDistributionDTO implements JsonSerializable
     private function getQualityRecommendations(float $organicPercentage, float $directPercentage, float $socialPercentage): array
     {
         $recommendations = [];
-
         if ($organicPercentage < 30) {
             $recommendations[] = '建議加強 SEO 優化以提升有機流量';
         }
-
         if ($directPercentage < 20) {
             $recommendations[] = '建議提升品牌知名度以增加直接流量';
         }
-
         if ($socialPercentage > 50) {
             $recommendations[] = '建議平衡流量來源，減少對社群媒體的過度依賴';
         }
@@ -655,7 +625,6 @@ class SourceDistributionDTO implements JsonSerializable
         if ($totalTraffic === 0 || empty($this->byChannel)) {
             return 0.0;
         }
-
         // 計算管道多樣性（使用香農熵）
         $entropy = 0.0;
         foreach ($this->byChannel as $traffic) {
@@ -664,7 +633,6 @@ class SourceDistributionDTO implements JsonSerializable
                 $entropy -= $probability * log($probability, 2);
             }
         }
-
         // 正規化到 0-100 分數
         $maxEntropy = log(count($this->byChannel), 2);
 
@@ -682,7 +650,6 @@ class SourceDistributionDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key)) {
@@ -704,7 +671,6 @@ class SourceDistributionDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && is_numeric($value)) {
@@ -726,7 +692,6 @@ class SourceDistributionDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $item) {
             if (is_array($item)) {

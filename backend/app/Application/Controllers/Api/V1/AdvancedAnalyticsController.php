@@ -10,9 +10,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 進階分析 API 控制器.
- */
 class AdvancedAnalyticsController extends BaseController
 {
     public function __construct(
@@ -43,7 +40,6 @@ class AdvancedAnalyticsController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $stats = $this->analyticsService->getDeviceTypeStats($postId, $startDate, $endDate);
 
         return $this->json($response, [
@@ -76,7 +72,6 @@ class AdvancedAnalyticsController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $stats = $this->analyticsService->getBrowserStats($postId, $startDate, $endDate);
 
         return $this->json($response, [
@@ -109,7 +104,6 @@ class AdvancedAnalyticsController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $stats = $this->analyticsService->getOSStats($postId, $startDate, $endDate);
 
         return $this->json($response, [
@@ -144,7 +138,6 @@ class AdvancedAnalyticsController extends BaseController
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
         $limit = isset($params['limit']) ? (int) $params['limit'] : 10;
-
         $stats = $this->analyticsService->getReferrerStats($postId, $startDate, $endDate, $limit);
 
         return $this->json($response, [
@@ -177,7 +170,6 @@ class AdvancedAnalyticsController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $stats = $this->analyticsService->getHourlyDistribution($postId, $startDate, $endDate);
 
         return $this->json($response, [
@@ -210,7 +202,6 @@ class AdvancedAnalyticsController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $report = $this->analyticsService->getComprehensiveReport($postId, $startDate, $endDate);
 
         return $this->json($response, [

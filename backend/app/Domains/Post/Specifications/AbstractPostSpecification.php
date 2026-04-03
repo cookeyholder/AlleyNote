@@ -6,11 +6,6 @@ namespace App\Domains\Post\Specifications;
 
 use App\Domains\Post\Aggregates\PostAggregate;
 
-/**
- * 抽象 Post 規格基類.
- *
- * 提供規格組合邏輯的預設實作
- */
 abstract class AbstractPostSpecification implements PostSpecificationInterface
 {
     public function and(PostSpecificationInterface $other): PostSpecificationInterface
@@ -30,7 +25,6 @@ abstract class AbstractPostSpecification implements PostSpecificationInterface
 
     abstract public function isSatisfiedBy(PostAggregate $post): bool;
 }
-
 /**
  * AND 組合規格.
  */
@@ -46,7 +40,6 @@ final class AndPostSpecification extends AbstractPostSpecification
         return $this->left->isSatisfiedBy($post) && $this->right->isSatisfiedBy($post);
     }
 }
-
 /**
  * OR 組合規格.
  */
@@ -62,7 +55,6 @@ final class OrPostSpecification extends AbstractPostSpecification
         return $this->left->isSatisfiedBy($post) || $this->right->isSatisfiedBy($post);
     }
 }
-
 /**
  * NOT 反轉規格.
  */

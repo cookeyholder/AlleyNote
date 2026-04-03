@@ -7,9 +7,6 @@ namespace App\Infrastructure\Http;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
-/**
- * PSR-7 Response 實作.
- */
 class Response implements ResponseInterface
 {
     private string $protocolVersion = '1.1';
@@ -34,13 +31,11 @@ class Response implements ResponseInterface
         $this->statusCode = $statusCode;
         $this->protocolVersion = $protocolVersion;
         $this->reasonPhrase = $reasonPhrase;
-
         if ($body instanceof StreamInterface) {
             $this->body = $body;
         } else {
             $this->body = new Stream($body ?? '');
         }
-
         foreach ($headers as $name => $value) {
             $normalizedName = strtolower($name);
             $this->headerNames[$normalizedName] = $name;
@@ -77,7 +72,6 @@ class Response implements ResponseInterface
         if (!isset($this->headerNames[$name])) {
             return [];
         }
-
         $originalName = $this->headerNames[$name];
         if (!is_string($originalName)) {
             return [];
@@ -105,7 +99,6 @@ class Response implements ResponseInterface
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
-
         if (isset($clone->headerNames[$normalizedName])) {
             $actualName = $clone->headerNames[$normalizedName];
             if (is_string($actualName)) {
@@ -123,11 +116,9 @@ class Response implements ResponseInterface
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
-
         if (!isset($clone->headerNames[$normalizedName])) {
             return $clone;
         }
-
         $originalName = $clone->headerNames[$normalizedName];
         if (is_string($originalName)) {
             unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);

@@ -10,6 +10,7 @@ use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentController
 {
@@ -134,8 +135,7 @@ class AttachmentController
             $currentUserId = $this->getCurrentUserId($request);
             $postId = (int) $request->getAttribute('post_id');
             $files = $request->getUploadedFiles();
-
-            if (!isset($files['file'])) {
+            if (!isset($files['file']) || !$files['file'] instanceof UploadedFileInterface) {
                 $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
                 ]) ?: ''));
@@ -144,9 +144,7 @@ class AttachmentController
                     ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
             }
-
             $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
-
             $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
             ]);
@@ -267,12 +265,10 @@ class AttachmentController
             if (!$uuid || !is_string($uuid)) {
                 throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
             }
-
             // TODO: 實作檔案下載邏輯
             // 1. 驗證附件是否存在
             // 2. 檢查檔案權限
             // 3. 讀取檔案並回傳
-
             $response->getBody()->write((json_encode([
                 'error' => '檔案下載功能尚未實作',
             ]) ?: ''));
@@ -353,7 +349,6 @@ class AttachmentController
     {
         $postId = (int) $request->getAttribute('post_id');
         $attachments = $this->attachmentService->getByPostId($postId);
-
         $response->getBody()->write((json_encode([
             'data' => array_map(
                 fn($attachment) => $attachment->toArray(),

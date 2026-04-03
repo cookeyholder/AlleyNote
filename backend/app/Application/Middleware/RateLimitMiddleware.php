@@ -26,30 +26,25 @@ class RateLimitMiddleware implements MiddlewareInterface
     public function process(Request $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri()->getPath();
-
         // 檢查是否需要跳過速率限制
         if (in_array($uri, $this->config['skip_paths'], true)) {
             return $handler->handle($request);
         }
-
         // 取得真實客戶端 IP
         $ip = $this->getRealClientIP($request->getServerParams());
-
         // 判斷操作類型
         $action = $this->determineAction($request);
-
         // 取得使用者 ID（如果已登入）
         $userId = $this->getUserId($request);
-
         // 檢查速率限制
         $maxRequests = $this->config['max_requests'] ?? 60;
         $timeWindow = $this->config['time_window'] ?? 60;
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
-
+        // RateLimitService 不會回傳 limit 欄位，統一在 middleware 補齊供 header/response 使用
+        $result['limit'] = $maxRequests;
         if (!$result['allowed']) {
             return $this->createRateLimitResponse($result, $request);
         }
-
         // 設定速率限制標頭
         $response = $handler->handle($request);
 
@@ -63,25 +58,20 @@ class RateLimitMiddleware implements MiddlewareInterface
     {
         $uri = $request->getUri()->getPath();
         $method = $request->getMethod();
-
         // 登入相關 (最優先判斷)
         if (strpos($uri, '/auth/login') !== false) {
             return 'login';
         }
-
         if (strpos($uri, '/auth/register') !== false) {
             return 'register';
         }
-
         if (strpos($uri, '/auth/password-reset') !== false) {
             return 'password_reset';
         }
-
         // API 路由
         if (strpos($uri, '/api/') === 0) {
             return 'api';
         }
-
         // 內容建立
         if ($method === 'POST' && strpos($uri, '/posts') !== false) {
             return 'post_create';
@@ -111,7 +101,6 @@ class RateLimitMiddleware implements MiddlewareInterface
         $acceptHeader = $request->getHeaderLine('Accept');
         $isJsonRequest = strpos($acceptHeader, 'application/json') !== false
             || strpos($request->getUri()->getPath(), '/api/') === 0;
-
         if ($isJsonRequest) {
             $body = json_encode([
                 'error' => 'Rate limit exceeded',
@@ -121,7 +110,6 @@ class RateLimitMiddleware implements MiddlewareInterface
                 'reset' => $result['reset'],
                 'retry_after' => $result['reset'] - time(),
             ]) ?: '';
-
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);
         } else {
             $body = $this->generateRateLimitHtml($result);
@@ -229,28 +217,35 @@ class RateLimitMiddleware implements MiddlewareInterface
      */
     private function getRealClientIP(array $serverParams): string
     {
-        // 檢查代理伺服器的標頭
-        $headers = [
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_REAL_IP',
-            'HTTP_CLIENT_IP',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_X_FORWARDED',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-        ];
-
-        foreach ($headers as $header) {
-            if (!empty($serverParams[$header])) {
-                $ips = explode(',', $serverParams[$header]);
-                $ip = trim($ips[0]);
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        // 僅在請求來自可信代理（本地回環或私有網路）時才信任轉發標頭
+        $isTrustedProxy = filter_var(
+            $remoteAddr,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+        ) === false;
+        if ($isTrustedProxy) {
+            $headers = [
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_REAL_IP',
+                'HTTP_CLIENT_IP',
+                'HTTP_X_CLUSTER_CLIENT_IP',
+                'HTTP_X_FORWARDED',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+            ];
+            foreach ($headers as $header) {
+                if (!empty($serverParams[$header])) {
+                    $ips = explode(',', $serverParams[$header]);
+                    $ip = trim($ips[0]);
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                        return $ip;
+                    }
                 }
             }
         }
 
-        return $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+        return $remoteAddr;
     }
 
     public function getPriority(): int

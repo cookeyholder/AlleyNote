@@ -6,11 +6,6 @@ namespace App\Domains\Auth\DTOs;
 
 use InvalidArgumentException;
 
-/**
- * 登入請求 DTO.
- *
- * 封裝使用者登入請求的資料，包括使用者憑證和相關選項。
- */
 final readonly class LoginRequestDTO
 {
     /**
@@ -61,7 +56,6 @@ final readonly class LoginRequestDTO
         if (!is_array($scopes)) {
             return null;
         }
-
         $normalizedScopes = [];
         foreach ($scopes as $scope) {
             if (is_string($scope) && $scope !== '') {
@@ -80,7 +74,6 @@ final readonly class LoginRequestDTO
         if ($scopes === null) {
             return;
         }
-
         foreach ($scopes as $scope) {
             if (!is_string($scope) || $scope === '') {
                 throw new InvalidArgumentException('Scopes must be a non-empty string list');

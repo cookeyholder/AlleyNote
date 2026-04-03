@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Services;
 
-/**
- * 密碼驗證服務.
- *
- * 提供密碼強度驗證和建議
- */
 class PasswordValidationService
 {
     /**
@@ -24,70 +19,59 @@ class PasswordValidationService
         $errors = [];
         $warnings = [];
         $score = 0;
-
         // 長度檢查
         if (strlen($password) < 8) {
             $errors[] = '密碼長度至少需要 8 個字元';
         } else {
             $score += 20;
         }
-
         if (strlen($password) > 128) {
             $errors[] = '密碼長度不能超過 128 個字元';
         }
-
         // 包含小寫字母
         if (!preg_match('/[a-z]/', $password)) {
             $errors[] = '密碼必須包含至少一個小寫字母';
         } else {
             $score += 15;
         }
-
         // 包含大寫字母
         if (!preg_match('/[A-Z]/', $password)) {
             $errors[] = '密碼必須包含至少一個大寫字母';
         } else {
             $score += 15;
         }
-
         // 包含數字
         if (!preg_match('/[0-9]/', $password)) {
             $errors[] = '密碼必須包含至少一個數字';
         } else {
             $score += 15;
         }
-
         // 包含特殊符號（加分項）
         if (preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>?\/\\|`~]/', $password)) {
             $score += 20;
         } else {
             $warnings[] = '建議包含至少一個特殊符號以增加安全性';
         }
-
         // 連續字元檢查
         if ($this->hasSequentialChars($password)) {
             $errors[] = '密碼不能包含連續的英文字母或數字（如 abc, 123）';
             $score -= 10;
         }
-
         // 重複字元檢查
         if ($this->hasRepeatingChars($password)) {
             $errors[] = '密碼不能包含重複的字元（如 aaa, 111）';
             $score -= 10;
         }
-
         // 常見密碼檢查
         if ($this->isCommonPassword($password)) {
             $errors[] = '此密碼過於常見，請使用更安全的密碼';
             $score -= 20;
         }
-
         // 個人資訊檢查
         if ($this->containsPersonalInfo($password, $username, $email)) {
             $errors[] = '密碼不能包含使用者名稱或電子郵件';
             $score -= 15;
         }
-
         // 長度加分
         if (strlen($password) >= 12) {
             $score += 10;
@@ -95,7 +79,6 @@ class PasswordValidationService
         if (strlen($password) >= 16) {
             $score += 10;
         }
-
         // 確保分數在 0-100 之間
         $score = max(0, min(100, $score));
 
@@ -115,21 +98,17 @@ class PasswordValidationService
     private function hasSequentialChars(string $password): bool
     {
         $length = strlen($password);
-
         for ($i = 0; $i < $length - 2; $i++) {
             $char1 = $password[$i];
             $char2 = $password[$i + 1];
             $char3 = $password[$i + 2];
-
             // 只檢查字母和數字的連續
             if (!ctype_alnum($char1) || !ctype_alnum($char2) || !ctype_alnum($char3)) {
                 continue;
             }
-
             $ord1 = ord($char1);
             $ord2 = ord($char2);
             $ord3 = ord($char3);
-
             // 檢查連續遞增或遞減
             if (
                 ($ord2 === $ord1 + 1 && $ord3 === $ord2 + 1)
@@ -138,19 +117,16 @@ class PasswordValidationService
                 return true;
             }
         }
-
         // 也檢查小寫版本的字母序列（處理大小寫混合的情況）
         $lower = strtolower($password);
         for ($i = 0; $i < $length - 2; $i++) {
             $char1 = $lower[$i];
             $char2 = $lower[$i + 1];
             $char3 = $lower[$i + 2];
-
             // 只檢查字母的連續
             if (!ctype_alpha($char1) || !ctype_alpha($char2) || !ctype_alpha($char3)) {
                 continue;
             }
-
             // 如果原始密碼在這個位置也是連續的，跳過（避免重複檢測）
             if (ctype_alnum($password[$i]) && ctype_alnum($password[$i + 1]) && ctype_alnum($password[$i + 2])) {
                 $origOrd1 = ord($password[$i]);
@@ -163,11 +139,9 @@ class PasswordValidationService
                     continue;
                 }
             }
-
             $ord1 = ord($char1);
             $ord2 = ord($char2);
             $ord3 = ord($char3);
-
             if (
                 ($ord2 === $ord1 + 1 && $ord3 === $ord2 + 1)
                 || ($ord2 === $ord1 - 1 && $ord3 === $ord2 - 1)
@@ -194,7 +168,6 @@ class PasswordValidationService
     {
         /** @var array<string>|null */
         static $commonPasswords = null;
-
         if ($commonPasswords === null) {
             $file = __DIR__ . '/../../../resources/data/common-passwords.txt';
             if (file_exists($file)) {
@@ -219,13 +192,11 @@ class PasswordValidationService
         ?string $email,
     ): bool {
         $lower = strtolower($password);
-
         if ($username && strlen($username) >= 3) {
             if (str_contains($lower, strtolower($username))) {
                 return true;
             }
         }
-
         if ($email) {
             $emailParts = explode('@', $email);
             if (isset($emailParts[0]) && strlen($emailParts[0]) >= 3) {
@@ -276,35 +247,30 @@ class PasswordValidationService
     private function getSuggestions(array $errors, array $warnings): array
     {
         $suggestions = [];
-
         foreach ($errors as $error) {
             if (is_string($error) && str_contains($error, '長度')) {
                 $suggestions[] = '使用更長的密碼（建議 12 個字元以上）';
                 break;
             }
         }
-
         foreach ($errors as $error) {
             if (is_string($error) && (str_contains($error, '字母') || str_contains($error, '數字'))) {
                 $suggestions[] = '混合使用大小寫字母、數字和特殊符號';
                 break;
             }
         }
-
         foreach ($errors as $error) {
             if (is_string($error) && (str_contains($error, '連續') || str_contains($error, '重複'))) {
                 $suggestions[] = '避免使用簡單的模式或重複字元';
                 break;
             }
         }
-
         foreach ($errors as $error) {
             if (is_string($error) && str_contains($error, '常見')) {
                 $suggestions[] = '使用獨特的密碼組合，不要使用常見單字';
                 break;
             }
         }
-
         if (empty($suggestions) && !empty($warnings)) {
             $suggestions[] = '已經很好！可以加入特殊符號讓密碼更安全';
         }

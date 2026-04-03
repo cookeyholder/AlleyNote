@@ -8,11 +8,6 @@ use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
 use DateTime;
 use RuntimeException;
 
-/**
- * CSV 統計資料格式化器.
- *
- * 將統計資料格式化為 CSV 格式。
- */
 final class CSVStatisticsFormatter implements StatisticsFormatterInterface
 {
     /** CSV 分隔符號 */
@@ -44,19 +39,15 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
         if (empty($data)) {
             return '';
         }
-
         $output = '';
         $delimiter = $options['delimiter'] ?? self::DELIMITER;
         $includeHeaders = $options['include_headers'] ?? true;
         $encoding = $options['encoding'] ?? 'UTF-8';
-
         // 處理巢狀資料結構
         $flattenedData = $this->flattenData($data);
-
         if (empty($flattenedData)) {
             return '';
         }
-
         // 建立暫存檔案處理 CSV
         $tempFile = tmpfile();
         if ($tempFile === false) {
@@ -69,20 +60,16 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
                 $headers = array_keys($flattenedData[0]);
                 fputcsv($tempFile, $headers, $delimiter, self::ENCLOSURE, self::ESCAPE_CHAR);
             }
-
             // 寫入資料行
             foreach ($flattenedData as $row) {
                 fputcsv($tempFile, array_values($row), $delimiter, self::ENCLOSURE, self::ESCAPE_CHAR);
             }
-
             // 讀取檔案內容
             rewind($tempFile);
             $output = stream_get_contents($tempFile);
-
             if ($output === false) {
                 throw new RuntimeException('無法讀取 CSV 資料');
             }
-
             // 處理編碼轉換
             if ($encoding !== 'UTF-8' && function_exists('mb_convert_encoding')) {
                 $output = mb_convert_encoding($output, $encoding, 'UTF-8');
@@ -115,7 +102,6 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
     private function flattenData(array $data): array
     {
         $flattened = [];
-
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 if ($this->isAssociativeArray($value)) {
@@ -170,10 +156,8 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
     private function expandAssociativeArray(string $prefix, array $data): array
     {
         $result = [];
-
         foreach ($data as $key => $value) {
             $fullKey = $prefix . '_' . $key;
-
             if (is_array($value)) {
                 $result[$fullKey] = $this->arrayToString($value);
             } else {
@@ -205,14 +189,12 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
         if (empty($rows)) {
             return [];
         }
-
         // 收集所有可能的欄位
         $allKeys = [];
         foreach ($rows as $row) {
             $allKeys = array_merge($allKeys, array_keys($row));
         }
         $allKeys = array_unique($allKeys);
-
         // 確保每行都有所有欄位
         $normalizedRows = [];
         foreach ($rows as $row) {

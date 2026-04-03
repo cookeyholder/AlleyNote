@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Headers;
 
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
-use Exception;
+use Throwable;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
@@ -24,7 +24,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         if ($this->config['csp']['enabled']) {
             header('Content-Security-Policy: ' . $this->buildCSP());
         }
-
         // Strict Transport Security (僅在 HTTPS 下啟用)
         if ($this->config['hsts']['enabled'] && $this->isHTTPS()) {
             $hstsValue = sprintf(
@@ -35,47 +34,38 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             );
             header('Strict-Transport-Security: ' . $hstsValue);
         }
-
         // X-Frame-Options
         if ($this->config['frame_options']['enabled']) {
             header('X-Frame-Options: ' . $this->config['frame_options']['value']);
         }
-
         // X-Content-Type-Options
         if ($this->config['content_type_options']['enabled']) {
             header('X-Content-Type-Options: nosniff');
         }
-
         // X-XSS-Protection (雖然現代瀏覽器已棄用，但為了向後相容)
         if ($this->config['xss_protection']['enabled']) {
             header('X-XSS-Protection: 1; mode=block');
         }
-
         // Referrer Policy
         if ($this->config['referrer_policy']['enabled']) {
             header('Referrer-Policy: ' . $this->config['referrer_policy']['value']);
         }
-
         // Permissions Policy
         if ($this->config['permissions_policy']['enabled']) {
             header('Permissions-Policy: ' . $this->buildPermissionsPolicy());
         }
-
         // Cross-Origin Embedder Policy
         if ($this->config['coep']['enabled']) {
             header('Cross-Origin-Embedder-Policy: ' . $this->config['coep']['value']);
         }
-
         // Cross-Origin Opener Policy
         if ($this->config['coop']['enabled']) {
             header('Cross-Origin-Opener-Policy: ' . $this->config['coop']['value']);
         }
-
         // Cross-Origin Resource Policy
         if ($this->config['corp']['enabled']) {
             header('Cross-Origin-Resource-Policy: ' . $this->config['corp']['value']);
         }
-
         // Cache Control for sensitive pages
         if ($this->config['cache_control']['enabled']) {
             header('Cache-Control: ' . $this->config['cache_control']['value']);
@@ -112,7 +102,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
             return;
         }
-
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (
             strpos($contentType, 'application/csp-report') === false
@@ -122,19 +111,15 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
             return;
         }
-
         $input = file_get_contents('php://input');
         $report = json_decode($input, true);
-
         if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
 
             return;
         }
-
         // 記錄 CSP 違規
         $this->logCSPViolation($report);
-
         http_response_code(204);
     }
 
@@ -149,10 +134,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
             'report' => $report,
         ];
-
         // 記錄到日誌檔案
         app_log('warning', 'CSP Violation', $logData);
-
         // 如果設定了監控服務，也可以發送到那裡
         if (isset($this->config['csp']['monitoring_endpoint'])) {
             $this->sendToMonitoring($logData);
@@ -175,9 +158,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     'timeout' => 5,
                 ],
             ]);
-
             file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             app_log('error', 'Failed to send CSP violation to monitoring', ['exception' => $e->getMessage()]);
         }
     }
@@ -187,7 +169,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         // 移除可能洩漏伺服器資訊的標頭
         header_remove('Server');
         header_remove('X-Powered-By');
-
         // 設定通用的伺服器標識（可選）
         if ($this->config['server_signature']['enabled']) {
             header('Server: ' . $this->config['server_signature']['value']);
@@ -198,7 +179,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         $directives = [];
         $nonce = $this->generateNonce();
-
         foreach ($this->config['csp']['directives'] as $directive => $sources) {
             if (!empty($sources)) {
                 // 對於 script-src 和 style-src，添加 nonce 支援
@@ -207,13 +187,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     $sources = array_diff($sources, ["'unsafe-inline'"]);
                     $sources[] = "'nonce-{$nonce}'";
                 }
-
                 $directives[] = $directive . ' ' . implode(' ', (array) $sources);
             } else {
                 $directives[] = $directive;
             }
         }
-
         // 添加 CSP 違規報告
         if (isset($this->config['csp']['report_uri'])) {
             $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
@@ -225,7 +203,6 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function buildPermissionsPolicy(): string
     {
         $policies = [];
-
         foreach ($this->config['permissions_policy']['directives'] as $feature => $allowlist) {
             if (is_array($allowlist)) {
                 $policies[] = $feature . '=(' . implode(' ', $allowlist) . ')';

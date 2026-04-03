@@ -6,11 +6,6 @@ namespace App\Domains\Auth\Exceptions;
 
 use Throwable;
 
-/**
- * Token 解析例外.
- *
- * 當 JWT Token 無法解析時拋出此例外，用於不安全的解析操作（如取得過期 token 資訊）
- */
 class TokenParsingException extends JwtException
 {
     /**
@@ -54,7 +49,6 @@ class TokenParsingException extends JwtException
             'reason' => $reason,
             'timestamp' => time(),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
     }
 

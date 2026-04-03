@@ -17,19 +17,15 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (session_status() === PHP_SESSION_NONE) {
             // 設定安全的 Session 參數
             ini_set('session.cookie_httponly', '1');
-
             // 根據環境決定是否啟用 secure cookie
             $isProduction = ($_ENV['APP_ENV'] ?? 'production') === 'production';
             ini_set('session.cookie_secure', $isProduction ? '1' : '0');
-
             ini_set('session.cookie_samesite', 'Strict');
             ini_set('session.use_strict_mode', '1');
             ini_set('session.use_only_cookies', '1');
             ini_set('session.cookie_lifetime', '0'); // Session cookie (瀏覽器關閉時過期)
-
             // 設定 Session 名稱 (避免使用預設的 PHPSESSID)
             session_name('ALLEYNOTE_SESSION');
-
             session_start();
         }
     }
@@ -52,7 +48,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (session_status() === PHP_SESSION_ACTIVE) {
             // 清空 Session 資料
             $_SESSION = [];
-
             // 刪除 Session cookie
             if (ini_get('session.use_cookies')) {
                 $params = session_get_cookie_params();
@@ -66,7 +61,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
                     $params['httponly'],
                 );
             }
-
             // 銷毀 Session
             session_destroy();
         }
@@ -80,12 +74,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (session_status() !== PHP_SESSION_ACTIVE) {
             return false;
         }
-
         // 檢查是否有必要的 Session 資料
         if (!isset($_SESSION['user_id']) || !isset($_SESSION['session_created_at'])) {
             return false;
         }
-
         // 檢查 Session 是否過期 (最大閒置時間 2 小時)
         $maxIdleTime = 7200; // 2 hours
         if (
@@ -94,7 +86,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         ) {
             return false;
         }
-
         // 檢查 Session 是否超過最大生命週期 (8 小時)
         $maxLifetime = 28800; // 8 hours
         if ((time() - $_SESSION['session_created_at']) > $maxLifetime) {
@@ -125,7 +116,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         $_SESSION['session_created_at'] = time();
         $_SESSION['last_activity'] = time();
         $_SESSION['requires_ip_verification'] = false; // IP 驗證狀態
-
         // 重新產生 Session ID 防止 Session 固定攻擊
         $this->regenerateSessionId();
     }
@@ -208,7 +198,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             'action_type' => null,
             'message' => null,
         ];
-
         // 基本 Session 有效性檢查
         if (!$this->isSessionValid()) {
             $result['valid'] = false;
@@ -216,7 +205,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
 
             return $result;
         }
-
         // User-Agent 檢查
         if (!$this->validateSessionUserAgent($currentUserAgent)) {
             $result['valid'] = false;
@@ -224,7 +212,6 @@ class SessionSecurityService implements SessionSecurityServiceInterface
 
             return $result;
         }
-
         // IP 變更檢查
         if (!$this->validateSessionIp($currentIp)) {
             if ($this->requiresIpVerification()) {

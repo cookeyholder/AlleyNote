@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-/**
- * Token 已過期例外.
- *
- * 當 JWT Token（Access Token 或 Refresh Token）已過期時拋出此例外。
- * 包含過期時間和剩餘時間等詳細資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 class TokenExpiredException extends JwtException
 {
     /**
@@ -47,21 +38,17 @@ class TokenExpiredException extends JwtException
         string $customMessage = '',
     ) {
         $currentTime ??= time();
-
         $message = $customMessage ?: $this->buildDefaultMessage($tokenType, $expiredAt, $currentTime);
-
         $context = [
             'token_type' => $tokenType,
             'expired_at' => $expiredAt,
             'current_time' => $currentTime,
         ];
-
         if ($expiredAt !== null) {
             $context['expired_duration'] = $currentTime - $expiredAt;
             $context['expired_at_human'] = date('Y-m-d H:i:s', $expiredAt);
             $context['current_time_human'] = date('Y-m-d H:i:s', $currentTime);
         }
-
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
 
@@ -75,11 +62,9 @@ class TokenExpiredException extends JwtException
     private function buildDefaultMessage(string $tokenType, ?int $expiredAt, int $currentTime): string
     {
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
-
         if ($expiredAt === null) {
             return sprintf('%s has expired', $tokenName);
         }
-
         $expiredDuration = $currentTime - $expiredAt;
         $expiredAgo = $this->formatDuration($expiredDuration);
 
@@ -96,19 +81,16 @@ class TokenExpiredException extends JwtException
         if ($seconds < 60) {
             return sprintf('%d second%s', $seconds, $seconds === 1 ? '' : 's');
         }
-
         if ($seconds < 3600) {
             $minutes = intval(floor($seconds / 60));
 
             return sprintf('%d minute%s', $minutes, $minutes === 1 ? '' : 's');
         }
-
         if ($seconds < 86400) {
             $hours = intval(floor($seconds / 3600));
 
             return sprintf('%d hour%s', $hours, $hours === 1 ? '' : 's');
         }
-
         $days = intval(floor($seconds / 86400));
 
         return sprintf('%d day%s', $days, $days === 1 ? '' : 's');
@@ -120,7 +102,6 @@ class TokenExpiredException extends JwtException
     public function getUserFriendlyMessage(): string
     {
         $tokenType = $this->context['token_type'] ?? self::ACCESS_TOKEN;
-
         if ($tokenType === self::ACCESS_TOKEN) {
             return '您的登入已過期，請重新登入或使用 Refresh Token 重新取得 Access Token。';
         }

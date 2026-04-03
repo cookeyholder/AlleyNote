@@ -7,11 +7,6 @@ namespace App\Shared\Validation\Factory;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Validator;
 
-/**
- * 驗證器工廠類別.
- *
- * 負責建立和配置驗證器實例，提供統一的驗證器建立介面
- */
 class ValidatorFactory
 {
     /**
@@ -20,10 +15,8 @@ class ValidatorFactory
     public function create(): ValidatorInterface
     {
         $validator = new Validator();
-
         // 設定繁體中文錯誤訊息
         $this->configureChineseMessages($validator);
-
         // 添加專案特定的驗證規則
         $this->addCustomRules($validator);
 
@@ -38,14 +31,12 @@ class ValidatorFactory
     public function createWithConfig(array $config): ValidatorInterface
     {
         $validator = $this->create();
-
         // 應用自訂配置
         if (isset($config['messages'])) {
             foreach ($config['messages'] as $rule => $message) {
                 $validator->addMessage($rule, $message);
             }
         }
-
         if (isset($config['rules'])) {
             foreach ($config['rules'] as $name => $callback) {
                 $validator->addRule($name, $callback);
@@ -106,22 +97,18 @@ class ValidatorFactory
             if (!is_string($value)) {
                 return false;
             }
-
             $username = trim($value);
             $minLength = (int) ($parameters[0] ?? 3);
             $maxLength = (int) ($parameters[1] ?? 50);
-
             // 檢查長度
             $length = mb_strlen($username, 'UTF-8');
             if ($length < $minLength || $length > $maxLength) {
                 return false;
             }
-
             // 檢查格式：只允許字母、數字、底線和破折號
             if (!preg_match('/^[a-zA-Z0-9_-]+$/', $username)) {
                 return false;
             }
-
             // 不能以數字開頭
             if (preg_match('/^\d/', $username)) {
                 return false;
@@ -129,68 +116,54 @@ class ValidatorFactory
 
             return true;
         });
-
         // 密碼強度驗證規則
         $validator->addRule('password_strength', function ($value, array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
-
             $password = $value;
             $minLength = (int) ($parameters[0] ?? 8);
-
             // 檢查最小長度
             if (strlen($password) < $minLength) {
                 return false;
             }
-
             // 檢查複雜度：至少包含一個小寫字母、一個大寫字母、一個數字
             if (!preg_match('/[a-z]/', $password)) {
                 return false;
             }
-
             if (!preg_match('/[A-Z]/', $password)) {
                 return false;
             }
-
             if (!preg_match('/\d/', $password)) {
                 return false;
             }
 
             return true;
         });
-
         // 增強型電子郵件驗證
         $validator->addRule('email_enhanced', function ($value) {
             if (!is_string($value)) {
                 return false;
             }
-
             $email = trim($value);
-
             // 基本格式檢查
             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 return false;
             }
-
             // 檢查長度限制
             if (strlen($email) > 254) {
                 return false;
             }
-
             // 檢查域名部分
             $parts = explode('@', $email);
             if (count($parts) !== 2) {
                 return false;
             }
-
             $domain = $parts[1];
-
             // 檢查域名長度
             if (strlen($domain) > 253) {
                 return false;
             }
-
             // 檢查是否包含危險字元
             if (preg_match('/[<>"\'&]/', $email)) {
                 return false;
@@ -198,35 +171,28 @@ class ValidatorFactory
 
             return true;
         });
-
         // IP 地址或 CIDR 格式驗證
         $validator->addRule('ip_or_cidr', function ($value) {
             if (!is_string($value)) {
                 return false;
             }
-
             $ip = trim($value);
-
             // 檢查是否為 CIDR 格式
             if (strpos($ip, '/') !== false) {
                 $parts = explode('/', $ip);
                 if (count($parts) !== 2) {
                     return false;
                 }
-
                 $ipPart = $parts[0];
                 $maskPart = $parts[1];
-
                 // 驗證 IP 部分
                 if (!filter_var($ipPart, FILTER_VALIDATE_IP)) {
                     return false;
                 }
-
                 // 驗證子網路遮罩
                 if (!is_numeric($maskPart)) {
                     return false;
                 }
-
                 $mask = (int) $maskPart;
                 if (filter_var($ipPart, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                     // IPv4：遮罩範圍 0-32
@@ -242,21 +208,17 @@ class ValidatorFactory
             // 檢查是否為單一 IP 地址
             return filter_var($ip, FILTER_VALIDATE_IP) !== false;
         });
-
         // 檔案名稱驗證規則
         $validator->addRule('filename', function ($value, array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
-
             $filename = trim($value);
             $maxLength = (int) ($parameters[0] ?? 255);
-
             // 檢查長度
             if (mb_strlen($filename, 'UTF-8') > $maxLength) {
                 return false;
             }
-
             // 檢查是否包含危險字元
             $dangerousChars = ['/', '\\', ':', '*', '?', '"', '<', '>', '|', "\0"];
             foreach ($dangerousChars as $char) {
@@ -264,12 +226,10 @@ class ValidatorFactory
                     return false;
                 }
             }
-
             // 不能是 . 或 ..
             if ($filename === '.' || $filename === '..') {
                 return false;
             }
-
             // 不能以點開頭或結尾（Windows 相容性）
             if (strpos($filename, '.') === 0 || substr($filename, -1) === '.') {
                 return false;
@@ -277,7 +237,6 @@ class ValidatorFactory
 
             return true;
         });
-
         // 設定對應的中文錯誤訊息
         $validator->addMessage('username', '使用者名稱長度必須介於 :param1 和 :param2 個字元之間，只能包含字母、數字、底線和破折號，且不能以數字開頭');
         $validator->addMessage('password_strength', '密碼長度至少需要 :param1 個字元，且必須包含大寫字母、小寫字母和數字');
@@ -292,7 +251,6 @@ class ValidatorFactory
     public function createForDTO(): ValidatorInterface
     {
         $validator = $this->create();
-
         // 為 DTO 添加額外的專用規則
         $this->addDTOSpecificRules($validator);
 
@@ -306,22 +264,18 @@ class ValidatorFactory
     {
         // 這裡可以添加 DTO 專用的驗證規則
         // 例如：跨欄位驗證、複雜的業務邏輯驗證等
-
         // 密碼確認驗證（用於註冊 DTO）
         $validator->addRule('password_confirmed', function ($value, array $parameters, array $allData = []) {
             if (!is_string($value)) {
                 return false;
             }
-
             $password = $allData['password'] ?? null;
-
             if ($password === null) {
                 return false;
             }
 
             return $value === $password;
         });
-
         $validator->addMessage('password_confirmed', '密碼確認不相符');
     }
 }

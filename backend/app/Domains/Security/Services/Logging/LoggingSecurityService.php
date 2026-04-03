@@ -10,11 +10,6 @@ use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-/**
- * 安全日誌記錄服務.
- *
- * 提供安全的日誌記錄功能，包含資料淨化和權限控制
- */
 class LoggingSecurityService implements LoggingSecurityServiceInterface
 {
     private Logger $logger;
@@ -65,10 +60,8 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private function initializeLoggers(): void
     {
         $logsDir = storage_path('logs');
-
         // 確保日誌目錄存在且權限正確
         $this->ensureLogDirectory($logsDir);
-
         // 主要應用日誌
         $this->logger = new Logger('app');
         $appHandler = new RotatingFileHandler(
@@ -78,7 +71,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         );
         $appHandler->setFormatter(new JsonFormatter());
         $this->logger->pushHandler($appHandler);
-
         // 安全事件日誌
         $this->securityLogger = new Logger('security');
         $securityHandler = new RotatingFileHandler(
@@ -88,7 +80,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         );
         $securityHandler->setFormatter(new JsonFormatter());
         $this->securityLogger->pushHandler($securityHandler);
-
         // 審計日誌（不輪轉，永久保存）
         $this->auditLogger = new Logger('audit');
         $auditHandler = new StreamHandler(
@@ -97,7 +88,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         );
         $auditHandler->setFormatter(new JsonFormatter());
         $this->auditLogger->pushHandler($auditHandler);
-
         // 設定所有日誌檔案權限
         $this->setLogFilePermissions($logsDir);
     }
@@ -124,14 +114,12 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             'audit.log',
             'csp_violations.log',
         ];
-
         foreach ($logFiles as $file) {
             $filepath = $logsDir . '/' . $file;
             if (file_exists($filepath)) {
                 chmod($filepath, 0o640);
             }
         }
-
         // 也處理輪轉的日誌檔案
         $rotatedFiles = glob($logsDir . '/*.log-*');
         foreach ($rotatedFiles as $file) {
@@ -167,7 +155,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
-
         $this->securityLogger->warning($event, $enrichedContext);
     }
 
@@ -178,9 +165,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
-
         $this->securityLogger->critical($event, $enrichedContext);
-
         // 同時記錄到審計日誌
         $this->auditLogger->critical($event, $enrichedContext);
     }
@@ -192,7 +177,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $whitelistedData = $this->applyRequestWhitelist($requestData);
         $enrichedData = $this->enrichRequestContext($whitelistedData);
-
         $this->logger->info('HTTP Request', $enrichedData);
     }
 
@@ -203,7 +187,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
-
         $this->securityLogger->warning('Authentication Failure: ' . $reason, $enrichedContext);
     }
 
@@ -214,7 +197,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
-
         $this->securityLogger->warning(
             "Authorization Failure: Access denied to {$resource} for action {$action}",
             $enrichedContext,
@@ -227,7 +209,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private function applyRequestWhitelist(array $data): array
     {
         $filtered = [];
-
         foreach (self::REQUEST_WHITELIST as $allowedField) {
             if (isset($data[$allowedField])) {
                 $filtered[$allowedField] = $data[$allowedField];
@@ -251,10 +232,8 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private function recursiveSanitize(array $data): array
     {
         $sanitized = [];
-
         foreach ($data as $key => $value) {
             $lowercaseKey = strtolower($key);
-
             // 檢查是否為敏感欄位
             $isSensitive = false;
             foreach (self::SENSITIVE_FIELDS as $sensitiveField) {
@@ -263,7 +242,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
                     break;
                 }
             }
-
             if ($isSensitive) {
                 $sanitized[$key] = '[REDACTED]';
             } elseif (is_array($value)) {
@@ -286,11 +264,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $context['server_time'] = date('Y-m-d H:i:s');
         $context['process_id'] = getmypid();
-
         if (!isset($context['session_id']) && session_status() === PHP_SESSION_ACTIVE) {
             $context['session_id'] = session_id();
         }
-
         if (!isset($context['user_id']) && isset($_SESSION['user_id'])) {
             $context['user_id'] = $_SESSION['user_id'];
         }
@@ -304,7 +280,6 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     private function enrichRequestContext(array $context): array
     {
         $context['server_time'] = date('Y-m-d H:i:s');
-
         // 如果有 User-Agent，轉換為雜湊值
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
@@ -320,23 +295,18 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $logsDir = storage_path('logs');
         $results = [];
-
         if (!is_dir($logsDir)) {
             return ['error' => 'Logs directory does not exist'];
         }
-
         $logFiles = glob($logsDir . '/*.log*');
-
         foreach ($logFiles as $file) {
             $perms = fileperms($file) & 0o777;
             $expected = 0o640;
-
             $results[basename($file)] = [
                 'current_permissions' => sprintf('%o', $perms),
                 'expected_permissions' => sprintf('%o', $expected),
                 'is_correct' => $perms === $expected,
             ];
-
             // 如果權限不正確，嘗試修正
             if ($perms !== $expected) {
                 if (chmod($file, $expected)) {
@@ -361,9 +331,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             'directory_permissions' => sprintf('%o', fileperms($logsDir) & 0o777),
             'files' => [],
         ];
-
         $logFiles = glob($logsDir . '/*.log*');
-
         foreach ($logFiles as $file) {
             $stats['files'][basename($file)] = [
                 'size' => filesize($file),

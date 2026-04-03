@@ -8,9 +8,9 @@ use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Models\IpList;
 use App\Shared\Contracts\CacheServiceInterface;
 use DateTime;
-use Exception;
 use InvalidArgumentException;
 use PDO;
+use Throwable;
 
 class IpRepository implements IpRepositoryInterface
 {
@@ -51,7 +51,6 @@ class IpRepository implements IpRepositoryInterface
         if (filter_var($ipAddress, FILTER_VALIDATE_IP)) {
             return;
         }
-
         // 驗證 CIDR 格式
         if (preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}\/([0-9]|[1-2][0-9]|3[0-2])$/', $ipAddress)) {
             return;
@@ -65,7 +64,6 @@ class IpRepository implements IpRepositoryInterface
         if (strpos($cidr, '/') === false) {
             return $ip === $cidr;
         }
-
         [$subnet, $bits] = explode('/', $cidr);
         $ip = ip2long($ip);
         $subnet = ip2long($subnet);
@@ -93,16 +91,13 @@ class IpRepository implements IpRepositoryInterface
     public function create(array $data): IpList
     {
         $this->validateIpAddress($data['ip_address']);
-
         $now = new DateTime()->format(DateTime::RFC3339);
         $uuid = generate_uuid();
-
         $sql = 'INSERT INTO ip_lists (uuid, ip_address, type, unit_id, description, created_at, updated_at)
                 VALUES (:uuid, :ip_address, :type, :unit_id, :description, :created_at, :updated_at)';
 
         try {
             $this->db->beginTransaction();
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'uuid' => $uuid,
@@ -113,9 +108,7 @@ class IpRepository implements IpRepositoryInterface
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
-
             $id = (int) $this->db->lastInsertId();
-
             // 直接從已知資料建立物件
             $ipList = new IpList([
                 'id' => $id,
@@ -127,16 +120,14 @@ class IpRepository implements IpRepositoryInterface
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
-
             $this->db->commit();
-
             // 儲存到快取
             $this->cache->set($this->getCacheKey('id', $id), $ipList);
             $this->cache->set($this->getCacheKey('uuid', $uuid), $ipList);
             $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
 
             return $ipList;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }
@@ -153,7 +144,6 @@ class IpRepository implements IpRepositoryInterface
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE id = :id');
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$result) {
                 return null;
@@ -195,27 +185,21 @@ class IpRepository implements IpRepositoryInterface
         if (isset($data['ip_address'])) {
             $this->validateIpAddress($data['ip_address']);
         }
-
         $data['updated_at'] = new DateTime()->format(DateTime::RFC3339);
-
         $sets = [];
         $params = ['id' => $id];
-
         foreach ($data as $key => $value) {
             if ($key !== 'id' && $key !== 'uuid' && $key !== 'created_at') {
                 $sets[] = "{$key} = :{$key}";
                 $params[$key] = $value;
             }
         }
-
         if (empty($sets)) {
             return $this->find($id);
         }
-
         $sql = 'UPDATE ip_lists SET ' . implode(', ', $sets) . ' WHERE id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-
         // 清除快取
         $ipList = $this->find($id);
         if ($ipList) {
@@ -238,7 +222,6 @@ class IpRepository implements IpRepositoryInterface
             $this->cache->delete($this->getCacheKey('ip', $ipList->getIpAddress()));
             $this->cache->delete('ip_lists:type:' . $ipList->getType());
         }
-
         $stmt = $this->db->prepare('DELETE FROM ip_lists WHERE id = ?');
 
         return $stmt->execute([$id]);
@@ -247,7 +230,6 @@ class IpRepository implements IpRepositoryInterface
     public function getByType(int $type): array
     {
         $cacheKey = 'ip_lists:type:' . $type;
-
         $results = $this->cache->remember($cacheKey, function () use ($type) {
             $stmt = $this->db->prepare('SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists WHERE type = ? ORDER BY created_at DESC');
             $stmt->execute([$type]);
@@ -266,7 +248,6 @@ class IpRepository implements IpRepositoryInterface
         $offset = ($page - 1) * $perPage;
         $where = [];
         $params = [];
-
         if (!empty($conditions)) {
             foreach ($conditions as $key => $value) {
                 // 檢查欄位是否在允許的白名單中
@@ -279,24 +260,20 @@ class IpRepository implements IpRepositoryInterface
                 }
             }
         }
-
         // 計算總筆數
         $countSql = 'SELECT COUNT(*) FROM ip_lists'
             . (empty($where) ? '' : ' WHERE ' . implode(' AND ', $where));
         $stmt = $this->db->prepare($countSql);
         $stmt->execute($params);
         $total = (int) $stmt->fetchColumn();
-
         // 取得分頁資料
         $sql = 'SELECT ' . self::IP_SELECT_FIELDS . ' FROM ip_lists'
             . (empty($where) ? '' : ' WHERE ' . implode(' AND ', $where))
             . ' ORDER BY created_at DESC LIMIT ?, ?';
-
         $stmt = $this->db->prepare($sql);
         $params[] = $offset;
         $params[] = $perPage;
         $stmt->execute($params);
-
         $items = array_map(
             fn($row) => $this->createIpListFromData($row),
             $stmt->fetchAll(PDO::FETCH_ASSOC),
@@ -314,11 +291,9 @@ class IpRepository implements IpRepositoryInterface
     public function isBlacklisted(string $ipAddress): bool
     {
         $this->validateIpAddress($ipAddress);
-
         $stmt = $this->db->prepare('SELECT ip_address FROM ip_lists WHERE type = 0');
         $stmt->execute();
         $blacklist = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         foreach ($blacklist as $entry) {
             if ($this->ipInRange($ipAddress, $entry)) {
                 return true;
@@ -331,11 +306,9 @@ class IpRepository implements IpRepositoryInterface
     public function isWhitelisted(string $ipAddress): bool
     {
         $this->validateIpAddress($ipAddress);
-
         $stmt = $this->db->prepare('SELECT ip_address FROM ip_lists WHERE type = 1');
         $stmt->execute();
         $whitelist = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         foreach ($whitelist as $entry) {
             if ($this->ipInRange($ipAddress, $entry)) {
                 return true;

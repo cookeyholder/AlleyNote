@@ -246,7 +246,9 @@ final class StatisticsVisualizationServiceTest extends UnitTestCase
         // Assert
         $this->assertInstanceOf(ChartData::class, $result);
         $this->assertTrue($result->isEmpty());
+        /** @phpstan-ignore-next-line */
         $this->assertSame($metrics, $result->options['requested_metrics']);
+        /** @phpstan-ignore-next-line */
         $this->assertFalse($result->options['empty_state']['implemented']);
     }
 

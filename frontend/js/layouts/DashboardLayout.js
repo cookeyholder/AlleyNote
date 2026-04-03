@@ -6,6 +6,7 @@ import { globalGetters } from "../store/globalStore.js";
 import { authAPI } from "../api/modules/auth.js";
 import { notification } from "../utils/notification.js";
 import { router } from "../utils/router.js";
+import { escapeHtml } from "../utils/security.js";
 
 /**
  * 渲染管理後台布局
@@ -35,7 +36,7 @@ export function renderDashboardLayout(content, options = {}) {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
-              <h1 class="text-2xl font-semibold text-modern-900">${title}</h1>
+              <h1 class="text-2xl font-semibold text-modern-900">${escapeHtml(title)}</h1>
             </div>
             <div class="flex items-center gap-4">
               ${headerActions}

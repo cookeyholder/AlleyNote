@@ -10,9 +10,6 @@ use App\Domains\Auth\Repositories\UserRepository;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 
-/**
- * 使用者管理服務.
- */
 class UserManagementService
 {
     public function __construct(
@@ -33,11 +30,9 @@ class UserManagementService
     public function getUser(int $id): array
     {
         $user = $this->userRepository->findByIdWithRoles($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-
         // 移除敏感資訊
         unset($user['password_hash']);
 
@@ -53,22 +48,18 @@ class UserManagementService
         if ($this->userRepository->findByUsername($dto->username)) {
             throw ValidationException::fromSingleError('username', '使用者名稱已被使用');
         }
-
         // 驗證 email 是否已存在
         if ($this->userRepository->findByEmail($dto->email)) {
             throw ValidationException::fromSingleError('email', 'Email 已被使用');
         }
-
         // 雜湊密碼
         $hashedPassword = password_hash($dto->password, PASSWORD_ARGON2ID);
-
         // 建立使用者
         $user = $this->userRepository->create([
             'username' => $dto->username,
             'email' => $dto->email,
             'password' => $hashedPassword,
         ]);
-
         // 分配角色
         if (!empty($dto->roleIds)) {
             $this->userRepository->setUserRoles($user['id'], $dto->roleIds);
@@ -84,13 +75,10 @@ class UserManagementService
     public function updateUser(int $id, UpdateUserDTO $dto): array
     {
         $user = $this->userRepository->findById($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-
         $updateData = [];
-
         // 檢查使用者名稱是否已被其他人使用
         if ($dto->username !== null) {
             $existing = $this->userRepository->findByUsername($dto->username);
@@ -99,7 +87,6 @@ class UserManagementService
             }
             $updateData['username'] = $dto->username;
         }
-
         // 檢查 email 是否已被其他人使用
         if ($dto->email !== null) {
             $existing = $this->userRepository->findByEmail($dto->email);
@@ -108,17 +95,14 @@ class UserManagementService
             }
             $updateData['email'] = $dto->email;
         }
-
         // 更新密碼
         if ($dto->password !== null) {
             $updateData['password'] = $dto->password;
         }
-
         // 更新基本資料
         if (!empty($updateData)) {
             $this->userRepository->update((string) $id, $updateData);
         }
-
         // 更新角色
         if ($dto->roleIds !== null) {
             $this->userRepository->setUserRoles($id, $dto->roleIds);
@@ -134,7 +118,6 @@ class UserManagementService
     public function deleteUser(int $id): bool
     {
         $user = $this->userRepository->findById($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -150,7 +133,6 @@ class UserManagementService
     public function assignRoles(int $userId, array $roleIds): bool
     {
         $user = $this->userRepository->findById($userId);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
@@ -174,11 +156,9 @@ class UserManagementService
     public function activateUser(int $id): array
     {
         $user = $this->userRepository->findById($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-
         $this->userRepository->update((string) $id, ['is_active' => true]);
 
         return $this->getUser($id);
@@ -190,11 +170,9 @@ class UserManagementService
     public function deactivateUser(int $id): array
     {
         $user = $this->userRepository->findById($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-
         $this->userRepository->update((string) $id, ['is_active' => false]);
 
         return $this->getUser($id);
@@ -206,19 +184,15 @@ class UserManagementService
     public function resetPassword(int $id, string $newPassword): bool
     {
         $user = $this->userRepository->findById($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-
         // 驗證密碼長度
         if (strlen($newPassword) < 6) {
             throw ValidationException::fromSingleError('password', '密碼長度至少需要 6 個字元');
         }
-
         // 雜湊密碼
         $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
-
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
 
         return true;
@@ -230,30 +204,24 @@ class UserManagementService
     public function changePassword(int $id, string $currentPassword, string $newPassword): bool
     {
         $user = $this->userRepository->findById($id);
-
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-
         // 驗證當前密碼
         $passwordHash = $user['password'] ?? $user['password_hash'] ?? '';
         if (!password_verify($currentPassword, $passwordHash)) {
             throw ValidationException::fromSingleError('current_password', '當前密碼不正確');
         }
-
         // 驗證新密碼長度
         if (strlen($newPassword) < 6) {
             throw ValidationException::fromSingleError('new_password', '新密碼長度至少需要 6 個字元');
         }
-
         // 驗證新密碼不能與舊密碼相同
         if ($currentPassword === $newPassword) {
             throw ValidationException::fromSingleError('new_password', '新密碼不能與當前密碼相同');
         }
-
         // 雜湊新密碼
         $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
-
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
 
         return true;

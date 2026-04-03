@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Events\Contracts;
 
-/**
- * 事件監聽器介面.
- *
- * 定義事件監聽器的基本合約
- */
 interface EventListenerInterface
 {
     /**

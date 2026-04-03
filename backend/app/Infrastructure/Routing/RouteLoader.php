@@ -9,11 +9,6 @@ use App\Infrastructure\Routing\Exceptions\RouteConfigurationException;
 use ParseError;
 use Throwable;
 
-/**
- * 路由載入器.
- *
- * 負責載入和管理多個路由配置檔案
- */
 class RouteLoader
 {
     private RouteValidator $validator;
@@ -35,11 +30,9 @@ class RouteLoader
         if (!file_exists($filePath)) {
             throw RouteConfigurationException::fileNotFound($filePath);
         }
-
         if (!is_readable($filePath)) {
             throw RouteConfigurationException::unreadableFile($filePath);
         }
-
         $this->routeFiles[] = [
             'path' => $filePath,
             'group' => $group,
@@ -55,7 +48,6 @@ class RouteLoader
     {
         $this->validator->reset();
         $this->loadedRoutes = [];
-
         foreach ($this->routeFiles as $routeFile) {
             $this->loadRouteFile($router, $routeFile['path'], $routeFile['group']);
         }
@@ -69,12 +61,9 @@ class RouteLoader
         try {
             // 使用輸出緩衝區來防止路由檔案輸出任何內容
             ob_start();
-
             // 在受保護的範圍內載入路由檔案
             $routes = $this->requireRouteFile($filePath, $router);
-
             ob_end_clean();
-
             // 如果路由檔案返回陣列，處理陣列格式的路由定義
             if (is_array($routes)) {
                 $this->processArrayRoutes($router, $routes, $group, $filePath);
@@ -115,22 +104,17 @@ class RouteLoader
                     '路由配置必須是陣列格式',
                 );
             }
-
             // 設定路由名稱（如果沒有提供的話）
             if (!isset($routeConfig['name'])) {
                 $routeConfig['name'] = is_string($routeName) ? $routeName : "route_{$routeName}";
             }
-
             // 新增群組資訊
             $routeConfig['group'] = $group;
             $routeConfig['file'] = $filePath;
-
             // 驗證路由配置
             $this->validator->validateRoute($routeConfig);
-
             // 註冊路由
             $this->registerRoute($router, $routeConfig);
-
             // 記錄已載入的路由
             $this->loadedRoutes[] = $routeConfig;
         }
@@ -144,20 +128,16 @@ class RouteLoader
         $methods = (array) $routeConfig['methods'];
         $path = $routeConfig['path'];
         $handler = $routeConfig['handler'];
-
         // 正規化 HTTP 方法
         $normalizedMethods = array_map(function ($method) {
             return strtoupper(trim($method));
         }, $methods);
-
         // 使用 map 方法註冊路由
         $route = $router->map($normalizedMethods, $path, $handler);
-
         // 設定路由名稱（如果有提供）
         if (isset($routeConfig['name'])) {
             $route->setName($routeConfig['name']);
         }
-
         // 設定中間件（如果有提供）
         if (isset($routeConfig['middleware'])) {
             $middlewares = (array) $routeConfig['middleware'];
@@ -185,7 +165,6 @@ class RouteLoader
             'files_loaded' => count($this->routeFiles),
             'groups' => [],
         ];
-
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {
             $group = (string) ($route['group'] ?? 'default');

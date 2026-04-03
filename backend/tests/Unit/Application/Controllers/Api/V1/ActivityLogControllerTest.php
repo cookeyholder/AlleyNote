@@ -49,7 +49,7 @@ class ActivityLogControllerTest extends UnitTestCase
     public function testStoreSuccess(): void
     {
         $requestData = [
-            'action_type' => 'auth.login.success',
+            'action_type' => 'login_success',
             'user_id' => 123,
             'metadata' => ['ip' => '127.0.0.1'],
         ];

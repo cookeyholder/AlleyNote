@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-/**
- * Refresh Token 操作例外.
- *
- * 當 Refresh Token 相關操作（重新整理、撤銷、儲存等）發生錯誤時拋出此例外。
- * 包含操作失敗的具體原因和相關詳細資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 class RefreshTokenException extends JwtException
 {
     /**
@@ -75,13 +66,11 @@ class RefreshTokenException extends JwtException
         array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
-
         $context = array_merge([
             'reason' => $reason,
             'timestamp' => time(),
             'operation_id' => uniqid('refresh_', true),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
 

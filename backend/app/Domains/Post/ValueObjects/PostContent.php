@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * PostContent 值物件.
- *
- * 表示文章內容，提供內容驗證和處理邏輯
- */
 final readonly class PostContent implements JsonSerializable, Stringable
 {
     private string $value;
@@ -20,15 +15,12 @@ final readonly class PostContent implements JsonSerializable, Stringable
     public function __construct(string $content)
     {
         $trimmedContent = trim($content);
-
         if (empty($trimmedContent)) {
             throw new InvalidArgumentException('文章內容不能為空');
         }
-
         if (mb_strlen($trimmedContent) > 1000000) { // 1MB 文字限制
             throw new InvalidArgumentException('文章內容不能超過 1,000,000 個字元');
         }
-
         $this->value = $trimmedContent;
     }
 

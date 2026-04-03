@@ -8,18 +8,13 @@ use App\Application\Controllers\BaseController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Services\CacheGroupManager;
-use Exception;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Throwable;
 
-/**
- * 標籤管理控制器.
- *
- * 提供快取標籤管理的 REST API 端點
- */
 class TagManagementController extends BaseController
 {
     public function __construct(
@@ -42,17 +37,14 @@ class TagManagementController extends BaseController
             $page = max(1, isset($queryParams['page']) && is_numeric($queryParams['page']) ? (int) $queryParams['page'] : 1);
             $limit = min(100, max(10, isset($queryParams['limit']) && is_numeric($queryParams['limit']) ? (int) $queryParams['limit'] : 20));
             $search = isset($queryParams['search']) && is_string($queryParams['search']) ? $queryParams['search'] : '';
-
             $tags = [];
             $totalTags = 0;
-
             // 從支援標籤的驅動取得標籤資訊
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     $driverTags = $driver->getAllTags();
                     $tagStats = $driver->getTagStatistics();
-
                     if ($driverTags) {
                         foreach ($driverTags as $tag) {
                             if (empty($search) || stripos($tag, $search) !== false) {
@@ -64,13 +56,11 @@ class TagManagementController extends BaseController
                                     'type' => $this->getTagType($tag),
                                     'created_at' => $this->getTagCreatedAt($tag),
                                 ];
-
                                 // 安全地取得統計資料
                                 if ($tagStats && isset($tagStats['tags'][$tag]) && is_array($tagStats['tags'][$tag])) {
                                     $tagData['key_count'] = $tagStats['tags'][$tag]['key_count'] ?? 0;
                                     $tagData['sample_keys'] = $tagStats['tags'][$tag]['sample_keys'] ?? [];
                                 }
-
                                 $tags[] = $tagData;
                             }
                         }
@@ -78,13 +68,10 @@ class TagManagementController extends BaseController
                     break; // 使用第一個可用的驅動
                 }
             }
-
             $totalTags = count($tags);
-
             // 分頁處理
             $offset = ($page - 1) * $limit;
             $paginatedTags = array_slice($tags, $offset, $limit);
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -99,12 +86,11 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤列表失敗', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -127,19 +113,15 @@ class TagManagementController extends BaseController
     {
         try {
             $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
-
             if (empty($tagName)) {
                 throw new InvalidArgumentException('標籤名稱不能為空');
             }
-
             $tagInfo = null;
-
             // 從支援標籤的驅動取得標籤詳細資訊
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
                 if ($driver && $driver instanceof TaggedCacheInterface) {
                     $tagStats = $driver->getTagStatistics();
-
                     if ($tagStats && isset($tagStats['tags'][$tagName])) {
                         $tagInfo = [
                             'name' => $tagName,
@@ -152,22 +134,19 @@ class TagManagementController extends BaseController
                     }
                 }
             }
-
             if (!$tagInfo) {
                 throw new RuntimeException('標籤不存在');
             }
-
             $responseData = [
                 'success' => true,
                 'data' => $tagInfo,
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤詳細資訊失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -190,14 +169,11 @@ class TagManagementController extends BaseController
     {
         try {
             $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
-
             if (empty($tagName)) {
                 throw new InvalidArgumentException('標籤名稱不能為空');
             }
-
             $deleted = false;
             $affectedDrivers = [];
-
             // 從所有支援標籤的驅動刪除標籤
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
@@ -210,11 +186,9 @@ class TagManagementController extends BaseController
                     }
                 }
             }
-
             if (!$deleted) {
                 throw new RuntimeException('標籤刪除失敗或標籤不存在');
             }
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -224,12 +198,11 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('刪除標籤失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -253,7 +226,6 @@ class TagManagementController extends BaseController
         try {
             $cleanedTags = [];
             $totalCleaned = 0;
-
             // 從所有支援標籤的驅動清理過期標籤
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
@@ -264,7 +236,6 @@ class TagManagementController extends BaseController
                     $totalCleaned += $cleaned;
                 }
             }
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -274,11 +245,10 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('清理標籤失敗', [
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -301,10 +271,8 @@ class TagManagementController extends BaseController
     {
         try {
             $groups = [];
-
             if ($this->groupManager) {
                 $allGroups = $this->groupManager->getAllGroups();
-
                 if ($allGroups) {
                     foreach ($allGroups as $groupName => $groupData) {
                         if (is_string($groupName) && is_array($groupData)) {
@@ -317,7 +285,6 @@ class TagManagementController extends BaseController
                     }
                 }
             }
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -326,11 +293,10 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤群組失敗', [
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -353,17 +319,13 @@ class TagManagementController extends BaseController
     {
         try {
             $groupName = isset($args['group']) && is_string($args['group']) ? urldecode($args['group']) : '';
-
             if (empty($groupName)) {
                 throw new InvalidArgumentException('群組名稱不能為空');
             }
-
             if (!$this->groupManager) {
                 throw new RuntimeException('群組管理器未設定');
             }
-
             $this->groupManager->removeGroup($groupName);
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -372,12 +334,11 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('刪除標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -418,14 +379,11 @@ class TagManagementController extends BaseController
     {
         try {
             $tagName = isset($args['tag']) && is_string($args['tag']) ? urldecode($args['tag']) : '';
-
             if (empty($tagName)) {
                 throw new InvalidArgumentException('標籤名稱不能為空');
             }
-
             $flushed = false;
             $affectedDrivers = [];
-
             // 從支援標籤的驅動清除標籤
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
@@ -436,18 +394,16 @@ class TagManagementController extends BaseController
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
                         }
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         $this->logger?->warning("無法從 {$driverName} 驅動清除標籤 {$tagName}", [
                             'error' => $e->getMessage(),
                         ]);
                     }
                 }
             }
-
             if (!$flushed) {
                 throw new RuntimeException('沒有找到可以清除的標籤');
             }
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -457,12 +413,11 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('清除標籤失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -489,22 +444,17 @@ class TagManagementController extends BaseController
                 throw new InvalidArgumentException('請求主體必須是有效的 JSON 格式');
             }
             $tags = $body['tags'] ?? [];
-
             if (!is_array($tags) || empty($tags)) {
                 throw new InvalidArgumentException('必須提供要清除的標籤列表');
             }
-
             $results = [];
             $totalFlushed = 0;
-
             foreach ($tags as $tagName) {
                 if (!is_string($tagName) || empty($tagName)) {
                     continue;
                 }
-
                 $flushed = false;
                 $affectedDrivers = [];
-
                 foreach (['redis', 'memory'] as $driverName) {
                     $driver = $this->cacheManager->getDriver($driverName);
                     if ($driver && $driver instanceof TaggedCacheInterface) {
@@ -514,25 +464,22 @@ class TagManagementController extends BaseController
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
                             }
-                        } catch (Exception $e) {
+                        } catch (Throwable $e) {
                             $this->logger?->warning("無法從 {$driverName} 驅動清除標籤 {$tagName}", [
                                 'error' => $e->getMessage(),
                             ]);
                         }
                     }
                 }
-
                 $results[] = [
                     'tag' => $tagName,
                     'success' => $flushed,
                     'affected_drivers' => $affectedDrivers,
                 ];
-
                 if ($flushed) {
                     $totalFlushed++;
                 }
             }
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -543,11 +490,10 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('批次清除標籤失敗', [
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -574,7 +520,6 @@ class TagManagementController extends BaseController
                 'total_tags' => 0,
                 'total_cache_entries' => 0,
             ];
-
             // 從支援標籤的驅動收集統計資訊
             foreach (['redis', 'memory'] as $driverName) {
                 $driver = $this->cacheManager->getDriver($driverName);
@@ -590,7 +535,7 @@ class TagManagementController extends BaseController
                                 $statistics['total_cache_entries'] += array_sum($keyCounts);
                             }
                         }
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         $this->logger?->warning("無法從 {$driverName} 驅動取得統計資訊", [
                             'error' => $e->getMessage(),
                         ]);
@@ -600,17 +545,15 @@ class TagManagementController extends BaseController
                     }
                 }
             }
-
             $responseData = [
                 'success' => true,
                 'data' => $statistics,
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤統計失敗', [
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -636,31 +579,24 @@ class TagManagementController extends BaseController
             if (!is_array($body)) {
                 throw new InvalidArgumentException('請求內容必須是有效的 JSON');
             }
-
             $groupName = $body['name'] ?? '';
             $tags = $body['tags'] ?? [];
-
             if (empty($groupName) || !is_string($groupName)) {
                 throw new InvalidArgumentException('群組名稱不能為空');
             }
-
             if (!is_array($tags)) {
                 throw new InvalidArgumentException('標籤必須是陣列');
             }
-
             // 確保所有標籤都是字串
             $validTags = array_filter($tags, 'is_string');
             if (count($validTags) !== count($tags)) {
                 throw new InvalidArgumentException('所有標籤必須是字串');
             }
-
             if (!$this->groupManager) {
                 throw new RuntimeException('群組管理器未初始化');
             }
-
             // 建立群組
             $this->groupManager->group($groupName, $validTags);
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -670,12 +606,11 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('建立標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [
@@ -698,18 +633,14 @@ class TagManagementController extends BaseController
     {
         try {
             $groupName = isset($args['group']) && is_string($args['group']) ? urldecode($args['group']) : '';
-
             if (empty($groupName)) {
                 throw new InvalidArgumentException('群組名稱不能為空');
             }
-
             if (!$this->groupManager) {
                 throw new RuntimeException('群組管理器未初始化');
             }
-
             // 清除群組快取
             $this->groupManager->flushGroup($groupName);
-
             $responseData = [
                 'success' => true,
                 'data' => [
@@ -718,12 +649,11 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('清除標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
-
             $responseData = [
                 'success' => false,
                 'error' => [

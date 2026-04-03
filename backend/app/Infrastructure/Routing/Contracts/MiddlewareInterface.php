@@ -7,11 +7,6 @@ namespace App\Infrastructure\Routing\Contracts;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由中介軟體介面.
- *
- * 定義路由系統中介軟體的標準行為，遵循 PSR-15 中介軟體介面概念
- */
 interface MiddlewareInterface
 {
     /**

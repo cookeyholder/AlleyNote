@@ -8,11 +8,6 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由資訊中介軟體.
- *
- * 負責將路由資訊注入到請求物件中
- */
 class RouteInfoMiddleware extends AbstractMiddleware
 {
     /**
@@ -71,22 +66,17 @@ class RouteInfoMiddleware extends AbstractMiddleware
             'methods' => $this->methods,
             'handler' => $this->handler,
         ];
-
         $request = $request->withAttribute('route_info', $routeInfo);
-
         // 個別注入每個路由資訊
         if ($this->routeName !== null) {
             $request = $request->withAttribute('route_name', $this->routeName);
         }
-
         if ($this->routePattern !== null) {
             $request = $request->withAttribute('route_pattern', $this->routePattern);
         }
-
         if (!empty($this->methods)) {
             $request = $request->withAttribute('route_methods', $this->methods);
         }
-
         if ($this->handler !== null) {
             $request = $request->withAttribute('route_handler', $this->handler);
         }

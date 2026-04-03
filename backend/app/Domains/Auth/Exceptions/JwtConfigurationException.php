@@ -6,11 +6,6 @@ namespace App\Domains\Auth\Exceptions;
 
 use Throwable;
 
-/**
- * JWT 配置例外.
- *
- * 當 JWT 配置無效、金鑰檔案無法讀取、或金鑰格式錯誤時拋出此例外
- */
 class JwtConfigurationException extends JwtException
 {
     /**
@@ -62,7 +57,6 @@ class JwtConfigurationException extends JwtException
             'reason' => $reason,
             'timestamp' => time(),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
     }
 

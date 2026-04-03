@@ -6,11 +6,6 @@ namespace App\Domains\Auth\DTOs;
 
 use InvalidArgumentException;
 
-/**
- * 刷新請求 DTO.
- *
- * 封裝使用者 Token 刷新請求的資料。
- */
 final readonly class RefreshRequestDTO
 {
     /**
@@ -55,7 +50,6 @@ final readonly class RefreshRequestDTO
         if (!is_array($scopes)) {
             return null;
         }
-
         $normalizedScopes = [];
         foreach ($scopes as $scope) {
             if (is_string($scope) && $scope !== '') {
@@ -74,7 +68,6 @@ final readonly class RefreshRequestDTO
         if ($scopes === null) {
             return;
         }
-
         foreach ($scopes as $scope) {
             if (!is_string($scope) || $scope === '') {
                 throw new InvalidArgumentException('Scopes must be a non-empty string list');

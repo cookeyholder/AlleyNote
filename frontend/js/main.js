@@ -8,7 +8,7 @@
  * - 全域事件監聽
  */
 
-import { initRouter } from "./utils/router.js";
+import { initRouter, router } from "./utils/router.js";
 import { globalActions, globalGetters } from "./store/globalStore.js";
 import { authAPI } from "./api/modules/auth.js";
 import { loading } from "./components/Loading.js";
@@ -114,6 +114,5 @@ if (document.readyState === "loading") {
  * 匯出全域函數供 HTML 使用
  */
 window.navigateTo = (path) => {
-  const { router } = require("./utils/router.js");
   router.navigate(path);
 };

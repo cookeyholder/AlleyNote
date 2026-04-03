@@ -9,11 +9,6 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 use Redis;
 use RedisException;
 
-/**
- * Redis 快取實作.
- *
- * 使用 Redis 存儲路由快取資料，提供更好的效能和分散式支援
- */
 class RedisRouteCache implements RouteCacheInterface
 {
     private const CACHE_KEY_PREFIX = 'route_cache:';
@@ -54,14 +49,12 @@ class RedisRouteCache implements RouteCacheInterface
         try {
             $cacheKey = $this->getCacheKey();
             $content = $this->redis->get($cacheKey);
-
             if ($content === false) {
                 $this->stats['misses']++;
                 $this->saveStats();
 
                 return null;
             }
-
             $data = unserialize($content);
             if (!$data instanceof RouteCollectionInterface) {
                 $this->stats['misses']++;
@@ -69,7 +62,6 @@ class RedisRouteCache implements RouteCacheInterface
 
                 return null;
             }
-
             $this->stats['hits']++;
             $this->stats['last_used'] = time();
             $this->saveStats();
@@ -88,11 +80,9 @@ class RedisRouteCache implements RouteCacheInterface
         try {
             $cacheKey = $this->getCacheKey();
             $content = serialize($routes);
-
             $result = $this->ttl > 0
                 ? $this->redis->setex($cacheKey, $this->ttl, $content)
                 : $this->redis->set($cacheKey, $content);
-
             if ($result) {
                 $this->stats['size'] = strlen($content);
                 $this->stats['created_at'] = time();
@@ -112,13 +102,11 @@ class RedisRouteCache implements RouteCacheInterface
         try {
             $cacheKey = $this->getCacheKey();
             $statsKey = self::STATS_KEY;
-
             // 使用 pipeline 提升效能
             $pipe = $this->redis->multi();
             $pipe->del($cacheKey);
             $pipe->del($statsKey);
             $results = $pipe->exec();
-
             // 重置統計
             $this->stats = [
                 'hits' => 0,

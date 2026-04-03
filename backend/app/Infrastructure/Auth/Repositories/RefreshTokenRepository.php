@@ -12,12 +12,6 @@ use DateTime;
 use PDO;
 use PDOException;
 
-/**
- * RefreshToken Repository 實作類別.
- *
- * 負責 RefreshToken 實體的資料庫存取操作，實作完整的 RefreshTokenRepositoryInterface。
- * 採用 PDO 進行資料庫操作，支援交易處理與錯誤處理。
- */
 final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
     private const TABLE_NAME = 'refresh_tokens';
@@ -42,7 +36,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                     status, parent_token_jti, created_at, updated_at
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ';
-
             $stmt = $this->pdo->prepare($sql);
             $now = new DateTime();
 
@@ -77,7 +70,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE jti = ? LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$jti]);
-
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ?: null;
@@ -95,7 +87,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE token_hash = ? LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$tokenHash]);
-
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result ?: null;
@@ -112,14 +103,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             $sql = 'SELECT * FROM ' . self::TABLE_NAME . ' WHERE user_id = ? AND status = ?';
             $params = [$userId, RefreshToken::STATUS_ACTIVE];
-
             if (!$includeExpired) {
                 $sql .= ' AND expires_at > ?';
                 $params[] = new DateTime()->format('Y-m-d H:i:s');
             }
-
             $sql .= ' ORDER BY created_at DESC';
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
 
@@ -214,12 +202,10 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 $userId,
                 RefreshToken::STATUS_ACTIVE,
             ];
-
             if ($excludeJti !== null) {
                 $sql .= ' AND jti != ?';
                 $params[] = $excludeJti;
             }
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
 
@@ -242,7 +228,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             ';
             $stmt = $this->pdo->prepare($sql);
             $now = new DateTime();
-
             $stmt->execute([
                 RefreshToken::STATUS_REVOKED,
                 $reason,
@@ -284,7 +269,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $sql = 'SELECT status FROM ' . self::TABLE_NAME . ' WHERE jti = ? LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$jti]);
-
             $result = $stmt->fetchColumn();
 
             return $result === RefreshToken::STATUS_REVOKED;
@@ -302,7 +286,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $sql = 'SELECT expires_at FROM ' . self::TABLE_NAME . ' WHERE jti = ? LIMIT 1';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$jti]);
-
             $expiresAt = $stmt->fetchColumn();
             if ($expiresAt === false) {
                 return true; // Token not found, consider expired
@@ -376,7 +359,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             ';
             $stmt = $this->pdo->prepare($sql);
             $now = new DateTime()->format('Y-m-d H:i:s');
-
             $stmt->execute([
                 RefreshToken::STATUS_ACTIVE,
                 $now,
@@ -384,7 +366,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 RefreshToken::STATUS_REVOKED,
                 $userId,
             ]);
-
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
@@ -423,7 +404,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 JOIN ' . self::TABLE_NAME . ' rt ON rt.jti = tf.jti
                 ORDER BY rt.created_at
             ';
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$rootJti, $rootJti]);
 
@@ -439,18 +419,15 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             $family = $this->getTokenFamily($rootJti);
             $jtis = array_column($family, 'jti');
-
             if (empty($jtis)) {
                 return 0;
             }
-
             $placeholders = implode(',', array_fill(0, count($jtis), '?'));
             $sql = '
                 UPDATE ' . self::TABLE_NAME . ' 
                 SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
                 WHERE jti IN (' . $placeholders . ')
             ';
-
             $params = [
                 RefreshToken::STATUS_REVOKED,
                 $reason,
@@ -458,7 +435,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 new DateTime()->format('Y-m-d H:i:s'),
                 ...$jtis,
             ];
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
 
@@ -476,7 +452,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
         try {
             $this->pdo->beginTransaction();
             $createdCount = 0;
-
             foreach ($tokens as $token) {
                 $success = $this->create(
                     $token['jti'],
@@ -486,12 +461,10 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                     $token['device_info'],
                     $token['parent_token_jti'] ?? null,
                 );
-
                 if ($success) {
                     $createdCount++;
                 }
             }
-
             $this->pdo->commit();
 
             return $createdCount;
@@ -511,14 +484,12 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             if (empty($jtis)) {
                 return 0;
             }
-
             $placeholders = implode(',', array_fill(0, count($jtis), '?'));
             $sql = '
                 UPDATE ' . self::TABLE_NAME . ' 
                 SET status = ?, revoked_reason = ?, revoked_at = ?, updated_at = ? 
                 WHERE jti IN (' . $placeholders . ')
             ';
-
             $params = [
                 RefreshToken::STATUS_REVOKED,
                 $reason,
@@ -526,7 +497,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 new DateTime()->format('Y-m-d H:i:s'),
                 ...$jtis,
             ];
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
 
@@ -548,7 +518,6 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                 WHERE expires_at <= ? AND expires_at > ? AND status = ?
                 ORDER BY expires_at ASC
             ';
-
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([
                 $thresholdDate->format('Y-m-d H:i:s'),
@@ -578,17 +547,14 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
                     COUNT(DISTINCT device_id) as unique_devices
                 FROM ' . self::TABLE_NAME . '
             ';
-
             $stmt = $this->pdo->prepare($sql);
             $now = new DateTime()->format('Y-m-d H:i:s');
-
             $stmt->execute([
                 RefreshToken::STATUS_ACTIVE,
                 $now,
                 $now,
                 RefreshToken::STATUS_REVOKED,
             ]);
-
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [

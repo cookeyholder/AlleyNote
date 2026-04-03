@@ -12,12 +12,6 @@ use DateTimeInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * 統計快照日誌適配器.
- *
- * 在統計 Repository 之上添加日誌記錄功能，用於監控和偵錯。
- * 記錄所有重要的資料庫操作，包括執行時間和結果。
- */
 final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryInterface
 {
     public function __construct(
@@ -31,7 +25,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $snapshot = $this->repository->findById($id);
-
             $this->logOperation('findById', [
                 'id' => $id,
                 'found' => $snapshot !== null,
@@ -52,7 +45,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $snapshot = $this->repository->findByUuid($uuid);
-
             $this->logOperation('findByUuid', [
                 'uuid' => $uuid,
                 'found' => $snapshot !== null,
@@ -73,7 +65,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $snapshot = $this->repository->findByTypeAndPeriod($snapshotType, $period);
-
             $this->logOperation('findByTypeAndPeriod', [
                 'snapshot_type' => $snapshotType,
                 'period_type' => $period->type->value,
@@ -98,7 +89,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $snapshot = $this->repository->findLatestByType($snapshotType);
-
             $this->logOperation('findLatestByType', [
                 'snapshot_type' => $snapshotType,
                 'found' => $snapshot !== null,
@@ -122,7 +112,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $snapshots = $this->repository->findByTypeAndDateRange($snapshotType, $startDate, $endDate);
-
             $this->logOperation('findByTypeAndDateRange', [
                 'snapshot_type' => $snapshotType,
                 'start_date' => $startDate->format('Y-m-d H:i:s'),
@@ -149,7 +138,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $snapshots = $this->repository->findExpiredSnapshots($beforeDate);
-
             $this->logOperation('findExpiredSnapshots', [
                 'before_date' => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
                 'count' => count($snapshots),
@@ -172,7 +160,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $savedSnapshot = $this->repository->save($snapshot);
-
             $this->logOperation('save', [
                 'snapshot_type' => $snapshot->getSnapshotType(),
                 'period_type' => $snapshot->getPeriod()->type->value,
@@ -197,7 +184,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $updatedSnapshot = $this->repository->update($snapshot);
-
             $this->logOperation('update', [
                 'snapshot_type' => $snapshot->getSnapshotType(),
                 'period_type' => $snapshot->getPeriod()->type->value,
@@ -221,7 +207,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $result = $this->repository->delete($snapshot);
-
             $this->logOperation('delete', [
                 'snapshot_type' => $snapshot->getSnapshotType(),
                 'result' => $result,
@@ -245,7 +230,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $result = $this->repository->deleteById($id);
-
             $this->logOperation('deleteById', [
                 'id' => $id,
                 'result' => $result,
@@ -266,7 +250,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $deletedCount = $this->repository->deleteExpiredSnapshots($beforeDate);
-
             $this->logOperation('deleteExpiredSnapshots', [
                 'before_date' => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
                 'deleted_count' => $deletedCount,
@@ -289,7 +272,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $exists = $this->repository->exists($snapshotType, $period);
-
             $this->logOperation('exists', [
                 'snapshot_type' => $snapshotType,
                 'period_type' => $period->type->value,
@@ -314,7 +296,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
 
         try {
             $count = $this->repository->count($snapshotType);
-
             $this->logOperation('count', [
                 'snapshot_type' => $snapshotType,
                 'result' => $count,
@@ -346,7 +327,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
                 $orderBy,
                 $direction,
             );
-
             $this->logOperation('findByTypeWithPagination', [
                 'snapshot_type' => $snapshotType,
                 'page' => $page,
@@ -375,7 +355,6 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
     private function logOperation(string $operation, array $context = [], LogLevel $level = LogLevel::DEBUG): void
     {
         $message = sprintf('Statistics Repository Operation: %s', $operation);
-
         match ($level) {
             LogLevel::INFO => $this->logger->info($message, $context),
             LogLevel::WARNING => $this->logger->warning($message, $context),

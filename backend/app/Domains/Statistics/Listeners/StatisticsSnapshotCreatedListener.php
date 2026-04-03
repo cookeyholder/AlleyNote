@@ -12,11 +12,6 @@ use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * 統計快照已建立事件監聽器.
- *
- * 處理統計快照建立事件，觸發快取失效和預熱操作
- */
 class StatisticsSnapshotCreatedListener implements EventListenerInterface
 {
     public function __construct(
@@ -68,7 +63,6 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         $snapshot = $event->getSnapshot();
         $snapshotType = $event->getSnapshotType();
         $isUpdate = $event->isUpdate();
-
         $this->logger?->info('Processing StatisticsSnapshotCreated event', [
             'event_id' => $event->getEventId(),
             'snapshot_id' => $event->getSnapshotId(),
@@ -76,16 +70,12 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             'snapshot_type' => $snapshotType,
             'is_update' => $isUpdate,
         ]);
-
         // 1. 記錄統計事件
         $this->recordSnapshotEvent($event);
-
         // 2. 處理快取失效
         $this->handleCacheInvalidation($event);
-
         // 3. 預熱相關快取
         $this->handleCachePrewarming($event);
-
         $this->logger?->info('StatisticsSnapshotCreated event processed successfully', [
             'event_id' => $event->getEventId(),
             'snapshot_id' => $event->getSnapshotId(),
@@ -96,7 +86,6 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
     private function recordSnapshotEvent(StatisticsSnapshotCreated $event): void
     {
         $eventType = $event->isUpdate() ? 'snapshot_updated' : 'snapshot_created';
-
         $context = [
             'snapshot_id' => $event->getSnapshotId(),
             'snapshot_uuid' => $event->getSnapshotUuid(),
@@ -113,7 +102,6 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
                 'snapshot_id' => $event->getSnapshotId(),
                 'error' => $e->getMessage(),
             ]);
-
             // 不重新拋出異常，因為監控記錄失敗不應該影響主流程
         }
     }
@@ -125,10 +113,8 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         try {
             // 根據快照類型決定要失效的快取標籤
             $tagsToInvalidate = $this->getCacheTagsForInvalidation($snapshotType);
-
             if (!empty($tagsToInvalidate)) {
                 $this->cacheService->flushByTags($tagsToInvalidate);
-
                 $this->logger?->info('Cache invalidated for snapshot type', [
                     'event_id' => $event->getEventId(),
                     'snapshot_type' => $snapshotType,
@@ -141,7 +127,6 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
                 'snapshot_type' => $snapshotType,
                 'error' => $e->getMessage(),
             ]);
-
             // 不重新拋出異常，快取失效失敗不應該中斷統計流程
         }
     }
@@ -153,10 +138,8 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         try {
             // 根據快照類型決定要預熱的快取回調
             $warmupCallbacks = $this->getWarmupCallbacks($snapshotType);
-
             if (!empty($warmupCallbacks)) {
                 $results = $this->cacheService->warmup($warmupCallbacks);
-
                 $this->logger?->info('Cache prewarmed for snapshot type', [
                     'event_id' => $event->getEventId(),
                     'snapshot_type' => $snapshotType,

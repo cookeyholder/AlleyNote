@@ -8,11 +8,6 @@ use App\Domains\Post\Services\ContentModerationService;
 use App\Domains\Post\Services\RichTextProcessorService;
 use App\Domains\Security\Services\Core\XssProtectionService;
 
-/**
- * XSS 防護擴展服務.
- *
- * 提供進階的 XSS 防護功能，包含情境感知的防護和自動修復
- */
 class XssProtectionExtensionService
 {
     private XssProtectionService $baseXssProtection;
@@ -61,7 +56,6 @@ class XssProtectionExtensionService
     {
         $userLevel = $options['user_level'] ?? 'basic';
         $processResult = $this->richTextProcessor->processCKEditorContent($input, $userLevel);
-
         $result = [
             'protected_content' => $processResult['content'],
             'context' => 'rich_text_editor',
@@ -70,7 +64,6 @@ class XssProtectionExtensionService
             'warnings' => $processResult['warnings'],
             'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
         ];
-
         if ($input !== $processResult['content']) {
             $result['modifications'][] = [
                 'type' => 'html_sanitization',
@@ -110,7 +103,6 @@ class XssProtectionExtensionService
     {
         // 標題不允許任何 HTML
         $cleaned = $this->baseXssProtection->strictClean($input);
-
         // 長度限制
         if (strlen($cleaned) > $this->config['max_title_length']) {
             $cleaned = mb_substr($cleaned, 0, $this->config['max_title_length']);
@@ -132,10 +124,8 @@ class XssProtectionExtensionService
     private function protectPostContent(string $input, array $options): array
     {
         $userLevel = $options['user_level'] ?? 'basic';
-
         // 先進行內容審核
         $moderationResult = $this->contentModerator->moderateContent($input, $options);
-
         if ($moderationResult['status'] === 'rejected') {
             return [
                 'protected_content' => '',
@@ -146,7 +136,6 @@ class XssProtectionExtensionService
                 'security_score' => 0,
             ];
         }
-
         // 進行富文本處理
         $processResult = $this->richTextProcessor->processContent($input, $userLevel);
 
@@ -169,7 +158,6 @@ class XssProtectionExtensionService
         $allowedTags = '<b><strong><i><em><u><br><p><a>';
         $cleaned = strip_tags($input, $allowedTags);
         $cleaned = $this->baseXssProtection->cleanHtml($cleaned);
-
         // 長度限制
         if (strlen($cleaned) > $this->config['max_comment_length']) {
             $cleaned = mb_substr($cleaned, 0, $this->config['max_comment_length']) . '...';
@@ -192,10 +180,8 @@ class XssProtectionExtensionService
     {
         // 搜尋查詢完全不允許 HTML
         $cleaned = $this->baseXssProtection->strictClean($input);
-
         // 移除特殊字元
         $cleaned = preg_replace('/[<>"\']/', '', $cleaned);
-
         // 長度限制
         if (strlen($cleaned) > $this->config['max_search_length']) {
             $cleaned = mb_substr($cleaned, 0, $this->config['max_search_length']);
@@ -235,7 +221,6 @@ class XssProtectionExtensionService
     {
         // 嘗試解析 JSON
         $decoded = json_decode($input, true);
-
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
                 'protected_content' => '',
@@ -246,7 +231,6 @@ class XssProtectionExtensionService
                 'security_score' => 0,
             ];
         }
-
         // 遞迴清理 JSON 資料
         $cleaned = $this->cleanJsonRecursively($decoded);
 
@@ -267,7 +251,6 @@ class XssProtectionExtensionService
     {
         $filename = $options['filename'] ?? 'unknown';
         $fileExtension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-
         // 檢查檔案擴展名
         if (!in_array($fileExtension, $this->config['allowed_file_extensions'], true)) {
             return [
@@ -279,7 +262,6 @@ class XssProtectionExtensionService
                 'security_score' => 0,
             ];
         }
-
         // 清理檔案名稱
         $cleanFilename = $this->cleanFilename($filename);
 
@@ -318,7 +300,6 @@ class XssProtectionExtensionService
         if (is_array($data)) {
             return array_map([$this, 'cleanJsonRecursively'], $data);
         }
-
         if (is_string($data)) {
             return $this->baseXssProtection->clean($data);
         }
@@ -333,10 +314,8 @@ class XssProtectionExtensionService
     {
         // 移除危險字元
         $cleaned = preg_replace('/[^a-zA-Z0-9\-_\.]/', '', $filename);
-
         // 防止目錄遍歷
         $cleaned = str_replace(['../', '..\\', '../'], '', $cleaned);
-
         // 確保檔名不為空
         if (empty($cleaned)) {
             $cleaned = 'file_' . time();
@@ -353,16 +332,12 @@ class XssProtectionExtensionService
         if ($original === $filtered) {
             return 100;
         }
-
         $originalLength = strlen($original);
         $filteredLength = strlen($filtered);
-
         if ($originalLength === 0) {
             return 100;
         }
-
         $reductionRatio = ($originalLength - $filteredLength) / $originalLength;
-
         // 減少量越大，代表過濾掉越多可能有問題的內容
         if ($reductionRatio > 0.5) {
             return 30; // 大量內容被過濾，安全但可能有問題

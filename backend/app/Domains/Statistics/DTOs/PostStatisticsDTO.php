@@ -8,12 +8,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 文章統計 DTO.
- *
- * 封裝文章相關統計資料的傳輸物件，包含狀態分布、來源分析、瀏覽統計等。
- * 專門用於文章統計 API 的回應格式與內部資料傳遞。
- */
 class PostStatisticsDTO implements JsonSerializable
 {
     /**
@@ -55,7 +49,6 @@ class PostStatisticsDTO implements JsonSerializable
         if (isset($data['generated_at']) && is_string($data['generated_at'])) {
             $generatedAt = new DateTimeImmutable($data['generated_at']);
         }
-
         // 過濾並清理資料
         $byStatus = self::filterIntegerMap($data['by_status'] ?? []);
         $bySource = self::filterIntegerMap($data['by_source'] ?? []);
@@ -87,7 +80,6 @@ class PostStatisticsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $filtered = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && is_numeric($value) && $value >= 0) {
@@ -109,7 +101,6 @@ class PostStatisticsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key)) {
@@ -131,7 +122,6 @@ class PostStatisticsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $item) {
             if (is_array($item)) {
@@ -342,7 +332,6 @@ class PostStatisticsDTO implements JsonSerializable
         if (empty($this->timeDistribution)) {
             return null;
         }
-
         $maxCount = max($this->timeDistribution);
         $peakHours = array_keys($this->timeDistribution, $maxCount);
 
@@ -362,7 +351,6 @@ class PostStatisticsDTO implements JsonSerializable
     {
         $totalViews = $this->getTotalViews();
         $totalPosts = $this->getTotalPosts();
-
         $authorProductivity = $this->calculateAuthorProductivity();
         $avgProductivity = 0.0;
         if (!empty($this->topAuthors)) {
@@ -421,7 +409,6 @@ class PostStatisticsDTO implements JsonSerializable
         if (empty($this->timeDistribution)) {
             return null;
         }
-
         $maxCount = max($this->timeDistribution);
         $peakHours = array_keys($this->timeDistribution, $maxCount);
 
@@ -478,11 +465,9 @@ class PostStatisticsDTO implements JsonSerializable
             'content_analysis' => $this->getContentAnalysis(),
             'content_quality' => $this->getContentQualityMetrics(),
         ];
-
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
         }
-
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
@@ -540,49 +525,41 @@ class PostStatisticsDTO implements JsonSerializable
         if ($this->totalPosts < 0) {
             throw new InvalidArgumentException('文章總數不能為負數');
         }
-
         // 驗證狀態分布
         foreach ($this->byStatus as $status => $count) {
             if (!is_string($status) || (!is_int($count) && !is_numeric($count)) || $count < 0) {
                 throw new InvalidArgumentException('狀態統計資料格式不正確');
             }
         }
-
         // 驗證來源分布
         foreach ($this->bySource as $source => $count) {
             if (!is_string($source) || (!is_int($count) && !is_numeric($count)) || $count < 0) {
                 throw new InvalidArgumentException('來源統計資料格式不正確');
             }
         }
-
         // 驗證時間分布
         foreach ($this->timeDistribution as $time => $count) {
             if (!is_string($time) || (!is_int($count) && !is_numeric($count)) || $count < 0) {
                 throw new InvalidArgumentException('時間分布統計資料格式不正確');
             }
         }
-
         // 驗證瀏覽統計 (只檢查必要鍵)
         if (!empty($this->viewsStatistics) && isset($this->viewsStatistics['total_views']) && !isset($this->viewsStatistics['avg_views_per_post'])) {
             // avg_views_per_post 不是必要的，可以計算得出
         }
-
         // 驗證熱門文章 (檢查基本結構，支援 id 或 post_id)
         foreach ($this->topPosts as $post) {
             if (!is_array($post)) {
                 throw new InvalidArgumentException('熱門文章資料結構不正確');
             }
-
             // 支援 id 或 post_id, title 或 name, views 或 metric_value
             $hasId = isset($post['id']) || isset($post['post_id']);
             $hasTitle = isset($post['title']) || isset($post['name']);
             $hasMetric = isset($post['views']) || isset($post['metric_value']);
-
             if (!$hasId || !$hasTitle || !$hasMetric) {
                 throw new InvalidArgumentException('熱門文章資料結構不正確');
             }
         }
-
         // 驗證長度統計 (只檢查存在的鍵)
         if (!empty($this->lengthStatistics)) {
             foreach (['avg_length', 'min_length', 'max_length'] as $key) {
@@ -591,22 +568,18 @@ class PostStatisticsDTO implements JsonSerializable
                 }
             }
         }
-
         // 驗證活躍作者 (支援多種格式)
         foreach ($this->topAuthors as $author) {
             if (!is_array($author)) {
                 throw new InvalidArgumentException('熱門作者資料結構不正確');
             }
-
             // 支援 user_id 或 author_id, posts_count 必須存在
             $hasId = isset($author['user_id']) || isset($author['author_id']);
             $hasCount = isset($author['posts_count']);
-
             if (!$hasId || !$hasCount) {
                 throw new InvalidArgumentException('熱門作者資料結構不正確');
             }
         }
-
         // 驗證置頂統計 (只檢查存在的鍵)
         if (!empty($this->pinnedStats)) {
             foreach ($this->pinnedStats as $key => $value) {
@@ -626,13 +599,10 @@ class PostStatisticsDTO implements JsonSerializable
         $avgLengthFloat = is_numeric($avgLength) ? (float) $avgLength : 0.0;
         $publishRate = $this->getPublishRate();
         $avgViews = $this->getAverageViews();
-
         // 長度分數 (0-40分)
         $lengthScore = min(($avgLengthFloat / 500) * 40, 40);
-
         // 發布率分數 (0-30分)
         $publishScore = ($publishRate / 100) * 30;
-
         // 瀏覽量分數 (0-30分)
         $viewsScore = min(($avgViews / 100) * 30, 30);
 
@@ -667,15 +637,12 @@ class PostStatisticsDTO implements JsonSerializable
     {
         $avgLength = $this->getAverageLength();
         $optimalRange = [500, 2000]; // 假設最佳文章長度範圍
-
         if ($avgLength >= $optimalRange[0] && $avgLength <= $optimalRange[1]) {
             return 1.0; // 完美分數
         }
-
         if ($avgLength < $optimalRange[0]) {
             return $avgLength / $optimalRange[0]; // 低於最佳範圍
         }
-
         // 高於最佳範圍時，分數遞減
         $excess = $avgLength - $optimalRange[1];
         $penalty = min($excess / $optimalRange[1], 0.5); // 最多扣除50%
@@ -692,11 +659,9 @@ class PostStatisticsDTO implements JsonSerializable
         $maxLength = $this->getMaxLength();
         $minLength = $this->getMinLength();
         $avgLength = $this->getAverageLength();
-
         if ($maxLength === $minLength || $avgLength === 0) {
             return 0.0; // 沒有變化或數據不足
         }
-
         $lengthRange = $maxLength - $minLength;
         $diversityScore = min($lengthRange / $avgLength, 2.0); // 限制最大值為2.0
 

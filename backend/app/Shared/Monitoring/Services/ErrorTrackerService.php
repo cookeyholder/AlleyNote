@@ -6,7 +6,6 @@ namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Enums\LogLevel;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -51,12 +50,11 @@ final class ErrorTrackerService implements ErrorTrackerInterface
             'file' => $error->getFile(),
             'line' => $error->getLine(),
         ]);
-
         // Trigger notification handlers with the original context (tests expect this)
         foreach ($this->notificationHandlers as $h) {
             try {
                 $h(LogLevel::CRITICAL->value, $error->getMessage(), $context, $error);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $this->logger->error('Notification handler failed', ['e' => $e->getMessage()]);
             }
         }
@@ -123,7 +121,6 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     public function getErrorSummary(int $hours = 24): array
     {
         $stats = $this->getErrorStats($hours);
-
         $levelsArr = is_array($stats['levels']) ? $stats['levels'] : [];
         $critical = $levelsArr[LogLevel::CRITICAL->value] ?? 0;
         $warnings = $levelsArr[LogLevel::WARNING->value] ?? 0;
@@ -165,25 +162,22 @@ final class ErrorTrackerService implements ErrorTrackerInterface
                 if (!$filter($level, $message, $context, $exception)) {
                     return '';
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $this->logger->error('Error filter threw exception', ['e' => $e->getMessage()]);
             }
         }
-
         $id = substr(bin2hex(random_bytes(8)), 0, 16);
         $this->errorRecords[] = ['id' => $id, 'timestamp' => microtime(true), 'level' => $level, 'message' => $message, 'context' => $this->sanitizeContext($context)];
-
         if ($triggerNotifications) {
             foreach ($this->notificationHandlers as $h) {
                 try {
                     // Pass the original context to notification handlers to preserve caller intent
                     $h($level, $message, $context, $exception);
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $this->logger->error('Notification handler failed', ['e' => $e->getMessage()]);
                 }
             }
         }
-
         match ($level) {
             LogLevel::ERROR->value => $this->logger->error($message, $context),
             LogLevel::WARNING->value => $this->logger->warning($message, $context),
@@ -191,7 +185,6 @@ final class ErrorTrackerService implements ErrorTrackerInterface
             LogLevel::CRITICAL->value => $this->logger->critical($message, $context),
             default => $this->logger->debug($message, $context),
         };
-
         if (count($this->errorRecords) > $this->maxRecords) {
             array_shift($this->errorRecords);
         }

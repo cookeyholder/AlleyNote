@@ -8,8 +8,8 @@ use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
 use DateTimeZone;
-use Exception;
 use JsonSerializable;
+use Throwable;
 
 class Post implements JsonSerializable
 {
@@ -207,7 +207,6 @@ class Post implements JsonSerializable
         if ($this->publishDate === null) {
             return null;
         }
-
         // 如果已經是 ISO 8601 格式（包含 T 和時區），直接返回
         if (strpos($this->publishDate, 'T') !== false) {
             return $this->publishDate;
@@ -219,7 +218,7 @@ class Post implements JsonSerializable
             $dateTime = new DateTime($this->publishDate, new DateTimeZone('UTC'));
 
             return $dateTime->format(DateTime::ATOM); // RFC3339 格式
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 如果轉換失敗，返回原始值
             return $this->publishDate;
         }
@@ -234,10 +233,8 @@ class Post implements JsonSerializable
     public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed
     {
         $data = $this->toArray();
-
         // 清理標題（純文字）
         $data['title'] = $sanitizer->sanitizeHtml((string) $data['title']);
-
         // 清理內容（富文本）
         $data['content'] = $sanitizer->sanitizeRichText((string) $data['content']);
 

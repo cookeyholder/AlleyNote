@@ -11,10 +11,6 @@ use App\Domains\Security\Enums\ActivityType;
 use DateTime;
 use InvalidArgumentException;
 
-/**
- * 活動記錄搜尋條件 DTO
- * 封裝搜尋活動記錄的各種條件參數.
- */
 class ActivityLogSearchDTO
 {
     private const DEFAULT_PAGE = 1;
@@ -318,7 +314,6 @@ class ActivityLogSearchDTO
         if ($page < 1) {
             throw new InvalidArgumentException('頁碼必須大於 0');
         }
-
         if ($perPage < 1 || $perPage > self::MAX_PER_PAGE) {
             throw new InvalidArgumentException('每頁筆數必須介於 1 到 ' . self::MAX_PER_PAGE . ' 之間');
         }
@@ -357,11 +352,9 @@ class ActivityLogSearchDTO
             'status',
             'ip_address',
         ];
-
         if (!in_array($sortBy, $validSortFields, true)) {
             throw new InvalidArgumentException('不支援的排序欄位：' . $sortBy);
         }
-
         if (!in_array($sortOrder, ['asc', 'desc'], true)) {
             throw new InvalidArgumentException('排序順序必須是 asc 或 desc');
         }
@@ -529,11 +522,9 @@ class ActivityLogSearchDTO
         if ($this->startDate && $this->endDate && $this->startDate > $this->endDate) {
             throw new InvalidArgumentException('開始時間不能大於結束時間');
         }
-
         if ($this->page < 1) {
             throw new InvalidArgumentException('頁碼必須大於 0');
         }
-
         if ($this->perPage < 1 || $this->perPage > self::MAX_PER_PAGE) {
             throw new InvalidArgumentException('每頁筆數必須介於 1 到 ' . self::MAX_PER_PAGE . ' 之間');
         }

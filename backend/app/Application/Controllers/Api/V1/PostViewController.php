@@ -9,18 +9,12 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Statistics\Events\PostViewed;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
-use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Throwable;
 
-/**
- * 文章瀏覽追蹤控制器.
- *
- * 專門處理文章瀏覽行為記錄的高效能端點
- */
-#[OA\Tag(name: 'posts', description: '文章瀏覽追蹤 API')]
 class PostViewController extends BaseController
 {
     public function __construct(
@@ -56,7 +50,7 @@ class PostViewController extends BaseController
             required: false,
             content: new OA\JsonContent(
                 properties: [
-                    'referrer' => new OA\Property(
+                    new OA\Property(
                         property: 'referrer',
                         description: '來源頁面 URL',
                         type: 'string',
@@ -74,14 +68,14 @@ class PostViewController extends BaseController
                 description: '成功記錄瀏覽',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
-                        'message' => new OA\Property(property: 'message', type: 'string', example: '已記錄瀏覽'),
-                        'data' => new OA\Property(
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'message', type: 'string', example: '已記錄瀏覽'),
+                        new OA\Property(
                             property: 'data',
                             properties: [
-                                'post_id' => new OA\Property(property: 'post_id', type: 'integer', example: 123),
-                                'viewed_at' => new OA\Property(property: 'viewed_at', type: 'string', format: 'date-time', example: '2025-09-25T10:30:00Z'),
-                                'is_authenticated' => new OA\Property(property: 'is_authenticated', type: 'boolean', example: true),
+                                new OA\Property(property: 'post_id', type: 'integer', example: 123),
+                                new OA\Property(property: 'viewed_at', type: 'string', format: 'date-time', example: '2025-09-25T10:30:00Z'),
+                                new OA\Property(property: 'is_authenticated', type: 'boolean', example: true),
                             ],
                             type: 'object',
                         ),
@@ -108,12 +102,12 @@ class PostViewController extends BaseController
                 description: '請求過於頻繁',
                 content: new OA\JsonContent(
                     properties: [
-                        'success' => new OA\Property(property: 'success', type: 'boolean', example: false),
-                        'error' => new OA\Property(
+                        new OA\Property(property: 'success', type: 'boolean', example: false),
+                        new OA\Property(
                             property: 'error',
                             properties: [
-                                'message' => new OA\Property(property: 'message', type: 'string', example: '請求過於頻繁，請稍後再試'),
-                                'retry_after' => new OA\Property(property: 'retry_after', type: 'integer', example: 60),
+                                new OA\Property(property: 'message', type: 'string', example: '請求過於頻繁，請稍後再試'),
+                                new OA\Property(property: 'retry_after', type: 'integer', example: 60),
                             ],
                             type: 'object',
                         ),
@@ -138,27 +132,21 @@ class PostViewController extends BaseController
     ): ResponseInterface {
         try {
             $startTime = microtime(true);
-
             // 1. 驗證文章 ID
             $postId = $this->validatePostId($id);
-
             // 2. 收集瀏覽資訊
             $viewData = $this->extractViewData($request);
-
             // 3. 驗證文章存在性（輕量級檢查）
             $this->validatePostExists($postId);
-
             // 4. 發布 PostViewed 事件
             $event = $this->createPostViewedEvent($postId, $viewData);
             $this->eventDispatcher->dispatch($event);
-
             // 5. 建立回應資料
             $responseData = [
                 'post_id' => $postId,
                 'viewed_at' => $event->getViewedAt()->format('c'),
                 'is_authenticated' => $event->isAuthenticatedUser(),
             ];
-
             $duration = round((microtime(true) - $startTime) * 1000, 2);
 
             return $this->json($response, [
@@ -177,7 +165,7 @@ class PostViewController extends BaseController
                     'code' => 'POST_NOT_FOUND',
                 ],
             ], 404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄詳細錯誤但不暴露給客戶端
             app_log('error', 'PostViewController::recordView error', [
                 'message' => $e->getMessage(),
@@ -218,18 +206,15 @@ class PostViewController extends BaseController
         if (is_array($id)) {
             $id = $id['id'] ?? null;
         }
-
         if ($id === null || $id === '') {
-            throw new Exception('文章 ID 不能為空');
+            throw new RuntimeException('文章 ID 不能為空');
         }
-
         if (!is_string($id) && !is_numeric($id)) {
-            throw new Exception('無效的文章 ID 格式');
+            throw new RuntimeException('無效的文章 ID 格式');
         }
-
         $postId = filter_var((string) $id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if ($postId === false) {
-            throw new Exception('無效的文章 ID');
+            throw new RuntimeException('無效的文章 ID');
         }
 
         return $postId;
@@ -248,13 +233,10 @@ class PostViewController extends BaseController
         if (is_numeric($userIdAttr)) {
             $userId = (int) $userIdAttr;
         }
-
         // 取得 IP 地址
         $userIp = $this->getUserIp($request);
-
         // 取得 User-Agent
         $userAgent = $request->getHeaderLine('User-Agent') ?: null;
-
         // 從 body 或 headers 取得 referrer
         $bodyContent = (string) $request->getBody();
         $body = [];
@@ -264,7 +246,6 @@ class PostViewController extends BaseController
                 $body = $decodedBody;
             }
         }
-
         $referrer = null;
         if (isset($body['referrer']) && is_string($body['referrer'])) {
             $referrer = $body['referrer'];
@@ -295,9 +276,7 @@ class PostViewController extends BaseController
             'HTTP_FORWARDED_FOR',
             'HTTP_FORWARDED',
         ];
-
         $serverParams = $request->getServerParams();
-
         foreach ($ipHeaders as $header) {
             if (!empty($serverParams[$header]) && is_string($serverParams[$header])) {
                 $ipList = explode(',', $serverParams[$header]);
@@ -307,7 +286,6 @@ class PostViewController extends BaseController
                 }
             }
         }
-
         // 回退到 REMOTE_ADDR
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
 
@@ -338,11 +316,9 @@ class PostViewController extends BaseController
         $userIp = $viewData['user_ip'];
         $userAgent = $viewData['user_agent'];
         $referrer = $viewData['referrer'];
-
         if (!is_string($userIp)) {
             $userIp = '127.0.0.1';
         }
-
         if ($userId !== null && is_int($userId)) {
             return PostViewed::createAuthenticated(
                 postId: $postId,

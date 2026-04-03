@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
-/**
- * 慢查詢監控服務合約介面.
- *
- * 定義慢查詢監控的標準操作。
- */
 interface SlowQueryMonitoringServiceInterface
 {
     /**

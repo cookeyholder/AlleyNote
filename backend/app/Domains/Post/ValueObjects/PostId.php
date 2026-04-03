@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * PostId 值物件.
- *
- * 表示文章的唯一識別符
- */
 final readonly class PostId implements JsonSerializable, Stringable
 {
     private int $value;
@@ -22,7 +17,6 @@ final readonly class PostId implements JsonSerializable, Stringable
         if ($id <= 0) {
             throw new InvalidArgumentException('文章 ID 必須是正整數');
         }
-
         $this->value = $id;
     }
 

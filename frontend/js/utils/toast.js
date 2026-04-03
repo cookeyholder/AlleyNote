@@ -3,6 +3,8 @@
  * 提供輕量級的通知訊息顯示功能
  */
 
+import { escapeHtml } from "./security.js";
+
 class ToastManager {
   constructor() {
     this.container = null;
@@ -51,7 +53,7 @@ class ToastManager {
         ${icons[type] || icons.info}
       </div>
       <div class="flex-1 text-sm font-medium">
-        ${message}
+        ${escapeHtml(message)}
       </div>
       <button type="button" class="flex-shrink-0 text-modern-400 hover:text-modern-600 transition-colors" data-toast-close>
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

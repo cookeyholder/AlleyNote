@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Integration;
 
 use App\Application\Controllers\Api\V1\PostController;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostService;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -70,12 +71,16 @@ class PostActivityLoggingTest extends IntegrationTestCase
         $this->activityLogger->shouldReceive('logSuccess')->once();
 
         // 4. 執行
+        /** @var AuthorizationServiceInterface $authService */
+        $authService = $this->mockAuthorizationService();
+
         $controller = new PostController(
             $this->postService,
             $this->validator,
             $this->sanitizer,
             $this->activityLogger,
             Mockery::mock(PostViewStatisticsService::class),
+            $authService,
         );
 
         $response = $controller->store($request, new Response());

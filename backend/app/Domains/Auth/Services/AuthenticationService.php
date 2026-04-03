@@ -20,15 +20,6 @@ use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use Throwable;
 
-/**
- * 認證服務實作.
- *
- * 實作完整的 JWT 認證服務功能，整合各個認證元件。
- * 提供使用者登入、登出、權杖管理等核心認證功能。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final class AuthenticationService implements AuthenticationServiceInterface
 {
     private const MAX_REFRESH_TOKENS_PER_USER = 50;
@@ -50,7 +41,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     'Invalid credentials provided',
                 );
             }
-
             // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
             if (isset($user['deleted_at']) && !empty($user['deleted_at'])) {
                 throw new AuthenticationException(
@@ -58,14 +48,11 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     'User account has been deactivated',
                 );
             }
-
             $userId = (int) $user['id'];
             $userEmail = $user['email'] ?? $request->email;
             $userName = $user['username'] ?? null;
-
             // 3. 清理該使用者過期的 refresh token
             $this->refreshTokenRepository->cleanup();
-
             // 4. 檢查該使用者的活躍 token 數量限制
             $userTokens = $this->refreshTokenRepository->findByUserId($userId, false);
             if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
@@ -75,7 +62,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     $this->refreshTokenRepository->revoke($oldestToken['jti'], 'max_tokens_exceeded');
                 }
             }
-
             // 5. 取得使用者角色資訊
             $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
             $roles = $userWithRoles['roles'] ?? [];
@@ -83,7 +69,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (is_array($roles) && !empty($roles) && isset($roles[0]) && is_array($roles[0])) {
                 $userRole = $roles[0]['name'] ?? null;
             }
-
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
                 'email' => $userEmail,
@@ -91,10 +76,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
                 'role' => $userRole,
                 'scopes' => $request->scopes ?? [],
             ]);
-
             // 7. 更新使用者最後登入時間
             $this->userRepository->updateLastLogin($userId);
-
             // 8. 建立回應
             $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
 
@@ -123,7 +106,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
         try {
             // 1. 驗證並取得新的 token pair（這個過程會自動撤銷舊 token 並創建新 token）
             $newTokenPair = $this->jwtTokenService->refreshTokens($request->refreshToken, $deviceInfo);
-
             // 2. 建立回應
             $newPayload = $this->jwtTokenService->extractPayload($newTokenPair->getRefreshToken());
             $oldPayload = $this->jwtTokenService->extractPayload($request->refreshToken);
@@ -153,7 +135,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
         try {
             if ($request->refreshToken !== null) {
                 $payload = $this->jwtTokenService->extractPayload($request->refreshToken);
-
                 if ($request->revokeAllTokens) {
                     // 撤銷該使用者的所有 token
                     $this->refreshTokenRepository->revokeAllByUserId($payload->getUserId(), 'logout_all');
@@ -162,7 +143,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     $this->refreshTokenRepository->revoke($payload->getJti(), 'user_logout');
                 }
             }
-
             // 撤銷 access token（加入黑名單）
             if ($request->accessToken !== '') {
                 $this->jwtTokenService->revokeToken($request->accessToken, 'user_logout');
@@ -267,14 +247,11 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (!$this->validateAccessToken($accessToken)) {
                 return null;
             }
-
             // 提取 payload
             $payload = $this->jwtTokenService->extractPayload($accessToken);
-
             // 從使用者 ID 查找使用者 (使用 UUID 查詢)
             $userId = $payload->getUserId();
             $user = $this->userRepository->findByUuid((string) $userId);
-
             if (!$user) {
                 return null;
             }

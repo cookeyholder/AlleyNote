@@ -7,11 +7,6 @@ namespace App\Infrastructure\Routing\Cache;
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use InvalidArgumentException;
 
-/**
- * 路由快取工廠.
- *
- * 根據配置建立適當的快取實作
- */
 class RouteCacheFactory
 {
     /**
@@ -31,7 +26,6 @@ class RouteCacheFactory
     public function create(array $config): RouteCacheInterface
     {
         $driver = $config['driver'];
-
         if (!isset(self::SUPPORTED_DRIVERS[$driver])) {
             throw new InvalidArgumentException(
                 "Unsupported cache driver: {$driver}. Supported drivers: "
@@ -55,7 +49,6 @@ class RouteCacheFactory
     {
         $cachePath = $config['path'] ?? sys_get_temp_dir() . '/route_cache';
         $cache = new FileRouteCache($cachePath);
-
         if (isset($config['ttl'])) {
             $cache->setTtl((int) $config['ttl']);
         }
@@ -71,7 +64,6 @@ class RouteCacheFactory
     private function createMemoryCache(array $config): MemoryRouteCache
     {
         $cache = new MemoryRouteCache();
-
         if (isset($config['ttl'])) {
             $cache->setTtl((int) $config['ttl']);
         }
@@ -122,7 +114,6 @@ class RouteCacheFactory
     public function validateConfig(array $config): array
     {
         $errors = [];
-
         if (!array_key_exists('driver', $config)) {
             $errors[] = 'Cache driver is required';
         } elseif (!self::isDriverSupported($config['driver'])) {
@@ -132,11 +123,9 @@ class RouteCacheFactory
                 implode(', ', self::getSupportedDrivers()),
             );
         }
-
         if (array_key_exists('ttl', $config) && (!is_int($config['ttl']) || $config['ttl'] < 0)) {
             $errors[] = 'Cache TTL must be a non-negative integer';
         }
-
         if ($config['driver'] === 'file') {
             if (array_key_exists('path', $config)) {
                 $path = $config['path'];

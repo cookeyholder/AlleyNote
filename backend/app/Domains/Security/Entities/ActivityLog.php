@@ -13,11 +13,6 @@ use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
 use ReflectionObject;
 
-/**
- * 活動記錄實體.
- *
- * 記錄使用者和系統的各種活動，用於安全審計和行為分析
- */
 class ActivityLog
 {
     private ?int $id = null;
@@ -91,7 +86,6 @@ class ActivityLog
     }
 
     // === Getters ===
-
     public function getId(): ?int
     {
         return $this->id;
@@ -152,7 +146,6 @@ class ActivityLog
         if ($this->metadata === null) {
             return null;
         }
-
         $decoded = json_decode($this->metadata, true);
 
         return is_array($decoded) ? $decoded : null;
@@ -194,7 +187,6 @@ class ActivityLog
     }
 
     // === Business Methods ===
-
     /**
      * 判斷是否為失敗的活動.
      */
@@ -297,7 +289,6 @@ class ActivityLog
     }
 
     // === Factory Methods ===
-
     /**
      * 從資料庫資料建立 ActivityLog 實體.
      *
@@ -320,18 +311,14 @@ class ActivityLog
             requestPath: $data['request_path'],
             occurredAt: new DateTimeImmutable($data['occurred_at']),
         );
-
         // 設定從資料庫來的資料
         $reflection = new ReflectionObject($entity);
-
         $idProperty = $reflection->getProperty('id');
         $idProperty->setAccessible(true);
         $idProperty->setValue($entity, $data['id'] !== null ? (int) $data['id'] : null);
-
         $uuidProperty = $reflection->getProperty('uuid');
         $uuidProperty->setAccessible(true);
         $uuidProperty->setValue($entity, $data['uuid']);
-
         $createdAtProperty = $reflection->getProperty('createdAt');
         $createdAtProperty->setAccessible(true);
         $createdAtProperty->setValue($entity, new DateTimeImmutable($data['created_at']));

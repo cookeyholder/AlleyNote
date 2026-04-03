@@ -6,11 +6,6 @@ namespace App\Infrastructure\Routing\Contracts;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由器介面.
- *
- * 核心路由器功能，負責路由註冊、解析和執行
- */
 interface RouterInterface
 {
     /**

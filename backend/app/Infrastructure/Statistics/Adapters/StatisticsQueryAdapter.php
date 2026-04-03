@@ -10,11 +10,6 @@ use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-/**
- * 統計查詢適配器.
- *
- * 將現有的統計查詢服務介面適配為可視化服務所需的格式
- */
 class StatisticsQueryAdapter
 {
     public function __construct(
@@ -35,7 +30,6 @@ class StatisticsQueryAdapter
             'period_start' => DateTime::createFromInterface($startDate),
             'period_end' => DateTime::createFromInterface($endDate),
         ];
-
         $data = $this->baseQueryService->getPostStatistics($options);
 
         // 模擬時間序列資料生成
@@ -56,7 +50,6 @@ class StatisticsQueryAdapter
             'period_start' => DateTime::createFromInterface($startDate),
             'period_end' => DateTime::createFromInterface($endDate),
         ];
-
         $data = $this->baseQueryService->getUserStatistics($options);
 
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'users');
@@ -79,7 +72,6 @@ class StatisticsQueryAdapter
         if ($endDate) {
             $options['period_end'] = DateTime::createFromInterface($endDate);
         }
-
         $data = $this->baseQueryService->getSourceDistribution($options);
 
         return $this->generateMockCategoryData('source', $limit);
@@ -142,7 +134,6 @@ class StatisticsQueryAdapter
         if ($endDate) {
             $options['period_end'] = DateTime::createFromInterface($endDate);
         }
-
         $data = $this->baseQueryService->getPopularContent($options);
 
         return $this->generateMockCategoryData('content', $limit);
@@ -177,7 +168,6 @@ class StatisticsQueryAdapter
             $startDateParam = $parameters['start_date'];
             $endDateParam = $parameters['end_date'];
             $granularityParam = $parameters['granularity'] ?? 'day';
-
             if (!is_string($startDateParam) || !is_string($endDateParam) || !is_string($granularityParam)) {
                 $limitParam = $parameters['limit'] ?? 10;
                 if (!is_int($limitParam) && !is_numeric($limitParam)) {
@@ -186,7 +176,6 @@ class StatisticsQueryAdapter
 
                 return $this->generateMockCategoryData($metricName, (int) $limitParam);
             }
-
             $startDate = new DateTimeImmutable($startDateParam);
             $endDate = new DateTimeImmutable($endDateParam);
             $granularity = $granularityParam;
@@ -242,7 +231,6 @@ class StatisticsQueryAdapter
         $data = [];
         $current = DateTimeImmutable::createFromInterface($startDate);
         $end = DateTimeImmutable::createFromInterface($endDate);
-
         $interval = match ($granularity) {
             'hour' => new DateInterval('PT1H'),
             'day' => new DateInterval('P1D'),
@@ -251,7 +239,6 @@ class StatisticsQueryAdapter
             'year' => new DateInterval('P1Y'),
             default => new DateInterval('P1D'),
         };
-
         $baseValue = match ($type) {
             'posts' => 50,
             'users' => 100,
@@ -262,26 +249,21 @@ class StatisticsQueryAdapter
             'throughput' => 500,
             default => 100,
         };
-
         while ($current <= $end) {
             // 加入一些隨機波動和趨勢
             $randomFactor = 0.7 + (mt_rand() / mt_getrandmax()) * 0.6; // 0.7-1.3
             $trendFactor = 1 + sin($current->getTimestamp() / 86400) * 0.2; // 週期性趨勢
-
             $value = $baseValue * $randomFactor * $trendFactor;
-
             // 確保某些指標的合理範圍
             if ($type === 'error_rate') {
                 $value = max(0, min(10, $value)); // 0-10%
             } elseif ($type === 'response_time') {
                 $value = max(50, $value); // 最少 50ms
             }
-
             $data[] = [
                 'timestamp' => $current->format('Y-m-d H:i:s'),
                 'value' => round($value, 2),
             ];
-
             $current = $current->add($interval);
         }
 
@@ -301,20 +283,16 @@ class StatisticsQueryAdapter
             'content' => ['React 入門指南', 'PHP 最佳實踐', 'Docker 容器化', 'API 設計原則', 'MySQL 優化'],
             default => ['項目1', '項目2', '項目3', '項目4', '項目5'],
         };
-
         $data = [];
         $totalValue = 1000;
         $remainingValue = $totalValue;
-
         for ($i = 0; $i < min($limit, count($categories)); $i++) {
             $maxValue = $i === $limit - 1 ? $remainingValue : $remainingValue * 0.6;
             $value = max(10, mt_rand(10, (int) $maxValue));
-
             $data[] = [
                 'category' => $categories[$i],
                 'value' => (float) $value,
             ];
-
             $remainingValue -= $value;
             if ($remainingValue <= 0) {
                 break;
@@ -398,7 +376,6 @@ class StatisticsQueryAdapter
         // 模擬分類資料
         $categories = ['Tech', 'Business', 'Health', 'Education', 'Entertainment'];
         $result = [];
-
         foreach (array_slice($categories, 0, $limit) as $index => $category) {
             $result[] = [
                 'category' => $category,
@@ -416,7 +393,6 @@ class StatisticsQueryAdapter
     public function getTopContentData(int $limit, array $timeRange, string $sortBy): array
     {
         $result = [];
-
         for ($i = 1; $i <= $limit; $i++) {
             $result[] = [
                 'title' => "Popular Article {$i}",

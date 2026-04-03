@@ -20,11 +20,6 @@ use Firebase\JWT\SignatureInvalidException;
 use Throwable;
 use UnexpectedValueException;
 
-/**
- * Firebase JWT 提供器.
- *
- * 封裝 Firebase JWT 函式庫，提供 RS256 演算法的 JWT token 產生、驗證、解析功能
- */
 final class FirebaseJwtProvider implements JwtProviderInterface
 {
     private JwtConfig $config;
@@ -114,23 +109,17 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             file_put_contents('php://stderr', "[JWT] 開始驗證 Token...\n");
             file_put_contents('php://stderr', '[JWT] Token 前 50 字元: ' . substr($token, 0, 50) . "...\n");
             file_put_contents('php://stderr', '[JWT] 公鑰長度: ' . strlen($this->publicKey) . " bytes\n");
-
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
             $payload = (array) $decoded;
-
             file_put_contents('php://stderr', "[JWT] Token 解碼成功\n");
-
             // 驗證必要欄位
             $this->validateRequiredFields($payload);
-
             // 驗證 token 類型
             if ($expectedType !== null) {
                 $this->validateTokenType($payload, $expectedType);
             }
-
             // 驗證 issuer 和 audience
             $this->validateIssuerAndAudience($payload);
-
             file_put_contents('php://stderr', "[JWT] 所有驗證通過\n");
 
             return $payload;
@@ -202,7 +191,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             if (count($parts) !== 3) {
                 throw TokenParsingException::invalidFormat('Token 格式無效，必須包含三個部分');
             }
-
             // 解碼 payload（第二部分）
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($parts[1]));
 
@@ -231,7 +219,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     {
         try {
             $payload = $this->parseTokenUnsafe($token);
-
             if (!isset($payload['exp']) || !is_int($payload['exp'])) {
                 return null;
             }
@@ -252,7 +239,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     public function isTokenExpired(string $token): bool
     {
         $expiration = $this->getTokenExpiration($token);
-
         if ($expiration === null) {
             return false; // 無法確定過期時間，假設未過期
         }
@@ -270,7 +256,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         // 直接從配置中獲取金鑰內容
         $this->privateKey = $this->config->getPrivateKey();
         $this->publicKey = $this->config->getPublicKey();
-
         // 驗證金鑰格式
         $this->validateKeyFormats();
     }
@@ -290,7 +275,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 JwtConfigurationException::INVALID_PRIVATE_KEY_FORMAT,
             );
         }
-
         // 檢查公鑰
         $publicKeyResource = openssl_pkey_get_public($this->publicKey);
         if ($publicKeyResource === false) {
@@ -299,7 +283,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 JwtConfigurationException::INVALID_PUBLIC_KEY_FORMAT,
             );
         }
-
         // 驗證金鑰匹配
         if (!$this->keysMatch($privateKeyResource, $publicKeyResource)) {
             throw new JwtConfigurationException(
@@ -320,14 +303,12 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     private function keysMatch($privateKey, $publicKey): bool
     {
         $testData = 'test-data-for-key-verification';
-
         // 使用私鑰簽名
         $signature = '';
         $signResult = openssl_sign($testData, $signature, $privateKey, OPENSSL_ALGO_SHA256);
         if (!$signResult) {
             return false;
         }
-
         // 使用公鑰驗證
         $verifyResult = openssl_verify($testData, $signature, $publicKey, OPENSSL_ALGO_SHA256);
 
@@ -348,7 +329,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     private function generateToken(array $payload, int $ttl, string $type): string
     {
         $now = new DateTimeImmutable();
-
         // 準備標準 JWT 宣告
         $claims = [
             'iss' => $this->config->getIssuer(),
@@ -358,7 +338,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             'jti' => $this->generateJti(),
             'type' => $type,
         ];
-
         // 合併自訂載荷
         $finalPayload = array_merge($claims, $payload);
 
@@ -397,7 +376,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     private function validateRequiredFields(array $payload): void
     {
         $requiredFields = ['iss', 'aud', 'iat', 'exp', 'jti', 'type'];
-
         foreach ($requiredFields as $field) {
             if (!array_key_exists($field, $payload)) {
                 throw new InvalidTokenException(
@@ -444,7 +422,6 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 TokenValidationException::INVALID_ISSUER,
             );
         }
-
         // 驗證 audience
         if (!isset($payload['aud']) || $payload['aud'] !== $this->config->getAudience()) {
             throw new TokenValidationException(

@@ -5,16 +5,11 @@ declare(strict_types=1);
 namespace App\Infrastructure\Statistics\Services;
 
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
-use Exception;
 use PDO;
 use PDOException;
 use RuntimeException;
+use Throwable;
 
-/**
- * 慢查詢監控服務.
- *
- * 監控統計查詢的執行效能，記錄慢查詢並提供效能分析。
- */
 final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInterface
 {
     /** 慢查詢閾值（秒） */
@@ -38,7 +33,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $this->recordSlowQueryInternal($query, $queryType, $executionTime, $parameters, $queryHash);
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄錯誤但不中斷主要流程
             return false;
         }
@@ -59,21 +54,16 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
 
         try {
             $stmt = $this->db->prepare($query);
-
             // 綁定參數
             foreach ($params as $key => $value) {
                 $paramName = str_starts_with($key, ':') ? $key : ':' . $key;
                 $stmt->bindValue($paramName, $value);
             }
-
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
             $executionTime = microtime(true) - $startTime;
-
             // 記錄查詢效能
             $this->recordQueryPerformance($query, $queryType, $executionTime, $queryHash, count($result));
-
             // 如果是慢查詢，額外記錄詳細資訊
             if ($executionTime > self::SLOW_QUERY_THRESHOLD) {
                 $this->recordSlowQueryInternal($query, $queryType, $executionTime, $params, $queryHash);
@@ -107,7 +97,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                     WHERE created_at >= :since_date
                     GROUP BY query_type
                     ORDER BY slow_query_count DESC';
-
             $stmt = $this->db->prepare($sql);
             $timestamp = strtotime("-{$days} days");
             if ($timestamp === false) {
@@ -115,7 +104,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             }
             $stmt->bindValue(':since_date', date('Y-m-d H:i:s', $timestamp));
             $stmt->execute();
-
             /** @var array<string, mixed> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -146,7 +134,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                     AND created_at >= :since_date
                     GROUP BY DATE(created_at)
                     ORDER BY date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':query_type', $queryType);
             $stmt->bindValue(':threshold', self::SLOW_QUERY_THRESHOLD);
@@ -156,7 +143,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             }
             $stmt->bindValue(':since_date', date('Y-m-d H:i:s', $timestamp));
             $stmt->execute();
-
             /** @var array<string, mixed> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -187,7 +173,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                     WHERE created_at >= :since_date
                     ORDER BY execution_time DESC
                     LIMIT :limit';
-
             $stmt = $this->db->prepare($sql);
             $timestamp = strtotime("-{$days} days");
             if ($timestamp === false) {
@@ -196,7 +181,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $stmt->bindValue(':since_date', date('Y-m-d H:i:s', $timestamp));
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
-
             /** @var array<string, mixed> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -221,17 +205,14 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                           WHERE query_hash = :query_hash
                           ORDER BY created_at DESC
                           LIMIT 100';
-
             $historyStmt = $this->db->prepare($historySql);
             $historyStmt->bindValue(':query_hash', $queryHash);
             $historyStmt->execute();
             /** @var array<array<string, mixed>> $history */
             $history = $historyStmt->fetchAll(PDO::FETCH_ASSOC);
-
             if (empty($history)) {
                 return ['error' => '找不到查詢記錄'];
             }
-
             // 計算統計指標
             $executionTimes = array_column($history, 'execution_time');
             $resultCounts = array_column($history, 'result_count');
@@ -279,10 +260,8 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                 ORDER BY created_at DESC
                 LIMIT :limit
             ');
-
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
-
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             // 處理 JSON 參數
@@ -310,14 +289,12 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                 return 0;
             }
             $cutoffDate = date('Y-m-d H:i:s', $cutoffTimestamp);
-
             // 清理效能記錄
             $performanceSql = 'DELETE FROM statistics_query_performance WHERE created_at < :cutoff_date';
             $performanceStmt = $this->db->prepare($performanceSql);
             $performanceStmt->bindValue(':cutoff_date', $cutoffDate);
             $performanceStmt->execute();
             $performanceDeleted = $performanceStmt->rowCount();
-
             // 清理慢查詢記錄
             $slowSql = 'DELETE FROM statistics_slow_queries WHERE created_at < :cutoff_date';
             $slowStmt = $this->db->prepare($slowSql);
@@ -345,7 +322,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $sql = 'INSERT INTO statistics_query_performance
                     (query_hash, query_type, execution_time, result_count, created_at)
                     VALUES (:query_hash, :query_type, :execution_time, :result_count, :created_at)';
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'query_hash' => $queryHash,
@@ -376,7 +352,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $sql = 'INSERT INTO statistics_slow_queries
                     (query_hash, query_type, query_sql, execution_time, query_params, created_at)
                     VALUES (:query_hash, :query_type, :query_sql, :execution_time, :query_params, :created_at)';
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'query_hash' => $queryHash,
@@ -405,7 +380,6 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $sql = 'INSERT INTO statistics_failed_queries
                     (query_hash, query_type, query_sql, execution_time, error_message, created_at)
                     VALUES (:query_hash, :query_type, :query_sql, :execution_time, :error_message, :created_at)';
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'query_hash' => $queryHash,
@@ -448,15 +422,11 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
         if (count($history) < 5) {
             return 'insufficient_data';
         }
-
         $recent = array_slice($history, 0, 10);
         $older = array_slice($history, -10, 10);
-
         $recentAvg = array_sum(array_column($recent, 'execution_time')) / count($recent);
         $olderAvg = array_sum(array_column($older, 'execution_time')) / count($older);
-
         $change = ($recentAvg - $olderAvg) / $olderAvg * 100;
-
         if ($change > 20) {
             return 'deteriorating';
         } elseif ($change < -20) {

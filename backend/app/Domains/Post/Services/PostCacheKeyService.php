@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
 
-/**
- * Post 相關的快取鍵服務.
- *
- * 此服務負責產生 Post Domain 相關的快取鍵，
- * 避免 Domain 層直接依賴 Infrastructure 層的 CacheKeys 類別
- */
 class PostCacheKeyService
 {
     private const PREFIX = 'alleynote';

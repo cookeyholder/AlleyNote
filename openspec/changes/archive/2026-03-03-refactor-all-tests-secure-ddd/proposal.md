@@ -2,7 +2,7 @@
 
 ## Why
 
-為了確保 AlleyNote 專案的質量保證體系與最新的 **Secure-DDD** 架構保持一致，目前的 178 個測試檔案需要全面重構。現有的測試大多缺乏統一的輔助工具，且未能充分驗證集中化的安全組件（如 `NetworkHelper` 與 `OutputSanitizerService`）。本次重構旨在提升測試的可維護性、嚴謹性與執行效率。
+為了確保 AlleyNote 專案的品質保證體系與最新的 **Secure-DDD** 架構保持一致，目前的 178 個測試檔案需要全面重構。現有的測試大多缺乏統一的輔助工具，且未能充分驗證集中化的安全組件（如 `NetworkHelper` 與 `OutputSanitizerService`）。本次重構旨在提升測試的可維護性、嚴謹性與執行效率。
 
 ## What Changes
 
@@ -15,6 +15,7 @@
 ## Capabilities
 
 ### Modified Capabilities
+
 - `test-infrastructure`: 升級整個測試基礎設施，支援 Secure-DDD 模式。
 
 ## Impact

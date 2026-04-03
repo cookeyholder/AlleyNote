@@ -7,11 +7,6 @@ namespace App\Domains\Statistics\Events;
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
 
-/**
- * 統計數據已計算事件.
- *
- * 當統計數據計算完成時觸發
- */
 final class StatisticsCalculated extends AbstractDomainEvent
 {
     /**

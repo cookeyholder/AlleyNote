@@ -7,11 +7,6 @@ namespace App\Domains\Statistics\Contracts;
 use App\Domains\Statistics\ValueObjects\ChartData;
 use DateTimeInterface;
 
-/**
- * 統計可視化服務介面.
- *
- * 提供前端圖表所需的各種統計資料格式化服務
- */
 interface StatisticsVisualizationServiceInterface
 {
     /**

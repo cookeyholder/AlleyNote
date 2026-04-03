@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Contracts;
 
-/**
- * 標籤化快取介面.
- *
- * 支援按標籤組織和批次操作快取項目，提供豐富的標籤管理功能
- */
 interface TaggedCacheInterface
 {
     /**
@@ -70,7 +65,6 @@ interface TaggedCacheInterface
     public function getTaggedKeys(): array;
 
     // ========== 新增的進階標籤功能 ==========
-
     /**
      * 使用指定標籤存放快取項目.
      *

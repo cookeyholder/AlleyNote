@@ -11,9 +11,6 @@ use PDO;
 use RuntimeException;
 use Throwable;
 
-/**
- * 標籤資料存取實現.
- */
 class TagRepository implements TagRepositoryInterface
 {
     private ?bool $usageCountColumnExists = null;
@@ -30,39 +27,31 @@ class TagRepository implements TagRepositoryInterface
     {
         $where = [];
         $params = [];
-
         // 搜尋過濾
         if (!empty($filters['search']) && is_string($filters['search'])) {
             $where[] = '(name LIKE :search OR slug LIKE :search OR description LIKE :search)';
             $params[':search'] = '%' . $filters['search'] . '%';
         }
-
         $whereClause = empty($where) ? '' : 'WHERE ' . implode(' AND ', $where);
-
         // 計算總數
         $totalStmt = $this->db->prepare("SELECT COUNT(*) FROM tags {$whereClause}");
         $totalStmt->execute($params);
         $total = (int) $totalStmt->fetchColumn();
-
         // 查詢標籤
         $offset = ($page - 1) * $perPage;
         $orderBy = $this->hasUsageCountColumn() ? 'usage_count DESC, name ASC' : 'name ASC';
         $sql = "SELECT * FROM tags {$whereClause} ORDER BY {$orderBy} LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);
-
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-
         $stmt->execute();
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         if (!is_array($rows)) {
             $rows = [];
         }
-
         /** @var array<int, Tag> $tags */
         $tags = [];
         foreach ($rows as $row) {
@@ -83,7 +72,6 @@ class TagRepository implements TagRepositoryInterface
         $stmt = $this->db->prepare('SELECT * FROM tags WHERE id = :id');
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!is_array($row) || empty($row)) {
             return null;
         }
@@ -97,7 +85,6 @@ class TagRepository implements TagRepositoryInterface
         $stmt = $this->db->prepare('SELECT * FROM tags WHERE name = :name');
         $stmt->execute([':name' => $name]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!is_array($row) || empty($row)) {
             return null;
         }
@@ -111,7 +98,6 @@ class TagRepository implements TagRepositoryInterface
         $stmt = $this->db->prepare('SELECT * FROM tags WHERE slug = :slug');
         $stmt->execute([':slug' => $slug]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!is_array($row) || empty($row)) {
             return null;
         }
@@ -126,13 +112,11 @@ class TagRepository implements TagRepositoryInterface
     public function create(array $data): Tag
     {
         $now = new DateTimeImmutable()->format('Y-m-d H:i:s');
-
         if ($this->hasUsageCountColumn()) {
             $stmt = $this->db->prepare('
                 INSERT INTO tags (name, slug, description, color, usage_count, created_at, updated_at)
                 VALUES (:name, :slug, :description, :color, :usage_count, :created_at, :updated_at)
             ');
-
             $stmt->execute([
                 ':name' => $data['name'],
                 ':slug' => $data['slug'] ?? null,
@@ -147,7 +131,6 @@ class TagRepository implements TagRepositoryInterface
                 INSERT INTO tags (name, slug, description, color, created_at, updated_at)
                 VALUES (:name, :slug, :description, :color, :created_at, :updated_at)
             ');
-
             $stmt->execute([
                 ':name' => $data['name'],
                 ':slug' => $data['slug'] ?? null,
@@ -157,10 +140,8 @@ class TagRepository implements TagRepositoryInterface
                 ':updated_at' => $now,
             ]);
         }
-
         $id = (int) $this->db->lastInsertId();
         $tag = $this->findById($id);
-
         if (!$tag) {
             throw new RuntimeException('建立標籤後無法取得標籤資料');
         }
@@ -175,19 +156,16 @@ class TagRepository implements TagRepositoryInterface
     {
         $updates = [];
         $params = [':id' => $id];
-
         $allowedFields = ['name', 'slug', 'description', 'color'];
         if ($this->hasUsageCountColumn()) {
             $allowedFields[] = 'usage_count';
         }
-
         foreach ($allowedFields as $field) {
             if (array_key_exists($field, $data)) {
                 $updates[] = "{$field} = :{$field}";
                 $params[":{$field}"] = $data[$field];
             }
         }
-
         if (empty($updates)) {
             $tag = $this->findById($id);
             if (!$tag) {
@@ -196,15 +174,12 @@ class TagRepository implements TagRepositoryInterface
 
             return $tag;
         }
-
         $now = new DateTimeImmutable()->format('Y-m-d H:i:s');
         $updates[] = 'updated_at = :updated_at';
         $params[':updated_at'] = $now;
-
         $sql = 'UPDATE tags SET ' . implode(', ', $updates) . ' WHERE id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
-
         $tag = $this->findById($id);
         if (!$tag) {
             throw new RuntimeException('更新標籤後無法取得標籤資料');
@@ -234,12 +209,10 @@ class TagRepository implements TagRepositoryInterface
         if (!isset($row['id'], $row['name'], $row['created_at'])) {
             throw new RuntimeException('標籤資料不完整');
         }
-
         $slug = isset($row['slug']) && is_string($row['slug']) ? $row['slug'] : null;
         $description = isset($row['description']) && is_string($row['description']) ? $row['description'] : null;
         $color = isset($row['color']) && is_string($row['color']) ? $row['color'] : null;
         $updatedAt = isset($row['updated_at']) && is_string($row['updated_at']) ? $row['updated_at'] : null;
-
         // @phpstan-ignore-next-line
         $id = is_int($row['id']) ? $row['id'] : (int) $row['id'];
         // @phpstan-ignore-next-line
@@ -270,7 +243,6 @@ class TagRepository implements TagRepositoryInterface
         try {
             $stmt = $this->db->query('PRAGMA table_info(tags)');
             $columns = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
-
             foreach ($columns as $column) {
                 if (is_array($column) && isset($column['name']) && is_string($column['name']) && $column['name'] === 'usage_count') {
                     $this->usageCountColumnExists = true;
@@ -280,7 +252,6 @@ class TagRepository implements TagRepositoryInterface
             }
         } catch (Throwable) {
         }
-
         $this->usageCountColumnExists = false;
 
         return false;

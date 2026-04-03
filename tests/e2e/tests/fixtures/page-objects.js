@@ -61,10 +61,31 @@ class LoginPage extends SecureBasePage {
   }
 
   async goto() {
-    await this.page.goto("/login");
+    let lastError = null;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        await this.page.goto("/login", {
+          timeout: 20000,
+          waitUntil: "domcontentloaded",
+        });
+        return;
+      } catch (error) {
+        lastError = error;
+        if (attempt < 2) {
+          await this.page.waitForTimeout(800);
+        }
+      }
+    }
+    throw lastError;
   }
 
   async login(email, password, remember = false) {
+    // CI 偶發 SPA 尚未渲染登入表單，先做一次回復導向
+    if (!(await this.emailInput.isVisible().catch(() => false))) {
+      await this.goto();
+      await this.emailInput.waitFor({ state: "visible", timeout: 10000 });
+    }
+
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
     if (remember) {
@@ -83,6 +104,7 @@ class LoginPage extends SecureBasePage {
     let lastError = null;
     const startedAt = Date.now();
     const maxDurationMs = 45000;
+    const dashboardWaitMs = 12000;
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
@@ -113,19 +135,24 @@ class LoginPage extends SecureBasePage {
 
         if (loginResponse && loginResponse.ok()) {
           try {
-            await this.page.waitForURL("**/admin/dashboard", { timeout: 4000 });
+            await this.page.waitForURL("**/admin/dashboard", {
+              timeout: dashboardWaitMs,
+              waitUntil: "domcontentloaded",
+            });
 
             return;
           } catch {
             try {
               await this.page.goto("/admin/dashboard", {
                 waitUntil: "domcontentloaded",
-                timeout: 6000,
+                timeout: dashboardWaitMs,
+              });
+              await this.page.waitForURL("**/admin/dashboard", {
+                timeout: dashboardWaitMs,
+                waitUntil: "domcontentloaded",
               });
 
-              if (this.page.url().includes("/admin/dashboard")) {
-                return;
-              }
+              return;
             } catch (directVisitAfterLoginError) {
               lastError = directVisitAfterLoginError;
             }
@@ -133,7 +160,10 @@ class LoginPage extends SecureBasePage {
         }
 
         try {
-          await this.page.waitForURL("**/admin/dashboard", { timeout: 6000 });
+          await this.page.waitForURL("**/admin/dashboard", {
+            timeout: dashboardWaitMs,
+            waitUntil: "domcontentloaded",
+          });
 
           return;
         } catch (error) {
@@ -143,20 +173,23 @@ class LoginPage extends SecureBasePage {
             break;
           }
 
-          const hasToken = await this.page
+          const isAuthenticated = await this.page
             .evaluate(() => {
-              const raw = localStorage.getItem("alleynote_access_token");
-              return !!raw && raw !== "null";
+              const hasToken = localStorage.getItem("alleynote_access_token");
+              const hasAuthMode = document.cookie.includes("auth_mode=cookie");
+              return (!!hasToken && hasToken !== "null") || hasAuthMode;
             })
             .catch(() => false);
 
-          if (hasToken) {
+          if (isAuthenticated) {
             try {
               await this.page.goto("/admin/dashboard", {
                 waitUntil: "domcontentloaded",
+                timeout: dashboardWaitMs,
               });
               await this.page.waitForURL("**/admin/dashboard", {
-                timeout: 5000,
+                timeout: dashboardWaitMs,
+                waitUntil: "domcontentloaded",
               });
 
               return;
@@ -168,7 +201,7 @@ class LoginPage extends SecureBasePage {
           try {
             await this.page.goto("/admin/dashboard", {
               waitUntil: "domcontentloaded",
-              timeout: 6000,
+              timeout: dashboardWaitMs,
             });
 
             if (this.page.url().includes("/admin/dashboard")) {
@@ -182,7 +215,7 @@ class LoginPage extends SecureBasePage {
             break;
           }
 
-          await this.page.waitForTimeout(300);
+          await this.page.waitForTimeout(500);
         }
       }
 

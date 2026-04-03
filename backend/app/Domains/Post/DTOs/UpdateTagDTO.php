@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
 
-/**
- * 更新標籤 DTO.
- */
 readonly class UpdateTagDTO
 {
     public function __construct(
@@ -47,7 +44,6 @@ readonly class UpdateTagDTO
     public function toArray(): array
     {
         $data = ['id' => $this->id];
-
         if ($this->name !== null) {
             $data['name'] = $this->name;
         }

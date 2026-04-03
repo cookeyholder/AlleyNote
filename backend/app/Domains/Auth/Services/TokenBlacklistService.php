@@ -11,15 +11,6 @@ use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * Token 黑名單服務.
- *
- * 提供高層次的 Token 黑名單管理功能，封裝複雜的業務邏輯。
- * 負責協調黑名單操作、統計分析、自動清理等功能。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final class TokenBlacklistService
 {
     /**
@@ -83,12 +74,9 @@ final class TokenBlacklistService
                 deviceId: $deviceId,
                 metadata: $metadata ?? [],
             );
-
             $result = $this->repository->addToBlacklist($entry);
-
             if ($result) {
                 $this->logBlacklistAction('add', $jti, $reason, $userId, $deviceId);
-
                 // 如果是高優先級原因，記錄額外日誌
                 if (in_array($reason, self::HIGH_PRIORITY_REASONS, true)) {
                     $this->logHighPriorityBlacklist($entry);
@@ -145,9 +133,7 @@ final class TokenBlacklistService
         if (empty($jtis)) {
             return [];
         }
-
         $validJtis = array_filter($jtis, fn($jti) => !empty($jti));
-
         if (empty($validJtis)) {
             return [];
         }
@@ -176,14 +162,12 @@ final class TokenBlacklistService
     public function blacklistUserTokens(int $userId, string $reason, ?string $excludeJti = null): int
     {
         $this->validateReason($reason);
-
         if ($userId <= 0) {
             throw new InvalidArgumentException('User ID must be positive');
         }
 
         try {
             $count = $this->repository->blacklistAllUserTokens($userId, $reason, $excludeJti);
-
             $this->logger?->info('Blacklisted user tokens', [
                 'user_id' => $userId,
                 'reason' => $reason,
@@ -213,14 +197,12 @@ final class TokenBlacklistService
     public function blacklistDeviceTokens(string $deviceId, string $reason): int
     {
         $this->validateReason($reason);
-
         if (empty($deviceId)) {
             throw new InvalidArgumentException('Device ID cannot be empty');
         }
 
         try {
             $count = $this->repository->blacklistAllDeviceTokens($deviceId, $reason);
-
             $this->logger?->info('Blacklisted device tokens', [
                 'device_id' => $deviceId,
                 'reason' => $reason,
@@ -253,7 +235,6 @@ final class TokenBlacklistService
 
         try {
             $result = $this->repository->removeFromBlacklist($jti);
-
             if ($result) {
                 $this->logger?->info('Token removed from blacklist', [
                     'jti' => $jti,
@@ -282,16 +263,13 @@ final class TokenBlacklistService
         if (empty($jtis)) {
             return 0;
         }
-
         $validJtis = array_filter($jtis, fn($jti) => !empty($jti));
-
         if (empty($validJtis)) {
             return 0;
         }
 
         try {
             $count = $this->repository->batchRemoveFromBlacklist($validJtis);
-
             $this->logger?->info('Batch removed tokens from blacklist', [
                 'removed_count' => $count,
                 'requested_count' => count($validJtis),
@@ -323,13 +301,10 @@ final class TokenBlacklistService
             // 清理可清理的過期項目
             $expiredCleaned = $this->repository->cleanupExpiredEntries();
             $totalCleaned += $expiredCleaned;
-
             // 清理超過保留期限的舊項目
             $oldCleaned = $this->repository->cleanupOldEntries();
             $totalCleaned += $oldCleaned;
-
             $executionTime = microtime(true) - $startTime;
-
             $result = [
                 'total_cleaned' => $totalCleaned,
                 'expired_cleaned' => $expiredCleaned,
@@ -337,20 +312,17 @@ final class TokenBlacklistService
                 'execution_time' => round($executionTime, 3),
                 'success' => true,
             ];
-
             $this->logger?->info('Auto cleanup completed', $result);
 
             return $result;
         } catch (Throwable $e) {
             $executionTime = microtime(true) - $startTime;
-
             $result = [
                 'total_cleaned' => $totalCleaned,
                 'execution_time' => round($executionTime, 3),
                 'success' => false,
                 'error' => $e->getMessage(),
             ];
-
             $this->logger?->error('Auto cleanup failed', $result);
 
             return $result;
@@ -428,7 +400,6 @@ final class TokenBlacklistService
         if ($offset < 0) {
             throw new InvalidArgumentException('Offset must be non-negative');
         }
-
         if ($limit !== null && $limit <= 0) {
             throw new InvalidArgumentException('Limit must be positive');
         }
@@ -487,7 +458,6 @@ final class TokenBlacklistService
     {
         try {
             $result = $this->repository->optimize();
-
             $this->logger?->info('Blacklist optimization completed', $result);
 
             return $result;
@@ -514,10 +484,8 @@ final class TokenBlacklistService
             $sizeInfo = $this->repository->getSizeInfo();
             $isOverLimit = $this->repository->isSizeExceeded();
             $stats = $this->repository->getBlacklistStats();
-
             $totalEntries = $sizeInfo['total_entries'] ?? 0;
             $isTooLarge = $totalEntries > self::DEFAULT_MAX_BLACKLIST_SIZE;
-
             $status = [
                 'healthy' => !$isOverLimit && !$isTooLarge,
                 'size_exceeded' => $isOverLimit,
@@ -530,20 +498,16 @@ final class TokenBlacklistService
                 'security_issues' => $stats['security_related'] ?? 0,
                 'recommendations' => [],
             ];
-
             // 產生建議
             if ($isOverLimit) {
                 $status['recommendations'][] = 'Run cleanup to reduce blacklist size';
             }
-
             if ($isTooLarge) {
                 $status['recommendations'][] = 'Blacklist size exceeds recommended limit, consider cleanup';
             }
-
             if (($sizeInfo['expired_entries'] ?? 0) > 1000) {
                 $status['recommendations'][] = 'High number of expired entries, consider cleanup';
             }
-
             if (($stats['security_related'] ?? 0) > 100) {
                 $status['recommendations'][] = 'High security-related blacklist entries detected';
             }
@@ -597,7 +561,6 @@ final class TokenBlacklistService
             TokenBlacklistEntry::REASON_DEVICE_LOST,
             TokenBlacklistEntry::REASON_SUSPICIOUS_ACTIVITY,
         ];
-
         if (!in_array($reason, $validReasons, true)) {
             throw new InvalidArgumentException("Invalid blacklist reason: {$reason}");
         }

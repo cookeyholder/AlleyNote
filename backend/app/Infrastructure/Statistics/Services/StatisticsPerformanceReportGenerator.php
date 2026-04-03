@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
-use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
+use Throwable;
 
-/**
- * 統計效能測試報告生成器.
- *
- * 生成詳細的統計查詢效能測試報告，分析索引最佳化效果。
- */
 final class StatisticsPerformanceReportGenerator
 {
     public function __construct(
@@ -33,7 +28,6 @@ final class StatisticsPerformanceReportGenerator
         if ($testDataCount <= 0) {
             throw new InvalidArgumentException('測試資料數量必須大於 0');
         }
-
         $report = [
             'test_metadata' => $this->generateTestMetadata($testDataCount),
             'query_performance' => $this->runPerformanceTests($testDataCount),
@@ -42,7 +36,6 @@ final class StatisticsPerformanceReportGenerator
             'recommendations' => $this->generateRecommendations(),
             'generated_at' => date('Y-m-d H:i:s'),
         ];
-
         // 保存報告到檔案
         $this->saveReportToFile($report);
 
@@ -58,7 +51,6 @@ final class StatisticsPerformanceReportGenerator
     private function runPerformanceTests(int $testDataCount): array
     {
         $testResults = [];
-
         // 測試查詢列表
         $testQueries = [
             'posts_count_by_source' => [
@@ -92,7 +84,6 @@ final class StatisticsPerformanceReportGenerator
                 'description' => '置頂文章統計',
             ],
         ];
-
         // 執行每個測試查詢多次取平均值
         foreach ($testQueries as $queryName => $queryInfo) {
             $testResults[$queryName] = $this->runQueryPerformanceTest(
@@ -130,7 +121,6 @@ final class StatisticsPerformanceReportGenerator
     ): array {
         $executionTimes = [];
         $resultCounts = [];
-
         for ($i = 0; $i < $iterations; $i++) {
             $startTime = microtime(true);
 
@@ -141,7 +131,6 @@ final class StatisticsPerformanceReportGenerator
                 }
                 $stmt->execute();
                 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
                 $executionTime = microtime(true) - $startTime;
                 $executionTimes[] = $executionTime;
                 $resultCounts[] = count($results);
@@ -180,7 +169,6 @@ final class StatisticsPerformanceReportGenerator
             $stmt->execute();
             /** @var array<array<string, mixed>> $indexes */
             $indexes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
             $indexAnalysis = [];
             foreach ($indexes as $index) {
                 /** @var string $indexName */
@@ -250,16 +238,13 @@ final class StatisticsPerformanceReportGenerator
             'monitoring_suggestions' => [],
             'future_optimizations' => [],
         ];
-
         // 即時行動建議
         $recommendations['immediate_actions'][] = '定期執行 ANALYZE TABLE posts 更新統計資訊';
         $recommendations['immediate_actions'][] = '監控索引使用率和查詢執行計劃';
-
         // 監控建議
         $recommendations['monitoring_suggestions'][] = '設定慢查詢警告（閾值: 1秒）';
         $recommendations['monitoring_suggestions'][] = '建立查詢效能儀表板';
         $recommendations['monitoring_suggestions'][] = '定期檢查索引碎片和重建需求';
-
         // 未來最佳化
         $recommendations['future_optimizations'][] = '考慮實作查詢結果快取';
         $recommendations['future_optimizations'][] = '評估分片或讀寫分離的必要性';
@@ -298,7 +283,6 @@ final class StatisticsPerformanceReportGenerator
         $totalTime = 0.0;
         /** @var string[] $grades */
         $grades = [];
-
         foreach ($testResults as $result) {
             if (($result['status'] ?? '') === 'success') {
                 $totalTests++;
@@ -349,11 +333,9 @@ final class StatisticsPerformanceReportGenerator
         if (empty($grades)) {
             return 'N/A';
         }
-
         $gradeValues = ['F' => 0, 'D' => 1, 'C' => 2, 'B' => 3, 'A' => 4, 'A+' => 5];
         $totalValue = array_sum(array_map(fn($grade) => $gradeValues[$grade] ?? 0, $grades));
         $avgValue = $totalValue / count($grades);
-
         $reverseGrades = array_flip($gradeValues);
 
         return $reverseGrades[(int) round($avgValue)] ?? 'N/A';
@@ -365,7 +347,6 @@ final class StatisticsPerformanceReportGenerator
     private function generatePerformanceSummary(float $totalTime, int $totalTests): string
     {
         $avgTime = $totalTests > 0 ? $totalTime / $totalTests : 0;
-
         if ($avgTime < 0.01) {
             return '優秀：查詢效能表現卓越，索引最佳化非常成功';
         } elseif ($avgTime < 0.05) {
@@ -402,7 +383,6 @@ final class StatisticsPerformanceReportGenerator
     private function assessOptimizationStatus(array $indexAnalysis): string
     {
         $indexCount = count($indexAnalysis);
-
         if ($indexCount >= 8) {
             return 'well_optimized';
         } elseif ($indexCount >= 5) {
@@ -456,12 +436,10 @@ final class StatisticsPerformanceReportGenerator
             if (!is_dir($reportDir)) {
                 mkdir($reportDir, 0o755, true);
             }
-
             $filename = $reportDir . '/statistics_performance_report_' . date('Y-m-d_H-i-s') . '.json';
             file_put_contents($filename, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
             echo "效能測試報告已保存到: {$filename}\n";
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             echo '保存報告失敗: ' . $e->getMessage() . "\n";
         }
     }

@@ -9,11 +9,6 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 抽象中介軟體基礎類別.
- *
- * 提供中介軟體的基本實作，子類別只需實作核心的處理邏輯
- */
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
     /**

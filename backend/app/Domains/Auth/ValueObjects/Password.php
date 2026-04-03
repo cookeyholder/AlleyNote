@@ -7,11 +7,6 @@ namespace App\Domains\Auth\ValueObjects;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * Password 值物件.
- *
- * 表示使用者密碼，提供驗證和安全處理
- */
 final readonly class Password implements JsonSerializable
 {
     private string $hashedValue;
@@ -29,19 +24,15 @@ final readonly class Password implements JsonSerializable
         if (empty(trim($plainPassword))) {
             throw new InvalidArgumentException('密碼不能為空');
         }
-
         if (mb_strlen($plainPassword) < 8) {
             throw new InvalidArgumentException('密碼至少需要 8 個字元');
         }
-
         if (mb_strlen($plainPassword) > 100) {
             throw new InvalidArgumentException('密碼不能超過 100 個字元');
         }
-
         // 檢查密碼強度
         self::validatePasswordStrength($plainPassword);
-
-        $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
+        $hashedPassword = password_hash($plainPassword, PASSWORD_ARGON2ID);
 
         return new self($hashedPassword);
     }
@@ -66,7 +57,6 @@ final readonly class Password implements JsonSerializable
         $hasUpperCase = preg_match('/[A-Z]/', $password);
         $hasLowerCase = preg_match('/[a-z]/', $password);
         $hasNumber = preg_match('/[0-9]/', $password);
-
         if (!$hasUpperCase || !$hasLowerCase || !$hasNumber) {
             throw new InvalidArgumentException(
                 '密碼必須包含至少一個大寫字母、一個小寫字母和一個數字',
@@ -95,7 +85,7 @@ final readonly class Password implements JsonSerializable
      */
     public function needsRehash(): bool
     {
-        return password_needs_rehash($this->hashedValue, PASSWORD_DEFAULT);
+        return password_needs_rehash($this->hashedValue, PASSWORD_ARGON2ID);
     }
 
     /**

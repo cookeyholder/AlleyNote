@@ -10,9 +10,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 統計報表匯出控制器.
- */
 class StatisticsExportController extends BaseController
 {
     public function __construct(
@@ -43,11 +40,8 @@ class StatisticsExportController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $csv = $this->exportService->exportViewsToCSV($postId, $startDate, $endDate);
-
         $filename = 'post_views_' . date('Y-m-d_His') . '.csv';
-
         $response->getBody()->write($csv);
 
         return $response
@@ -80,11 +74,8 @@ class StatisticsExportController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $csv = $this->exportService->exportComprehensiveReportToCSV($postId, $startDate, $endDate);
-
         $filename = 'comprehensive_report_' . date('Y-m-d_His') . '.csv';
-
         $response->getBody()->write($csv);
 
         return $response
@@ -117,11 +108,8 @@ class StatisticsExportController extends BaseController
         $postId = isset($params['post_id']) ? (int) $params['post_id'] : null;
         $startDate = $params['start_date'] ?? null;
         $endDate = $params['end_date'] ?? null;
-
         $json = $this->exportService->exportToJSON($postId, $startDate, $endDate);
-
         $filename = 'comprehensive_report_' . date('Y-m-d_His') . '.json';
-
         $response->getBody()->write($json);
 
         return $response

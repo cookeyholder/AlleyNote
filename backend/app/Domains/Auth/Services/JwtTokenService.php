@@ -20,12 +20,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Throwable;
 
-/**
- * JWT Token 服務實作類別.
- *
- * 負責JWT token的核心業務邏輯，包括token生成、驗證、撤銷等功能。
- * 整合 FirebaseJwtProvider 提供安全的 RS256 JWT token 服務。
- */
 final class JwtTokenService implements JwtTokenServiceInterface
 {
     public function __construct(
@@ -39,7 +33,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
     {
         try {
             $now = new DateTimeImmutable();
-
             // 準備 access token 的 payload
             $accessTokenPayload = array_merge($customClaims, [
                 'sub' => (string) $userId,
@@ -51,22 +44,18 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'browser' => $deviceInfo->getBrowser(),
                 'type' => 'access',
             ]);
-
             // 準備 refresh token 的 payload（較少資訊）
             $refreshTokenPayload = [
                 'sub' => (string) $userId,
                 'device_id' => $deviceInfo->getDeviceId(),
                 'type' => 'refresh',
             ];
-
             // 產生 tokens
             $accessToken = $this->jwtProvider->generateAccessToken($accessTokenPayload);
             $refreshToken = $this->jwtProvider->generateRefreshToken($refreshTokenPayload);
-
             // 解析 refresh token 以獲取 JTI
             $refreshTokenData = $this->jwtProvider->parseTokenUnsafe($refreshToken);
             $jti = $refreshTokenData['jti'] ?? null;
-
             if (!$jti) {
                 throw new TokenGenerationException(
                     TokenGenerationException::REASON_CLAIMS_INVALID,
@@ -74,7 +63,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
                     'Refresh token missing JTI',
                 );
             }
-
             // 將 refresh token 儲存到資料庫
             $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
             $this->refreshTokenRepository->create(
@@ -84,7 +72,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 deviceInfo: $deviceInfo,
                 expiresAt: DateTime::createFromImmutable($refreshTokenExpiresAt),
             );
-
             // 計算過期時間
             $accessTokenExpiresAt = $now->modify('+' . $this->config->getAccessTokenTtl() . ' seconds');
             $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
@@ -114,7 +101,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'Token has been revoked',
             );
         }
-
         // 驗證 token 並確認是 access token
         $payload = $this->jwtProvider->validateToken($token, 'access');
 
@@ -131,14 +117,11 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'Token has been revoked',
             );
         }
-
         // 驗證 token 並確認是 refresh token
         $payload = $this->jwtProvider->validateToken($token, 'refresh');
-
         // 檢查 refresh token 是否在資料庫中存在且未被撤銷
         $jwtPayload = $this->createJwtPayloadFromArray($payload);
         $refreshTokenRecord = $this->refreshTokenRepository->findByJti($jwtPayload->getJti());
-
         if ($refreshTokenRecord === null) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_CLAIMS_INVALID,
@@ -146,7 +129,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'Refresh token not found in database',
             );
         }
-
         if ($this->refreshTokenRepository->isRevoked($jwtPayload->getJti())) {
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_BLACKLISTED,
@@ -169,9 +151,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
     {
         // 驗證 refresh token
         $payload = $this->validateRefreshToken($refreshToken);
-
         $userId = (int) $payload->getSubject();
-
         // 撤銷舊的 refresh token
         $this->refreshTokenRepository->delete($payload->getJti());
 
@@ -183,7 +163,6 @@ final class JwtTokenService implements JwtTokenServiceInterface
     {
         try {
             $payload = $this->extractPayload($token);
-
             // 將 token 加入黑名單
             $blacklistEntry = new TokenBlacklistEntry(
                 jti: $payload->getJti(),
@@ -193,9 +172,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 reason: $reason,
                 userId: (int) $payload->getSubject(),
             );
-
             $this->blacklistRepository->addToBlacklist($blacklistEntry);
-
             // 如果是 refresh token，也從資料庫中刪除
             if ($payload->getCustomClaim('type') === 'refresh') {
                 $this->refreshTokenRepository->delete($payload->getJti());
@@ -305,18 +282,15 @@ final class JwtTokenService implements JwtTokenServiceInterface
                     throw new InvalidArgumentException("Missing required payload key: {$key}");
                 }
             }
-
             // 安全地建立 DateTimeImmutable 物件
             $iat = DateTimeImmutable::createFromFormat('U', (string) $payload['iat']);
             if ($iat === false) {
                 throw new InvalidArgumentException("Invalid iat timestamp: {$payload['iat']}");
             }
-
             $exp = DateTimeImmutable::createFromFormat('U', (string) $payload['exp']);
             if ($exp === false) {
                 throw new InvalidArgumentException("Invalid exp timestamp: {$payload['exp']}");
             }
-
             $nbf = null;
             if (isset($payload['nbf'])) {
                 $nbf = DateTimeImmutable::createFromFormat('U', (string) $payload['nbf']);

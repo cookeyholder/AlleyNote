@@ -18,7 +18,6 @@ parameters:
         - app/Domains/Setting/Models/Setting.php
         - vendor
         - tests/Factory
-        - tests/manual
         - coverage-reports (?)
         - ../coverage-reports (?)
     tmpDir: storage/phpstan

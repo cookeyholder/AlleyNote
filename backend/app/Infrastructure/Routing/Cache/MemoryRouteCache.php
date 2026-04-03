@@ -7,11 +7,6 @@ namespace App\Infrastructure\Routing\Cache;
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 
-/**
- * 記憶體快取實作.
- *
- * 使用 PHP 記憶體存儲路由快取資料，適用於開發和測試環境
- */
 class MemoryRouteCache implements RouteCacheInterface
 {
     private int $ttl = 3600; // 預設 1 小時
@@ -38,7 +33,6 @@ class MemoryRouteCache implements RouteCacheInterface
         if (!isset($this->cache['routes'])) {
             return false;
         }
-
         // 檢查是否過期
         if ($this->ttl > 0 && isset($this->timestamps['routes'])) {
             $elapsed = time() - $this->timestamps['routes'];
@@ -60,7 +54,6 @@ class MemoryRouteCache implements RouteCacheInterface
 
             return null;
         }
-
         $data = $this->cache['routes'];
         if (!$data instanceof RouteCollectionInterface) {
             $this->stats['misses']++;
@@ -69,7 +62,6 @@ class MemoryRouteCache implements RouteCacheInterface
 
             return null;
         }
-
         $this->stats['hits']++;
         $this->stats['last_used'] = time();
 
@@ -80,7 +72,6 @@ class MemoryRouteCache implements RouteCacheInterface
     {
         $this->cache['routes'] = $routes;
         $this->timestamps['routes'] = time();
-
         // 計算大小（序列化後的大小）
         $serialized = serialize($routes);
         $this->stats['size'] = strlen($serialized);
@@ -93,7 +84,6 @@ class MemoryRouteCache implements RouteCacheInterface
     {
         $this->cache = [];
         $this->timestamps = [];
-
         // 重置統計
         $this->stats = [
             'hits' => 0,
@@ -150,11 +140,9 @@ class MemoryRouteCache implements RouteCacheInterface
         if (!isset($this->timestamps[$key])) {
             return true;
         }
-
         if ($this->ttl <= 0) {
             return false;
         }
-
         $elapsed = time() - $this->timestamps[$key];
 
         return $elapsed > $this->ttl;
@@ -166,7 +154,6 @@ class MemoryRouteCache implements RouteCacheInterface
     public function cleanupExpired(): int
     {
         $cleaned = 0;
-
         foreach ($this->timestamps as $key => $timestamp) {
             if ($this->isItemExpired($key)) {
                 unset($this->cache[$key]);

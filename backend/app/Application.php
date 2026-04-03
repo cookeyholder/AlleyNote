@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App;
 
 use App\Infrastructure\Http\Response;
-use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
@@ -13,16 +12,12 @@ use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use DI\ContainerBuilder;
-use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
+use Throwable;
 
-/**
- * 應用程式核心類別.
- *
- * 負責初始化和配置整個應用程式
- */
 class Application
 {
     private ContainerInterface $container;
@@ -48,7 +43,7 @@ class Application
     {
         try {
             return $this->handleRequest($request);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->handleException($e);
         }
     }
@@ -70,17 +65,15 @@ class Application
     {
         // 從容器獲取並驗證環境配置
         $config = $this->container->get(EnvironmentConfig::class);
-
         if (!$config instanceof EnvironmentConfig) {
-            throw new Exception('無法獲取有效的環境配置');
+            throw new RuntimeException('無法獲取有效的環境配置');
         }
-
         // 驗證配置的完整性
         $errors = $config->validate();
         if (!empty($errors)) {
             $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
 
-            throw new Exception($errorMessage);
+            throw new RuntimeException($errorMessage);
         }
     }
 
@@ -90,11 +83,9 @@ class Application
     private function initializeContainer(): void
     {
         $builder = new ContainerBuilder();
-
         // 載入容器配置檔案
         $containerConfig = require __DIR__ . '/../config/container.php';
         $builder->addDefinitions($containerConfig);
-
         $this->container = $builder->build();
     }
 
@@ -134,7 +125,7 @@ class Application
     /**
      * 處理例外狀況.
      */
-    private function handleException(Exception $e): ResponseInterface
+    private function handleException(Throwable $e): ResponseInterface
     {
         // 記錄錯誤到監控系統
         try {
@@ -146,26 +137,26 @@ class Application
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
                 ]);
             }
-        } catch (Exception $monitoringException) {
+        } catch (Throwable $monitoringException) {
             // 如果監控系統本身出錯，記錄到錯誤日誌
             app_log('error', 'Monitoring system error', ['exception' => $monitoringException->getMessage()]);
         }
-
         // 建立錯誤回應內容
+        $appEnv = getenv('APP_ENV') ?: 'production';
         $errorData = [
             'status' => 'error',
             'error' => 'Internal Server Error',
-            'message' => $e->getMessage(),
-            'code' => $e->getCode(),
+            'message' => $appEnv !== 'production' ? $e->getMessage() : '伺服器內部錯誤，請稍後再試',
         ];
-
+        if ($appEnv !== 'production') {
+            $errorData['code'] = $e->getCode();
+        }
         $json = json_encode($errorData, JSON_UNESCAPED_UNICODE) ?: '{"error": "Internal Server Error"}';
-        $stream = new Stream($json);
 
         return new Response(
             500,
             ['Content-Type' => 'application/json'],
-            $stream,
+            $json,
         );
     }
 

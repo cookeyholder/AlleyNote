@@ -7,11 +7,6 @@ namespace App\Domains\Auth\Events;
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
 
-/**
- * 使用者已登入事件.
- *
- * 當使用者成功登入時觸發
- */
 final class UserLoggedIn extends AbstractDomainEvent
 {
     public function __construct(

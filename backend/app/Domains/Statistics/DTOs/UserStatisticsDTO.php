@@ -8,50 +8,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 使用者統計 D    public function get    public function getHighEngage    public function getEngagementScore(): float.
-    {
-        $engagementScore = $this->engagementStats['engagement_score'] ?? 0.0;
-        return is_numeric($engagementScore) ? (float) $engagementScore : 0.0;
-    }(): int
-    {
-        $highEngagement =    private function getActivityConcentration(): string
-    {
-        $totalActivity = array_sum($this->activityTimeDistribution);
-        if ($totalActivity === 0 || empty($this->activityTimeDistribution)) {
-            return 'inactive';
-        }
-
-        $peakCount = max($this->activityTimeDistribution);
-        $concentration = ($peakCount / $totalActivity) * 100;
-
-        return match (true) {
-            $concentration >= 50 => 'concentrated',
-            $concentration >= 30 => 'moderate',
-            default => 'distributed',
-        };
-    }ntStats['high_engagement'] ?? 0;
-        return is_numeric($highEngagement) ? (int) $highEngagement : 0;
-    }u    public function getMediumEngagement(): int
-    {
-        $mediumEngagement = $this->engagementStats['medium_engagement'] ?? 0;
-        return is_numeric($mediumEngagement) ? (int) $mediumEngagement : 0;
-    }r    public function getLowEngagement(): int
-    {
-        $lowEngagement = $this->engagementStats['low_engagement'] ?? 0;
-        return is_numeric($lowEngagement) ? (int) $lowEngagement : 0;
-    } int
-    {
-        $uniqueUsers = $this->loginActivity['unique_users'] ?? 0;
-        return is_numeric($uniqueUsers) ? (int) $uniqueUsers : 0;
-    } *
- *     public function getPeakLoginHour(): int
-    {
-        $peakHour = $this->loginActivity['peak_hour'] ?? 0;
-        return is_numeric($peakHour) ? (int) $peakHour : 0;
-    }者相關統計資料的傳輸物件，包含活躍度分析、登入統計、參與度等。
- * 專門用於使用者統計 API 的回應格式與內部資料傳遞。
- */
 class UserStatisticsDTO implements JsonSerializable
 {
     /**
@@ -262,7 +218,6 @@ class UserStatisticsDTO implements JsonSerializable
         if ($this->activeUsers === 0) {
             return 0.0;
         }
-
         $engagedUsers = $this->getHighEngagementUsers() + $this->getMediumEngagementUsers();
 
         return round(($engagedUsers / $this->activeUsers) * 100, 2);
@@ -278,7 +233,6 @@ class UserStatisticsDTO implements JsonSerializable
         if (empty($this->registrationSources)) {
             return null;
         }
-
         $maxCount = max($this->registrationSources);
         $topSources = array_keys($this->registrationSources, $maxCount);
 
@@ -290,7 +244,6 @@ class UserStatisticsDTO implements JsonSerializable
         if (empty($this->geographicalDistribution)) {
             return null;
         }
-
         $topLocation = $this->geographicalDistribution[0] ?? null;
         if (!is_array($topLocation) || !isset($topLocation['location'])) {
             return null;
@@ -370,11 +323,9 @@ class UserStatisticsDTO implements JsonSerializable
             'engagement_analysis' => $this->getEngagementAnalysis(),
             'activity_insights' => $this->getActivityInsights(),
         ];
-
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
         }
-
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
@@ -426,14 +377,12 @@ class UserStatisticsDTO implements JsonSerializable
         if ($this->activeUsers < 0) {
             throw new InvalidArgumentException('活躍使用者數不能為負數');
         }
-
         // 驗證活動類型統計
         foreach ($this->byActivityType as $type => $count) {
             if (!is_string($type) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('活動類型統計資料格式不正確');
             }
         }
-
         // 驗證登入活動統計
         if (!empty($this->loginActivity)) {
             $requiredKeys = ['total_logins', 'unique_users', 'avg_logins_per_user'];
@@ -443,14 +392,12 @@ class UserStatisticsDTO implements JsonSerializable
                 }
             }
         }
-
         // 驗證最活躍使用者
         foreach ($this->mostActive as $user) {
             if (!is_array($user) || !isset($user['user_id'], $user['username'], $user['metric_value'])) {
                 throw new InvalidArgumentException('最活躍使用者資料結構不正確');
             }
         }
-
         // 驗證參與度統計
         if (!empty($this->engagementStats)) {
             $requiredKeys = ['high_engagement', 'medium_engagement', 'low_engagement', 'inactive'];
@@ -460,21 +407,18 @@ class UserStatisticsDTO implements JsonSerializable
                 }
             }
         }
-
         // 驗證註冊來源
         foreach ($this->registrationSources as $source => $count) {
             if (!is_string($source) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('註冊來源統計資料格式不正確');
             }
         }
-
         // 驗證地理分布
         foreach ($this->geographicalDistribution as $location) {
             if (!is_array($location) || !isset($location['location'], $location['users_count'])) {
                 throw new InvalidArgumentException('地理分布資料結構不正確');
             }
         }
-
         // 驗證角色分布
         foreach ($this->byRole as $role => $count) {
             if (!is_string($role) || !is_int($count) || $count < 0) {
@@ -491,7 +435,6 @@ class UserStatisticsDTO implements JsonSerializable
         if (empty($this->activityTimeDistribution)) {
             return null;
         }
-
         /** @var int $maxCount */
         $maxCount = max($this->activityTimeDistribution);
         $peakHours = array_keys($this->activityTimeDistribution, $maxCount);
@@ -508,7 +451,6 @@ class UserStatisticsDTO implements JsonSerializable
         if ($totalActivity === 0 || empty($this->activityTimeDistribution)) {
             return 'inactive';
         }
-
         $peakCount = max($this->activityTimeDistribution);
         $concentration = ($peakCount / $totalActivity) * 100;
 
@@ -547,7 +489,6 @@ class UserStatisticsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key)) {
@@ -569,7 +510,6 @@ class UserStatisticsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && is_numeric($value)) {
@@ -591,7 +531,6 @@ class UserStatisticsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $item) {
             if (is_array($item)) {

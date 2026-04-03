@@ -8,9 +8,6 @@ use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
-/**
- * PSR-7 Stream 實作.
- */
 class Stream implements StreamInterface
 {
     private mixed $stream;
@@ -32,9 +29,7 @@ class Stream implements StreamInterface
         } else {
             throw new InvalidArgumentException('Body must be a string or resource');
         }
-
         $this->seekable = $this->getMetadata('seekable') ?? false;
-
         $mode = $this->getMetadata('mode') ?? '';
         $this->readable = str_contains($mode, 'r') || str_contains($mode, '+');
         $this->writable = str_contains($mode, 'w') || str_contains($mode, 'a') || str_contains($mode, 'x') || str_contains($mode, 'c') || str_contains($mode, '+');
@@ -54,7 +49,6 @@ class Stream implements StreamInterface
         if (isset($this->stream)) {
             fclose($this->stream);
         }
-
         $this->detach();
     }
 
@@ -74,7 +68,6 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             return null;
         }
-
         $stats = fstat($this->stream);
         if (isset($stats['size'])) {
             return $stats['size'];
@@ -88,7 +81,6 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
-
         $result = ftell($this->stream);
         if ($result === false) {
             throw new RuntimeException('Unable to determine stream position');
@@ -116,11 +108,9 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
-
         if (!$this->seekable) {
             throw new RuntimeException('Stream is not seekable');
         }
-
         if (fseek($this->stream, $offset, $whence) === -1) {
             throw new RuntimeException('Unable to seek to stream position');
         }
@@ -141,11 +131,9 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
-
         if (!$this->writable) {
             throw new RuntimeException('Stream is not writable');
         }
-
         $result = fwrite($this->stream, $string);
         if ($result === false) {
             throw new RuntimeException('Unable to write to stream');
@@ -164,11 +152,9 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
-
         if (!$this->readable) {
             throw new RuntimeException('Stream is not readable');
         }
-
         $result = fread($this->stream, $length);
         if ($result === false) {
             throw new RuntimeException('Unable to read from stream');
@@ -182,11 +168,9 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             throw new RuntimeException('Stream is detached');
         }
-
         if (!$this->readable) {
             throw new RuntimeException('Stream is not readable');
         }
-
         $contents = stream_get_contents($this->stream);
         if ($contents === false) {
             throw new RuntimeException('Unable to read stream contents');
@@ -200,7 +184,6 @@ class Stream implements StreamInterface
         if (!isset($this->stream)) {
             return $key ? null : [];
         }
-
         $meta = stream_get_meta_data($this->stream);
         if ($key === null) {
             return $meta;

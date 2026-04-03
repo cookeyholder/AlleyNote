@@ -13,13 +13,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-/**
- * 系統設定管理 Controller.
- */
-#[OA\Tag(
-    name: 'Settings',
-    description: 'System settings management endpoints',
-)]
 class SettingController
 {
     public function __construct(
@@ -61,13 +54,12 @@ class SettingController
     )]
     public function index(Request $request, Response $response): Response
     {
-        $settings = $this->settingManagementService->getAllSettings();
-
+        $authenticated = (bool) $request->getAttribute('authenticated', false);
+        $settings = $this->settingManagementService->getAllSettings($authenticated);
         $responseData = json_encode([
             'success' => true,
             'data' => $settings,
         ]);
-
         $response->getBody()->write($responseData ?: '');
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -130,13 +122,12 @@ class SettingController
                 throw new InvalidArgumentException('Invalid setting key');
             }
             $key = $keyAttr;
-            $setting = $this->settingManagementService->getSetting($key);
-
+            $authenticated = (bool) $request->getAttribute('authenticated', false);
+            $setting = $this->settingManagementService->getSetting($key, $authenticated);
             $responseData = json_encode([
                 'success' => true,
                 'data' => $setting,
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -145,7 +136,6 @@ class SettingController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -207,15 +197,12 @@ class SettingController
             $data = json_decode((string) $request->getBody(), true);
             /** @var array<string, mixed> */
             $settings = is_array($data) ? $data : [];
-
             $result = $this->settingManagementService->updateSettings($settings);
-
             $responseData = json_encode([
                 'success' => true,
                 'data' => $result,
                 'message' => '系統設定更新成功',
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -225,7 +212,6 @@ class SettingController
                 'message' => $e->getMessage(),
                 'errors' => $e->getErrors(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
@@ -311,21 +297,17 @@ class SettingController
                 throw new InvalidArgumentException('Invalid setting key');
             }
             $key = $keyAttr;
-
             $data = json_decode((string) $request->getBody(), true);
             if (!is_array($data)) {
                 $data = [];
             }
             $value = $data['value'] ?? null;
-
             $setting = $this->settingManagementService->updateSetting($key, $value);
-
             $responseData = json_encode([
                 'success' => true,
                 'data' => $setting,
                 'message' => '設定更新成功',
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -334,7 +316,6 @@ class SettingController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -344,7 +325,6 @@ class SettingController
                 'message' => $e->getMessage(),
                 'errors' => $e->getErrors(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
@@ -394,7 +374,6 @@ class SettingController
         $offset = TimezoneHelper::getTimezoneOffset();
         $currentTime = TimezoneHelper::nowSiteTimezone();
         $allTimezones = TimezoneHelper::getAllTimezones(); // 使用全球所有時區
-
         $responseData = json_encode([
             'success' => true,
             'data' => [
@@ -404,7 +383,6 @@ class SettingController
                 'common_timezones' => $allTimezones, // 返回全部 419 個時區
             ],
         ]);
-
         $response->getBody()->write($responseData ?: '');
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

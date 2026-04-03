@@ -8,12 +8,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 內容洞察統計 DTO.
- *
- * 封裝內容洞察統計資料的傳輸物件，包含內容效能分析、主題分析、使用者互動洞察等。
- * 專門用於內容分析 API 的回應格式與內部資料傳遞。
- */
 class ContentInsightsDTO implements JsonSerializable
 {
     /**
@@ -218,7 +212,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (empty($this->popularTopics)) {
             return null;
         }
-
         $maxCount = max($this->popularTopics);
         $topTopics = array_keys($this->popularTopics, $maxCount);
 
@@ -230,7 +223,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (empty($this->contentFormats)) {
             return null;
         }
-
         $maxCount = max($this->contentFormats);
         $topFormats = array_keys($this->contentFormats, $maxCount);
 
@@ -313,7 +305,6 @@ class ContentInsightsDTO implements JsonSerializable
         $engagementRate = $this->getAverageEngagementRate();
         $completionRate = $this->getCompletionRate();
         $shareRate = $this->getShareRate();
-
         $score = ($engagementRate * 0.4) + ($completionRate * 0.4) + ($shareRate * 0.2);
 
         return match (true) {
@@ -335,7 +326,6 @@ class ContentInsightsDTO implements JsonSerializable
     public function getContentStrategyRecommendations(): array
     {
         $recommendations = [];
-
         // 基於參與率的建議
         if ($this->getAverageEngagementRate() < 5.0) {
             $recommendations['engagement'] = [
@@ -344,7 +334,6 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['增加問答環節', '加入互動元素', '改善內容標題'],
             ];
         }
-
         // 基於完成率的建議
         if ($this->getCompletionRate() < 60.0) {
             $recommendations['completion'] = [
@@ -353,7 +342,6 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['縮短內容長度', '改善排版', '增加視覺元素'],
             ];
         }
-
         // 基於分享率的建議
         if ($this->getShareRate() < 2.0) {
             $recommendations['sharing'] = [
@@ -362,7 +350,6 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['創造更多有價值的內容', '優化分享功能', '增加社群元素'],
             ];
         }
-
         // 基於熱門主題的建議
         $topTopic = $this->getTopTopic();
         if ($topTopic !== null) {
@@ -491,11 +478,9 @@ class ContentInsightsDTO implements JsonSerializable
             'seasonal_content_strategy' => $this->getSeasonalContentStrategy(),
             'reader_behavior_analysis' => $this->getReaderBehaviorAnalysis(),
         ];
-
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
         }
-
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
@@ -553,7 +538,6 @@ class ContentInsightsDTO implements JsonSerializable
                 throw new InvalidArgumentException('表現最佳內容資料結構不正確');
             }
         }
-
         // 驗證內容效能指標
         if (!empty($this->contentPerformanceMetrics)) {
             $requiredMetrics = ['avg_views_per_content', 'avg_engagement_rate', 'avg_read_time', 'bounce_rate', 'completion_rate', 'share_rate'];
@@ -563,21 +547,18 @@ class ContentInsightsDTO implements JsonSerializable
                 }
             }
         }
-
         // 驗證熱門主題統計
         foreach ($this->popularTopics as $topic => $count) {
             if (!is_string($topic) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('熱門主題統計資料格式不正確');
             }
         }
-
         // 驗證內容格式統計
         foreach ($this->contentFormats as $format => $count) {
             if (!is_string($format) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('內容格式統計資料格式不正確');
             }
         }
-
         // 驗證閱讀模式統計
         foreach ($this->readingPatterns as $pattern => $value) {
             if (!is_string($pattern)) {
@@ -607,7 +588,6 @@ class ContentInsightsDTO implements JsonSerializable
     private function getRefreshRecommendations(): array
     {
         $lifespan = $this->getContentLifespanDays();
-
         if ($lifespan < 30) {
             return ['每週檢查內容效能', '快速更新過時資訊', '持續優化標題和描述'];
         } elseif ($lifespan < 90) {
@@ -642,7 +622,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key)) {
@@ -664,7 +643,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && is_numeric($value)) {
@@ -686,7 +664,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $item) {
             if (is_array($item)) {
@@ -714,7 +691,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && (is_int($value) || is_float($value))) {

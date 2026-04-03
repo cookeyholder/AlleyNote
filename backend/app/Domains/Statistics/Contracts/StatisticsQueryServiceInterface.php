@@ -6,11 +6,6 @@ namespace App\Domains\Statistics\Contracts;
 
 use DateTime;
 
-/**
- * 統計查詢服務介面.
- *
- * 為匯出服務提供統計資料查詢的標準介面。
- */
 interface StatisticsQueryServiceInterface
 {
     /**

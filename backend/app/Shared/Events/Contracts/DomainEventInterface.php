@@ -6,11 +6,6 @@ namespace App\Shared\Events\Contracts;
 
 use DateTimeImmutable;
 
-/**
- * 領域事件介面.
- *
- * 定義所有領域事件必須實作的基本合約
- */
 interface DomainEventInterface
 {
     /**

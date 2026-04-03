@@ -6,11 +6,6 @@ namespace App\Domains\Post\Specifications;
 
 use App\Domains\Post\Aggregates\PostAggregate;
 
-/**
- * Post 規格介面.
- *
- * 定義檢查 Post 是否滿足某個業務規則的契約
- */
 interface PostSpecificationInterface
 {
     /**

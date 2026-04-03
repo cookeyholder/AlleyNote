@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-/**
- * Token 生成失敗例外.
- *
- * 當生成 JWT Token 過程中發生錯誤時拋出此例外。
- * 包含生成失敗的具體原因和相關詳細資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 class TokenGenerationException extends JwtException
 {
     /**
@@ -66,14 +57,12 @@ class TokenGenerationException extends JwtException
         array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
-
         $context = array_merge([
             'reason' => $reason,
             'token_type' => $tokenType,
             'timestamp' => time(),
             'generation_attempt_id' => uniqid('gen_', true),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
 

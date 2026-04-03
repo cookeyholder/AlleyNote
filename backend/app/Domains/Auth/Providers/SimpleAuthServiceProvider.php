@@ -25,11 +25,6 @@ use App\Shared\Config\JwtConfig;
 use PDO;
 use Psr\Container\ContainerInterface;
 
-/**
- * JWT 認證服務提供者（簡化版）.
- *
- * 負責註冊 JWT 中介軟體和基本服務到 DI 容器
- */
 class SimpleAuthServiceProvider
 {
     /**
@@ -41,28 +36,21 @@ class SimpleAuthServiceProvider
             // 基本配置和服務
             JwtConfig::class => \DI\factory([self::class, 'createJwtConfig']),
             FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
-
             // Repository (明確建立並注入依賴)
             RefreshTokenRepositoryInterface::class => \DI\factory([self::class, 'createRefreshTokenRepository']),
             TokenBlacklistRepositoryInterface::class => \DI\factory([self::class, 'createTokenBlacklistRepository']),
             UserRepositoryInterface::class => \DI\factory([self::class, 'createUserRepository']),
-
             // Password Security Service
             PasswordSecurityServiceInterface::class => \DI\autowire(PasswordSecurityService::class),
-
             // Authentication Service
             AuthenticationServiceInterface::class => \DI\factory([self::class, 'createAuthenticationService']),
-
             // Token Service (簡化版本)
             JwtTokenServiceInterface::class => \DI\factory([self::class, 'createJwtTokenService']),
-
             // Blacklist Service
             TokenBlacklistService::class => \DI\factory([self::class, 'createTokenBlacklistService']),
-
             // Middleware - 主要目標
             JwtAuthenticationMiddleware::class => \DI\factory([self::class, 'createJwtAuthenticationMiddleware']),
             JwtAuthorizationMiddleware::class => \DI\factory([self::class, 'createJwtAuthorizationMiddleware']),
-
             // Middleware 別名（為路由配置使用）
             'jwt.auth' => \DI\get(JwtAuthenticationMiddleware::class),
             'jwt.authorize' => \DI\get(JwtAuthorizationMiddleware::class),
@@ -139,7 +127,6 @@ class SimpleAuthServiceProvider
         $pdo = $container->get(PDO::class);
         /** @var PasswordSecurityServiceInterface $passwordService */
         $passwordService = $container->get(PasswordSecurityServiceInterface::class);
-
         $userRepository = new UserRepository($pdo, $passwordService);
 
         return new UserRepositoryAdapter($userRepository);

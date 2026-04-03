@@ -1,6 +1,9 @@
 // @ts-check
 const { test, expect } = require("./fixtures/page-objects");
 
+const tagNameInput = (page) =>
+  page.getByRole("textbox", { name: "例如：技術公告" });
+
 async function ensureAdminRoute(page, reason) {
   const currentUrl = page.url();
   if (!currentUrl.includes("/admin/")) {
@@ -35,7 +38,7 @@ test.describe("文章標籤管理", () => {
 
     if (tagCount === 0) {
       await page.click("#addTagBtn");
-      await page.fill('input[name="name"]', "測試標籤");
+      await tagNameInput(page).fill("測試標籤");
       await page.click('button[type="submit"]');
       await page.waitForTimeout(1000);
     }
@@ -157,7 +160,7 @@ test.describe("文章標籤管理", () => {
     if (tagCount < 2) {
       for (let i = tagCount; i < 2; i++) {
         await page.click("#addTagBtn");
-        await page.fill('input[name="name"]', `測試標籤${i + 1}`);
+        await tagNameInput(page).fill(`測試標籤${i + 1}`);
         await page.click('button[type="submit"]');
         await page.waitForTimeout(1000);
       }

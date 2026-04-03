@@ -7,11 +7,6 @@ namespace App\Domains\Post\Services;
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
 
-/**
- * 內容審核服務.
- *
- * 提供自動化內容審核和人工審核的工作流程
- */
 class ContentModerationService
 {
     private XssProtectionService $xssProtection;
@@ -33,50 +28,44 @@ class ContentModerationService
     /**
      * 審核內容.
      */
-    public function moderateContent(string $content, array $metadata = []): mixed
+    public function moderateContent(string $content, array $metadata = []): array
     {
         $result = [
-            'status' => 'approved',
-            'confidence' => 100,
-            'issues' => [],
-            'recommendations' => [],
+            'status'                => 'approved',
+            'confidence'            => 100,
+            'issues'                => [],
+            'recommendations'       => [],
             'requires_human_review' => false,
-            'auto_actions' => [],
+            'auto_actions'          => [],
         ];
-
         // 1. 基本安全檢查
+        /** @var array<int, array<string, mixed>> $securityIssues */
         $securityIssues = $this->checkSecurity($content);
         if (!empty($securityIssues)) {
-            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $securityIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
-            // // $data ? $result->status : null)) = 'rejected'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $result->confidence : null)) = 0; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-
-            return $result;
+            $result['issues'] = array_merge($result['issues'], $securityIssues);
         }
-
         // 2. 內容品質檢查
+        /** @var array<int, array<string, mixed>> $qualityIssues */
         $qualityIssues = $this->checkQuality($content, $metadata);
         if (!empty($qualityIssues)) {
-            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $qualityIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
+            $result['issues'] = array_merge($result['issues'], $qualityIssues);
         }
-
         // 3. 敏感詞檢查
+        /** @var array<int, array<string, mixed>> $sensitiveWordIssues */
         $sensitiveWordIssues = $this->checkSensitiveWords($content);
         if (!empty($sensitiveWordIssues)) {
-            // // $data ? $result->issues : null)) = array_merge((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, $sensitiveWordIssues); // 語法錯誤已註解 // isset 語法錯誤已註解
+            $result['issues'] = array_merge($result['issues'], $sensitiveWordIssues);
         }
-
         // 4. 垃圾內容檢查
         $spamScore = $this->calculateSpamScore($content, $metadata);
         if ($spamScore > $this->config['spam_threshold']) {
-            // $data ? $result->issues : null))[] = [ // 複雜賦值語法錯誤已註解
-            //     'type' => 'spam_detected',
-            //     'severity' => ActivitySeverity::HIGH,
-            //     'message' => '內容可能為垃圾訊息',
-            //     'score' => $spamScore,
-            // ];
+            $result['issues'][] = [
+                'type'     => 'spam_detected',
+                'severity' => ActivitySeverity::HIGH,
+                'message'  => '內容可能為垃圾訊息',
+                'score'    => $spamScore,
+            ];
         }
-
         // 5. 決定最終狀態
         $this->determineFinalStatus($result);
 
@@ -89,7 +78,6 @@ class ContentModerationService
     private function checkSecurity(string $content): mixed
     {
         $issues = [];
-
         // XSS 檢查
         $hasXss = $this->xssProtection->detectXss($content);
         if ($hasXss) {
@@ -100,18 +88,18 @@ class ContentModerationService
                 'details' => 'Content contains potentially dangerous XSS patterns',
             ];
         }
-
         // 富文本安全檢查
         $richTextIssues = $this->richTextProcessor->validateSecurity($content);
+        /** @var array<int, array{severity: ActivitySeverity, message: string, details?: string}> $richTextIssues */
         foreach ($richTextIssues as $issue) {
-            // if ($data ? $issue->severity : null)) === ActivitySeverity::HIGH) { // 複雜賦值語法錯誤已註解
-            $issues[] = [
-                'type' => 'security_richtext',
-                'severity' => ActivitySeverity::HIGH,
-                // 'message' => (is_array($issue) && isset($data ? $issue->message : null)))) ? $data ? $issue->message : null)) : null, // isset 語法錯誤已註解
-                // 'details' => (is_array($issue) && isset($data ? $issue->details : null)))) ? $data ? $issue->details : null)) : null, // isset 語法錯誤已註解
-            ];
-            // }
+            if ($issue['severity'] === ActivitySeverity::HIGH) {
+                $issues[] = [
+                    'type'     => 'security_richtext',
+                    'severity' => ActivitySeverity::HIGH,
+                    'message'  => $issue['message'],
+                    'details'  => $issue['details'] ?? '',
+                ];
+            }
         }
 
         return $issues;
@@ -124,7 +112,6 @@ class ContentModerationService
     {
         $issues = [];
         $textContent = strip_tags($content);
-
         // 長度檢查
         if (strlen($textContent) < $this->config['min_content_length']) {
             $issues[] = [
@@ -135,7 +122,6 @@ class ContentModerationService
                 'min_required' => $this->config['min_content_length'],
             ];
         }
-
         if (strlen($textContent) > $this->config['max_content_length']) {
             $issues[] = [
                 'type' => 'quality_too_long',
@@ -145,7 +131,6 @@ class ContentModerationService
                 'max_allowed' => $this->config['max_content_length'],
             ];
         }
-
         // 重複內容檢查
         if ($this->isRepetitiveContent($textContent)) {
             $issues[] = [
@@ -154,7 +139,6 @@ class ContentModerationService
                 'message' => '內容過度重複',
             ];
         }
-
         // 全大寫檢查
         if ($this->isAllCaps($textContent)) {
             $issues[] = [
@@ -174,7 +158,6 @@ class ContentModerationService
     {
         $issues = [];
         $textContent = strtolower(strip_tags($content));
-
         foreach ($this->config['sensitive_words'] as $category => $words) {
             foreach ($words as $word) {
                 if (str_contains($textContent, strtolower($word))) {
@@ -199,7 +182,6 @@ class ContentModerationService
     {
         $score = 0;
         $textContent = strip_tags($content);
-
         // 外部連結密度
         $linkCount = substr_count(strtolower($content), '<a ');
         $wordCount = str_word_count($textContent);
@@ -209,25 +191,21 @@ class ContentModerationService
                 $score += 30;
             }
         }
-
         // 大寫字母比例
         $upperCaseRatio = $this->getUpperCaseRatio($textContent);
         if ($upperCaseRatio > 0.5) {
             $score += 20;
         }
-
         // 重複字元
         if ($this->hasExcessiveRepetition($textContent)) {
             $score += 25;
         }
-
         // 可疑 URL 模式
         if ($this->hasSuspiciousUrls($content)) {
             $score += 40;
         }
 
         // 發文頻率（如果有提供使用者資訊）
-
         return min($score, 100);
     }
 
@@ -236,33 +214,39 @@ class ContentModerationService
      */
     private function determineFinalStatus(array &$result): void
     {
-        // $criticalIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === ActivitySeverity::CRITICAL); // isset 語法錯誤已註解
-        // $highIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === ActivitySeverity::HIGH); // isset 語法錯誤已註解
-        // $mediumIssues = array_filter((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null, fn($issue) => $data ? $issue->severity : null)) === ActivitySeverity::MEDIUM); // isset 語法錯誤已註解
-        $criticalIssues = [];
-        $highIssues = [];
-        $mediumIssues = [];
-
+        /** @var array<int, array{severity: ActivitySeverity}> $issues */
+        $issues = $result['issues'];
+        $criticalIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::CRITICAL);
+        $highIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::HIGH);
+        $mediumIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::MEDIUM);
         if (!empty($criticalIssues)) {
-            // // $data ? $result->status : null)) = 'rejected'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $result->confidence : null)) = 0; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // $data ? $result->auto_actions : null))[] = 'content_blocked'; // 複雜賦值語法錯誤已註解
+            $result['status'] = 'rejected';
+            $result['confidence'] = 0;
+            if (!isset($result['auto_actions']) || !is_array($result['auto_actions'])) {
+                $result['auto_actions'] = [];
+            }
+            $result['auto_actions'][] = 'content_blocked';
         } elseif (count($highIssues) >= 2 || count($mediumIssues) >= 3) {
-            // // $data ? $result->status : null)) = 'pending'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $result->requires_human_review : null)) = true; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $result->confidence : null)) = 30; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // $data ? $result->auto_actions : null))[] = 'flag_for_review'; // 複雜賦值語法錯誤已註解
+            $result['status'] = 'pending';
+            $result['requires_human_review'] = true;
+            $result['confidence'] = 30;
+            if (!isset($result['auto_actions']) || !is_array($result['auto_actions'])) {
+                $result['auto_actions'] = [];
+            }
+            $result['auto_actions'][] = 'flag_for_review';
         } elseif (!empty($highIssues) || !empty($mediumIssues)) {
-            // // $data ? $result->status : null)) = 'conditional'; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // // $data ? $result->confidence : null)) = 70; // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-            // $data ? $result->recommendations : null))[] = '建議作者檢查並修正標記的問題'; // 複雜賦值語法錯誤已註解
+            $result['status'] = 'conditional';
+            $result['confidence'] = 70;
+            if (!isset($result['recommendations']) || !is_array($result['recommendations'])) {
+                $result['recommendations'] = [];
+            }
+            $result['recommendations'][] = '建議作者檢查並修正標記的問題';
         }
-
         // 根據問題數量調整信心度
-        // $totalIssues = count((is_array($result) && isset($data ? $result->issues : null)))) ? $data ? $result->issues : null)) : null); // isset 語法錯誤已註解
-        // if ($totalIssues > 0 && $data ? $result->status : null)) === 'approved') {
-        //     // $data ? $result->confidence : null)) = max(50, 100 - ($totalIssues * 10)); // 語法錯誤已註解 // 複雜賦值語法錯誤已註解
-        // }
+        $totalIssues = count($issues);
+        if ($totalIssues > 0 && $result['status'] === 'approved') {
+            $result['confidence'] = max(50, 100 - ($totalIssues * 10));
+        }
     }
 
     /**
@@ -272,11 +256,9 @@ class ContentModerationService
     {
         $sentences = preg_split('/[.!?]+/', $text);
         $sentences = array_filter(array_map('trim', $sentences));
-
         if (count($sentences) < 3) {
             return false;
         }
-
         $uniqueSentences = array_unique($sentences);
 
         return count($uniqueSentences) / count($sentences) < 0.7;
@@ -304,7 +286,6 @@ class ContentModerationService
         if (strlen($alphaChars) === 0) {
             return 0;
         }
-
         $upperChars = preg_replace('/[^A-Z]/', '', $alphaChars);
 
         return strlen($upperChars) / strlen($alphaChars);
@@ -332,7 +313,6 @@ class ContentModerationService
             '/short\.link/',
             '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/', // IP 位址
         ];
-
         foreach ($suspiciousPatterns as $pattern) {
             if (preg_match($pattern, $content)) {
                 return true;

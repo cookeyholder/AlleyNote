@@ -33,18 +33,14 @@ class TimeSeriesProcessor
         if ($startDate === null || $endDate === null) {
             [$startDate, $endDate] = $this->inferDateRangeFromData($rawData);
         }
-
         $this->validateGranularity($granularity);
-
         $dataPoints = [];
         foreach ($rawData as $item) {
             if (is_array($item)) {
                 $timestamp = $item['timestamp'] ?? $item['date'] ?? 'now';
                 $value = $item['value'] ?? 0;
-
                 $timestampStr = is_string($timestamp) ? $timestamp : 'now';
                 $numericValue = is_numeric($value) ? (float) $value : 0.0;
-
                 $dataPoints[] = TimeSeriesDataPoint::forDate(
                     new DateTimeImmutable($timestampStr),
                     $numericValue,
@@ -76,17 +72,14 @@ class TimeSeriesProcessor
                 }
             }
         }
-
         if ($startDate === null || $endDate === null) {
             $now = new DateTimeImmutable();
             $startDate = $now->sub(new DateInterval('P30D'));
             $endDate = $now;
         }
-
         $datasets = [];
         $colors = $this->getDefaultColors();
         $colorIndex = 0;
-
         foreach ($allData as $seriesName => $rawData) {
             $data = [];
             if (is_array($rawData)) {
@@ -97,10 +90,8 @@ class TimeSeriesProcessor
                     }
                 }
             }
-
             $currentColor = $colors[$colorIndex % count($colors)];
             $validColor = is_string($currentColor) ? $currentColor : '#000000';
-
             $dataset = new ChartDataset(
                 $seriesName,
                 $data,
@@ -109,7 +100,6 @@ class TimeSeriesProcessor
                 [$validColor],
                 2,
             );
-
             $datasets[] = $dataset;
             $colorIndex++;
         }
@@ -152,13 +142,11 @@ class TimeSeriesProcessor
 
             return [$now->sub(new DateInterval('P30D')), $now];
         }
-
         $timestamps = array_map(function ($item) {
             $timestamp = null;
             if (is_array($item)) {
                 $timestamp = $item['timestamp'] ?? $item['date'] ?? null;
             }
-
             $timestampStr = is_string($timestamp) ? $timestamp : 'now';
 
             return new DateTimeImmutable($timestampStr);

@@ -8,11 +8,6 @@ use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 
-/**
- * 效能監控服務實作。
- *
- * 提供詳細的應用程式效能監控功能，包含操作追蹤、指標收集和效能分析
- */
 class PerformanceMonitorService implements PerformanceMonitorInterface
 {
     /** @var array<string, array> 進行中的監控會話 */
@@ -59,7 +54,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function startMonitoring(string $operation, array $context = []): string
     {
         $monitoringId = Uuid::uuid4()->toString();
-
         $this->activeMonitoringSessions[$monitoringId] = [
             'operation' => $operation,
             'start_time' => microtime(true),
@@ -67,7 +61,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'context' => $context,
             'created_at' => time(),
         ];
-
         $this->logger->debug("Started monitoring operation: {$operation}", [
             'monitoring_id' => $monitoringId,
             'context' => $context,
@@ -86,46 +79,35 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
 
             return;
         }
-
         $session = $this->activeMonitoringSessions[$monitoringId];
-
         if (!is_array($session)) {
             $this->logger->warning('Invalid monitoring session data', ['monitoring_id' => $monitoringId]);
 
             return;
         }
-
         $sessionStartTime = $session['start_time'] ?? 0;
         $startTime = is_numeric($sessionStartTime) ? (float) $sessionStartTime : microtime(true);
-
         $sessionStartMemory = $session['start_memory'] ?? 0;
         $startMemory = is_numeric($sessionStartMemory) ? (int) $sessionStartMemory : memory_get_usage(true);
-
         $operationValue = $session['operation'] ?? '';
         $operation = is_string($operationValue) ? $operationValue : 'unknown';
-
         $endTime = microtime(true);
         $endMemory = memory_get_usage(true);
-
         $duration = ($endTime - $startTime) * 1000; // 轉換為毫秒
         $memoryDiff = $endMemory - $startMemory;
-
         // 記錄效能指標
         $this->recordMetric("operation.{$operation}.duration", $duration, 'ms', [
             'operation' => $operation,
         ]);
-
         $this->recordMetric("operation.{$operation}.memory_delta", $memoryDiff, 'bytes', [
             'operation' => $operation,
         ]);
-
         // 檢查是否為慢操作
         if ($duration > $this->slowQueryThreshold) {
             $sessionContext = is_array($session['context'] ?? null) ? $session['context'] : [];
             $mergedContext = array_merge($sessionContext, $context);
             $this->recordSlowOperation($operation, $duration, $mergedContext);
         }
-
         // 記錄詳細資訊
         $this->logger->info("Operation completed: {$operation}", [
             'operation' => $operation,
@@ -142,11 +124,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function recordMetric(string $name, float $value, string $unit = 'ms', array $tags = []): void
     {
         $metricKey = $this->buildMetricKey($name, $tags);
-
         if (!isset($this->metrics[$metricKey])) {
             $this->metrics[$metricKey] = [];
         }
-
         $metricsForKey = $this->metrics[$metricKey];
         assert(is_array($metricsForKey));
         $metricsForKey[] = [
@@ -156,7 +136,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'timestamp' => microtime(true),
         ];
         $this->metrics[$metricKey] = $metricsForKey;
-
         $this->logger->debug("Recorded metric: {$name}", [
             'value' => $value,
             'unit' => $unit,
@@ -170,15 +149,12 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function incrementCounter(string $name, array $tags = []): void
     {
         $counterKey = $this->buildMetricKey($name, $tags);
-
         if (!isset($this->counters[$counterKey])) {
             $this->counters[$counterKey] = 0;
         }
-
         $currentCounter = $this->counters[$counterKey];
         assert(is_int($currentCounter) || is_float($currentCounter));
         $this->counters[$counterKey] = $currentCounter + 1;
-
         $this->logger->debug("Incremented counter: {$name}", [
             'current_value' => $this->counters[$counterKey],
             'tags' => $tags,
@@ -199,16 +175,13 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function recordHistogram(string $name, float $value, array $tags = []): void
     {
         $histogramKey = $this->buildMetricKey($name, $tags);
-
         if (!isset($this->histograms[$histogramKey])) {
             $this->histograms[$histogramKey] = [];
         }
-
         $this->histograms[$histogramKey][] = [
             'value' => $value,
             'timestamp' => microtime(true),
         ];
-
         $this->logger->debug("Recorded histogram value: {$name}", [
             'value' => $value,
             'tags' => $tags,
@@ -227,12 +200,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'total_histograms' => count($this->histograms),
             'slow_operations_count' => count($this->slowQueries),
         ];
-
         // 如果指定了操作，返回該操作的詳細統計
         if ($operation !== null) {
             $stats['operation_details'] = $this->getOperationStats($operation);
         }
-
         // 計算整體統計
         $stats['metrics_summary'] = $this->calculateMetricsSummary();
         $stats['counters_summary'] = $this->counters;
@@ -259,7 +230,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function getPerformanceWarnings(): array
     {
         $warnings = [];
-
         // 檢查活躍會話數量
         if (count($this->activeMonitoringSessions) > 100) {
             $warnings[] = [
@@ -269,11 +239,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 'severity' => 'warning',
             ];
         }
-
         // 檢查記憶體使用
         $memoryUsage = memory_get_usage(true);
         $memoryLimit = $this->parseMemoryLimit(ini_get('memory_limit'));
-
         if ($memoryLimit > 0 && $memoryUsage > $memoryLimit * 0.8) {
             $warnings[] = [
                 'type' => 'high_memory_usage',
@@ -284,7 +252,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 'severity' => 'critical',
             ];
         }
-
         // 檢查長時間運行的操作
         $currentTime = microtime(true);
         foreach ($this->activeMonitoringSessions as $id => $session) {
@@ -314,7 +281,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $cutoffTime = time() - ($daysToKeep * 24 * 60 * 60);
         $cleanedCount = 0;
-
         // 清除舊的慢查詢記錄
         $originalCount = count($this->slowQueries);
         $this->slowQueries = array_filter(
@@ -322,7 +288,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             fn($query) => $query['timestamp'] > $cutoffTime,
         );
         $cleanedCount += $originalCount - count($this->slowQueries);
-
         // 清除舊的指標
         foreach ($this->metrics as $key => $metricData) {
             $originalMetricCount = count($metricData);
@@ -331,13 +296,11 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 fn($metric) => $metric['timestamp'] > $cutoffTime,
             );
             $cleanedCount += $originalMetricCount - count($this->metrics[$key]);
-
             // 如果指標陣列為空，移除整個鍵
             if (empty($this->metrics[$key])) {
                 unset($this->metrics[$key]);
             }
         }
-
         // 清除舊的直方圖資料
         foreach ($this->histograms as $key => $histogramData) {
             $originalHistogramCount = count($histogramData);
@@ -346,13 +309,11 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 fn($histogram) => is_array($histogram) && isset($histogram['timestamp']) && is_numeric($histogram['timestamp']) && $histogram['timestamp'] > $cutoffTime,
             );
             $cleanedCount += $originalHistogramCount - count($this->histograms[$key]);
-
             // 如果直方圖陣列為空，移除整個鍵
             if (empty($this->histograms[$key])) {
                 unset($this->histograms[$key]);
             }
         }
-
         $this->logger->info('Performance data cleanup completed', [
             'days_kept' => $daysToKeep,
             'items_cleaned' => $cleanedCount,
@@ -362,7 +323,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     }
 
     // ===== 私有方法 =====
-
     /**
      * 建立指標鍵名。
      */
@@ -371,7 +331,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         if (empty($tags)) {
             return $name;
         }
-
         ksort($tags);
         $tagString = implode(',', array_map(
             fn($k, $v) => $k . '=' . (is_scalar($v) ? (string) $v : 'complex'),
@@ -393,7 +352,6 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'context' => $context,
             'timestamp' => time(),
         ];
-
         $this->logger->warning("Slow operation detected: {$operation}", [
             'duration_ms' => round($duration, 2),
             'threshold_ms' => (float) $this->slowQueryThreshold,
@@ -407,26 +365,22 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function getOperationStats(string $operation): array
     {
         $operationMetrics = [];
-
         foreach ($this->metrics as $key => $metricData) {
             if (strpos($key, "operation.{$operation}.") === 0) {
                 $operationMetrics[$key] = $metricData;
             }
         }
-
         $stats = [
             'operation' => $operation,
             'metrics_count' => count($operationMetrics),
             'active_sessions' => 0,
         ];
-
         // 計算活躍會話
         foreach ($this->activeMonitoringSessions as $session) {
             if ($session['operation'] === $operation) {
                 $stats['active_sessions']++;
             }
         }
-
         // 計算統計摘要
         if (!empty($operationMetrics)) {
             $stats['metrics_summary'] = $this->calculateMetricsSummary($operationMetrics);
@@ -442,10 +396,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $metrics = $metricsSubset ?? $this->metrics;
         $summary = [];
-
         foreach ($metrics as $key => $metricData) {
             $values = is_array($metricData) ? array_column($metricData, 'value') : [];
-
             if (!empty($values)) {
                 $summary[$key] = [
                     'count' => count($values),
@@ -469,11 +421,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function calculateHistogramSummary(): array
     {
         $summary = [];
-
         foreach ($this->histograms as $key => $histogramData) {
             $values = array_column($histogramData, 'value');
             sort($values);
-
             if (!empty($values)) {
                 $count = count($values);
                 $summary[$key] = [
@@ -501,24 +451,19 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         if ($count === 0) {
             return 0.0;
         }
-
         $index = ($percentile / 100) * ($count - 1);
         $lower = (int) floor($index);
         $upper = (int) ceil($index);
-
         if ($lower === $upper) {
             $value = $values[$lower] ?? 0;
 
             return is_numeric($value) ? (float) $value : 0.0;
         }
-
         $lowerValue = $values[$lower] ?? 0;
         $upperValue = $values[$upper] ?? 0;
-
         if (!is_numeric($lowerValue) || !is_numeric($upperValue)) {
             return 0.0;
         }
-
         $weight = $index - $lower;
 
         return (float) $lowerValue * (1 - $weight) + (float) $upperValue * $weight;
@@ -530,11 +475,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     private function parseMemoryLimit(string $memoryLimit): int
     {
         $memoryLimit = trim($memoryLimit);
-
         if ($memoryLimit === '-1') {
             return 0;
         }
-
         $unit = strtolower(substr($memoryLimit, -1));
         $value = (int) substr($memoryLimit, 0, -1);
 

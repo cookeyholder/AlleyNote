@@ -11,9 +11,6 @@ use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
 
-/**
- * 建立活動記錄的 DTO.
- */
 final class CreateActivityLogDTO implements JsonSerializable
 {
     public function __construct(
@@ -33,7 +30,6 @@ final class CreateActivityLogDTO implements JsonSerializable
         private ?DateTimeImmutable $occurredAt = null,
     ) {
         $this->occurredAt ??= new DateTimeImmutable();
-
         // 驗證 metadata 只能包含可序列化的資料
         if ($this->metadata !== null) {
             $this->validateMetadata($this->metadata);
@@ -135,7 +131,6 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     // === Getters ===
-
     public function getActionType(): ActivityType
     {
         return $this->actionType;
@@ -205,7 +200,6 @@ final class CreateActivityLogDTO implements JsonSerializable
     }
 
     // === Fluent Setters ===
-
     public function withUserId(?int $userId): self
     {
         $new = clone $this;
@@ -310,7 +304,6 @@ final class CreateActivityLogDTO implements JsonSerializable
                 'Metadata must be JSON serializable: ' . $e->getMessage(),
             );
         }
-
         // 檢查 metadata 大小不超過 64KB（文字欄位限制）
         $json = (json_encode($metadata) ?? '') ?: '';
         $jsonSize = $json !== false ? strlen($json) : 0;

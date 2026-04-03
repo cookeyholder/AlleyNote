@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-/**
- * 身份驗證失敗例外.
- *
- * 當用戶身份驗證過程中發生錯誤時拋出此例外。
- * 包含驗證失敗的具體原因和相關詳細資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 class AuthenticationException extends JwtException
 {
     /**
@@ -67,13 +58,11 @@ class AuthenticationException extends JwtException
         array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
-
         $context = array_merge([
             'reason' => $reason,
             'timestamp' => time(),
             'attempt_id' => uniqid('auth_', true),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
 
@@ -351,7 +340,6 @@ class AuthenticationException extends JwtException
             'lockout_until' => $lockoutUntil,
             'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
         ];
-
         if ($ipAddress) {
             $context['ip_address'] = $ipAddress;
         }
@@ -440,7 +428,6 @@ class AuthenticationException extends JwtException
             'required_privilege' => $requiredPrivilege,
             'user_privileges' => $userPrivileges,
         ];
-
         if ($userId !== null) {
             $context['user_id'] = $userId;
         }

@@ -11,11 +11,6 @@ use App\Domains\Post\ValueObjects\PostTitle;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
 
-/**
- * Post 工廠類別.
- *
- * 負責建立 Post 聚合根實例，封裝複雜的建立邏輯
- */
 final class PostFactory
 {
     /**
@@ -51,7 +46,6 @@ final class PostFactory
     public function createFromRequest(array $data): PostAggregate
     {
         $this->validateRequestData($data);
-
         $title = is_string($data['title']) ? $data['title'] : '';
         $content = is_string($data['content']) ? $data['content'] : '';
         $authorId = is_int($data['author_id']) ? $data['author_id'] : 0;
@@ -102,7 +96,6 @@ final class PostFactory
     {
         $titleSuffix = ' (副本)';
         $newTitle = $original->getTitle()->toString() . $titleSuffix;
-
         // 確保標題不超過限制
         if (mb_strlen($newTitle, 'UTF-8') > 255) {
             $maxLength = 255 - mb_strlen($titleSuffix, 'UTF-8');
@@ -156,23 +149,18 @@ final class PostFactory
         if (!isset($data['title'])) {
             throw new InvalidArgumentException('標題欄位是必需的');
         }
-
         if (!isset($data['content'])) {
             throw new InvalidArgumentException('內容欄位是必需的');
         }
-
         if (!isset($data['author_id'])) {
             throw new InvalidArgumentException('作者 ID 欄位是必需的');
         }
-
         if (!is_string($data['title'])) {
             throw new InvalidArgumentException('標題必須是字串');
         }
-
         if (!is_string($data['content'])) {
             throw new InvalidArgumentException('內容必須是字串');
         }
-
         if (!is_int($data['author_id']) || $data['author_id'] <= 0) {
             throw new InvalidArgumentException('作者 ID 必須是大於 0 的整數');
         }

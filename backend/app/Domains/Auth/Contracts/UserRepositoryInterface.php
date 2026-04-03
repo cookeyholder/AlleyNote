@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
 
-/**
- * 使用者資料庫介面.
- *
- * 定義使用者相關的資料庫操作標準介面
- */
 interface UserRepositoryInterface
 {
     /**

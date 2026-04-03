@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
-/**
- * 統計資料格式化器介面.
- *
- * 定義統計資料格式化的標準操作。
- */
 interface StatisticsFormatterInterface
 {
     /**

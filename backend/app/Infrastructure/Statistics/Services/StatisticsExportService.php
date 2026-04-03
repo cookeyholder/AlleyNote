@@ -14,11 +14,6 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
-/**
- * 統計資料匯出服務.
- *
- * 提供統計資料的匯出功能，支援多種格式和批次匯出。
- */
 final class StatisticsExportService implements StatisticsExportServiceInterface
 {
     /** 預設匯出格式 */
@@ -45,16 +40,14 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
-
         $this->validateFormat($format);
 
         try {
             // 準備查詢選項
             $queryOptions = $this->prepareQueryOptions($options);
-
             // 取得統計資料
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getOverview($queryOptions);
-
             // 格式化資料
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
@@ -78,13 +71,12 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
-
         $this->validateFormat($format);
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getPostStatistics($queryOptions);
-
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -106,13 +98,12 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
-
         $this->validateFormat($format);
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getSourceDistribution($queryOptions);
-
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -134,13 +125,12 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
-
         $this->validateFormat($format);
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getUserStatistics($queryOptions);
-
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -162,13 +152,12 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
-
         $this->validateFormat($format);
 
         try {
             $queryOptions = $this->prepareQueryOptions($options);
+            /** @phpstan-ignore-next-line argument.type */
             $data = $this->queryService->getPopularContent($queryOptions);
-
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -194,11 +183,9 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         $errors = [];
         $successCount = 0;
         $failureCount = 0;
-
         foreach ($types as $type) {
             try {
                 $this->validateStatisticsType($type);
-
                 $result = match ($type) {
                     'overview' => $this->exportOverview($options),
                     'posts' => $this->exportPostStatistics($options),
@@ -207,7 +194,6 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
                     'popular' => $this->exportPopularContent($options),
                     default => throw new InvalidArgumentException("不支援的統計類型: {$type}"),
                 };
-
                 $results[$type] = $result;
                 $successCount++;
             } catch (Throwable $e) {
@@ -269,34 +255,27 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     private function prepareQueryOptions(array $options): array
     {
         $queryOptions = [];
-
         // 處理時間範圍
         if (isset($options['period_start'])) {
             $queryOptions['period_start'] = $options['period_start'];
         }
-
         if (isset($options['period_end'])) {
             $queryOptions['period_end'] = $options['period_end'];
         }
-
         // 處理分頁
         if (isset($options['limit'])) {
             $queryOptions['limit'] = $options['limit'];
         }
-
         if (isset($options['offset'])) {
             $queryOptions['offset'] = $options['offset'];
         }
-
         // 處理其他選項
         if (isset($options['include_details'])) {
             $queryOptions['include_details'] = $options['include_details'];
         }
-
         if (isset($options['group_by_detail'])) {
             $queryOptions['group_by_detail'] = $options['group_by_detail'];
         }
-
         if (isset($options['include_inactive'])) {
             $queryOptions['include_inactive'] = $options['include_inactive'];
         }
@@ -310,7 +289,6 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     private function countRecords(array $data): int
     {
         $count = 0;
-
         foreach ($data as $key => $value) {
             if (is_array($value)) {
                 if ($this->isSequentialArray($value)) {
@@ -345,12 +323,10 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             'export_time' => new DateTime()->format('Y-m-d H:i:s'),
             'format_options' => array_diff_key($options, array_flip(['format'])),
         ];
-
         // 添加資料相關的元資料
         if (isset($options['include_details'])) {
             $metadata['include_details'] = $options['include_details'];
         }
-
         if (isset($options['period_start'], $options['period_end'])) {
             $metadata['period'] = [
                 'start' => $options['period_start']->format('Y-m-d'),

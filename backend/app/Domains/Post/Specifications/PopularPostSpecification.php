@@ -6,11 +6,6 @@ namespace App\Domains\Post\Specifications;
 
 use App\Domains\Post\Aggregates\PostAggregate;
 
-/**
- * 熱門文章規格.
- *
- * 檢查文章瀏覽次數是否超過指定閾值
- */
 final class PopularPostSpecification extends AbstractPostSpecification
 {
     public function __construct(

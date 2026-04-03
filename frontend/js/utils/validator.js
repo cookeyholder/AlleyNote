@@ -216,13 +216,34 @@ export class FormValidator {
 
   /**
    * 取得表單資料
+   * 支援文字、核取方塊、選擇器等多種欄位類型
    */
   getData() {
     const formData = new FormData(this.form);
     const data = {};
-    for (const [key, value] of formData.entries()) {
-      data[key] = value;
+
+    for (const key of formData.keys()) {
+      const values = formData.getAll(key);
+
+      if (values.length > 1) {
+        // 多個同名欄位（例如多選核取方塊）
+        data[key] = values;
+      } else {
+        const input = this.form.querySelector(`[name="${key}"]`);
+
+        if (input && input.type === "checkbox") {
+          // 單選核取方塊，回傳布林值
+          data[key] = input.checked;
+        } else if (input && input.type === "number") {
+          // 數字欄位，回傳數字型別
+          data[key] = values[0] !== "" ? Number(values[0]) : null;
+        } else {
+          // 預設處理為字串
+          data[key] = values[0];
+        }
+      }
     }
+
     return data;
   }
 }

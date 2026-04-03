@@ -12,11 +12,6 @@ use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * 文章瀏覽事件監聽器.
- *
- * 處理文章瀏覽事件，觸發非同步計數更新和統計資料記錄
- */
 class PostViewedListener implements EventListenerInterface
 {
     public function __construct(
@@ -67,7 +62,6 @@ class PostViewedListener implements EventListenerInterface
         $postId = $event->getPostId();
         $userId = $event->getUserId();
         $userIp = $event->getUserIp();
-
         $this->logger?->info('Processing PostViewed event', [
             'event_id' => $event->getEventId(),
             'post_id' => $postId,
@@ -92,16 +86,13 @@ class PostViewedListener implements EventListenerInterface
                 'error' => $e->getMessage(),
             ]);
         }
-
         // 記錄統計事件到監控服務
         $this->recordViewEvent($event);
-
         // 此處可以擴展為非同步處理，例如：
         // - 更新即時瀏覽計數
         // - 記錄使用者行為軌跡
         // - 觸發推薦演算法
         // - 發送到消息佇列進行批量處理
-
         $this->logger?->info('PostViewed event processed successfully', [
             'event_id' => $event->getEventId(),
             'post_id' => $postId,
@@ -129,7 +120,6 @@ class PostViewedListener implements EventListenerInterface
                 'post_id' => $event->getPostId(),
                 'error' => $e->getMessage(),
             ]);
-
             // 不重新拋出異常，因為監控記錄失敗不應該影響主流程
         }
     }

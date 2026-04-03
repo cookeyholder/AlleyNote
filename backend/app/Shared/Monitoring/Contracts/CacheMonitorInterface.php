@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Contracts;
 
-/**
- * 快取監控介面。
- *
- * 提供快取系統的監控功能，包含效能指標收集、健康狀態檢查和統計分析
- */
 interface CacheMonitorInterface
 {
     /**

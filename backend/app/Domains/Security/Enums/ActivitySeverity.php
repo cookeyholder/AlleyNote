@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Enums;
 
-/**
- * 活動嚴重程度枚舉
- * 定義使用者行為的重要性和嚴重程度等級.
- */
 enum ActivitySeverity: int
 {
     case LOW = 1;
@@ -16,9 +12,6 @@ enum ActivitySeverity: int
     case HIGH = 4;
     case CRITICAL = 5;
 
-    /**
-     * 取得嚴重程度顯示名稱.
-     */
     public function getDisplayName(): string
     {
         return match ($this) {
@@ -30,9 +23,6 @@ enum ActivitySeverity: int
         };
     }
 
-    /**
-     * 取得嚴重程度描述.
-     */
     public function getDescription(): string
     {
         return match ($this) {
@@ -44,72 +34,36 @@ enum ActivitySeverity: int
         };
     }
 
-    /**
-     * 比較嚴重程度是否大於等於指定等級.
-     */
-    public function isAtLeast(self $level): bool
+    public function isAtLeast(self $other): bool
     {
-        return $this->getSeverityValue() >= $level->getSeverityValue();
+        return $this->value >= $other->value;
     }
 
-    /**
-     * 比較嚴重程度是否小於等於指定等級.
-     */
-    public function isAtMost(self $level): bool
+    public function isAtMost(self $other): bool
     {
-        return $this->getSeverityValue() <= $level->getSeverityValue();
+        return $this->value <= $other->value;
     }
 
-    /**
-     * 判斷是否為高風險等級（HIGH 或 CRITICAL）.
-     */
     public function isHighRisk(): bool
     {
         return $this->isAtLeast(self::HIGH);
     }
 
-    /**
-     * 判斷是否為低風險等級（LOW 或 NORMAL）.
-     */
     public function isLowRisk(): bool
     {
         return $this->isAtMost(self::NORMAL);
     }
 
     /**
-     * 取得所有嚴重程度等級.
-     *
-     * @return array<self>
+     * @return list<self>
      */
     public static function getAllLevels(): array
     {
         return self::cases();
     }
 
-    /**
-     * 根據數值取得對應的嚴重程度。
-     * 接受 string 或 int，並轉為字串後嘗試匹配。
-     */
-    public static function fromValue(string|int $value): ?self
+    public static function fromValue(int $value): ?self
     {
-        $intVal = (int) $value;
-        foreach (self::cases() as $case) {
-            if ($case->value === $intVal) {
-                return $case;
-            }
-        }
-
-        return null;
-    }
-
-    private function getSeverityValue(): int
-    {
-        return match ($this) {
-            self::LOW => 1,
-            self::NORMAL => 2,
-            self::MEDIUM => 3,
-            self::HIGH => 4,
-            self::CRITICAL => 5,
-        };
+        return self::tryFrom($value);
     }
 }

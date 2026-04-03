@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics\DTOs;
 
-/**
- * 分頁統計結果傳輸物件.
- *
- * 包含分頁後的統計資料和分頁資訊
- */
 final class PaginatedStatisticsDTO
 {
     public function __construct(
@@ -73,7 +68,6 @@ final class PaginatedStatisticsDTO
         if ($this->totalCount === 0) {
             return 0;
         }
-
         $to = $this->currentPage * $this->perPage;
 
         return min($to, $this->totalCount);

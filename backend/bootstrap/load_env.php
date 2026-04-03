@@ -3,45 +3,25 @@
 /**
  * 環境變數載入腳本
  *
- * 在應用程式啟動前載入 .env 檔案
+ * 使用 vlucas/phpdotenv 載入 .env 檔案
+ * 替代自訂解析器以解決注入漏洞和執行緒安全問題
  */
 
 declare(strict_types=1);
 
 // 決定環境
-$environment = getenv('APP_ENV') ?: ($_ENV['APP_ENV'] ?? 'development');
-$envFile = dirname(__DIR__) . "/.env.{$environment}";
+$environment = $_ENV['APP_ENV'] ?? getenv('APP_ENV') ?? 'development';
+$basePath = dirname(__DIR__);
 
-if (!file_exists($envFile)) {
-    $envFile = dirname(__DIR__) . '/.env';
+// 使用 vlucas/phpdotenv 載入對應的環境檔案
+$envFile = ".env.{$environment}";
+$defaultEnv = '.env';
+
+if (file_exists($basePath . '/' . $envFile)) {
+    $dotenv = Dotenv\Dotenv::createImmutable($basePath, $envFile);
+} else {
+    $dotenv = Dotenv\Dotenv::createImmutable($basePath, $defaultEnv);
 }
 
-if (file_exists($envFile)) {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
-    foreach ($lines as $line) {
-        $line = trim($line);
-
-        // 跳過註解和空行
-        if (empty($line) || $line[0] === '#') {
-            continue;
-        }
-
-        // 解析 KEY=VALUE
-        if (strpos($line, '=') !== false) {
-            list($key, $value) = explode('=', $line, 2);
-            $key = trim($key);
-            $value = trim($value, '"\'');
-
-            // 若環境變數已由外部注入（如 CI），則保留既有值
-            if (getenv($key) !== false) {
-                continue;
-            }
-
-            // 設定環境變數
-            $_ENV[$key] = $value;
-            $_SERVER[$key] = $value;
-            putenv("{$key}={$value}");
-        }
-    }
-}
+// 安全載入：不覆蓋已由外部設定的環境變數（如 CI 環境）
+$dotenv->safeLoad();

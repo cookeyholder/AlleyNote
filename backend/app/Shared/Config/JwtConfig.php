@@ -4,14 +4,9 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
-use Exception;
 use InvalidArgumentException;
+use Throwable;
 
-/**
- * JWT 配置管理類別.
- *
- * 負責載入和驗證 JWT 相關的配置參數，包括 RS256 金鑰對管理
- */
 final class JwtConfig
 {
     private string $algorithm;
@@ -42,12 +37,10 @@ final class JwtConfig
     private function loadFromEnvironment(): void
     {
         $this->algorithm = $_ENV['JWT_ALGORITHM'] ?? 'RS256';
-
         // 先驗證算法是否支援
         if (!in_array($this->algorithm, ['RS256', 'RS384', 'RS512', 'HS256', 'HS384', 'HS512'])) {
             throw new InvalidArgumentException("不支援的演算法: {$this->algorithm}");
         }
-
         // 根據算法載入不同的金鑰
         if ($this->isSymmetricAlgorithm($this->algorithm)) {
             $this->secret = $this->loadSecret();
@@ -55,7 +48,6 @@ final class JwtConfig
             $this->privateKey = $this->loadPrivateKey();
             $this->publicKey = $this->loadPublicKey();
         }
-
         $this->issuer = $_ENV['JWT_ISSUER'] ?? 'alleynote-api';
         $this->audience = $_ENV['JWT_AUDIENCE'] ?? 'alleynote-client';
         $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
@@ -76,15 +68,12 @@ final class JwtConfig
     private function loadSecret(): string
     {
         $secret = $_ENV['JWT_SECRET'] ?? '';
-
         if (empty($secret)) {
             throw new InvalidArgumentException('JWT_SECRET 環境變數未設定');
         }
-
         if (!is_string($secret)) {
             throw new InvalidArgumentException('JWT_SECRET 必須是字串');
         }
-
         if (strlen($secret) < 32) {
             throw new InvalidArgumentException('JWT_SECRET 長度至少需要 32 個字元');
         }
@@ -102,18 +91,14 @@ final class JwtConfig
         if ($privateKeyFromPath !== null && $privateKeyFromPath !== '') {
             return $privateKeyFromPath;
         }
-
         // 若路徑未設定，則從環境變數讀取
         $privateKeyEnv = $_ENV['JWT_PRIVATE_KEY'] ?? getenv('JWT_PRIVATE_KEY');
         $privateKey = is_string($privateKeyEnv) ? $privateKeyEnv : '';
-
         if ($privateKey === '') {
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 或 JWT_PRIVATE_KEY_PATH 環境變數至少需要設定一個');
         }
-
         // 將環境變數中的 \n 轉換為實際的換行符
         $privateKey = str_replace('\\n', "\n", $privateKey);
-
         // 驗證私鑰格式
         if (!str_contains($privateKey, 'BEGIN PRIVATE KEY')) {
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 格式無效，必須是 PEM 格式的私鑰');
@@ -132,18 +117,14 @@ final class JwtConfig
         if ($publicKeyFromPath !== null && $publicKeyFromPath !== '') {
             return $publicKeyFromPath;
         }
-
         // 若路徑未設定，則從環境變數讀取
         $publicKeyEnv = $_ENV['JWT_PUBLIC_KEY'] ?? getenv('JWT_PUBLIC_KEY');
         $publicKey = is_string($publicKeyEnv) ? $publicKeyEnv : '';
-
         if ($publicKey === '') {
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 或 JWT_PUBLIC_KEY_PATH 環境變數至少需要設定一個');
         }
-
         // 將環境變數中的 \n 轉換為實際的換行符
         $publicKey = str_replace('\\n', "\n", $publicKey);
-
         // 驗證公鑰格式
         if (!str_contains($publicKey, 'BEGIN PUBLIC KEY')) {
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 格式無效，必須是 PEM 格式的公鑰');
@@ -160,23 +141,18 @@ final class JwtConfig
         if (empty($this->issuer)) {
             throw new InvalidArgumentException('JWT_ISSUER 不能為空');
         }
-
         if (empty($this->audience)) {
             throw new InvalidArgumentException('JWT_AUDIENCE 不能為空');
         }
-
         if ($this->accessTokenTtl <= 0) {
             throw new InvalidArgumentException('JWT_ACCESS_TOKEN_TTL 必須大於 0');
         }
-
         if ($this->refreshTokenTtl <= 0) {
             throw new InvalidArgumentException('JWT_REFRESH_TOKEN_TTL 必須大於 0');
         }
-
         if ($this->refreshTokenTtl <= $this->accessTokenTtl) {
             throw new InvalidArgumentException('Refresh token 有效期必須大於 access token 有效期');
         }
-
         // 驗證金鑰對是否匹配（僅非對稱算法需要）
         if (!$this->isSymmetricAlgorithm($this->algorithm)) {
             $this->validateKeyPair();
@@ -192,33 +168,27 @@ final class JwtConfig
             // 使用 openssl 函數驗證金鑰對
             $privateKeyResource = openssl_pkey_get_private($this->privateKey ?? '');
             $publicKeyResource = openssl_pkey_get_public($this->publicKey ?? '');
-
             if (!$privateKeyResource) {
                 throw new InvalidArgumentException('私鑰無效或格式錯誤');
             }
-
             if (!$publicKeyResource) {
                 throw new InvalidArgumentException('公鑰無效或格式錯誤');
             }
-
             // 簡單的金鑰對匹配測試
             $testData = 'jwt-config-validation-test';
             $signature = '';
-
             if (!openssl_sign($testData, $signature, $privateKeyResource, OPENSSL_ALGO_SHA256)) {
                 throw new InvalidArgumentException('私鑰簽名測試失敗');
             }
-
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
                 throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new InvalidArgumentException('金鑰驗證失敗: ' . $e->getMessage());
         }
     }
 
     // Getter 方法
-
     public function getAlgorithm(): string
     {
         return $this->algorithm;
@@ -320,23 +290,18 @@ final class JwtConfig
     private function loadKeyFromPath(string $pathEnvKey): ?string
     {
         $pathEnv = $_ENV[$pathEnvKey] ?? getenv($pathEnvKey);
-
         if (!is_string($pathEnv) || $pathEnv === '') {
             return null;
         }
-
         $candidatePaths = [$pathEnv];
         $basePath = dirname(__DIR__, 3);
         $resolvedRelative = $basePath . DIRECTORY_SEPARATOR . ltrim($pathEnv, DIRECTORY_SEPARATOR);
-
         if ($resolvedRelative !== $pathEnv) {
             $candidatePaths[] = $resolvedRelative;
         }
-
         foreach ($candidatePaths as $candidatePath) {
             if (is_file($candidatePath) && is_readable($candidatePath)) {
                 $contents = file_get_contents($candidatePath);
-
                 if ($contents === false) {
                     // If file exists but cannot be read, it's a hard error.
                     throw new InvalidArgumentException(

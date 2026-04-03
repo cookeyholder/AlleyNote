@@ -18,6 +18,9 @@ import {
 
 // 儲存原始設定值
 let originalSettings = {};
+
+// 儲存 setInterval ID 以便清理
+let currentTimeIntervalId = null;
 let currentSettings = {};
 let footerDescriptionEditor = null;
 
@@ -254,6 +257,20 @@ export async function renderSettings() {
 
   // 綁定事件
   bindSettingsEvents();
+}
+
+/**
+ * 清理設定頁面資源（導航離開時呼叫）
+ */
+export function cleanupSettings() {
+  if (currentTimeIntervalId) {
+    clearInterval(currentTimeIntervalId);
+    currentTimeIntervalId = null;
+  }
+  if (footerDescriptionEditor) {
+    destroyRichTextEditor("footer-description-editor");
+    footerDescriptionEditor = null;
+  }
 }
 
 /**
@@ -519,7 +536,11 @@ async function loadTimezoneSettings() {
 
     // 更新當前網站時間
     updateCurrentTime();
-    setInterval(updateCurrentTime, 1000);
+    // 清除舊的 interval 以避免記憶體泄漏
+    if (currentTimeIntervalId) {
+      clearInterval(currentTimeIntervalId);
+    }
+    currentTimeIntervalId = setInterval(updateCurrentTime, 1000);
   } catch (error) {
     console.error("載入時區設定失敗:", error);
     notification.error("載入時區設定失敗");

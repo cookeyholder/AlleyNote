@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Contracts;
 
-/**
- * 快取驅動介面。
- *
- * 定義所有快取驅動必須實作的基本操作
- */
 interface CacheDriverInterface
 {
     /**

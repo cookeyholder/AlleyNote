@@ -10,39 +10,26 @@ enum PostStatus: string
     case PUBLISHED = 'published';
     case ARCHIVED = 'archived';
 
-    /**
-     * 取得狀態的中文說明.
-     */
     public function getLabel(): string
     {
         return match ($this) {
             self::DRAFT => '草稿',
             self::PUBLISHED => '已發布',
-            self::ARCHIVED => '已封存'
+            self::ARCHIVED => '已封存',
         };
     }
 
-    /**
-     * 檢查是否可以轉換到目標狀態.
-     */
-    public function canTransitionTo(self $targetStatus): bool
+    public function canTransitionTo(self $target): bool
     {
-        if ($this === $targetStatus) {
-            return true; // 允許保持相同狀態
-        }
-
         return match ($this) {
-            self::DRAFT => true, // 草稿可以轉換到任何狀態
-            self::PUBLISHED => $targetStatus === self::ARCHIVED, // 已發布只能轉換到封存
-            self::ARCHIVED => false // 已封存不能轉換到其他狀態
+            self::DRAFT => $target !== self::DRAFT,
+            self::PUBLISHED => $target === self::ARCHIVED,
+            self::ARCHIVED => false,
         };
     }
 
-    /**
-     * 檢查給定的值是否是有效的狀態.
-     */
     public static function isValid(string $value): bool
     {
-        return in_array($value, array_column(self::cases(), 'value'), true);
+        return self::tryFrom($value) !== null;
     }
 }

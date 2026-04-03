@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
-/**
- * API 使用率限制配置.
- *
- * 定義各 API 端點的使用率限制規則
- */
 class ApiRateLimits
 {
     /**

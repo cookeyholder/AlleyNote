@@ -6,18 +6,6 @@ namespace App\Shared\ValueObjects;
 
 use App\Shared\Exceptions\ValidationException;
 
-/**
- * 安全密碼值物件.
- *
- * 確保密碼符合以下安全要求：
- * - 至少 8 個字元
- * - 包含大小寫字母
- * - 包含數字
- * - 不能是常見密碼
- * - 不能包含連續字元
- * - 不能包含重複字元
- * - 不能包含使用者資訊
- */
 final class SecurePassword
 {
     private const MIN_LENGTH = 8;
@@ -39,54 +27,43 @@ final class SecurePassword
     private function validate(): void
     {
         $errors = [];
-
         // 長度檢查
         if (strlen($this->value) < self::MIN_LENGTH) {
             $errors[] = sprintf('密碼長度至少需要 %d 個字元', self::MIN_LENGTH);
         }
-
         if (strlen($this->value) > self::MAX_LENGTH) {
             $errors[] = sprintf('密碼長度不能超過 %d 個字元', self::MAX_LENGTH);
         }
-
         // 字母數字檢查
         if (!preg_match('/[a-z]/', $this->value)) {
             $errors[] = '密碼必須包含至少一個小寫字母';
         }
-
         if (!preg_match('/[A-Z]/', $this->value)) {
             $errors[] = '密碼必須包含至少一個大寫字母';
         }
-
         if (!preg_match('/[0-9]/', $this->value)) {
             $errors[] = '密碼必須包含至少一個數字';
         }
-
         // 連續字元檢查
         if ($this->hasSequentialChars()) {
             $errors[] = '密碼不能包含連續的英文字母或數字（如 abc, 123）';
         }
-
         // 重複字元檢查
         if ($this->hasRepeatingChars()) {
             $errors[] = '密碼不能包含重複的字元（如 aaa, 111）';
         }
-
         // 常見密碼檢查
         if ($this->isCommonPassword()) {
             $errors[] = '此密碼過於常見，請使用更安全的密碼';
         }
-
         // 常見單字檢查
         if ($this->containsCommonWord()) {
             $errors[] = '密碼不能包含常見的英文單字';
         }
-
         // 個人資訊檢查
         if ($this->containsPersonalInfo()) {
             $errors[] = '密碼不能包含使用者名稱或電子郵件';
         }
-
         if (!empty($errors)) {
             throw ValidationException::fromMultipleErrors(['password' => $errors]);
         }
@@ -98,21 +75,17 @@ final class SecurePassword
     private function hasSequentialChars(): bool
     {
         $length = strlen($this->value);
-
         for ($i = 0; $i < $length - 2; $i++) {
             $char1 = $this->value[$i];
             $char2 = $this->value[$i + 1];
             $char3 = $this->value[$i + 2];
-
             // 只檢查字母和數字的連續
             if (!ctype_alnum($char1) || !ctype_alnum($char2) || !ctype_alnum($char3)) {
                 continue;
             }
-
             $ord1 = ord($char1);
             $ord2 = ord($char2);
             $ord3 = ord($char3);
-
             // 檢查連續遞增或遞減
             if (
                 ($ord2 === $ord1 + 1 && $ord3 === $ord2 + 1)
@@ -121,19 +94,16 @@ final class SecurePassword
                 return true;
             }
         }
-
         // 也檢查小寫版本的字母序列（處理大小寫混合的情況）
         $lower = strtolower($this->value);
         for ($i = 0; $i < $length - 2; $i++) {
             $char1 = $lower[$i];
             $char2 = $lower[$i + 1];
             $char3 = $lower[$i + 2];
-
             // 只檢查字母的連續
             if (!ctype_alpha($char1) || !ctype_alpha($char2) || !ctype_alpha($char3)) {
                 continue;
             }
-
             // 如果原始密碼在這個位置也是連續的，跳過（避免重複檢測）
             if (ctype_alnum($this->value[$i]) && ctype_alnum($this->value[$i + 1]) && ctype_alnum($this->value[$i + 2])) {
                 $origOrd1 = ord($this->value[$i]);
@@ -146,11 +116,9 @@ final class SecurePassword
                     continue;
                 }
             }
-
             $ord1 = ord($char1);
             $ord2 = ord($char2);
             $ord3 = ord($char3);
-
             if (
                 ($ord2 === $ord1 + 1 && $ord3 === $ord2 + 1)
                 || ($ord2 === $ord1 - 1 && $ord3 === $ord2 - 1)
@@ -191,9 +159,7 @@ final class SecurePassword
         if (self::$commonWords === null) {
             self::$commonWords = $this->loadCommonWords();
         }
-
         $lower = strtolower($this->value);
-
         foreach (self::$commonWords as $word) {
             if (is_string($word) && strlen($word) >= 4 && str_contains($lower, $word)) {
                 return true;
@@ -209,13 +175,11 @@ final class SecurePassword
     private function containsPersonalInfo(): bool
     {
         $lower = strtolower($this->value);
-
         if ($this->username && strlen($this->username) >= 3) {
             if (str_contains($lower, strtolower($this->username))) {
                 return true;
             }
         }
-
         if ($this->email) {
             $emailParts = explode('@', $this->email);
             if (isset($emailParts[0]) && strlen($emailParts[0]) >= 3) {
@@ -234,13 +198,10 @@ final class SecurePassword
     private function loadCommonPasswords(): array
     {
         $file = __DIR__ . '/../../../resources/data/common-passwords.txt';
-
         if (!file_exists($file)) {
             return [];
         }
-
         $passwords = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
         if ($passwords === false) {
             return [];
         }
@@ -254,13 +215,10 @@ final class SecurePassword
     private function loadCommonWords(): array
     {
         $file = __DIR__ . '/../../../resources/data/common-words.txt';
-
         if (!file_exists($file)) {
             return [];
         }
-
         $words = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-
         if ($words === false) {
             return [];
         }
@@ -274,7 +232,6 @@ final class SecurePassword
     public function calculateScore(): int
     {
         $score = 0;
-
         // 長度分數
         $length = strlen($this->value);
         if ($length >= 8) {
@@ -286,7 +243,6 @@ final class SecurePassword
         if ($length >= 16) {
             $score += 10;
         }
-
         // 字元類型分數
         if (preg_match('/[a-z]/', $this->value)) {
             $score += 15;
@@ -300,7 +256,6 @@ final class SecurePassword
         if (preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>?\/\\|`~]/', $this->value)) {
             $score += 15;
         }
-
         // 扣分項
         if ($this->hasSequentialChars()) {
             $score -= 10;
@@ -318,7 +273,6 @@ final class SecurePassword
     public function getStrengthLevel(): string
     {
         $score = $this->calculateScore();
-
         if ($score >= 80) {
             return 'very-strong';
         }

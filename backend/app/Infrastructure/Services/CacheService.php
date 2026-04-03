@@ -29,7 +29,6 @@ class CacheService implements CacheServiceInterface
         if (!is_dir($this->cachePath)) {
             mkdir($this->cachePath, 0o755, true);
         }
-
         $this->bucketPath = $this->cachePath . '/_index_buckets';
         if (!is_dir($this->bucketPath)) {
             mkdir($this->bucketPath, 0o755, true);
@@ -44,21 +43,18 @@ class CacheService implements CacheServiceInterface
 
             return null;
         }
-
         $data = file_get_contents($filename);
         if ($data === false) {
             $this->incrementStat('misses');
 
             return null;
         }
-
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'], $cacheData['data'])) {
             $this->incrementStat('misses');
 
             return null;
         }
-
         $expiry = $cacheData['expiry'];
         if (!is_int($expiry)) {
             if (is_string($expiry) && ctype_digit($expiry)) {
@@ -69,14 +65,12 @@ class CacheService implements CacheServiceInterface
                 return null;
             }
         }
-
         if (time() > $expiry) {
             $this->delete($key);
             $this->incrementStat('misses');
 
             return null;
         }
-
         $this->incrementStat('hits');
 
         return $cacheData['data'];
@@ -86,13 +80,11 @@ class CacheService implements CacheServiceInterface
     {
         $filename = $this->getCacheFilename($key);
         $this->incrementStat('sets');
-
         $cacheData = [
             'key' => $key,
             'expiry' => time() + ($ttl ?: self::TTL),
             'data' => $value,
         ];
-
         $result = file_put_contents($filename, (json_encode($cacheData) ?: '')) !== false;
         if ($result) {
             $this->updateIndex($key);
@@ -107,7 +99,6 @@ class CacheService implements CacheServiceInterface
         if (!file_exists($filename)) {
             return true;
         }
-
         $result = unlink($filename);
         if ($result) {
             $this->removeFromIndex($key);
@@ -122,11 +113,9 @@ class CacheService implements CacheServiceInterface
         if (strpos($pattern, '*') === false) {
             return $this->delete($pattern) ? 1 : 0;
         }
-
         $quotedPattern = preg_quote($pattern, '/');
         $regex = '/^' . str_replace('\\*', '.*', $quotedPattern) . '$/';
         $deletedCount = 0;
-
         foreach ($this->getCandidateKeysForPattern($pattern) as $key) {
             if (preg_match($regex, $key)) {
                 if ($this->delete($key)) {
@@ -144,13 +133,11 @@ class CacheService implements CacheServiceInterface
         if ($files === false) {
             return false;
         }
-
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
             }
         }
-
         $this->clearIndex();
 
         return true;
@@ -209,7 +196,6 @@ class CacheService implements CacheServiceInterface
     }
 
     // --- 索引管理邏輯 ---
-
     private function getIndexPath(): string
     {
         return $this->cachePath . '/_index.json';
@@ -224,12 +210,10 @@ class CacheService implements CacheServiceInterface
         if (!file_exists($path)) {
             return [];
         }
-
         $contents = file_get_contents($path);
         if ($contents === false) {
             return [];
         }
-
         $decoded = json_decode($contents, true);
         if (!is_array($decoded)) {
             return [];
@@ -263,7 +247,6 @@ class CacheService implements CacheServiceInterface
             $index[] = $key;
             file_put_contents($this->getIndexPath(), json_encode($index));
         }
-
         foreach ($this->getNamespacePrefixes($key) as $prefix) {
             $bucket = $this->getBucket($prefix);
             if (!in_array($key, $bucket, true)) {
@@ -281,17 +264,14 @@ class CacheService implements CacheServiceInterface
             unset($index[$pos]);
             file_put_contents($this->getIndexPath(), json_encode(array_values($index)));
         }
-
         foreach ($this->getNamespacePrefixes($key) as $prefix) {
             $bucket = $this->getBucket($prefix);
             $bucketPos = array_search($key, $bucket, true);
             if ($bucketPos === false) {
                 continue;
             }
-
             unset($bucket[$bucketPos]);
             $bucketPath = $this->getBucketPath($prefix);
-
             if ($bucket === []) {
                 if (file_exists($bucketPath)) {
                     unlink($bucketPath);
@@ -307,7 +287,6 @@ class CacheService implements CacheServiceInterface
         if (file_exists($this->getIndexPath())) {
             unlink($this->getIndexPath());
         }
-
         $bucketFiles = glob($this->bucketPath . '/*.json');
         if ($bucketFiles !== false) {
             foreach ($bucketFiles as $bucketFile) {
@@ -327,12 +306,10 @@ class CacheService implements CacheServiceInterface
         if ($prefix === false || $prefix === '') {
             return $this->getIndex();
         }
-
         $namespaceSeparatorPos = strrpos($prefix, ':');
         if ($namespaceSeparatorPos === false) {
             return $this->getIndex();
         }
-
         $namespacePrefix = substr($prefix, 0, $namespaceSeparatorPos + 1);
         $bucket = $this->getBucket($namespacePrefix);
 
@@ -346,11 +323,9 @@ class CacheService implements CacheServiceInterface
     {
         $parts = array_values(array_filter(explode(':', $key), static fn(string $part): bool => $part !== ''));
         $prefixes = [];
-
         if (count($parts) < 2) {
             return $prefixes;
         }
-
         $current = '';
         for ($index = 0; $index < count($parts) - 1; $index++) {
             $current .= $parts[$index] . ':';
@@ -374,12 +349,10 @@ class CacheService implements CacheServiceInterface
         if (!file_exists($path)) {
             return [];
         }
-
         $contents = file_get_contents($path);
         if ($contents === false) {
             return [];
         }
-
         $decoded = json_decode($contents, true);
         if (!is_array($decoded)) {
             return [];

@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
 
+use App\Application\Middleware\CsrfMiddleware;
 use App\Application\Middleware\PostViewRateLimitMiddleware;
+use App\Application\Middleware\RateLimitMiddleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 
-/**
- * 中介軟體解析器.
- *
- * 負責解析中介軟體字串別名並從容器中取得實例
- */
 class MiddlewareResolver
 {
     /**
@@ -23,8 +20,11 @@ class MiddlewareResolver
         'auth' => 'jwt.auth',
         'jwt' => 'jwt.auth',
         'jwt.auth' => 'jwt.auth',
+        'admin' => 'jwt.authorize',
         'authorize' => 'jwt.authorize',
         'jwt.authorize' => 'jwt.authorize',
+        'csrf' => CsrfMiddleware::class,
+        'rate_limit' => RateLimitMiddleware::class,
         'post_view_rate_limit' => PostViewRateLimitMiddleware::class,
     ];
 
@@ -43,15 +43,12 @@ class MiddlewareResolver
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
         }
-
         if (is_string($middleware)) {
             // 1. 檢查是否為別名
             $resolvedAlias = $this->resolveAlias($middleware);
-
             // 2. 嘗試從容器中解析
             if ($this->container->has($resolvedAlias)) {
                 $resolved = $this->container->get($resolvedAlias);
-
                 if ($resolved instanceof MiddlewareInterface) {
                     return $resolved;
                 }
@@ -60,12 +57,10 @@ class MiddlewareResolver
                     "Container entry '{$resolvedAlias}' does not implement MiddlewareInterface",
                 );
             }
-
             // 3. 如果是類別名稱，嘗試直接從容器解析
             if (class_exists($middleware)) {
                 if ($this->container->has($middleware)) {
                     $resolved = $this->container->get($middleware);
-
                     if ($resolved instanceof MiddlewareInterface) {
                         return $resolved;
                     }
@@ -91,7 +86,6 @@ class MiddlewareResolver
     public function resolveMultiple(array $middlewares): array
     {
         $resolved = [];
-
         foreach ($middlewares as $middleware) {
             $resolved[] = $this->resolve($middleware);
         }
@@ -109,7 +103,6 @@ class MiddlewareResolver
         if ($middleware instanceof MiddlewareInterface) {
             return true;
         }
-
         if (is_string($middleware)) {
             $resolvedAlias = $this->resolveAlias($middleware);
 

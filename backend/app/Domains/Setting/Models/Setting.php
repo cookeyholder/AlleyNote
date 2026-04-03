@@ -4,20 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Setting\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * 系統設定 Model.
- *
- * @property int $id
- * @property string $key
- * @property string|null $value
- * @property string $type
- * @property string|null $description
- * @property Carbon $created_at
- * @property Carbon $updated_at
- */
 class Setting extends Model
 {
     /** @var string */

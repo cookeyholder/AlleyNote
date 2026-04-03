@@ -6,11 +6,6 @@ namespace App\Shared\Validation;
 
 use JsonSerializable;
 
-/**
- * 驗證結果類.
- *
- * 封裝驗證操作的結果，包含驗證狀態、錯誤訊息和清理後的資料
- */
 class ValidationResult implements JsonSerializable
 {
     private bool $isValid;
@@ -221,19 +216,16 @@ class ValidationResult implements JsonSerializable
     public function merge(ValidationResult $other): self
     {
         $this->isValid = $this->isValid && $other->isValid();
-
         foreach ($other->getErrors() as $field => $errors) {
             foreach ($errors as $error) {
                 $this->addError($field, $error);
             }
         }
-
         foreach ($other->getFailedRules() as $field => $rules) {
             foreach ($rules as $rule) {
                 $this->addFailedRule($field, $rule);
             }
         }
-
         $this->validatedData = array_merge($this->validatedData, $other->getValidatedData());
 
         return $this;
@@ -311,7 +303,6 @@ class ValidationResult implements JsonSerializable
         if ($this->isValid) {
             return 'Validation passed with ' . count($this->validatedData) . ' fields';
         }
-
         $errorCount = count($this->getAllErrors());
 
         return "Validation failed with {$errorCount} errors: " . implode(', ', $this->getAllErrors());

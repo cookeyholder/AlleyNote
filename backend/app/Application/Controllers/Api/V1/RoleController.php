@@ -11,13 +11,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-/**
- * 角色管理 Controller.
- */
-#[OA\Tag(
-    name: 'Roles',
-    description: 'Role management endpoints',
-)]
 class RoleController
 {
     public function __construct(
@@ -63,12 +56,10 @@ class RoleController
     public function index(Request $request, Response $response): Response
     {
         $roles = $this->roleManagementService->listRoles();
-
         $responseData = json_encode([
             'success' => true,
             'data' => array_map(fn($role) => $role->toArray(), $roles),
         ]);
-
         $response->getBody()->write($responseData ?: '');
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -141,12 +132,10 @@ class RoleController
         try {
             $id = (int) $request->getAttribute('id');
             $roleData = $this->roleManagementService->getRole($id);
-
             $responseData = json_encode([
                 'success' => true,
                 'data' => $roleData,
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -155,7 +144,6 @@ class RoleController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -221,20 +209,16 @@ class RoleController
     {
         try {
             $data = json_decode((string) $request->getBody(), true) ?? [];
-
             $name = $data['name'] ?? '';
             $displayName = $data['display_name'] ?? '';
             $description = $data['description'] ?? null;
             $permissionIds = $data['permission_ids'] ?? [];
-
             $role = $this->roleManagementService->createRole($name, $displayName, $description, $permissionIds);
-
             $responseData = json_encode([
                 'success' => true,
                 'message' => '角色建立成功',
                 'data' => $role->toArray(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
@@ -244,7 +228,6 @@ class RoleController
                 'message' => $e->getMessage(),
                 'errors' => $e->getErrors(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
@@ -310,18 +293,14 @@ class RoleController
         try {
             $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
-
             $displayName = $data['display_name'] ?? null;
             $description = $data['description'] ?? null;
-
             $role = $this->roleManagementService->updateRole($id, $displayName, $description);
-
             $responseData = json_encode([
                 'success' => true,
                 'message' => '角色更新成功',
                 'data' => $role->toArray(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -330,7 +309,6 @@ class RoleController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -396,12 +374,10 @@ class RoleController
         try {
             $id = (int) $request->getAttribute('id');
             $this->roleManagementService->deleteRole($id);
-
             $responseData = json_encode([
                 'success' => true,
                 'message' => '角色刪除成功',
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -410,7 +386,6 @@ class RoleController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -420,7 +395,6 @@ class RoleController
                 'message' => $e->getMessage(),
                 'errors' => $e->getErrors(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
@@ -492,14 +466,11 @@ class RoleController
             $id = (int) $request->getAttribute('id');
             $data = json_decode((string) $request->getBody(), true) ?? [];
             $permissionIds = $data['permission_ids'] ?? [];
-
             $this->roleManagementService->setRolePermissions($id, $permissionIds);
-
             $responseData = json_encode([
                 'success' => true,
                 'message' => '權限更新成功',
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -508,7 +479,6 @@ class RoleController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
@@ -554,12 +524,10 @@ class RoleController
     public function permissions(Request $request, Response $response): Response
     {
         $permissions = $this->roleManagementService->listPermissions();
-
         $responseData = json_encode([
             'success' => true,
             'data' => array_map(fn($p) => $p->toArray(), $permissions),
         ]);
-
         $response->getBody()->write($responseData ?: '');
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -616,17 +584,14 @@ class RoleController
     public function permissionsGrouped(Request $request, Response $response): Response
     {
         $grouped = $this->roleManagementService->listPermissionsGroupedByResource();
-
         $data = [];
         foreach ($grouped as $resource => $permissions) {
             $data[$resource] = array_map(fn($p) => $p->toArray(), $permissions);
         }
-
         $responseData = json_encode([
             'success' => true,
             'data' => $data,
         ]);
-
         $response->getBody()->write($responseData ?: '');
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);

@@ -6,11 +6,6 @@ namespace App\Infrastructure\Routing\Exceptions;
 
 use Exception;
 
-/**
- * 路由配置例外類別.
- *
- * 當路由配置檔案有問題或載入失敗時拋出此例外
- */
 class RouteConfigurationException extends Exception
 {
     /**

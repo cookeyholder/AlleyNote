@@ -7,11 +7,6 @@ namespace App\Domains\Statistics\Events;
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
 
-/**
- * 文章瀏覽事件.
- *
- * 當使用者瀏覽文章時觸發，用於統計文章瀏覽數和使用者行為分析
- */
 class PostViewed extends AbstractDomainEvent
 {
     public function __construct(

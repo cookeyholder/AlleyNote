@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Contracts;
 
-/**
- * 快取管理器介面。
- *
- * 提供統一的快取管理功能，支援多層快取和策略選擇
- */
 interface CacheManagerInterface
 {
     /**

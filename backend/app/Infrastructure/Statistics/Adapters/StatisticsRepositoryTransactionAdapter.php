@@ -13,12 +13,6 @@ use PDO;
 use RuntimeException;
 use Throwable;
 
-/**
- * 統計快照事務適配器.
- *
- * 在統計 Repository 之上添加事務管理功能，確保資料一致性。
- * 適用於需要原子性操作的統計資料處理場景。
- */
 final class StatisticsRepositoryTransactionAdapter implements StatisticsRepositoryInterface
 {
     public function __construct(
@@ -190,12 +184,10 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
                 new DateTimeImmutable('1970-01-01'),
                 new DateTimeImmutable('2099-12-31'),
             );
-
             // 刪除現有快照
             foreach ($existingSnapshots as $snapshot) {
                 $this->repository->delete($snapshot);
             }
-
             // 儲存新快照
             $savedSnapshots = [];
             foreach ($newSnapshots as $snapshot) {
@@ -218,9 +210,7 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
     {
         try {
             $this->db->beginTransaction();
-
             $result = $operation();
-
             $this->db->commit();
 
             return $result;

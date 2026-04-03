@@ -7,11 +7,6 @@ namespace App\Shared\Contracts;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 
-/**
- * 驗證器介面.
- *
- * 定義資料驗證的標準介面
- */
 interface ValidatorInterface
 {
     /**

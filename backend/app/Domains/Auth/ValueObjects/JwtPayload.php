@@ -8,15 +8,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * JWT Payload Value Object.
- *
- * 表示 JWT Token 的載荷資訊，包含所有標準和自訂宣告。
- * 此類別是不可變的，確保 payload 資料的完整性。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final readonly class JwtPayload implements JsonSerializable
 {
     /**
@@ -65,23 +56,18 @@ final readonly class JwtPayload implements JsonSerializable
                 throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
-
         $iat = is_int($data['iat'])
             ? new DateTimeImmutable('@' . $data['iat'])
             : new DateTimeImmutable($data['iat']);
-
         $exp = is_int($data['exp'])
             ? new DateTimeImmutable('@' . $data['exp'])
             : new DateTimeImmutable($data['exp']);
-
         $nbf = isset($data['nbf'])
             ? (is_int($data['nbf'])
                 ? new DateTimeImmutable('@' . $data['nbf'])
                 : new DateTimeImmutable($data['nbf']))
             : null;
-
         $aud = is_array($data['aud']) ? $data['aud'] : [$data['aud']];
-
         // 提取自訂宣告 (排除標準宣告)
         $standardClaims = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp', 'nbf'];
         $customClaims = array_diff_key($data, array_flip($standardClaims));
@@ -205,7 +191,6 @@ final readonly class JwtPayload implements JsonSerializable
     public function isActive(?DateTimeImmutable $now = null): bool
     {
         $now ??= new DateTimeImmutable();
-
         // 如果有 nbf，檢查是否已生效
         if ($this->nbf !== null && $this->nbf > $now) {
             return false;
@@ -240,7 +225,6 @@ final readonly class JwtPayload implements JsonSerializable
             'iat' => $this->iat->getTimestamp(),
             'exp' => $this->exp->getTimestamp(),
         ];
-
         if ($this->nbf !== null) {
             $payload['nbf'] = $this->nbf->getTimestamp();
         }
@@ -316,7 +300,6 @@ final readonly class JwtPayload implements JsonSerializable
         if (empty($jti)) {
             throw new InvalidArgumentException('JWT ID (jti) cannot be empty');
         }
-
         if (mb_strlen($jti) > 255) {
             throw new InvalidArgumentException('JWT ID (jti) cannot exceed 255 characters');
         }
@@ -333,7 +316,6 @@ final readonly class JwtPayload implements JsonSerializable
         if ($sub === '') {
             throw new InvalidArgumentException('Subject (sub) cannot be empty');
         }
-
         // 檢查是否為有效的使用者 ID
         if (!is_numeric($sub) || (int) $sub <= 0) {
             throw new InvalidArgumentException('Subject (sub) must be a valid positive integer');
@@ -364,7 +346,6 @@ final readonly class JwtPayload implements JsonSerializable
         if (empty($aud)) {
             throw new InvalidArgumentException('Audience (aud) cannot be empty');
         }
-
         foreach ($aud as $audience) {
             if (!is_string($audience) || empty($audience)) {
                 throw new InvalidArgumentException('All audience values must be non-empty strings');
@@ -385,7 +366,6 @@ final readonly class JwtPayload implements JsonSerializable
         if ($exp <= $iat) {
             throw new InvalidArgumentException('Expiration time (exp) must be after issued time (iat)');
         }
-
         if ($nbf !== null && $nbf > $exp) {
             throw new InvalidArgumentException('Not before time (nbf) cannot be after expiration time (exp)');
         }
@@ -400,12 +380,10 @@ final readonly class JwtPayload implements JsonSerializable
     private function validateCustomClaims(array $customClaims): void
     {
         $reservedClaims = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp', 'nbf'];
-
         foreach (array_keys($customClaims) as $claim) {
             if (in_array($claim, $reservedClaims, true)) {
                 throw new InvalidArgumentException("Cannot use reserved claim '{$claim}' as custom claim");
             }
-
             if (!is_string($claim) || empty($claim)) {
                 throw new InvalidArgumentException('Custom claim names must be non-empty strings');
             }

@@ -6,15 +6,6 @@ namespace App\Application\Middleware;
 
 use JsonSerializable;
 
-/**
- * 授權結果 Value Object.
- *
- * 封裝授權檢查的結果，包含是否允許、原因、錯誤代碼和應用的規則。
- * 此類別是不可變的，確保授權結果的完整性。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final readonly class AuthorizationResult implements JsonSerializable
 {
     /**

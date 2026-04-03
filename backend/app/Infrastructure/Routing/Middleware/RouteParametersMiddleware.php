@@ -8,11 +8,6 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由參數中介軟體.
- *
- * 負責處理路由參數，將路由參數注入到請求物件中
- */
 class RouteParametersMiddleware extends AbstractMiddleware
 {
     /**
@@ -42,7 +37,6 @@ class RouteParametersMiddleware extends AbstractMiddleware
         foreach ($this->parameters as $name => $value) {
             $request = $request->withAttribute($name, $value);
         }
-
         // 加入特殊的路由參數集合屬性
         $request = $request->withAttribute('route_parameters', $this->parameters);
 

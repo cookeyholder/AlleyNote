@@ -7,9 +7,6 @@ namespace App\Domains\Setting\Repositories;
 use PDO;
 use Throwable;
 
-/**
- * 設定 Repository.
- */
 class SettingRepository
 {
     public function __construct(
@@ -33,7 +30,6 @@ class SettingRepository
         } catch (Throwable) {
             return [];
         }
-
         $result = [];
         foreach ($rows as $row) {
             if (!is_array($row)) {
@@ -42,7 +38,6 @@ class SettingRepository
             $type = is_string($row['type'] ?? null) ? $row['type'] : 'string';
             $valueStr = is_string($row['value'] ?? null) ? $row['value'] : null;
             $value = $this->castValue($valueStr, $type);
-
             $result[] = [
                 'id' => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
                 'key' => is_string($row['key'] ?? null) ? $row['key'] : '',
@@ -72,11 +67,9 @@ class SettingRepository
         } catch (Throwable) {
             return null;
         }
-
         if (!is_array($row)) {
             return null;
         }
-
         $type = is_string($row['type'] ?? null) ? $row['type'] : 'string';
         $valueStr = is_string($row['value'] ?? null) ? $row['value'] : null;
         $value = $this->castValue($valueStr, $type);
@@ -100,11 +93,9 @@ class SettingRepository
     public function updateValue(string $key, mixed $value, string $type): ?array
     {
         $storedValue = $this->prepareValue($value, $type);
-
         $sql = 'UPDATE settings SET value = :value, updated_at = CURRENT_TIMESTAMP WHERE key = :key';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['value' => $storedValue, 'key' => $key]);
-
         if ($stmt->rowCount() === 0) {
             return null;
         }
@@ -120,7 +111,6 @@ class SettingRepository
     public function create(string $key, mixed $value, string $type, ?string $description = null): array
     {
         $storedValue = $this->prepareValue($value, $type);
-
         $sql = 'INSERT INTO settings (key, value, type, description, created_at, updated_at)
                 VALUES (:key, :value, :type, :description, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
         $stmt = $this->db->prepare($sql);
@@ -130,7 +120,6 @@ class SettingRepository
             'type' => $type,
             'description' => $description,
         ]);
-
         $result = $this->findByKey($key);
 
         return $result ?? [];

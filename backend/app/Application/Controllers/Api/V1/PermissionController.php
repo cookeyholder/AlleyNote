@@ -11,13 +11,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-/**
- * 權限管理 Controller.
- */
-#[OA\Tag(
-    name: 'Permissions',
-    description: 'Permission management endpoints',
-)]
 class PermissionController
 {
     public function __construct(
@@ -64,12 +57,10 @@ class PermissionController
     public function index(Request $request, Response $response): Response
     {
         $permissions = $this->permissionManagementService->listPermissions();
-
         $responseData = json_encode([
             'success' => true,
             'data' => array_map(fn($permission) => $permission->toArray(), $permissions),
         ]);
-
         $response->getBody()->write($responseData ?: '');
 
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -138,12 +129,10 @@ class PermissionController
             }
             $id = (int) $idAttr;
             $permission = $this->permissionManagementService->getPermission($id);
-
             $responseData = json_encode([
                 'success' => true,
                 'data' => $permission->toArray(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
@@ -152,7 +141,6 @@ class PermissionController
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);

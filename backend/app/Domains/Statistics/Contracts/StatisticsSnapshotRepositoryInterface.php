@@ -6,9 +6,6 @@ namespace App\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\Models\StatisticsSnapshot;
 
-/**
- * 統計快照存儲介面.
- */
 interface StatisticsSnapshotRepositoryInterface
 {
     /**

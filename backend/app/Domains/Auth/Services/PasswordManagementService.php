@@ -9,11 +9,6 @@ use App\Domains\Auth\Repositories\UserRepository;
 use App\Shared\Exceptions\ValidationException;
 use InvalidArgumentException;
 
-/**
- * 密碼管理服務.
- *
- * 統一處理所有密碼相關操作，包含安全驗證
- */
 class PasswordManagementService
 {
     public function __construct(
@@ -37,12 +32,10 @@ class PasswordManagementService
         if (!$user) {
             throw new InvalidArgumentException('找不到指定的使用者');
         }
-
         // 驗證目前密碼
         if (!$this->passwordService->verifyPassword($currentPassword, $user['password'])) {
             throw new InvalidArgumentException('目前密碼不正確');
         }
-
         // 驗證新密碼的安全性（包含 HIBP 檢查）
         $this->passwordService->validatePassword($newPassword);
 
@@ -112,7 +105,6 @@ class PasswordManagementService
         if (!$user) {
             return false;
         }
-
         // 檢查密碼是否正確且需要升級
         if (
             $this->passwordService->verifyPassword($plainPassword, $user['password'])

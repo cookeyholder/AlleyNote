@@ -5,16 +5,8 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Exceptions;
 
 use Exception;
+use Throwable;
 
-/**
- * JWT 基礎例外類別.
- *
- * 所有 JWT 相關例外的基礎類別，提供統一的錯誤處理介面。
- * 支援錯誤碼、多語言錯誤訊息和額外的上下文資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 abstract class JwtException extends Exception
 {
     /**
@@ -34,13 +26,13 @@ abstract class JwtException extends Exception
      *
      * @param string $message 錯誤訊息
      * @param int $code 錯誤碼
-     * @param Exception|null $previous 前一個例外
+     * @param Throwable|null $previous 前一個例外
      * @param array<string, mixed> $context 錯誤上下文
      */
     public function __construct(
         string $message = '',
         int $code = 0,
-        ?Exception $previous = null,
+        ?Throwable $previous = null,
         array $context = [],
     ) {
         parent::__construct($message, $code, $previous);

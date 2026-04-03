@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Models\Role;
-use Exception;
 use PDO;
 use RuntimeException;
+use Throwable;
 
-/**
- * 角色 Repository.
- */
 class RoleRepository
 {
     public function __construct(
@@ -27,9 +24,18 @@ class RoleRepository
     {
         $sql = 'SELECT * FROM roles ORDER BY id ASC';
         $stmt = $this->db->query($sql);
+        if ($stmt === false) {
+            throw new RuntimeException('Failed to query roles');
+        }
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($rows)) {
+            return [];
+        }
 
-        return array_map(fn($row) => Role::fromArray($row), $rows);
+        return array_values(array_filter(array_map(
+            static fn(mixed $row): ?Role => is_array($row) ? Role::fromArray($row) : null,
+            $rows,
+        )));
     }
 
     /**
@@ -42,7 +48,7 @@ class RoleRepository
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row ? Role::fromArray($row) : null;
+        return is_array($row) ? Role::fromArray($row) : null;
     }
 
     /**
@@ -55,7 +61,7 @@ class RoleRepository
         $stmt->execute(['name' => $name]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return $row ? Role::fromArray($row) : null;
+        return is_array($row) ? Role::fromArray($row) : null;
     }
 
     /**
@@ -69,14 +75,19 @@ class RoleRepository
         if (empty($ids)) {
             return [];
         }
-
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $sql = "SELECT * FROM roles WHERE id IN ({$placeholders}) ORDER BY id ASC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($ids);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (!is_array($rows)) {
+            return [];
+        }
 
-        return array_map(fn($row) => Role::fromArray($row), $rows);
+        return array_values(array_filter(array_map(
+            static fn(mixed $row): ?Role => is_array($row) ? Role::fromArray($row) : null,
+            $rows,
+        )));
     }
 
     /**
@@ -86,14 +97,12 @@ class RoleRepository
     {
         $sql = 'INSERT INTO roles (name, display_name, description, created_at) 
                 VALUES (:name, :display_name, :description, datetime(\'now\'))';
-
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'name' => $name,
             'display_name' => $displayName,
             'description' => $description,
         ]);
-
         $id = (int) $this->db->lastInsertId();
 
         return $this->findById($id) ?? throw new RuntimeException('Failed to create role');
@@ -106,23 +115,18 @@ class RoleRepository
     {
         $updates = [];
         $params = ['id' => $id];
-
         if ($displayName !== null) {
             $updates[] = 'display_name = :display_name';
             $params['display_name'] = $displayName;
         }
-
         if ($description !== null) {
             $updates[] = 'description = :description';
             $params['description'] = $description;
         }
-
         $updates[] = 'updated_at = datetime(\'now\')';
-
         if (empty($updates)) {
             return false;
         }
-
         $sql = 'UPDATE roles SET ' . implode(', ', $updates) . ' WHERE id = :id';
         $stmt = $this->db->prepare($sql);
 
@@ -168,13 +172,11 @@ class RoleRepository
             $deleteSql = 'DELETE FROM role_permissions WHERE role_id = :role_id';
             $deleteStmt = $this->db->prepare($deleteSql);
             $deleteStmt->execute(['role_id' => $roleId]);
-
             // 新增新的權限
             if (!empty($permissionIds)) {
                 $insertSql = 'INSERT INTO role_permissions (role_id, permission_id, created_at) 
                               VALUES (:role_id, :permission_id, datetime(\'now\'))';
                 $insertStmt = $this->db->prepare($insertSql);
-
                 foreach ($permissionIds as $permissionId) {
                     $insertStmt->execute([
                         'role_id' => $roleId,
@@ -182,11 +184,10 @@ class RoleRepository
                     ]);
                 }
             }
-
             $this->db->commit();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
 
             throw $e;

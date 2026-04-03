@@ -114,7 +114,6 @@ class IpList implements JsonSerializable
     public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
         $data = $this->toArray();
-
         // 清理可能包含 HTML 的欄位
         if ($data['description'] !== null) {
             $data['description'] = $sanitizer->sanitizeHtml($data['description']);

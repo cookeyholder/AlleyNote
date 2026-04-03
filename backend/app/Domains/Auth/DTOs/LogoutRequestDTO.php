@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
 
-/**
- * 登出請求 DTO.
- *
- * 封裝使用者登出請求的資料。
- */
 final readonly class LogoutRequestDTO
 {
     public function __construct(

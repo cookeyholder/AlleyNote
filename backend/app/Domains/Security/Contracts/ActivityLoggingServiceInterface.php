@@ -7,10 +7,6 @@ namespace App\Domains\Security\Contracts;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 
-/**
- * 活動記錄服務介面
- * 定義使用者行為記錄的核心功能.
- */
 interface ActivityLoggingServiceInterface
 {
     /**

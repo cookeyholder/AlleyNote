@@ -6,9 +6,9 @@ namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use DateTime;
-use Exception;
 use InvalidArgumentException;
 use PDO;
+use Throwable;
 
 class UserRepository
 {
@@ -21,10 +21,8 @@ class UserRepository
     {
         // 生成 UUID（如果未提供）
         $uuid = $data['uuid'] ?? $this->generateUuid();
-
         $sql = 'INSERT INTO users (uuid, username, email, password_hash) VALUES (:uuid, :username, :email, :password)';
         $stmt = $this->db->prepare($sql);
-
         $stmt->execute([
             'uuid' => $uuid,
             'username' => $data['username'],
@@ -51,7 +49,6 @@ class UserRepository
     {
         $fields = [];
         $params = ['id' => $id];
-
         foreach ($data as $key => $value) {
             if (in_array($key, ['username', 'email', 'status', 'password'])) {
                 // 如果是 password 欄位，要對應到資料庫的 password_hash
@@ -64,13 +61,10 @@ class UserRepository
                 }
             }
         }
-
         if (empty($fields)) {
             return $this->findById($id);
         }
-
         $fields[] = 'updated_at = CURRENT_TIMESTAMP';
-
         $sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -90,7 +84,6 @@ class UserRepository
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE id = :id');
         $stmt->execute(['id' => $id]);
-
         $result = $stmt->fetch();
 
         return $result ?: null;
@@ -100,7 +93,6 @@ class UserRepository
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE uuid = :uuid');
         $stmt->execute(['uuid' => $uuid]);
-
         $result = $stmt->fetch();
 
         return $result ?: null;
@@ -110,7 +102,6 @@ class UserRepository
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE username = :username');
         $stmt->execute(['username' => $username]);
-
         $result = $stmt->fetch();
 
         return $result ?: null;
@@ -120,7 +111,6 @@ class UserRepository
     {
         $stmt = $this->db->prepare('SELECT * FROM users WHERE email = :email');
         $stmt->execute(['email' => $email]);
-
         $result = $stmt->fetch();
 
         return $result ?: null;
@@ -142,23 +132,19 @@ class UserRepository
         if (!$user) {
             throw new InvalidArgumentException('找不到指定的使用者');
         }
-
         // 如果有密碼服務，進行密碼安全性驗證
         if ($this->passwordService) {
             $this->passwordService->validatePassword($newPassword);
         }
-
         // 檢查新密碼是否與目前密碼相同
         $currentPassword = $user['password_hash'] ?? $user['password'] ?? null;
         if ($currentPassword && password_verify($newPassword, $currentPassword)) {
             throw new InvalidArgumentException('新密碼不能與目前的密碼相同');
         }
-
         // 使用密碼服務雜湊密碼，如果沒有則使用預設方法
         $hashedPassword = $this->passwordService
             ? $this->passwordService->hashPassword($newPassword)
             : password_hash($newPassword, PASSWORD_ARGON2ID);
-
         // 更新密碼
         $sql = 'UPDATE users SET password = :password, updated_at = CURRENT_TIMESTAMP WHERE id = :id';
         $stmt = $this->db->prepare($sql);
@@ -175,24 +161,19 @@ class UserRepository
     public function paginate(int $page = 1, int $perPage = 10, array $filters = []): array
     {
         $offset = ($page - 1) * $perPage;
-
         // 建立 WHERE 條件
         $where = [];
         $params = [];
-
         if (!empty($filters['search'])) {
             $where[] = '(username LIKE :search OR email LIKE :search)';
             $params['search'] = '%' . $filters['search'] . '%';
         }
-
         $whereClause = empty($where) ? '' : ' WHERE ' . implode(' AND ', $where);
-
         // 計算總數
         $countSql = 'SELECT COUNT(*) FROM users' . $whereClause;
         $countStmt = $this->db->prepare($countSql);
         $countStmt->execute($params);
         $total = (int) $countStmt->fetchColumn();
-
         // 取得資料
         $sql = 'SELECT u.*, 
                 GROUP_CONCAT(r.id) as role_ids,
@@ -205,7 +186,6 @@ class UserRepository
                 . ' GROUP BY u.id
                 ORDER BY u.id DESC
                 LIMIT :limit OFFSET :offset';
-
         $stmt = $this->db->prepare($sql);
         foreach ($params as $key => $value) {
             $stmt->bindValue(":{$key}", $value);
@@ -213,13 +193,11 @@ class UserRepository
         $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
-
         $users = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $roleIds = $row['role_ids'] ? explode(',', $row['role_ids']) : [];
             $roleNames = $row['role_names'] ? explode(',', $row['role_names']) : [];
             $roleDisplayNames = $row['role_display_names'] ? explode(',', $row['role_display_names']) : [];
-
             $roles = [];
             for ($i = 0; $i < count($roleIds); $i++) {
                 $roles[] = [
@@ -228,7 +206,7 @@ class UserRepository
                     'display_name' => $roleDisplayNames[$i] ?? '',
                 ];
             }
-
+            /** @var array<string, mixed> $row */
             // 移除敏感欄位
             unset($row['role_ids'], $row['role_names'], $row['role_display_names'], $row['password_hash'], $row['password']);
             $row['roles'] = $roles;
@@ -272,13 +250,11 @@ class UserRepository
             $deleteSql = 'DELETE FROM user_roles WHERE user_id = :user_id';
             $deleteStmt = $this->db->prepare($deleteSql);
             $deleteStmt->execute(['user_id' => $userId]);
-
             // 新增新的角色
             if (!empty($roleIds)) {
                 $insertSql = 'INSERT INTO user_roles (user_id, role_id, created_at) 
                               VALUES (:user_id, :role_id, datetime(\'now\'))';
                 $insertStmt = $this->db->prepare($insertSql);
-
                 foreach ($roleIds as $roleId) {
                     $insertStmt->execute([
                         'user_id' => $userId,
@@ -286,11 +262,10 @@ class UserRepository
                     ]);
                 }
             }
-
             $this->db->commit();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
 
             throw $e;
@@ -311,19 +286,15 @@ class UserRepository
                 LEFT JOIN roles r ON ur.role_id = r.id
                 WHERE u.id = :id
                 GROUP BY u.id';
-
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (!$row) {
             return null;
         }
-
         $roleIds = $row['role_ids'] ? explode(',', $row['role_ids']) : [];
         $roleNames = $row['role_names'] ? explode(',', $row['role_names']) : [];
         $roleDisplayNames = $row['role_display_names'] ? explode(',', $row['role_display_names']) : [];
-
         $roles = [];
         for ($i = 0; $i < count($roleIds); $i++) {
             $roles[] = [
@@ -332,8 +303,9 @@ class UserRepository
                 'display_name' => $roleDisplayNames[$i] ?? '',
             ];
         }
-
+        /** @var array<string, mixed> $row */
         unset($row['role_ids'], $row['role_names'], $row['role_display_names']);
+        unset($row['password_hash'], $row['password']);
         $row['roles'] = $roles;
 
         return $row;

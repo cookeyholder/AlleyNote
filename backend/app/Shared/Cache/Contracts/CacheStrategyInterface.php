@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Contracts;
 
-/**
- * 快取策略介面。
- *
- * 定義快取策略的行為，如 LRU、FIFO、TTL 等
- */
 interface CacheStrategyInterface
 {
     /**
