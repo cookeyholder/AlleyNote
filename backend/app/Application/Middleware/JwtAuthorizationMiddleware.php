@@ -7,7 +7,7 @@ namespace App\Application\Middleware;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
-use Exception;
+use Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -111,7 +111,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $request = $this->injectAuthorizationContext($request, $authorizationResult);
 
             return $handler->handle($request);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->createForbiddenResponse('授權檢查失敗', 'AUTHORIZATION_ERROR');
         }
     }

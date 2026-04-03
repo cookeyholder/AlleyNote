@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Exceptions;
 
-use Exception;
+use Throwable;
 
 /**
  * 路由配置例外類別.

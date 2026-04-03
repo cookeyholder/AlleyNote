@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
 
-use Exception;
+use Throwable;
 
 class RateLimitService
 {
@@ -47,7 +47,7 @@ class RateLimitService
                 'remaining' => max(0, $maxRequests - $data['count']),
                 'reset' => $data['reset'],
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 如果快取服務不可用，預設允許請求
             app_log('error', '速率限制檢查失敗', ['exception' => $e->getMessage()]);
 

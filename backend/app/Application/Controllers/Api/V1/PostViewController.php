@@ -9,11 +9,10 @@ use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Statistics\Events\PostViewed;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
-use Exception;
+use Throwable;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 
 /**
  * 文章瀏覽追蹤控制器.
@@ -177,7 +176,7 @@ class PostViewController extends BaseController
                     'code' => 'POST_NOT_FOUND',
                 ],
             ], 404);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄詳細錯誤但不暴露給客戶端
             app_log('error', 'PostViewController::recordView error', [
                 'message' => $e->getMessage(),
@@ -220,16 +219,16 @@ class PostViewController extends BaseController
         }
 
         if ($id === null || $id === '') {
-            throw new Exception('文章 ID 不能為空');
+            throw new \RuntimeException('文章 ID 不能為空');
         }
 
         if (!is_string($id) && !is_numeric($id)) {
-            throw new Exception('無效的文章 ID 格式');
+            throw new \RuntimeException('無效的文章 ID 格式');
         }
 
         $postId = filter_var((string) $id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if ($postId === false) {
-            throw new Exception('無效的文章 ID');
+            throw new \RuntimeException('無效的文章 ID');
         }
 
         return $postId;

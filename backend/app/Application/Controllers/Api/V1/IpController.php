@@ -10,7 +10,7 @@ use App\Domains\Security\Services\IpService;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 
 class IpController
@@ -41,7 +41,7 @@ class IpController
                 'status' => 400,
                 'error' => $e->getMessage(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return [
                 'status' => 500,
                 'error' => '建立 IP 規則時發生錯誤',
@@ -70,7 +70,7 @@ class IpController
                 'status' => 400,
                 'error' => $e->getMessage(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return [
                 'status' => 500,
                 'error' => '取得 IP 規則時發生錯誤',
@@ -99,7 +99,7 @@ class IpController
                 'status' => 400,
                 'error' => $e->getMessage(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return [
                 'status' => 500,
                 'error' => '檢查 IP 存取權限時發生錯誤',

@@ -8,7 +8,7 @@ use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
 use DateTimeZone;
-use Exception;
+use Throwable;
 use JsonSerializable;
 
 class Post implements JsonSerializable
@@ -219,7 +219,7 @@ class Post implements JsonSerializable
             $dateTime = new DateTime($this->publishDate, new DateTimeZone('UTC'));
 
             return $dateTime->format(DateTime::ATOM); // RFC3339 格式
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 如果轉換失敗，返回原始值
             return $this->publishDate;
         }

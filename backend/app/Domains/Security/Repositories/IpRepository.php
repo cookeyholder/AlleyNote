@@ -8,7 +8,7 @@ use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Models\IpList;
 use App\Shared\Contracts\CacheServiceInterface;
 use DateTime;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 
@@ -136,7 +136,7 @@ class IpRepository implements IpRepositoryInterface
             $this->cache->set($this->getCacheKey('ip', $data['ip_address']), $ipList);
 
             return $ipList;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             if ($this->db->inTransaction()) {
                 $this->db->rollBack();
             }

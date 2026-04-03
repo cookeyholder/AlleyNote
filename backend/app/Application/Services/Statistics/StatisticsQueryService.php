@@ -10,7 +10,7 @@ use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use DateTimeImmutable;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 use Psr\Log\LoggerInterface;
@@ -70,7 +70,7 @@ final class StatisticsQueryService
             $this->logger->debug('統計概覽已快取', ['cache_key' => $cacheKey]);
 
             return $overview;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('統計概覽查詢失敗', [
                 'error' => $e->getMessage(),
                 'query' => [
@@ -112,7 +112,7 @@ final class StatisticsQueryService
             $this->logger->debug('文章統計已快取', ['cache_key' => $cacheKey]);
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('文章統計查詢失敗', [
                 'error' => $e->getMessage(),
                 'page' => $query->getPage(),
@@ -148,7 +148,7 @@ final class StatisticsQueryService
             $this->logger->debug('來源分佈已快取', ['cache_key' => $cacheKey]);
 
             return $distribution;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('來源分佈查詢失敗', ['error' => $e->getMessage()]);
 
             throw $e;
@@ -180,7 +180,7 @@ final class StatisticsQueryService
             $this->logger->debug('使用者統計已快取', ['cache_key' => $cacheKey]);
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('使用者統計查詢失敗', ['error' => $e->getMessage()]);
 
             throw $e;
@@ -212,7 +212,7 @@ final class StatisticsQueryService
             $this->logger->debug('熱門內容已快取', ['cache_key' => $cacheKey]);
 
             return $popular;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('熱門內容查詢失敗', ['error' => $e->getMessage()]);
 
             throw $e;
@@ -248,7 +248,7 @@ final class StatisticsQueryService
             $this->logger->debug('統計搜尋已快取', ['cache_key' => $cacheKey, 'keyword' => $keyword]);
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('統計搜尋失敗', [
                 'error' => $e->getMessage(),
                 'keyword' => $keyword,

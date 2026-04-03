@@ -6,7 +6,7 @@ namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use DateTime;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 
@@ -291,7 +291,7 @@ class UserRepository
             $this->db->commit();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
 
             throw $e;

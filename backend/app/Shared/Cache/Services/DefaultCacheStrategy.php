@@ -6,7 +6,7 @@ namespace App\Shared\Cache\Services;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 
 /**
@@ -181,7 +181,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         for ($i = 0; $i < $maxRetries; $i++) {
             try {
                 return $callback();
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 if ($i === $maxRetries - 1) {
                     throw $e;
                 }
@@ -218,7 +218,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } catch (Exception) {
+            } catch (Throwable ) {
                 // 繼續嘗試下一個驅動
                 continue;
             }

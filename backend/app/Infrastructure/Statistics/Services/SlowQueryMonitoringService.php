@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Statistics\Services;
 
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
-use Exception;
+use Throwable;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -38,7 +38,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $this->recordSlowQueryInternal($query, $queryType, $executionTime, $parameters, $queryHash);
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄錯誤但不中斷主要流程
             return false;
         }

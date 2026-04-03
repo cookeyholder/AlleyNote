@@ -12,12 +12,11 @@ use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
 use DateTime;
 use DateTimeZone;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
 use RuntimeException;
-use Throwable;
 
 class PostRepository implements PostRepositoryInterface
 {
@@ -88,7 +87,7 @@ class PostRepository implements PostRepositoryInterface
             $this->db->commit();
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
 
             throw $e;
@@ -168,7 +167,7 @@ class PostRepository implements PostRepositoryInterface
             try {
                 $dt = new DateTime($publishDate, new DateTimeZone('UTC'));
                 $publishDate = $dt->format(DateTime::ATOM);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // 轉換失敗時保持原值
             }
         }
@@ -695,7 +694,7 @@ class PostRepository implements PostRepositoryInterface
             $this->invalidateCache($id);
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
 
             throw $e;
@@ -780,7 +779,7 @@ class PostRepository implements PostRepositoryInterface
 
             $this->db->commit();
             $this->invalidateCache($id);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
             // 記錄錯誤並重新拋出，以便調用方能處理
             app_log('error', 'Failed to set tags for post', [

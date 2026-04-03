@@ -13,7 +13,7 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
-use Exception;
+use Throwable;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use PDO;
 use Psr\Http\Message\UploadedFileInterface;
@@ -195,7 +195,7 @@ class AttachmentService implements AttachmentServiceInterface
             if (is_array($result) && isset($result['value']) && is_numeric($result['value'])) {
                 return (int) $result['value'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
 
@@ -219,7 +219,7 @@ class AttachmentService implements AttachmentServiceInterface
             if (is_array($result) && isset($result['value']) && is_numeric($result['value'])) {
                 return (int) $result['value'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
 
@@ -246,7 +246,7 @@ class AttachmentService implements AttachmentServiceInterface
                     return $this->extensionsToMimeTypes($extensions);
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
 
@@ -482,7 +482,7 @@ class AttachmentService implements AttachmentServiceInterface
             imagedestroy($cleanImage);
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             app_log('error', 'Image sanitization failed', ['exception' => $e->getMessage()]);
 
             throw ValidationException::fromSingleError('file', '圖片處理失敗：' . $e->getMessage());
@@ -566,7 +566,7 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $actualMimeType,
                 'file_size' => filesize($tempPath),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 清理臨時檔案
             if (file_exists($tempPath)) {
                 unlink($tempPath);
@@ -722,7 +722,7 @@ class AttachmentService implements AttachmentServiceInterface
             );
 
             return $attachment;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 清理失敗時的檔案
             if (file_exists($fileInfo['temp_path'])) {
                 unlink($fileInfo['temp_path']);

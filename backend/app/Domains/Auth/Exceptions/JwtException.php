@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-use Exception;
+use Throwable;
 
 /**
  * JWT 基礎例外類別.

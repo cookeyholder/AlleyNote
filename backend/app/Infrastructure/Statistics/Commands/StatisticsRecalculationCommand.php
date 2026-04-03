@@ -7,7 +7,7 @@ namespace App\Infrastructure\Statistics\Commands;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod as DomainStatisticsPeriod;
 use DateTimeImmutable;
-use Exception;
+use Throwable;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -114,7 +114,7 @@ final class StatisticsRecalculationCommand extends Command
 
                 return Command::SUCCESS;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $io->error('指令執行失敗: ' . $e->getMessage());
             $this->logger->error('統計回填指令失敗', [
                 'error' => $e->getMessage(),
@@ -179,7 +179,7 @@ final class StatisticsRecalculationCommand extends Command
 
                 return null;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $io->error('日期格式錯誤: ' . $e->getMessage());
 
             return null;
@@ -335,7 +335,7 @@ final class StatisticsRecalculationCommand extends Command
             try {
                 $this->processTask($task, $config);
                 $results['success']++;
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $results['failed']++;
                 $results['errors'][] = sprintf(
                     '%s [%s - %s]: %s',
@@ -439,7 +439,7 @@ final class StatisticsRecalculationCommand extends Command
                 'posts' => $this->aggregationService->createPostsSnapshot($period),
                 'users' => $this->aggregationService->createUsersSnapshot($period),
                 'popular' => $this->aggregationService->createPopularSnapshot($period),
-                default => throw new Exception('不支援的統計類型: ' . $task['type']),
+                default => throw new \RuntimeException('不支援的統計類型: ' . $task['type']),
             };
 
             $currentDate = $currentDate->modify('+1 day');

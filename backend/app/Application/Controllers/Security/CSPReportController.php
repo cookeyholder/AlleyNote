@@ -6,7 +6,7 @@ namespace App\Application\Controllers\Security;
 
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Enums\ActivitySeverity;
-use Exception;
+use Throwable;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -56,7 +56,7 @@ class CSPReportController
             $this->logViolation($report, $request);
 
             return $response->withStatus(204);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('CSP Report handling error', [
                 'error_message' => $e->getMessage(),
                 'error_file' => $e->getFile(),

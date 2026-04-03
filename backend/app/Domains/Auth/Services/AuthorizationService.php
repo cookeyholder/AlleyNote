@@ -6,7 +6,7 @@ namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
-use Exception;
+use Throwable;
 use PDO;
 
 class AuthorizationService implements AuthorizationServiceInterface
@@ -87,7 +87,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -108,7 +108,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -142,7 +142,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -163,7 +163,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -243,7 +243,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $post && (int) $post['user_id'] === $userId;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -261,7 +261,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result && (int) $result['user_id'] === $userId;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }

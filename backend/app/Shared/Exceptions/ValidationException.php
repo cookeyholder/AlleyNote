@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Shared\Exceptions;
 
 use App\Shared\Validation\ValidationResult;
-use Exception;
 use Throwable;
 
 // Import ValidationResult

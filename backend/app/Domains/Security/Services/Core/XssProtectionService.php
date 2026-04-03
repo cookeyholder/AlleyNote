@@ -8,7 +8,7 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
-use Exception;
+use Throwable;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 
@@ -175,7 +175,7 @@ class XssProtectionService implements XssProtectionServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (Exception) {
+        } catch (Throwable ) {
             // 記錄失敗不應影響主要功能
         }
     }

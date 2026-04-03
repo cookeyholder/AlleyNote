@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 
 /**
@@ -212,7 +212,7 @@ final class JwtConfig
             if (openssl_verify($testData, $signature, $publicKeyResource, OPENSSL_ALGO_SHA256) !== 1) {
                 throw new InvalidArgumentException('金鑰對不匹配，公鑰無法驗證私鑰簽名');
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new InvalidArgumentException('金鑰驗證失敗: ' . $e->getMessage());
         }
     }

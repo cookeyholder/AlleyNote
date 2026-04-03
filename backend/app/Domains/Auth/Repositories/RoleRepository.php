@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Models\Role;
-use Exception;
+use Throwable;
 use PDO;
 use RuntimeException;
 
@@ -186,7 +186,7 @@ class RoleRepository
             $this->db->commit();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->db->rollBack();
 
             throw $e;

@@ -7,7 +7,7 @@ namespace App\Infrastructure\Statistics\Services;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use DateTime;
-use Exception;
+use Throwable;
 use PDO;
 use Psr\Log\LoggerInterface;
 
@@ -76,7 +76,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'total_calculations' => (int) ($result['total_calculations'] ?? 0),
                 'failed_calculations' => (int) ($result['failed_calculations'] ?? 0),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to get calculation time metrics', [
                 'error' => $e->getMessage(),
             ]);
@@ -164,7 +164,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'slow_query_count' => $slowQueryCount,
                 'critical_errors' => $criticalErrors,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to get error metrics', [
                 'error' => $e->getMessage(),
             ]);
@@ -244,7 +244,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             }
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to log statistics event', [
                 'event_type' => $eventType,
                 'error' => $e->getMessage(),
@@ -321,7 +321,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             ]);
 
             return $deletedRows;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to cleanup old monitoring data', [
                 'error' => $e->getMessage(),
             ]);
@@ -447,7 +447,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             return $result
                 ? ['status' => 'healthy', 'message' => 'Database connection OK']
                 : ['status' => 'unhealthy', 'message' => 'Database connection failed'];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return ['status' => 'unhealthy', 'message' => 'Database error: ' . $e->getMessage()];
         }
     }

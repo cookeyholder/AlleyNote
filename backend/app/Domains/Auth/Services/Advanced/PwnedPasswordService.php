@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services\Advanced;
 
-use Exception;
+use Throwable;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
@@ -75,7 +75,7 @@ class PwnedPasswordService
                 'error' => null,
                 'api_available' => true,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄錯誤但不阻止使用者操作
             app_log('error', 'PwnedPasswordService error', ['exception' => $e->getMessage()]);
 
@@ -168,7 +168,7 @@ class PwnedPasswordService
                 'available' => $response->getStatusCode() === 200,
                 'response_time' => null, // 可以實作回應時間測量
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return [
                 'available' => false,
                 'error' => $e->getMessage(),

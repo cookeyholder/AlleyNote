@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
 
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -461,7 +461,7 @@ final class StatisticsPerformanceReportGenerator
             file_put_contents($filename, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
             echo "效能測試報告已保存到: {$filename}\n";
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             echo '保存報告失敗: ' . $e->getMessage() . "\n";
         }
     }

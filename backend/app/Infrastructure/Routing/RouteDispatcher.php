@@ -7,7 +7,7 @@ namespace App\Infrastructure\Routing;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
-use Exception;
+use Throwable;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -58,7 +58,7 @@ class RouteDispatcher
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // 中介軟體解析失敗時應阻止請求（fail-closed），避免安全防護被繞過
                 app_log('critical', 'Failed to resolve middleware — request blocked', [
                     'middleware' => (string) $middleware,

@@ -8,7 +8,7 @@ use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -333,7 +333,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'growth_rate' => round($growthRate, 2),
                 'growth_count' => $growthCount,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException('取得文章成長趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
     }

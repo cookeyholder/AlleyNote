@@ -8,7 +8,7 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
 use DateTimeInterface;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
@@ -417,7 +417,7 @@ class StatisticsSnapshot implements JsonSerializable
 
         try {
             return new DateTime($dateTimeString);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new InvalidArgumentException("無效的日期時間格式: {$dateTimeString}");
         }
     }

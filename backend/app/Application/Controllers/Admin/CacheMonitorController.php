@@ -7,7 +7,7 @@ namespace App\Application\Controllers\Admin;
 use App\Application\Controllers\BaseController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
-use Exception;
+use Throwable;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
@@ -36,7 +36,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $data);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->json($response, [
                 'error' => '無法取得快取統計資料',
                 'message' => $e->getMessage(),
@@ -62,7 +62,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $metrics);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->json($response, [
                 'error' => '無法取得快取指標',
                 'message' => $e->getMessage(),
@@ -86,7 +86,7 @@ class CacheMonitorController extends BaseController
             ];
 
             return $this->json($response, $healthData);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->json($response, [
                 'error' => '無法取得健康狀態',
                 'message' => $e->getMessage(),
@@ -107,7 +107,7 @@ class CacheMonitorController extends BaseController
                 'message' => '統計資料已重置',
                 'cleanedRecords' => $cleaned,
             ]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->json($response, [
                 'error' => '無法重置統計資料',
                 'message' => $e->getMessage(),
@@ -132,7 +132,7 @@ class CacheMonitorController extends BaseController
                     'error' => '清空快取失敗',
                 ], 500);
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->json($response, [
                 'error' => '無法清空快取',
                 'message' => $e->getMessage(),
@@ -162,7 +162,7 @@ class CacheMonitorController extends BaseController
             return $this->json($response, [
                 'drivers' => $driverInfo,
             ]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $this->json($response, [
                 'error' => '無法取得驅動資訊',
                 'message' => $e->getMessage(),

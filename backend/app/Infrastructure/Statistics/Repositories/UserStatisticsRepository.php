@@ -6,7 +6,7 @@ namespace App\Infrastructure\Statistics\Repositories;
 
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -97,7 +97,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException('取得活動類型統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -293,7 +293,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
                 'growth_rate' => round($growthRate, 2),
                 'growth_count' => $growthCount,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException('取得使用者註冊趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
     }

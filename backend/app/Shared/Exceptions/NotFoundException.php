@@ -4,6 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Exceptions;
 
-use Exception;
+use Throwable;
 
 class NotFoundException extends Exception {}

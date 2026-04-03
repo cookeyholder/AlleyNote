@@ -10,11 +10,10 @@ use App\Application\Services\Statistics\StatisticsQueryService;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
-use Exception;
+use Throwable;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 
 /**
  * 統計查詢 API 控制器.
@@ -630,7 +629,7 @@ class StatisticsController extends BaseController
                 sortBy: $sortBy,
                 sortDirection: $sortDirection,
             );
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw ValidationException::fromSingleError('date_format', '日期格式錯誤，請使用 YYYY-MM-DD 格式');
         }
     }

@@ -21,7 +21,7 @@ use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Enums\CacheType;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use DI\Container;
-use Exception;
+use Throwable;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -230,7 +230,7 @@ class CacheServiceProvider
                 $priority = $drivers[CacheType::REDIS->value]['priority'] ?? 70;
                 assert(is_int($priority), 'Priority must be an integer');
                 $manager->addDriver(CacheType::REDIS->value, $driver, $priority);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // Redis 連線失敗，記錄但不中斷啟動
                 if ($container->has(LoggerInterface::class)) {
                     $logger = $container->get(LoggerInterface::class);
@@ -330,7 +330,7 @@ class CacheServiceProvider
                 if (extension_loaded('redis')) {
                     try {
                         return $c->get('cache.tag.repository.redis');
-                    } catch (Exception) {
+                    } catch (Throwable ) {
                         return $c->get('cache.tag.repository.memory');
                     }
                 }
@@ -377,7 +377,7 @@ class CacheServiceProvider
                     if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
                         $tagRepository = $tagRepositoryTmp;
                     }
-                } catch (Exception) {
+                } catch (Throwable ) {
                 }
                 $monitor = null;
 
@@ -386,7 +386,7 @@ class CacheServiceProvider
                     if ($monitorTmp instanceof CacheMonitorInterface) {
                         $monitor = $monitorTmp;
                     }
-                } catch (Exception) {
+                } catch (Throwable ) {
                 }
                 $manager = new CacheManager($strategy, $logger, $config, $monitor, $tagRepository);
                 // 新增記憶體驅動
@@ -409,7 +409,7 @@ class CacheServiceProvider
                             $redisPriority = $c->has('cache.drivers.' . CacheType::REDIS->value . '.priority') ? $c->get('cache.drivers.' . CacheType::REDIS->value . '.priority') : 70;
                             $manager->addDriver(CacheType::REDIS->value, $redisDriver, is_int($redisPriority) ? $redisPriority : 70);
                         }
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         if ($logger instanceof LoggerInterface) {
                             $logger->warning('Redis 快取驅動不可用', ['error' => $e->getMessage()]);
                         }

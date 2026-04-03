@@ -6,9 +6,8 @@ namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Enums\LogLevel;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
-use Exception;
-use Psr\Log\LoggerInterface;
 use Throwable;
+use Psr\Log\LoggerInterface;
 
 final class ErrorTrackerService implements ErrorTrackerInterface
 {
@@ -56,7 +55,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
         foreach ($this->notificationHandlers as $h) {
             try {
                 $h(LogLevel::CRITICAL->value, $error->getMessage(), $context, $error);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $this->logger->error('Notification handler failed', ['e' => $e->getMessage()]);
             }
         }
@@ -165,7 +164,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
                 if (!$filter($level, $message, $context, $exception)) {
                     return '';
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 $this->logger->error('Error filter threw exception', ['e' => $e->getMessage()]);
             }
         }
@@ -178,7 +177,7 @@ final class ErrorTrackerService implements ErrorTrackerInterface
                 try {
                     // Pass the original context to notification handlers to preserve caller intent
                     $h($level, $message, $context, $exception);
-                } catch (Exception $e) {
+                } catch (Throwable $e) {
                     $this->logger->error('Notification handler failed', ['e' => $e->getMessage()]);
                 }
             }

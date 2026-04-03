@@ -11,7 +11,7 @@ use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Domains\Security\Models\IpList;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use RuntimeException;
 
@@ -95,7 +95,7 @@ class IpService implements IpServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄失敗不應影響主要業務邏輯，靜默處理
             app_log('error', 'Failed to log IP rule event', ['exception' => $e->getMessage()]);
         }

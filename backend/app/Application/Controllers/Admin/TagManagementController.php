@@ -8,7 +8,7 @@ use App\Application\Controllers\BaseController;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Services\CacheGroupManager;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -99,7 +99,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤列表失敗', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -162,7 +162,7 @@ class TagManagementController extends BaseController
                 'data' => $tagInfo,
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤詳細資訊失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -224,7 +224,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('刪除標籤失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -274,7 +274,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('清理標籤失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -326,7 +326,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤群組失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -372,7 +372,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('刪除標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -436,7 +436,7 @@ class TagManagementController extends BaseController
                             $flushed = true;
                             $affectedDrivers[] = $driverName;
                         }
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         $this->logger?->warning("無法從 {$driverName} 驅動清除標籤 {$tagName}", [
                             'error' => $e->getMessage(),
                         ]);
@@ -457,7 +457,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('清除標籤失敗', [
                 'tag' => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -514,7 +514,7 @@ class TagManagementController extends BaseController
                                 $flushed = true;
                                 $affectedDrivers[] = $driverName;
                             }
-                        } catch (Exception $e) {
+                        } catch (Throwable $e) {
                             $this->logger?->warning("無法從 {$driverName} 驅動清除標籤 {$tagName}", [
                                 'error' => $e->getMessage(),
                             ]);
@@ -543,7 +543,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('批次清除標籤失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -590,7 +590,7 @@ class TagManagementController extends BaseController
                                 $statistics['total_cache_entries'] += array_sum($keyCounts);
                             }
                         }
-                    } catch (Exception $e) {
+                    } catch (Throwable $e) {
                         $this->logger?->warning("無法從 {$driverName} 驅動取得統計資訊", [
                             'error' => $e->getMessage(),
                         ]);
@@ -606,7 +606,7 @@ class TagManagementController extends BaseController
                 'data' => $statistics,
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('取得標籤統計失敗', [
                 'error' => $e->getMessage(),
             ]);
@@ -670,7 +670,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('建立標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),
@@ -718,7 +718,7 @@ class TagManagementController extends BaseController
                 ],
                 'timestamp' => time(),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('清除標籤群組失敗', [
                 'group' => $groupName ?? 'unknown',
                 'error' => $e->getMessage(),

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Cache\Repositories;
 
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
-use Exception;
+use Throwable;
 use Redis;
 
 /**
@@ -70,7 +70,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->redis->discard();
 
             return false;
@@ -145,7 +145,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->redis->discard();
 
             return false;
@@ -179,7 +179,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->redis->discard();
 
             return false;
@@ -365,7 +365,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->redis->discard();
 
             return false;
@@ -441,7 +441,7 @@ class RedisTagRepository implements TagRepositoryInterface
             $this->redis->exec();
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->redis->discard();
 
             return false;

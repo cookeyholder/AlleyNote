@@ -10,7 +10,7 @@ use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
-use Exception;
+use Throwable;
 
 class AuthService
 {
@@ -152,7 +152,7 @@ class AuthService
                     'success' => true,
                     'message' => '登出成功',
                 ];
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // 如果撤銷失敗，記錄錯誤但仍然回傳成功（使用者體驗優先）
                 app_log('error', 'JWT token revocation failed during logout', ['exception' => $e->getMessage()]);
             }

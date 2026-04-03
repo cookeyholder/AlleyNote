@@ -9,7 +9,7 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
-use Exception;
+use Throwable;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -134,7 +134,7 @@ class TaggedCacheManager implements TaggedCacheInterface
             $this->put($key, $value, $ttl);
 
             return $value;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('標籤化快取記憶化失敗', [
                 'key' => $key,
                 'tags' => $this->tags,

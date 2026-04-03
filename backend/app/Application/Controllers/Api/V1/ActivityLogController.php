@@ -10,7 +10,7 @@ use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
-use Exception;
+use Throwable;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -84,7 +84,7 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $errorResponse = json_encode([
                 'success' => false,
                 'message' => 'Internal server error',
@@ -130,7 +130,7 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $errorResponse = json_encode([
                 'success' => false,
                 'message' => 'Internal server error',
@@ -177,7 +177,7 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $errorResponse = json_encode([
                 'success' => false,
                 'message' => 'Internal server error',
@@ -236,7 +236,7 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $errorResponse = json_encode([
                 'success' => false,
                 'message' => 'Internal server error',
@@ -287,7 +287,7 @@ class ActivityLogController extends BaseController
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
 
             return $response->withHeader('Content-Type', 'application/json');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $errorResponse = json_encode([
                 'success' => false,
                 'message' => 'Internal server error: ' . $e->getMessage(),

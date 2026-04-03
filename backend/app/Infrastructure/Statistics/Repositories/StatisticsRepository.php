@@ -9,7 +9,7 @@ use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
@@ -424,7 +424,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             ];
 
             return StatisticsSnapshot::fromArray($data);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             /** @phpstan-ignore-next-line cast.string */
             $idStr = isset($row['id']) ? (string) $row['id'] : 'unknown';
 

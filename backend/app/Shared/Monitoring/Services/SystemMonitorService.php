@@ -6,7 +6,7 @@ namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
-use Exception;
+use Throwable;
 use PDO;
 use Psr\Log\LoggerInterface;
 
@@ -135,7 +135,7 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $status;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger->error('Database status check failed', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -391,7 +391,7 @@ class SystemMonitorService implements SystemMonitorInterface
             }
 
             return $stats;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return ['error' => $e->getMessage()];
         }
     }
@@ -413,7 +413,7 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'critical', 'message' => 'Database connection is very slow', 'response_time_ms' => round($connectionTime, 2)];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
         }
     }
@@ -465,7 +465,7 @@ class SystemMonitorService implements SystemMonitorInterface
             } else {
                 return ['status' => 'warning', 'message' => 'Environment configuration has issues', 'errors' => $errors];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return ['status' => 'critical', 'message' => 'Environment configuration check failed: ' . $e->getMessage()];
         }
     }

@@ -12,7 +12,7 @@ use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
 use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\SecurityTestInterface;
-use Exception;
+use Throwable;
 
 class SecurityTestService implements SecurityTestInterface
 {
@@ -85,7 +85,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => 'Session 成功初始化',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => 'Session 安全初始化',
                 'status' => 'FAIL',
@@ -115,7 +115,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => 'Session ID 重新產生',
                 'status' => 'FAIL',
@@ -147,7 +147,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '權限檢查功能正常',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '權限檢查',
                 'status' => 'FAIL',
@@ -165,7 +165,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '角色權限檢查功能正常',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '角色權限檢查',
                 'status' => 'FAIL',
@@ -217,7 +217,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '檔名清理',
                 'status' => 'FAIL',
@@ -280,7 +280,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '安全標頭設定',
                 'status' => 'FAIL',
@@ -323,7 +323,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '錯誤處理',
                 'status' => 'FAIL',
@@ -366,7 +366,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '密碼雜湊',
                 'status' => 'FAIL',
@@ -398,7 +398,7 @@ class SecurityTestService implements SecurityTestInterface
                 ];
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '密碼強度檢查',
                 'status' => 'FAIL',
@@ -430,7 +430,7 @@ class SecurityTestService implements SecurityTestInterface
                 'message' => '秘密設定載入成功',
             ];
             $results['passed']++;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '秘密設定載入',
                 'status' => 'FAIL',
@@ -453,7 +453,7 @@ class SecurityTestService implements SecurityTestInterface
             } else {
                 $results['failed']++;
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $results['tests'][] = [
                 'name' => '.env 檔案驗證',
                 'status' => 'FAIL',

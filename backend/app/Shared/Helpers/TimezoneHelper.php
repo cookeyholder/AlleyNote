@@ -6,7 +6,7 @@ namespace App\Shared\Helpers;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Exception;
+use Throwable;
 use PDO;
 
 /**
@@ -39,7 +39,7 @@ class TimezoneHelper
                 } else {
                     self::$siteTimezone = 'Asia/Taipei';
                 }
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // 如果讀取失敗，使用預設值
                 self::$siteTimezone = 'Asia/Taipei';
             }
@@ -70,7 +70,7 @@ class TimezoneHelper
             $dt = $dt->setTimezone($siteTimezone);
 
             return $dt->format('c'); // RFC3339 格式
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 如果轉換失敗，返回原始時間
             return $utcTime;
         }
@@ -90,13 +90,13 @@ class TimezoneHelper
             $dt = $dt->setTimezone(new DateTimeZone('UTC'));
 
             return $dt->format('Y-m-d\TH:i:s\Z'); // RFC3339 UTC 格式
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 如果轉換失敗，假設輸入已經是 UTC
             try {
                 $dt = new DateTimeImmutable($siteTime);
 
                 return $dt->format('Y-m-d\TH:i:s\Z');
-            } catch (Exception $e2) {
+            } catch (Throwable $e2) {
                 // 完全失敗，返回當前 UTC 時間
                 return gmdate('Y-m-d\TH:i:s\Z');
             }
@@ -120,7 +120,7 @@ class TimezoneHelper
             $dt = new DateTimeImmutable('now', new DateTimeZone(self::getSiteTimezone()));
 
             return $dt->format('c');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return self::nowUtc();
         }
     }
@@ -135,7 +135,7 @@ class TimezoneHelper
 
             // 檢查是否能成功解析
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -155,7 +155,7 @@ class TimezoneHelper
             $dt = $dt->setTimezone($siteTimezone);
 
             return $dt->format($format);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return $utcTime;
         }
     }
@@ -176,7 +176,7 @@ class TimezoneHelper
             $minutes = abs(intdiv($offset % 3600, 60));
 
             return sprintf('%+03d:%02d', $hours, $minutes);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return '+00:00';
         }
     }
@@ -203,7 +203,7 @@ class TimezoneHelper
 
                 // 格式化顯示名稱
                 $result[$timezone] = "{$timezone} ({$offsetString})";
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // 如果無法取得時區資訊，使用簡單格式
                 $result[$timezone] = $timezone;
             }

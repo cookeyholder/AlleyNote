@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
-use Exception;
+use Throwable;
 use InvalidArgumentException;
 
 /**
@@ -54,7 +54,7 @@ final class EnvironmentConfig
         $envFile = $this->getEnvironmentFile();
 
         if (!file_exists($envFile)) {
-            throw new Exception("環境配置檔案不存在: {$envFile}");
+            throw new \RuntimeException("環境配置檔案不存在: {$envFile}");
         }
 
         $this->loadFromFile($envFile);
@@ -211,7 +211,7 @@ final class EnvironmentConfig
     {
         $content = file_get_contents($filePath);
         if ($content === false) {
-            throw new Exception("無法讀取環境配置檔案: {$filePath}");
+            throw new \RuntimeException("無法讀取環境配置檔案: {$filePath}");
         }
 
         $lines = explode("\n", $content);
@@ -316,7 +316,7 @@ final class EnvironmentConfig
         }
 
         if (!empty($missing)) {
-            throw new Exception(
+            throw new \RuntimeException(
                 '環境配置缺少必要項目: ' . implode(', ', $missing),
             );
         }

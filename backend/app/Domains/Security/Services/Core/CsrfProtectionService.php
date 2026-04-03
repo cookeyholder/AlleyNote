@@ -9,7 +9,7 @@ use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\CsrfTokenException;
-use Exception;
+use Throwable;
 
 class CsrfProtectionService implements CsrfProtectionServiceInterface
 {
@@ -196,7 +196,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
 
             return false;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -288,7 +288,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (Exception) {
+        } catch (Throwable ) {
             // 記錄失敗不應影響主要功能
         }
     }

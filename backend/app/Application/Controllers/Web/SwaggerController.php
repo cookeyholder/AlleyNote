@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Web;
 
-use Exception;
+use Throwable;
 use OpenApi\Generator;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -41,7 +41,7 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 確保清除任何緩衝的輸出
             if (ob_get_level() > 0) {
                 ob_end_clean();

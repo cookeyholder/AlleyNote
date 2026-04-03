@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Headers;
 
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
-use Exception;
+use Throwable;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
@@ -177,7 +177,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             ]);
 
             file_get_contents($this->config['csp']['monitoring_endpoint'], false, $context);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             app_log('error', 'Failed to send CSP violation to monitoring', ['exception' => $e->getMessage()]);
         }
     }

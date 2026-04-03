@@ -8,10 +8,9 @@ use App\Application\Controllers\BaseController;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
-use Exception;
+use Throwable;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 
 /**
  * 統計可視化 API 控制器.
@@ -62,7 +61,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new \RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -104,7 +103,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new \RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -141,7 +140,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得瀏覽量統計失敗: ' . $e->getMessage());
+            throw new \RuntimeException('取得瀏覽量統計失敗: ' . $e->getMessage());
         }
     }
 
@@ -201,7 +200,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new \RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -254,7 +253,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new \RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -305,7 +304,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new \RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -331,7 +330,7 @@ class StatisticsChartController extends BaseController
             try {
                 $startDate = new DateTimeImmutable($startDateStr);
                 $endDate = new DateTimeImmutable($endDateStr);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 throw ValidationException::fromSingleError('date_format', '日期格式無效，請使用 YYYY-MM-DD 格式');
             }
         }
@@ -354,7 +353,7 @@ class StatisticsChartController extends BaseController
 
         try {
             return new DateTimeImmutable($dateStr);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw ValidationException::fromSingleError('date_format', '日期格式無效，請使用 YYYY-MM-DD 格式');
         }
     }
