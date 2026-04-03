@@ -10,6 +10,7 @@ use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\UploadedFileInterface;
 
 class AttachmentController
 {
@@ -134,7 +135,7 @@ class AttachmentController
             $currentUserId = $this->getCurrentUserId($request);
             $postId = (int) $request->getAttribute('post_id');
             $files = $request->getUploadedFiles();
-            if (!isset($files['file'])) {
+            if (!isset($files['file']) || !$files['file'] instanceof UploadedFileInterface) {
                 $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
                 ]) ?: ''));

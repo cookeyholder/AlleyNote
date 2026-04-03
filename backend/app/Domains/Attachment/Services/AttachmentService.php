@@ -4,6 +4,19 @@ declare(strict_types=1);
 
 namespace App\Domains\Attachment\Services;
 
+use App\Domains\Attachment\Contracts\AttachmentServiceInterface;
+use App\Domains\Attachment\Models\Attachment;
+use App\Domains\Attachment\Repositories\AttachmentRepository;
+use App\Domains\Auth\Services\AuthorizationService;
+use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Domains\Security\Enums\ActivityType;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\ValidationException;
+use League\MimeTypeDetection\FinfoMimeTypeDetector;
+use PDO;
+use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 use Throwable;
 
 class AttachmentService implements AttachmentServiceInterface
@@ -524,12 +537,20 @@ class AttachmentService implements AttachmentServiceInterface
             return true;
         }
         // 檢查文章是否存在並且是否為文章的擁有者
-        $post = $this->postRepo->find($postId);
-        if (!$post) {
-            return false;
+        $postUserId = $this->extractPostUserId($this->postRepo->find($postId));
+
+        return $postUserId !== null && $postUserId === $userId;
+    }
+
+    private function extractPostUserId(mixed $post): ?int
+    {
+        if (!is_object($post) || !method_exists($post, 'getUserId')) {
+            return null;
         }
 
-        return $post->getUserId() === $userId;
+        $postUserId = $post->getUserId();
+
+        return is_int($postUserId) ? $postUserId : null;
     }
 
     /**

@@ -62,10 +62,32 @@ class ActivityLogController extends BaseController
 
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
+
+            if (!isset($data['action_type']) || !is_string($data['action_type'])) {
+                $errorResponse = json_encode([
+                    'success' => false,
+                    'message' => 'action_type 欄位為必填且必須為字串',
+                    'error_code' => 422,
+                ]);
+                $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
+                return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
+            }
+
+            $metadata = null;
+            if (isset($data['metadata']) && is_array($data['metadata'])) {
+                $metadata = [];
+                foreach ($data['metadata'] as $key => $value) {
+                    if (is_string($key)) {
+                        $metadata[$key] = $value;
+                    }
+                }
+            }
+
             $dto = new CreateActivityLogDTO(
-                actionType: ActivityType::from($data['action_type'] ?? ''),
+                actionType: ActivityType::from($data['action_type']),
                 userId: (int) ($data['user_id'] ?? 0),
-                metadata: $data['metadata'] ?? [],
+                metadata: $metadata,
             );
             $result = $this->loggingService->log($dto);
             $successResponse = json_encode([
