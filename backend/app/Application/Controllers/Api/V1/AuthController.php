@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Application\Contracts\AuthApiInterface;
 use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
@@ -27,7 +28,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
 
-class AuthController extends BaseController
+class AuthController extends BaseController implements AuthApiInterface
 {
     public function __construct(
         private AuthService $authService,

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
 
+use App\Application\Contracts\PostApiInterface;
 use App\Application\Controllers\BaseController;
 use App\Application\Resources\PostResource;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
@@ -27,7 +28,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
 
-class PostController extends BaseController
+class PostController extends BaseController implements PostApiInterface
 {
     public function __construct(
         private readonly PostServiceInterface $postService,
