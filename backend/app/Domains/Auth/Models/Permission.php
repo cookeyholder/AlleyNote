@@ -3,23 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Models;
-
 class Permission
 {
     private int $id;
-
     private string $name;
-
     private ?string $description;
-
     private string $resource;
-
     private string $action;
-
     private string $createdAt;
-
     private string $updatedAt;
-
     public function __construct(
         int $id,
         string $name,
@@ -37,42 +29,34 @@ class Permission
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
-
     public function getId(): int
     {
         return $this->id;
     }
-
     public function getName(): string
     {
         return $this->name;
     }
-
     public function getDescription(): ?string
     {
         return $this->description;
     }
-
     public function getResource(): string
     {
         return $this->resource;
     }
-
     public function getAction(): string
     {
         return $this->action;
     }
-
     public function getCreatedAt(): string
     {
         return $this->createdAt;
     }
-
     public function getUpdatedAt(): string
     {
         return $this->updatedAt;
     }
-
     public function toArray(): array
     {
         return [
@@ -85,7 +69,6 @@ class Permission
             'updated_at' => $this->updatedAt,
         ];
     }
-
     public static function fromArray(array $data): self
     {
         return new self(

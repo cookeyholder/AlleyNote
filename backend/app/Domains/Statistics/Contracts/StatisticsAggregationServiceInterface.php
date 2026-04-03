@@ -3,16 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
-
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
-
-/**
- * 統計聚合服務介面.
- *
- * 定義統計聚合服務的合約，用於統計資料的計算、聚合與快照管理。
- */
 interface StatisticsAggregationServiceInterface
 {
     /**
@@ -28,7 +21,6 @@ interface StatisticsAggregationServiceInterface
         array $metadata = [],
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot;
-
     /**
      * 建立文章統計快照.
      *
@@ -42,7 +34,6 @@ interface StatisticsAggregationServiceInterface
         array $metadata = [],
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot;
-
     /**
      * 建立使用者統計快照.
      *
@@ -56,7 +47,6 @@ interface StatisticsAggregationServiceInterface
         array $metadata = [],
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot;
-
     /**
      * 建立熱門內容統計快照.
      *
@@ -70,7 +60,6 @@ interface StatisticsAggregationServiceInterface
         array $metadata = [],
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot;
-
     /**
      * 批量建立多種類型的統計快照.
      *
@@ -86,7 +75,6 @@ interface StatisticsAggregationServiceInterface
         array $metadata = [],
         ?DateTimeInterface $expiresAt = null,
     ): array;
-
     /**
      * 更新現有的統計快照.
      *
@@ -94,7 +82,6 @@ interface StatisticsAggregationServiceInterface
      * @return StatisticsSnapshot 更新後的快照
      */
     public function updateSnapshot(StatisticsSnapshot $snapshot): StatisticsSnapshot;
-
     /**
      * 計算統計趨勢.
      *
@@ -108,7 +95,6 @@ interface StatisticsAggregationServiceInterface
         StatisticsPeriod $previousPeriod,
         string $snapshotType,
     ): array;
-
     /**
      * 清理過期的統計快照.
      *

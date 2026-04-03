@@ -7,11 +7,12 @@
 
 ## 2. 核心組件重構
 
-- [ ] 2.1 重構 `BaseController`：移除靜態對照表，整合 `ExceptionRegistry`
-- [ ] 2.2 建立 `PostControllerInterface` 與 `AuthControllerInterface`
-- [ ] 2.3 遷移 OpenAPI 註解至上述介面，並讓 Controller 實作之
-- [ ] 2.4 簡化 `PostController`：將資料轉換與統計合併邏輯移至 `PostResource`
-- [ ] 2.5 遷移系統內其餘控制器至新的例外處理機制 (一次到位)
+- [ ] 2.1 執行技術實驗 (Spike)：驗證 Swagger 能正確掃描 Interface 上的註解
+- [ ] 2.2 重構 `BaseController`：移除靜態對照表，整合 `ExceptionRegistry`
+- [ ] 2.3 建立 `PostApiInterface` 與 `AuthApiInterface`
+- [ ] 2.4 遷移 OpenAPI 註解至上述介面，並讓 Controller 實作之
+- [ ] 2.5 簡化 `PostController`：將資料轉換與統計合併邏輯移至 `PostResource`
+- [ ] 2.6 遷移系統內其餘控制器至新的例外處理機制 (一次到位)
 
 ## 3. 測試基礎設施與 DSL 構建
 

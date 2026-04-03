@@ -3,12 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\ValueObjects;
-
 use JsonSerializable;
-
-/**
- * 分類資料點值物件.
- */
 readonly class CategoryDataPoint implements JsonSerializable
 {
     public function __construct(
@@ -17,7 +12,6 @@ readonly class CategoryDataPoint implements JsonSerializable
         public string $color = '#3B82F6',
         public ?string $label = null,
     ) {}
-
     /**
      * 建立百分比資料點.
      */
@@ -29,7 +23,6 @@ readonly class CategoryDataPoint implements JsonSerializable
         ?string $label = null,
     ): self {
         $percentage = $total > 0 ? ($value / $total) * 100 : 0;
-
         return new self(
             category: $category,
             value: $percentage,
@@ -37,7 +30,6 @@ readonly class CategoryDataPoint implements JsonSerializable
             label: $label ?? sprintf('%s (%.1f%%)', $category, $percentage),
         );
     }
-
     /**
      * 建立計數資料點.
      */
@@ -54,7 +46,6 @@ readonly class CategoryDataPoint implements JsonSerializable
             label: $label ?? sprintf('%s (%d)', $category, $count),
         );
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -65,11 +56,9 @@ readonly class CategoryDataPoint implements JsonSerializable
             'value' => $this->value,
             'color' => $this->color,
         ];
-
         if ($this->label !== null) {
             $result['label'] = $this->label;
         }
-
         return $result;
     }
 }

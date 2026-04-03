@@ -3,17 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Processors;
-
 use App\Domains\Statistics\ValueObjects\CategoryDataPoint;
 use App\Domains\Statistics\ValueObjects\ChartData;
 use App\Domains\Statistics\ValueObjects\ChartDataset;
 use App\Domains\Statistics\ValueObjects\ChartType;
-
-/**
- * 分類統計資料處理器.
- *
- * 處理圓餅圖、甜甜圈圖、長條圖等分類統計所需的資料格式化功能
- */
 class CategoryProcessor
 {
     /**
@@ -33,7 +26,6 @@ class CategoryProcessor
         '#8B5A2B', // 棕色
         '#6B7280', // 灰色
     ];
-
     /**
      * 處理分類統計資料為圓餅圖.
      *
@@ -50,11 +42,9 @@ class CategoryProcessor
         if (empty($rawData)) {
             return new ChartData([], []);
         }
-
         // 排序並處理資料
         $processedData = $this->sortAndProcessData($rawData, 'desc');
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($processedData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($processedData as $index => $item) {
@@ -65,7 +55,6 @@ class CategoryProcessor
                 color: $color,
             );
         }
-
         return ChartData::forCategory(
             $dataPoints,
             $label,
@@ -73,7 +62,6 @@ class CategoryProcessor
             array_merge(ChartType::Pie->getDefaultOptions(), $options),
         );
     }
-
     /**
      * 處理分類統計資料為甜甜圈圖.
      *
@@ -88,20 +76,17 @@ class CategoryProcessor
         array $options = [],
     ): ChartData {
         $pieChart = $this->processPieChartData($rawData, $label, $customColors, $options);
-
         // 轉換為甜甜圈圖
         $datasets = [];
         foreach ($pieChart->datasets as $dataset) {
             $datasets[] = $dataset->withType(ChartType::Doughnut);
         }
-
         return ChartData::forMultiDataset(
             $pieChart->labels,
             $datasets,
             array_merge(ChartType::Doughnut->getDefaultOptions(), $options),
         );
     }
-
     /**
      * 處理分類統計資料為長條圖.
      *
@@ -118,11 +103,9 @@ class CategoryProcessor
         if (empty($rawData)) {
             return new ChartData([], []);
         }
-
         // 排序並處理資料
         $processedData = $this->sortAndProcessData($rawData, 'desc');
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($processedData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($processedData as $index => $item) {
@@ -133,7 +116,6 @@ class CategoryProcessor
                 color: $color,
             );
         }
-
         return ChartData::forCategory(
             $dataPoints,
             $label,
@@ -141,7 +123,6 @@ class CategoryProcessor
             array_merge(ChartType::Bar->getDefaultOptions(), $options),
         );
     }
-
     /**
      * 處理百分比分布圖.
      *
@@ -159,14 +140,11 @@ class CategoryProcessor
         if (empty($rawData)) {
             return new ChartData([], []);
         }
-
         // 計算總和
         $total = array_sum(array_column($rawData, 'value'));
-
         if ($total <= 0) {
             return new ChartData([], []);
         }
-
         // 轉換為百分比並排序
         $percentageData = [];
         foreach ($rawData as $item) {
@@ -176,10 +154,8 @@ class CategoryProcessor
                 'value' => $percentage,
             ];
         }
-
         $processedData = $this->sortAndProcessData($percentageData, 'desc');
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($processedData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($processedData as $index => $item) {
@@ -191,7 +167,6 @@ class CategoryProcessor
                 color: $color,
             );
         }
-
         return ChartData::forCategory(
             $dataPoints,
             $label,
@@ -199,7 +174,6 @@ class CategoryProcessor
             array_merge($chartType->getDefaultOptions(), $options),
         );
     }
-
     /**
      * 處理排名前 N 的資料.
      *
@@ -219,14 +193,11 @@ class CategoryProcessor
         if (empty($rawData) || $topN <= 0) {
             return new ChartData([], []);
         }
-
         // 排序資料
         $sortedData = $this->sortAndProcessData($rawData, 'desc');
-
         // 取前 N 名
         $topData = array_slice($sortedData, 0, $topN);
         $remainingData = array_slice($sortedData, $topN);
-
         // 如果需要包含「其他」項目且有剩餘資料
         if ($includeOthers && !empty($remainingData)) {
             $othersValue = array_sum(array_column($remainingData, 'value'));
@@ -237,9 +208,7 @@ class CategoryProcessor
                 ];
             }
         }
-
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($topData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($topData as $index => $item) {
@@ -250,7 +219,6 @@ class CategoryProcessor
                 color: $color,
             );
         }
-
         return ChartData::forCategory(
             $dataPoints,
             $label,
@@ -258,7 +226,6 @@ class CategoryProcessor
             array_merge($chartType->getDefaultOptions(), $options),
         );
     }
-
     /**
      * 處理比較分析資料（多個分類系列）.
      *
@@ -273,7 +240,6 @@ class CategoryProcessor
         if (empty($multiSeriesData)) {
             return new ChartData([], []);
         }
-
         // 收集所有分類
         $allCategories = [];
         foreach ($multiSeriesData as $seriesData) {
@@ -283,12 +249,10 @@ class CategoryProcessor
                 }
             }
         }
-
         // 為每個系列建立資料集
         $datasets = [];
         $colors = self::DEFAULT_COLORS;
         $colorIndex = 0;
-
         foreach ($multiSeriesData as $seriesLabel => $seriesData) {
             // 建立該系列的完整資料（包含所有分類）
             $seriesValues = [];
@@ -302,7 +266,6 @@ class CategoryProcessor
                 }
                 $seriesValues[] = $value;
             }
-
             $color = $colors[$colorIndex % count($colors)];
             $datasets[] = ChartDataset::forBarChart(
                 $seriesLabel,
@@ -311,14 +274,12 @@ class CategoryProcessor
             );
             $colorIndex++;
         }
-
         return ChartData::forMultiDataset(
             $allCategories,
             $datasets,
             array_merge(ChartType::Bar->getDefaultOptions(), $options),
         );
     }
-
     /**
      * 處理分組堆疊長條圖資料.
      *
@@ -331,7 +292,6 @@ class CategoryProcessor
         array $options = [],
     ): ChartData {
         $comparisonChart = $this->processComparisonData($stackedData, $label, $options);
-
         // 加入堆疊選項
         $existingScales = $comparisonChart->options['scales'] ?? [];
         $stackedOptions = array_merge($comparisonChart->options, [
@@ -343,10 +303,8 @@ class CategoryProcessor
                 ],
             ),
         ]);
-
         return $comparisonChart->withOptions($stackedOptions);
     }
-
     /**
      * 排序並處理資料.
      *
@@ -359,19 +317,15 @@ class CategoryProcessor
         $filteredData = array_filter($data, function ($item) {
             return $item['value'] >= 0;
         });
-
         // 排序
         usort($filteredData, function ($a, $b) use ($order) {
             if ($order === 'asc') {
                 return $a['value'] <=> $b['value'];
             }
-
             return $b['value'] <=> $a['value'];
         });
-
         return $filteredData;
     }
-
     /**
      * 取得顏色配色方案.
      *
@@ -400,7 +354,6 @@ class CategoryProcessor
             default => self::DEFAULT_COLORS,
         };
     }
-
     /**
      * 處理水平長條圖資料.
      *
@@ -413,14 +366,12 @@ class CategoryProcessor
     ): ChartData {
         $labels = [];
         $values = [];
-
         // 依據排序欄位排序
         if ($sortBy === 'category') {
             usort($rawData, fn($a, $b) => strcmp($a['category'], $b['category']));
         } else {
             usort($rawData, fn($a, $b) => $b['value'] <=> $a['value']);
         }
-
         foreach ($rawData as $item) {
             if (!is_array($item) || !isset($item['category'], $item['value'])) {
                 continue;
@@ -428,7 +379,6 @@ class CategoryProcessor
             $labels[] = $item['category'];
             $values[] = $item['value'];
         }
-
         $dataset = new ChartDataset(
             $label,
             $values,
@@ -438,7 +388,6 @@ class CategoryProcessor
             1,
             false,
         );
-
         return new ChartData(
             $labels,
             [$dataset],
@@ -459,7 +408,6 @@ class CategoryProcessor
             ],
         );
     }
-
     /**
      * 處理自訂圖表資料.
      *
@@ -472,7 +420,6 @@ class CategoryProcessor
         array $chartOptions = [],
     ): ChartData {
         $chartType = $chartOptions['type'] ?? 'bar';
-
         return match ($chartType) {
             'pie', 'doughnut' => $this->processPieChartData($rawData, $metricName),
             'bar' => $this->processBarChartData($rawData, $metricName),
@@ -480,7 +427,6 @@ class CategoryProcessor
             default => $this->processBarChartData($rawData, $metricName),
         };
     }
-
     /**
      * 處理分類資料.
      */
@@ -493,19 +439,15 @@ class CategoryProcessor
             if (is_array($item)) {
                 $categoryValue = $item['category'] ?? $item['name'] ?? 'Unknown';
                 $value = $item['value'] ?? $item['count'] ?? 0;
-
                 return [
                     'category' => is_string($categoryValue) ? $categoryValue : 'Unknown',
                     'value' => is_numeric($value) ? (float) $value : 0.0,
                 ];
             }
-
             return ['category' => 'Unknown', 'value' => 0.0];
         }, $rawData);
-
         return $this->processPieChartData($formattedData, $categoryType);
     }
-
     /**
      * 處理排名資料.
      */
@@ -518,16 +460,13 @@ class CategoryProcessor
             if (is_array($item)) {
                 $titleValue = $item['title'] ?? $item['name'] ?? $item['category'] ?? 'Unknown';
                 $value = $item['views'] ?? $item['value'] ?? $item['count'] ?? 0;
-
                 return [
                     'category' => is_string($titleValue) ? $titleValue : 'Unknown',
                     'value' => is_numeric($value) ? (float) $value : 0.0,
                 ];
             }
-
             return ['category' => 'Unknown', 'value' => 0.0];
         }, $rawData);
-
         return $this->processBarChartData($formattedData, $title);
     }
 }

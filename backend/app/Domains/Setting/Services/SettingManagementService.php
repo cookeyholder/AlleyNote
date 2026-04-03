@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Setting\Services;
 use RuntimeException;
-
-
-/**
- * 系統設定管理服務.
- */
 class SettingManagementService
 {
     /**
@@ -21,11 +16,9 @@ class SettingManagementService
         'site_timezone',
         'site_locale',
     ];
-
     public function __construct(
         private readonly SettingRepository $settingRepository,
     ) {}
-
     /**
      * 取得所有設定.
      *
@@ -34,29 +27,24 @@ class SettingManagementService
     public function getAllSettings(?bool $authenticated = false): array
     {
         $settings = $this->settingRepository->findAll();
-
         $result = [];
         foreach ($settings as $setting) {
             $key = is_string($setting['key'] ?? null) ? $setting['key'] : '';
             if ($key === '') {
                 continue;
             }
-
             // 未驗證使用者僅回傳白名單中的設定
             if (!$authenticated && !in_array($key, self::PUBLIC_KEYS, true)) {
                 continue;
             }
-
             $result[$key] = [
                 'value' => $setting['value'],
                 'type' => $setting['type'],
                 'description' => $setting['description'],
             ];
         }
-
         return $result;
     }
-
     /**
      * 取得單一設定.
      *
@@ -66,16 +54,13 @@ class SettingManagementService
     public function getSetting(string $key, ?bool $authenticated = false): array
     {
         $setting = $this->settingRepository->findByKey($key);
-
         if (!$setting) {
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
-
         // 未驗證使用者僅能存取白名單中的設定
         if (!$authenticated && !in_array($key, self::PUBLIC_KEYS, true)) {
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
-
         return [
             'key' => $setting['key'],
             'value' => $setting['value'],
@@ -83,7 +68,6 @@ class SettingManagementService
             'description' => $setting['description'],
         ];
     }
-
     /**
      * 批量更新設定.
      *
@@ -97,28 +81,22 @@ class SettingManagementService
         $errors = [];
         /** @var array<string, mixed> */
         $updated = [];
-
         foreach ($data as $key => $value) {
             if (!is_string($key)) {
                 continue;
             }
-
             try {
                 $updated[$key] = $this->updateSetting($key, $value);
             } catch (NotFoundException $e) {
                 $errors[$key] = [$e->getMessage()];
             }
         }
-
         if (!empty($errors)) {
             $validationResult = new ValidationResult(false, $errors);
-
             throw new ValidationException($validationResult, '部分設定更新失敗');
         }
-
         return $updated;
     }
-
     /**
      * 更新單一設定.
      *
@@ -128,18 +106,14 @@ class SettingManagementService
     public function updateSetting(string $key, mixed $value): array
     {
         $setting = $this->settingRepository->findByKey($key);
-
         if (!$setting) {
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
-
         $type = is_string($setting['type'] ?? null) ? $setting['type'] : 'string';
         $updatedSetting = $this->settingRepository->updateValue($key, $value, $type);
-
         if (!$updatedSetting) {
             throw new NotFoundException("設定更新失敗 (Key: {$key})");
         }
-
         return [
             'key' => $updatedSetting['key'],
             'value' => $updatedSetting['value'],
@@ -147,7 +121,6 @@ class SettingManagementService
             'description' => $updatedSetting['description'],
         ];
     }
-
     /**
      * 建立或更新設定.
      *
@@ -160,14 +133,12 @@ class SettingManagementService
         ?string $description = null,
     ): array {
         $setting = $this->settingRepository->findByKey($key);
-
         if ($setting) {
             $settingType = is_string($setting['type'] ?? null) ? $setting['type'] : 'string';
             $updatedSetting = $this->settingRepository->updateValue($key, $value, $type ?? $settingType);
             if (!$updatedSetting) {
                 throw new RuntimeException("設定更新失敗 (Key: {$key})");
             }
-
             return [
                 'key' => $updatedSetting['key'],
                 'value' => $updatedSetting['value'],
@@ -175,9 +146,7 @@ class SettingManagementService
                 'description' => $updatedSetting['description'],
             ];
         }
-
         $newSetting = $this->settingRepository->create($key, $value, $type ?? 'string', $description);
-
         return [
             'key' => $newSetting['key'],
             'value' => $newSetting['value'],
@@ -185,7 +154,6 @@ class SettingManagementService
             'description' => $newSetting['description'],
         ];
     }
-
     /**
      * 刪除設定.
      *
@@ -194,11 +162,9 @@ class SettingManagementService
     public function deleteSetting(string $key): void
     {
         $setting = $this->settingRepository->findByKey($key);
-
         if (!$setting) {
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
-
         $this->settingRepository->delete($key);
     }
 }

@@ -3,14 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
-
 use InvalidArgumentException;
-
-/**
- * 刷新請求 DTO.
- *
- * 封裝使用者 Token 刷新請求的資料。
- */
 final readonly class RefreshRequestDTO
 {
     /**
@@ -22,7 +15,6 @@ final readonly class RefreshRequestDTO
     ) {
         self::assertScopes($this->scopes);
     }
-
     /**
      * 從陣列建立 RefreshRequestDTO.
      *
@@ -35,7 +27,6 @@ final readonly class RefreshRequestDTO
             scopes: self::normalizeScopes($data['scopes'] ?? null),
         );
     }
-
     /**
      * 轉換為陣列.
      */
@@ -46,7 +37,6 @@ final readonly class RefreshRequestDTO
             'scopes' => $this->scopes,
         ];
     }
-
     /**
      * @return list<string>|null
      */
@@ -55,17 +45,14 @@ final readonly class RefreshRequestDTO
         if (!is_array($scopes)) {
             return null;
         }
-
         $normalizedScopes = [];
         foreach ($scopes as $scope) {
             if (is_string($scope) && $scope !== '') {
                 $normalizedScopes[] = $scope;
             }
         }
-
         return $normalizedScopes === [] ? null : $normalizedScopes;
     }
-
     /**
      * @param list<string>|null $scopes
      */
@@ -74,7 +61,6 @@ final readonly class RefreshRequestDTO
         if ($scopes === null) {
             return;
         }
-
         foreach ($scopes as $scope) {
             if (!is_string($scope) || $scope === '') {
                 throw new InvalidArgumentException('Scopes must be a non-empty string list');

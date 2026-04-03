@@ -3,14 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
-
 use App\Domains\Auth\ValueObjects\TokenPair;
-
-/**
- * 刷新回應 DTO.
- *
- * 封裝使用者 Token 刷新成功後的回應資料。
- */
 final readonly class RefreshResponseDTO
 {
     public function __construct(
@@ -20,7 +13,6 @@ final readonly class RefreshResponseDTO
         public ?string $sessionId = null,
         public ?array $permissions = null,
     ) {}
-
     /**
      * 轉換為陣列.
      */

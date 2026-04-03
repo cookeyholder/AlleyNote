@@ -43,32 +43,25 @@
 - **[Mitigation]** → 在重構後執行完整的整合測試套件以驗證行為一致性。
 - **[Trade-off]** → 引入 `ApiResource` 與 Interface 會增加類別數量，但在系統複雜度下，其帶來的架構清晰度與測試便利性更具價值。
 
-## Open Questions (Phase 2: Implementation Details)
+### 5. 分頁數據封裝 (PaginatedResourceResponse)
+- **方案**：建立 `App\Shared\Http\Responses\PaginatedResourceResponse`。
+- **結構**：該類別將負責包裝 `ApiResource` 轉換後的 Data 陣列與 Meta 元數據（total, current_page 等），確保 API 回應格式統一為：
+  ```json
+  { "success": true, "data": [...], "meta": { "total": 100, ... } }
+  ```
 
-### 1. OpenAPI 註解繼承的技術相容性
-- **問題**：`zircote/swagger-php` 對於 Interface 上的註解掃描是否有特定限制？
-- **風險**：若掃描器無法自動識別介面註解，重構後 Swagger UI 可能會變空白。
-- **思考**：是否需要先在 `PostController` 的其中一個方法進行「單點實驗 (Spike)」？
+### 6. 目錄與命名規範 (Naming Convention)
+- **Resources**: `App\Application\Resources` (如 `PostResource.php`)。
+- **OpenAPI Interfaces**: `App\Application\Contracts` (如 `PostApiInterface.php`)。
+- **Exceptions**: `App\Infrastructure\Http\ExceptionRegistry.php`。
 
-### 2. ApiResource 如何封裝分頁元數據 (Pagination Meta)
-- **問題**：`ApiResource` 專注於轉換 Data，但 API 輸出的 `total`, `per_page` 等資訊應該放在哪裡？
-    - **方案 A**：建立 `PaginatedResourceResponse` 類別包裝 Data 與 Meta。
-    - **方案 B**：由 `BaseController` 的 `paginatedResponse` 方法接收 Resource 轉換後的陣列再進行手動包裝。
-- **思考**：您希望 API 回應是扁平結構還是帶有顯式的 `meta` 欄位？
+## Risks / Trade-offs
 
-### 3. ExceptionRegistry 的定義媒介
-- **問題**：例外映射表（Exception -> HttpCode）存放在哪裡最直觀？
-    - **方案 A：設定檔** (`config/exceptions.php`)：易於查找與修改。
-    - **方案 B：DI 容器註冊** (`container.php`)：符合目前專案的架構風格，但映射表變大時會讓容器定義變得擁擠。
+- **[Risk]** → `zircote/swagger-php` 可能不支援 Interface 註解繼承。
+- **[Mitigation]** → 在實作前先於 `PostController` 進行「單點實驗 (Spike)」，若失敗則改採「虛擬文件類別」方案。
+- **[Risk]** → 測試 DSL 的資料庫斷言在巢狀事務下失效。
+- **[Mitigation]** → 確保測試環境 DI 容器強制使用 PDO 單例連線，並在 `ApiTestCase` 基類統一管理事務生命週期。
 
-### 4. 測試 DSL 的資料庫事務 (Database Transactions)
-- **問題**：當呼叫 `$this->json()` 或 `$this->assertDatabaseHas()` 時，如何確保數據的一致性？
-- **思考**：是否需要在 `ApiTestCase` 內部自動開啟事務？如果測試涉及多個請求（例如：先建立再查詢），事務的處理邊界該如何定義？
-
-### 5. 命名空間與目錄結構定調
-- **ApiResource** 位置：`App\Application\Resources` 還是 `App\Http\Resources`？
-- **OpenAPI 介面** 命名：`PostApi` 還是 `PostControllerInterface`？
-- **ExceptionRegistry** 位置：`App\Infrastructure\Exceptions` 還是 `App\Shared\Http`？
 
 
 

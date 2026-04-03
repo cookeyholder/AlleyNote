@@ -3,15 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Events;
-
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
-
-/**
- * 文章內容已更新事件.
- *
- * 當文章的標題或內容被修改時觸發
- */
 final class PostContentUpdated extends AbstractDomainEvent
 {
     public function __construct(
@@ -21,12 +14,10 @@ final class PostContentUpdated extends AbstractDomainEvent
     ) {
         parent::__construct();
     }
-
     public function getEventName(): string
     {
         return 'post.content_updated';
     }
-
     /**
      * @return array<string, mixed>
      */

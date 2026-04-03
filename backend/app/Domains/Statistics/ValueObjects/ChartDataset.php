@@ -3,14 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\ValueObjects;
-
 use JsonSerializable;
-
-/**
- * 圖表資料集值物件.
- *
- * 表示圖表中的一組資料，包含標籤、資料、顏色等屬性
- */
 readonly class ChartDataset implements JsonSerializable
 {
     /**
@@ -33,7 +26,6 @@ readonly class ChartDataset implements JsonSerializable
         public bool $fill = false,
         public array $options = [],
     ) {}
-
     /**
      * 建立時間序列資料集.
      *
@@ -57,7 +49,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $options,
         );
     }
-
     /**
      * 建立長條圖資料集.
      *
@@ -75,9 +66,7 @@ readonly class ChartDataset implements JsonSerializable
             '#3B82F6', '#EF4444', '#10B981', '#F59E0B',
             '#8B5CF6', '#EC4899', '#6B7280', '#14B8A6',
         ];
-
         $backgroundColor = $colors ?? array_slice($defaultColors, 0, count($data));
-
         return new self(
             label: $label,
             data: $data,
@@ -89,7 +78,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $options,
         );
     }
-
     /**
      * 建立圓餅圖資料集.
      *
@@ -107,9 +95,7 @@ readonly class ChartDataset implements JsonSerializable
             '#8B5CF6', '#EC4899', '#6B7280', '#14B8A6',
             '#F97316', '#84CC16', '#06B6D4', '#8B5A2B',
         ];
-
         $backgroundColor = $colors ?? array_slice($defaultColors, 0, count($data));
-
         return new self(
             label: '',
             data: $data,
@@ -121,7 +107,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $options,
         );
     }
-
     /**
      * 建立甜甜圈圖資料集.
      *
@@ -137,7 +122,6 @@ readonly class ChartDataset implements JsonSerializable
         return self::forPieChart($data, $colors, $options)
             ->withType(ChartType::Doughnut);
     }
-
     /**
      * 設定圖表類型.
      */
@@ -154,7 +138,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $this->options,
         );
     }
-
     /**
      * 設定背景色.
      *
@@ -173,7 +156,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $this->options,
         );
     }
-
     /**
      * 設定邊框色.
      *
@@ -192,7 +174,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $this->options,
         );
     }
-
     /**
      * 設定額外選項.
      *
@@ -201,7 +182,6 @@ readonly class ChartDataset implements JsonSerializable
     public function withOptions(array $options): self
     {
         $mergedOptions = array_merge($this->options, $options);
-
         return new self(
             label: $this->label,
             data: $this->data,
@@ -213,7 +193,6 @@ readonly class ChartDataset implements JsonSerializable
             options: $mergedOptions,
         );
     }
-
     /**
      * 檢查資料集是否為空.
      */
@@ -221,7 +200,6 @@ readonly class ChartDataset implements JsonSerializable
     {
         return empty($this->data);
     }
-
     /**
      * 取得資料點數量.
      */
@@ -229,7 +207,6 @@ readonly class ChartDataset implements JsonSerializable
     {
         return count($this->data);
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -242,15 +219,12 @@ readonly class ChartDataset implements JsonSerializable
             'borderWidth' => $this->borderWidth,
             'fill' => $this->fill,
         ];
-
         if ($this->backgroundColor !== null) {
             $result['backgroundColor'] = $this->backgroundColor;
         }
-
         if ($this->borderColor !== null) {
             $result['borderColor'] = $this->borderColor;
         }
-
         // 合併額外選項
         return array_merge($result, $this->options);
     }

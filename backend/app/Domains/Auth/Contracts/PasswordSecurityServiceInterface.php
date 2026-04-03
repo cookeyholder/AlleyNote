@@ -3,38 +3,31 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
-
 use App\Shared\Exceptions\ValidationException;
-
 interface PasswordSecurityServiceInterface
 {
     /**
      * 雜湊密碼
      */
     public function hashPassword(string $password): string;
-
     /**
      * 驗證密碼
      */
     public function verifyPassword(string $password, string $hash): bool;
-
     /**
      * 檢查雜湊是否需要重新產生
      */
     public function needsRehash(string $hash): bool;
-
     /**
      * 驗證密碼強度.
      *
      * @throws ValidationException
      */
     public function validatePassword(string $password): void;
-
     /**
      * 產生安全的隨機密碼
      */
     public function generateSecurePassword(int $length = 16): string;
-
     /**
      * 計算密碼強度評分.
      */

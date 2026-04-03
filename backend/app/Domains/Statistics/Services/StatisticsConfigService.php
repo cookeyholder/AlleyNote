@@ -7,20 +7,11 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
 use RuntimeException;
-
-
-/**
- * 統計配置服務.
- *
- * 統一管理統計功能的所有配置參數，提供型別安全的配置存取
- */
 final class StatisticsConfigService
 {
     /** @var array<string, mixed> */
     private array $config;
-
     private string $environment;
-
     /**
      * @param array<string, mixed>|null $config
      */
@@ -29,7 +20,6 @@ final class StatisticsConfigService
         $this->config = $config ?? $this->loadConfig();
         $this->environment = $environment ?? $this->detectEnvironment();
     }
-
     /**
      * 取得快取 TTL 設定.
      */
@@ -39,15 +29,12 @@ final class StatisticsConfigService
         if ($envConfig !== null && is_int($envConfig)) {
             return $envConfig;
         }
-
         $defaultConfig = $this->config['cache']['ttl'] ?? [];
         if (is_array($defaultConfig) && isset($defaultConfig[$type])) {
             return (int) $defaultConfig[$type];
         }
-
         return 3600;
     }
-
     /**
      * 取得特定統計類型的 TTL.
      */
@@ -57,15 +44,12 @@ final class StatisticsConfigService
         if (!is_array($cacheConfig)) {
             return $this->getCacheTtl('medium');
         }
-
         $typesConfig = $cacheConfig['types'] ?? [];
         if (is_array($typesConfig) && isset($typesConfig[$statisticsType])) {
             return (int) $typesConfig[$statisticsType];
         }
-
         return $this->getCacheTtl('medium');
     }
-
     /**
      * 取得計算排程設定.
      */
@@ -75,15 +59,12 @@ final class StatisticsConfigService
         if (!is_array($calcConfig)) {
             return '0 * * * *';
         }
-
         $scheduleConfig = $calcConfig['schedule'] ?? [];
         if (is_array($scheduleConfig) && isset($scheduleConfig[$frequency])) {
             return (string) $scheduleConfig[$frequency];
         }
-
         return '0 * * * *';
     }
-
     /**
      * 取得計算任務配置.
      *
@@ -95,12 +76,9 @@ final class StatisticsConfigService
         if (!is_array($calcConfig)) {
             return [];
         }
-
         $tasksConfig = $calcConfig['tasks'] ?? [];
-
         return is_array($tasksConfig) ? $tasksConfig : [];
     }
-
     /**
      * 取得並行處理配置.
      *
@@ -116,16 +94,13 @@ final class StatisticsConfigService
                 'lock_timeout' => 1800,
             ];
         }
-
         $parallelConfig = $calcConfig['parallel'] ?? [];
-
         return is_array($parallelConfig) ? $parallelConfig : [
             'enabled' => false,
             'max_workers' => 1,
             'lock_timeout' => 1800,
         ];
     }
-
     /**
      * 取得資料保存期限.
      */
@@ -135,15 +110,12 @@ final class StatisticsConfigService
         if (!is_array($retentionConfig)) {
             return 90;
         }
-
         $snapshotsConfig = $retentionConfig['snapshots'] ?? [];
         if (is_array($snapshotsConfig) && isset($snapshotsConfig[$snapshotType])) {
             return (int) $snapshotsConfig[$snapshotType];
         }
-
         return 90;
     }
-
     /**
      * 取得 API 限制配置.
      *
@@ -159,16 +131,13 @@ final class StatisticsConfigService
                 'default_limit' => 20,
             ];
         }
-
         $apiLimitsConfig = $perfConfig['api_limits'] ?? [];
-
         return is_array($apiLimitsConfig) ? $apiLimitsConfig : [
             'max_date_range' => 90,
             'max_results' => 1000,
             'default_limit' => 20,
         ];
     }
-
     /**
      * 取得瀏覽追蹤限流配置.
      *
@@ -180,22 +149,17 @@ final class StatisticsConfigService
         if (!is_array($perfConfig)) {
             return ['requests' => 120, 'window' => 60];
         }
-
         $viewTrackingConfig = $perfConfig['view_tracking'] ?? [];
         if (!is_array($viewTrackingConfig)) {
             return ['requests' => 120, 'window' => 60];
         }
-
         $rateLimitsConfig = $viewTrackingConfig['rate_limits'] ?? [];
         if (is_array($rateLimitsConfig) && isset($rateLimitsConfig[$userType])) {
             $userLimit = $rateLimitsConfig[$userType];
-
             return is_array($userLimit) ? $userLimit : ['requests' => 120, 'window' => 60];
         }
-
         return ['requests' => 120, 'window' => 60];
     }
-
     /**
      * 取得回應超時限制.
      */
@@ -205,15 +169,12 @@ final class StatisticsConfigService
         if (!is_array($perfConfig)) {
             return 100;
         }
-
         $viewTrackingConfig = $perfConfig['view_tracking'] ?? [];
         if (is_array($viewTrackingConfig) && isset($viewTrackingConfig['response_timeout'])) {
             return (int) $viewTrackingConfig['response_timeout'];
         }
-
         return 100;
     }
-
     /**
      * 取得健康檢查配置.
      *
@@ -234,9 +195,7 @@ final class StatisticsConfigService
                 ],
             ];
         }
-
         $healthCheckConfig = $monitoringConfig['health_check'] ?? [];
-
         return is_array($healthCheckConfig) ? $healthCheckConfig : [
             'enabled' => true,
             'cache_check_timeout' => 5,
@@ -248,7 +207,6 @@ final class StatisticsConfigService
             ],
         ];
     }
-
     /**
      * 取得快取預熱配置.
      *
@@ -264,16 +222,13 @@ final class StatisticsConfigService
                 'batch_size' => 100,
             ];
         }
-
         $warmupConfig = $cacheConfig['warmup'] ?? [];
-
         return is_array($warmupConfig) ? $warmupConfig : [
             'enabled' => true,
             'ttl' => 7200,
             'batch_size' => 100,
         ];
     }
-
     /**
      * 取得支援的快取標籤.
      *
@@ -294,12 +249,10 @@ final class StatisticsConfigService
                 'prewarmed',
             ];
         }
-
         $tagsConfig = $cacheConfig['supported_tags'] ?? [];
         if (is_array($tagsConfig)) {
             return array_map('strval', $tagsConfig);
         }
-
         return [
             'statistics',
             'overview',
@@ -311,7 +264,6 @@ final class StatisticsConfigService
             'prewarmed',
         ];
     }
-
     /**
      * 檢查功能是否啟用.
      */
@@ -321,15 +273,12 @@ final class StatisticsConfigService
         if ($envConfig !== null && is_bool($envConfig)) {
             return $envConfig;
         }
-
         $featuresConfig = $this->config['features'] ?? [];
         if (is_array($featuresConfig) && isset($featuresConfig[$feature])) {
             return (bool) $featuresConfig[$feature];
         }
-
         return false;
     }
-
     /**
      * 取得日誌配置.
      *
@@ -346,9 +295,7 @@ final class StatisticsConfigService
                 'rotation' => 'daily',
             ];
         }
-
         $loggingConfig = $monitoringConfig['logging'] ?? [];
-
         return is_array($loggingConfig) ? $loggingConfig : [
             'level' => 'info',
             'max_files' => 30,
@@ -356,7 +303,6 @@ final class StatisticsConfigService
             'rotation' => 'daily',
         ];
     }
-
     /**
      * 取得資料庫配置.
      *
@@ -372,16 +318,13 @@ final class StatisticsConfigService
                 'slow_query_threshold' => 2.0,
             ];
         }
-
         $dbConfig = $perfConfig['database'] ?? [];
-
         return is_array($dbConfig) ? $dbConfig : [
             'connection_timeout' => 30,
             'query_timeout' => 60,
             'slow_query_threshold' => 2.0,
         ];
     }
-
     /**
      * 取得清理配置.
      *
@@ -397,16 +340,13 @@ final class StatisticsConfigService
                 'batch_size' => 500,
             ];
         }
-
         $cleanupConfig = $retentionConfig['cleanup'] ?? [];
-
         return is_array($cleanupConfig) ? $cleanupConfig : [
             'enabled' => true,
             'schedule' => '0 5 * * *',
             'batch_size' => 500,
         ];
     }
-
     /**
      * 取得所有配置（用於除錯）.
      */
@@ -414,7 +354,6 @@ final class StatisticsConfigService
     {
         return $this->config;
     }
-
     /**
      * 取得當前環境名稱.
      */
@@ -422,27 +361,21 @@ final class StatisticsConfigService
     {
         return $this->environment;
     }
-
     /**
      * 載入配置檔案.
      */
     private function loadConfig(): array
     {
         $configPath = __DIR__ . '/../../../../config/statistics.php';
-
         if (!file_exists($configPath)) {
             throw new RuntimeException('統計配置檔案不存在：' . $configPath);
         }
-
         $config = require $configPath;
-
         if (!is_array($config)) {
             throw new RuntimeException('統計配置檔案必須返回陣列');
         }
-
         return $config;
     }
-
     /**
      * 偵測當前環境.
      */
@@ -450,23 +383,18 @@ final class StatisticsConfigService
     {
         // 優先從環境變數取得
         $env = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? null;
-
         if (is_string($env) && $env !== '') {
             return $env;
         }
-
         // 從其他常見環境變數判斷
         if (isset($_ENV['TESTING']) || isset($_SERVER['TESTING'])) {
             return 'testing';
         }
-
         if (isset($_ENV['DEBUG']) || isset($_SERVER['DEBUG'])) {
             return 'development';
         }
-
         return 'production';
     }
-
     /**
      * 取得環境特定配置.
      */
@@ -476,22 +404,18 @@ final class StatisticsConfigService
         if (!is_array($environmentConfig)) {
             return null;
         }
-
         $envConfig = $environmentConfig[$this->environment] ?? null;
         if (!is_array($envConfig)) {
             return null;
         }
-
         $keys = explode('.', $key);
         $value = $envConfig;
-
         foreach ($keys as $k) {
             if (!is_array($value) || !array_key_exists($k, $value)) {
                 return null;
             }
             $value = $value[$k];
         }
-
         return $value;
     }
 }

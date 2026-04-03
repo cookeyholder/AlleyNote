@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
-
 use App\Shared\Exceptions\CsrfTokenException;
-
 interface CsrfProtectionServiceInterface
 {
     /**
@@ -14,7 +12,6 @@ interface CsrfProtectionServiceInterface
      * @return string 新產生的 token
      */
     public function generateToken(): string;
-
     /**
      * 驗證 CSRF token 是否有效.
      *
@@ -22,7 +19,6 @@ interface CsrfProtectionServiceInterface
      * @throws CsrfTokenException 當 token 無效時拋出
      */
     public function validateToken(?string $token): void;
-
     /**
      * 從請求中取得 CSRF token.
      *

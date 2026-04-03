@@ -3,16 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
-
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
-
-/**
- * Refresh Token Repository 介面.
- *
- * 定義refresh token的資料存取操作，包含建立、查詢、更新、刪除等功能。
- * 負責管理refresh token的持久化儲存和生命週期管理。
- */
 interface RefreshTokenRepositoryInterface
 {
     /**
@@ -34,7 +26,6 @@ interface RefreshTokenRepositoryInterface
         DeviceInfo $deviceInfo,
         ?string $parentTokenJti = null,
     ): bool;
-
     /**
      * 根據JTI查找refresh token.
      *
@@ -42,7 +33,6 @@ interface RefreshTokenRepositoryInterface
      * @return array<string, mixed>|null token資料，找不到時回傳null
      */
     public function findByJti(string $jti): ?array;
-
     /**
      * 根據token雜湊值查找refresh token.
      *
@@ -50,7 +40,6 @@ interface RefreshTokenRepositoryInterface
      * @return array<string, mixed>|null token資料，找不到時回傳null
      */
     public function findByTokenHash(string $tokenHash): ?array;
-
     /**
      * 取得使用者的所有有效refresh token.
      *
@@ -59,7 +48,6 @@ interface RefreshTokenRepositoryInterface
      * @return array<int, array<string, mixed>> token資料陣列
      */
     public function findByUserId(int $userId, bool $includeExpired = false): array;
-
     /**
      * 取得特定裝置的refresh token.
      *
@@ -68,7 +56,6 @@ interface RefreshTokenRepositoryInterface
      * @return array<int, array<string, mixed>> token資料陣列
      */
     public function findByUserIdAndDevice(int $userId, string $deviceId): array;
-
     /**
      * 更新refresh token的最後使用時間.
      *
@@ -77,7 +64,6 @@ interface RefreshTokenRepositoryInterface
      * @return bool 更新成功時回傳true
      */
     public function updateLastUsed(string $jti, ?DateTime $lastUsedAt = null): bool;
-
     /**
      * 撤銷refresh token（軟刪除）.
      *
@@ -86,7 +72,6 @@ interface RefreshTokenRepositoryInterface
      * @return bool 撤銷成功時回傳true
      */
     public function revoke(string $jti, string $reason = 'manual_revocation'): bool;
-
     /**
      * 撤銷使用者的所有refresh token.
      *
@@ -96,7 +81,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 撤銷的token數量
      */
     public function revokeAllByUserId(int $userId, string $reason = 'revoke_all_sessions', ?string $excludeJti = null): int;
-
     /**
      * 撤銷特定裝置的所有refresh token.
      *
@@ -106,7 +90,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 撤銷的token數量
      */
     public function revokeAllByDevice(int $userId, string $deviceId, string $reason = 'device_logout'): int;
-
     /**
      * 刪除refresh token記錄.
      *
@@ -114,7 +97,6 @@ interface RefreshTokenRepositoryInterface
      * @return bool 刪除成功時回傳true
      */
     public function delete(string $jti): bool;
-
     /**
      * 檢查refresh token是否已被撤銷.
      *
@@ -122,7 +104,6 @@ interface RefreshTokenRepositoryInterface
      * @return bool 已撤銷時回傳true
      */
     public function isRevoked(string $jti): bool;
-
     /**
      * 檢查refresh token是否已過期
      *
@@ -130,7 +111,6 @@ interface RefreshTokenRepositoryInterface
      * @return bool 已過期時回傳true
      */
     public function isExpired(string $jti): bool;
-
     /**
      * 檢查refresh token是否存在且有效.
      *
@@ -138,7 +118,6 @@ interface RefreshTokenRepositoryInterface
      * @return bool 存在且有效時回傳true
      */
     public function isValid(string $jti): bool;
-
     /**
      * 清理過期的refresh token.
      *
@@ -146,7 +125,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 清理的記錄數量
      */
     public function cleanup(?DateTime $beforeDate = null): int;
-
     /**
      * 清理已撤銷的refresh token（超過指定天數）.
      *
@@ -154,7 +132,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 清理的記錄數量
      */
     public function cleanupRevoked(int $days = 30): int;
-
     /**
      * 取得使用者的refresh token統計資訊.
      *
@@ -166,7 +143,6 @@ interface RefreshTokenRepositoryInterface
      *                              - revoked: 已撤銷數量
      */
     public function getUserTokenStats(int $userId): array;
-
     /**
      * 取得token家族的所有相關token.
      *
@@ -174,7 +150,6 @@ interface RefreshTokenRepositoryInterface
      * @return array<int, array<string, mixed>> token資料陣列
      */
     public function getTokenFamily(string $rootJti): array;
-
     /**
      * 撤銷整個token家族.
      *
@@ -183,7 +158,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 撤銷的token數量
      */
     public function revokeTokenFamily(string $rootJti, string $reason = 'family_revocation'): int;
-
     /**
      * 批次建立refresh token記錄.
      *
@@ -191,7 +165,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 建立成功的記錄數量
      */
     public function batchCreate(array $tokens): int;
-
     /**
      * 批次撤銷refresh token.
      *
@@ -200,7 +173,6 @@ interface RefreshTokenRepositoryInterface
      * @return int 撤銷成功的數量
      */
     public function batchRevoke(array $jtis, string $reason = 'batch_revocation'): int;
-
     /**
      * 取得即將過期的refresh token.
      *
@@ -208,7 +180,6 @@ interface RefreshTokenRepositoryInterface
      * @return array<int, array<string, mixed>> token資料陣列
      */
     public function getTokensNearExpiry(int $thresholdHours = 24): array;
-
     /**
      * 統計系統中的refresh token資訊.
      *

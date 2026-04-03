@@ -3,11 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers;
-
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
 class HealthController
 {
     #[OA\Get(
@@ -23,7 +21,6 @@ class HealthController
             'timestamp' => date('c'),
             'service' => 'AlleyNote API',
         ]) ?: '{"error": "JSON encoding failed"}'));
-
         return $response->withHeader('Content-Type', 'application/json');
     }
 }

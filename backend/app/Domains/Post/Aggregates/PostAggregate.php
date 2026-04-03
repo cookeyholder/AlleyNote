@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Aggregates;
-
 use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Events\PostContentUpdated;
 use App\Domains\Post\Events\PostPublished;
@@ -17,24 +16,13 @@ use App\Domains\Post\ValueObjects\ViewCount;
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
 use InvalidArgumentException;
-
-/**
- * Post 聚合根.
- *
- * 負責維護 Post 實體的一致性邊界和業務規則
- * 所有對 Post 的修改都應通過此聚合根進行
- */
 final class PostAggregate
 {
     /** @var array<AbstractDomainEvent> */
     private array $domainEvents = [];
-
     private DateTimeImmutable $createdAt;
-
     private DateTimeImmutable $updatedAt;
-
     private ?DateTimeImmutable $publishedAt = null;
-
     /**
      * @param PostId $id 文章唯一識別碼
      * @param PostTitle $title 文章標題
@@ -60,7 +48,6 @@ final class PostAggregate
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
     }
-
     /**
      * 建立新的文章聚合.
      *
@@ -81,7 +68,6 @@ final class PostAggregate
         if ($authorId <= 0) {
             throw new InvalidArgumentException('作者 ID 必須大於 0');
         }
-
         $aggregate = new self(
             id: $id,
             title: $title,
@@ -93,10 +79,8 @@ final class PostAggregate
             slug: PostSlug::fromTitle($title->toString()),
             creationSource: $creationSource,
         );
-
         return $aggregate;
     }
-
     /**
      * 從現有資料重建聚合.
      *
@@ -124,7 +108,6 @@ final class PostAggregate
         $seqNumber = $data['seq_number'] ?? null;
         /** @var string|null $creationSource */
         $creationSource = $data['creation_source'] ?? null;
-
         $aggregate = new self(
             id: is_int($uuid) ? PostId::fromInt($uuid) : PostId::fromString((string) $uuid),
             title: PostTitle::fromString($title),
@@ -136,19 +119,16 @@ final class PostAggregate
             slug: $seqNumber !== null ? PostSlug::fromString($seqNumber) : null,
             creationSource: $creationSource,
         );
-
         if (isset($data['created_at'])) {
             /** @var string $createdAt */
             $createdAt = $data['created_at'];
             $aggregate->createdAt = new DateTimeImmutable($createdAt);
         }
-
         if (isset($data['updated_at'])) {
             /** @var string $updatedAt */
             $updatedAt = $data['updated_at'];
             $aggregate->updatedAt = new DateTimeImmutable($updatedAt);
         }
-
         if (isset($data['publish_date'])) {
             /** @var string|null $publishDate */
             $publishDate = $data['publish_date'];
@@ -156,10 +136,8 @@ final class PostAggregate
                 $aggregate->publishedAt = new DateTimeImmutable($publishDate);
             }
         }
-
         return $aggregate;
     }
-
     /**
      * 發佈文章.
      *
@@ -170,17 +148,13 @@ final class PostAggregate
         if ($this->status === PostStatus::PUBLISHED) {
             throw PostValidationException::alreadyPublished();
         }
-
         if ($this->status === PostStatus::ARCHIVED) {
             throw PostValidationException::archivedCannotPublish();
         }
-
         $this->ensureContentIsValid();
-
         $this->status = PostStatus::PUBLISHED;
         $this->publishedAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
-
         $this->recordEvent(new PostPublished(
             postId: $this->id->toString(),
             title: $this->title->toString(),
@@ -188,7 +162,6 @@ final class PostAggregate
             publishedAt: $this->publishedAt,
         ));
     }
-
     /**
      * 更新文章內容.
      *
@@ -201,24 +174,20 @@ final class PostAggregate
         if ($this->status === PostStatus::ARCHIVED) {
             throw PostValidationException::archivedCannotEdit();
         }
-
         $oldTitle = $this->title;
         $this->title = $title;
         $this->content = $content;
         $this->updatedAt = new DateTimeImmutable();
-
         // 如果標題改變，更新 slug
         if (!$oldTitle->equals($title)) {
             $this->slug = PostSlug::fromTitle($title->toString());
         }
-
         $this->recordEvent(new PostContentUpdated(
             postId: $this->id->toString(),
             title: $this->title->toString(),
             updatedAt: $this->updatedAt,
         ));
     }
-
     /**
      * 封存文章.
      *
@@ -229,11 +198,9 @@ final class PostAggregate
         if ($this->status === PostStatus::ARCHIVED) {
             throw PostValidationException::alreadyArchived();
         }
-
         $oldStatus = $this->status;
         $this->status = PostStatus::ARCHIVED;
         $this->updatedAt = new DateTimeImmutable();
-
         $this->recordEvent(new PostStatusChanged(
             postId: $this->id->toString(),
             oldStatus: $oldStatus->value,
@@ -241,7 +208,6 @@ final class PostAggregate
             changedAt: $this->updatedAt,
         ));
     }
-
     /**
      * 設為草稿.
      */
@@ -250,11 +216,9 @@ final class PostAggregate
         if ($this->status === PostStatus::DRAFT) {
             return;
         }
-
         $oldStatus = $this->status;
         $this->status = PostStatus::DRAFT;
         $this->updatedAt = new DateTimeImmutable();
-
         $this->recordEvent(new PostStatusChanged(
             postId: $this->id->toString(),
             oldStatus: $oldStatus->value,
@@ -262,7 +226,6 @@ final class PostAggregate
             changedAt: $this->updatedAt,
         ));
     }
-
     /**
      * 設定置頂狀態.
      *
@@ -273,11 +236,9 @@ final class PostAggregate
         if ($this->isPinned === $isPinned) {
             return;
         }
-
         $this->isPinned = $isPinned;
         $this->updatedAt = new DateTimeImmutable();
     }
-
     /**
      * 增加瀏覽次數.
      */
@@ -286,7 +247,6 @@ final class PostAggregate
         $this->viewCount = $this->viewCount->increment();
         // 瀏覽次數增加不更新 updatedAt，因為這不是實質性的內容變更
     }
-
     /**
      * 檢查是否為草稿.
      */
@@ -294,7 +254,6 @@ final class PostAggregate
     {
         return $this->status === PostStatus::DRAFT;
     }
-
     /**
      * 檢查是否已發佈.
      */
@@ -302,7 +261,6 @@ final class PostAggregate
     {
         return $this->status === PostStatus::PUBLISHED;
     }
-
     /**
      * 檢查是否已封存.
      */
@@ -310,7 +268,6 @@ final class PostAggregate
     {
         return $this->status === PostStatus::ARCHIVED;
     }
-
     /**
      * 檢查是否由特定作者撰寫.
      *
@@ -320,68 +277,55 @@ final class PostAggregate
     {
         return $this->authorId === $authorId;
     }
-
     // Getters
     public function getId(): PostId
     {
         return $this->id;
     }
-
     public function getTitle(): PostTitle
     {
         return $this->title;
     }
-
     public function getContent(): PostContent
     {
         return $this->content;
     }
-
     public function getAuthorId(): int
     {
         return $this->authorId;
     }
-
     public function getStatus(): PostStatus
     {
         return $this->status;
     }
-
     public function getViewCount(): ViewCount
     {
         return $this->viewCount;
     }
-
     public function isPinned(): bool
     {
         return $this->isPinned;
     }
-
     public function getSlug(): ?PostSlug
     {
         return $this->slug;
     }
-
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
-
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
-
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
     }
-
     public function getCreationSource(): ?string
     {
         return $this->creationSource;
     }
-
     /**
      * 取得所有領域事件.
      *
@@ -391,10 +335,8 @@ final class PostAggregate
     {
         $events = $this->domainEvents;
         $this->domainEvents = [];
-
         return $events;
     }
-
     /**
      * 轉換為陣列表示.
      *
@@ -417,7 +359,6 @@ final class PostAggregate
             'creation_source' => $this->creationSource,
         ];
     }
-
     /**
      * 記錄領域事件.
      *
@@ -427,7 +368,6 @@ final class PostAggregate
     {
         $this->domainEvents[] = $event;
     }
-
     /**
      * 確保內容有效.
      *
@@ -438,7 +378,6 @@ final class PostAggregate
         if ($this->title->getLength() === 0) {
             throw PostValidationException::titleEmpty();
         }
-
         if ($this->content->getLength() === 0) {
             throw PostValidationException::contentEmpty();
         }

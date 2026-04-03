@@ -3,15 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-/**
- * 中介軟體執行器介面.
- *
- * 定義中介軟體執行器的標準行為，負責執行中介軟體鏈
- */
 interface MiddlewareDispatcherInterface
 {
     /**
@@ -27,7 +20,6 @@ interface MiddlewareDispatcherInterface
         array $middlewares,
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface;
-
     /**
      * 建立中介軟體執行鏈.
      *

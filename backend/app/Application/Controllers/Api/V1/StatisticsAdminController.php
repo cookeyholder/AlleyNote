@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
-
 use App\Application\Controllers\BaseController;
 use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsApplicationService;
@@ -17,13 +16,6 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-
-/**
- * 統計管理 API 控制器.
- *
- * 提供管理員專用的統計管理功能，包括快取管理、系統健康檢查、統計刷新等操作
- */
-#[OA\Tag(name: 'statistics-admin', description: '統計管理 API (管理員專用)')]
 class StatisticsAdminController extends BaseController
 {
     public function __construct(
@@ -31,7 +23,6 @@ class StatisticsAdminController extends BaseController
         private readonly StatisticsQueryService $statisticsQueryService,
         private readonly StatisticsCacheServiceInterface $cacheService,
     ) {}
-
     /**
      * 手動刷新統計資料.
      *
@@ -108,25 +99,19 @@ class StatisticsAdminController extends BaseController
     ): ResponseInterface {
         try {
             $startTime = microtime(true);
-
             // 檢查管理員權限
             $this->checkAdminPermission($request);
-
             $body = $request->getParsedBody() ?? [];
-
             // 確保 body 是陣列類型
             if (!is_array($body)) {
                 $body = [];
             }
-
             $types = $body['types'] ?? ['overview', 'posts', 'users', 'popular', 'sources'];
             $forceRecalculate = $body['force_recalculate'] ?? true;
-
             // 確保 types 是陣列類型
             if (!is_array($types)) {
                 $types = ['overview', 'posts', 'users', 'popular', 'sources'];
             }
-
             // 驗證統計類型
             $validTypes = ['overview', 'posts', 'users', 'popular', 'sources'];
             $invalidTypes = array_diff($types, $validTypes);
@@ -136,22 +121,18 @@ class StatisticsAdminController extends BaseController
                     '無效的統計類型：' . implode(', ', $invalidTypes),
                 );
             }
-
             $refreshedTypes = [];
             $snapshotsCreated = 0;
-
             // 清除相關快取
             /** @var array<string> $cacheTags */
             $cacheTags = array_merge(['statistics'], $types);
             $this->cacheService->flushByTags($cacheTags);
-
             if ($forceRecalculate) {
                 // 強制重新計算統計快照
                 foreach ($types as $type) {
                     if (!is_string($type)) {
                         continue;
                     }
-
                     try {
                         $snapshot = match ($type) {
                             'overview' => $this->statisticsApplicationService->createOverviewSnapshot(
@@ -185,7 +166,6 @@ class StatisticsAdminController extends BaseController
                             'sources' => null, // 來源統計不需要快照，直接從資料庫計算
                             default => null,
                         };
-
                         if ($snapshot !== null) {
                             $snapshotsCreated++;
                         }
@@ -202,16 +182,13 @@ class StatisticsAdminController extends BaseController
                 // 僅清除快取，不重新計算
                 $refreshedTypes = $types;
             }
-
             $executionTime = round(microtime(true) - $startTime, 3);
-
             // 記錄管理操作
             $this->logAdminAction($request, 'statistics_refresh', [
                 'types' => $refreshedTypes,
                 'force_recalculate' => $forceRecalculate,
                 'execution_time' => $executionTime,
             ]);
-
             return $this->json($response, [
                 'success' => true,
                 'message' => '統計資料刷新成功',
@@ -237,7 +214,6 @@ class StatisticsAdminController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 清除統計快取.
      *
@@ -308,19 +284,15 @@ class StatisticsAdminController extends BaseController
         try {
             // 檢查管理員權限
             $this->checkAdminPermission($request);
-
             $queryParams = $request->getQueryParams();
             $tagsParam = $queryParams['tags'] ?? '';
             $clearAll = ($queryParams['all'] ?? 'false') === 'true';
-
             // 確保 tagsParam 是字串
             if (!is_string($tagsParam)) {
                 $tagsParam = '';
             }
-
             $clearedTags = [];
             $allCacheCleared = false;
-
             if ($clearAll) {
                 // 清除所有統計快取
                 $this->cacheService->flush();
@@ -331,14 +303,12 @@ class StatisticsAdminController extends BaseController
                 $tags = array_map('trim', explode(',', $tagsParam));
                 $validTags = ['statistics', 'overview', 'posts', 'users', 'popular', 'trends', 'sources', 'prewarmed'];
                 $invalidTags = array_diff($tags, $validTags);
-
                 if (!empty($invalidTags)) {
                     throw ValidationException::fromSingleError(
                         'tags',
                         '無效的快取標籤：' . implode(', ', $invalidTags),
                     );
                 }
-
                 $this->cacheService->flushByTags($tags);
                 $clearedTags = $tags;
             } else {
@@ -347,13 +317,11 @@ class StatisticsAdminController extends BaseController
                 $this->cacheService->flushByTags($defaultTags);
                 $clearedTags = $defaultTags;
             }
-
             // 記錄管理操作
             $this->logAdminAction($request, 'cache_clear', [
                 'tags' => $clearedTags,
                 'all_cache_cleared' => $allCacheCleared,
             ]);
-
             return $this->json($response, [
                 'success' => true,
                 'message' => '快取清除成功',
@@ -377,7 +345,6 @@ class StatisticsAdminController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 統計系統健康檢查.
      *
@@ -452,10 +419,8 @@ class StatisticsAdminController extends BaseController
         try {
             // 檢查管理員權限
             $this->checkAdminPermission($request);
-
             $healthData = [];
             $overallStatus = 'healthy';
-
             // 檢查快取狀態
             try {
                 $cacheStats = $this->cacheService->getStats();
@@ -463,14 +428,12 @@ class StatisticsAdminController extends BaseController
                 $misses = is_int($cacheStats['misses']) ? $cacheStats['misses'] : 0;
                 $totalRequests = $hits + $misses;
                 $hitRate = $totalRequests > 0 ? round($hits / $totalRequests * 100, 2) : 0;
-
                 $healthData['cache'] = [
                     'status' => 'healthy',
                     'hits' => $hits,
                     'misses' => $misses,
                     'hit_rate' => $hitRate,
                 ];
-
                 // 如果命中率過低，標記為警告
                 if ($hitRate < 50 && $totalRequests > 100) {
                     $healthData['cache']['status'] = 'warning';
@@ -483,7 +446,6 @@ class StatisticsAdminController extends BaseController
                 ];
                 $overallStatus = 'critical';
             }
-
             // 檢查資料庫連接
             try {
                 $startTime = microtime(true);
@@ -492,12 +454,10 @@ class StatisticsAdminController extends BaseController
                     new StatisticsQueryDTO(),
                 );
                 $connectionTime = round((microtime(true) - $startTime) * 1000, 2);
-
                 $healthData['database'] = [
                     'status' => 'healthy',
                     'connection_time' => $connectionTime,
                 ];
-
                 // 如果連接時間過長，標記為警告
                 if ($connectionTime > 1000) { // 1 秒
                     $healthData['database']['status'] = 'warning';
@@ -512,25 +472,20 @@ class StatisticsAdminController extends BaseController
                 ];
                 $overallStatus = 'critical';
             }
-
             // 檢查服務可用性
             $healthData['services'] = [
                 'statistics_application_service' => 'healthy',
                 'statistics_query_service' => 'healthy',
                 'cache_service' => 'healthy',
             ];
-
             // 所有核心服務都被成功注入，所以狀態都是 healthy
-
             $healthData['overall_status'] = $overallStatus;
             $healthData['timestamp'] = new DateTimeImmutable()->format('c');
-
             $statusCode = match ($overallStatus) {
                 'healthy' => 200,
                 'warning' => 200,
                 'critical' => 503,
             };
-
             return $this->json($response, [
                 'success' => $overallStatus !== 'critical',
                 'message' => match ($overallStatus) {
@@ -548,7 +503,6 @@ class StatisticsAdminController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 檢查管理員權限.
      */
@@ -556,29 +510,23 @@ class StatisticsAdminController extends BaseController
     {
         // 檢查用戶角色 (從 JWT token 中獲取)
         $userRole = $request->getAttribute('role');
-
         // 允許的管理員角色
         $adminRoles = ['super_admin', 'admin'];
-
         if (!in_array($userRole, $adminRoles)) {
             // 備用檢查：檢查權限陣列 (如果存在)
             $userPermissions = $request->getAttribute('permissions', []);
-
             if (!is_array($userPermissions)) {
                 throw ValidationException::fromSingleError('permission', '權限不足，需要管理員權限');
             }
-
             $hasPermission = in_array('*', $userPermissions)
                             || in_array('admin.*', $userPermissions)
                             || in_array('statistics.*', $userPermissions)
                             || in_array('statistics.admin', $userPermissions);
-
             if (!$hasPermission) {
                 throw ValidationException::fromSingleError('permission', '權限不足，需要管理員權限');
             }
         }
     }
-
     /**
      * 記錄管理操作.
      */
@@ -588,7 +536,6 @@ class StatisticsAdminController extends BaseController
         $userId = $request->getAttribute('user_id') ?? 'unknown';
         $userAgent = $request->getHeaderLine('User-Agent');
         $ipAddress = $this->getClientIpAddress($request);
-
         // 確保 userId 是字串
         $userIdString = 'unknown';
         if (is_string($userId)) {
@@ -596,7 +543,6 @@ class StatisticsAdminController extends BaseController
         } elseif (is_numeric($userId)) {
             $userIdString = (string) $userId;
         }
-
         app_log('info', 'ADMIN_ACTION', [
             'user_id' => $userIdString,
             'action' => $action,
@@ -605,14 +551,12 @@ class StatisticsAdminController extends BaseController
             'details' => $details,
         ]);
     }
-
     /**
      * 取得客戶端 IP 地址.
      */
     private function getClientIpAddress(ServerRequestInterface $request): string
     {
         $serverParams = $request->getServerParams();
-
         // 檢查常見的 IP 標頭
         $ipHeaders = [
             'HTTP_CF_CONNECTING_IP',     // Cloudflare
@@ -624,16 +568,13 @@ class StatisticsAdminController extends BaseController
             'HTTP_FORWARDED',            // Proxy
             'REMOTE_ADDR',                // Standard
         ];
-
         foreach ($ipHeaders as $header) {
             if (!empty($serverParams[$header])) {
                 $ip = $serverParams[$header];
-
                 // 確保 IP 是字串類型
                 if (!is_string($ip)) {
                     continue;
                 }
-
                 // 如果有多個 IP（以逗號分隔），取第一個
                 if (str_contains($ip, ',')) {
                     $ipParts = explode(',', $ip);
@@ -644,7 +585,6 @@ class StatisticsAdminController extends BaseController
                 }
             }
         }
-
         return isset($serverParams['REMOTE_ADDR']) && is_string($serverParams['REMOTE_ADDR'])
             ? $serverParams['REMOTE_ADDR']
             : 'unknown';

@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
-
 use App\Application\Controllers\BaseController;
 use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsQueryService;
@@ -14,20 +13,12 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-
-/**
- * 統計查詢 API 控制器.
- *
- * 提供統計資料查詢的 REST API 端點，支援概覽、文章、來源、使用者等統計查詢
- */
-#[OA\Tag(name: 'statistics', description: '統計查詢 API')]
 class StatisticsController extends BaseController
 {
     public function __construct(
         private readonly StatisticsQueryService $statisticsQueryService,
         private readonly ValidatorInterface $validator,
     ) {}
-
     /**
      * 取得統計概覽.
      *
@@ -103,16 +94,12 @@ class StatisticsController extends BaseController
         try {
             // 檢查權限
             $this->checkStatisticsReadPermission($request);
-
             $queryParams = $request->getQueryParams();
-
             // 解析查詢參數
             /** @var array<string, mixed> $queryParams */
             $queryDTO = $this->buildQueryDTO($queryParams);
-
             // 呼叫應用服務
             $overview = $this->statisticsQueryService->getOverview($queryDTO);
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $overview,
@@ -141,7 +128,6 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 取得文章統計.
      *
@@ -213,13 +199,10 @@ class StatisticsController extends BaseController
     ): ResponseInterface {
         try {
             $queryParams = $request->getQueryParams();
-
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
-
             // 呼叫應用服務
             $paginatedResult = $this->statisticsQueryService->getPostStatistics($queryDTO);
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $paginatedResult->getData(),
@@ -249,7 +232,6 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 取得來源分布統計.
      *
@@ -307,13 +289,10 @@ class StatisticsController extends BaseController
     ): ResponseInterface {
         try {
             $queryParams = $request->getQueryParams();
-
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
-
             // 呼叫應用服務
             $sourceDistribution = $this->statisticsQueryService->getSourceDistribution($queryDTO);
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $sourceDistribution,
@@ -337,7 +316,6 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 取得使用者統計.
      *
@@ -408,13 +386,10 @@ class StatisticsController extends BaseController
     ): ResponseInterface {
         try {
             $queryParams = $request->getQueryParams();
-
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
-
             // 呼叫應用服務
             $paginatedResult = $this->statisticsQueryService->getUserStatistics($queryDTO);
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $paginatedResult->getData(),
@@ -444,7 +419,6 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 取得熱門內容.
      *
@@ -509,13 +483,10 @@ class StatisticsController extends BaseController
     ): ResponseInterface {
         try {
             $queryParams = $request->getQueryParams();
-
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
-
             // 呼叫應用服務
             $popularContent = $this->statisticsQueryService->getPopularContent($queryDTO);
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $popularContent,
@@ -539,7 +510,6 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
-
     /**
      * 檢查使用者是否有統計查詢權限.
      */
@@ -547,27 +517,21 @@ class StatisticsController extends BaseController
     {
         // 檢查角色權限
         $userRole = $request->getAttribute('role', '');
-
         // super_admin 角色擁有所有權限
         if ($userRole === 'super_admin') {
             return;
         }
-
         $userPermissions = $request->getAttribute('permissions', []);
-
         if (!is_array($userPermissions)) {
             throw ValidationException::fromSingleError('permission', '權限資訊格式錯誤');
         }
-
         $hasPermission = in_array('*', $userPermissions)
                         || in_array('statistics.*', $userPermissions)
                         || in_array('statistics.read', $userPermissions);
-
         if (!$hasPermission) {
             throw ValidationException::fromSingleError('permission', '沒有統計查詢權限');
         }
     }
-
     /**
      * 建構統計查詢 DTO.
      *
@@ -579,47 +543,36 @@ class StatisticsController extends BaseController
     {
         // 驗證查詢參數
         $this->validateQueryParams($queryParams);
-
         try {
             // 解析日期參數
             $startDate = null;
             $endDate = null;
-
             if (!empty($queryParams['start_date']) && is_string($queryParams['start_date'])) {
                 $startDate = new DateTimeImmutable($queryParams['start_date']);
             }
-
             if (!empty($queryParams['end_date']) && is_string($queryParams['end_date'])) {
                 $endDate = new DateTimeImmutable($queryParams['end_date']);
             }
-
             // 驗證日期範圍
             $this->validateDateRange($startDate, $endDate);
-
             // 解析分頁參數
             $page = 1;
             $limit = 20;
-
             if (isset($queryParams['page']) && is_numeric($queryParams['page'])) {
                 $page = max(1, (int) $queryParams['page']);
             }
-
             if (isset($queryParams['limit']) && is_numeric($queryParams['limit'])) {
                 $limit = max(1, min(100, (int) $queryParams['limit']));
             }
-
             // 解析排序參數
             $sortBy = 'created_at';
             $sortDirection = 'desc';
-
             if (isset($queryParams['sort_by']) && is_string($queryParams['sort_by'])) {
                 $sortBy = $queryParams['sort_by'];
             }
-
             if (isset($queryParams['sort_direction']) && is_string($queryParams['sort_direction'])) {
                 $sortDirection = $queryParams['sort_direction'];
             }
-
             // 建立查詢 DTO
             return new StatisticsQueryDTO(
                 startDate: $startDate,
@@ -633,7 +586,6 @@ class StatisticsController extends BaseController
             throw ValidationException::fromSingleError('date_format', '日期格式錯誤，請使用 YYYY-MM-DD 格式');
         }
     }
-
     /**
      * 驗證查詢參數.
      *
@@ -643,7 +595,6 @@ class StatisticsController extends BaseController
     {
         // 觸碰 validator 屬性以避免 PHPStan 警告
         $this->validator; // @phpstan-ignore-line
-
         $rules = [
             'start_date' => [
                 'type' => 'string',
@@ -678,26 +629,21 @@ class StatisticsController extends BaseController
                 'optional' => true,
             ],
         ];
-
         foreach ($rules as $field => $rule) {
             $value = $queryParams[$field] ?? null;
-
             // 檢查必填欄位
             if ($value === null || $value === '') {
                 // 所有欄位都是 optional，如果不存在就跳過
                 continue;
             }
-
             // 型別檢查（所有規則都有 type，所以總是存在）
             $this->validateFieldType($field, $value, $rule['type']);
-
             // 正規表達式檢查
             if (isset($rule['pattern']) && is_string($value)) {
                 if (!preg_match($rule['pattern'], $value)) {
                     throw ValidationException::fromSingleError($field, "參數 {$field} 格式不正確");
                 }
             }
-
             // 範圍檢查
             if (is_numeric($value)) {
                 $numValue = (int) $value;
@@ -708,19 +654,16 @@ class StatisticsController extends BaseController
                     throw ValidationException::fromSingleError($field, "參數 {$field} 不能大於 {$rule['max']}");
                 }
             }
-
             // 枚舉值檢查
             if (array_key_exists('enum', $rule) && is_string($value)) {
                 // enum 總是陣列，所以移除 is_array 檢查
                 if (!in_array($value, $rule['enum'], true)) {
                     $allowedValues = implode(', ', $rule['enum']);
-
                     throw ValidationException::fromSingleError($field, "參數 {$field} 必須為以下值之一：{$allowedValues}");
                 }
             }
         }
     }
-
     /**
      * 驗證欄位型別.
      *
@@ -735,12 +678,10 @@ class StatisticsController extends BaseController
             'boolean' => is_bool($value) || in_array($value, ['true', 'false', '1', '0']),
             default => true,
         };
-
         if (!$valid) {
             throw ValidationException::fromSingleError($field, "參數 {$field} 必須為 {$expectedType} 型別");
         }
     }
-
     /**
      * 驗證日期範圍.
      *
@@ -753,14 +694,12 @@ class StatisticsController extends BaseController
             if ($startDate > $endDate) {
                 throw ValidationException::fromSingleError('date_range', '開始日期不能晚於結束日期');
             }
-
             // 檢查查詢範圍限制（最多1年）
             $maxRange = $startDate->modify('+1 year');
             if ($endDate > $maxRange) {
                 throw ValidationException::fromSingleError('date_range', '查詢範圍不能超過1年');
             }
         }
-
         // 檢查日期不能是未來
         $now = new DateTimeImmutable();
         if ($startDate && $startDate > $now) {

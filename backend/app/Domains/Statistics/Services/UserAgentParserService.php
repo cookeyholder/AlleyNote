@@ -3,11 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
-
-/**
- * User-Agent 解析服務
- * 用於從 User-Agent 字符串中提取瀏覽器和裝置資訊.
- */
 class UserAgentParserService
 {
     /**
@@ -25,7 +20,6 @@ class UserAgentParserService
                 'os' => 'Unknown',
             ];
         }
-
         return [
             'browser' => $this->detectBrowser($userAgent),
             'browser_version' => $this->detectBrowserVersion($userAgent),
@@ -33,7 +27,6 @@ class UserAgentParserService
             'os' => $this->detectOS($userAgent),
         ];
     }
-
     /**
      * 檢測瀏覽器類型.
      */
@@ -47,16 +40,13 @@ class UserAgentParserService
             'Opera' => '/Opera\/([\d\.]+)/',
             'IE' => '/MSIE ([\d\.]+)/',
         ];
-
         foreach ($browsers as $browser => $pattern) {
             if (preg_match($pattern, $userAgent)) {
                 return $browser;
             }
         }
-
         return 'Other';
     }
-
     /**
      * 檢測瀏覽器版本.
      */
@@ -70,16 +60,13 @@ class UserAgentParserService
             '/Opera\/([\d\.]+)/',
             '/MSIE ([\d\.]+)/',
         ];
-
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $userAgent, $matches)) {
                 return $matches[1] ?? '';
             }
         }
-
         return '';
     }
-
     /**
      * 檢測裝置類型.
      */
@@ -89,13 +76,10 @@ class UserAgentParserService
             if (preg_match('/iPad|Tablet/i', $userAgent)) {
                 return 'Tablet';
             }
-
             return 'Mobile';
         }
-
         return 'Desktop';
     }
-
     /**
      * 檢測操作系統.
      */
@@ -114,16 +98,13 @@ class UserAgentParserService
             'Linux' => '/Linux/i',
             'Ubuntu' => '/Ubuntu/i',
         ];
-
         foreach ($osList as $os => $pattern) {
             if (preg_match($pattern, $userAgent)) {
                 return $os;
             }
         }
-
         return 'Other';
     }
-
     /**
      * 批量解析多個 User-Agent.
      *

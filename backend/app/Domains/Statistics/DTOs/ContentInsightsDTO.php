@@ -3,17 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
-
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
-
-/**
- * 內容洞察統計 DTO.
- *
- * 封裝內容洞察統計資料的傳輸物件，包含內容效能分析、主題分析、使用者互動洞察等。
- * 專門用於內容分析 API 的回應格式與內部資料傳遞。
- */
 class ContentInsightsDTO implements JsonSerializable
 {
     /**
@@ -46,7 +38,6 @@ class ContentInsightsDTO implements JsonSerializable
     ) {
         $this->validateData();
     }
-
     /**
      * 從陣列建立 DTO.
      *
@@ -59,7 +50,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (isset($data['generated_at']) && is_string($data['generated_at'])) {
             $generatedAt = new DateTimeImmutable($data['generated_at']);
         }
-
         return new self(
             topPerformingContent: self::ensureIntArrayStringMixedArray($data['top_performing_content'] ?? []),
             contentPerformanceMetrics: self::ensureStringMixedArray($data['content_performance_metrics'] ?? []),
@@ -75,7 +65,6 @@ class ContentInsightsDTO implements JsonSerializable
             metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
         );
     }
-
     // Getters
     /**
      * @return array<int, array<string, mixed>>
@@ -84,7 +73,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->topPerformingContent;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -92,7 +80,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->contentPerformanceMetrics;
     }
-
     /**
      * @return array<string, int>
      */
@@ -100,7 +87,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->popularTopics;
     }
-
     /**
      * @return array<string, int>
      */
@@ -108,7 +94,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->contentFormats;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -116,7 +101,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->userEngagementPatterns;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -124,7 +108,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->contentLifecycleAnalysis;
     }
-
     /**
      * @return array<string, int|float>
      */
@@ -132,7 +115,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->readingPatterns;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -140,7 +122,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->shareability;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -148,7 +129,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->seasonalTrends;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -156,12 +136,10 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->contentOptimization;
     }
-
     public function getGeneratedAt(): ?DateTimeImmutable
     {
         return $this->generatedAt;
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -169,142 +147,104 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->metadata;
     }
-
     // 計算方法
     public function getAverageViewsPerContent(): float
     {
         $avgViews = $this->contentPerformanceMetrics['avg_views_per_content'] ?? 0.0;
-
         return is_numeric($avgViews) ? (float) $avgViews : 0.0;
     }
-
     public function getAverageEngagementRate(): float
     {
         $engagementRate = $this->contentPerformanceMetrics['avg_engagement_rate'] ?? 0.0;
-
         return is_numeric($engagementRate) ? (float) $engagementRate : 0.0;
     }
-
     public function getAverageReadTime(): int
     {
         $readTime = $this->contentPerformanceMetrics['avg_read_time'] ?? 0;
-
         return is_numeric($readTime) ? (int) $readTime : 0;
     }
-
     public function getBounceRate(): float
     {
         $bounceRate = $this->contentPerformanceMetrics['bounce_rate'] ?? 0.0;
-
         return is_numeric($bounceRate) ? (float) $bounceRate : 0.0;
     }
-
     public function getCompletionRate(): float
     {
         $completionRate = $this->contentPerformanceMetrics['completion_rate'] ?? 0.0;
-
         return is_numeric($completionRate) ? (float) $completionRate : 0.0;
     }
-
     public function getShareRate(): float
     {
         $shareRate = $this->contentPerformanceMetrics['share_rate'] ?? 0.0;
-
         return is_numeric($shareRate) ? (float) $shareRate : 0.0;
     }
-
     public function getTopTopic(): ?string
     {
         if (empty($this->popularTopics)) {
             return null;
         }
-
         $maxCount = max($this->popularTopics);
         $topTopics = array_keys($this->popularTopics, $maxCount);
-
         return $topTopics[0] ?? null;
     }
-
     public function getMostPopularFormat(): ?string
     {
         if (empty($this->contentFormats)) {
             return null;
         }
-
         $maxCount = max($this->contentFormats);
         $topFormats = array_keys($this->contentFormats, $maxCount);
-
         return $topFormats[0] ?? null;
     }
-
     public function getBestPerformingContent(): ?array
     {
         return $this->topPerformingContent[0] ?? null;
     }
-
     public function getAverageSharesPerContent(): float
     {
         $avgShares = $this->shareability['avg_shares_per_content'] ?? 0.0;
-
         return is_numeric($avgShares) ? (float) $avgShares : 0.0;
     }
-
     public function getMostSharableContentType(): ?string
     {
         $type = $this->shareability['most_sharable_type'] ?? null;
-
         return is_string($type) ? $type : null;
     }
-
     public function getPeakEngagementHour(): ?string
     {
         $hour = $this->userEngagementPatterns['peak_hour'] ?? null;
-
         return is_string($hour) ? $hour : null;
     }
-
     public function getPeakEngagementDay(): ?string
     {
         $day = $this->userEngagementPatterns['peak_day'] ?? null;
-
         return is_string($day) ? $day : null;
     }
-
     public function getContentLifespanDays(): int
     {
         $lifespan = $this->contentLifecycleAnalysis['avg_lifespan_days'] ?? 0;
-
         return is_numeric($lifespan) ? (int) $lifespan : 0;
     }
-
     public function getPeakViewsPeriod(): ?string
     {
         $period = $this->contentLifecycleAnalysis['peak_views_period'] ?? null;
-
         return is_string($period) ? $period : null;
     }
-
     public function getOptimalContentLength(): int
     {
         $length = $this->readingPatterns['optimal_length_words'] ?? 0;
-
         return is_numeric($length) ? (int) $length : 0;
     }
-
     public function getAverageScrollDepth(): float
     {
         $scrollDepth = $this->readingPatterns['avg_scroll_depth'] ?? 0.0;
-
         return is_numeric($scrollDepth) ? (float) $scrollDepth : 0.0;
     }
-
     public function getReturnReaderRate(): float
     {
         $returnRate = $this->readingPatterns['return_reader_rate'] ?? 0.0;
-
         return is_numeric($returnRate) ? (float) $returnRate : 0.0;
     }
-
     /**
      * 取得內容效能評級.
      */
@@ -313,9 +253,7 @@ class ContentInsightsDTO implements JsonSerializable
         $engagementRate = $this->getAverageEngagementRate();
         $completionRate = $this->getCompletionRate();
         $shareRate = $this->getShareRate();
-
         $score = ($engagementRate * 0.4) + ($completionRate * 0.4) + ($shareRate * 0.2);
-
         return match (true) {
             $score >= 80 => 'A+',
             $score >= 70 => 'A',
@@ -326,7 +264,6 @@ class ContentInsightsDTO implements JsonSerializable
             default => 'D',
         };
     }
-
     /**
      * 取得內容策略建議.
      *
@@ -335,7 +272,6 @@ class ContentInsightsDTO implements JsonSerializable
     public function getContentStrategyRecommendations(): array
     {
         $recommendations = [];
-
         // 基於參與率的建議
         if ($this->getAverageEngagementRate() < 5.0) {
             $recommendations['engagement'] = [
@@ -344,7 +280,6 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['增加問答環節', '加入互動元素', '改善內容標題'],
             ];
         }
-
         // 基於完成率的建議
         if ($this->getCompletionRate() < 60.0) {
             $recommendations['completion'] = [
@@ -353,7 +288,6 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['縮短內容長度', '改善排版', '增加視覺元素'],
             ];
         }
-
         // 基於分享率的建議
         if ($this->getShareRate() < 2.0) {
             $recommendations['sharing'] = [
@@ -362,7 +296,6 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['創造更多有價值的內容', '優化分享功能', '增加社群元素'],
             ];
         }
-
         // 基於熱門主題的建議
         $topTopic = $this->getTopTopic();
         if ($topTopic !== null) {
@@ -372,10 +305,8 @@ class ContentInsightsDTO implements JsonSerializable
                 'suggestions' => ['創作更多相關內容', '深入探討熱門話題', '建立主題系列'],
             ];
         }
-
         return $recommendations;
     }
-
     /**
      * 取得內容優化洞察.
      *
@@ -405,7 +336,6 @@ class ContentInsightsDTO implements JsonSerializable
             ],
         ];
     }
-
     /**
      * 取得季節性內容策略.
      *
@@ -415,7 +345,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         $currentSeason = $this->getCurrentSeason();
         $seasonalData = $this->seasonalTrends[$currentSeason] ?? [];
-
         return [
             'current_season' => $currentSeason,
             'seasonal_performance' => $seasonalData,
@@ -425,7 +354,6 @@ class ContentInsightsDTO implements JsonSerializable
             'content_calendar_suggestions' => $this->generateContentCalendarSuggestions($currentSeason),
         ];
     }
-
     /**
      * 取得讀者行為分析.
      *
@@ -456,7 +384,6 @@ class ContentInsightsDTO implements JsonSerializable
             'content_discovery' => $this->userEngagementPatterns['discovery_patterns'] ?? [],
         ];
     }
-
     /**
      * 轉換為陣列.
      *
@@ -491,18 +418,14 @@ class ContentInsightsDTO implements JsonSerializable
             'seasonal_content_strategy' => $this->getSeasonalContentStrategy(),
             'reader_behavior_analysis' => $this->getReaderBehaviorAnalysis(),
         ];
-
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
         }
-
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
-
         return $data;
     }
-
     /**
      * JSON 序列化.
      *
@@ -512,7 +435,6 @@ class ContentInsightsDTO implements JsonSerializable
     {
         return $this->toArray();
     }
-
     /**
      * 檢查是否有有效資料.
      */
@@ -522,7 +444,6 @@ class ContentInsightsDTO implements JsonSerializable
                || !empty($this->contentPerformanceMetrics)
                || !empty($this->popularTopics);
     }
-
     /**
      * 取得摘要資訊.
      *
@@ -539,7 +460,6 @@ class ContentInsightsDTO implements JsonSerializable
             'optimal_content_length' => $this->getOptimalContentLength(),
         ];
     }
-
     /**
      * 驗證資料完整性.
      *
@@ -553,7 +473,6 @@ class ContentInsightsDTO implements JsonSerializable
                 throw new InvalidArgumentException('表現最佳內容資料結構不正確');
             }
         }
-
         // 驗證內容效能指標
         if (!empty($this->contentPerformanceMetrics)) {
             $requiredMetrics = ['avg_views_per_content', 'avg_engagement_rate', 'avg_read_time', 'bounce_rate', 'completion_rate', 'share_rate'];
@@ -563,21 +482,18 @@ class ContentInsightsDTO implements JsonSerializable
                 }
             }
         }
-
         // 驗證熱門主題統計
         foreach ($this->popularTopics as $topic => $count) {
             if (!is_string($topic) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('熱門主題統計資料格式不正確');
             }
         }
-
         // 驗證內容格式統計
         foreach ($this->contentFormats as $format => $count) {
             if (!is_string($format) || !is_int($count) || $count < 0) {
                 throw new InvalidArgumentException('內容格式統計資料格式不正確');
             }
         }
-
         // 驗證閱讀模式統計
         foreach ($this->readingPatterns as $pattern => $value) {
             if (!is_string($pattern)) {
@@ -588,11 +504,9 @@ class ContentInsightsDTO implements JsonSerializable
             }
         }
     }
-
     private function getCurrentSeason(): string
     {
         $month = (int) date('n');
-
         return match (true) {
             in_array($month, [12, 1, 2], true) => 'winter',
             in_array($month, [3, 4, 5], true) => 'spring',
@@ -600,14 +514,12 @@ class ContentInsightsDTO implements JsonSerializable
             default => 'autumn',
         };
     }
-
     /**
      * @return array<string>
      */
     private function getRefreshRecommendations(): array
     {
         $lifespan = $this->getContentLifespanDays();
-
         if ($lifespan < 30) {
             return ['每週檢查內容效能', '快速更新過時資訊', '持續優化標題和描述'];
         } elseif ($lifespan < 90) {
@@ -616,7 +528,6 @@ class ContentInsightsDTO implements JsonSerializable
             return ['每季度全面檢視', '重新評估內容價值', '考慮重新撰寫或合併內容'];
         }
     }
-
     /**
      * @return array<string>
      */
@@ -630,7 +541,6 @@ class ContentInsightsDTO implements JsonSerializable
             default => ['通用主題內容'],
         };
     }
-
     /**
      * 確保回傳 array<string, mixed> 型別.
      *
@@ -642,17 +552,14 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key)) {
                 $result[$key] = $value;
             }
         }
-
         return $result;
     }
-
     /**
      * 確保回傳 array<string, int> 型別.
      *
@@ -664,17 +571,14 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && is_numeric($value)) {
                 $result[$key] = (int) $value;
             }
         }
-
         return $result;
     }
-
     /**
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
@@ -686,7 +590,6 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $item) {
             if (is_array($item)) {
@@ -699,10 +602,8 @@ class ContentInsightsDTO implements JsonSerializable
                 $result[] = $filteredItem;
             }
         }
-
         return $result;
     }
-
     /**
      * 確保回傳 array<string, int|float> 型別.
      *
@@ -714,14 +615,12 @@ class ContentInsightsDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key) && (is_int($value) || is_float($value))) {
                 $result[$key] = $value;
             }
         }
-
         return $result;
     }
 }

@@ -3,15 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Cache;
-
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use InvalidArgumentException;
-
-/**
- * 路由快取工廠.
- *
- * 根據配置建立適當的快取實作
- */
 class RouteCacheFactory
 {
     /**
@@ -22,7 +15,6 @@ class RouteCacheFactory
         'memory' => MemoryRouteCache::class,
         // 'redis' => RedisRouteCache::class, // 如果 Redis 可用時啟用
     ];
-
     /**
      * 建立路由快取實例.
      *
@@ -31,21 +23,18 @@ class RouteCacheFactory
     public function create(array $config): RouteCacheInterface
     {
         $driver = $config['driver'];
-
         if (!isset(self::SUPPORTED_DRIVERS[$driver])) {
             throw new InvalidArgumentException(
                 "Unsupported cache driver: {$driver}. Supported drivers: "
                     . implode(', ', array_keys(self::SUPPORTED_DRIVERS)),
             );
         }
-
         return match ($driver) {
             'file' => $this->createFileCache($config),
             'memory' => $this->createMemoryCache($config),
             // 'redis' => $this->createRedisCache($config),
         };
     }
-
     /**
      * 建立檔案快取實例.
      *
@@ -55,14 +44,11 @@ class RouteCacheFactory
     {
         $cachePath = $config['path'] ?? sys_get_temp_dir() . '/route_cache';
         $cache = new FileRouteCache($cachePath);
-
         if (isset($config['ttl'])) {
             $cache->setTtl((int) $config['ttl']);
         }
-
         return $cache;
     }
-
     /**
      * 建立記憶體快取實例.
      *
@@ -71,14 +57,11 @@ class RouteCacheFactory
     private function createMemoryCache(array $config): MemoryRouteCache
     {
         $cache = new MemoryRouteCache();
-
         if (isset($config['ttl'])) {
             $cache->setTtl((int) $config['ttl']);
         }
-
         return $cache;
     }
-
     /**
      * 取得支援的快取驅動程式列表.
      *
@@ -88,7 +71,6 @@ class RouteCacheFactory
     {
         return array_keys(self::SUPPORTED_DRIVERS);
     }
-
     /**
      * 檢查指定驅動程式是否支援.
      */
@@ -96,7 +78,6 @@ class RouteCacheFactory
     {
         return isset(self::SUPPORTED_DRIVERS[$driver]);
     }
-
     /**
      * 取得快取驅動程式的類別名稱.
      */
@@ -104,7 +85,6 @@ class RouteCacheFactory
     {
         return self::SUPPORTED_DRIVERS[$driver] ?? null;
     }
-
     /**
      * 建立預設快取實例（記憶體快取）.
      */
@@ -112,7 +92,6 @@ class RouteCacheFactory
     {
         return $this->create(['driver' => 'memory']);
     }
-
     /**
      * 驗證快取配置.
      *
@@ -122,7 +101,6 @@ class RouteCacheFactory
     public function validateConfig(array $config): array
     {
         $errors = [];
-
         if (!array_key_exists('driver', $config)) {
             $errors[] = 'Cache driver is required';
         } elseif (!self::isDriverSupported($config['driver'])) {
@@ -132,11 +110,9 @@ class RouteCacheFactory
                 implode(', ', self::getSupportedDrivers()),
             );
         }
-
         if (array_key_exists('ttl', $config) && (!is_int($config['ttl']) || $config['ttl'] < 0)) {
             $errors[] = 'Cache TTL must be a non-negative integer';
         }
-
         if ($config['driver'] === 'file') {
             if (array_key_exists('path', $config)) {
                 $path = $config['path'];
@@ -147,7 +123,6 @@ class RouteCacheFactory
                 }
             }
         }
-
         return $errors;
     }
 }

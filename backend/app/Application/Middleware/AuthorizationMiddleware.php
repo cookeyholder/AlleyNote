@@ -3,24 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Application\Middleware;
-
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Infrastructure\Http\Response;
-
 class AuthorizationMiddleware
 {
     private AuthorizationServiceInterface $authorizationService;
-
     public function __construct(AuthorizationServiceInterface $authorizationService)
     {
         $this->authorizationService = $authorizationService;
     }
-
     public function checkPermission(int $userId, string $resource, string $action): bool
     {
         return $this->authorizationService->can($userId, $resource, $action);
     }
-
     public function requirePermission(int $userId, string $resource, string $action): Response
     {
         if (!$this->checkPermission($userId, $resource, $action)) {
@@ -33,10 +28,8 @@ class AuthorizationMiddleware
                 ], JSON_UNESCAPED_UNICODE),
             );
         }
-
         return new Response(statusCode: 200);
     }
-
     public function requireRole(int $userId, string $roleName): Response
     {
         if (!$this->authorizationService->hasRole($userId, $roleName)) {
@@ -49,10 +42,8 @@ class AuthorizationMiddleware
                 ], JSON_UNESCAPED_UNICODE),
             );
         }
-
         return new Response(statusCode: 200);
     }
-
     public function extractResourceFromPath(string $path): string
     {
         if (str_contains($path, '/posts')) {
@@ -66,10 +57,8 @@ class AuthorizationMiddleware
         } elseif (str_contains($path, '/system')) {
             return 'system';
         }
-
         return 'unknown';
     }
-
     public function extractActionFromMethod(string $method): string
     {
         return match (strtoupper($method)) {

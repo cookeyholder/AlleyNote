@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Shared\Http;
-
 class ApiResponse
 {
     public static function success($data = null, string $message = 'Success'): array
@@ -15,7 +14,6 @@ class ApiResponse
             'timestamp' => date('c'),
         ];
     }
-
     public static function error(string $message, int $code = 400, mixed $errors = null): array
     {
         return [
@@ -31,7 +29,6 @@ class ApiResponse
             'timestamp' => date('c'),
         ];
     }
-
     public static function paginated(array $data, int $total, int $page, int $perPage): array
     {
         return [

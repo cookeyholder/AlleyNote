@@ -3,54 +3,32 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
-
-/**
- * Token 生成失敗例外.
- *
- * 當生成 JWT Token 過程中發生錯誤時拋出此例外。
- * 包含生成失敗的具體原因和相關詳細資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 class TokenGenerationException extends JwtException
 {
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'token_generation_failed';
-
     /**
      * 錯誤碼常數.
      */
     public const ERROR_CODE = 5001;
-
     /**
      * 生成失敗原因常數.
      */
     public const REASON_KEY_INVALID = 'key_invalid';
-
     public const REASON_KEY_MISSING = 'key_missing';
-
     public const REASON_PAYLOAD_INVALID = 'payload_invalid';
-
     public const REASON_ALGORITHM_UNSUPPORTED = 'algorithm_unsupported';
-
     public const REASON_ENCODING_FAILED = 'encoding_failed';
-
     public const REASON_CLAIMS_INVALID = 'claims_invalid';
-
     public const REASON_SIGNATURE_FAILED = 'signature_failed';
-
     public const REASON_RESOURCE_EXHAUSTED = 'resource_exhausted';
-
     /**
      * Token 類型常數.
      */
     public const ACCESS_TOKEN = 'access_token';
-
     public const REFRESH_TOKEN = 'refresh_token';
-
     /**
      * 建立 Token 生成失敗例外.
      *
@@ -66,17 +44,14 @@ class TokenGenerationException extends JwtException
         array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
-
         $context = array_merge([
             'reason' => $reason,
             'token_type' => $tokenType,
             'timestamp' => time(),
             'generation_attempt_id' => uniqid('gen_', true),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
-
     /**
      * 建構預設錯誤訊息.
      *
@@ -86,7 +61,6 @@ class TokenGenerationException extends JwtException
     private function buildDefaultMessage(string $reason, string $tokenType): string
     {
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
-
         return match ($reason) {
             self::REASON_KEY_INVALID => sprintf('Failed to generate %s: private key is invalid or corrupted', $tokenName),
             self::REASON_KEY_MISSING => sprintf('Failed to generate %s: private key is missing', $tokenName),
@@ -98,14 +72,12 @@ class TokenGenerationException extends JwtException
             default => sprintf('Failed to generate %s: encoding process failed', $tokenName),
         };
     }
-
     /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string
     {
         $reason = $this->getReason();
-
         return match ($reason) {
             self::REASON_KEY_INVALID,
             self::REASON_KEY_MISSING => '系統配置錯誤，無法產生安全 Token。請聯絡系統管理員。',
@@ -117,7 +89,6 @@ class TokenGenerationException extends JwtException
             default => 'Token 生成過程發生錯誤，請稍後重試。如問題持續發生，請聯絡系統管理員。',
         };
     }
-
     /**
      * 取得失敗原因.
      */
@@ -125,7 +96,6 @@ class TokenGenerationException extends JwtException
     {
         return $this->context['reason'] ?? self::REASON_ENCODING_FAILED;
     }
-
     /**
      * 取得 Token 類型.
      */
@@ -133,7 +103,6 @@ class TokenGenerationException extends JwtException
     {
         return $this->context['token_type'] ?? self::ACCESS_TOKEN;
     }
-
     /**
      * 取得生成嘗試 ID.
      */
@@ -141,7 +110,6 @@ class TokenGenerationException extends JwtException
     {
         return $this->context['generation_attempt_id'] ?? null;
     }
-
     /**
      * 檢查是否為特定失敗原因.
      *
@@ -151,7 +119,6 @@ class TokenGenerationException extends JwtException
     {
         return $this->getReason() === $reason;
     }
-
     /**
      * 檢查是否為 Access Token 生成失敗.
      */
@@ -159,7 +126,6 @@ class TokenGenerationException extends JwtException
     {
         return $this->getTokenType() === self::ACCESS_TOKEN;
     }
-
     /**
      * 檢查是否為 Refresh Token 生成失敗.
      */
@@ -167,7 +133,6 @@ class TokenGenerationException extends JwtException
     {
         return $this->getTokenType() === self::REFRESH_TOKEN;
     }
-
     /**
      * 檢查是否為金鑰相關錯誤.
      */
@@ -178,7 +143,6 @@ class TokenGenerationException extends JwtException
             self::REASON_KEY_MISSING,
         ]);
     }
-
     /**
      * 檢查是否為資料相關錯誤.
      */
@@ -189,7 +153,6 @@ class TokenGenerationException extends JwtException
             self::REASON_CLAIMS_INVALID,
         ]);
     }
-
     /**
      * 檢查是否為系統配置錯誤.
      */
@@ -201,7 +164,6 @@ class TokenGenerationException extends JwtException
             self::REASON_ALGORITHM_UNSUPPORTED,
         ]);
     }
-
     /**
      * 檢查是否為暫時性錯誤（可重試）.
      */
@@ -212,7 +174,6 @@ class TokenGenerationException extends JwtException
             self::REASON_ENCODING_FAILED,
         ]);
     }
-
     /**
      * 靜態工廠方法：金鑰無效.
      *
@@ -222,10 +183,8 @@ class TokenGenerationException extends JwtException
     public static function keyInvalid(string $keyInfo = '', string $tokenType = self::ACCESS_TOKEN): self
     {
         $context = $keyInfo ? ['key_info' => $keyInfo] : [];
-
         return new self(self::REASON_KEY_INVALID, $tokenType, '', $context);
     }
-
     /**
      * 靜態工廠方法：金鑰遺失.
      *
@@ -235,7 +194,6 @@ class TokenGenerationException extends JwtException
     {
         return new self(self::REASON_KEY_MISSING, $tokenType);
     }
-
     /**
      * 靜態工廠方法：載荷無效.
      *
@@ -248,7 +206,6 @@ class TokenGenerationException extends JwtException
             'invalid_fields' => $invalidFields,
         ]);
     }
-
     /**
      * 靜態工廠方法：演算法不支援.
      *
@@ -261,7 +218,6 @@ class TokenGenerationException extends JwtException
             'algorithm' => $algorithm,
         ]);
     }
-
     /**
      * 靜態工廠方法：聲明無效.
      *
@@ -274,7 +230,6 @@ class TokenGenerationException extends JwtException
             'invalid_claims' => $invalidClaims,
         ]);
     }
-
     /**
      * 靜態工廠方法：簽章生成失敗.
      *
@@ -284,10 +239,8 @@ class TokenGenerationException extends JwtException
     public static function signatureFailed(string $details = '', string $tokenType = self::ACCESS_TOKEN): self
     {
         $context = $details ? ['failure_details' => $details] : [];
-
         return new self(self::REASON_SIGNATURE_FAILED, $tokenType, '', $context);
     }
-
     /**
      * 靜態工廠方法：資源耗盡
      *
@@ -300,7 +253,6 @@ class TokenGenerationException extends JwtException
             'resource_type' => $resourceType,
         ]);
     }
-
     /**
      * 靜態工廠方法：編碼失敗.
      *
@@ -310,7 +262,6 @@ class TokenGenerationException extends JwtException
     public static function encodingFailed(string $details = '', string $tokenType = self::ACCESS_TOKEN): self
     {
         $context = $details ? ['failure_details' => $details] : [];
-
         return new self(self::REASON_ENCODING_FAILED, $tokenType, '', $context);
     }
 }

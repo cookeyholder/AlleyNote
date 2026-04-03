@@ -3,22 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Shared\Helpers;
-
 use DateTimeImmutable;
 use DateTimeZone;
-use Throwable;
 use PDO;
-
-/**
- * 時區處理輔助類.
- *
- * 負責處理網站時區與 UTC 之間的轉換
- * 資料庫統一儲存 RFC3339 格式的 UTC 時間
- */
+use Throwable;
 class TimezoneHelper
 {
     private static ?string $siteTimezone = null;
-
     /**
      * 獲取網站時區設定.
      */
@@ -33,7 +24,6 @@ class TimezoneHelper
                 $stmt = $pdo->prepare("SELECT value FROM settings WHERE key = 'site_timezone' LIMIT 1");
                 $stmt->execute();
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
                 if (is_array($result) && isset($result['value']) && is_string($result['value'])) {
                     self::$siteTimezone = $result['value'];
                 } else {
@@ -44,10 +34,8 @@ class TimezoneHelper
                 self::$siteTimezone = 'Asia/Taipei';
             }
         }
-
         return self::$siteTimezone;
     }
-
     /**
      * 重設快取的時區設定.
      */
@@ -55,7 +43,6 @@ class TimezoneHelper
     {
         self::$siteTimezone = null;
     }
-
     /**
      * 將 UTC 時間轉換為網站時區
      *
@@ -68,14 +55,12 @@ class TimezoneHelper
             $dt = new DateTimeImmutable($utcTime, new DateTimeZone('UTC'));
             $siteTimezone = new DateTimeZone(self::getSiteTimezone());
             $dt = $dt->setTimezone($siteTimezone);
-
             return $dt->format('c'); // RFC3339 格式
         } catch (Throwable $e) {
             // 如果轉換失敗，返回原始時間
             return $utcTime;
         }
     }
-
     /**
      * 將網站時區時間轉換為 UTC.
      *
@@ -88,13 +73,11 @@ class TimezoneHelper
             $siteTimezone = new DateTimeZone(self::getSiteTimezone());
             $dt = new DateTimeImmutable($siteTime, $siteTimezone);
             $dt = $dt->setTimezone(new DateTimeZone('UTC'));
-
             return $dt->format('Y-m-d\TH:i:s\Z'); // RFC3339 UTC 格式
         } catch (Throwable $e) {
             // 如果轉換失敗，假設輸入已經是 UTC
             try {
                 $dt = new DateTimeImmutable($siteTime);
-
                 return $dt->format('Y-m-d\TH:i:s\Z');
             } catch (Throwable $e2) {
                 // 完全失敗，返回當前 UTC 時間
@@ -102,7 +85,6 @@ class TimezoneHelper
             }
         }
     }
-
     /**
      * 獲取當前 UTC 時間（RFC3339 格式）.
      */
@@ -110,7 +92,6 @@ class TimezoneHelper
     {
         return gmdate('Y-m-d\TH:i:s\Z');
     }
-
     /**
      * 獲取當前網站時區時間（RFC3339 格式）.
      */
@@ -118,13 +99,11 @@ class TimezoneHelper
     {
         try {
             $dt = new DateTimeImmutable('now', new DateTimeZone(self::getSiteTimezone()));
-
             return $dt->format('c');
         } catch (Throwable $e) {
             return self::nowUtc();
         }
     }
-
     /**
      * 驗證 RFC3339 格式.
      */
@@ -132,14 +111,12 @@ class TimezoneHelper
     {
         try {
             $dt = new DateTimeImmutable($dateTime);
-
             // 檢查是否能成功解析
             return true;
         } catch (Throwable $e) {
             return false;
         }
     }
-
     /**
      * 格式化顯示時間（用於前端顯示）.
      *
@@ -153,13 +130,11 @@ class TimezoneHelper
             $dt = new DateTimeImmutable($utcTime, new DateTimeZone('UTC'));
             $siteTimezone = new DateTimeZone(self::getSiteTimezone());
             $dt = $dt->setTimezone($siteTimezone);
-
             return $dt->format($format);
         } catch (Throwable $e) {
             return $utcTime;
         }
     }
-
     /**
      * 獲取時區偏移量.
      *
@@ -171,16 +146,13 @@ class TimezoneHelper
             $timezone = new DateTimeZone(self::getSiteTimezone());
             $dt = new DateTimeImmutable('now', $timezone);
             $offset = $timezone->getOffset($dt);
-
             $hours = intdiv($offset, 3600);
             $minutes = abs(intdiv($offset % 3600, 60));
-
             return sprintf('%+03d:%02d', $hours, $minutes);
         } catch (Throwable $e) {
             return '+00:00';
         }
     }
-
     /**
      * 獲取所有時區列表（全球 419 個時區）.
      *
@@ -190,17 +162,14 @@ class TimezoneHelper
     {
         $timezones = timezone_identifiers_list();
         $result = [];
-
         foreach ($timezones as $timezone) {
             try {
                 $tz = new DateTimeZone($timezone);
                 $dt = new DateTimeImmutable('now', $tz);
                 $offset = $tz->getOffset($dt);
-
                 $hours = intdiv($offset, 3600);
                 $minutes = abs(intdiv($offset % 3600, 60));
                 $offsetString = sprintf('UTC%+03d:%02d', $hours, $minutes);
-
                 // 格式化顯示名稱
                 $result[$timezone] = "{$timezone} ({$offsetString})";
             } catch (Throwable $e) {
@@ -208,10 +177,8 @@ class TimezoneHelper
                 $result[$timezone] = $timezone;
             }
         }
-
         return $result;
     }
-
     /**
      * 獲取常用時區列表（向後相容）.
      *

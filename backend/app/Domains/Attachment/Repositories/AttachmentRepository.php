@@ -3,23 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\Repositories;
-
 use App\Domains\Attachment\Models\Attachment;
 use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
 use Ramsey\Uuid\Uuid;
-
 class AttachmentRepository
 {
     public function __construct(
         private PDO $db,
         private CacheServiceInterface $cache,
     ) {}
-
     public function create(array $data): Attachment
     {
         $uuid = Uuid::uuid4()->toString();
-
         $sql = '
             INSERT INTO attachments (
                 uuid, post_id, filename, original_name,
@@ -31,7 +27,6 @@ class AttachmentRepository
                 CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
             )
         ';
-
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'uuid' => $uuid,
@@ -42,13 +37,10 @@ class AttachmentRepository
             'file_size' => $data['file_size'],
             'storage_path' => $data['storage_path'],
         ]);
-
         $data['id'] = (int) $this->db->lastInsertId();
         $data['uuid'] = $uuid;
-
         return new Attachment($data);
     }
-
     public function find(int $id): ?Attachment
     {
         return $this->cache->remember("attachment:{$id}", function () use ($id) {
@@ -57,16 +49,12 @@ class AttachmentRepository
                 FROM attachments
                 WHERE id = :id
             ';
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['id' => $id]);
-
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
             return $data ? new Attachment($data) : null;
         });
     }
-
     public function findByUuid(string $uuid): ?Attachment
     {
         return $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
@@ -75,16 +63,12 @@ class AttachmentRepository
                 FROM attachments
                 WHERE uuid = :uuid
             ';
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['uuid' => $uuid]);
-
             $data = $stmt->fetch(PDO::FETCH_ASSOC);
-
             return $data ? new Attachment($data) : null;
         });
     }
-
     public function getByPostId(int $postId): array
     {
         return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
@@ -95,19 +79,15 @@ class AttachmentRepository
                 AND deleted_at IS NULL
                 ORDER BY created_at DESC
             ';
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['post_id' => $postId]);
-
             $attachments = [];
             while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $attachments[] = new Attachment($data);
             }
-
             return $attachments;
         });
     }
-
     /**
      * 計算指定文章的附件數量.
      */
@@ -119,20 +99,15 @@ class AttachmentRepository
             WHERE post_id = :post_id
             AND deleted_at IS NULL
         ';
-
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['post_id' => $postId]);
-
         /** @var array<string, mixed>|false $result */
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
         if (is_array($result) && isset($result['count']) && is_numeric($result['count'])) {
             return (int) $result['count'];
         }
-
         return 0;
     }
-
     public function delete(int $id): bool
     {
         $sql = '
@@ -142,13 +117,10 @@ class AttachmentRepository
             WHERE id = :id
             AND deleted_at IS NULL
         ';
-
         $stmt = $this->db->prepare($sql);
         $success = $stmt->execute(['id' => $id]);
-
         if ($success) {
             $this->cache->delete("attachment:{$id}");
-
             // 清除相關的快取
             $attachment = $this->find($id);
             if ($attachment) {
@@ -156,7 +128,6 @@ class AttachmentRepository
                 $this->cache->delete("attachments:post:{$attachment->getPostId()}");
             }
         }
-
         return $success;
     }
 }

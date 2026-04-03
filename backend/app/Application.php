@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App;
-
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
@@ -17,20 +16,11 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-
-/**
- * 應用程式核心類別.
- *
- * 負責初始化和配置整個應用程式
- */
 class Application
 {
     private ContainerInterface $container;
-
     private RouterInterface $router;
-
     private RouteDispatcher $routeDispatcher;
-
     public function __construct()
     {
         $this->initializeContainer();
@@ -40,7 +30,6 @@ class Application
         $this->initializeRouteDispatcher();
         $this->loadRoutes();
     }
-
     /**
      * 執行應用程式.
      */
@@ -52,7 +41,6 @@ class Application
             return $this->handleException($e);
         }
     }
-
     /**
      * 初始化監控服務。
      */
@@ -62,7 +50,6 @@ class Application
         MonitoringServiceProvider::setupPerformanceBenchmarks($this->container);
         MonitoringServiceProvider::setupHealthCheckSchedule($this->container);
     }
-
     /**
      * 初始化環境配置.
      */
@@ -70,34 +57,27 @@ class Application
     {
         // 從容器獲取並驗證環境配置
         $config = $this->container->get(EnvironmentConfig::class);
-
         if (!$config instanceof EnvironmentConfig) {
             throw new \RuntimeException('無法獲取有效的環境配置');
         }
-
         // 驗證配置的完整性
         $errors = $config->validate();
         if (!empty($errors)) {
             $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
-
             throw new \RuntimeException($errorMessage);
         }
     }
-
     /**
      * 初始化 DI 容器.
      */
     private function initializeContainer(): void
     {
         $builder = new ContainerBuilder();
-
         // 載入容器配置檔案
         $containerConfig = require __DIR__ . '/../config/container.php';
         $builder->addDefinitions($containerConfig);
-
         $this->container = $builder->build();
     }
-
     /**
      * 初始化路由器.
      */
@@ -105,7 +85,6 @@ class Application
     {
         $this->router = $this->container->get(RouterInterface::class);
     }
-
     /**
      * 初始化路由分派器.
      */
@@ -113,7 +92,6 @@ class Application
     {
         $this->routeDispatcher = $this->container->get(RouteDispatcher::class);
     }
-
     /**
      * 載入路由配置.
      */
@@ -122,7 +100,6 @@ class Application
         // 使用路由服務提供者載入路由
         RoutingServiceProvider::loadRoutes($this->container);
     }
-
     /**
      * 處理 HTTP 請求
      */
@@ -130,7 +107,6 @@ class Application
     {
         return $this->routeDispatcher->dispatch($request);
     }
-
     /**
      * 處理例外狀況.
      */
@@ -150,7 +126,6 @@ class Application
             // 如果監控系統本身出錯，記錄到錯誤日誌
             app_log('error', 'Monitoring system error', ['exception' => $monitoringException->getMessage()]);
         }
-
         // 建立錯誤回應內容
         $appEnv = getenv('APP_ENV') ?: 'production';
         $errorData = [
@@ -161,17 +136,14 @@ class Application
         if ($appEnv !== 'production') {
             $errorData['code'] = $e->getCode();
         }
-
         $json = json_encode($errorData, JSON_UNESCAPED_UNICODE) ?: '{"error": "Internal Server Error"}';
         $stream = new Stream($json);
-
         return new Response(
             500,
             ['Content-Type' => 'application/json'],
             $stream,
         );
     }
-
     /**
      * 獲取 DI 容器實例.
      */
@@ -179,7 +151,6 @@ class Application
     {
         return $this->container;
     }
-
     /**
      * 獲取路由器實例.
      */

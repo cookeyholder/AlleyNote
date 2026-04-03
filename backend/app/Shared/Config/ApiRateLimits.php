@@ -3,29 +3,20 @@
 declare(strict_types=1);
 
 namespace App\Shared\Config;
-
-/**
- * API 使用率限制配置.
- *
- * 定義各 API 端點的使用率限制規則
- */
 class ApiRateLimits
 {
     /**
      * 預設限制: 每分鐘請求次數.
      */
     public const DEFAULT_REQUESTS_PER_MINUTE = 60;
-
     /**
      * 預設限制: 每小時請求次數.
      */
     public const DEFAULT_REQUESTS_PER_HOUR = 1000;
-
     /**
      * 預設限制: 每天請求次數.
      */
     public const DEFAULT_REQUESTS_PER_DAY = 10000;
-
     /**
      * 認證端點限制（較嚴格，防止暴力破解）.
      */
@@ -49,7 +40,6 @@ class ApiRateLimits
             'description' => 'Token 刷新端點',
         ],
     ];
-
     /**
      * 查詢端點限制（相對寬鬆）.
      */
@@ -67,7 +57,6 @@ class ApiRateLimits
             'description' => '詳細資訊查詢端點',
         ],
     ];
-
     /**
      * 寫入端點限制（中等嚴格）.
      */
@@ -91,7 +80,6 @@ class ApiRateLimits
             'description' => '刪除資源端點',
         ],
     ];
-
     /**
      * 管理員端點限制（相對寬鬆）.
      */
@@ -101,7 +89,6 @@ class ApiRateLimits
         'requests_per_day' => 50000,
         'description' => '管理員端點限制較寬鬆',
     ];
-
     /**
      * 檔案上傳端點限制（最嚴格）.
      */
@@ -113,7 +100,6 @@ class ApiRateLimits
         'allowed_types' => ['image/jpeg', 'image/png', 'image/gif', 'application/pdf'],
         'description' => '檔案上傳端點限制最嚴格',
     ];
-
     /**
      * 搜尋端點限制.
      */
@@ -123,7 +109,6 @@ class ApiRateLimits
         'requests_per_day' => 5000,
         'description' => '搜尋端點有中等限制',
     ];
-
     /**
      * 取得端點的限制配置.
      */
@@ -144,7 +129,6 @@ class ApiRateLimits
             ],
         };
     }
-
     /**
      * 取得所有限制配置.
      */

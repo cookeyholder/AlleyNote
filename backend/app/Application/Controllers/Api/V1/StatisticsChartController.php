@@ -5,19 +5,11 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 use RuntimeException;
 use Throwable;
-
-
-/**
- * 統計可視化 API 控制器.
- *
- * 提供前端圖表所需的各種統計資料 API 端點
- */
 class StatisticsChartController extends BaseController
 {
     public function __construct(
         private StatisticsVisualizationServiceInterface $visualizationService,
     ) {}
-
     /**
      * 取得文章發布時間序列統計.
      *
@@ -30,19 +22,15 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = $this->visualizationService->getPostsTimeSeriesData(
                 $startDate,
                 $endDate,
                 $granularity,
             );
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $chartData,
@@ -59,7 +47,6 @@ class StatisticsChartController extends BaseController
             throw new RuntimeException('取得統計資料失敗');
         }
     }
-
     /**
      * 取得使用者活動時間序列統計.
      *
@@ -72,19 +59,15 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = $this->visualizationService->getUserActivityTimeSeriesData(
                 $startDate,
                 $endDate,
                 $granularity,
             );
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $chartData,
@@ -101,7 +84,6 @@ class StatisticsChartController extends BaseController
             throw new RuntimeException('取得統計資料失敗');
         }
     }
-
     /**
      * 取得瀏覽量時間序列統計.
      *
@@ -114,15 +96,11 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = $this->visualizationService->getViewsTimeSeriesData($startDate, $endDate, $granularity);
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $chartData,
@@ -138,7 +116,6 @@ class StatisticsChartController extends BaseController
             throw new RuntimeException('取得瀏覽量統計失敗: ' . $e->getMessage());
         }
     }
-
     /**
      * 取得分類統計圖表（圓餅圖/長條圖等）.
      *
@@ -153,16 +130,13 @@ class StatisticsChartController extends BaseController
             $type = $args['type'] ?? 'sources';
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             /** @var string|null $startDateStr */
             $startDateStr = $params['start_date'] ?? null;
             /** @var string|null $endDateStr */
             $endDateStr = $params['end_date'] ?? null;
-
             $startDate = $this->parseOptionalDate($startDateStr);
             $endDate = $this->parseOptionalDate($endDateStr);
             $limit = $this->parseIntParam($params, 'limit', 10, 1, 50);
-
             $chartData = match ($type) {
                 'sources' => $this->visualizationService->getPostSourceDistributionData(
                     $startDate,
@@ -180,7 +154,6 @@ class StatisticsChartController extends BaseController
                 ),
                 default => throw ValidationException::fromSingleError('type', '不支援的分類類型'),
             };
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $chartData,
@@ -198,7 +171,6 @@ class StatisticsChartController extends BaseController
             throw new RuntimeException('取得統計資料失敗');
         }
     }
-
     /**
      * 取得趨勢分析圖表.
      *
@@ -213,13 +185,10 @@ class StatisticsChartController extends BaseController
             $type = $args['type'] ?? 'registration';
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = match ($type) {
                 'registration' => $this->visualizationService->getUserRegistrationTrendData(
                     $startDate,
@@ -233,7 +202,6 @@ class StatisticsChartController extends BaseController
                 ),
                 default => throw ValidationException::fromSingleError('type', '不支援的趨勢類型'),
             };
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $chartData,
@@ -251,7 +219,6 @@ class StatisticsChartController extends BaseController
             throw new RuntimeException('取得統計資料失敗');
         }
     }
-
     /**
      * 取得熱門內容排行榜.
      *
@@ -264,27 +231,22 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             /** @var string|null $startDateStr */
             $startDateStr = $params['start_date'] ?? null;
             /** @var string|null $endDateStr */
             $endDateStr = $params['end_date'] ?? null;
-
             $startDate = $this->parseOptionalDate($startDateStr);
             $endDate = $this->parseOptionalDate($endDateStr);
             /** @var string $sortBy */
             $sortBy = $params['sort_by'] ?? 'views';
             $limit = $this->parseIntParam($params, 'limit', 10, 1, 50);
-
             $this->validateSortBy($sortBy);
-
             $chartData = $this->visualizationService->getPopularContentRankingData(
                 $startDate,
                 $endDate,
                 $sortBy,
                 $limit,
             );
-
             return $this->json($response, [
                 'success' => true,
                 'data' => $chartData,
@@ -302,7 +264,6 @@ class StatisticsChartController extends BaseController
             throw new RuntimeException('取得統計資料失敗');
         }
     }
-
     /**
      * 解析日期範圍參數.
      *
@@ -316,7 +277,6 @@ class StatisticsChartController extends BaseController
         $startDateStr = $params['start_date'] ?? null;
         /** @var string|null $endDateStr */
         $endDateStr = $params['end_date'] ?? null;
-
         if (!$startDateStr || !$endDateStr) {
             // 預設為最近 30 天
             $endDate = new DateTimeImmutable();
@@ -329,14 +289,11 @@ class StatisticsChartController extends BaseController
                 throw ValidationException::fromSingleError('date_format', '日期格式無效，請使用 YYYY-MM-DD 格式');
             }
         }
-
         if ($startDate > $endDate) {
             throw ValidationException::fromSingleError('date_range', '開始日期不能晚於結束日期');
         }
-
         return [$startDate, $endDate];
     }
-
     /**
      * 解析可選日期參數.
      */
@@ -345,14 +302,12 @@ class StatisticsChartController extends BaseController
         if (!$dateStr) {
             return null;
         }
-
         try {
             return new DateTimeImmutable($dateStr);
         } catch (Throwable $e) {
             throw ValidationException::fromSingleError('date_format', '日期格式無效，請使用 YYYY-MM-DD 格式');
         }
     }
-
     /**
      * 解析整數參數.
      *
@@ -366,39 +321,31 @@ class StatisticsChartController extends BaseController
         int $max = 100,
     ): int {
         $value = $params[$key] ?? $default;
-
         if (!is_numeric($value)) {
             throw ValidationException::fromSingleError($key, "參數 {$key} 必須為整數");
         }
-
         $intValue = (int) $value;
-
         if ($intValue < $min || $intValue > $max) {
             throw ValidationException::fromSingleError($key, "參數 {$key} 必須在 {$min} 到 {$max} 之間");
         }
-
         return $intValue;
     }
-
     /**
      * 驗證時間粒度參數.
      */
     private function validateGranularity(string $granularity): void
     {
         $validGranularities = ['hour', 'day', 'week', 'month', 'year'];
-
         if (!in_array($granularity, $validGranularities)) {
             throw ValidationException::fromSingleError('granularity', '時間粒度無效，支援的粒度: ' . implode(', ', $validGranularities));
         }
     }
-
     /**
      * 驗證排序參數.
      */
     private function validateSortBy(string $sortBy): void
     {
         $validSortOptions = ['views', 'likes', 'comments'];
-
         if (!in_array($sortBy, $validSortOptions)) {
             throw ValidationException::fromSingleError('sort_by', '排序選項無效，支援的選項: ' . implode(', ', $validSortOptions));
         }

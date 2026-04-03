@@ -3,10 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
-
-/**
- * 更新標籤 DTO.
- */
 readonly class UpdateTagDTO
 {
     public function __construct(
@@ -16,7 +12,6 @@ readonly class UpdateTagDTO
         public ?string $description = null,
         public ?string $color = null,
     ) {}
-
     /**
      * 從陣列建立 DTO.
      *
@@ -29,7 +24,6 @@ readonly class UpdateTagDTO
         $slug = isset($data['slug']) && is_string($data['slug']) ? $data['slug'] : null;
         $description = isset($data['description']) && is_string($data['description']) ? $data['description'] : null;
         $color = isset($data['color']) && is_string($data['color']) ? $data['color'] : null;
-
         return new self(
             id: $id,
             name: $name,
@@ -38,7 +32,6 @@ readonly class UpdateTagDTO
             color: $color,
         );
     }
-
     /**
      * 轉換為陣列.
      *
@@ -47,7 +40,6 @@ readonly class UpdateTagDTO
     public function toArray(): array
     {
         $data = ['id' => $this->id];
-
         if ($this->name !== null) {
             $data['name'] = $this->name;
         }
@@ -60,7 +52,6 @@ readonly class UpdateTagDTO
         if ($this->color !== null) {
             $data['color'] = $this->color;
         }
-
         return $data;
     }
 }

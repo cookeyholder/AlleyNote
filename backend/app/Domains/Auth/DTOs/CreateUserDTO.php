@@ -3,13 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
-
 use App\Shared\ValueObjects\SecurePassword;
 use InvalidArgumentException;
-
-/**
- * 建立使用者 DTO.
- */
 final readonly class CreateUserDTO
 {
     /**
@@ -22,11 +17,9 @@ final readonly class CreateUserDTO
         public array $roleIds = [],
     ) {
         self::assertRoleIds($this->roleIds);
-
         // 驗證密碼安全性
         new SecurePassword($this->password, $this->username, $this->email);
     }
-
     /** @param array<mixed> $data */
     public static function fromArray(array $data): self
     {
@@ -37,7 +30,6 @@ final readonly class CreateUserDTO
             roleIds: self::normalizeRoleIds($data['role_ids'] ?? []),
         );
     }
-
     public function toArray(): array
     {
         return [
@@ -47,7 +39,6 @@ final readonly class CreateUserDTO
             'role_ids' => $this->roleIds,
         ];
     }
-
     /**
      * @return list<int>
      */
@@ -56,17 +47,14 @@ final readonly class CreateUserDTO
         if (!is_array($roleIds)) {
             return [];
         }
-
         $normalizedRoleIds = [];
         foreach ($roleIds as $roleId) {
             if (is_int($roleId) && $roleId > 0) {
                 $normalizedRoleIds[] = $roleId;
             }
         }
-
         return array_values(array_unique($normalizedRoleIds));
     }
-
     /**
      * @param list<int> $roleIds
      */

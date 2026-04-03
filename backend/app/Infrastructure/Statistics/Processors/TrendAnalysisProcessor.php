@@ -3,18 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Processors;
-
 use App\Domains\Statistics\ValueObjects\ChartData;
 use App\Domains\Statistics\ValueObjects\ChartDataset;
 use App\Domains\Statistics\ValueObjects\ChartType;
 use InvalidArgumentException;
-
-/**
- * 趨勢分析資料處理器.
- *
- * 提供趨勢分析所需的進階數學計算和資料處理功能
- * 包括成長率、移動平均、線性回歸、預測等功能
- */
 class TrendAnalysisProcessor
 {
     /**
@@ -27,12 +19,10 @@ class TrendAnalysisProcessor
     public function addTrendAnalysis(ChartData $baseChart, string $analysisType): ChartData
     {
         $datasets = $baseChart->datasets;
-
         // 取得基礎資料
         if (empty($datasets)) {
             return $baseChart;
         }
-
         $baseDataset = $datasets[0];
         $datasetData = $baseDataset->data;
         if (!is_array($datasetData)) {
@@ -40,7 +30,6 @@ class TrendAnalysisProcessor
         }
         /** @var array<float> $dataFloat */
         $dataFloat = array_map(fn($value): float => is_numeric($value) ? (float) $value : 0.0, $datasetData);
-
         $additionalDatasets = match ($analysisType) {
             'trend' => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
             'moving_average' => [$this->calculateMovingAverage($dataFloat, $baseChart->labels)],
@@ -52,16 +41,13 @@ class TrendAnalysisProcessor
             ],
             default => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
         };
-
         $datasets = array_merge($datasets, $additionalDatasets);
-
         return new ChartData(
             $baseChart->labels,
             $datasets,
             $baseChart->options,
         );
     }
-
     /**
      * 計算線性趨勢線.
      *
@@ -74,29 +60,24 @@ class TrendAnalysisProcessor
         if ($n < 2) {
             return new ChartDataset('趨勢線', $data, ChartType::Line, '#ff6384', ['rgba(255, 99, 132, 1)'], 2);
         }
-
         // 計算線性回歸
         $x = range(1, $n);
         $sumX = array_sum($x);
         $sumY = array_sum($data);
         $sumXY = 0;
         $sumX2 = 0;
-
         for ($i = 0; $i < $n; $i++) {
             $sumXY += $x[$i] * $data[$i];
             $sumX2 += $x[$i] * $x[$i];
         }
-
         // 計算斜率和截距
         $slope = ($n * $sumXY - $sumX * $sumY) / ($n * $sumX2 - $sumX * $sumX);
         $intercept = ($sumY - $slope * $sumX) / $n;
-
         // 生成趨勢線資料
         $trendData = [];
         for ($i = 0; $i < $n; $i++) {
             $trendData[] = $slope * ($i + 1) + $intercept;
         }
-
         return new ChartDataset(
             '趨勢線',
             $trendData,
@@ -106,7 +87,6 @@ class TrendAnalysisProcessor
             2,
         );
     }
-
     /**
      * 計算移動平均線.
      *
@@ -118,7 +98,6 @@ class TrendAnalysisProcessor
     {
         $n = count($data);
         $movingAvg = [];
-
         for ($i = 0; $i < $n; $i++) {
             if ($i < $period - 1) {
                 // 前面不足週期的點使用累計平均
@@ -130,7 +109,6 @@ class TrendAnalysisProcessor
                 $movingAvg[] = $sum / $period;
             }
         }
-
         return new ChartDataset(
             "{$period}日移動平均",
             $movingAvg,
@@ -141,7 +119,6 @@ class TrendAnalysisProcessor
             false,
         );
     }
-
     /**
      * 計算季節性趨勢.
      *
@@ -155,17 +132,14 @@ class TrendAnalysisProcessor
             // 資料不足，返回移動平均
             return $this->calculateMovingAverage($data, $labels, min(7, $n));
         }
-
         // 簡化的季節性調整（假設月度週期）
         $seasonalData = [];
         $seasonalPattern = $this->calculateSeasonalPattern($data, 12);
-
         for ($i = 0; $i < $n; $i++) {
             $seasonalIndex = $i % 12;
             $seasonalAdjustment = $seasonalPattern[$seasonalIndex] ?? 1.0;
             $seasonalData[] = $data[$i] * $seasonalAdjustment;
         }
-
         return new ChartDataset(
             '季節性調整',
             $seasonalData,
@@ -176,7 +150,6 @@ class TrendAnalysisProcessor
             false,
         );
     }
-
     /**
      * 計算成長率.
      *
@@ -187,7 +160,6 @@ class TrendAnalysisProcessor
     {
         $n = count($data);
         $growthRates = [];
-
         for ($i = 0; $i < $n; $i++) {
             if ($i === 0) {
                 $growthRates[] = 0; // 第一個點沒有成長率
@@ -201,7 +173,6 @@ class TrendAnalysisProcessor
                 }
             }
         }
-
         return new ChartDataset(
             '成長率 (%)',
             $growthRates,
@@ -212,7 +183,6 @@ class TrendAnalysisProcessor
             true,
         );
     }
-
     /**
      * 計算季節性模式.
      *
@@ -224,24 +194,20 @@ class TrendAnalysisProcessor
         $n = count($data);
         $pattern = array_fill(0, $seasonLength, 0.0);
         $counts = array_fill(0, $seasonLength, 0);
-
         // 計算每個季節位置的平均值
         for ($i = 0; $i < $n; $i++) {
             $seasonIndex = $i % $seasonLength;
             $pattern[$seasonIndex] += $data[$i];
             $counts[$seasonIndex]++;
         }
-
         // 計算平均值
         for ($i = 0; $i < $seasonLength; $i++) {
             if ($counts[$i] > 0) {
                 $pattern[$i] = $pattern[$i] / $counts[$i];
             }
         }
-
         // 計算整體平均
         $overallMean = array_sum($pattern) / $seasonLength;
-
         // 轉換為調整係數
         for ($i = 0; $i < $seasonLength; $i++) {
             if ($overallMean != 0) {
@@ -250,10 +216,8 @@ class TrendAnalysisProcessor
                 $pattern[$i] = 1.0;
             }
         }
-
         return $pattern;
     }
-
     /**
      * 預測未來資料點.
      *
@@ -267,25 +231,20 @@ class TrendAnalysisProcessor
         if ($n < 3) {
             // 資料不足，返回最後一個值
             $lastValue = (float) end($data);
-
             return array_fill(0, $periods, $lastValue);
         }
-
         // 使用簡單線性回歸預測
         $x = range(1, $n);
         $sumX = array_sum($x);
         $sumY = array_sum($data);
         $sumXY = 0;
         $sumX2 = 0;
-
         for ($i = 0; $i < $n; $i++) {
             $sumXY += $x[$i] * $data[$i];
             $sumX2 += $x[$i] * $x[$i];
         }
-
         $slope = ($n * $sumXY - $sumX * $sumY) / ($n * $sumX2 - $sumX * $sumX);
         $intercept = ($sumY - $slope * $sumX) / $n;
-
         // 預測未來值
         $predictions = [];
         for ($i = 1; $i <= $periods; $i++) {
@@ -293,10 +252,8 @@ class TrendAnalysisProcessor
             $prediction = $slope * $nextX + $intercept;
             $predictions[] = max(0, $prediction); // 確保預測值不為負
         }
-
         return $predictions;
     }
-
     /**
      * 計算資料的統計摘要
      *
@@ -308,11 +265,9 @@ class TrendAnalysisProcessor
         if (empty($data)) {
             return [];
         }
-
         $n = count($data);
         $sum = array_sum($data);
         $mean = $sum / $n;
-
         // 計算變異數和標準差
         $variance = 0;
         foreach ($data as $value) {
@@ -320,17 +275,14 @@ class TrendAnalysisProcessor
         }
         $variance = $variance / $n;
         $stdDev = sqrt($variance);
-
         // 排序以計算中位數
         $sortedData = $data;
         sort($sortedData);
-
         if ($n % 2 === 0) {
             $median = ($sortedData[(int) ($n / 2) - 1] + $sortedData[(int) ($n / 2)]) / 2;
         } else {
             $median = $sortedData[(int) floor($n / 2)];
         }
-
         return [
             'count' => $n,
             'sum' => $sum,
@@ -343,7 +295,6 @@ class TrendAnalysisProcessor
             'range' => max($data) - min($data),
         ];
     }
-
     /**
      * 處理趨勢分析資料.
      */

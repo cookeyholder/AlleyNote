@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Commands;
-
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod as DomainStatisticsPeriod;
 use DateTimeImmutable;
@@ -16,32 +15,22 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
-
-/**
- * 統計資料回填指令.
- *
- * 用於對歷史資料重新計算並生成統計快照，支援按統計類型和日期範圍進行回填。
- */
 final class StatisticsRecalculationCommand extends Command
 {
     private const COMMAND_NAME = 'statistics:recalculate';
-
     private const SUPPORTED_TYPES = [
         'overview' => '總覽統計',
         'posts' => '文章統計',
         'users' => '使用者統計',
         'popular' => '熱門內容統計',
     ];
-
     private const DEFAULT_BATCH_SIZE = 30; // 預設每30天為一批
-
     public function __construct(
         private readonly StatisticsAggregationService $aggregationService,
         private readonly LoggerInterface $logger,
     ) {
         parent::__construct();
     }
-
     protected function configure(): void
     {
         $this
@@ -86,33 +75,27 @@ final class StatisticsRecalculationCommand extends Command
                 '試執行模式，只顯示將要處理的項目，不實際執行',
             );
     }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-
         try {
             // 解析輸入參數
             $config = $this->parseInputs($input, $io);
             if (!$config) {
                 return Command::FAILURE;
             }
-
             $io->title('統計資料回填指令');
             $this->displayConfiguration($io, $config);
-
             // 試執行模式
             if ($config['dry_run']) {
                 return $this->performDryRun($io, $config);
             }
-
             // 確認執行（非互動模式下自動通過）
             if (!$input->isInteractive() || $this->confirmExecution($io, $config)) {
                 // 執行回填
                 return $this->performRecalculation($io, $config);
             } else {
                 $io->warning('操作已取消');
-
                 return Command::SUCCESS;
             }
         } catch (Throwable $e) {
@@ -121,11 +104,9 @@ final class StatisticsRecalculationCommand extends Command
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
-
             return Command::FAILURE;
         }
     }
-
     /**
      * 解析輸入參數.
      *
@@ -141,7 +122,6 @@ final class StatisticsRecalculationCommand extends Command
         $batchSizeOption = $input->getOption('batch-size');
         $batchSize = is_numeric($batchSizeOption) ? (int) $batchSizeOption : 30;
         $dryRun = (bool) $input->getOption('dry-run');
-
         // 驗證統計類型
         $types = [];
         if (is_string($type)) {
@@ -151,48 +131,37 @@ final class StatisticsRecalculationCommand extends Command
                     $type,
                     implode(', ', array_keys(self::SUPPORTED_TYPES)),
                 ));
-
                 return null;
             }
             $types = [$type];
         } else {
             $types = array_keys(self::SUPPORTED_TYPES);
         }
-
         // 解析日期範圍
         try {
             $startDate = is_string($startDateStr)
                 ? new DateTimeImmutable($startDateStr)
                 : new DateTimeImmutable('-30 days');
-
             $endDate = is_string($endDateStr)
                 ? new DateTimeImmutable($endDateStr)
                 : new DateTimeImmutable('-1 day');
-
             if ($startDate > $endDate) {
                 $io->error('開始日期不能晚於結束日期');
-
                 return null;
             }
-
             if ($endDate >= new DateTimeImmutable('today')) {
                 $io->error('結束日期不能是今天或未來日期');
-
                 return null;
             }
         } catch (Throwable $e) {
             $io->error('日期格式錯誤: ' . $e->getMessage());
-
             return null;
         }
-
         // 驗證批次大小
         if ($batchSize <= 0 || $batchSize > 365) {
             $io->error('批次大小必須在 1-365 天之間');
-
             return null;
         }
-
         return [
             'types' => $types,
             'start_date' => $startDate,
@@ -202,7 +171,6 @@ final class StatisticsRecalculationCommand extends Command
             'dry_run' => $dryRun,
         ];
     }
-
     /**
      * 顯示配置資訊.
      *
@@ -214,11 +182,9 @@ final class StatisticsRecalculationCommand extends Command
             fn(string $type): string => sprintf('%s (%s)', $type, self::SUPPORTED_TYPES[$type]),
             $config['types'],
         );
-
         $diffResult = $config['start_date']->diff($config['end_date']);
         $totalDays = $diffResult->days !== false ? $diffResult->days + 1 : 1;
         $estimatedBatches = (int) ceil($totalDays / $config['batch_size']);
-
         $io->definitionList(
             ['統計類型' => implode(', ', $typesDisplay)],
             ['日期範圍' => sprintf(
@@ -233,7 +199,6 @@ final class StatisticsRecalculationCommand extends Command
             ['試執行模式' => $config['dry_run'] ? '是' : '否'],
         );
     }
-
     /**
      * 試執行模式.
      *
@@ -242,18 +207,13 @@ final class StatisticsRecalculationCommand extends Command
     private function performDryRun(SymfonyStyle $io, array $config): int
     {
         $io->section('試執行模式 - 將要處理的項目：');
-
         $tasks = $this->generateProcessingTasks($config);
-
         if (empty($tasks)) {
             $io->warning('沒有需要處理的項目');
-
             return Command::SUCCESS;
         }
-
         $table = $io->createTable();
         $table->setHeaders(['統計類型', '開始日期', '結束日期', '狀態']);
-
         foreach ($tasks as $task) {
             $status = $task['exists'] && !$config['force'] ? '跳過（已存在）' : '將處理';
             $table->addRow([
@@ -263,15 +223,11 @@ final class StatisticsRecalculationCommand extends Command
                 $status,
             ]);
         }
-
         $table->render();
-
         $willProcess = count(array_filter($tasks, fn(array $task): bool => !$task['exists'] || $config['force']));
         $io->success(sprintf('共 %d 個項目，其中 %d 個將被處理', count($tasks), $willProcess));
-
         return Command::SUCCESS;
     }
-
     /**
      * 確認執行.
      *
@@ -281,30 +237,23 @@ final class StatisticsRecalculationCommand extends Command
     {
         $tasks = $this->generateProcessingTasks($config);
         $willProcess = count(array_filter($tasks, fn(array $task): bool => !$task['exists'] || $config['force']));
-
         if ($willProcess === 0) {
             $io->warning('沒有需要處理的項目');
-
             return false;
         }
-
         $warning = [];
         if ($config['force']) {
             $warning[] = '⚠️ 將強制覆蓋已存在的快照';
         }
-
         $totalDays = $config['start_date']->diff($config['end_date'])->days + 1;
         if ($totalDays > 90) {
             $warning[] = '⚠️ 處理超過 90 天的資料可能需要較長時間';
         }
-
         if (!empty($warning)) {
             $io->warning($warning);
         }
-
         return $io->confirm(sprintf('確定要處理 %d 個統計快照嗎？', $willProcess));
     }
-
     /**
      * 執行回填.
      *
@@ -314,24 +263,19 @@ final class StatisticsRecalculationCommand extends Command
     {
         $tasks = $this->generateProcessingTasks($config);
         $willProcess = array_filter($tasks, fn(array $task): bool => !$task['exists'] || $config['force']);
-
         if (empty($willProcess)) {
             $io->success('沒有需要處理的項目');
-
             return Command::SUCCESS;
         }
-
         $io->section('開始執行統計回填');
         $progressBar = $io->createProgressBar(count($willProcess));
         $progressBar->start();
-
         $results = [
             'success' => 0,
             'failed' => 0,
             'skipped' => 0,
             'errors' => [],
         ];
-
         foreach ($willProcess as $task) {
             try {
                 $this->processTask($task, $config);
@@ -345,7 +289,6 @@ final class StatisticsRecalculationCommand extends Command
                     $task['end_date']->format('Y-m-d'),
                     $e->getMessage(),
                 );
-
                 $this->logger->error('統計回填任務失敗', [
                     'type' => $task['type'],
                     'start_date' => $task['start_date']->format('Y-m-d'),
@@ -353,22 +296,16 @@ final class StatisticsRecalculationCommand extends Command
                     'error' => $e->getMessage(),
                 ]);
             }
-
             $progressBar->advance();
-
             // 添加小延遲避免資源過度使用
             usleep(100000); // 0.1 秒
         }
-
         $progressBar->finish();
         $io->newLine(2);
-
         // 顯示結果
         $this->displayResults($io, $results);
-
         return $results['failed'] > 0 ? Command::FAILURE : Command::SUCCESS;
     }
-
     /**
      * 產生處理任務清單.
      *
@@ -381,21 +318,17 @@ final class StatisticsRecalculationCommand extends Command
         $currentDate = $config['start_date'];
         $endDate = $config['end_date'];
         $batchSize = $config['batch_size'];
-
         while ($currentDate <= $endDate) {
             $diffResult = $currentDate->diff($endDate);
             $remainingDays = $diffResult->days !== false ? $diffResult->days + 1 : 1;
             $actualBatchSize = min($batchSize, (int) $remainingDays);
-
             $batchEndDate = $currentDate->modify(sprintf('+%d days', $actualBatchSize - 1));
             if ($batchEndDate > $endDate) {
                 $batchEndDate = $endDate;
             }
-
             foreach ($config['types'] as $type) {
                 // 檢查快照是否已存在
                 $exists = $this->snapshotExists($type, $currentDate, $batchEndDate);
-
                 $tasks[] = [
                     'type' => $type,
                     'start_date' => $currentDate,
@@ -403,13 +336,10 @@ final class StatisticsRecalculationCommand extends Command
                     'exists' => $exists,
                 ];
             }
-
             $currentDate = $batchEndDate->modify('+1 day');
         }
-
         return $tasks;
     }
-
     /**
      * 檢查快照是否存在.
      */
@@ -419,7 +349,6 @@ final class StatisticsRecalculationCommand extends Command
         // 暫時返回 false，表示需要處理
         return false;
     }
-
     /**
      * 處理單個任務.
      *
@@ -430,11 +359,9 @@ final class StatisticsRecalculationCommand extends Command
     {
         $currentDate = $task['start_date'];
         $endDate = $task['end_date'];
-
         // 將批次拆分為單日處理
         while ($currentDate <= $endDate) {
             $period = DomainStatisticsPeriod::createDaily($currentDate);
-
             match ($task['type']) {
                 'overview' => $this->aggregationService->createOverviewSnapshot($period),
                 'posts' => $this->aggregationService->createPostsSnapshot($period),
@@ -442,11 +369,9 @@ final class StatisticsRecalculationCommand extends Command
                 'popular' => $this->aggregationService->createPopularSnapshot($period),
                 default => throw new RuntimeException('不支援的統計類型: ' . $task['type']),
             };
-
             $currentDate = $currentDate->modify('+1 day');
         }
     }
-
     /**
      * 顯示執行結果.
      *
@@ -455,24 +380,20 @@ final class StatisticsRecalculationCommand extends Command
     private function displayResults(SymfonyStyle $io, array $results): void
     {
         $io->section('執行結果');
-
         $io->definitionList(
             ['成功' => $results['success'] . ' 個'],
             ['失敗' => $results['failed'] . ' 個'],
             ['跳過' => $results['skipped'] . ' 個'],
         );
-
         if ($results['success'] > 0) {
             $io->success(sprintf('成功處理 %d 個統計快照', $results['success']));
         }
-
         if (!empty($results['errors'])) {
             $io->error('以下項目處理失敗：');
             foreach ($results['errors'] as $error) {
                 $io->writeln('  • ' . $error);
             }
         }
-
         $this->logger->info('統計回填指令完成', [
             'success' => $results['success'],
             'failed' => $results['failed'],

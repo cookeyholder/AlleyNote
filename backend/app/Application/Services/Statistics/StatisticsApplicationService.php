@@ -4,21 +4,6 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
 use RuntimeException;
-
-
-/**
- * 統計應用服務.
- *
- * 應用層服務，負責協調統計相關的領域服務，處理應用層的事務邏輯，
- * 實作快取策略，並提供統一的錯誤處理。
- *
- * 職責：
- * - 協調多個領域服務的互動
- * - 處理應用層的事務邏輯
- * - 實作快取策略以提升效能
- * - 統一的錯誤處理與異常轉換
- * - 資料驗證與業務規則檢查
- */
 final class StatisticsApplicationService
 {
     private const VALID_SNAPSHOT_TYPES = [
@@ -27,13 +12,11 @@ final class StatisticsApplicationService
         StatisticsSnapshot::TYPE_USERS,
         StatisticsSnapshot::TYPE_POPULAR,
     ];
-
     public function __construct(
         private readonly StatisticsAggregationServiceInterface $aggregationService,
         private readonly StatisticsCacheServiceInterface $cacheService,
         private readonly StatisticsConfigService $configService,
     ) {}
-
     /**
      * 建立綜合統計快照.
      *
@@ -52,20 +35,16 @@ final class StatisticsApplicationService
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         try {
             // 建立統計快照
             $snapshot = $this->aggregationService->createOverviewSnapshot($period, $metadata, $expiresAt);
-
             // 清除相關快取
             $this->invalidateRelatedCache($snapshot);
-
             return $snapshot;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to create overview snapshot: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 建立文章統計快照.
      *
@@ -84,17 +63,14 @@ final class StatisticsApplicationService
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         try {
             $snapshot = $this->aggregationService->createPostsSnapshot($period, $metadata, $expiresAt);
             $this->invalidateRelatedCache($snapshot);
-
             return $snapshot;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to create posts snapshot: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 建立使用者統計快照.
      *
@@ -113,17 +89,14 @@ final class StatisticsApplicationService
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         try {
             $snapshot = $this->aggregationService->createUsersSnapshot($period, $metadata, $expiresAt);
             $this->invalidateRelatedCache($snapshot);
-
             return $snapshot;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to create users snapshot: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 建立熱門內容統計快照.
      *
@@ -142,17 +115,14 @@ final class StatisticsApplicationService
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         try {
             $snapshot = $this->aggregationService->createPopularSnapshot($period, $metadata, $expiresAt);
             $this->invalidateRelatedCache($snapshot);
-
             return $snapshot;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to create popular snapshot: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 批量建立多種類型的統計快照.
      *
@@ -174,19 +144,15 @@ final class StatisticsApplicationService
     ): array {
         $this->validatePeriod($period);
         $this->validateSnapshotTypes($types);
-
         try {
             $snapshots = $this->aggregationService->createBatchSnapshots($period, $types, $metadata, $expiresAt);
-
             // 批量清除快取，使用標籤快取失效更高效
             $this->cacheService->flushByTags(['statistics']);
-
             return $snapshots;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to create batch snapshots: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 更新現有的統計快照.
      *
@@ -201,13 +167,11 @@ final class StatisticsApplicationService
         try {
             $updatedSnapshot = $this->aggregationService->updateSnapshot($snapshot);
             $this->invalidateRelatedCache($updatedSnapshot);
-
             return $updatedSnapshot;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to update snapshot: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 計算統計趨勢.
      *
@@ -229,17 +193,14 @@ final class StatisticsApplicationService
         // 生成快取鍵
         $cacheKey = $this->generateTrendsCacheKey($currentPeriod, $previousPeriod, $snapshotType);
         $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl('trends');
-
         /** @var array<string, mixed> $result */
         $result = $this->cacheService->remember(
             $cacheKey,
             fn(): array => $this->aggregationService->calculateTrends($currentPeriod, $previousPeriod, $snapshotType),
             $resolvedCacheTtl,
         );
-
         return $result;
     }
-
     /**
      * 清理過期的統計快照.
      *
@@ -253,16 +214,13 @@ final class StatisticsApplicationService
     {
         try {
             $deletedCount = $this->aggregationService->cleanExpiredSnapshots($beforeDate);
-
             // 清理完成後清除所有統計快取
             $this->cacheService->flushByTags(['statistics']);
-
             return $deletedCount;
         } catch (RuntimeException $e) {
             throw new RuntimeException("Failed to clean expired snapshots: {$e->getMessage()}", 0, $e);
         }
     }
-
     /**
      * 獲取帶快取的統計資料.
      *
@@ -280,7 +238,6 @@ final class StatisticsApplicationService
     ): array {
         $cacheKey = $this->generateStatisticsCacheKey($snapshotType, $period);
         $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl($snapshotType);
-
         /** @var array<string, mixed> $result */
         $result = $this->cacheService->remember(
             $cacheKey,
@@ -291,10 +248,8 @@ final class StatisticsApplicationService
             },
             $resolvedCacheTtl,
         );
-
         return $result;
     }
-
     /**
      * 預熱統計快取.
      *
@@ -307,7 +262,6 @@ final class StatisticsApplicationService
     public function warmCache(array $snapshotTypes, StatisticsPeriod $period): array
     {
         $results = [];
-
         foreach ($snapshotTypes as $type) {
             try {
                 $this->getCachedStatistics($type, $period, $this->configService->getStatisticsTypeTtl($type));
@@ -316,10 +270,8 @@ final class StatisticsApplicationService
                 $results[$type] = false;
             }
         }
-
         return $results;
     }
-
     /**
      * 清除指定標籤的快取.
      *
@@ -329,7 +281,6 @@ final class StatisticsApplicationService
     {
         $this->cacheService->flushByTags($tags);
     }
-
     /**
      * 驗證統計週期.
      *
@@ -342,19 +293,16 @@ final class StatisticsApplicationService
         if ($period->endTime > $now) {
             throw new InvalidArgumentException('Cannot create statistics for future periods');
         }
-
         // 檢查週期長度是否合理
         if ($period->getDurationInSeconds() <= 0) {
             throw new InvalidArgumentException('Invalid period duration');
         }
-
         // 檢查週期是否過長（例如超過一年）
         $maxDuration = 365 * 24 * 3600; // 一年
         if ($period->getDurationInSeconds() > $maxDuration) {
             throw new InvalidArgumentException('Period duration too long (max 1 year)');
         }
     }
-
     /**
      * 驗證快照類型陣列.
      *
@@ -366,23 +314,19 @@ final class StatisticsApplicationService
         if (empty($types)) {
             throw new InvalidArgumentException('Snapshot types array cannot be empty');
         }
-
         $invalidTypes = array_diff($types, self::VALID_SNAPSHOT_TYPES);
         if (!empty($invalidTypes)) {
             throw new InvalidArgumentException('Unsupported snapshot types: ' . implode(', ', $invalidTypes));
         }
-
         // 檢查是否有重複類型
         if (count($types) !== count(array_unique($types))) {
             throw new InvalidArgumentException('Duplicate snapshot types found');
         }
-
         // 限制批量操作的數量
         if (count($types) > 10) {
             throw new InvalidArgumentException('Too many snapshot types (max 10)');
         }
     }
-
     /**
      * 清除與快照相關的快取.
      */
@@ -393,10 +337,8 @@ final class StatisticsApplicationService
             "statistics.{$snapshot->getSnapshotType()}.*",
             "trends.{$snapshot->getSnapshotType()}.*",
         ];
-
         $this->cacheService->forget($cacheKeys);
     }
-
     /**
      * 生成統計資料快取鍵.
      */
@@ -409,7 +351,6 @@ final class StatisticsApplicationService
             $period->startTime->format('Y-m-d'),
         );
     }
-
     /**
      * 生成趨勢分析快取鍵.
      */

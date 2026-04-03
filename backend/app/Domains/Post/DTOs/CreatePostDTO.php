@@ -3,34 +3,20 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
-
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
 use DateTime;
-
-/**
- * 建立文章的資料傳輸物件.
- *
- * 用於安全地傳輸建立文章所需的資料，防止巨量賦值攻擊
- */
 class CreatePostDTO extends BaseDTO
 {
     public readonly string $title;
-
     public readonly string $content;
-
     public readonly int $userId;
-
     public readonly string $userIp;
-
     public readonly bool $isPinned;
-
     public readonly PostStatus $status;
-
     public readonly ?string $publishDate;
-
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
@@ -39,23 +25,18 @@ class CreatePostDTO extends BaseDTO
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
-
         // 添加文章專用驗證規則
         $this->addPostValidationRules();
-
         // 預處理 is_pinned 預設值
         if (!isset($data['is_pinned'])) {
             $data['is_pinned'] = false;
         }
-
         // 預處理狀態值
         if (!isset($data['status'])) {
             $data['status'] = PostStatus::DRAFT->value;
         }
-
         // 驗證資料
         $validatedData = $this->validate($data);
-
         // 設定屬性
         $this->title = $this->getString($validatedData, 'title') ?? '';
         $this->content = $this->getString($validatedData, 'content') ?? '';
@@ -63,12 +44,10 @@ class CreatePostDTO extends BaseDTO
         $this->userIp = $this->getString($validatedData, 'user_ip') ?? '';
         $this->isPinned = $this->getBool($validatedData, 'is_pinned') ?? false;
         $this->status = PostStatus::from($validatedData['status']);
-
         // 處理發布日期，空字串轉為 null
         $publishDate = $this->getString($validatedData, 'publish_date');
         $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
     }
-
     /**
      * 添加文章專用驗證規則.
      */
@@ -79,79 +58,62 @@ class CreatePostDTO extends BaseDTO
             if (!is_string($value)) {
                 return false;
             }
-
             $title = trim($value);
             $minLength = (int) ($parameters[0] ?? 1);
             $maxLength = (int) ($parameters[1] ?? 255);
-
             // 檢查長度
             $length = mb_strlen($title, 'UTF-8');
             if ($length > $maxLength) {
                 return false;
             }
-
             // 檢查是否包含有效內容（不只是空白字元或特殊字符）
             if (!preg_match('/[\p{L}\p{N}]/u', $title)) {
                 return false;
             }
-
             return true;
         });
-
         // 文章內容驗證規則
         $this->validator->addRule('post_content', function ($value, array $parameters) {
             if (!is_string($value)) {
                 return false;
             }
-
             $content = trim($value);
             $minLength = $parameters[0] ?? 1;
-
             // 檢查最小長度
             $length = mb_strlen($content, 'UTF-8');
             if ($length < $minLength) {
                 return false;
             }
-
             // 檢查是否包含有效內容
             if (!preg_match('/[\p{L}\p{N}]/u', $content)) {
                 return false;
             }
-
             return true;
         });
-
         // 使用者 ID 驗證規則
         $this->validator->addRule('user_id', function ($value) {
             return is_numeric($value) && (int) $value > 0;
         });
-
         // IP 地址驗證規則（別名）
         $this->validator->addRule('ip_address', function ($value) {
             return filter_var($value, FILTER_VALIDATE_IP) !== false;
         });
-
         // 文章狀態驗證規則
         $this->validator->addRule('post_status', function ($value) {
             if (!is_string($value)) {
                 return false;
             }
-
             $validStatuses = array_map(fn($status) => $status->value, PostStatus::cases());
-
             return in_array($value, $validStatuses, true);
         });
-
         // RFC3339 日期時間驗證規則
         $this->validator->addRule('rfc3339_datetime', function ($value) {
             if ($value === null || $value === '') {
                 return true; // 允許空值
             }
-
             if (!is_string($value)) {
                 return false;
             }
-
             // 支援多種 RFC3339 格式
             $formats = [
                 DateTime::RFC3339,
@@ -159,17 +121,14 @@ class CreatePostDTO extends BaseDTO
                 'Y-m-d\TH:i:s\Z',
                 'Y-m-d\TH:i:sP',
             ];
-
             foreach ($formats as $format) {
                 $date = DateTime::createFromFormat($format, $value);
                 if ($date && $date->format($format) === $value) {
                     return true;
                 }
             }
-
             return false;
         });
-
         // 添加繁體中文錯誤訊息
         $this->validator->addMessage('post_title', '文章標題長度必須介於 :min 和 :max 個字元之間，且包含有效內容');
         $this->validator->addMessage('post_content', '文章內容長度不能少於 :min 個字元，且必須包含有效內容');
@@ -178,7 +137,6 @@ class CreatePostDTO extends BaseDTO
         $this->validator->addMessage('post_status', '文章狀態必須是：draft（草稿）、published（已發布）或 archived（已封存）');
         $this->validator->addMessage('rfc3339_datetime', '發布日期必須是有效的 RFC3339 日期時間格式');
     }
-
     /**
      * 取得驗證規則.
      */
@@ -194,7 +152,6 @@ class CreatePostDTO extends BaseDTO
             'publish_date' => 'rfc3339_datetime',
         ];
     }
-
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */

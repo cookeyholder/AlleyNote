@@ -3,16 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\DTOs;
-
 use App\Domains\Security\Enums\ActivitySeverity;
 use DateTimeImmutable;
 use JsonSerializable;
-
-/**
- * 可疑活動分析結果 DTO.
- *
- * 封裝異常檢測結果的資料結構
- */
 class SuspiciousActivityAnalysisDTO implements JsonSerializable
 {
     /**
@@ -46,7 +39,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         private readonly ?string $recommendedAction,
         private readonly float $confidenceScore,
     ) {}
-
     /**
      * 工廠方法：建立使用者分析結果.
      */
@@ -80,7 +72,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             confidenceScore: $confidenceScore,
         );
     }
-
     /**
      * 工廠方法：建立 IP 分析結果.
      */
@@ -114,7 +105,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             confidenceScore: $confidenceScore,
         );
     }
-
     /**
      * 工廠方法：建立全域分析結果.
      */
@@ -147,78 +137,63 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             confidenceScore: $confidenceScore,
         );
     }
-
     // Getters
     public function getAnalysisId(): string
     {
         return $this->analysisId;
     }
-
     public function getTargetType(): string
     {
         return $this->targetType;
     }
-
     public function getTargetId(): ?string
     {
         return $this->targetId;
     }
-
     public function getAnalysisTime(): DateTimeImmutable
     {
         return $this->analysisTime;
     }
-
     public function getTimeWindowMinutes(): int
     {
         return $this->timeWindowMinutes;
     }
-
     public function isSuspicious(): bool
     {
         return $this->isSuspicious;
     }
-
     public function getSeverityLevel(): ActivitySeverity
     {
         return $this->severityLevel;
     }
-
     public function getActivityCounts(): array
     {
         return $this->activityCounts;
     }
-
     public function getFailureCounts(): array
     {
         return $this->failureCounts;
     }
-
     public function getAnomalyScores(): array
     {
         return $this->anomalyScores;
     }
-
     public function getDetectionRules(): array
     {
         return $this->detectionRules;
     }
-
     public function getMetadata(): array
     {
         return $this->metadata;
     }
-
     public function getRecommendedAction(): ?string
     {
         return $this->recommendedAction;
     }
-
     public function getConfidenceScore(): float
     {
         return $this->confidenceScore;
     }
-
     /**
      * 取得總活動數量.
      */
@@ -226,7 +201,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return array_sum($this->activityCounts);
     }
-
     /**
      * 取得總失敗數量.
      */
@@ -234,7 +208,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     {
         return array_sum($this->failureCounts);
     }
-
     /**
      * 取得失敗率.
      */
@@ -244,10 +217,8 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         if ($totalActivities === 0) {
             return 0.0;
         }
-
         return $this->getTotalFailureCount() / $totalActivities;
     }
-
     /**
      * 取得最高異常分數.
      */
@@ -256,10 +227,8 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         if (empty($this->anomalyScores)) {
             return 0.0;
         }
-
         return max($this->anomalyScores);
     }
-
     /**
      * 取得平均異常分數.
      */
@@ -268,10 +237,8 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
         if (empty($this->anomalyScores)) {
             return 0.0;
         }
-
         return array_sum($this->anomalyScores) / count($this->anomalyScores);
     }
-
     /**
      * 檢查是否需要立即處理.
      */
@@ -283,7 +250,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             || $this->getFailureRate() > 0.8
         );
     }
-
     /**
      * 取得格式化的摘要
      */
@@ -295,14 +261,11 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             'global' => '全域模式',
             default => '未知目標',
         };
-
         $status = $this->isSuspicious ? '可疑' : '正常';
         $totalActivities = $this->getTotalActivityCount();
         $totalFailures = $this->getTotalFailureCount();
-
         return "{$target} 在過去 {$this->timeWindowMinutes} 分鐘內的活動分析：{$status}（活動：{$totalActivities}，失敗：{$totalFailures}，嚴重程度：{$this->severityLevel->getDisplayName()}）";
     }
-
     /**
      * 轉換為陣列.
      */
@@ -332,7 +295,6 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
             'summary' => $this->getSummary(),
         ];
     }
-
     /**
      * JSON 序列化.
      */

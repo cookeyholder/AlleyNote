@@ -3,18 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
-
 use PDO;
-
-/**
- * 文章瀏覽統計服務.
- */
 class PostViewStatisticsService
 {
     public function __construct(
         private readonly PDO $pdo,
     ) {}
-
     /**
      * 取得單篇文章的瀏覽統計.
      *
@@ -29,16 +23,13 @@ class PostViewStatisticsService
             FROM post_views 
             WHERE post_id = :post_id
         ');
-
         $stmt->execute(['post_id' => $postId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
         return [
             'views' => (int) ($result['views'] ?? 0),
             'unique_visitors' => (int) ($result['unique_visitors'] ?? 0),
         ];
     }
-
     /**
      * 取得多篇文章的瀏覽統計（批量查詢）.
      *
@@ -50,9 +41,7 @@ class PostViewStatisticsService
         if (empty($postIds)) {
             return [];
         }
-
         $placeholders = implode(',', array_fill(0, count($postIds), '?'));
-
         $stmt = $this->pdo->prepare("
             SELECT 
                 post_id,
@@ -62,10 +51,8 @@ class PostViewStatisticsService
             WHERE post_id IN ({$placeholders})
             GROUP BY post_id
         ");
-
         $stmt->execute($postIds);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         $stats = [];
         foreach ($results as $row) {
             $stats[(int) $row['post_id']] = [
@@ -73,7 +60,6 @@ class PostViewStatisticsService
                 'unique_visitors' => (int) $row['unique_visitors'],
             ];
         }
-
         // 填充沒有瀏覽記錄的文章
         foreach ($postIds as $postId) {
             if (!isset($stats[$postId])) {
@@ -83,22 +69,18 @@ class PostViewStatisticsService
                 ];
             }
         }
-
         return $stats;
     }
-
     /**
      * 記錄文章瀏覽.
      */
     public function recordView(int $postId, ?int $userId, string $userIp, ?string $userAgent = null, ?string $referrer = null): bool
     {
         $uuid = $this->generateUuid();
-
         $stmt = $this->pdo->prepare('
             INSERT INTO post_views (uuid, post_id, user_id, user_ip, user_agent, referrer, view_date)
             VALUES (:uuid, :post_id, :user_id, :user_ip, :user_agent, :referrer, :view_date)
         ');
-
         return $stmt->execute([
             'uuid' => $uuid,
             'post_id' => $postId,
@@ -109,7 +91,6 @@ class PostViewStatisticsService
             'view_date' => date('Y-m-d H:i:s'),
         ]);
     }
-
     /**
      * 生成 UUID.
      */

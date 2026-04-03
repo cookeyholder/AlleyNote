@@ -3,23 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Domains\Shared\ValueObjects;
-
 use DateTimeImmutable;
 use DateTimeZone;
-use Throwable;
 use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
-
-/**
- * Timestamp 值物件.
- *
- * 表示不可變的時間戳記，提供時間相關的領域邏輯
- */
+use Throwable;
 final readonly class Timestamp implements JsonSerializable, Stringable
 {
     private DateTimeImmutable $dateTime;
-
     public function __construct(DateTimeImmutable|int|string $timestamp, ?DateTimeZone $timezone = null)
     {
         if ($timestamp instanceof DateTimeImmutable) {
@@ -37,7 +29,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
             throw new InvalidArgumentException('Timestamp 必須是 DateTimeImmutable、整數或字串');
         }
     }
-
     /**
      * 建立當前時間的 Timestamp.
      */
@@ -45,7 +36,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self(new DateTimeImmutable('now', $timezone));
     }
-
     /**
      * 從 Unix 時間戳記建立.
      */
@@ -53,7 +43,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self($timestamp);
     }
-
     /**
      * 從字串建立.
      */
@@ -61,7 +50,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self($timestamp, $timezone);
     }
-
     /**
      * 取得 Unix 時間戳記.
      */
@@ -69,7 +57,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime->getTimestamp();
     }
-
     /**
      * 格式化為字串.
      */
@@ -77,7 +64,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime->format($format);
     }
-
     /**
      * 取得 ISO 8601 格式.
      */
@@ -85,7 +71,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime->format(DateTimeImmutable::ATOM);
     }
-
     /**
      * 轉換為 RFC 3339 格式.
      */
@@ -93,7 +78,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime->format(DateTimeImmutable::RFC3339);
     }
-
     /**
      * 增加時間.
      */
@@ -101,7 +85,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self($this->dateTime->modify("+{$seconds} seconds"));
     }
-
     /**
      * 增加分鐘.
      */
@@ -109,7 +92,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self($this->dateTime->modify("+{$minutes} minutes"));
     }
-
     /**
      * 增加小時.
      */
@@ -117,7 +99,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self($this->dateTime->modify("+{$hours} hours"));
     }
-
     /**
      * 增加天數.
      */
@@ -125,7 +106,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return new self($this->dateTime->modify("+{$days} days"));
     }
-
     /**
      * 檢查是否在指定時間之前.
      */
@@ -133,7 +113,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime < $other->dateTime;
     }
-
     /**
      * 檢查是否在指定時間之後.
      */
@@ -141,7 +120,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime > $other->dateTime;
     }
-
     /**
      * 計算與另一個時間戳記的差距（秒）.
      */
@@ -149,7 +127,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return abs($this->toUnixTimestamp() - $other->toUnixTimestamp());
     }
-
     /**
      * 檢查是否在過去.
      */
@@ -157,7 +134,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->isBefore(self::now());
     }
-
     /**
      * 檢查是否在未來.
      */
@@ -165,7 +141,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->isAfter(self::now());
     }
-
     /**
      * 檢查兩個時間戳記是否相等.
      */
@@ -173,7 +148,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->toUnixTimestamp() === $other->toUnixTimestamp();
     }
-
     /**
      * 取得日期部分（年-月-日）.
      */
@@ -181,7 +155,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime->format('Y-m-d');
     }
-
     /**
      * 取得時間部分（時:分:秒）.
      */
@@ -189,7 +162,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime->format('H:i:s');
     }
-
     /**
      * 取得底層的 DateTimeImmutable 物件.
      */
@@ -197,7 +169,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->dateTime;
     }
-
     /**
      * 轉換為字串.
      */
@@ -205,12 +176,10 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->format();
     }
-
     public function __toString(): string
     {
         return $this->toString();
     }
-
     /**
      * JSON 序列化.
      */
@@ -218,7 +187,6 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return $this->toIso8601();
     }
-
     /**
      * 轉換為陣列.
      */

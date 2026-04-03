@@ -83,7 +83,7 @@ try {
     }
     echo $response->getBody();
     exit;
-} catch (Exception $e) {
+} catch (Throwable $e) {
     // 錯誤處理
     app_log('critical', '路由系統錯誤', ['exception' => $e->getMessage()]);
     header('Content-Type: application/json');

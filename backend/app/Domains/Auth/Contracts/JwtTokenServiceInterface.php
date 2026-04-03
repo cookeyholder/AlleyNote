@@ -3,20 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
-
 use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Domains\Auth\ValueObjects\TokenPair;
-
-/**
- * JWT Token 服務介面.
- *
- * 定義JWT token的核心操作方法，包含token產生、驗證、解析等功能。
- * 採用RS256演算法進行token簽名，確保token的安全性和可驗證性。
- */
 interface JwtTokenServiceInterface
 {
     /**
@@ -30,7 +22,6 @@ interface JwtTokenServiceInterface
      * @throws TokenGenerationException 當token產生失敗時
      */
     public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair;
-
     /**
      * 驗證access token的有效性.
      *
@@ -42,7 +33,6 @@ interface JwtTokenServiceInterface
      * @throws TokenExpiredException 當token已過期時
      */
     public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload;
-
     /**
      * 驗證refresh token的有效性.
      *
@@ -54,7 +44,6 @@ interface JwtTokenServiceInterface
      * @throws TokenExpiredException 當token已過期時
      */
     public function validateRefreshToken(string $token, bool $checkBlacklist = true): JwtPayload;
-
     /**
      * 從token中提取payload資訊（不驗證簽名）.
      *
@@ -66,7 +55,6 @@ interface JwtTokenServiceInterface
      * @throws InvalidTokenException 當token格式無效時
      */
     public function extractPayload(string $token): JwtPayload;
-
     /**
      * 使用refresh token產生新的access token.
      *
@@ -79,7 +67,6 @@ interface JwtTokenServiceInterface
      * @throws TokenGenerationException 當新token產生失敗時
      */
     public function refreshTokens(string $refreshToken, DeviceInfo $deviceInfo): TokenPair;
-
     /**
      * 撤銷token（加入黑名單）.
      *
@@ -88,7 +75,6 @@ interface JwtTokenServiceInterface
      * @return bool 撤銷成功時回傳true
      */
     public function revokeToken(string $token, string $reason = 'manual_revocation'): bool;
-
     /**
      * 撤銷使用者的所有token.
      *
@@ -97,7 +83,6 @@ interface JwtTokenServiceInterface
      * @return int 撤銷的token數量
      */
     public function revokeAllUserTokens(int $userId, string $reason = 'revoke_all_sessions'): int;
-
     /**
      * 檢查token是否已被撤銷（是否在黑名單中）.
      *
@@ -105,7 +90,6 @@ interface JwtTokenServiceInterface
      * @return bool 在黑名單中時回傳true
      */
     public function isTokenRevoked(string $token): bool;
-
     /**
      * 取得token的剩餘有效時間（秒）.
      *
@@ -115,7 +99,6 @@ interface JwtTokenServiceInterface
      * @throws InvalidTokenException 當token格式無效時
      */
     public function getTokenRemainingTime(string $token): int;
-
     /**
      * 檢查token是否即將過期
      *
@@ -126,7 +109,6 @@ interface JwtTokenServiceInterface
      * @throws InvalidTokenException 當token格式無效時
      */
     public function isTokenNearExpiry(string $token, int $thresholdSeconds = 300): bool;
-
     /**
      * 驗證token是否屬於特定使用者.
      *
@@ -137,7 +119,6 @@ interface JwtTokenServiceInterface
      * @throws InvalidTokenException 當token格式無效時
      */
     public function isTokenOwnedBy(string $token, int $userId): bool;
-
     /**
      * 驗證token是否來自特定裝置.
      *
@@ -148,21 +129,18 @@ interface JwtTokenServiceInterface
      * @throws InvalidTokenException 當token格式無效時
      */
     public function isTokenFromDevice(string $token, DeviceInfo $deviceInfo): bool;
-
     /**
      * 取得JWT演算法名稱.
      *
      * @return string 演算法名稱（例如：'RS256'）
      */
     public function getAlgorithm(): string;
-
     /**
      * 取得access token的TTL（存活時間）.
      *
      * @return int TTL秒數
      */
     public function getAccessTokenTtl(): int;
-
     /**
      * 取得refresh token的TTL（存活時間）.
      *

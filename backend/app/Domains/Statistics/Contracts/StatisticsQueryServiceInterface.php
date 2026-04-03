@@ -3,14 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
-
 use DateTime;
-
-/**
- * 統計查詢服務介面.
- *
- * 為匯出服務提供統計資料查詢的標準介面。
- */
 interface StatisticsQueryServiceInterface
 {
     /**
@@ -24,7 +17,6 @@ interface StatisticsQueryServiceInterface
      * @return array<string, mixed>
      */
     public function getOverview(array $options = []): array;
-
     /**
      * 取得文章統計資料.
      *
@@ -37,7 +29,6 @@ interface StatisticsQueryServiceInterface
      * @return array<string, mixed>
      */
     public function getPostStatistics(array $options = []): array;
-
     /**
      * 取得來源分布統計.
      *
@@ -49,7 +40,6 @@ interface StatisticsQueryServiceInterface
      * @return array<string, mixed>
      */
     public function getSourceDistribution(array $options = []): array;
-
     /**
      * 取得使用者統計資料.
      *
@@ -61,7 +51,6 @@ interface StatisticsQueryServiceInterface
      * @return array<string, mixed>
      */
     public function getUserStatistics(array $options = []): array;
-
     /**
      * 取得熱門內容統計.
      *

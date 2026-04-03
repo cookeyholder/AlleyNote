@@ -3,16 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Shared\Exceptions;
-
 use App\Shared\Validation\ValidationResult;
 use Throwable;
-
-// Import ValidationResult
-
 class ValidationException extends Exception
 {
     protected ValidationResult $validationResult; // Store the ValidationResult
-
     public function __construct(ValidationResult $validationResult, string $message = '', int $code = 422, ?Throwable $previous = null)
     {
         // If no message is provided, use the first error from ValidationResult
@@ -22,12 +17,10 @@ class ValidationException extends Exception
         parent::__construct($message, $code, $previous); // 使用提供的錯誤碼，預設 422
         $this->validationResult = $validationResult;
     }
-
     public function getValidationResult(): ValidationResult
     {
         return $this->validationResult;
     }
-
     // Static factory method for creating from an array of errors
     public static function fromErrors(array $errors, array|string $failedRulesOrMessage = '', string $message = ''): self
     {
@@ -39,21 +32,16 @@ class ValidationException extends Exception
             $message = $failedRulesOrMessage;
             $validationResult = ValidationResult::failure($errors);
         }
-
         return new self($validationResult, $message);
     }
-
     // Static factory method for creating from a single error
     public static function fromSingleError(string $field, string $error, string $rule = '', string $message = ''): self
     {
         $errors = [$field => [$error]];
         $failedRules = $rule ? [$field => [$rule]] : [];
-
         $validationResult = ValidationResult::failure($errors, $failedRules);
-
         return new self($validationResult, $message);
     }
-
     /**
      * 從多個欄位錯誤建立異常.
      *
@@ -63,22 +51,18 @@ class ValidationException extends Exception
     public static function fromMultipleErrors(array $errors, string $message = ''): self
     {
         $validationResult = ValidationResult::failure($errors);
-
         return new self($validationResult, $message);
     }
-
     // Override getErrors to delegate to ValidationResult
     public function getErrors(): array
     {
         return $this->validationResult->getErrors();
     }
-
     // Get failed rules from ValidationResult
     public function getFailedRules(): array
     {
         return $this->validationResult->getFailedRules();
     }
-
     /**
      * 取得第一個錯誤訊息.
      */
@@ -86,7 +70,6 @@ class ValidationException extends Exception
     {
         return $this->validationResult->getFirstError();
     }
-
     /**
      * 轉換為 API 回應格式.
      */
@@ -99,7 +82,6 @@ class ValidationException extends Exception
             'failed_rules' => $this->validationResult->getFailedRules(),
         ];
     }
-
     /**
      * 取得除錯資訊.
      */

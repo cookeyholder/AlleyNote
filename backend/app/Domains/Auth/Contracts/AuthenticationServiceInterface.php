@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
-
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
@@ -12,19 +11,6 @@ use App\Domains\Auth\DTOs\RefreshResponseDTO;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use Throwable;
-
-/**
- * 認證服務介面.
- *
- * 定義完整的 JWT 認證服務功能，包括：
- * - 使用者登入與登出
- * - 權杖重新整理
- * - 權杖驗證與撤銷
- * - 使用者裝置管理
- *
- * 負責協調各個認證元件（JwtTokenService、RefreshTokenRepository 等）
- * 提供統一的認證服務入口。
- */
 interface AuthenticationServiceInterface
 {
     /**
@@ -39,7 +25,6 @@ interface AuthenticationServiceInterface
      * @throws Exception 認證失敗時拋出
      */
     public function login(LoginRequestDTO $request, DeviceInfo $deviceInfo): LoginResponseDTO;
-
     /**
      * 權杖重新整理.
      *
@@ -52,7 +37,6 @@ interface AuthenticationServiceInterface
      * @throws Exception 權杖無效或重新整理失敗時拋出
      */
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO;
-
     /**
      * 使用者登出.
      *
@@ -63,7 +47,6 @@ interface AuthenticationServiceInterface
      * @throws Exception 登出失敗時拋出
      */
     public function logout(LogoutRequestDTO $request): bool;
-
     /**
      * 驗證存取權杖.
      *
@@ -73,7 +56,6 @@ interface AuthenticationServiceInterface
      * @return bool 權杖是否有效
      */
     public function validateAccessToken(string $accessToken): bool;
-
     /**
      * 驗證更新權杖.
      *
@@ -83,7 +65,6 @@ interface AuthenticationServiceInterface
      * @return bool 權杖是否有效
      */
     public function validateRefreshToken(string $refreshToken): bool;
-
     /**
      * 撤銷單一更新權杖.
      *
@@ -94,7 +75,6 @@ interface AuthenticationServiceInterface
      * @return bool 撤銷是否成功
      */
     public function revokeRefreshToken(string $refreshToken, string $reason = 'manual_revocation'): bool;
-
     /**
      * 撤銷使用者所有更新權杖.
      *
@@ -106,7 +86,6 @@ interface AuthenticationServiceInterface
      * @return int 撤銷的權杖數量
      */
     public function revokeAllUserTokens(int $userId, ?string $excludeJti = null, string $reason = 'logout_all'): int;
-
     /**
      * 撤銷指定裝置的所有更新權杖.
      *
@@ -118,7 +97,6 @@ interface AuthenticationServiceInterface
      * @return int 撤銷的權杖數量
      */
     public function revokeDeviceTokens(int $userId, string $deviceId, string $reason = 'device_logout'): int;
-
     /**
      * 獲取使用者權杖統計.
      *
@@ -128,7 +106,6 @@ interface AuthenticationServiceInterface
      * @return array<string, int> 權杖統計資訊
      */
     public function getUserTokenStats(int $userId): array;
-
     /**
      * 清理過期權杖.
      *
@@ -138,7 +115,6 @@ interface AuthenticationServiceInterface
      * @return int 清理的權杖數量
      */
     public function cleanupExpiredTokens(?DateTime $beforeDate = null): int;
-
     /**
      * 清理已撤銷權杖.
      *

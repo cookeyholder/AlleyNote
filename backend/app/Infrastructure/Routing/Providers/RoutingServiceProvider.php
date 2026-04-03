@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Providers;
-
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\ControllerResolver;
 use App\Infrastructure\Routing\Core\Router;
@@ -14,12 +13,6 @@ use App\Infrastructure\Routing\RouteLoader;
 use App\Infrastructure\Routing\RouteValidator;
 use Psr\Container\ContainerInterface;
 use Throwable;
-
-/**
- * 路由服務提供者.
- *
- * 負責註冊所有路由相關服務到 DI 容器
- */
 class RoutingServiceProvider
 {
     /**
@@ -30,39 +23,29 @@ class RoutingServiceProvider
         return [
             // 路由器核心服務
             RouterInterface::class => \DI\create(Router::class),
-
             Router::class => \DI\create(Router::class),
-
             // 路由驗證器
             RouteValidator::class => \DI\create(RouteValidator::class),
-
             // 路由載入器
             RouteLoader::class => \DI\factory([self::class, 'createRouteLoader']),
-
             // 控制器解析器
             ControllerResolver::class => \DI\factory([self::class, 'createControllerResolver']),
-
             // 中間件解析器
             MiddlewareResolver::class => \DI\factory([self::class, 'createMiddlewareResolver']),
-
             // 中間件分派器
             MiddlewareDispatcher::class => \DI\create(MiddlewareDispatcher::class),
-
             // 路由分派器
             RouteDispatcher::class => \DI\factory([self::class, 'createRouteDispatcher']),
         ];
     }
-
     /**
      * 建立路由載入器實例.
      */
     public static function createRouteLoader(ContainerInterface $container): RouteLoader
     {
         $validator = $container->get(RouteValidator::class);
-
         return new RouteLoader($validator);
     }
-
     /**
      * 建立控制器解析器實例.
      */
@@ -70,7 +53,6 @@ class RoutingServiceProvider
     {
         return new ControllerResolver($container);
     }
-
     /**
      * 建立中介軟體解析器實例.
      */
@@ -78,7 +60,6 @@ class RoutingServiceProvider
     {
         return new MiddlewareResolver($container);
     }
-
     /**
      * 建立路由分派器實例.
      */
@@ -88,7 +69,6 @@ class RoutingServiceProvider
         $controllerResolver = $container->get(ControllerResolver::class);
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
         $middlewareResolver = $container->get(MiddlewareResolver::class);
-
         return new RouteDispatcher(
             $router,
             $controllerResolver,
@@ -96,7 +76,6 @@ class RoutingServiceProvider
             $container,
         );
     }
-
     /**
      * 取得路由配置檔案清單.
      */
@@ -111,7 +90,6 @@ class RoutingServiceProvider
             'activity-logs' => __DIR__ . '/../../../../config/routes/activity-logs.php',
         ];
     }
-
     /**
      * 載入路由配置到路由器.
      */
@@ -119,7 +97,6 @@ class RoutingServiceProvider
     {
         $routeLoader = $container->get(RouteLoader::class);
         $router = $container->get(RouterInterface::class);
-
         try {
             // 載入各種路由配置檔案
             foreach (self::getRouteFiles() as $group => $filePath) {
@@ -127,13 +104,11 @@ class RoutingServiceProvider
                     $routeLoader->addRouteFile($filePath, $group);
                 }
             }
-
             // 載入所有路由到路由器
             $routeLoader->loadRoutes($router);
         } catch (Throwable $e) {
             // 記錄路由載入錯誤並回退到基本配置
             app_log('error', '路由載入失敗', ['exception' => $e->getMessage()]);
-
             // 嘗試載入舊版路由檔案作為回退
             $legacyRoutesFile = __DIR__ . '/../../../../config/routes.php';
             if (file_exists($legacyRoutesFile)) {
@@ -144,7 +119,6 @@ class RoutingServiceProvider
             }
         }
     }
-
     /**
      * 取得路由系統統計資訊.
      */
@@ -152,7 +126,6 @@ class RoutingServiceProvider
     {
         try {
             $routeLoader = $container->get(RouteLoader::class);
-
             return $routeLoader->getRouteStats();
         } catch (Throwable $e) {
             return [

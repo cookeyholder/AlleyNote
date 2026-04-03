@@ -3,13 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
-
 use App\Shared\ValueObjects\SecurePassword;
 use InvalidArgumentException;
-
-/**
- * 更新使用者 DTO.
- */
 final readonly class UpdateUserDTO
 {
     /**
@@ -22,13 +17,11 @@ final readonly class UpdateUserDTO
         public ?array $roleIds = null,
     ) {
         self::assertRoleIds($this->roleIds);
-
         // 如果有更新密碼，驗證密碼安全性
         if ($this->password !== null) {
             new SecurePassword($this->password, $this->username, $this->email);
         }
     }
-
     /** @param array<mixed> $data */
     public static function fromArray(array $data): self
     {
@@ -39,11 +32,9 @@ final readonly class UpdateUserDTO
             roleIds: self::normalizeRoleIds($data['role_ids'] ?? null),
         );
     }
-
     public function toArray(): array
     {
         $result = [];
-
         if ($this->username !== null) {
             $result['username'] = $this->username;
         }
@@ -56,10 +47,8 @@ final readonly class UpdateUserDTO
         if ($this->roleIds !== null) {
             $result['role_ids'] = $this->roleIds;
         }
-
         return $result;
     }
-
     public function hasUpdates(): bool
     {
         return $this->username !== null
@@ -67,7 +56,6 @@ final readonly class UpdateUserDTO
             || $this->password !== null
             || $this->roleIds !== null;
     }
-
     /**
      * @return list<int>|null
      */
@@ -76,17 +64,14 @@ final readonly class UpdateUserDTO
         if (!is_array($roleIds)) {
             return null;
         }
-
         $normalizedRoleIds = [];
         foreach ($roleIds as $roleId) {
             if (is_int($roleId) && $roleId > 0) {
                 $normalizedRoleIds[] = $roleId;
             }
         }
-
         return $normalizedRoleIds === [] ? [] : array_values(array_unique($normalizedRoleIds));
     }
-
     /**
      * @param list<int>|null $roleIds
      */
@@ -95,7 +80,6 @@ final readonly class UpdateUserDTO
         if ($roleIds === null) {
             return;
         }
-
         foreach ($roleIds as $roleId) {
             if (!is_int($roleId) || $roleId <= 0) {
                 throw new InvalidArgumentException('Role IDs must be a positive integer list');

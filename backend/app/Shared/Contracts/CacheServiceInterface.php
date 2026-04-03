@@ -3,12 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Shared\Contracts;
-
-/**
- * 快取服務介面.
- *
- * 定義快取操作的標準介面
- */
 interface CacheServiceInterface
 {
     /**
@@ -18,7 +12,6 @@ interface CacheServiceInterface
      * @return mixed 快取的資料，若不存在則返回 null
      */
     public function get(string $key): mixed;
-
     /**
      * 將資料存入快取.
      *
@@ -28,7 +21,6 @@ interface CacheServiceInterface
      * @return bool 是否成功存入
      */
     public function set(string $key, mixed $value, int $ttl = 3600): bool;
-
     /**
      * 檢查快取鍵是否存在.
      *
@@ -36,7 +28,6 @@ interface CacheServiceInterface
      * @return bool 是否存在
      */
     public function has(string $key): bool;
-
     /**
      * 刪除快取.
      *
@@ -44,14 +35,12 @@ interface CacheServiceInterface
      * @return bool 是否成功刪除
      */
     public function delete(string $key): bool;
-
     /**
      * 清空所有快取.
      *
      * @return bool 是否成功清空
      */
     public function clear(): bool;
-
     /**
      * 批次取得多個快取.
      *
@@ -59,7 +48,6 @@ interface CacheServiceInterface
      * @return array 快取資料陣列，格式為 [key => value]
      */
     public function getMultiple(array $keys): array;
-
     /**
      * 批次設定多個快取.
      *
@@ -68,7 +56,6 @@ interface CacheServiceInterface
      * @return bool 是否全部成功設定
      */
     public function setMultiple(array $values, int $ttl = 3600): bool;
-
     /**
      * 批次刪除多個快取.
      *
@@ -76,7 +63,6 @@ interface CacheServiceInterface
      * @return bool 是否全部成功刪除
      */
     public function deleteMultiple(array $keys): bool;
-
     /**
      * 依照模式刪除快取.
      *
@@ -84,14 +70,12 @@ interface CacheServiceInterface
      * @return int 刪除的快取數量
      */
     public function deletePattern(string $pattern): int;
-
     /**
      * 取得快取統計資訊.
      *
      * @return array 包含命中率、快取數量等統計資訊
      */
     public function getStats(): array;
-
     /**
      * 記憶化快取 - 如果快取不存在則執行回調並快取結果.
      *

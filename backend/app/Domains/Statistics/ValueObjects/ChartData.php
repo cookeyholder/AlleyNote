@@ -3,15 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\ValueObjects;
-
 use JsonSerializable;
-
-/**
- * 圖表資料值物件.
- *
- * 用於統一前端圖表庫（如 Chart.js）的資料格式
- * 支援多種圖表類型的資料結構
- */
 readonly class ChartData implements JsonSerializable
 {
     /**
@@ -24,7 +16,6 @@ readonly class ChartData implements JsonSerializable
         public array $datasets,
         public array $options = [],
     ) {}
-
     /**
      * 建立時間序列圖表資料.
      *
@@ -38,25 +29,21 @@ readonly class ChartData implements JsonSerializable
     ): self {
         $labels = [];
         $data = [];
-
         foreach ($dataPoints as $point) {
             $labels[] = $point->timestamp;
             $data[] = $point->value;
         }
-
         $dataset = new ChartDataset(
             label: $label,
             data: $data,
             type: ChartType::Line,
         );
-
         return new self(
             labels: $labels,
             datasets: [$dataset],
             options: $options,
         );
     }
-
     /**
      * 建立分類統計圖表資料.
      *
@@ -72,27 +59,23 @@ readonly class ChartData implements JsonSerializable
         $labels = [];
         $data = [];
         $backgroundColors = [];
-
         foreach ($dataPoints as $point) {
             $labels[] = $point->category;
             $data[] = $point->value;
             $backgroundColors[] = $point->color;
         }
-
         $dataset = new ChartDataset(
             label: $label,
             data: $data,
             type: $type,
             backgroundColor: $backgroundColors,
         );
-
         return new self(
             labels: $labels,
             datasets: [$dataset],
             options: $options,
         );
     }
-
     /**
      * 建立多資料集圖表資料.
      *
@@ -111,21 +94,18 @@ readonly class ChartData implements JsonSerializable
             options: $options,
         );
     }
-
     /**
      * 加入額外的資料集.
      */
     public function withDataset(ChartDataset $dataset): self
     {
         $datasets = [...$this->datasets, $dataset];
-
         return new self(
             labels: $this->labels,
             datasets: $datasets,
             options: $this->options,
         );
     }
-
     /**
      * 設定圖表選項.
      *
@@ -134,14 +114,12 @@ readonly class ChartData implements JsonSerializable
     public function withOptions(array $options): self
     {
         $mergedOptions = array_merge($this->options, $options);
-
         return new self(
             labels: $this->labels,
             datasets: $this->datasets,
             options: $mergedOptions,
         );
     }
-
     /**
      * 檢查是否為空資料.
      */
@@ -150,7 +128,6 @@ readonly class ChartData implements JsonSerializable
         return empty($this->datasets)
                || (count($this->datasets) === 1 && empty($this->datasets[0]->data));
     }
-
     /**
      * 取得資料點總數.
      */
@@ -160,10 +137,8 @@ readonly class ChartData implements JsonSerializable
         foreach ($this->datasets as $dataset) {
             $totalCount += count($dataset->data);
         }
-
         return $totalCount;
     }
-
     /**
      * @return array<string, mixed>
      */

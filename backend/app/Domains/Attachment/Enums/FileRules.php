@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\Enums;
-
 class FileRules
 {
     // 允許的檔案類型
@@ -25,10 +24,8 @@ class FileRules
         'text/plain',
         'text/csv',
     ];
-
     // 檔案大小限制 (20MB)
     public const MAX_FILE_SIZE = 20 * 1024 * 1024;
-
     // 檔案副檔名對應表
     public const MIME_EXTENSIONS = [
         'image/jpeg' => 'jpg',

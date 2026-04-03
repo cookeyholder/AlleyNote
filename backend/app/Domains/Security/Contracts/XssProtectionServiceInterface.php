@@ -3,19 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
-
 interface XssProtectionServiceInterface
 {
     /**
      * 清理單一字串中的 XSS 內容.
      */
     public function sanitize(string $input): string;
-
     /**
      * 清理陣列中所有值的 XSS 內容.
      */
     public function sanitizeArray(array $input): array;
-
     /**
      * 清理陣列中指定欄位的 XSS 內容.
      *

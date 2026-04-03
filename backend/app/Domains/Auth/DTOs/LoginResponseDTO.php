@@ -3,14 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
-
 use App\Domains\Auth\ValueObjects\TokenPair;
-
-/**
- * 登入回應 DTO.
- *
- * 封裝使用者登入成功後的回應資料，包括令牌、使用者資訊和相關中繼資料。
- */
 final readonly class LoginResponseDTO
 {
     public function __construct(
@@ -23,7 +16,6 @@ final readonly class LoginResponseDTO
         public ?array $permissions = null,
         public ?array $roles = null,
     ) {}
-
     /**
      * 轉換為陣列.
      */
@@ -34,7 +26,6 @@ final readonly class LoginResponseDTO
         if (is_array($this->roles) && count($this->roles) > 0) {
             $primaryRole = $this->roles[0]['name'] ?? null;
         }
-
         return [
             'access_token' => $this->tokens->getAccessToken(),
             'refresh_token' => $this->tokens->getRefreshToken(),

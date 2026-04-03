@@ -3,20 +3,17 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
-
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
 class AttachmentController
 {
     public function __construct(
         private AttachmentService $attachmentService,
     ) {}
-
     /**
      * 取得當前登入使用者 ID
      * TODO: 實作真正的使用者認證邏輯.
@@ -28,10 +25,8 @@ class AttachmentController
         if ($userId === null) {
             throw ValidationException::fromSingleError('user_id', '使用者未登入');
         }
-
         return (int) $userId;
     }
-
     #[OA\Post(
         path: '/api/posts/{post_id}/attachments',
         summary: '上傳文件附件',
@@ -134,24 +129,19 @@ class AttachmentController
             $currentUserId = $this->getCurrentUserId($request);
             $postId = (int) $request->getAttribute('post_id');
             $files = $request->getUploadedFiles();
-
             if (!isset($files['file'])) {
                 $response->getBody()->write((json_encode([
                     'error' => '缺少上傳檔案',
                 ]) ?: ''));
-
                 return $response
                     ->withStatus(400)
                     ->withHeader('Content-Type', 'application/json');
             }
-
             $attachment = $this->attachmentService->upload($postId, $files['file'], $currentUserId);
-
             $jsonResponse = json_encode([
                 'data' => $attachment->toArray(),
             ]);
             $response->getBody()->write($jsonResponse ?: '{"error": "JSON encoding failed"}');
-
             return $response
                 ->withStatus(201)
                 ->withHeader('Content-Type', 'application/json');
@@ -159,7 +149,6 @@ class AttachmentController
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
             ]) ?: '{"error": "JSON encoding failed"}'));
-
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
@@ -167,13 +156,11 @@ class AttachmentController
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
             ]) ?: '{"error": "JSON encoding failed"}'));
-
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
         }
     }
-
     #[OA\Get(
         path: '/api/attachments/{id}/download',
         summary: '下載附件',
@@ -267,16 +254,13 @@ class AttachmentController
             if (!$uuid || !is_string($uuid)) {
                 throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
             }
-
             // TODO: 實作檔案下載邏輯
             // 1. 驗證附件是否存在
             // 2. 檢查檔案權限
             // 3. 讀取檔案並回傳
-
             $response->getBody()->write((json_encode([
                 'error' => '檔案下載功能尚未實作',
             ]) ?: ''));
-
             return $response
                 ->withStatus(501)
                 ->withHeader('Content-Type', 'application/json');
@@ -284,7 +268,6 @@ class AttachmentController
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
             ]) ?: '{"error": "JSON encoding failed"}'));
-
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
@@ -292,13 +275,11 @@ class AttachmentController
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
             ]) ?: '{"error": "JSON encoding failed"}'));
-
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');
         }
     }
-
     #[OA\Get(
         path: '/api/posts/{post_id}/attachments',
         summary: '取得貼文附件列表',
@@ -353,19 +334,16 @@ class AttachmentController
     {
         $postId = (int) $request->getAttribute('post_id');
         $attachments = $this->attachmentService->getByPostId($postId);
-
         $response->getBody()->write((json_encode([
             'data' => array_map(
                 fn($attachment) => $attachment->toArray(),
                 $attachments,
             ),
         ]) ?: '{"error": "JSON encoding failed"}'));
-
         return $response
             ->withStatus(200)
             ->withHeader('Content-Type', 'application/json');
     }
-
     #[OA\Delete(
         path: '/api/attachments/{id}',
         summary: '刪除附件',
@@ -433,13 +411,11 @@ class AttachmentController
                 throw ValidationException::fromSingleError('uuid', '無效的附件識別碼');
             }
             $this->attachmentService->delete($uuid, $currentUserId);
-
             return $response->withStatus(204);
         } catch (ValidationException $e) {
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
             ]) ?: '{"error": "JSON encoding failed"}'));
-
             return $response
                 ->withStatus(400)
                 ->withHeader('Content-Type', 'application/json');
@@ -447,7 +423,6 @@ class AttachmentController
             $response->getBody()->write((json_encode([
                 'error' => $e->getMessage(),
             ]) ?: '{"error": "JSON encoding failed"}'));
-
             return $response
                 ->withStatus(404)
                 ->withHeader('Content-Type', 'application/json');

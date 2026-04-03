@@ -3,23 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
-
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
-
-/**
- * 內容審核服務.
- *
- * 提供自動化內容審核和人工審核的工作流程
- */
 class ContentModerationService
 {
     private XssProtectionService $xssProtection;
-
     private RichTextProcessorService $richTextProcessor;
-
     private array $config;
-
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
@@ -29,7 +19,6 @@ class ContentModerationService
         $this->richTextProcessor = $richTextProcessor;
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
-
     /**
      * 審核內容.
      */
@@ -43,28 +32,24 @@ class ContentModerationService
             'requires_human_review' => false,
             'auto_actions'          => [],
         ];
-
         // 1. 基本安全檢查
         /** @var array<int, array<string, mixed>> $securityIssues */
         $securityIssues = $this->checkSecurity($content);
         if (!empty($securityIssues)) {
             $result['issues'] = array_merge($result['issues'], $securityIssues);
         }
-
         // 2. 內容品質檢查
         /** @var array<int, array<string, mixed>> $qualityIssues */
         $qualityIssues = $this->checkQuality($content, $metadata);
         if (!empty($qualityIssues)) {
             $result['issues'] = array_merge($result['issues'], $qualityIssues);
         }
-
         // 3. 敏感詞檢查
         /** @var array<int, array<string, mixed>> $sensitiveWordIssues */
         $sensitiveWordIssues = $this->checkSensitiveWords($content);
         if (!empty($sensitiveWordIssues)) {
             $result['issues'] = array_merge($result['issues'], $sensitiveWordIssues);
         }
-
         // 4. 垃圾內容檢查
         $spamScore = $this->calculateSpamScore($content, $metadata);
         if ($spamScore > $this->config['spam_threshold']) {
@@ -75,20 +60,16 @@ class ContentModerationService
                 'score'    => $spamScore,
             ];
         }
-
         // 5. 決定最終狀態
         $this->determineFinalStatus($result);
-
         return $result;
     }
-
     /**
      * 安全檢查.
      */
     private function checkSecurity(string $content): mixed
     {
         $issues = [];
-
         // XSS 檢查
         $hasXss = $this->xssProtection->detectXss($content);
         if ($hasXss) {
@@ -99,7 +80,6 @@ class ContentModerationService
                 'details' => 'Content contains potentially dangerous XSS patterns',
             ];
         }
-
         // 富文本安全檢查
         $richTextIssues = $this->richTextProcessor->validateSecurity($content);
         /** @var array<int, array{severity: ActivitySeverity, message: string, details?: string}> $richTextIssues */
@@ -113,10 +93,8 @@ class ContentModerationService
                 ];
             }
         }
-
         return $issues;
     }
-
     /**
      * 品質檢查.
      */
@@ -124,7 +102,6 @@ class ContentModerationService
     {
         $issues = [];
         $textContent = strip_tags($content);
-
         // 長度檢查
         if (strlen($textContent) < $this->config['min_content_length']) {
             $issues[] = [
@@ -135,7 +112,6 @@ class ContentModerationService
                 'min_required' => $this->config['min_content_length'],
             ];
         }
-
         if (strlen($textContent) > $this->config['max_content_length']) {
             $issues[] = [
                 'type' => 'quality_too_long',
@@ -145,7 +121,6 @@ class ContentModerationService
                 'max_allowed' => $this->config['max_content_length'],
             ];
         }
-
         // 重複內容檢查
         if ($this->isRepetitiveContent($textContent)) {
             $issues[] = [
@@ -154,7 +129,6 @@ class ContentModerationService
                 'message' => '內容過度重複',
             ];
         }
-
         // 全大寫檢查
         if ($this->isAllCaps($textContent)) {
             $issues[] = [
@@ -163,10 +137,8 @@ class ContentModerationService
                 'message' => '內容全為大寫字母',
             ];
         }
-
         return $issues;
     }
-
     /**
      * 敏感詞檢查.
      */
@@ -174,7 +146,6 @@ class ContentModerationService
     {
         $issues = [];
         $textContent = strtolower(strip_tags($content));
-
         foreach ($this->config['sensitive_words'] as $category => $words) {
             foreach ($words as $word) {
                 if (str_contains($textContent, strtolower($word))) {
@@ -188,10 +159,8 @@ class ContentModerationService
                 }
             }
         }
-
         return $issues;
     }
-
     /**
      * 計算垃圾內容分數.
      */
@@ -199,7 +168,6 @@ class ContentModerationService
     {
         $score = 0;
         $textContent = strip_tags($content);
-
         // 外部連結密度
         $linkCount = substr_count(strtolower($content), '<a ');
         $wordCount = str_word_count($textContent);
@@ -209,28 +177,22 @@ class ContentModerationService
                 $score += 30;
             }
         }
-
         // 大寫字母比例
         $upperCaseRatio = $this->getUpperCaseRatio($textContent);
         if ($upperCaseRatio > 0.5) {
             $score += 20;
         }
-
         // 重複字元
         if ($this->hasExcessiveRepetition($textContent)) {
             $score += 25;
         }
-
         // 可疑 URL 模式
         if ($this->hasSuspiciousUrls($content)) {
             $score += 40;
         }
-
         // 發文頻率（如果有提供使用者資訊）
-
         return min($score, 100);
     }
-
     /**
      * 決定最終審核狀態.
      */
@@ -238,11 +200,9 @@ class ContentModerationService
     {
         /** @var array<int, array{severity: ActivitySeverity}> $issues */
         $issues = $result['issues'];
-
         $criticalIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::CRITICAL);
         $highIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::HIGH);
         $mediumIssues = array_filter($issues, fn($issue) => $issue['severity'] === ActivitySeverity::MEDIUM);
-
         if (!empty($criticalIssues)) {
             $result['status'] = 'rejected';
             $result['confidence'] = 0;
@@ -266,14 +226,12 @@ class ContentModerationService
             }
             $result['recommendations'][] = '建議作者檢查並修正標記的問題';
         }
-
         // 根據問題數量調整信心度
         $totalIssues = count($issues);
         if ($totalIssues > 0 && $result['status'] === 'approved') {
             $result['confidence'] = max(50, 100 - ($totalIssues * 10));
         }
     }
-
     /**
      * 檢查是否為重複內容.
      */
@@ -281,16 +239,12 @@ class ContentModerationService
     {
         $sentences = preg_split('/[.!?]+/', $text);
         $sentences = array_filter(array_map('trim', $sentences));
-
         if (count($sentences) < 3) {
             return false;
         }
-
         $uniqueSentences = array_unique($sentences);
-
         return count($uniqueSentences) / count($sentences) < 0.7;
     }
-
     /**
      * 檢查是否全為大寫.
      */
@@ -300,10 +254,8 @@ class ContentModerationService
         if (strlen($alphaChars) < 10) {
             return false;
         }
-
         return strtoupper($alphaChars) === $alphaChars;
     }
-
     /**
      * 取得大寫字母比例.
      */
@@ -313,12 +265,9 @@ class ContentModerationService
         if (strlen($alphaChars) === 0) {
             return 0;
         }
-
         $upperChars = preg_replace('/[^A-Z]/', '', $alphaChars);
-
         return strlen($upperChars) / strlen($alphaChars);
     }
-
     /**
      * 檢查是否有過度重複.
      */
@@ -328,7 +277,6 @@ class ContentModerationService
         return preg_match('/(.)\1{4,}/', $text) // 同一字元重複5次以上
             || preg_match('/(.{2,5})\1{3,}/', $text); // 短模式重複4次以上
     }
-
     /**
      * 檢查可疑 URL.
      */
@@ -341,16 +289,13 @@ class ContentModerationService
             '/short\.link/',
             '/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/', // IP 位址
         ];
-
         foreach ($suspiciousPatterns as $pattern) {
             if (preg_match($pattern, $content)) {
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * 取得敏感詞嚴重程度.
      */
@@ -365,10 +310,8 @@ class ContentModerationService
             'spam' => ActivitySeverity::MEDIUM,
             'political' => ActivitySeverity::MEDIUM,
         ];
-
         return $severityMap[$category] ?? ActivitySeverity::MEDIUM;
     }
-
     /**
      * 預設設定.
      */

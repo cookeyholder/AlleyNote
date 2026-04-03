@@ -81,6 +81,7 @@ function proxyRequest(req, res, targetUrl) {
       path: url.pathname + url.search,
       method: req.method,
       headers: { ...req.headers, host: url.host },
+      timeout: 30000, // 30s timeout
     },
     (proxyRes) => {
       console.log(`[proxy-res] ${req.url} -> ${proxyRes.statusCode}`);

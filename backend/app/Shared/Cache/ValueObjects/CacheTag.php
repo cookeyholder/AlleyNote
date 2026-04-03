@@ -3,24 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\ValueObjects;
-
 use InvalidArgumentException;
-
-/**
- * 快取標籤值物件.
- *
- * 表示快取項目的標籤，提供標籤驗證和正規化功能
- */
 class CacheTag
 {
     private string $name;
-
     public function __construct(string $name)
     {
         $this->name = $this->normalizeName($name);
         $this->validateName($this->name);
     }
-
     /**
      * 取得標籤名稱.
      */
@@ -28,7 +19,6 @@ class CacheTag
     {
         return $this->name;
     }
-
     /**
      * 正規化標籤名稱.
      */
@@ -44,10 +34,8 @@ class CacheTag
         if ($normalized === null) {
             $normalized = '';
         }
-
         return trim($normalized, '_');
     }
-
     /**
      * 驗證標籤名稱.
      */
@@ -56,22 +44,18 @@ class CacheTag
         if (empty($name)) {
             throw new InvalidArgumentException('標籤名稱不能為空');
         }
-
         if (strlen($name) > 50) {
             throw new InvalidArgumentException('標籤名稱不能超過 50 個字符');
         }
-
         if (!preg_match('/^[a-z0-9_\-\.]+$/', $name)) {
             throw new InvalidArgumentException('標籤名稱只能包含英文字母、數字、底線、連字號和點號');
         }
-
         // 保留標籤名稱檢查
         $reserved = ['all', 'none', 'cache', 'tag', 'key', 'system', 'admin'];
         if (in_array($name, $reserved, true)) {
             throw new InvalidArgumentException("標籤名稱 '{$name}' 為系統保留字");
         }
     }
-
     /**
      * 轉換為字串.
      */
@@ -79,7 +63,6 @@ class CacheTag
     {
         return $this->name;
     }
-
     /**
      * 比較兩個標籤是否相等.
      */
@@ -87,7 +70,6 @@ class CacheTag
     {
         return $this->name === $other->name;
     }
-
     /**
      * 從字串陣列建立標籤陣列.
      *
@@ -98,7 +80,6 @@ class CacheTag
     {
         return array_map(static fn(string $name) => new self($name), $names);
     }
-
     /**
      * 將標籤陣列轉換為字串陣列.
      *
@@ -109,7 +90,6 @@ class CacheTag
     {
         return array_map(static fn(CacheTag $tag) => $tag->getName(), $tags);
     }
-
     /**
      * 檢查標籤名稱是否有效.
      */
@@ -117,13 +97,11 @@ class CacheTag
     {
         try {
             new self($name);
-
             return true;
         } catch (InvalidArgumentException) {
             return false;
         }
     }
-
     /**
      * 建立標籤群組標籤.
      *
@@ -134,7 +112,6 @@ class CacheTag
     {
         return new self("group:{$group}");
     }
-
     /**
      * 建立使用者相關標籤.
      *
@@ -145,7 +122,6 @@ class CacheTag
     {
         return new self("user:{$userId}");
     }
-
     /**
      * 建立模組相關標籤.
      *
@@ -156,7 +132,6 @@ class CacheTag
     {
         return new self("module:{$module}");
     }
-
     /**
      * 建立時間相關標籤.
      *
@@ -167,7 +142,6 @@ class CacheTag
     {
         return new self("time:{$period}");
     }
-
     /**
      * 檢查是否為群組標籤.
      */
@@ -175,7 +149,6 @@ class CacheTag
     {
         return str_starts_with($this->name, 'group_');
     }
-
     /**
      * 檢查是否為使用者標籤.
      */
@@ -183,7 +156,6 @@ class CacheTag
     {
         return str_starts_with($this->name, 'user_');
     }
-
     /**
      * 檢查是否為模組標籤.
      */
@@ -191,7 +163,6 @@ class CacheTag
     {
         return str_starts_with($this->name, 'module_');
     }
-
     /**
      * 檢查是否為時間標籤.
      */

@@ -3,27 +3,17 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
-
 use App\Domains\Auth\Services\PermissionManagementService;
 use App\Shared\Exceptions\NotFoundException;
 use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
-
-/**
- * 權限管理 Controller.
- */
-#[OA\Tag(
-    name: 'Permissions',
-    description: 'Permission management endpoints',
-)]
 class PermissionController
 {
     public function __construct(
         private readonly PermissionManagementService $permissionManagementService,
     ) {}
-
     /**
      * 取得權限列表.
      *
@@ -64,17 +54,13 @@ class PermissionController
     public function index(Request $request, Response $response): Response
     {
         $permissions = $this->permissionManagementService->listPermissions();
-
         $responseData = json_encode([
             'success' => true,
             'data' => array_map(fn($permission) => $permission->toArray(), $permissions),
         ]);
-
         $response->getBody()->write($responseData ?: '');
-
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
-
     /**
      * 取得單一權限.
      *
@@ -138,23 +124,18 @@ class PermissionController
             }
             $id = (int) $idAttr;
             $permission = $this->permissionManagementService->getPermission($id);
-
             $responseData = json_encode([
                 'success' => true,
                 'data' => $permission->toArray(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
-
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
             ]);
-
             $response->getBody()->write($responseData ?: '');
-
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }

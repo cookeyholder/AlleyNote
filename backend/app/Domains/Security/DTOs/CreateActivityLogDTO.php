@@ -3,17 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\DTOs;
-
 use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
-
-/**
- * 建立活動記錄的 DTO.
- */
 final class CreateActivityLogDTO implements JsonSerializable
 {
     public function __construct(
@@ -33,13 +28,11 @@ final class CreateActivityLogDTO implements JsonSerializable
         private ?DateTimeImmutable $occurredAt = null,
     ) {
         $this->occurredAt ??= new DateTimeImmutable();
-
         // 驗證 metadata 只能包含可序列化的資料
         if ($this->metadata !== null) {
             $this->validateMetadata($this->metadata);
         }
     }
-
     /**
      * @param array<string, mixed> $data
      */
@@ -63,7 +56,6 @@ final class CreateActivityLogDTO implements JsonSerializable
                 : new DateTimeImmutable(),
         );
     }
-
     /**
      * 快速建立成功操作的記錄.
      *
@@ -87,7 +79,6 @@ final class CreateActivityLogDTO implements JsonSerializable
             metadata: $metadata,
         );
     }
-
     /**
      * 快速建立失敗操作的記錄.
      *
@@ -111,7 +102,6 @@ final class CreateActivityLogDTO implements JsonSerializable
             metadata: $metadata,
         );
     }
-
     /**
      * 快速建立安全事件的記錄.
      *
@@ -133,44 +123,35 @@ final class CreateActivityLogDTO implements JsonSerializable
             userAgent: $userAgent,
         );
     }
-
     // === Getters ===
-
     public function getActionType(): ActivityType
     {
         return $this->actionType;
     }
-
     public function getUserId(): ?int
     {
         return $this->userId;
     }
-
     public function getSessionId(): ?string
     {
         return $this->sessionId;
     }
-
     public function getStatus(): ActivityStatus
     {
         return $this->status;
     }
-
     public function getTargetType(): ?string
     {
         return $this->targetType;
     }
-
     public function getTargetId(): ?string
     {
         return $this->targetId;
     }
-
     public function getDescription(): ?string
     {
         return $this->description;
     }
-
     /**
      * @return array<string, mixed>|null
      */
@@ -178,68 +159,53 @@ final class CreateActivityLogDTO implements JsonSerializable
     {
         return $this->metadata;
     }
-
     public function getIpAddress(): ?string
     {
         return $this->ipAddress;
     }
-
     public function getUserAgent(): ?string
     {
         return $this->userAgent;
     }
-
     public function getRequestMethod(): ?string
     {
         return $this->requestMethod;
     }
-
     public function getRequestPath(): ?string
     {
         return $this->requestPath;
     }
-
     public function getOccurredAt(): DateTimeImmutable
     {
         return $this->occurredAt ?? new DateTimeImmutable();
     }
-
     // === Fluent Setters ===
-
     public function withUserId(?int $userId): self
     {
         $new = clone $this;
         $new->userId = $userId;
-
         return $new;
     }
-
     public function withSessionId(?string $sessionId): self
     {
         $new = clone $this;
         $new->sessionId = $sessionId;
-
         return $new;
     }
-
     public function withRequestInfo(?string $method, ?string $path): self
     {
         $new = clone $this;
         $new->requestMethod = $method;
         $new->requestPath = $path;
-
         return $new;
     }
-
     public function withNetworkInfo(?string $ipAddress, ?string $userAgent): self
     {
         $new = clone $this;
         $new->ipAddress = $ipAddress;
         $new->userAgent = $userAgent;
-
         return $new;
     }
-
     /**
      * @param array<string, mixed> $metadata
      */
@@ -248,20 +214,16 @@ final class CreateActivityLogDTO implements JsonSerializable
         $this->validateMetadata($metadata);
         $new = clone $this;
         $new->metadata = $metadata;
-
         return $new;
     }
-
     public function addMetadata(string $key, mixed $value): self
     {
         $new = clone $this;
         $new->metadata ??= [];
         $new->metadata[$key] = $value;
         $this->validateMetadata($new->metadata);
-
         return $new;
     }
-
     /**
      * 轉換為資料庫儲存格式.
      *
@@ -287,7 +249,6 @@ final class CreateActivityLogDTO implements JsonSerializable
             'created_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
         ];
     }
-
     /**
      * @return array<string, mixed>
      */
@@ -295,7 +256,6 @@ final class CreateActivityLogDTO implements JsonSerializable
     {
         return $this->toArray();
     }
-
     /**
      * 驗證 metadata 是否可序列化.
      *
@@ -310,7 +270,6 @@ final class CreateActivityLogDTO implements JsonSerializable
                 'Metadata must be JSON serializable: ' . $e->getMessage(),
             );
         }
-
         // 檢查 metadata 大小不超過 64KB（文字欄位限制）
         $json = (json_encode($metadata) ?? '') ?: '';
         $jsonSize = $json !== false ? strlen($json) : 0;
