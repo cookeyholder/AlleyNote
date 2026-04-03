@@ -25,24 +25,27 @@ abstract class BaseController
         'App\Domains\Auth\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
     ];
 
-    /**
-     * 建立JSON回應.
-     */
     protected function json(
         ResponseInterface $response,
         array $data,
         HttpStatusCode|int $status = HttpStatusCode::OK,
         JsonFlag $jsonFlag = JsonFlag::DEFAULT,
     ): ResponseInterface {
-        $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
+        try {
+            $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
 
-        $response->getBody()->write($json);
+            $response->getBody()->write($json);
 
-        $statusCode = $status instanceof HttpStatusCode ? $status->value : (int) $status;
+            $statusCode = $status instanceof HttpStatusCode ? $status->value : (int) $status;
 
-        return $response
-            ->withHeader('Content-Type', 'application/json')
-            ->withStatus($statusCode);
+            return $response
+                ->withHeader('Content-Type', 'application/json')
+                ->withStatus($statusCode);
+        } catch (\Throwable $e) {
+            echo "\n[CRITICAL ERROR] BaseController::json() failed: " . get_class($e) . ": " . $e->getMessage() . "\n";
+            echo $e->getTraceAsString() . "\n";
+            throw $e;
+        }
     }
 
     protected function jsonResponse(array $data, HttpStatusCode|int $httpCode = HttpStatusCode::OK): string

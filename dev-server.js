@@ -47,7 +47,7 @@ function serveStaticFile(res, filePath) {
   if (!fs.existsSync(filePath)) {
     console.error(`[static-error] File not found: ${filePath}`);
     res.writeHead(404);
-    res.end("Not Found");
+    res.end(`Not Found: ${filePath}`);
     return;
   }
 
@@ -102,7 +102,12 @@ function proxyRequest(req, res, targetUrl) {
 
 function main() {
   const args = parseArgs();
-  const staticRootDir = path.resolve(process.cwd(), args.staticDir);
+  console.log(`[dev-server] Starting with CWD: ${process.cwd()}`);
+  console.log(`[dev-server] __dirname: ${__dirname}`);
+  
+  const staticRootDir = path.isAbsolute(args.staticDir) 
+    ? args.staticDir 
+    : path.resolve(process.cwd(), args.staticDir);
 
   const server = http.createServer((req, res) => {
     const parsedUrl = new URL(req.url, `http://localhost:${args.port}`);

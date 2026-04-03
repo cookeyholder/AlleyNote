@@ -12,6 +12,7 @@ use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Infrastructure\Http\Response;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
@@ -23,7 +24,6 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Tests\Support\IntegrationTestCase;
 
 class AuthControllerTest extends IntegrationTestCase
@@ -36,7 +36,8 @@ class AuthControllerTest extends IntegrationTestCase
 
     private ValidatorInterface|MockInterface $validator;
 
-    private ActivityLoggingServiceInterface|MockInterface $activityLoggingService;
+    /** @var mixed */
+    private $activityLoggingService;
 
     private UserRepositoryInterface|MockInterface $userRepository;
 
@@ -44,9 +45,7 @@ class AuthControllerTest extends IntegrationTestCase
 
     private ServerRequestInterface|MockInterface $request;
 
-    private ResponseInterface|MockInterface $response;
-
-    private StreamInterface|MockInterface $stream;
+    private ResponseInterface $response;
 
     protected function setUp(): void
     {
@@ -61,17 +60,13 @@ class AuthControllerTest extends IntegrationTestCase
         $this->userManagementService = Mockery::mock(UserManagementService::class);
 
         $this->request = Mockery::mock(ServerRequestInterface::class);
-        $this->response = Mockery::mock(ResponseInterface::class);
-        $this->stream = Mockery::mock(StreamInterface::class);
+        $this->response = new Response();
 
         // 預設行為
         $this->request->shouldReceive('getParsedBody')->andReturn([])->byDefault();
         $this->request->shouldReceive('getHeaderLine')->andReturn('')->byDefault();
-        $this->response->shouldReceive('withHeader')->andReturnSelf()->byDefault();
-        $this->response->shouldReceive('withStatus')->andReturnSelf()->byDefault();
-        $this->response->shouldReceive('getBody')->andReturn($this->stream)->byDefault();
-        $this->stream->shouldReceive('write')->andReturn(0)->byDefault();
-        $this->response->shouldReceive('getStatusCode')->andReturn(200)->byDefault();
+        $this->validator->shouldReceive('addRule')->zeroOrMoreTimes()->andReturnSelf();
+        $this->validator->shouldReceive('addMessage')->zeroOrMoreTimes()->andReturnSelf();
     }
 
     private function getValidTestJwt(): string
@@ -86,12 +81,15 @@ class AuthControllerTest extends IntegrationTestCase
             'username' => 'testuser',
             'email' => 'test@example.com',
             'password' => 'Password123!',
+            'password_confirmation' => 'Password123!',
+            'confirm_password' => 'Password123!',
+            'user_ip' => '127.0.0.1',
         ];
 
         $this->request->shouldReceive('getParsedBody')->andReturn($userData);
         $this->validator->shouldReceive('validateOrFail')->andReturn($userData);
 
-        $this->authenticationService->shouldReceive('register')
+        $this->authService->shouldReceive('register')
             ->once()
             ->andReturn([
                 'id' => 1,
@@ -100,26 +98,22 @@ class AuthControllerTest extends IntegrationTestCase
                 'status' => 1,
             ]);
 
-        $this->response->shouldReceive('withStatus')->with(201)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(201);
-
         $config = new EnvironmentConfig();
 
+        /** @var AuthService $authService */
         $authService = $this->authService;
+        /** @var AuthenticationServiceInterface $authenticationService */
         $authenticationService = $this->authenticationService;
+        /** @var JwtTokenServiceInterface $jwtTokenService */
         $jwtTokenService = $this->jwtTokenService;
+        /** @var ValidatorInterface $validator */
         $validator = $this->validator;
+        /** @var ActivityLoggingServiceInterface $activityLoggingService */
         $activityLoggingService = $this->activityLoggingService;
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
-
-        assert($authService instanceof AuthService);
-        assert($authenticationService instanceof AuthenticationServiceInterface);
-        assert($jwtTokenService instanceof JwtTokenServiceInterface);
-        assert($validator instanceof ValidatorInterface);
-        assert($activityLoggingService instanceof ActivityLoggingServiceInterface);
-        assert($userRepository instanceof UserRepositoryInterface);
-        assert($userManagementService instanceof UserManagementService);
 
         // 建立控制器並執行
         $controller = new AuthController($authService, $authenticationService, $jwtTokenService, $validator, $activityLoggingService, $userRepository, $userManagementService, $config);
@@ -138,26 +132,22 @@ class AuthControllerTest extends IntegrationTestCase
         $this->validator->shouldReceive('validateOrFail')
             ->andThrow(new ValidationException(new ValidationResult(false, ['username' => ['Required']])));
 
-        $this->response->shouldReceive('withStatus')->with(400)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(400);
-
         $config = new EnvironmentConfig();
 
+        /** @var AuthService $authService */
         $authService = $this->authService;
+        /** @var AuthenticationServiceInterface $authenticationService */
         $authenticationService = $this->authenticationService;
+        /** @var JwtTokenServiceInterface $jwtTokenService */
         $jwtTokenService = $this->jwtTokenService;
+        /** @var ValidatorInterface $validator */
         $validator = $this->validator;
+        /** @var ActivityLoggingServiceInterface $activityLoggingService */
         $activityLoggingService = $this->activityLoggingService;
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
-
-        assert($authService instanceof AuthService);
-        assert($authenticationService instanceof AuthenticationServiceInterface);
-        assert($jwtTokenService instanceof JwtTokenServiceInterface);
-        assert($validator instanceof ValidatorInterface);
-        assert($activityLoggingService instanceof ActivityLoggingServiceInterface);
-        assert($userRepository instanceof UserRepositoryInterface);
-        assert($userManagementService instanceof UserManagementService);
 
         // 建立控制器並執行
         $controller = new AuthController($authService, $authenticationService, $jwtTokenService, $validator, $activityLoggingService, $userRepository, $userManagementService, $config);
@@ -175,28 +165,34 @@ class AuthControllerTest extends IntegrationTestCase
 
         $jwt = $this->getValidTestJwt();
         $tokens = new TokenPair($jwt, $jwt, new DateTimeImmutable('+1 hour'), new DateTimeImmutable('+30 days'));
-        $this->authenticationService->shouldReceive('login')->once()->andReturn($tokens);
-        $this->authenticationService->shouldReceive('getUserByEmail')->andReturn([
-            'id' => 1, 'username' => 'test', 'email' => 'test@example.com',
-        ]);
+        
+        $loginResponse = new \App\Domains\Auth\DTOs\LoginResponseDTO(
+            userId: 1,
+            username: 'test',
+            email: 'test@example.com',
+            roles: [],
+            permissions: [],
+            tokens: $tokens
+        );
+
+        $this->authenticationService->shouldReceive('login')->once()->andReturn($loginResponse);
 
         $config = new EnvironmentConfig();
 
+        /** @var AuthService $authService */
         $authService = $this->authService;
+        /** @var AuthenticationServiceInterface $authenticationService */
         $authenticationService = $this->authenticationService;
+        /** @var JwtTokenServiceInterface $jwtTokenService */
         $jwtTokenService = $this->jwtTokenService;
+        /** @var ValidatorInterface $validator */
         $validator = $this->validator;
+        /** @var ActivityLoggingServiceInterface $activityLoggingService */
         $activityLoggingService = $this->activityLoggingService;
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
-
-        assert($authService instanceof AuthService);
-        assert($authenticationService instanceof AuthenticationServiceInterface);
-        assert($jwtTokenService instanceof JwtTokenServiceInterface);
-        assert($validator instanceof ValidatorInterface);
-        assert($activityLoggingService instanceof ActivityLoggingServiceInterface);
-        assert($userRepository instanceof UserRepositoryInterface);
-        assert($userManagementService instanceof UserManagementService);
 
         // 建立控制器並執行
         $controller = new AuthController($authService, $authenticationService, $jwtTokenService, $validator, $activityLoggingService, $userRepository, $userManagementService, $config);
@@ -210,30 +206,25 @@ class AuthControllerTest extends IntegrationTestCase
     {
         $credentials = ['email' => 'wrong@example.com', 'password' => 'wrong'];
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
-        $this->validator->shouldReceive('validateOrFail')->andReturn($credentials);
-
+        
         $this->authenticationService->shouldReceive('login')->once()->andThrow(new InvalidArgumentException('Invalid credentials'));
-
-        $this->response->shouldReceive('withStatus')->with(401)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(401);
 
         $config = new EnvironmentConfig();
 
+        /** @var AuthService $authService */
         $authService = $this->authService;
+        /** @var AuthenticationServiceInterface $authenticationService */
         $authenticationService = $this->authenticationService;
+        /** @var JwtTokenServiceInterface $jwtTokenService */
         $jwtTokenService = $this->jwtTokenService;
+        /** @var ValidatorInterface $validator */
         $validator = $this->validator;
+        /** @var ActivityLoggingServiceInterface $activityLoggingService */
         $activityLoggingService = $this->activityLoggingService;
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
-
-        assert($authService instanceof AuthService);
-        assert($authenticationService instanceof AuthenticationServiceInterface);
-        assert($jwtTokenService instanceof JwtTokenServiceInterface);
-        assert($validator instanceof ValidatorInterface);
-        assert($activityLoggingService instanceof ActivityLoggingServiceInterface);
-        assert($userRepository instanceof UserRepositoryInterface);
-        assert($userManagementService instanceof UserManagementService);
 
         // 建立控制器並執行
         $controller = new AuthController($authService, $authenticationService, $jwtTokenService, $validator, $activityLoggingService, $userRepository, $userManagementService, $config);
@@ -245,23 +236,24 @@ class AuthControllerTest extends IntegrationTestCase
     #[Test]
     public function logoutUserSuccessfully(): void
     {
+        $this->authenticationService->shouldReceive('logout')->once();
+        
         $config = new EnvironmentConfig();
 
+        /** @var AuthService $authService */
         $authService = $this->authService;
+        /** @var AuthenticationServiceInterface $authenticationService */
         $authenticationService = $this->authenticationService;
+        /** @var JwtTokenServiceInterface $jwtTokenService */
         $jwtTokenService = $this->jwtTokenService;
+        /** @var ValidatorInterface $validator */
         $validator = $this->validator;
+        /** @var ActivityLoggingServiceInterface $activityLoggingService */
         $activityLoggingService = $this->activityLoggingService;
+        /** @var UserRepositoryInterface $userRepository */
         $userRepository = $this->userRepository;
+        /** @var UserManagementService $userManagementService */
         $userManagementService = $this->userManagementService;
-
-        assert($authService instanceof AuthService);
-        assert($authenticationService instanceof AuthenticationServiceInterface);
-        assert($jwtTokenService instanceof JwtTokenServiceInterface);
-        assert($validator instanceof ValidatorInterface);
-        assert($activityLoggingService instanceof ActivityLoggingServiceInterface);
-        assert($userRepository instanceof UserRepositoryInterface);
-        assert($userManagementService instanceof UserManagementService);
 
         // 建立控制器並執行
         $controller = new AuthController($authService, $authenticationService, $jwtTokenService, $validator, $activityLoggingService, $userRepository, $userManagementService, $config);

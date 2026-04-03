@@ -462,7 +462,7 @@ class AuthController extends BaseController
         }
     }
 
-    private function withAuthCookies(ResponseInterface $response, TokenPair $tokens): ResponseInterface
+    private function withAuthCookies(Response $response, TokenPair $tokens): Response
     {
         return $response->withHeader('Set-Cookie', [
             $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true),
@@ -471,7 +471,7 @@ class AuthController extends BaseController
         ]);
     }
 
-    private function expireAuthCookies(ResponseInterface $response): ResponseInterface
+    private function expireAuthCookies(Response $response): Response
     {
         return $response->withHeader('Set-Cookie', [
             $this->buildCookieHeader('access_token', '', time() - 3600, true),

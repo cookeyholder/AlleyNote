@@ -9,8 +9,9 @@ use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
-use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
+use App\Infrastructure\Http\Response;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
@@ -20,7 +21,6 @@ use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
 use Tests\Support\IntegrationTestCase;
 
 class PostControllerTest extends IntegrationTestCase
@@ -31,18 +31,14 @@ class PostControllerTest extends IntegrationTestCase
 
     private OutputSanitizerInterface|MockInterface $sanitizer;
 
-    private ActivityLoggingServiceInterface|MockInterface $activityLogger;
+    /** @var mixed */
+    private $activityLogger;
 
     private PostViewStatisticsService|MockInterface $postViewStatsService;
 
     private ServerRequestInterface|MockInterface $request;
 
-    private ResponseInterface|MockInterface $response;
-
-    private StreamInterface|MockInterface $stream;
-
-    /** @var array<mixed, mixed>|null */
-    private ?array $currentResponseData = null;
+    private ResponseInterface $response;
 
     protected function setUp(): void
     {
@@ -54,26 +50,24 @@ class PostControllerTest extends IntegrationTestCase
         $this->postViewStatsService = Mockery::mock(PostViewStatisticsService::class);
 
         $this->request = Mockery::mock(ServerRequestInterface::class);
-        $this->response = Mockery::mock(ResponseInterface::class);
-        $this->stream = Mockery::mock(StreamInterface::class);
+        $this->response = new Response();
 
         // 預設行為
         $this->request->shouldReceive('getQueryParams')->andReturn([])->byDefault();
         $this->request->shouldReceive('getParsedBody')->andReturn([])->byDefault();
         $this->request->shouldReceive('getHeaderLine')->andReturn('')->byDefault();
         $this->request->shouldReceive('getAttribute')->andReturn(null)->byDefault();
+    }
 
-        // 模擬 Response 的鏈式調用與內容捕捉
-        $this->response->shouldReceive('withHeader')->andReturnSelf()->byDefault();
-        $this->response->shouldReceive('withStatus')->andReturnSelf()->byDefault();
-        $this->response->shouldReceive('getStatusCode')->andReturn(200)->byDefault();
-        $this->response->shouldReceive('getBody')->andReturn($this->stream)->byDefault();
-        $this->stream->shouldReceive('write')->andReturnUsing(function ($content) {
-            $decoded = json_decode((string) $content, true);
-            $this->currentResponseData = is_array($decoded) ? $decoded : null;
-
-            return strlen((string) $content);
-        });
+    /**
+     * 輔助方法：獲取 JSON 回應內容
+     */
+    private function getJsonResponse(ResponseInterface $response): array
+    {
+        $body = (string) $response->getBody();
+        /** @var array<mixed, mixed> $decoded */
+        $decoded = json_decode($body, true) ?: [];
+        return $decoded;
     }
 
     #[Test]
@@ -84,17 +78,27 @@ class PostControllerTest extends IntegrationTestCase
         ]);
         $this->postViewStatsService->shouldReceive('getBatchPostViewStats')->once()->andReturn([]);
 
-        $authServiceOrig = $this->mockAuthorizationService();
         /** @var AuthorizationServiceInterface $authService */
-        $authService = $authServiceOrig;
+        $authService = $this->mockAuthorizationService();
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
+        /** @var PostServiceInterface $postService */
+        $postService = $this->postService;
+        /** @var ValidatorInterface $validator */
+        $validator = $this->validator;
+        /** @var OutputSanitizerInterface $sanitizer */
+        $sanitizer = $this->sanitizer;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+        /** @var PostViewStatisticsService $statsService */
+        $statsService = $this->postViewStatsService;
+
+        $controller = new PostController($postService, $validator, $sanitizer, $activityLogger, $statsService, $authService);
         $response = $controller->index($this->request, $this->response);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSafeApiResponse($this->currentResponseData);
+        $this->assertSafeApiResponse($this->getJsonResponse($response));
     }
 
     #[Test]
@@ -113,33 +117,51 @@ class PostControllerTest extends IntegrationTestCase
         $this->postService->shouldReceive('recordView')->once();
         $this->postViewStatsService->shouldReceive('getPostViewStats')->once()->andReturn(['views' => 10, 'unique_visitors' => 5]);
 
-        $authServiceOrig = $this->mockAuthorizationService();
         /** @var AuthorizationServiceInterface $authService */
-        $authService = $authServiceOrig;
+        $authService = $this->mockAuthorizationService();
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
+        /** @var PostServiceInterface $postService */
+        $postService = $this->postService;
+        /** @var ValidatorInterface $validator */
+        $validator = $this->validator;
+        /** @var OutputSanitizerInterface $sanitizer */
+        $sanitizer = $this->sanitizer;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+        /** @var PostViewStatisticsService $statsService */
+        $statsService = $this->postViewStatsService;
+
+        $controller = new PostController($postService, $validator, $sanitizer, $activityLogger, $statsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => (string) $postId]);
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSafeApiResponse($this->currentResponseData);
+        $this->assertSafeApiResponse($this->getJsonResponse($response));
     }
 
     #[Test]
     public function showShouldReturn404WhenNotFound(): void
     {
         $this->postService->shouldReceive('findById')->once()->andThrow(new PostNotFoundException(999));
-        $this->response->shouldReceive('withStatus')->with(404)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(404);
 
-        $authServiceOrig = $this->mockAuthorizationService();
         /** @var AuthorizationServiceInterface $authService */
-        $authService = $authServiceOrig;
+        $authService = $this->mockAuthorizationService();
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
+        /** @var PostServiceInterface $postService */
+        $postService = $this->postService;
+        /** @var ValidatorInterface $validator */
+        $validator = $this->validator;
+        /** @var OutputSanitizerInterface $sanitizer */
+        $sanitizer = $this->sanitizer;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+        /** @var PostViewStatisticsService $statsService */
+        $statsService = $this->postViewStatsService;
+
+        $controller = new PostController($postService, $validator, $sanitizer, $activityLogger, $statsService, $authService);
         $response = $controller->show($this->request, $this->response, ['id' => '999']);
 
         $this->assertEquals(404, $response->getStatusCode());
@@ -151,16 +173,24 @@ class PostControllerTest extends IntegrationTestCase
         $createdPost = new Post(['id' => 1, 'title' => '新文章', 'user_id' => 1]);
         $this->validator->shouldReceive('validateOrFail')->andReturn(['title' => '新文章']);
         $this->postService->shouldReceive('createPost')->once()->andReturn($createdPost);
-        $this->response->shouldReceive('withStatus')->with(201)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(201);
 
-        $authServiceOrig = $this->mockAuthorizationService();
         /** @var AuthorizationServiceInterface $authService */
-        $authService = $authServiceOrig;
+        $authService = $this->mockAuthorizationService();
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
+        /** @var PostServiceInterface $postService */
+        $postService = $this->postService;
+        /** @var ValidatorInterface $validator */
+        $validator = $this->validator;
+        /** @var OutputSanitizerInterface $sanitizer */
+        $sanitizer = $this->sanitizer;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+        /** @var PostViewStatisticsService $statsService */
+        $statsService = $this->postViewStatsService;
+
+        $controller = new PostController($postService, $validator, $sanitizer, $activityLogger, $statsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(201, $response->getStatusCode());
@@ -170,16 +200,24 @@ class PostControllerTest extends IntegrationTestCase
     public function storeShouldReturn400OnValidationFailure(): void
     {
         $this->postService->shouldReceive('createPost')->once()->andThrow(new ValidationException(new ValidationResult(false, ['title' => ['Required']])));
-        $this->response->shouldReceive('withStatus')->with(400)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(400);
 
-        $authServiceOrig = $this->mockAuthorizationService();
         /** @var AuthorizationServiceInterface $authService */
-        $authService = $authServiceOrig;
+        $authService = $this->mockAuthorizationService();
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
+        /** @var PostServiceInterface $postService */
+        $postService = $this->postService;
+        /** @var ValidatorInterface $validator */
+        $validator = $this->validator;
+        /** @var OutputSanitizerInterface $sanitizer */
+        $sanitizer = $this->sanitizer;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+        /** @var PostViewStatisticsService $statsService */
+        $statsService = $this->postViewStatsService;
+
+        $controller = new PostController($postService, $validator, $sanitizer, $activityLogger, $statsService, $authService);
         $response = $controller->store($this->request, $this->response);
 
         $this->assertEquals(400, $response->getStatusCode());
@@ -192,16 +230,24 @@ class PostControllerTest extends IntegrationTestCase
         $post = new Post(['id' => $postId, 'user_id' => 1]);
         $this->postService->shouldReceive('findById')->once()->with($postId)->andReturn($post);
         $this->postService->shouldReceive('deletePost')->once()->with($postId);
-        $this->response->shouldReceive('withStatus')->with(204)->andReturnSelf();
-        $this->response->shouldReceive('getStatusCode')->andReturn(204);
 
-        $authServiceOrig = $this->mockAuthorizationService();
         /** @var AuthorizationServiceInterface $authService */
-        $authService = $authServiceOrig;
+        $authService = $this->mockAuthorizationService();
         $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->zeroOrMoreTimes();
         $this->request->shouldReceive('getAttribute')->with('user_id')->andReturn(1)->zeroOrMoreTimes();
 
-        $controller = new PostController($this->postService, $this->validator, $this->sanitizer, $this->activityLogger, $this->postViewStatsService, $authService);
+        /** @var PostServiceInterface $postService */
+        $postService = $this->postService;
+        /** @var ValidatorInterface $validator */
+        $validator = $this->validator;
+        /** @var OutputSanitizerInterface $sanitizer */
+        $sanitizer = $this->sanitizer;
+        /** @var ActivityLoggingServiceInterface $activityLogger */
+        $activityLogger = $this->activityLogger;
+        /** @var PostViewStatisticsService $statsService */
+        $statsService = $this->postViewStatsService;
+
+        $controller = new PostController($postService, $validator, $sanitizer, $activityLogger, $statsService, $authService);
         $response = $controller->delete($this->request, $this->response, ['id' => (string) $postId]);
 
         $this->assertEquals(204, $response->getStatusCode());
