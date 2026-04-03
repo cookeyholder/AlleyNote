@@ -83,6 +83,7 @@ class LoginPage extends SecureBasePage {
     let lastError = null;
     const startedAt = Date.now();
     const maxDurationMs = 45000;
+    const dashboardWaitMs = 12000;
 
     for (let index = 0; index < candidates.length; index += 1) {
       const candidate = candidates[index];
@@ -113,19 +114,24 @@ class LoginPage extends SecureBasePage {
 
         if (loginResponse && loginResponse.ok()) {
           try {
-            await this.page.waitForURL("**/admin/dashboard", { timeout: 4000 });
+            await this.page.waitForURL("**/admin/dashboard", {
+              timeout: dashboardWaitMs,
+              waitUntil: "domcontentloaded",
+            });
 
             return;
           } catch {
             try {
               await this.page.goto("/admin/dashboard", {
                 waitUntil: "domcontentloaded",
-                timeout: 6000,
+                timeout: dashboardWaitMs,
+              });
+              await this.page.waitForURL("**/admin/dashboard", {
+                timeout: dashboardWaitMs,
+                waitUntil: "domcontentloaded",
               });
 
-              if (this.page.url().includes("/admin/dashboard")) {
-                return;
-              }
+              return;
             } catch (directVisitAfterLoginError) {
               lastError = directVisitAfterLoginError;
             }
@@ -133,7 +139,10 @@ class LoginPage extends SecureBasePage {
         }
 
         try {
-          await this.page.waitForURL("**/admin/dashboard", { timeout: 6000 });
+          await this.page.waitForURL("**/admin/dashboard", {
+            timeout: dashboardWaitMs,
+            waitUntil: "domcontentloaded",
+          });
 
           return;
         } catch (error) {
@@ -155,9 +164,11 @@ class LoginPage extends SecureBasePage {
             try {
               await this.page.goto("/admin/dashboard", {
                 waitUntil: "domcontentloaded",
+                timeout: dashboardWaitMs,
               });
               await this.page.waitForURL("**/admin/dashboard", {
-                timeout: 5000,
+                timeout: dashboardWaitMs,
+                waitUntil: "domcontentloaded",
               });
 
               return;
@@ -169,7 +180,7 @@ class LoginPage extends SecureBasePage {
           try {
             await this.page.goto("/admin/dashboard", {
               waitUntil: "domcontentloaded",
-              timeout: 6000,
+              timeout: dashboardWaitMs,
             });
 
             if (this.page.url().includes("/admin/dashboard")) {
@@ -183,7 +194,7 @@ class LoginPage extends SecureBasePage {
             break;
           }
 
-          await this.page.waitForTimeout(300);
+          await this.page.waitForTimeout(500);
         }
       }
 
