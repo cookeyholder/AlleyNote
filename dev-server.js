@@ -44,20 +44,26 @@ function parseArgs() {
 }
 
 function serveStaticFile(res, filePath) {
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      console.error(`[static-error] Failed to read ${filePath}: ${err.message}`);
-      res.writeHead(404);
-      res.end("Not Found");
-      return;
-    }
+  if (!fs.existsSync(filePath)) {
+    console.error(`[static-error] File not found: ${filePath}`);
+    res.writeHead(404);
+    res.end("Not Found");
+    return;
+  }
+
+  try {
+    const data = fs.readFileSync(filePath);
     const ext = path.extname(filePath).toLowerCase();
     res.writeHead(200, {
       "Content-Type": MIME_TYPES[ext] || "application/octet-stream",
       "Cache-Control": "no-cache",
     });
     res.end(data);
-  });
+  } catch (err) {
+    console.error(`[static-error] Read error ${filePath}: ${err.message}`);
+    res.writeHead(500);
+    res.end("Internal Server Error");
+  }
 }
 
 function proxyRequest(req, res, targetUrl) {
@@ -96,7 +102,7 @@ function proxyRequest(req, res, targetUrl) {
 
 function main() {
   const args = parseArgs();
-  const staticRootDir = path.resolve(args.staticDir);
+  const staticRootDir = path.resolve(process.cwd(), args.staticDir);
 
   const server = http.createServer((req, res) => {
     const parsedUrl = new URL(req.url, `http://localhost:${args.port}`);
@@ -116,14 +122,6 @@ function main() {
     // 2. 靜態檔案
     const decodedPath = decodeURIComponent(urlPath);
     let filePath = path.join(staticRootDir, decodedPath === "/" ? "index.html" : decodedPath);
-
-    // 路徑穿越保護
-    if (!filePath.startsWith(staticRootDir)) {
-      console.warn(`[security] Blocked path traversal attempt: ${filePath}`);
-      res.writeHead(403);
-      res.end("Forbidden");
-      return;
-    }
 
     // 檢查檔案是否存在
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
