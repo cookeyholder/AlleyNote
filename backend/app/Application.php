@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App;
 
 use App\Infrastructure\Http\Response;
-use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Routing\RouteDispatcher;
@@ -153,12 +152,11 @@ class Application
             $errorData['code'] = $e->getCode();
         }
         $json = json_encode($errorData, JSON_UNESCAPED_UNICODE) ?: '{"error": "Internal Server Error"}';
-        $stream = new Stream($json);
 
         return new Response(
             500,
             ['Content-Type' => 'application/json'],
-            $stream,
+            $json,
         );
     }
 
