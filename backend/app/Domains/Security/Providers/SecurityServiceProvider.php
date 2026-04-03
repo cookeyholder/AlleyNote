@@ -19,11 +19,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Stringable;
 
-/**
- * Security 領域服務提供者.
- *
- * 負責註冊所有 Security 相關服務到 DI 容器
- */
 class SecurityServiceProvider
 {
     /**
@@ -34,18 +29,14 @@ class SecurityServiceProvider
         return [
             // Activity Log Repository Interface
             ActivityLogRepositoryInterface::class => \DI\autowire(ActivityLogRepository::class),
-
             // Activity Logging Service
             ActivityLoggingServiceInterface::class => \DI\factory([self::class, 'createActivityLoggingService']),
-
             // CSRF Protection Service Interface & Implementation
             CsrfProtectionServiceInterface::class => \DI\factory([self::class, 'createCsrfProtectionService']),
             CsrfProtectionService::class => \DI\get(CsrfProtectionServiceInterface::class),
-
             // XSS Protection Service Interface & Implementation
             XssProtectionServiceInterface::class => \DI\factory([self::class, 'createXssProtectionService']),
             XssProtectionService::class => \DI\get(XssProtectionServiceInterface::class),
-
             // IP Service Interface & Implementation
             IpServiceInterface::class => \DI\factory([self::class, 'createIpService']),
             IpService::class => \DI\get(IpServiceInterface::class),
@@ -58,7 +49,6 @@ class SecurityServiceProvider
     public static function createActivityLoggingService(ContainerInterface $container): ActivityLoggingService
     {
         $repository = $container->get(ActivityLogRepositoryInterface::class);
-
         // 使用共用的 Monolog helper 作為 logger
         $logger = new class implements LoggerInterface {
             public function emergency(Stringable|string $message, array $context = []): void
@@ -106,7 +96,6 @@ class SecurityServiceProvider
                 $normalizedLevel = is_string($level) || $level instanceof Stringable
                     ? (string) $level
                     : 'info';
-
                 app_log($normalizedLevel, (string) $message, $context);
             }
         };

@@ -251,7 +251,6 @@ class CacheKeys
         if (!self::isValidKey($key)) {
             return [];
         }
-
         $withoutPrefix = substr($key, strlen(self::PREFIX . self::SEPARATOR));
 
         return explode(self::SEPARATOR, $withoutPrefix);

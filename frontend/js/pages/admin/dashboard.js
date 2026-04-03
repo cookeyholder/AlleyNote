@@ -7,6 +7,7 @@ import { router } from "../../utils/router.js";
 import { apiClient } from "../../api/client.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 /**
  * 渲染儀表板頁面
@@ -74,21 +75,18 @@ export async function renderDashboard() {
             ${
               globalGetters.isAdmin()
                 ? `
-                const result = await apiClient.get("/posts", {
-                  params: { page: 1, per_page: 100 },
-                  silent: true,
-                });
-                <div class="flex items-center gap-4">
-                  <div class="w-12 h-12 bg-modern-50 text-modern-500 rounded-xl flex items-center justify-center group-hover:bg-modern-900 group-hover:text-white transition-colors duration-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <a href="#/admin/users" class="block p-6 bg-white rounded-xl border border-modern-200 hover:border-modern-300 hover:shadow-md transition-all group">
+                  <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-modern-50 text-modern-500 rounded-xl flex items-center justify-center group-hover:bg-modern-900 group-hover:text-white transition-colors duration-300">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-modern-900">成員管理</h3>
+                      <p class="text-xs text-modern-500">權限設定與帳號管理</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 class="font-bold text-modern-900">成員管理</h3>
-                    <p class="text-xs text-modern-500">權限設定與帳號管理</p>
-                  </div>
-                </div>
-              </a>
-            `
+                </a>
+              `
                 : ""
             }
           </div>
@@ -250,10 +248,10 @@ async function loadDashboardData() {
             return `
             <div class="flex items-center justify-between py-3 ${borderClass}">
               <div class="flex-1 min-w-0">
-                <h3 class="font-medium text-modern-900 truncate">${post.title}</h3>
+                <h3 class="font-medium text-modern-900 truncate">${escapeHtml(post.title)}</h3>
                 <div class="flex items-center gap-2 mt-1">
                   <p class="text-sm text-modern-500">${post.formattedDateTime}</p>
-                  ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${post.author}</p>` : ""}
+                  ${post.author ? `<span class="text-sm text-modern-400">·</span><p class="text-sm text-modern-500">${escapeHtml(post.author)}</p>` : ""}
                 </div>
               </div>
               <span class="ml-4 px-3 py-1 ${statusClass} text-sm rounded-full whitespace-nowrap">

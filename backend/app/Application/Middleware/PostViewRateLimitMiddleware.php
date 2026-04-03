@@ -11,11 +11,6 @@ use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 文章瀏覽速率限制中介軟體.
- *
- * 專為文章瀏覽端點設計的輕量級速率限制，防止濫用同時保持高效能
- */
 class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
 {
     /** @var int 每個 IP 每分鐘最大請求數 */
@@ -47,7 +42,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         if (is_string($routeName)) {
             return str_contains($routeName, 'post_view') || str_contains($routeName, 'posts.view');
         }
-
         $route = $request->getAttribute('route');
         if (is_object($route) && method_exists($route, 'getName')) {
             $resolvedName = $route->getName();
@@ -55,7 +49,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
                 return str_contains($resolvedName, 'post_view') || str_contains($resolvedName, 'posts.view');
             }
         }
-
         $path = $request->getUri()->getPath();
 
         return str_contains($path, '/post-view') || str_contains($path, '/posts');
@@ -66,7 +59,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         RequestHandlerInterface $handler,
     ): ResponseInterface {
         $startTime = microtime(true);
-
         // 取得識別資訊
         $ip = $this->getRealClientIP($request);
         $userIdAttr = $request->getAttribute('user_id');
@@ -74,14 +66,11 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         if (is_numeric($userIdAttr)) {
             $userId = (int) $userIdAttr;
         }
-
         // 檢查速率限制
         $rateLimitResult = $this->checkRateLimit($ip, $userId);
-
         if (!$rateLimitResult['allowed']) {
             return $this->createRateLimitResponse($rateLimitResult);
         }
-
         // 處理請求
         $response = $handler->handle($request);
 
@@ -97,7 +86,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
     private function checkRateLimit(string $ip, ?int $userId): array
     {
         $now = time();
-
         if ($userId !== null) {
             // 認證使用者：使用較寬鬆的限制
             $key = "post_view_user_{$userId}";
@@ -107,9 +95,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
             $key = "post_view_ip_{$ip}";
             $limit = self::MAX_REQUESTS_PER_MINUTE;
         }
-
         $result = $this->rateLimitService->checkLimit($key, $limit, self::TIME_WINDOW);
-
         // 確保返回類型正確
         $allowed = $result['allowed'] ?? false;
         $remaining = $result['remaining'] ?? 0;
@@ -131,7 +117,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
     {
         $resetTime = $rateLimitResult['reset'];
         $retryAfter = max(1, is_numeric($resetTime) ? (int) $resetTime - time() : 60);
-
         $data = [
             'success' => false,
             'error' => [
@@ -147,12 +132,10 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
                 ],
             ],
         ];
-
         $json = json_encode($data, JSON_UNESCAPED_UNICODE);
         if ($json === false) {
             $json = '{"success":false,"error":{"message":"Rate limit exceeded"}}';
         }
-
         $limitStr = is_numeric($rateLimitResult['limit']) ? (string) $rateLimitResult['limit'] : '100';
         $resetStr = is_numeric($resetTime) ? (string) $resetTime : (string) (time() + 60);
 
@@ -174,7 +157,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         float $startTime,
     ): ResponseInterface {
         $processingTime = round((microtime(true) - $startTime) * 1000, 2);
-
         $limitStr = is_numeric($rateLimitResult['limit']) ? (string) $rateLimitResult['limit'] : '100';
         $remainingStr = is_numeric($rateLimitResult['remaining']) ? (string) $rateLimitResult['remaining'] : '0';
         $resetStr = is_numeric($rateLimitResult['reset']) ? (string) $rateLimitResult['reset'] : (string) (time() + 60);
@@ -192,7 +174,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
     private function getRealClientIP(ServerRequestInterface $request): string
     {
         $serverParams = $request->getServerParams();
-
         // 檢查代理伺服器的標頭
         $headers = [
             'HTTP_X_FORWARDED_FOR',
@@ -202,7 +183,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
             'HTTP_FORWARDED_FOR',
             'HTTP_FORWARDED',
         ];
-
         foreach ($headers as $header) {
             if (!empty($serverParams[$header]) && is_string($serverParams[$header])) {
                 $ips = array_map('trim', explode(',', $serverParams[$header]));
@@ -214,7 +194,6 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
                 }
             }
         }
-
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
 
         return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';

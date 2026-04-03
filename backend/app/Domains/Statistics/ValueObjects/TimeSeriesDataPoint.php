@@ -7,9 +7,6 @@ namespace App\Domains\Statistics\ValueObjects;
 use DateTimeInterface;
 use JsonSerializable;
 
-/**
- * 時間序列資料點值物件.
- */
 readonly class TimeSeriesDataPoint implements JsonSerializable
 {
     public function __construct(
@@ -72,7 +69,6 @@ readonly class TimeSeriesDataPoint implements JsonSerializable
             'x' => $this->timestamp,
             'y' => $this->value,
         ];
-
         if ($this->label !== null) {
             $result['label'] = $this->label;
         }

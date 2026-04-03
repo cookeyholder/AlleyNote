@@ -7,11 +7,6 @@ namespace App\Infrastructure\Routing\Cache;
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 
-/**
- * 檔案快取實作.
- *
- * 使用檔案系統存儲路由快取資料
- */
 class FileRouteCache implements RouteCacheInterface
 {
     private int $ttl = 3600; // 預設 1 小時
@@ -36,12 +31,10 @@ class FileRouteCache implements RouteCacheInterface
         if (!file_exists($this->getCacheFile())) {
             return false;
         }
-
         $mtime = filemtime($this->getCacheFile());
         if ($mtime === false) {
             return false;
         }
-
         // 檢查是否過期
         if ($this->ttl > 0 && (time() - $mtime) > $this->ttl) {
             return false;
@@ -58,7 +51,6 @@ class FileRouteCache implements RouteCacheInterface
 
             return null;
         }
-
         $content = file_get_contents($this->getCacheFile());
         if ($content === false) {
             $this->stats['misses']++;
@@ -66,7 +58,6 @@ class FileRouteCache implements RouteCacheInterface
 
             return null;
         }
-
         $data = unserialize($content);
         if (!$data instanceof RouteCollectionInterface) {
             $this->stats['misses']++;
@@ -74,7 +65,6 @@ class FileRouteCache implements RouteCacheInterface
 
             return null;
         }
-
         $this->stats['hits']++;
         $this->stats['last_used'] = time();
         $this->saveStats();
@@ -86,7 +76,6 @@ class FileRouteCache implements RouteCacheInterface
     {
         $content = serialize($routes);
         $result = file_put_contents($this->getCacheFile(), $content, LOCK_EX);
-
         if ($result !== false) {
             $this->stats['size'] = strlen($content);
             $this->stats['created_at'] = time();
@@ -102,16 +91,13 @@ class FileRouteCache implements RouteCacheInterface
     {
         $cacheFile = $this->getCacheFile();
         $statsFile = $this->getStatsFile();
-
         $result = true;
         if (file_exists($cacheFile)) {
             $result = unlink($cacheFile);
         }
-
         if (file_exists($statsFile)) {
             $result = $result && unlink($statsFile);
         }
-
         // 重置統計
         $this->stats = [
             'hits' => 0,

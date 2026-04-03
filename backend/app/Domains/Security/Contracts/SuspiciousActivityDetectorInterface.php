@@ -7,11 +7,6 @@ namespace App\Domains\Security\Contracts;
 use App\Domains\Security\DTOs\SuspiciousActivityAnalysisDTO;
 use App\Domains\Security\Enums\ActivityType;
 
-/**
- * 可疑活動檢測服務介面.
- *
- * 提供異常行為檢測、閾值配置和警報觸發功能
- */
 interface SuspiciousActivityDetectorInterface
 {
     /**

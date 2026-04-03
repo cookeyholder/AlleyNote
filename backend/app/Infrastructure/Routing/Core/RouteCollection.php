@@ -8,11 +8,6 @@ use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 use App\Infrastructure\Routing\Contracts\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由收集器.
- *
- * 管理和組織所有註冊的路由
- */
 class RouteCollection implements RouteCollectionInterface
 {
     /** @var RouteInterface[] */
@@ -27,12 +22,10 @@ class RouteCollection implements RouteCollectionInterface
     public function add(RouteInterface $route): void
     {
         $this->routes[] = $route;
-
         // 如果路由有名稱，加入命名路由索引
         if ($route->getName() !== null) {
             $this->namedRoutes[$route->getName()] = $route;
         }
-
         // 按 HTTP 方法建立索引
         foreach ($route->getMethods() as $method) {
             $method = strtoupper($method);
@@ -73,7 +66,6 @@ class RouteCollection implements RouteCollectionInterface
     {
         $method = $request->getMethod();
         $candidates = $this->getByMethod($method);
-
         foreach ($candidates as $route) {
             $matchResult = $route->matches($request);
             if ($matchResult->isMatched()) {
@@ -94,13 +86,10 @@ class RouteCollection implements RouteCollectionInterface
         if (!$this->has($name)) {
             return false;
         }
-
         $route = $this->namedRoutes[$name];
         unset($this->namedRoutes[$name]);
-
         // 從主要路由列表中移除
         $this->routes = array_filter($this->routes, static fn($r) => $r !== $route);
-
         // 從方法索引中移除
         foreach ($route->getMethods() as $method) {
             $method = strtoupper($method);
@@ -130,7 +119,6 @@ class RouteCollection implements RouteCollectionInterface
     public function toArray(): array
     {
         $data = [];
-
         foreach ($this->routes as $route) {
             $data[] = [
                 'methods' => $route->getMethods(),
@@ -147,22 +135,18 @@ class RouteCollection implements RouteCollectionInterface
     public static function fromArray(array $data): RouteCollectionInterface
     {
         $collection = new self();
-
         foreach ($data as $routeData) {
             $route = new Route(
                 $routeData['methods'],
                 $routeData['pattern'],
                 $routeData['handler'], // Note: 反序列化處理器可能需要額外邏輯
             );
-
             if (!empty($routeData['name'])) {
                 $route->setName($routeData['name']);
             }
-
             if (!empty($routeData['middleware'])) {
                 $route->middleware($routeData['middleware']);
             }
-
             $collection->add($route);
         }
 
@@ -181,7 +165,6 @@ class RouteCollection implements RouteCollectionInterface
         if (is_string($handler)) {
             return $handler;
         }
-
         if (is_array($handler) && count($handler) === 2) {
             [$class, $method] = $handler;
             if (is_string($class) && is_string($method)) {

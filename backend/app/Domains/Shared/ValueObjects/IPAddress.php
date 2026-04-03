@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * IP Address 值物件.
- *
- * 表示有效的 IPv4 或 IPv6 地址
- */
 final readonly class IPAddress implements JsonSerializable, Stringable
 {
     private string $value;
@@ -22,11 +17,9 @@ final readonly class IPAddress implements JsonSerializable, Stringable
     public function __construct(string $ipAddress)
     {
         $trimmedIp = trim($ipAddress);
-
         if (empty($trimmedIp)) {
             throw new InvalidArgumentException('IP 地址不能為空');
         }
-
         // 檢查 IPv4
         if (filter_var($trimmedIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $this->value = $trimmedIp;
@@ -34,7 +27,6 @@ final readonly class IPAddress implements JsonSerializable, Stringable
 
             return;
         }
-
         // 檢查 IPv6
         if (filter_var($trimmedIp, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             $this->value = $trimmedIp;
@@ -119,14 +111,12 @@ final readonly class IPAddress implements JsonSerializable, Stringable
 
             return implode('.', $parts);
         }
-
         // IPv6 簡單遮罩
         if (str_contains($this->value, '::')) {
             $parts = explode('::', $this->value);
 
             return $parts[0] . '::xxxx';
         }
-
         $parts = explode(':', $this->value);
         if (count($parts) >= 4) {
             return implode(':', array_slice($parts, 0, 4)) . '::xxxx';

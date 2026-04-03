@@ -6,9 +6,6 @@ namespace App\Domains\Statistics\ValueObjects;
 
 use JsonSerializable;
 
-/**
- * 分類資料點值物件.
- */
 readonly class CategoryDataPoint implements JsonSerializable
 {
     public function __construct(
@@ -65,7 +62,6 @@ readonly class CategoryDataPoint implements JsonSerializable
             'value' => $this->value,
             'color' => $this->color,
         ];
-
         if ($this->label !== null) {
             $result['label'] = $this->label;
         }

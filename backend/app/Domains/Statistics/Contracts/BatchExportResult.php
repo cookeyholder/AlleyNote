@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
-/**
- * 批次匯出結果值物件.
- *
- * 封裝批次統計資料匯出的結果資訊。
- */
 final readonly class BatchExportResult
 {
     /**

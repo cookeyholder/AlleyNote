@@ -79,7 +79,7 @@ class SettingControllerTest extends UnitTestCase
         $this->settingManagementService
             ->shouldReceive('getSetting')
             ->once()
-            ->with('site_name')
+            ->with('site_name', true)
             ->andReturn(['key' => 'site_name', 'value' => 'Test Site']);
 
         $result = $this->controller->show($request, $response);
@@ -93,6 +93,11 @@ class SettingControllerTest extends UnitTestCase
 
         $request->shouldReceive('getQueryParams')
             ->andReturn([]);
+
+        $request->shouldReceive('getAttribute')
+            ->with('authenticated', false)
+            ->andReturn(true)
+            ->byDefault();
 
         return $request;
     }

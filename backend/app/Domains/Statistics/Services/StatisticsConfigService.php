@@ -9,11 +9,6 @@ namespace App\Domains\Statistics\Services;
 
 use RuntimeException;
 
-/**
- * 統計配置服務.
- *
- * 統一管理統計功能的所有配置參數，提供型別安全的配置存取
- */
 final class StatisticsConfigService
 {
     /** @var array<string, mixed> */
@@ -39,7 +34,6 @@ final class StatisticsConfigService
         if ($envConfig !== null && is_int($envConfig)) {
             return $envConfig;
         }
-
         $defaultConfig = $this->config['cache']['ttl'] ?? [];
         if (is_array($defaultConfig) && isset($defaultConfig[$type])) {
             return (int) $defaultConfig[$type];
@@ -57,7 +51,6 @@ final class StatisticsConfigService
         if (!is_array($cacheConfig)) {
             return $this->getCacheTtl('medium');
         }
-
         $typesConfig = $cacheConfig['types'] ?? [];
         if (is_array($typesConfig) && isset($typesConfig[$statisticsType])) {
             return (int) $typesConfig[$statisticsType];
@@ -75,7 +68,6 @@ final class StatisticsConfigService
         if (!is_array($calcConfig)) {
             return '0 * * * *';
         }
-
         $scheduleConfig = $calcConfig['schedule'] ?? [];
         if (is_array($scheduleConfig) && isset($scheduleConfig[$frequency])) {
             return (string) $scheduleConfig[$frequency];
@@ -95,7 +87,6 @@ final class StatisticsConfigService
         if (!is_array($calcConfig)) {
             return [];
         }
-
         $tasksConfig = $calcConfig['tasks'] ?? [];
 
         return is_array($tasksConfig) ? $tasksConfig : [];
@@ -116,7 +107,6 @@ final class StatisticsConfigService
                 'lock_timeout' => 1800,
             ];
         }
-
         $parallelConfig = $calcConfig['parallel'] ?? [];
 
         return is_array($parallelConfig) ? $parallelConfig : [
@@ -135,7 +125,6 @@ final class StatisticsConfigService
         if (!is_array($retentionConfig)) {
             return 90;
         }
-
         $snapshotsConfig = $retentionConfig['snapshots'] ?? [];
         if (is_array($snapshotsConfig) && isset($snapshotsConfig[$snapshotType])) {
             return (int) $snapshotsConfig[$snapshotType];
@@ -159,7 +148,6 @@ final class StatisticsConfigService
                 'default_limit' => 20,
             ];
         }
-
         $apiLimitsConfig = $perfConfig['api_limits'] ?? [];
 
         return is_array($apiLimitsConfig) ? $apiLimitsConfig : [
@@ -180,12 +168,10 @@ final class StatisticsConfigService
         if (!is_array($perfConfig)) {
             return ['requests' => 120, 'window' => 60];
         }
-
         $viewTrackingConfig = $perfConfig['view_tracking'] ?? [];
         if (!is_array($viewTrackingConfig)) {
             return ['requests' => 120, 'window' => 60];
         }
-
         $rateLimitsConfig = $viewTrackingConfig['rate_limits'] ?? [];
         if (is_array($rateLimitsConfig) && isset($rateLimitsConfig[$userType])) {
             $userLimit = $rateLimitsConfig[$userType];
@@ -205,7 +191,6 @@ final class StatisticsConfigService
         if (!is_array($perfConfig)) {
             return 100;
         }
-
         $viewTrackingConfig = $perfConfig['view_tracking'] ?? [];
         if (is_array($viewTrackingConfig) && isset($viewTrackingConfig['response_timeout'])) {
             return (int) $viewTrackingConfig['response_timeout'];
@@ -234,7 +219,6 @@ final class StatisticsConfigService
                 ],
             ];
         }
-
         $healthCheckConfig = $monitoringConfig['health_check'] ?? [];
 
         return is_array($healthCheckConfig) ? $healthCheckConfig : [
@@ -264,7 +248,6 @@ final class StatisticsConfigService
                 'batch_size' => 100,
             ];
         }
-
         $warmupConfig = $cacheConfig['warmup'] ?? [];
 
         return is_array($warmupConfig) ? $warmupConfig : [
@@ -294,7 +277,6 @@ final class StatisticsConfigService
                 'prewarmed',
             ];
         }
-
         $tagsConfig = $cacheConfig['supported_tags'] ?? [];
         if (is_array($tagsConfig)) {
             return array_map('strval', $tagsConfig);
@@ -321,7 +303,6 @@ final class StatisticsConfigService
         if ($envConfig !== null && is_bool($envConfig)) {
             return $envConfig;
         }
-
         $featuresConfig = $this->config['features'] ?? [];
         if (is_array($featuresConfig) && isset($featuresConfig[$feature])) {
             return (bool) $featuresConfig[$feature];
@@ -346,7 +327,6 @@ final class StatisticsConfigService
                 'rotation' => 'daily',
             ];
         }
-
         $loggingConfig = $monitoringConfig['logging'] ?? [];
 
         return is_array($loggingConfig) ? $loggingConfig : [
@@ -372,7 +352,6 @@ final class StatisticsConfigService
                 'slow_query_threshold' => 2.0,
             ];
         }
-
         $dbConfig = $perfConfig['database'] ?? [];
 
         return is_array($dbConfig) ? $dbConfig : [
@@ -397,7 +376,6 @@ final class StatisticsConfigService
                 'batch_size' => 500,
             ];
         }
-
         $cleanupConfig = $retentionConfig['cleanup'] ?? [];
 
         return is_array($cleanupConfig) ? $cleanupConfig : [
@@ -429,13 +407,10 @@ final class StatisticsConfigService
     private function loadConfig(): array
     {
         $configPath = __DIR__ . '/../../../../config/statistics.php';
-
         if (!file_exists($configPath)) {
             throw new RuntimeException('統計配置檔案不存在：' . $configPath);
         }
-
         $config = require $configPath;
-
         if (!is_array($config)) {
             throw new RuntimeException('統計配置檔案必須返回陣列');
         }
@@ -450,16 +425,13 @@ final class StatisticsConfigService
     {
         // 優先從環境變數取得
         $env = $_ENV['APP_ENV'] ?? $_SERVER['APP_ENV'] ?? null;
-
         if (is_string($env) && $env !== '') {
             return $env;
         }
-
         // 從其他常見環境變數判斷
         if (isset($_ENV['TESTING']) || isset($_SERVER['TESTING'])) {
             return 'testing';
         }
-
         if (isset($_ENV['DEBUG']) || isset($_SERVER['DEBUG'])) {
             return 'development';
         }
@@ -476,15 +448,12 @@ final class StatisticsConfigService
         if (!is_array($environmentConfig)) {
             return null;
         }
-
         $envConfig = $environmentConfig[$this->environment] ?? null;
         if (!is_array($envConfig)) {
             return null;
         }
-
         $keys = explode('.', $key);
         $value = $envConfig;
-
         foreach ($keys as $k) {
             if (!is_array($value) || !array_key_exists($k, $value)) {
                 return null;

@@ -8,11 +8,6 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use Psr\Log\LoggerInterface;
 
-/**
- * 快取分組管理器.
- *
- * 提供快取分組管理功能，支援分組內的快取關聯性和自動失效
- */
 class CacheGroupManager
 {
     /**
@@ -50,11 +45,9 @@ class CacheGroupManager
         // 添加分組標籤
         $groupTag = CacheTag::group($groupName);
         $allTags = array_merge([$groupTag->getName()], $tags);
-
         // 建立分組快取實例
         $groupCache = $this->taggedCache->tags($allTags);
         $this->groups[$groupName] = $groupCache;
-
         $this->logger->debug('建立快取分組', [
             'group_name' => $groupName,
             'tags' => $allTags,
@@ -86,15 +79,12 @@ class CacheGroupManager
     {
         /** @var array<string> $childGroupsArray */
         $childGroupsArray = is_array($childGroups) ? $childGroups : [$childGroups];
-
         if (!isset($this->dependencies[$parentGroup])) {
             $this->dependencies[$parentGroup] = [];
         }
-
         $this->dependencies[$parentGroup] = array_values(array_unique(
             array_merge($this->dependencies[$parentGroup], $childGroupsArray),
         ));
-
         $this->logger->debug('設定分組依賴關係', [
             'parent_group' => $parentGroup,
             'child_groups' => $childGroupsArray,
@@ -113,9 +103,7 @@ class CacheGroupManager
     {
         /** @var array<string> $targetGroupsArray */
         $targetGroupsArray = is_array($targetGroups) ? $targetGroups : [$targetGroups];
-
         $this->invalidationRules[$triggerPattern] = $targetGroupsArray;
-
         $this->logger->debug('設定自動失效規則', [
             'trigger_pattern' => $triggerPattern,
             'target_groups' => $targetGroupsArray,
@@ -134,16 +122,13 @@ class CacheGroupManager
         if (!isset($this->groups[$groupName])) {
             return 0;
         }
-
         $groupTag = CacheTag::group($groupName);
         $clearedCount = $this->taggedCache->flushByTags([$groupTag->getName()]);
-
         $this->logger->info('清空快取分組', [
             'group_name' => $groupName,
             'cleared_count' => $clearedCount,
             'cascade' => $cascade,
         ]);
-
         // 如果啟用級聯清空，清空依賴的子分組
         if ($cascade && isset($this->dependencies[$groupName])) {
             foreach ($this->dependencies[$groupName] as $childGroup) {
@@ -157,7 +142,6 @@ class CacheGroupManager
                 }
             }
         }
-
         // 移除分組實例
         unset($this->groups[$groupName]);
 
@@ -178,7 +162,6 @@ class CacheGroupManager
                         $this->flushGroup($group);
                     }
                 }
-
                 $this->logger->info('觸發自動失效規則', [
                     'key' => $key,
                     'pattern' => $pattern,
@@ -201,11 +184,9 @@ class CacheGroupManager
             'dependencies' => $this->dependencies,
             'invalidation_rules_count' => count($this->invalidationRules),
         ];
-
         foreach ($this->groups as $groupName => $groupCache) {
             $groupTag = CacheTag::group($groupName);
             $keys = $this->taggedCache->getKeysByTag($groupTag->getName());
-
             $statistics['groups'][$groupName] = [
                 'cache_count' => count($keys),
                 'tags' => $groupCache->getTags(),
@@ -250,21 +231,17 @@ class CacheGroupManager
         if (!isset($this->groups[$groupName])) {
             return false;
         }
-
         if ($flushCache) {
             $this->flushGroup($groupName, false);
         }
-
         // 移除分組實例
         unset($this->groups[$groupName]);
-
         // 清理依賴關係
         unset($this->dependencies[$groupName]);
         foreach ($this->dependencies as $parent => &$children) {
             $children = array_values(array_filter($children, static fn(string $child): bool => $child !== $groupName));
         }
         unset($children);
-
         $this->logger->debug('移除快取分組', [
             'group_name' => $groupName,
             'flush_cache' => $flushCache,
@@ -331,7 +308,6 @@ class CacheGroupManager
     public function flushGroups(array $groupNames, bool $cascade = true): int
     {
         $totalCleared = 0;
-
         foreach ($groupNames as $groupName) {
             $totalCleared += $this->flushGroup($groupName, $cascade);
         }
@@ -349,7 +325,6 @@ class CacheGroupManager
     public function flushByPattern(string $pattern, bool $cascade = true): int
     {
         $matchingGroups = [];
-
         foreach ($this->groups as $groupName => $group) {
             if ($this->matchPattern($groupName, $pattern)) {
                 $matchingGroups[] = $groupName;
@@ -368,7 +343,6 @@ class CacheGroupManager
     public function setInvalidationRules(string $groupName, array $rules): void
     {
         $this->invalidationRules[$groupName] = $rules;
-
         $this->logger->debug('設定分組失效規則', [
             'group_name' => $groupName,
             'rules' => $rules,
@@ -384,12 +358,10 @@ class CacheGroupManager
     public function getInvalidationRules(string $groupName): array
     {
         $rules = $this->invalidationRules[$groupName] ?? [];
-
         // 確保返回的是 string-indexed array
         if (!is_array($rules)) {
             return [];
         }
-
         $result = [];
         foreach ($rules as $key => $value) {
             if (is_string($key)) {
@@ -420,11 +392,9 @@ class CacheGroupManager
     public function shouldInvalidate(string $groupName): bool
     {
         $rules = $this->getInvalidationRules($groupName);
-
         if (empty($rules)) {
             return false;
         }
-
         // 檢查最大年齡規則
         if (isset($rules['max_age']) && is_int($rules['max_age'])) {
             $group = $this->getGroup($groupName);
@@ -448,13 +418,11 @@ class CacheGroupManager
         // 這裡應該檢查分組的建立時間，但為了簡化，我們使用一個簡單的實作
         /** @var array<string, int> $groupCreationTimes */
         static $groupCreationTimes = [];
-
         if (!isset($groupCreationTimes[$groupName])) {
             $groupCreationTimes[$groupName] = time();
 
             return false;
         }
-
         $creationTime = $groupCreationTimes[$groupName];
 
         return (time() - $creationTime) > $maxAge;
@@ -470,7 +438,6 @@ class CacheGroupManager
     public function flushMultipleGroups(array $groupNames, bool $cascade = true): array
     {
         $results = [];
-
         foreach ($groupNames as $groupName) {
             $results[$groupName] = $this->flushGroup($groupName, $cascade);
         }

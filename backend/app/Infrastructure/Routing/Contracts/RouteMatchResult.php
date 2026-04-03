@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
 
-/**
- * 路由匹配結果.
- *
- * 包含路由匹配的所有相關資訊
- */
 class RouteMatchResult
 {
     public function __construct(

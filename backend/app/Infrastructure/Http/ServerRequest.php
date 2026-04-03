@@ -8,9 +8,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
-/**
- * 簡單的 PSR-7 ServerRequest 實作.
- */
 class ServerRequest implements ServerRequestInterface
 {
     private string $method;
@@ -43,22 +40,18 @@ class ServerRequest implements ServerRequestInterface
     ) {
         $this->method = $method;
         $this->uri = $uri;
-
         // 統一 Header 鍵值為小寫並合併同名標頭
         foreach ($headers as $name => $value) {
             $normalizedName = strtolower((string) $name);
             $newValues = is_array($value) ? $value : [$value];
-
             if (isset($this->headers[$normalizedName])) {
                 $this->headers[$normalizedName] = array_merge($this->headers[$normalizedName], $newValues);
             } else {
                 $this->headers[$normalizedName] = $newValues;
             }
         }
-
         // 確保 body 始終被初始化，即使傳入的是 null
         $this->body = $body ?? new Stream(fopen('php://temp', 'r+'));
-
         $this->protocolVersion = $version;
         $this->serverParams = $serverParams;
     }

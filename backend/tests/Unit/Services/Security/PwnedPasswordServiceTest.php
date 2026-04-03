@@ -45,6 +45,11 @@ class PwnedPasswordServiceTest extends UnitTestCase
             $this->assertFalse($result['is_leaked']);
             $this->assertEquals(0, $result['count']);
             $this->assertNull($result['error']);
+        } else {
+            // API 不可用時，應回傳可預期的降級結果
+            $this->assertFalse($result['is_leaked']);
+            $this->assertEquals(0, $result['count']);
+            $this->assertNotNull($result['error']);
         }
     }
 

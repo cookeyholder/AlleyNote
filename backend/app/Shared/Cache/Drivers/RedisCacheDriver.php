@@ -9,12 +9,6 @@ use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use Redis;
 use RedisException;
 
-/**
- * Redis 快取驅動。
- *
- * 使用 Redis 存儲快取資料，支援分散式快取和高效能訪問
- * 提供標籤支援功能
- */
 class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 {
     /** @var Redis Redis 連線 */
@@ -46,7 +40,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $this->redis = new Redis();
         $prefix = $config['prefix'] ?? 'alleynote_cache:';
         $this->prefix = is_string($prefix) ? $prefix : 'alleynote_cache:';
-
         $this->connect($config);
     }
 
@@ -55,13 +48,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKey = $this->getPrefixedKey($key);
             $value = $this->redis->get($prefixedKey);
-
             if ($value === false) {
                 $this->stats['misses']++;
 
                 return $default;
             }
-
             $this->stats['hits']++;
             $unserializedValue = is_string($value) ? unserialize($value) : false;
 
@@ -76,14 +67,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKey = $this->getPrefixedKey($key);
             $serializedValue = serialize($value);
-
             $result = $ttl > 0
                 ? $this->redis->setex($prefixedKey, $ttl, $serializedValue)
                 : $this->redis->set($prefixedKey, $serializedValue);
-
             if ($result) {
                 $this->stats['sets']++;
-
                 // 如果有標籤，添加到標籤索引
                 if (!empty($this->tags)) {
                     $this->addKeyToTags($key, $this->tags);
@@ -148,7 +136,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKeys = array_map([$this, 'getPrefixedKey'], $keys);
             $values = $this->redis->mget($prefixedKeys);
-
             foreach ($keys as $index => $key) {
                 $value = $values[$index] ?? false;
                 if ($value !== false && is_string($value)) {
@@ -173,24 +160,19 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         try {
             $pipe = $this->redis->multi();
-
             foreach ($values as $key => $value) {
                 $prefixedKey = $this->getPrefixedKey($key);
                 $serializedValue = serialize($value);
-
                 if ($ttl > 0) {
                     $pipe->setex($prefixedKey, $ttl, $serializedValue);
                 } else {
                     $pipe->set($prefixedKey, $serializedValue);
                 }
             }
-
             $results = $pipe->exec();
             $success = $results !== false && !in_array(false, $results, true);
-
             if ($success) {
                 $this->stats['sets'] += count($values);
-
                 // 如果有標籤，添加到標籤索引
                 if (!empty($this->tags)) {
                     foreach (array_keys($values) as $key) {
@@ -218,10 +200,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKeys = array_map([$this, 'getPrefixedKey'], $keys);
             $deleted = $this->redis->del($prefixedKeys);
-
             if (is_int($deleted)) {
                 $this->stats['deletes'] += $deleted;
-
                 if ($deleted > 0) {
                     foreach ($keys as $key) {
                         $this->removeKeyFromAllTags($key);
@@ -250,11 +230,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedPattern = $this->prefix . $pattern;
             $keys = $this->redis->keys($prefixedPattern);
-
             if (empty($keys)) {
                 return 0;
             }
-
             $deleted = $this->redis->del($keys);
             $this->stats['deletes'] += $deleted;
 
@@ -299,11 +277,9 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     public function remember(string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
     {
         $value = $this->get($key);
-
         if ($value !== null) {
             return $value;
         }
-
         $value = $callback();
         if ($value !== null) {
             $this->put($key, $value, $ttl);
@@ -321,7 +297,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;
-
         $redisStats = [];
 
         try {
@@ -370,18 +345,15 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $host = $config['host'] ?? '127.0.0.1';
         $port = $config['port'] ?? 6379;
         $timeout = $config['timeout'] ?? 0.0;
-
         $host = is_string($host) ? $host : '127.0.0.1';
         $port = is_int($port) ? $port : 6379;
         $timeout = is_float($timeout) || is_int($timeout) ? (float) $timeout : 0.0;
 
         try {
             $this->redis->connect($host, $port, $timeout);
-
             if (isset($config['password']) && is_string($config['password'])) {
                 $this->redis->auth($config['password']);
             }
-
             if (isset($config['database']) && is_int($config['database'])) {
                 $this->redis->select($config['database']);
             }
@@ -443,7 +415,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     // ===== 標籤化快取介面實作 =====
-
     /**
      * 設定快取標籤.
      *
@@ -453,7 +424,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     public function tags(array|string $tags): TaggedCacheInterface
     {
         $tagsArray = is_array($tags) ? $tags : [$tags];
-
         // 建立新的驅動實例以避免標籤污染
         $driver = clone $this;
         $driver->tags = $tagsArray;
@@ -486,16 +456,13 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             foreach ($tagsArray as $tag) {
                 $tagIndexKey = $this->getTagIndexKey($tag);
                 $keys = $this->redis->sMembers($tagIndexKey);
-
                 if (!empty($keys)) {
                     // 刪除所有與標籤相關的快取鍵
                     $deleted = $this->redis->del($keys);
                     $totalDeleted += $deleted;
-
                     // 清空標籤索引
                     $this->redis->del($tagIndexKey);
                 }
-
                 $this->stats['deletes'] += is_array($keys) ? count($keys) : 0;
             }
         } catch (RedisException) {
@@ -516,7 +483,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $tagIndexKey = $this->getTagIndexKey($tag);
             $keys = $this->redis->sMembers($tagIndexKey);
-
             // 移除前綴並過濾存在的鍵
             $result = [];
             foreach ($keys as $key) {
@@ -548,13 +514,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
         try {
             $tagIndexKeys = array_map([$this, 'getTagIndexKey'], $tags);
-
             // 使用 Redis 的集合交集運算
             $tempKey = 'temp_intersection_' . uniqid();
             $this->redis->sInterStore($tempKey, ...$tagIndexKeys);
             $keys = $this->redis->sMembers($tempKey);
             $this->redis->del($tempKey);
-
             // 移除前綴並過濾存在的鍵
             $result = [];
             foreach ($keys as $key) {
@@ -600,7 +564,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $pattern = $this->prefix . self::TAG_INDEX_PREFIX . '*';
             $keys = $this->redis->keys($pattern);
-
             $tags = [];
             foreach ($keys as $key) {
                 $tag = substr($key, strlen($this->prefix . self::TAG_INDEX_PREFIX));
@@ -630,7 +593,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $allTags = $this->getAllTags();
             $statistics['total_tags'] = count($allTags);
-
             foreach ($allTags as $tag) {
                 $keys = $this->getKeysByTag($tag);
                 $statistics['tags'][$tag] = [
@@ -646,7 +608,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     }
 
     // 實現 TaggedCacheInterface 的缺少方法
-
     /**
      * 增加新標籤到快取管理器.
      */
@@ -680,7 +641,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     public function getTaggedKeys(): array
     {
         $allKeys = [];
-
         foreach ($this->tags as $tag) {
             try {
                 $tagIndexKey = $this->getTagIndexKey($tag);
@@ -702,7 +662,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKey = $this->getPrefixedKey($key);
             $tagKey = $prefixedKey . ':tags';
-
             $tags = $this->redis->sMembers($tagKey);
 
             return is_array($tags) ? $tags : [];
@@ -731,7 +690,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKey = $this->getPrefixedKey($key);
             $tagKey = $prefixedKey . ':tags';
-
             foreach ($tags as $tag) {
                 $this->redis->sRem($tagKey, $tag);
                 $tagIndexKey = $this->getTagIndexKey($tag);
@@ -763,7 +721,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $pattern = $this->prefix . self::TAG_INDEX_PREFIX . '*';
             $tagKeys = $this->redis->keys($pattern);
             $cleanedCount = 0;
-
             foreach ($tagKeys as $tagKey) {
                 $members = $this->redis->sMembers($tagKey);
                 if (empty($members)) {
@@ -788,7 +745,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         try {
             $prefixedKey = $this->getPrefixedKey($key);
-
             foreach ($tags as $tag) {
                 $tagIndexKey = $this->getTagIndexKey($tag);
                 $this->redis->sAdd($tagIndexKey, $prefixedKey);
@@ -808,7 +764,6 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $prefixedKey = $this->getPrefixedKey($key);
             $allTags = $this->getAllTags();
-
             foreach ($allTags as $tag) {
                 $tagIndexKey = $this->getTagIndexKey($tag);
                 $this->redis->sRem($tagIndexKey, $prefixedKey);

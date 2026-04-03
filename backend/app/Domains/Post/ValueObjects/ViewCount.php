@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * ViewCount 值物件.
- *
- * 表示文章的瀏覽次數
- */
 final readonly class ViewCount implements JsonSerializable, Stringable
 {
     private int $value;
@@ -22,7 +17,6 @@ final readonly class ViewCount implements JsonSerializable, Stringable
         if ($count < 0) {
             throw new InvalidArgumentException('瀏覽次數不能為負數');
         }
-
         $this->value = $count;
     }
 
@@ -102,7 +96,6 @@ final readonly class ViewCount implements JsonSerializable, Stringable
         if ($this->value >= 1000000) {
             return number_format($this->value / 1000000, 1) . 'M';
         }
-
         if ($this->value >= 1000) {
             return number_format($this->value / 1000, 1) . 'K';
         }

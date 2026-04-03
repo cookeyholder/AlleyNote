@@ -9,12 +9,6 @@ use DateTime;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * RefreshToken Entity.
- *
- * 管理 JWT refresh token 的業務邏輯實體，負責處理 token 的生命週期、
- * 驗證規則、撤銷狀態等核心業務邏輯。
- */
 class RefreshToken implements JsonSerializable
 {
     /**
@@ -236,7 +230,6 @@ class RefreshToken implements JsonSerializable
         if ($this->isRevoked()) {
             return $this;
         }
-
         $revokedAt ??= new DateTime();
 
         return new self(
@@ -342,7 +335,6 @@ class RefreshToken implements JsonSerializable
     public function getRemainingTime(?DateTime $now = null): int
     {
         $now ??= new DateTime();
-
         if ($this->isExpired($now)) {
             return 0;
         }
@@ -416,11 +408,9 @@ class RefreshToken implements JsonSerializable
         if (empty($jti)) {
             throw new InvalidArgumentException('JTI cannot be empty');
         }
-
         if (mb_strlen($jti) < 8 || mb_strlen($jti) > 255) {
             throw new InvalidArgumentException('JTI must be between 8 and 255 characters');
         }
-
         // 檢查 JTI 是否為合法格式（UUID 或隨機字串）
         if (!preg_match('/^[a-zA-Z0-9\-_]+$/', $jti)) {
             throw new InvalidArgumentException('JTI contains invalid characters');
@@ -445,7 +435,6 @@ class RefreshToken implements JsonSerializable
         if (empty($tokenHash)) {
             throw new InvalidArgumentException('Token hash cannot be empty');
         }
-
         // 檢查是否為 64 字元的 hex 字串（SHA256）
         if (!preg_match('/^[a-f0-9]{64}$/', $tokenHash)) {
             throw new InvalidArgumentException('Token hash must be a valid SHA256 hash');
@@ -463,7 +452,6 @@ class RefreshToken implements JsonSerializable
             self::STATUS_EXPIRED,
             self::STATUS_USED,
         ];
-
         if (!in_array($status, $validStatuses, true)) {
             throw new InvalidArgumentException(
                 'Status must be one of: ' . implode(', ', $validStatuses),
@@ -477,7 +465,6 @@ class RefreshToken implements JsonSerializable
     private function validateExpirationTime(DateTime $expiresAt): void
     {
         $now = new DateTime();
-
         // 允許設定過去的時間（用於測試或匯入歷史資料）
         // 但不允許過於久遠的過期時間（超過 10 年）
         $maxExpiry = $now->modify('+10 years');
@@ -495,7 +482,6 @@ class RefreshToken implements JsonSerializable
             if (empty($revokedReason)) {
                 throw new InvalidArgumentException('Revoked reason is required when status is revoked');
             }
-
             if ($revokedAt === null) {
                 throw new InvalidArgumentException('Revoked time is required when status is revoked');
             }

@@ -6,11 +6,6 @@ namespace App\Domains\Post\Specifications;
 
 use App\Domains\Post\Aggregates\PostAggregate;
 
-/**
- * 特定作者文章規格.
- *
- * 檢查文章是否由特定作者撰寫
- */
 final class AuthorPostSpecification extends AbstractPostSpecification
 {
     public function __construct(

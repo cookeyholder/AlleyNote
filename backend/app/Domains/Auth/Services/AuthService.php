@@ -10,7 +10,7 @@ use App\Domains\Auth\DTOs\RegisterUserDTO;
 use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
-use Exception;
+use Throwable;
 
 class AuthService
 {
@@ -25,13 +25,10 @@ class AuthService
     {
         // DTO 已經在建構時進行基本驗證，這裡進行密碼安全性檢查
         $this->passwordService->validatePassword($dto->password);
-
         // 轉換為陣列並雜湊密碼
         $data = $dto->toArray();
         $data['password'] = $this->passwordService->hashPassword($data['password']);
-
         $user = $this->userRepository->create($data);
-
         // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
             try {
@@ -74,32 +71,26 @@ class AuthService
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
         $user = $this->userRepository->findByEmail($credentials['email']);
-
         if (!$user) {
             return [
                 'success' => false,
                 'message' => '無效的認證資訊',
             ];
         }
-
         if ($user['status'] === 0) {
             return [
                 'success' => false,
                 'message' => '帳號已被停用',
             ];
         }
-
         if (!password_verify($credentials['password'], $user['password'])) {
             return [
                 'success' => false,
                 'message' => '無效的認證資訊',
             ];
         }
-
         $this->userRepository->updateLastLogin((string) $user['id']);
-
         unset($user['password']); // 移除敏感資訊
-
         // 如果啟用 JWT 且有提供 JWT 服務和裝置資訊，則產生 JWT token
         if ($this->jwtEnabled && $this->jwtTokenService !== null && $deviceInfo !== null) {
             try {
@@ -152,7 +143,7 @@ class AuthService
                     'success' => true,
                     'message' => '登出成功',
                 ];
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 // 如果撤銷失敗，記錄錯誤但仍然回傳成功（使用者體驗優先）
                 app_log('error', 'JWT token revocation failed during logout', ['exception' => $e->getMessage()]);
             }

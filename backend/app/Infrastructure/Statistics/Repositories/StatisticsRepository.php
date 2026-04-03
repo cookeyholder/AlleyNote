@@ -9,19 +9,13 @@ use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
+use Throwable;
 
-/**
- * 統計快照 Repository 實作.
- *
- * 提供統計快照的資料庫存取功能，使用原生 SQL 最佳化效能。
- * 支援 JSON 資料序列化/反序列化，以及複雜的統計查詢。
- */
 final class StatisticsRepository implements StatisticsRepositoryInterface
 {
     // SQL 查詢常數
@@ -65,7 +59,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt = $this->db->prepare(self::SQL_FIND_BY_ID);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return null;
@@ -88,7 +81,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt = $this->db->prepare(self::SQL_FIND_BY_UUID);
             $stmt->bindValue(':uuid', $uuid, PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return null;
@@ -114,7 +106,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt->bindValue(':period_start', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':period_end', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return null;
@@ -137,7 +128,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt = $this->db->prepare(self::SQL_FIND_LATEST_BY_TYPE);
             $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return null;
@@ -158,7 +148,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
         if (empty(trim($snapshotType))) {
             throw new InvalidArgumentException('快照類型不能為空');
         }
-
         if ($startDate >= $endDate) {
             throw new InvalidArgumentException('開始日期必須小於結束日期');
         }
@@ -169,7 +158,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt->bindValue(':start_date', $startDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $endDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'mapRowToEntity'], $rows);
@@ -186,7 +174,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt = $this->db->prepare(self::SQL_FIND_EXPIRED);
             $stmt->bindValue(':before_date', $beforeDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'mapRowToEntity'], $rows);
@@ -199,13 +186,10 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
     {
         try {
             $this->db->beginTransaction();
-
             $stmt = $this->db->prepare(self::SQL_INSERT);
             $this->bindInsertParams($stmt, $snapshot);
             $stmt->execute();
-
             $id = (int) $this->db->lastInsertId();
-
             $this->db->commit();
 
             // 返回帶有 ID 的快照實體
@@ -225,19 +209,15 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
 
         try {
             $this->db->beginTransaction();
-
             $stmt = $this->db->prepare(self::SQL_UPDATE);
             $this->bindUpdateParams($stmt, $snapshot);
             $stmt->bindValue(':id', $snapshot->getId(), PDO::PARAM_INT);
-
             $affectedRows = $stmt->execute();
-
             if ($stmt->rowCount() === 0) {
                 $this->db->rollBack();
 
                 throw new RuntimeException("統計快照不存在或更新失敗 (ID: {$snapshot->getId()})");
             }
-
             $this->db->commit();
 
             return $this->findById($snapshot->getId()) ?? $snapshot;
@@ -314,7 +294,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
                 $stmt = $this->db->prepare(self::SQL_COUNT_BY_TYPE);
                 $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
             }
-
             $stmt->execute();
 
             return (int) $stmt->fetchColumn();
@@ -333,25 +312,20 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
         if (empty(trim($snapshotType))) {
             throw new InvalidArgumentException('快照類型不能為空');
         }
-
         if ($page < 1) {
             throw new InvalidArgumentException('頁碼必須大於 0');
         }
-
         if ($limit < 1 || $limit > 1000) {
             throw new InvalidArgumentException('每頁數量必須在 1-1000 之間');
         }
-
         if (!in_array(strtolower($direction), ['asc', 'desc'], true)) {
             throw new InvalidArgumentException('排序方向只能是 asc 或 desc');
         }
-
         // 允許的排序欄位白名單
         $allowedOrderBy = ['id', 'created_at', 'updated_at', 'period_start', 'period_end'];
         if (!in_array($orderBy, $allowedOrderBy, true)) {
             throw new InvalidArgumentException('不支援的排序欄位: ' . $orderBy);
         }
-
         $offset = ($page - 1) * $limit;
 
         try {
@@ -361,13 +335,11 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
                 [$orderBy, strtoupper($direction)],
                 self::SQL_FIND_BY_TYPE_WITH_PAGINATION,
             );
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
-
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             return array_map([$this, 'mapRowToEntity'], $rows);
@@ -407,7 +379,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $createdAt = isset($row['created_at']) ? (string) $row['created_at'] : '';
             /** @phpstan-ignore-next-line cast.string */
             $updatedAt = isset($row['updated_at']) ? (string) $row['updated_at'] : '';
-
             // 準備實體建構所需的資料陣列
             $data = [
                 'id' => $id,
@@ -424,7 +395,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             ];
 
             return StatisticsSnapshot::fromArray($data);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             /** @phpstan-ignore-next-line cast.string */
             $idStr = isset($row['id']) ? (string) $row['id'] : 'unknown';
 
@@ -436,7 +407,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
     {
         $now = new DateTimeImmutable();
         $snapshotArray = $snapshot->toArray();
-
         $stmt->bindValue(':uuid', $snapshot->getUuid(), PDO::PARAM_STR);
         $stmt->bindValue(':snapshot_type', $snapshot->getSnapshotType(), PDO::PARAM_STR);
         $stmt->bindValue(':period_type', $snapshot->getPeriod()->type->value, PDO::PARAM_STR);
@@ -455,7 +425,6 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
     {
         $now = new DateTimeImmutable();
         $snapshotArray = $snapshot->toArray();
-
         $stmt->bindValue(':snapshot_type', $snapshot->getSnapshotType(), PDO::PARAM_STR);
         $stmt->bindValue(':period_type', $snapshot->getPeriod()->type->value, PDO::PARAM_STR);
         $stmt->bindValue(':period_start', $snapshot->getPeriod()->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);

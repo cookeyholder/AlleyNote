@@ -9,9 +9,11 @@ declare(strict_types=1);
  */
 
 use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Auth\Repositories\RoleRepository;
 use App\Domains\Auth\Repositories\PermissionRepository;
 use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\Services\RoleManagementService;
 use App\Application\Controllers\Api\V1\UserController;
@@ -33,10 +35,12 @@ use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Services\CacheService;
+use App\Infrastructure\Services\OutputSanitizerService;
 use App\Infrastructure\Services\RateLimitService;
 use App\Shared\Cache\Providers\CacheServiceProvider;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\CacheServiceInterface;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
@@ -100,6 +104,22 @@ return array_merge(
         // PostView 速率限制中介軟體
         \App\Application\Middleware\PostViewRateLimitMiddleware::class => \DI\autowire(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
         'post_view_rate_limit' => \DI\get(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
+
+        // CSRF 中介層（Secure flag 依環境變數 CSRF_COOKIE_SECURE 決定，預設 production 開啟）
+        \App\Application\Middleware\CsrfMiddleware::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+            $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
+            $secureEnv = $config->get('CSRF_COOKIE_SECURE');
+            // 若未設定 CSRF_COOKIE_SECURE，則依環境名稱決定：production 開啟，其餘關閉
+            // 使用 FILTER_NULL_ON_FAILURE 避免非法值靜默降級為 false
+            $secureCookie = $secureEnv !== null
+                ? (filter_var($secureEnv, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? ($config->getEnvironment() === 'production'))
+                : $config->getEnvironment() === 'production';
+            return new \App\Application\Middleware\CsrfMiddleware(
+                secureCookie: $secureCookie,
+                logger: $c->get(LoggerInterface::class),
+            );
+        }),
+        'csrf' => \DI\get(\App\Application\Middleware\CsrfMiddleware::class),
 
         // 其他控制器
         \App\Application\Controllers\Api\V1\PostViewController::class => \DI\autowire(\App\Application\Controllers\Api\V1\PostViewController::class),
@@ -167,7 +187,7 @@ return array_merge(
         'api.version' => \DI\env('API_VERSION', 'v1'),
 
         // 安全配置
-        'security.jwt_secret' => \DI\env('JWT_SECRET', 'your-secret-key'),
+        'security.jwt_secret' => \DI\env('JWT_SECRET'),
         'security.session_lifetime' => \DI\env('SESSION_LIFETIME', 3600),
     ],
 
@@ -231,9 +251,6 @@ return array_merge(
         }),
     ],
 
-    // 快取服務
-    CacheServiceProvider::getDefinitions(),
-
     // 核心領域與共用服務
     [
         CacheService::class => \DI\autowire(CacheService::class),
@@ -261,6 +278,10 @@ return array_merge(
         ValidatorFactory::class => \DI\autowire(ValidatorFactory::class),
         ValidatorInterface::class => \DI\factory(static fn (ValidatorFactory $factory) => $factory->createForDTO()),
         Validator::class => \DI\autowire(Validator::class),
+        OutputSanitizerInterface::class => \DI\autowire(OutputSanitizerService::class),
+        AuthorizationServiceInterface::class => \DI\autowire(AuthorizationService::class)
+            ->constructorParameter('db', \DI\get(\PDO::class))
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class)),
 
         // ========================================
         // 使用者管理模組

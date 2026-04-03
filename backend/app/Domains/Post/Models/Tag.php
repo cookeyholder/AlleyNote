@@ -7,9 +7,6 @@ namespace App\Domains\Post\Models;
 use DateTimeImmutable;
 use JsonSerializable;
 
-/**
- * 標籤 Model.
- */
 class Tag implements JsonSerializable
 {
     private int $id;

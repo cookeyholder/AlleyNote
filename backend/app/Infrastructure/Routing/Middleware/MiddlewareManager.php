@@ -11,11 +11,6 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 中介軟體管理器.
- *
- * 負責管理和執行路由中介軟體
- */
 class MiddlewareManager implements MiddlewareManagerInterface
 {
     /**
@@ -90,7 +85,6 @@ class MiddlewareManager implements MiddlewareManagerInterface
     public function getSorted(): array
     {
         $middlewares = $this->getAll();
-
         // 按優先順序排序（數值越小優先級越高）
         usort($middlewares, function (MiddlewareInterface $a, MiddlewareInterface $b): int {
             return $a->getPriority() <=> $b->getPriority();
@@ -104,7 +98,6 @@ class MiddlewareManager implements MiddlewareManagerInterface
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface {
         $middlewares = $this->getSorted();
-
         // 過濾出應該執行的中介軟體，並重新索引陣列
         $activeMiddlewares = array_values(array_filter(
             $middlewares,

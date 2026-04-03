@@ -17,11 +17,6 @@ use ReflectionNamedType;
 use ReflectionType;
 use RuntimeException;
 
-/**
- * 控制器解析器.
- *
- * 負責解析路由處理器並呼叫對應的控制器方法
- */
 class ControllerResolver
 {
     public function __construct(
@@ -37,17 +32,14 @@ class ControllerResolver
         array $parameters = [],
     ): ResponseInterface {
         $handler = $route->getHandler();
-
         if (is_array($handler) && count($handler) === 2) {
             // 處理器是陣列格式: [ControllerClass::class, 'method']
             return $this->handleArrayHandler($handler, $request, $parameters);
         }
-
         if (is_string($handler)) {
             // 處理器是字串格式: "ControllerClass@method"
             return $this->handleStringHandler($handler, $request, $parameters);
         }
-
         if (is_callable($handler)) {
             // 處理器是閉包函式
             return $this->handleCallable($handler, $request, $parameters);
@@ -65,9 +57,7 @@ class ControllerResolver
         foreach ($parameters as $key => $value) {
             $request = $request->withAttribute($key, $value);
         }
-
         $result = $handler($request);
-
         // 如果結果已經是 ResponseInterface，直接回傳
         if ($result instanceof ResponseInterface) {
             return $result;
@@ -108,7 +98,6 @@ class ControllerResolver
         if (!str_contains($handler, '@')) {
             throw new RuntimeException("處理器格式錯誤: {$handler}，預期格式: ControllerClass@method");
         }
-
         [$controllerClass, $method] = explode('@', $handler, 2);
 
         return $this->handleArrayHandler([$controllerClass, $method], $request, $parameters);
@@ -120,15 +109,12 @@ class ControllerResolver
     private function handleArrayHandler(array $handler, ServerRequestInterface $request, array $parameters): ResponseInterface
     {
         [$controllerClass, $method] = $handler;
-
         // 解析控制器類別
         $controller = $this->resolveController($controllerClass);
-
         // 檢查方法是否存在
         if (!method_exists($controller, $method)) {
             throw new RuntimeException("控制器方法不存在: {$controllerClass}::{$method}");
         }
-
         // 準備方法參數
         $methodArgs = $this->resolveMethodArguments($controller, $method, $request, $parameters);
 
@@ -145,12 +131,10 @@ class ControllerResolver
         if (!str_starts_with($controllerClass, 'App\\')) {
             $controllerClass = 'App\\Application\\Controllers\\' . $controllerClass;
         }
-
         // 檢查類別是否存在
         if (!class_exists($controllerClass)) {
             throw new RuntimeException("控制器類別不存在: {$controllerClass}");
         }
-
         // 從 DI 容器中取得控制器實例
         if ($this->container->has($controllerClass)) {
             return $this->container->get($controllerClass);
@@ -160,12 +144,10 @@ class ControllerResolver
         try {
             $reflection = new ReflectionClass($controllerClass);
             $constructor = $reflection->getConstructor();
-
             if ($constructor === null) {
                 // 無參數建構子
                 return new $controllerClass();
             }
-
             // 解析建構子參數
             $args = $this->resolveConstructorArguments($constructor);
 
@@ -181,10 +163,8 @@ class ControllerResolver
     private function resolveConstructorArguments(ReflectionMethod $constructor): array
     {
         $args = [];
-
         foreach ($constructor->getParameters() as $parameter) {
             $type = $parameter->getType();
-
             if ($type === null) {
                 if ($parameter->isDefaultValueAvailable()) {
                     $args[] = $parameter->getDefaultValue();
@@ -193,13 +173,10 @@ class ControllerResolver
                 }
                 continue;
             }
-
             if (!$type instanceof ReflectionNamedType) {
                 throw new RuntimeException("不支援的參數類型: {$parameter->getName()}");
             }
-
             $typeName = $type->getName();
-
             if ($this->container->has($typeName)) {
                 $args[] = $this->container->get($typeName);
             } elseif ($parameter->isDefaultValueAvailable()) {
@@ -228,13 +205,10 @@ class ControllerResolver
         } catch (ReflectionException $e) {
             throw new RuntimeException("無法反射方法: {$methodName}", 0, $e);
         }
-
         $args = [];
-
         foreach ($reflection->getParameters() as $parameter) {
             $paramName = $parameter->getName();
             $type = $parameter->getType();
-
             // 優先處理 PSR-7 請求物件
             if ($type && $type instanceof ReflectionNamedType && $type->getName() === ServerRequestInterface::class) {
                 // 將路由參數注入到請求屬性中
@@ -245,19 +219,16 @@ class ControllerResolver
                 $args[] = $requestWithParams;
                 continue;
             }
-
             // 處理 PSR-7 回應物件
             if ($type && $type instanceof ReflectionNamedType && $type->getName() === ResponseInterface::class) {
                 $args[] = $this->createResponse();
                 continue;
             }
-
             // 處理路由參數
             if (isset($routeParameters[$paramName])) {
                 $args[] = $this->convertParameter($routeParameters[$paramName], $type);
                 continue;
             }
-
             // 處理依賴注入
             if ($type && $type instanceof ReflectionNamedType && !$type->isBuiltin()) {
                 $typeName = $type->getName();
@@ -266,13 +237,11 @@ class ControllerResolver
                     continue;
                 }
             }
-
             // 處理預設值
             if ($parameter->isDefaultValueAvailable()) {
                 $args[] = $parameter->getDefaultValue();
                 continue;
             }
-
             // 處理可為 null 的參數
             if ($parameter->allowsNull()) {
                 $args[] = null;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services\Advanced;
 
-use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Throwable;
 
 class PwnedPasswordService
 {
@@ -44,7 +44,6 @@ class PwnedPasswordService
             $sha1Hash = strtoupper(sha1($password));
             $prefix = substr($sha1Hash, 0, 5);
             $suffix = substr($sha1Hash, 5);
-
             // 檢查快取
             $cacheKey = "pwned_prefix_{$prefix}";
             if ($this->isInCache($cacheKey)) {
@@ -56,7 +55,6 @@ class PwnedPasswordService
                     $this->setCache($cacheKey, $hashList);
                 }
             }
-
             if ($hashList === null) {
                 return [
                     'is_leaked' => false,
@@ -65,7 +63,6 @@ class PwnedPasswordService
                     'api_available' => false,
                 ];
             }
-
             // 在回傳的雜湊列表中查找
             $count = $this->findHashInList($suffix, $hashList);
 
@@ -75,7 +72,7 @@ class PwnedPasswordService
                 'error' => null,
                 'api_available' => true,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 記錄錯誤但不阻止使用者操作
             app_log('error', 'PwnedPasswordService error', ['exception' => $e->getMessage()]);
 
@@ -95,7 +92,6 @@ class PwnedPasswordService
     {
         try {
             $response = $this->httpClient->get(self::HIBP_API_URL . $prefix);
-
             if ($response->getStatusCode() === 200) {
                 return $response->getBody()->getContents();
             }
@@ -115,7 +111,6 @@ class PwnedPasswordService
     private function findHashInList(string $suffix, string $hashList): int
     {
         $lines = explode("\r\n", $hashList);
-
         foreach ($lines as $line) {
             $parts = explode(':', $line);
             if (count($parts) === 2 && $parts[0] === $suffix) {
@@ -168,7 +163,7 @@ class PwnedPasswordService
                 'available' => $response->getStatusCode() === 200,
                 'response_time' => null, // 可以實作回應時間測量
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return [
                 'available' => false,
                 'error' => $e->getMessage(),
@@ -182,10 +177,8 @@ class PwnedPasswordService
     public function checkMultiplePasswords(array $passwords): array
     {
         $results = [];
-
         foreach ($passwords as $index => $password) {
             $results[$index] = $this->isPasswordPwned($password);
-
             // 加入小延遲避免 API 限制
             if (count($passwords) > 1) {
                 usleep(100000); // 0.1 秒

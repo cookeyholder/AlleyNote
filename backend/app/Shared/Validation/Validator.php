@@ -8,11 +8,6 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTime;
 
-/**
- * 主要驗證器類.
- *
- * 提供完整的資料驗證功能，支援多種驗證規則和自訂規則
- */
 class Validator implements ValidatorInterface
 {
     private array $customRules = [];
@@ -63,51 +58,42 @@ class Validator implements ValidatorInterface
         $errors = [];
         $failedRules = [];
         $validatedData = [];
-
         foreach ($rules as $field => $ruleSet) {
             if (is_string($ruleSet)) {
                 $ruleSet = explode('|', $ruleSet);
             }
-
             $fieldValue = $data[$field] ?? null;
             $fieldErrors = [];
             $fieldFailedRules = [];
-
             foreach ($ruleSet as $rule) {
                 $ruleName = $rule;
                 $parameters = [];
-
                 // 解析帶參數的規則 (例如: min:5, between:1,10)
                 if (strpos($rule, ':') !== false) {
                     [$ruleName, $paramString] = explode(':', $rule, 2);
                     $parameters = explode(',', $paramString);
                 }
-
                 // 檢查規則
                 if (!$this->checkRule($fieldValue, $ruleName, $parameters, $data, $field)) {
                     $errorMessage = $this->getErrorMessage($field, $ruleName, $parameters, $fieldValue);
                     $fieldErrors[] = $errorMessage;
                     $fieldFailedRules[] = $ruleName;
-
                     if ($this->stopOnFirstFailure) {
                         break;
                     }
                 }
             }
-
             if (empty($fieldErrors)) {
                 $validatedData[$field] = $fieldValue;
             } else {
                 $errors[$field] = $fieldErrors;
                 $failedRules[$field] = $fieldFailedRules;
-
                 // 如果設定為第一個錯誤時停止，且已有錯誤，則跳出整個驗證循環
                 if ($this->stopOnFirstFailure) {
                     break;
                 }
             }
         }
-
         $isValid = empty($errors);
 
         return new ValidationResult($isValid, $errors, $validatedData, $failedRules);
@@ -116,7 +102,6 @@ class Validator implements ValidatorInterface
     public function validateOrFail(array $data, array $rules): array
     {
         $result = $this->validate($data, $rules);
-
         if ($result->isInvalid()) {
             throw new ValidationException($result);
         }
@@ -182,17 +167,14 @@ class Validator implements ValidatorInterface
     }
 
     // 驗證規則實作
-
     private function validateRequired(mixed $value): bool
     {
         if ($value === null) {
             return false;
         }
-
         if (is_string($value) && trim($value) === '') {
             return false;
         }
-
         if (is_array($value) && empty($value)) {
             return false;
         }
@@ -268,7 +250,6 @@ class Validator implements ValidatorInterface
         if (!is_string($value)) {
             return false;
         }
-
         $date = DateTime::createFromFormat('Y-m-d', $value);
 
         return $date && $date->format('Y-m-d') === $value;
@@ -279,7 +260,6 @@ class Validator implements ValidatorInterface
         if (!is_string($value)) {
             return false;
         }
-
         // 支援多種日期時間格式
         $formats = [
             'Y-m-d H:i:s',
@@ -288,7 +268,6 @@ class Validator implements ValidatorInterface
             DateTime::RFC3339,
             DateTime::ISO8601,
         ];
-
         foreach ($formats as $format) {
             $date = DateTime::createFromFormat($format, $value);
             if ($date && $date->format($format) === $value) {
@@ -304,17 +283,13 @@ class Validator implements ValidatorInterface
         if (empty($parameters)) {
             return true;
         }
-
         $min = (float) $parameters[0];
-
         if (is_numeric($value)) {
             return (float) $value >= $min;
         }
-
         if (is_string($value)) {
             return mb_strlen($value) >= $min;
         }
-
         if (is_array($value)) {
             return count($value) >= $min;
         }
@@ -327,17 +302,13 @@ class Validator implements ValidatorInterface
         if (empty($parameters)) {
             return true;
         }
-
         $max = (float) $parameters[0];
-
         if (is_numeric($value)) {
             return (float) $value <= $max;
         }
-
         if (is_string($value)) {
             return mb_strlen($value) <= $max;
         }
-
         if (is_array($value)) {
             return count($value) <= $max;
         }
@@ -350,7 +321,6 @@ class Validator implements ValidatorInterface
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
-
         $minLength = (int) $parameters[0];
 
         return mb_strlen($value) >= $minLength;
@@ -361,7 +331,6 @@ class Validator implements ValidatorInterface
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
-
         $maxLength = (int) $parameters[0];
 
         return mb_strlen($value) <= $maxLength;
@@ -372,7 +341,6 @@ class Validator implements ValidatorInterface
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
-
         $length = (int) $parameters[0];
 
         return mb_strlen($value) === $length;
@@ -383,22 +351,18 @@ class Validator implements ValidatorInterface
         if (count($parameters) < 2) {
             return true;
         }
-
         $min = (float) $parameters[0];
         $max = (float) $parameters[1];
-
         if (is_numeric($value)) {
             $numValue = (float) $value;
 
             return $numValue >= $min && $numValue <= $max;
         }
-
         if (is_string($value)) {
             $length = mb_strlen($value);
 
             return $length >= $min && $length <= $max;
         }
-
         if (is_array($value)) {
             $count = count($value);
 
@@ -423,7 +387,6 @@ class Validator implements ValidatorInterface
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
-
         $pattern = $parameters[0];
 
         return preg_match($pattern, $value) === 1;
@@ -460,12 +423,10 @@ class Validator implements ValidatorInterface
     {
         // 預設確認欄位名稱為 field_confirmation
         $confirmationField = $currentField . '_confirmation';
-
         // 如果有提供參數，使用參數作為確認欄位名稱
         if (!empty($parameters)) {
             $confirmationField = (string) $parameters[0];
         }
-
         // 檢查確認欄位是否存在且值相等
         if (!isset($allData[$confirmationField])) {
             return false;
@@ -479,7 +440,6 @@ class Validator implements ValidatorInterface
         if (empty($parameters)) {
             return true;
         }
-
         $otherField = (string) $parameters[0];
         if (!isset($allData[$otherField])) {
             return true;
@@ -493,7 +453,6 @@ class Validator implements ValidatorInterface
         if (empty($parameters)) {
             return true;
         }
-
         $otherField = (string) $parameters[0];
         if (!isset($allData[$otherField])) {
             return false;
@@ -503,7 +462,6 @@ class Validator implements ValidatorInterface
     }
 
     // 錯誤訊息處理
-
     private function getErrorMessage(string $field, string $rule, array $parameters, mixed $value): string
     {
         // 檢查自訂訊息
@@ -511,11 +469,9 @@ class Validator implements ValidatorInterface
         if (isset($this->customMessages[$customKey])) {
             return $this->replacePlaceholders($this->customMessages[$customKey], $field, $parameters, $value);
         }
-
         if (isset($this->customMessages[$rule])) {
             return $this->replacePlaceholders($this->customMessages[$rule], $field, $parameters, $value);
         }
-
         // 使用預設訊息
         $message = $this->defaultMessages[$rule] ?? "欄位 {$field} 驗證失敗";
 
@@ -528,7 +484,6 @@ class Validator implements ValidatorInterface
             ':field' => $field,
             ':value' => is_scalar($value) ? (string) $value : gettype($value),
         ];
-
         // 添加參數替換
         if (!empty($parameters)) {
             $replacements[':min'] = $parameters[0] ?? '';

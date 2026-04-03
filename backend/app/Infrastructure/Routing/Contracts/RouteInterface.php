@@ -7,11 +7,6 @@ namespace App\Infrastructure\Routing\Contracts;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由介面.
- *
- * 定義單一路由的基本結構和行為
- */
 interface RouteInterface
 {
     /**

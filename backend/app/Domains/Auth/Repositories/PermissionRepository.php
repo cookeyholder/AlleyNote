@@ -7,9 +7,6 @@ namespace App\Domains\Auth\Repositories;
 use App\Domains\Auth\Models\Permission;
 use PDO;
 
-/**
- * 權限 Repository.
- */
 class PermissionRepository
 {
     public function __construct(
@@ -67,7 +64,6 @@ class PermissionRepository
         if (empty($ids)) {
             return [];
         }
-
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $sql = "SELECT * FROM permissions WHERE id IN ({$placeholders}) ORDER BY resource ASC, action ASC";
         $stmt = $this->db->prepare($sql);
@@ -101,7 +97,6 @@ class PermissionRepository
     {
         $permissions = $this->findAll();
         $grouped = [];
-
         foreach ($permissions as $permission) {
             $resource = $permission->getResource();
             if (!isset($grouped[$resource])) {

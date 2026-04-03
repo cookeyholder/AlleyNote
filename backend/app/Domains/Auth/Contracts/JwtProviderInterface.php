@@ -11,12 +11,6 @@ use App\Domains\Auth\Exceptions\TokenParsingException;
 use App\Domains\Auth\Exceptions\TokenValidationException;
 use DateTimeImmutable;
 
-/**
- * JWT Provider 介面.
- *
- * 定義JWT token操作的核心方法，包含token生成、驗證、解析等功能。
- * 實作類別需要提供完整的JWT token處理能力。
- */
 interface JwtProviderInterface
 {
     /**

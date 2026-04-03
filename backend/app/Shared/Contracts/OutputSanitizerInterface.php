@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Contracts;
 
-/**
- * 輸出清理服務介面.
- *
- * 定義內容清理和防止 XSS 攻擊的標準介面
- */
 interface OutputSanitizerInterface
 {
     /**

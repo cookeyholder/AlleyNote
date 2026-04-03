@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
-/**
- * 匯出結果值物件.
- *
- * 封裝統計資料匯出的結果資訊。
- */
 final readonly class ExportResult
 {
     public function __construct(

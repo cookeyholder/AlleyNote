@@ -35,7 +35,6 @@ class CacheManager
     public function set(string $key, $value, ?int $ttl = null): bool
     {
         $ttl ??= $this->defaultTtl;
-
         $this->cache[$key] = $value;
         $this->expiry[$key] = time() + $ttl;
 
@@ -50,7 +49,6 @@ class CacheManager
         if (!isset($this->cache[$key])) {
             return false;
         }
-
         if (isset($this->expiry[$key]) && time() > $this->expiry[$key]) {
             $this->delete($key);
 
@@ -89,7 +87,6 @@ class CacheManager
         if ($this->has($key)) {
             return $this->get($key);
         }
-
         $value = $callback();
         $this->set($key, $value, $ttl);
 
@@ -104,7 +101,6 @@ class CacheManager
         if ($this->has($key)) {
             return $this->get($key);
         }
-
         $value = $callback();
         $this->cache[$key] = $value;
         unset($this->expiry[$key]); // 永不過期
@@ -148,7 +144,6 @@ class CacheManager
         // 然後將 * 替換為正則表達式的 .*
         $regexPattern = str_replace('*', '.*', $escapedPattern);
         $deleted = 0;
-
         foreach (array_keys($this->cache) as $key) {
             if (preg_match("/^{$regexPattern}$/", $key)) {
                 $this->delete($key);
@@ -187,7 +182,6 @@ class CacheManager
         $now = time();
         $expired = 0;
         $active = 0;
-
         foreach ($this->expiry as $key => $expireTime) {
             if ($now > $expireTime) {
                 $expired++;
@@ -210,7 +204,6 @@ class CacheManager
     private function getMemoryUsage(): string
     {
         $size = strlen(serialize($this->cache)) + strlen(serialize($this->expiry));
-
         if ($size < 1024) {
             return $size . ' B';
         } elseif ($size < 1048576) {
@@ -227,7 +220,6 @@ class CacheManager
     {
         $now = time();
         $cleaned = 0;
-
         foreach ($this->expiry as $key => $expireTime) {
             if ($now > $expireTime) {
                 $this->delete($key);

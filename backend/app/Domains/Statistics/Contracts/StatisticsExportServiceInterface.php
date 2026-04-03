@@ -6,11 +6,6 @@ namespace App\Domains\Statistics\Contracts;
 
 use DateTime;
 
-/**
- * 統計資料匯出服務合約介面.
- *
- * 定義統計資料匯出的標準操作，支援多種格式和篩選條件。
- */
 interface StatisticsExportServiceInterface
 {
     /**

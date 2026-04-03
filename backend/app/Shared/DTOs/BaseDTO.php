@@ -8,11 +8,6 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use JsonSerializable;
 
-/**
- * 基礎 DTO 抽象類別.
- *
- * 提供資料傳輸物件的基本功能，確保型別安全且防止巨量賦值攻擊
- */
 abstract class BaseDTO implements JsonSerializable
 {
     protected ValidatorInterface $validator;
@@ -94,7 +89,6 @@ abstract class BaseDTO implements JsonSerializable
         if ($value === null) {
             return $default;
         }
-
         if (is_bool($value)) {
             return $value;
         }

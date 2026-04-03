@@ -19,19 +19,14 @@ use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
+use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Helpers\NetworkHelper;
-use Exception;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Throwable;
 
-/**
- * JWT 認證 Controller.
- *
- * 處理 JWT 認證相關的 API 端點，包含登入、登出、token 刷新、使用者資訊等功能。
- * 整合 DTO 驗證、例外處理、HTTP 回應格式。
- */
 class AuthController extends BaseController
 {
     public function __construct(
@@ -42,6 +37,7 @@ class AuthController extends BaseController
         private ActivityLoggingServiceInterface $activityLoggingService,
         private UserRepositoryInterface $userRepository,
         private UserManagementService $userManagementService,
+        private EnvironmentConfig $config,
     ) {}
 
     #[OA\Post(
@@ -72,17 +68,14 @@ class AuthController extends BaseController
     {
         try {
             $data = $request->getParsedBody();
-
             if (!is_array($data)) {
                 return $this->json($response, [
                     'success' => false,
                     'message' => 'Invalid request data format',
                 ], 400);
             }
-
             $dto = new RegisterUserDTO($this->validator, $data);
             $user = $this->authService->register($dto);
-
             // 記錄成功註冊活動
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::USER_REGISTERED,
@@ -96,7 +89,6 @@ class AuthController extends BaseController
                 NetworkHelper::getClientIp($request),
                 $request->getHeaderLine('User-Agent') ?: 'Unknown',
             );
-
             $this->activityLoggingService->log($activityDto);
 
             return $this->json($response, [
@@ -104,7 +96,7 @@ class AuthController extends BaseController
                 'message' => '註冊成功',
                 'data' => $user,
             ], 201);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -131,24 +123,19 @@ class AuthController extends BaseController
     {
         try {
             $credentials = $request->getParsedBody();
-
             if (!is_array($credentials) || !isset($credentials['email'], $credentials['password'])) {
                 return $this->json($response, [
                     'success' => false,
                     'error' => '缺少必要的登入資料',
                 ], 400);
             }
-
             $loginRequest = LoginRequestDTO::fromArray($credentials);
-
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: NetworkHelper::getClientIp($request),
                 deviceName: $credentials['device_name'] ?? null,
             );
-
             $loginResponse = $this->authenticationService->login($loginRequest, $deviceInfo);
-
             // 記錄成功登入活動
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::LOGIN_SUCCESS,
@@ -159,9 +146,7 @@ class AuthController extends BaseController
                     'login_timestamp' => date('c'),
                 ],
             )->withNetworkInfo($deviceInfo->getIpAddress(), $deviceInfo->getUserAgent());
-
             $this->activityLoggingService->log($activityDto);
-
             $response = $this->json($response, [
                 'success' => true,
                 'message' => '登入成功',
@@ -169,7 +154,7 @@ class AuthController extends BaseController
             ], 200);
 
             return $this->withAuthCookies($response, $loginResponse->tokens);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             if (isset($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
             }
@@ -195,19 +180,15 @@ class AuthController extends BaseController
             $accessToken = $request->getAttribute('access_token');
             $cookies = $request->getCookieParams();
             $refreshToken = $cookies['refresh_token'] ?? null;
-
             if (is_array($requestData)) {
                 $refreshToken = $requestData['refresh_token'] ?? $refreshToken;
             }
-
             $logoutRequest = LogoutRequestDTO::fromArray([
                 'access_token' => $accessToken,
                 'refresh_token' => $refreshToken ?? null,
                 'revoke_all_tokens' => $requestData['logout_all_devices'] ?? false,
             ]);
-
             $this->authenticationService->logout($logoutRequest);
-
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::LOGOUT,
                 userId: $request->getAttribute('user_id'),
@@ -219,16 +200,14 @@ class AuthController extends BaseController
                 NetworkHelper::getClientIp($request),
                 $request->getHeaderLine('User-Agent') ?: 'Unknown',
             );
-
             $this->activityLoggingService->log($activityDto);
-
             $response = $this->json($response, [
                 'success' => true,
                 'message' => '登出成功',
             ], 200);
 
             return $this->expireAuthCookies($response);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -249,13 +228,10 @@ class AuthController extends BaseController
         try {
             $userId = $request->getAttribute('user_id');
             $payload = $request->getAttribute('jwt_payload');
-
             if (!$userId) {
                 return $this->json($response, ['success' => false, 'error' => '未授權存取'], 401);
             }
-
             $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
-
             if (!$userWithRoles) {
                 return $this->json($response, ['success' => false, 'error' => '使用者不存在'], 404);
             }
@@ -276,7 +252,7 @@ class AuthController extends BaseController
                     ],
                 ],
             ], 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -296,27 +272,21 @@ class AuthController extends BaseController
         try {
             $requestData = $request->getParsedBody();
             $cookies = $request->getCookieParams();
-
             if (!is_array($requestData)) {
                 $requestData = [];
             }
-
             if (!isset($requestData['refresh_token']) && !empty($cookies['refresh_token']) && is_string($cookies['refresh_token'])) {
                 $requestData['refresh_token'] = $cookies['refresh_token'];
             }
-
             if (!isset($requestData['refresh_token'])) {
                 return $this->json($response, ['success' => false, 'error' => '缺少必要的 refresh_token'], 400);
             }
-
             $refreshRequest = RefreshRequestDTO::fromArray($requestData);
             $deviceInfo = DeviceInfo::fromUserAgent(
                 userAgent: $request->getHeaderLine('User-Agent') ?: 'Unknown',
                 ipAddress: NetworkHelper::getClientIp($request),
             );
-
             $refreshResponse = $this->authenticationService->refresh($refreshRequest, $deviceInfo);
-
             $response = $this->json($response, [
                 'success' => true,
                 'message' => 'Token 刷新成功',
@@ -324,7 +294,7 @@ class AuthController extends BaseController
             ], 200);
 
             return $this->withAuthCookies($response, $refreshResponse->tokens);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -345,9 +315,8 @@ class AuthController extends BaseController
                 NetworkHelper::getClientIp($request),
                 $request->getHeaderLine('User-Agent') ?: 'Unknown',
             );
-
             $this->activityLoggingService->log($activityDto);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             app_log('error', 'Failed to log login failure activity', ['exception' => $e->getMessage()]);
         }
     }
@@ -368,12 +337,10 @@ class AuthController extends BaseController
             if (!$userId) {
                 return $this->json($response, ['success' => false, 'error' => '未授權存取'], 401);
             }
-
             $data = $request->getParsedBody();
             if (!is_array($data)) {
                 return $this->json($response, ['success' => false, 'error' => '無效的請求資料格式'], 400);
             }
-
             $allowedFields = ['username', 'email', 'name'];
             $unexpectedFields = array_values(array_diff(array_keys($data), $allowedFields));
             if ($unexpectedFields !== []) {
@@ -388,7 +355,6 @@ class AuthController extends BaseController
                     'unsupported_fields' => $unexpectedFields,
                 ], 400);
             }
-
             $this->userRepository->update($userId, array_intersect_key($data, array_flip($allowedFields)));
             $user = $this->userRepository->findByIdWithRoles($userId);
 
@@ -403,7 +369,7 @@ class AuthController extends BaseController
                     'roles' => $user['roles'] ?? [],
                 ],
             ], 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -426,18 +392,14 @@ class AuthController extends BaseController
             if (!$userId) {
                 return $this->json($response, ['success' => false, 'error' => '未授權存取'], 401);
             }
-
             $data = $request->getParsedBody();
             if (!is_array($data) || empty($data['current_password']) || empty($data['new_password'])) {
                 return $this->json($response, ['success' => false, 'error' => '缺少必要的密碼資料'], 400);
             }
-
             if (($data['new_password'] ?? '') !== ($data['new_password_confirmation'] ?? '')) {
                 return $this->json($response, ['success' => false, 'error' => '新密碼與確認密碼不符'], 422);
             }
-
             $this->userManagementService->changePassword($userId, $data['current_password'], $data['new_password']);
-
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::PASSWORD_CHANGED,
                 userId: $userId,
@@ -446,14 +408,13 @@ class AuthController extends BaseController
                 NetworkHelper::getClientIp($request),
                 $request->getHeaderLine('User-Agent') ?: 'Unknown',
             );
-
             $this->activityLoggingService->log($activityDto);
 
             return $this->json($response, [
                 'success' => true,
                 'message' => '密碼變更成功',
             ], 200);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -462,33 +423,40 @@ class AuthController extends BaseController
 
     private function withAuthCookies(Response $response, TokenPair $tokens): Response
     {
-        return $response
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', $tokens->getRefreshToken(), $tokens->getRefreshTokenExpiresAt()->getTimestamp(), true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false));
+        return $response->withHeader('Set-Cookie', [
+            $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true),
+            $this->buildCookieHeader('refresh_token', $tokens->getRefreshToken(), $tokens->getRefreshTokenExpiresAt()->getTimestamp(), true),
+            $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false),
+        ]);
     }
 
     private function expireAuthCookies(Response $response): Response
     {
-        return $response
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', '', time() - 3600, true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', '', time() - 3600, true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', '', time() - 3600, false));
+        return $response->withHeader('Set-Cookie', [
+            $this->buildCookieHeader('access_token', '', time() - 3600, true),
+            $this->buildCookieHeader('refresh_token', '', time() - 3600, true),
+            $this->buildCookieHeader('auth_mode', '', time() - 3600, false),
+        ]);
     }
 
     private function buildCookieHeader(string $name, string $value, int $expiresAt, bool $httpOnly): string
     {
-        $isSecure = ($_ENV['APP_ENV'] ?? 'production') === 'production';
-        $cookie = sprintf(
-            '%s=%s; Path=/; Expires=%s; Max-Age=%d; SameSite=Lax%s%s',
-            $name,
-            rawurlencode($value),
-            gmdate('D, d M Y H:i:s T', $expiresAt),
-            max(0, $expiresAt - time()),
-            $isSecure ? '; Secure' : '',
-            $httpOnly ? '; HttpOnly' : '',
-        );
+        $isSecure = $this->config->getEnvironment() === 'production';
+        $maxAge = max(0, $expiresAt - time());
+        $parts = [
+            sprintf('%s=%s', $name, rawurlencode($value)),
+            'Path=/',
+            sprintf('Expires=%s', gmdate('D, d M Y H:i:s T', $expiresAt)),
+            sprintf('Max-Age=%d', $maxAge),
+            'SameSite=Lax',
+        ];
+        if ($isSecure) {
+            $parts[] = 'Secure';
+        }
+        if ($httpOnly) {
+            $parts[] = 'HttpOnly';
+        }
 
-        return $cookie;
+        return implode('; ', $parts);
     }
 }

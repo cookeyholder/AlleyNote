@@ -10,12 +10,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 統計概覽 DTO.
- *
- * 封裝統計概覽資料的傳輸物件，包含文章、使用者、活動等綜合統計資訊。
- * 用於統計 API 的回應格式與內部資料傳遞。
- */
 class StatisticsOverviewDTO implements JsonSerializable
 {
     /**
@@ -77,7 +71,6 @@ class StatisticsOverviewDTO implements JsonSerializable
         if (!is_array($data)) {
             return [];
         }
-
         $result = [];
         foreach ($data as $key => $value) {
             if (is_string($key)) {
@@ -108,7 +101,6 @@ class StatisticsOverviewDTO implements JsonSerializable
             'generated_at' => 'sometimes|string|date',
             'metadata' => 'sometimes|array',
         ];
-
         $validator->validate($data, $rules);
 
         return self::fromArray($data);
@@ -227,11 +219,9 @@ class StatisticsOverviewDTO implements JsonSerializable
                 'activity_level' => $this->getActivityLevel(),
             ],
         ];
-
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
         }
-
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
@@ -283,28 +273,22 @@ class StatisticsOverviewDTO implements JsonSerializable
         if ($this->totalPosts < 0) {
             throw new InvalidArgumentException('文章總數不能為負數');
         }
-
         if ($this->activeUsers < 0) {
             throw new InvalidArgumentException('活躍使用者數不能為負數');
         }
-
         if ($this->newUsers < 0) {
             throw new InvalidArgumentException('新使用者數不能為負數');
         }
-
         // 驗證必要的陣列鍵
         $this->validateArrayStructure('post_activity', $this->postActivity, [
             'total_posts', 'published_posts', 'draft_posts',
         ]);
-
         $this->validateArrayStructure('user_activity', $this->userActivity, [
             'total_users', 'active_users', 'new_users',
         ]);
-
         $this->validateArrayStructure('engagement_metrics', $this->engagementMetrics, [
             'posts_per_active_user', 'user_growth_rate',
         ]);
-
         $this->validateArrayStructure('period_summary', $this->periodSummary, [
             'type', 'duration_days',
         ]);

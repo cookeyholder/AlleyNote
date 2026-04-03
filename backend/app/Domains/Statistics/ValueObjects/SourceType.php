@@ -7,14 +7,6 @@ namespace App\Domains\Statistics\ValueObjects;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 來源類型值物件.
- *
- * 表示文章的建立來源，用於分析文章的來源分布。
- * 此值物件是 immutable 的，一旦建立就不能修改。
- *
- * @psalm-immutable
- */
 final readonly class SourceType implements JsonSerializable
 {
     private const VALID_CODES = ['web', 'api', 'mobile', 'import', 'migration'];
@@ -244,12 +236,10 @@ final readonly class SourceType implements JsonSerializable
                 "Invalid source code: {$this->code}. Valid codes: " . implode(', ', self::VALID_CODES),
             );
         }
-
         // 檢查名稱不能為空
         if (trim($this->name) === '') {
             throw new InvalidArgumentException('Source name cannot be empty');
         }
-
         // 檢查描述不能是無意義字串
         if (in_array($this->description, ['N/A', 'null', 'undefined'], true)) {
             throw new InvalidArgumentException('Description cannot be meaningless string');

@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Events\Contracts;
 
-/**
- * 事件分派器介面.
- *
- * 定義事件分派器的基本合約，負責分派事件到相對應的監聽器
- */
 interface EventDispatcherInterface
 {
     /**

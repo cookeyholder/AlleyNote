@@ -7,11 +7,6 @@ namespace App\Domains\Statistics\Events;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Shared\Events\AbstractDomainEvent;
 
-/**
- * 統計快照已建立事件.
- *
- * 當統計快照成功建立時觸發，用於觸發快取失效和預熱操作
- */
 class StatisticsSnapshotCreated extends AbstractDomainEvent
 {
     public function __construct(

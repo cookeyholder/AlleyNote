@@ -6,11 +6,6 @@ namespace App\Domains\Statistics\ValueObjects;
 
 use JsonSerializable;
 
-/**
- * 圖表資料集值物件.
- *
- * 表示圖表中的一組資料，包含標籤、資料、顏色等屬性
- */
 readonly class ChartDataset implements JsonSerializable
 {
     /**
@@ -75,7 +70,6 @@ readonly class ChartDataset implements JsonSerializable
             '#3B82F6', '#EF4444', '#10B981', '#F59E0B',
             '#8B5CF6', '#EC4899', '#6B7280', '#14B8A6',
         ];
-
         $backgroundColor = $colors ?? array_slice($defaultColors, 0, count($data));
 
         return new self(
@@ -107,7 +101,6 @@ readonly class ChartDataset implements JsonSerializable
             '#8B5CF6', '#EC4899', '#6B7280', '#14B8A6',
             '#F97316', '#84CC16', '#06B6D4', '#8B5A2B',
         ];
-
         $backgroundColor = $colors ?? array_slice($defaultColors, 0, count($data));
 
         return new self(
@@ -242,11 +235,9 @@ readonly class ChartDataset implements JsonSerializable
             'borderWidth' => $this->borderWidth,
             'fill' => $this->fill,
         ];
-
         if ($this->backgroundColor !== null) {
             $result['backgroundColor'] = $this->backgroundColor;
         }
-
         if ($this->borderColor !== null) {
             $result['borderColor'] = $this->borderColor;
         }

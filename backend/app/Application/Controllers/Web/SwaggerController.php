@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers\Web;
 
-use Exception;
 use OpenApi\Generator;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Throwable;
 
 class SwaggerController
 {
@@ -19,7 +19,6 @@ class SwaggerController
         try {
             // 暫時捕獲所有輸出，避免警告訊息影響 JSON 格式
             ob_start();
-
             // 掃描專案中的註解以產生 OpenAPI 規格
             $basePath = dirname(__DIR__, 3); // 調整到正確的 app 目錄
             $openapi = Generator::scan([
@@ -27,12 +26,9 @@ class SwaggerController
                 $basePath . '/Domain',
                 $basePath . '/Infrastructure',
             ]);
-
             // 清除任何輸出的警告訊息
             ob_end_clean();
-
             $json = $openapi->toJson();
-
             $response->getBody()->write(($json ?: ''));
 
             return $response
@@ -41,12 +37,11 @@ class SwaggerController
                 ->withHeader('Access-Control-Allow-Origin', '*')
                 ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
                 ->withHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 確保清除任何緩衝的輸出
             if (ob_get_level() > 0) {
                 ob_end_clean();
             }
-
             $error = [
                 'error' => 'OpenAPI 掃描失敗',
                 'message' => $e->getMessage(),
@@ -54,7 +49,6 @@ class SwaggerController
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
             ];
-
             $response->getBody()->write(((json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
 
             return $response
@@ -69,7 +63,6 @@ class SwaggerController
     public function ui(Request $request, Response $response): Response
     {
         $html = $this->generateSwaggerUiHtml();
-
         $response->getBody()->write(($html ?: ''));
 
         return $response
@@ -95,7 +88,6 @@ class SwaggerController
             </head>
             <body>
                 <div id="swagger-ui"></div>
-
                 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
                 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
                 <script>
@@ -140,7 +132,6 @@ class SwaggerController
                 'url' => 'https://opensource.org/licenses/MIT',
             ],
         ];
-
         $response->getBody()->write(((json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
 
         return $response

@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
 
-/**
- * 路由快取介面.
- *
- * 用於快取路由定義和匹配結果，提升效能
- */
 interface RouteCacheInterface
 {
     /**

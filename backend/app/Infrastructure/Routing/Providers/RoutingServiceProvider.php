@@ -15,11 +15,6 @@ use App\Infrastructure\Routing\RouteValidator;
 use Psr\Container\ContainerInterface;
 use Throwable;
 
-/**
- * 路由服務提供者.
- *
- * 負責註冊所有路由相關服務到 DI 容器
- */
 class RoutingServiceProvider
 {
     /**
@@ -30,24 +25,17 @@ class RoutingServiceProvider
         return [
             // 路由器核心服務
             RouterInterface::class => \DI\create(Router::class),
-
             Router::class => \DI\create(Router::class),
-
             // 路由驗證器
             RouteValidator::class => \DI\create(RouteValidator::class),
-
             // 路由載入器
             RouteLoader::class => \DI\factory([self::class, 'createRouteLoader']),
-
             // 控制器解析器
             ControllerResolver::class => \DI\factory([self::class, 'createControllerResolver']),
-
             // 中間件解析器
             MiddlewareResolver::class => \DI\factory([self::class, 'createMiddlewareResolver']),
-
             // 中間件分派器
             MiddlewareDispatcher::class => \DI\create(MiddlewareDispatcher::class),
-
             // 路由分派器
             RouteDispatcher::class => \DI\factory([self::class, 'createRouteDispatcher']),
         ];
@@ -127,13 +115,11 @@ class RoutingServiceProvider
                     $routeLoader->addRouteFile($filePath, $group);
                 }
             }
-
             // 載入所有路由到路由器
             $routeLoader->loadRoutes($router);
         } catch (Throwable $e) {
             // 記錄路由載入錯誤並回退到基本配置
             app_log('error', '路由載入失敗', ['exception' => $e->getMessage()]);
-
             // 嘗試載入舊版路由檔案作為回退
             $legacyRoutesFile = __DIR__ . '/../../../../config/routes.php';
             if (file_exists($legacyRoutesFile)) {

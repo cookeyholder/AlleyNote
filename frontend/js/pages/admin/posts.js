@@ -7,6 +7,7 @@ import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { router } from "../../utils/router.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 let currentPage = 1;
 let currentFilters = {};
@@ -276,7 +277,7 @@ async function loadPosts() {
                     : ""
                 }
                 <td class="px-6 py-4">
-                  <div class="text-sm font-bold text-modern-900 group-hover:text-accent-700 transition-colors">${post.title}</div>
+                  <div class="text-sm font-bold text-modern-900 group-hover:text-accent-700 transition-colors">${escapeHtml(post.title)}</div>
                   <div class="text-xs text-modern-400 mt-0.5">ID: #${post.id}</div>
                 </td>
                 <td class="px-6 py-4">
@@ -291,7 +292,7 @@ async function loadPosts() {
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-2">
                     <div class="w-6 h-6 bg-modern-100 rounded-full flex items-center justify-center text-[10px] font-bold text-modern-600">
-                      ${post.author ? post.author.charAt(0).toUpperCase() : "U"}
+                      ${post.author ? String(post.author).charAt(0).toUpperCase() : "U"}
                     </div>
                     <span class="text-sm font-medium text-modern-600">${post.author || "未知"}</span>
                   </div>
@@ -423,9 +424,9 @@ function renderPagination(pagination) {
       <div class="text-sm text-modern-600">
         第 ${current_page} 頁，共 ${total_pages} 頁
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-2" data-pagination>
         <button
-          onclick="window.goToPage(${current_page - 1})"
+          data-page="${current_page - 1}"
           ${current_page === 1 ? "disabled" : ""}
           class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -438,7 +439,7 @@ function renderPagination(pagination) {
             }
             return `
             <button
-              onclick="window.goToPage(${page})"
+              data-page="${page}"
               class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 ${
                 page === current_page
                   ? "bg-accent-600 text-white border-accent-600"
@@ -451,7 +452,7 @@ function renderPagination(pagination) {
           })
           .join("")}
         <button
-          onclick="window.goToPage(${current_page + 1})"
+          data-page="${current_page + 1}"
           ${current_page === total_pages ? "disabled" : ""}
           class="px-3 py-1 border border-modern-300 rounded hover:bg-modern-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -710,5 +711,20 @@ function goToPage(page) {
   loadPosts();
 }
 
-// 保留舊的全域函數供分頁使用
-window.goToPage = goToPage;
+/**
+ * 綁定分頁事件委派
+ */
+function bindPaginationEvents() {
+  const paginationContainer = document.querySelector("[data-pagination]");
+  if (!paginationContainer) return;
+
+  paginationContainer.addEventListener("click", (e) => {
+    const button = e.target.closest("[data-page]");
+    if (!button || button.disabled) return;
+
+    const page = parseInt(button.getAttribute("data-page"), 10);
+    if (!isNaN(page)) {
+      goToPage(page);
+    }
+  });
+}

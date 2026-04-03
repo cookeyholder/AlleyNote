@@ -11,20 +11,7 @@ use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RefreshResponseDTO;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
-use Exception;
 
-/**
- * 認證服務介面.
- *
- * 定義完整的 JWT 認證服務功能，包括：
- * - 使用者登入與登出
- * - 權杖重新整理
- * - 權杖驗證與撤銷
- * - 使用者裝置管理
- *
- * 負責協調各個認證元件（JwtTokenService、RefreshTokenRepository 等）
- * 提供統一的認證服務入口。
- */
 interface AuthenticationServiceInterface
 {
     /**

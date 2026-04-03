@@ -17,13 +17,6 @@ use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
 
-/**
- * 統計聚合服務 - 領域服務.
- *
- * 負責處理統計資料的計算、聚合與快照管理。
- * 此服務封裝複雜的統計業務邏輯，確保統計資料的一致性與準確性。
- * 遵循 DDD 領域服務原則，專注於跨多個聚合根的業務邏輯協調。
- */
 class StatisticsAggregationService implements StatisticsAggregationServiceInterface
 {
     public function __construct(
@@ -51,15 +44,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         // 檢查是否已存在相同週期的快照
         if ($this->statisticsRepository->exists(StatisticsSnapshot::TYPE_OVERVIEW, $period)) {
             throw new InvalidArgumentException('Overview snapshot already exists for this period');
         }
-
         // 聚合各種統計資料
         $overviewData = $this->aggregateOverviewData($period);
-
         // 建立統計快照
         $snapshot = StatisticsSnapshot::create(
             StatisticsSnapshot::TYPE_OVERVIEW,
@@ -68,10 +58,8 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             array_merge($this->generateBaseMetadata(), $metadata),
             $expiresAt,
         );
-
         // 儲存快照
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
-
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
 
@@ -95,15 +83,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         // 檢查資料可用性
         if (!$this->postStatisticsRepository->hasDataForPeriod($period)) {
             throw new RuntimeException('No post data available for the specified period');
         }
-
         // 聚合文章統計資料
         $postsData = $this->aggregatePostsData($period);
-
         $snapshot = StatisticsSnapshot::create(
             StatisticsSnapshot::TYPE_POSTS,
             $period,
@@ -111,9 +96,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             array_merge($this->generateBaseMetadata(), $metadata),
             $expiresAt,
         );
-
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
-
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
 
@@ -137,15 +120,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         // 檢查資料可用性
         if (!$this->userStatisticsRepository->hasDataForPeriod($period)) {
             throw new RuntimeException('No user data available for the specified period');
         }
-
         // 聚合使用者統計資料
         $usersData = $this->aggregateUsersData($period);
-
         $snapshot = StatisticsSnapshot::create(
             StatisticsSnapshot::TYPE_USERS,
             $period,
@@ -153,9 +133,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             array_merge($this->generateBaseMetadata(), $metadata),
             $expiresAt,
         );
-
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
-
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
 
@@ -178,10 +156,8 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         ?DateTimeInterface $expiresAt = null,
     ): StatisticsSnapshot {
         $this->validatePeriod($period);
-
         // 聚合熱門內容資料
         $popularData = $this->aggregatePopularData($period);
-
         $snapshot = StatisticsSnapshot::create(
             StatisticsSnapshot::TYPE_POPULAR,
             $period,
@@ -189,9 +165,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             array_merge($this->generateBaseMetadata(), $metadata),
             $expiresAt,
         );
-
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
-
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
 
@@ -218,10 +192,8 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     ): array {
         $this->validatePeriod($period);
         $this->validateSnapshotTypes($types);
-
         $snapshots = [];
         $errors = [];
-
         foreach ($types as $type) {
             try {
                 $snapshots[$type] = match ($type) {
@@ -235,7 +207,6 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
                 $errors[$type] = $e->getMessage();
             }
         }
-
         if (!empty($errors)) {
             throw new RuntimeException('Failed to create some snapshots: ' . json_encode($errors, JSON_THROW_ON_ERROR));
         }
@@ -255,7 +226,6 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     public function updateSnapshot(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         $this->validateSnapshot($snapshot);
-
         // 根據快照類型重新計算統計資料
         $newData = match ($snapshot->getSnapshotType()) {
             StatisticsSnapshot::TYPE_OVERVIEW => $this->aggregateOverviewData($snapshot->getPeriod()),
@@ -264,10 +234,8 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             StatisticsSnapshot::TYPE_POPULAR => $this->aggregatePopularData($snapshot->getPeriod()),
             default => throw new InvalidArgumentException("Unsupported snapshot type: {$snapshot->getSnapshotType()}"),
         };
-
         // 更新統計資料
         $snapshot->updateStatistics($newData);
-
         // 更新元資料
         $snapshot->updateMetadata([
             'last_updated_by' => 'StatisticsAggregationService',
@@ -296,16 +264,12 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     ): array {
         $this->validatePeriod($currentPeriod);
         $this->validatePeriod($previousPeriod);
-
         // 獲取兩個週期的快照
         $currentSnapshot = $this->statisticsRepository->findByTypeAndPeriod($snapshotType, $currentPeriod);
-
         if ($currentSnapshot === null) {
             throw new RuntimeException('Current period snapshot not found');
         }
-
         $previousSnapshot = $this->statisticsRepository->findByTypeAndPeriod($snapshotType, $previousPeriod);
-
         if ($previousSnapshot === null) {
             throw new RuntimeException('Previous period snapshot not found');
         }
@@ -348,7 +312,6 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if ($snapshot->isExpired()) {
             throw new InvalidArgumentException('Cannot update expired snapshot');
         }
-
         if (!$snapshot->validateDataIntegrity()) {
             throw new InvalidArgumentException('Snapshot data integrity validation failed');
         }
@@ -368,7 +331,6 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             StatisticsSnapshot::TYPE_USERS,
             StatisticsSnapshot::TYPE_POPULAR,
         ];
-
         $invalidTypes = array_diff($types, $validTypes);
         if (!empty($invalidTypes)) {
             throw new InvalidArgumentException('Invalid snapshot types: ' . implode(', ', $invalidTypes));
@@ -387,10 +349,8 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $postsCount = $this->postStatisticsRepository->getTotalPostsCount($period);
         $activeUsersCount = $this->userStatisticsRepository->getActiveUsersCount($period);
         $newUsersCount = $this->userStatisticsRepository->getNewUsersCount($period);
-
         // 獲取文章活動摘要
         $postActivity = $this->postStatisticsRepository->getPostActivitySummary($period);
-
         // 獲取使用者活動摘要
         $userActivity = $this->userStatisticsRepository->getUserActivitySummary($period);
 
@@ -563,7 +523,6 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if ($current > $previous) {
             return 'up';
         }
-
         if ($current < $previous) {
             return 'down';
         }

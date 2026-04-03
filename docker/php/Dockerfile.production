@@ -24,12 +24,14 @@ WORKDIR /var/www/html
 # 複製 composer 檔案
 COPY composer.json composer.lock ./
 
-# 複製應用程式原始碼，以便 composer classmap 可以找到檔案
+# 複製應用程式原始碼
 COPY src/ ./src/
 COPY public/ ./public/
 COPY database/ ./database/
 COPY scripts/ ./scripts/
-COPY .env.example ./.env
+
+# 不複製 .env.example 作為 .env，生產環境應使用 Docker secrets 或環境變數注入
+# COPY .env.example ./.env
 
 # 複製並設定啟動腳本
 COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
@@ -60,41 +62,3 @@ ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # 預設執行 Web 伺服器
 CMD ["web"]
-
-# 開發環境映像檔
-FROM base AS development
-
-USER root
-
-# 安裝開發工具
-RUN apt-get update && apt-get install -y \
-    git \
-    vim \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# 安裝 Xdebug
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
-
-# 安裝開發相依套件
-RUN composer install --dev --no-interaction --no-scripts --no-progress --prefer-dist
-
-# 複製 Xdebug 設定
-COPY docker/php/conf.d/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
-
-USER www-data
-
-# 測試環境映像檔
-FROM development AS test
-
-USER root
-
-# 安裝測試相關擴充
-RUN docker-php-ext-install pcntl
-
-# 建立測試必要的目錄
-RUN mkdir -p storage/coverage storage/test-logs \
-    && chown -R www-data:www-data storage
-
-USER www-data

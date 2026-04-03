@@ -13,7 +13,6 @@ class UnauthorizedException extends Exception
         if (empty($message)) {
             $message = '未授權存取，請先登入';
         }
-
         parent::__construct($message, $code);
     }
 

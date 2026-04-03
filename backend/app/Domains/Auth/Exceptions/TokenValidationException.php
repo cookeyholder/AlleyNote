@@ -6,11 +6,6 @@ namespace App\Domains\Auth\Exceptions;
 
 use Throwable;
 
-/**
- * Token 驗證例外.
- *
- * 當 JWT Token 驗證失敗時拋出此例外，包括簽名驗證、issuer/audience 驗證等
- */
 class TokenValidationException extends JwtException
 {
     /**
@@ -56,7 +51,6 @@ class TokenValidationException extends JwtException
             'reason' => $reason,
             'timestamp' => time(),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
     }
 

@@ -1,8 +1,9 @@
-import { postsAPI } from "../../api/modules/posts.js?v=20251014";
+import { postsAPI } from "../../api/modules/posts.js";
 import { router } from "../../utils/router.js";
 import { notification } from "../../utils/notification.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 // DOMPurify 從 CDN 全域載入
 const DOMPurify = window.DOMPurify;
@@ -123,7 +124,7 @@ export async function renderPost(postId) {
                   ? post.tags
                       .map(
                         (tag) => `
-                  <span class="px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold uppercase tracking-widest border border-accent-100">${tag}</span>
+                  <span class="px-3 py-1 bg-accent-50 text-accent-600 rounded-lg text-xs font-bold uppercase tracking-widest border border-accent-100">${escapeHtml(typeof tag === "string" ? tag : tag.name || tag)}</span>
                 `,
                       )
                       .join("")
@@ -132,7 +133,7 @@ export async function renderPost(postId) {
             </div>
 
             <h1 class="text-4xl md:text-5xl font-bold text-modern-900 mb-8 tracking-tight leading-tight animate-fade-in">
-              ${post.title}
+              ${escapeHtml(post.title)}
             </h1>
 
             <div class="flex flex-wrap items-center gap-y-4 gap-x-8 text-sm font-bold text-modern-500 uppercase tracking-widest border-b border-modern-200 pb-8">
@@ -278,11 +279,11 @@ async function loadPostNavigation(currentPostId, currentPost) {
             <div class="flex-1 min-w-0">
               <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">Previous Post</p>
               <h3 class="text-lg font-bold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2 leading-snug">
-                ${prevPost.title}
+                ${escapeHtml(prevPost.title)}
               </h3>
               <div class="mt-4 flex items-center gap-2 text-modern-400 font-bold text-[10px] tabular-nums">
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                ${prevDate}
+                ${escapeHtml(prevDate)}
               </div>
             </div>
           </div>
@@ -303,10 +304,10 @@ async function loadPostNavigation(currentPostId, currentPost) {
             <div class="flex-1 min-w-0">
               <p class="text-[10px] font-bold text-modern-400 uppercase tracking-widest mb-1">Next Post</p>
               <h3 class="text-lg font-bold text-modern-900 group-hover:text-accent-600 transition-colors line-clamp-2 leading-snug">
-                ${nextPost.title}
+                ${escapeHtml(nextPost.title)}
               </h3>
               <div class="mt-4 flex items-center justify-end gap-2 text-modern-400 font-bold text-[10px] tabular-nums">
-                ${nextDate}
+                ${escapeHtml(nextDate)}
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               </div>
             </div>

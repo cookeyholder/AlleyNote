@@ -6,12 +6,6 @@ namespace App\Domains\Auth\Repositories;
 
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 
-/**
- * UserRepository 適配器.
- *
- * 將現有的 UserRepository 適配到 UserRepositoryInterface
- * 這是一個暫時的解決方案，直到 UserRepository 完全實作介面
- */
 class UserRepositoryAdapter implements UserRepositoryInterface
 {
     public function __construct(
@@ -65,19 +59,15 @@ class UserRepositoryAdapter implements UserRepositoryInterface
             // 如果通過 email 找不到，嘗試通過 username 查找
             $user = $this->userRepository->findByUsername($username);
         }
-
         if (!is_array($user)) {
             return null;
         }
-
         // 驗證密碼
         // 支援 password 和 password_hash 兩種欄位名稱
         $passwordHash = $user['password_hash'] ?? $user['password'] ?? null;
-
         if ($passwordHash === null) {
             return null;
         }
-
         // 使用 password_verify 驗證密碼
         if (!password_verify($password, $passwordHash)) {
             return null;

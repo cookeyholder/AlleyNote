@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
 
-/**
- * 使用者列表回應 DTO.
- */
 final readonly class UserListResponseDTO
 {
     public function __construct(

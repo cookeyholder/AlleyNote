@@ -7,9 +7,6 @@ namespace App\Domains\Auth\DTOs;
 use App\Shared\ValueObjects\SecurePassword;
 use InvalidArgumentException;
 
-/**
- * 建立使用者 DTO.
- */
 final readonly class CreateUserDTO
 {
     /**
@@ -22,7 +19,6 @@ final readonly class CreateUserDTO
         public array $roleIds = [],
     ) {
         self::assertRoleIds($this->roleIds);
-
         // 驗證密碼安全性
         new SecurePassword($this->password, $this->username, $this->email);
     }
@@ -56,7 +52,6 @@ final readonly class CreateUserDTO
         if (!is_array($roleIds)) {
             return [];
         }
-
         $normalizedRoleIds = [];
         foreach ($roleIds as $roleId) {
             if (is_int($roleId) && $roleId > 0) {

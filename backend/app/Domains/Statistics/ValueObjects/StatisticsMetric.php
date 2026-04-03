@@ -7,14 +7,6 @@ namespace App\Domains\Statistics\ValueObjects;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 統計指標值物件.
- *
- * 表示一個具體的統計測量值，如文章總數、平均瀏覽量等。
- * 此值物件是 immutable 的，一旦建立就不能修改。
- *
- * @psalm-immutable
- */
 final readonly class StatisticsMetric implements JsonSerializable
 {
     /**
@@ -168,22 +160,18 @@ final readonly class StatisticsMetric implements JsonSerializable
         if (trim($this->name) === '') {
             throw new InvalidArgumentException('Metric name cannot be empty');
         }
-
         // 檢查百分比值必須在 0-100 範圍內（優先於一般非負檢查）
         if ($this->isPercentage() && ($this->value < 0 || $this->value > 100)) {
             throw new InvalidArgumentException('Percentage value must be between 0 and 100');
         }
-
         // 檢查指標值必須非負（對於非百分比）
         if (!$this->isPercentage() && $this->value < 0) {
             throw new InvalidArgumentException('Metric value must be non-negative');
         }
-
         // 檢查單位和計算方式不能是無意義字串
         if ($this->unit === 'N/A' || $this->unit === 'null') {
             throw new InvalidArgumentException('Unit cannot be meaningless string');
         }
-
         if ($this->calculationMethod === 'N/A' || $this->calculationMethod === 'null') {
             throw new InvalidArgumentException('Calculation method cannot be meaningless string');
         }

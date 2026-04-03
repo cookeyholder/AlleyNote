@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * Username 值物件.
- *
- * 表示使用者名稱，提供驗證和格式化
- */
 final readonly class Username implements JsonSerializable, Stringable
 {
     private string $value;
@@ -20,24 +15,19 @@ final readonly class Username implements JsonSerializable, Stringable
     public function __construct(string $username)
     {
         $trimmedUsername = trim($username);
-
         if (empty($trimmedUsername)) {
             throw new InvalidArgumentException('使用者名稱不能為空');
         }
-
         if (mb_strlen($trimmedUsername) < 3) {
             throw new InvalidArgumentException('使用者名稱至少需要 3 個字元');
         }
-
         if (mb_strlen($trimmedUsername) > 50) {
             throw new InvalidArgumentException('使用者名稱不能超過 50 個字元');
         }
-
         // 只允許字母、數字、底線和連字號
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $trimmedUsername)) {
             throw new InvalidArgumentException('使用者名稱只能包含字母、數字、底線和連字號');
         }
-
         $this->value = $trimmedUsername;
     }
 

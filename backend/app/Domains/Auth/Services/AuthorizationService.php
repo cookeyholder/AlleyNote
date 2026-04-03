@@ -6,8 +6,8 @@ namespace App\Domains\Auth\Services;
 
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
-use Exception;
 use PDO;
+use Throwable;
 
 class AuthorizationService implements AuthorizationServiceInterface
 {
@@ -26,7 +26,6 @@ class AuthorizationService implements AuthorizationServiceInterface
     public function hasPermission(int $userId, string $permission): bool
     {
         $cacheKey = "user_permissions:{$userId}";
-
         $permissions = $this->cache->remember($cacheKey, function () use ($userId) {
             return $this->getUserPermissions($userId);
         }, self::CACHE_TTL);
@@ -37,7 +36,6 @@ class AuthorizationService implements AuthorizationServiceInterface
     public function hasRole(int $userId, string $roleName): bool
     {
         $cacheKey = "user_roles:{$userId}";
-
         $roles = $this->cache->remember($cacheKey, function () use ($userId) {
             return $this->getUserRoles($userId);
         }, self::CACHE_TTL);
@@ -51,7 +49,6 @@ class AuthorizationService implements AuthorizationServiceInterface
         if ($this->isSuperAdmin($userId)) {
             return true;
         }
-
         // 檢查具體權限
         $permission = "{$resource}:{$action}";
 
@@ -65,29 +62,24 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt = $this->db->prepare('SELECT id FROM roles WHERE name = ?');
             $stmt->execute([$roleName]);
             $role = $stmt->fetch(PDO::FETCH_ASSOC);
-
             if (!$role) {
                 return false;
             }
-
             // 檢查是否已經分配
             $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_roles WHERE user_id = ? AND role_id = ?');
             $stmt->execute([$userId, $role['id']]);
-
             if ($stmt->fetchColumn() > 0) {
                 return true; // 已經存在
             }
-
             // 分配角色
             $stmt = $this->db->prepare('INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)');
             $result = $stmt->execute([$userId, $role['id']]);
-
             if ($result) {
                 $this->clearUserCache($userId);
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -102,13 +94,12 @@ class AuthorizationService implements AuthorizationServiceInterface
                 )
             ');
             $result = $stmt->execute([$userId, $roleName]);
-
             if ($result) {
                 $this->clearUserCache($userId);
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -120,29 +111,24 @@ class AuthorizationService implements AuthorizationServiceInterface
             $stmt = $this->db->prepare('SELECT id FROM permissions WHERE name = ?');
             $stmt->execute([$permission]);
             $perm = $stmt->fetch(PDO::FETCH_ASSOC);
-
             if (!$perm) {
                 return false;
             }
-
             // 檢查是否已經分配
             $stmt = $this->db->prepare('SELECT COUNT(*) FROM user_permissions WHERE user_id = ? AND permission_id = ?');
             $stmt->execute([$userId, $perm['id']]);
-
             if ($stmt->fetchColumn() > 0) {
                 return true; // 已經存在
             }
-
             // 分配權限
             $stmt = $this->db->prepare('INSERT INTO user_permissions (user_id, permission_id) VALUES (?, ?)');
             $result = $stmt->execute([$userId, $perm['id']]);
-
             if ($result) {
                 $this->clearUserCache($userId);
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -157,13 +143,12 @@ class AuthorizationService implements AuthorizationServiceInterface
                 )
             ');
             $result = $stmt->execute([$userId, $permission]);
-
             if ($result) {
                 $this->clearUserCache($userId);
             }
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -193,7 +178,6 @@ class AuthorizationService implements AuthorizationServiceInterface
         ');
         $stmt->execute([$userId]);
         $rolePermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         // 取得直接權限
         $stmt = $this->db->prepare('
             SELECT DISTINCT p.name
@@ -243,7 +227,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $post && (int) $post['user_id'] === $userId;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -261,7 +245,7 @@ class AuthorizationService implements AuthorizationServiceInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return $result && (int) $result['user_id'] === $userId;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }

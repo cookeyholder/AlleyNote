@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Models\Post;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 use Ramsey\Uuid\Uuid;
@@ -115,13 +114,14 @@ if (!function_exists('get_file_mime_type')) {
 if (!function_exists('sanitize_post_array')) {
     /**
      * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
+     *
+     * @deprecated 已改用 HTMLPurifier 與 DOMPurify 雙層防護
      * @param array<string, mixed> $posts Post 資料陣列
      * @return array 清理過的陣列
      */
     function sanitize_post_array(array $posts): array
     {
         return array_map(function ($post) {
-            // 如果是陣列，手動清理
             if (is_array($post)) {
                 $sanitized = $post;
                 if (isset($sanitized['title'])) {

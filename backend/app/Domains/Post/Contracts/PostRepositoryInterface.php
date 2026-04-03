@@ -47,6 +47,12 @@ interface PostRepositoryInterface extends RepositoryInterface
     public function incrementViews(int $id, string $userIp, ?int $userId = null): bool;
 
     /**
+     * 取得文章標籤.
+     * @return array<int, array<string, mixed>>
+     */
+    public function getPostTags(int $id): array;
+
+    /**
      * 設定文章置頂狀態.
      */
     public function setPinned(int $id, bool $isPinned): bool;

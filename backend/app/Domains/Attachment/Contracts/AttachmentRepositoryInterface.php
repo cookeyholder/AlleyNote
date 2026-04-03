@@ -7,11 +7,6 @@ namespace App\Domains\Attachment\Contracts;
 use App\Domains\Attachment\Models\Attachment;
 use App\Shared\Contracts\RepositoryInterface;
 
-/**
- * 附件資料庫介面.
- *
- * 定義附件相關的資料庫操作標準介面
- */
 interface AttachmentRepositoryInterface extends RepositoryInterface
 {
     /**

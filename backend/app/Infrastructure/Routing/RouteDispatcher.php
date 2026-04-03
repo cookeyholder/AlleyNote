@@ -7,16 +7,11 @@ namespace App\Infrastructure\Routing;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
-use Exception;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
-/**
- * 路由分派器.
- *
- * 整合路由匹配、中間件執行和控制器呼叫
- */
 class RouteDispatcher
 {
     private MiddlewareResolver $middlewareResolver;
@@ -37,18 +32,14 @@ class RouteDispatcher
     {
         // 1. 路由匹配
         $matchResult = $this->router->dispatch($request);
-
         if (!$matchResult->isMatched()) {
             return $this->handleNotFound($request);
         }
-
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
-
         // 2. 準備中間件鏈（解析字串別名）
         $middlewares = $route->getMiddlewares();
         $resolvedMiddlewares = [];
-
         foreach ($middlewares as $middleware) {
             try {
                 if (is_string($middleware)) {
@@ -58,15 +49,16 @@ class RouteDispatcher
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
-            } catch (Exception $e) {
-                // 記錄錯誤但繼續執行，避免因為中介軟體問題導致整個請求失敗
-                app_log('error', 'Failed to resolve middleware', [
+            } catch (Throwable $e) {
+                // 中介軟體解析失敗時應阻止請求（fail-closed），避免安全防護被繞過
+                app_log('critical', 'Failed to resolve middleware — request blocked', [
                     'middleware' => (string) $middleware,
                     'exception' => $e->getMessage(),
                 ]);
+
+                throw $e;
             }
         }
-
         // 3. 建立最終處理器 (控制器)
         $finalHandler = new ClosureRequestHandler(
             function (ServerRequestInterface $request) use ($route, $parameters): ResponseInterface {
@@ -89,7 +81,6 @@ class RouteDispatcher
 
             return $handler($request);
         }
-
         // 預設 404 回應
         $response = $this->container->get(ResponseInterface::class);
         $response->getBody()->write(json_encode([

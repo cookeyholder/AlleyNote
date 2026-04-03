@@ -9,15 +9,6 @@ use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
 
-/**
- * Token Blacklist Entry Value Object.
- *
- * 表示 Token 黑名單項目，用於追蹤被撤銷或無效的 JWT Token。
- * 此類別是不可變的，確保黑名單項目的完整性和一致性。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final readonly class TokenBlacklistEntry implements JsonSerializable
 {
     /**
@@ -97,11 +88,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
                 throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
-
         $expiresAt = $data['expires_at'] instanceof DateTimeImmutable
             ? $data['expires_at']
             : new DateTimeImmutable($data['expires_at']);
-
         $blacklistedAt = $data['blacklisted_at'] instanceof DateTimeImmutable
             ? $data['blacklisted_at']
             : new DateTimeImmutable($data['blacklisted_at']);
@@ -169,7 +158,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_DEVICE_LOST,
             self::REASON_INVALID_SIGNATURE,
         ];
-
         if (!in_array($securityReason, $validSecurityReasons, true)) {
             $securityReason = self::REASON_SECURITY_BREACH;
         }
@@ -202,7 +190,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         string $changeType,
     ): self {
         $validChangeTypes = [self::REASON_PASSWORD_CHANGED, self::REASON_ACCOUNT_SUSPENDED];
-
         if (!in_array($changeType, $validChangeTypes, true)) {
             throw new InvalidArgumentException(
                 'Change type must be one of: ' . implode(', ', $validChangeTypes),
@@ -399,11 +386,9 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         if ($this->canBeCleanedUp()) {
             return 1; // 已過期的最優先清理
         }
-
         if ($this->isSecurityRelated()) {
             return 2; // 安全相關的次優先
         }
-
         if ($this->isUserInitiated()) {
             return 3; // 使用者主動的再次之
         }
@@ -563,7 +548,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         if (empty($jti)) {
             throw new InvalidArgumentException('JWT ID (jti) cannot be empty');
         }
-
         if (mb_strlen($jti) > 255) {
             throw new InvalidArgumentException('JWT ID (jti) cannot exceed 255 characters');
         }
@@ -614,7 +598,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         if ($blacklistedAt < $oneYearAgo) {
             throw new InvalidArgumentException('Blacklisted time cannot be more than 1 year ago');
         }
-
         // 黑名單時間不能是未來太遠的時間
         $oneYearLater = new DateTimeImmutable('+1 year');
         if ($blacklistedAt > $oneYearLater) {
@@ -647,7 +630,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             if (empty($deviceId)) {
                 throw new InvalidArgumentException('Device ID cannot be empty when provided');
             }
-
             if (mb_strlen($deviceId) > 255) {
                 throw new InvalidArgumentException('Device ID cannot exceed 255 characters');
             }
@@ -668,7 +650,6 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         } catch (JsonException $e) {
             throw new InvalidArgumentException('Metadata must be JSON serializable: ' . $e->getMessage());
         }
-
         // 限制元資料大小
         $serializedSize = strlen(json_encode($metadata));
         if ($serializedSize > 65535) { // 64KB limit

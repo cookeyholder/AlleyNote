@@ -14,19 +14,6 @@ use DateTimeInterface;
 use InvalidArgumentException;
 use RuntimeException;
 
-/**
- * 統計應用服務.
- *
- * 應用層服務，負責協調統計相關的領域服務，處理應用層的事務邏輯，
- * 實作快取策略，並提供統一的錯誤處理。
- *
- * 職責：
- * - 協調多個領域服務的互動
- * - 處理應用層的事務邏輯
- * - 實作快取策略以提升效能
- * - 統一的錯誤處理與異常轉換
- * - 資料驗證與業務規則檢查
- */
 final class StatisticsApplicationService
 {
     private const VALID_SNAPSHOT_TYPES = [
@@ -64,7 +51,6 @@ final class StatisticsApplicationService
         try {
             // 建立統計快照
             $snapshot = $this->aggregationService->createOverviewSnapshot($period, $metadata, $expiresAt);
-
             // 清除相關快取
             $this->invalidateRelatedCache($snapshot);
 
@@ -185,7 +171,6 @@ final class StatisticsApplicationService
 
         try {
             $snapshots = $this->aggregationService->createBatchSnapshots($period, $types, $metadata, $expiresAt);
-
             // 批量清除快取，使用標籤快取失效更高效
             $this->cacheService->flushByTags(['statistics']);
 
@@ -237,7 +222,6 @@ final class StatisticsApplicationService
         // 生成快取鍵
         $cacheKey = $this->generateTrendsCacheKey($currentPeriod, $previousPeriod, $snapshotType);
         $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl('trends');
-
         /** @var array<string, mixed> $result */
         $result = $this->cacheService->remember(
             $cacheKey,
@@ -261,7 +245,6 @@ final class StatisticsApplicationService
     {
         try {
             $deletedCount = $this->aggregationService->cleanExpiredSnapshots($beforeDate);
-
             // 清理完成後清除所有統計快取
             $this->cacheService->flushByTags(['statistics']);
 
@@ -288,7 +271,6 @@ final class StatisticsApplicationService
     ): array {
         $cacheKey = $this->generateStatisticsCacheKey($snapshotType, $period);
         $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl($snapshotType);
-
         /** @var array<string, mixed> $result */
         $result = $this->cacheService->remember(
             $cacheKey,
@@ -315,7 +297,6 @@ final class StatisticsApplicationService
     public function warmCache(array $snapshotTypes, StatisticsPeriod $period): array
     {
         $results = [];
-
         foreach ($snapshotTypes as $type) {
             try {
                 $this->getCachedStatistics($type, $period, $this->configService->getStatisticsTypeTtl($type));
@@ -350,12 +331,10 @@ final class StatisticsApplicationService
         if ($period->endTime > $now) {
             throw new InvalidArgumentException('Cannot create statistics for future periods');
         }
-
         // 檢查週期長度是否合理
         if ($period->getDurationInSeconds() <= 0) {
             throw new InvalidArgumentException('Invalid period duration');
         }
-
         // 檢查週期是否過長（例如超過一年）
         $maxDuration = 365 * 24 * 3600; // 一年
         if ($period->getDurationInSeconds() > $maxDuration) {
@@ -374,17 +353,14 @@ final class StatisticsApplicationService
         if (empty($types)) {
             throw new InvalidArgumentException('Snapshot types array cannot be empty');
         }
-
         $invalidTypes = array_diff($types, self::VALID_SNAPSHOT_TYPES);
         if (!empty($invalidTypes)) {
             throw new InvalidArgumentException('Unsupported snapshot types: ' . implode(', ', $invalidTypes));
         }
-
         // 檢查是否有重複類型
         if (count($types) !== count(array_unique($types))) {
             throw new InvalidArgumentException('Duplicate snapshot types found');
         }
-
         // 限制批量操作的數量
         if (count($types) > 10) {
             throw new InvalidArgumentException('Too many snapshot types (max 10)');
@@ -401,7 +377,6 @@ final class StatisticsApplicationService
             "statistics.{$snapshot->getSnapshotType()}.*",
             "trends.{$snapshot->getSnapshotType()}.*",
         ];
-
         $this->cacheService->forget($cacheKeys);
     }
 

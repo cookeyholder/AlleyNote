@@ -88,15 +88,12 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (!file_exists($filePath)) {
             throw ValidationException::fromSingleError('file', '檔案不存在');
         }
-
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         if ($finfo === false) {
             throw new RuntimeException('無法初始化檔案資訊檢測器');
         }
-
         $mimeType = finfo_file($finfo, $filePath);
         finfo_close($finfo);
-
         if ($mimeType === false) {
             throw ValidationException::fromSingleError('file', '無法檢測檔案 MIME 類型');
         }
@@ -109,13 +106,10 @@ class FileSecurityService implements FileSecurityServiceInterface
         // 移除路徑分隔符號和其他危險字元
         $fileName = basename($fileName);
         $fileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName);
-
         // 移除多個連續的點號（防止路徑遍歷）
         $fileName = preg_replace('/\.{2,}/', '.', $fileName);
-
         // 確保不以點號開始（隱藏檔案）
         $fileName = ltrim($fileName, '.');
-
         // 限制檔名長度
         if (strlen($fileName) > self::MAX_FILENAME_LENGTH) {
             $fileName = substr($fileName, 0, self::MAX_FILENAME_LENGTH);
@@ -128,7 +122,6 @@ class FileSecurityService implements FileSecurityServiceInterface
     {
         $realFilePath = realpath($filePath);
         $realBaseDir = realpath($allowedBaseDir);
-
         if ($realFilePath === false || $realBaseDir === false) {
             return false;
         }
@@ -141,11 +134,9 @@ class FileSecurityService implements FileSecurityServiceInterface
         if ($file->getError() !== UPLOAD_ERR_OK) {
             throw ValidationException::fromSingleError('file', '檔案上傳失敗：' . $this->getUploadErrorMessage($file->getError()));
         }
-
         if ($file->getSize() === null || $file->getSize() === 0) {
             throw ValidationException::fromSingleError('file', '檔案大小無效');
         }
-
         if ($file->getSize() > self::MAX_FILE_SIZE) {
             throw ValidationException::fromSingleError('file', '檔案大小超過限制（10MB）');
         }
@@ -156,7 +147,6 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (empty($fileName)) {
             throw ValidationException::fromSingleError('filename', '檔案名稱無效');
         }
-
         // 檢查路徑遍歷攻擊
         if (
             str_contains($fileName, '..')
@@ -165,18 +155,15 @@ class FileSecurityService implements FileSecurityServiceInterface
         ) {
             throw ValidationException::fromSingleError('filename', '檔案名稱包含不安全字元');
         }
-
         // 檢查空字節攻擊
         if (str_contains($fileName, "\0")) {
             throw ValidationException::fromSingleError('filename', '檔案名稱包含空字節');
         }
-
         // 檢查多重副檔名
         $parts = explode('.', $fileName);
         if (count($parts) > 3) { // 允許最多兩個副檔名，如 file.tar.gz
             throw ValidationException::fromSingleError('filename', '檔案名稱包含過多副檔名');
         }
-
         // 檢查是否包含禁止的副檔名
         array_shift($parts); // 移除檔案名稱部分
         foreach ($parts as $extension) {
@@ -189,15 +176,12 @@ class FileSecurityService implements FileSecurityServiceInterface
     private function validateMimeType(UploadedFileInterface $file): void
     {
         $clientMimeType = $file->getClientMediaType();
-
         if (empty($clientMimeType) || !array_key_exists($clientMimeType, self::ALLOWED_MIME_TYPES)) {
             throw ValidationException::fromSingleError('file', '不支援的檔案類型');
         }
-
         // 驗證副檔名與 MIME 類型是否匹配
         $fileName = $file->getClientFilename();
         $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-
         if (!in_array($extension, self::ALLOWED_MIME_TYPES[$clientMimeType], true)) {
             throw ValidationException::fromSingleError('file', '檔案副檔名與類型不匹配');
         }
@@ -208,11 +192,9 @@ class FileSecurityService implements FileSecurityServiceInterface
         $stream = $file->getStream();
         $content = $stream->read(8192); // 讀取前 8KB 檢查
         $stream->rewind();
-
         if ($this->containsMaliciousContent($content)) {
             throw ValidationException::fromSingleError('file', '檔案內容包含惡意程式碼');
         }
-
         // 檢查檔案簽名（魔術數字）
         if (!$this->validateFileSignature($content, $file->getClientMediaType())) {
             throw ValidationException::fromSingleError('file', '檔案格式驗證失敗');
@@ -228,25 +210,20 @@ class FileSecurityService implements FileSecurityServiceInterface
             '/javascript:/i',
             '/vbscript:/i',
             '/data:(?!image\/)/i',
-
             // Event handlers
             '/on\w+\s*=/i',
-
             // Server-side code
             '/<\?php/i',
             '/<%[\s\S]*?%>/i',
             '/<asp:/i',
             '/<jsp:/i',
-
             // Executable content
             '/MZ\x90\x00/', // PE executable header
             '/\x7fELF/', // ELF executable header
             '/#!/i', // Shebang
-
             // Base64 encoded scripts
             '/base64[,;]/i',
         ];
-
         foreach ($maliciousPatterns as $pattern) {
             if (preg_match($pattern, $content)) {
                 return true;
@@ -267,15 +244,12 @@ class FileSecurityService implements FileSecurityServiceInterface
             'text/plain' => [], // 純文字檔案無固定簽名
             'text/csv' => [],
         ];
-
         if (!isset($signatures[$mimeType])) {
             return false;
         }
-
         if (empty($signatures[$mimeType])) {
             return true; // 無需驗證簽名的檔案類型
         }
-
         foreach ($signatures[$mimeType] as $signature) {
             if (str_starts_with($content, $signature)) {
                 return true;
@@ -289,7 +263,6 @@ class FileSecurityService implements FileSecurityServiceInterface
     {
         $extension = pathinfo($fileName, PATHINFO_EXTENSION);
         $extension = strtolower($extension);
-
         // 確保副檔名在允許清單中
         foreach (self::ALLOWED_MIME_TYPES as $allowedExtensions) {
             if (in_array($extension, $allowedExtensions, true)) {

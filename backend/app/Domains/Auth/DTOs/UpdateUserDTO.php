@@ -7,9 +7,6 @@ namespace App\Domains\Auth\DTOs;
 use App\Shared\ValueObjects\SecurePassword;
 use InvalidArgumentException;
 
-/**
- * 更新使用者 DTO.
- */
 final readonly class UpdateUserDTO
 {
     /**
@@ -22,7 +19,6 @@ final readonly class UpdateUserDTO
         public ?array $roleIds = null,
     ) {
         self::assertRoleIds($this->roleIds);
-
         // 如果有更新密碼，驗證密碼安全性
         if ($this->password !== null) {
             new SecurePassword($this->password, $this->username, $this->email);
@@ -43,7 +39,6 @@ final readonly class UpdateUserDTO
     public function toArray(): array
     {
         $result = [];
-
         if ($this->username !== null) {
             $result['username'] = $this->username;
         }
@@ -76,7 +71,6 @@ final readonly class UpdateUserDTO
         if (!is_array($roleIds)) {
             return null;
         }
-
         $normalizedRoleIds = [];
         foreach ($roleIds as $roleId) {
             if (is_int($roleId) && $roleId > 0) {
@@ -95,7 +89,6 @@ final readonly class UpdateUserDTO
         if ($roleIds === null) {
             return;
         }
-
         foreach ($roleIds as $roleId) {
             if (!is_int($roleId) || $roleId <= 0) {
                 throw new InvalidArgumentException('Role IDs must be a positive integer list');

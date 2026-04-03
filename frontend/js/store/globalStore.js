@@ -27,15 +27,13 @@ class GlobalStore {
    * 恢復狀態
    */
   restoreState() {
-    const user = storage.get("user");
-    const token = storage.get("access_token");
-    const refreshToken = storage.get("refresh_token");
-    const hasCookieSession =
+    const hasToken =
       typeof document !== "undefined" &&
-      document.cookie.includes("auth_mode=cookie");
+      (document.cookie.includes("access_token") ||
+        document.cookie.includes("auth_mode=cookie") ||
+        storage.get("access_token"));
 
-    if (user && (token || refreshToken || hasCookieSession)) {
-      this.state.user = user;
+    if (hasToken) {
       this.state.isAuthenticated = true;
     }
   }
@@ -82,7 +80,15 @@ class GlobalStore {
   setUser(user) {
     this.state.user = user;
     this.state.isAuthenticated = !!user;
-    storage.set("user", user);
+    const safeUserData = user
+      ? {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+        }
+      : null;
+    storage.set("user", safeUserData);
     this.notify();
   }
 

@@ -6,14 +6,9 @@ namespace App\Shared\Cache\Strategies;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
-use Exception;
 use InvalidArgumentException;
+use Throwable;
 
-/**
- * 預設快取策略。
- *
- * 提供基本的快取策略實作
- */
 class DefaultCacheStrategy implements CacheStrategyInterface
 {
     /** @var array<string, int> 統計資料 */
@@ -43,17 +38,14 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     {
         $this->minTtl = is_int($config['min_ttl'] ?? null) ? $config['min_ttl'] : 60;
         $this->maxTtl = is_int($config['max_ttl'] ?? null) ? $config['max_ttl'] : 86400;
-
         $patterns = $config['exclude_patterns'] ?? [];
         $this->excludePatterns = is_array($patterns) ? array_filter($patterns, 'is_string') : [];
-
         $this->maxValueSize = is_int($config['max_value_size'] ?? null) ? $config['max_value_size'] : 1024 * 1024; // 1MB
     }
 
     public function shouldCache(string $key, mixed $value, int $ttl): bool
     {
         $this->stats['cache_decisions']++;
-
         // 檢查是否在排除模式中
         foreach ($this->excludePatterns as $pattern) {
             if ($this->matchesPattern($key, $pattern)) {
@@ -62,7 +54,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 return false;
             }
         }
-
         // 檢查值大小
         $serializedValue = serialize($value);
         if (strlen($serializedValue) > $this->maxValueSize) {
@@ -70,21 +61,18 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
             return false;
         }
-
         // 檢查 TTL 範圍
         if ($ttl > 0 && ($ttl < $this->minTtl || $ttl > $this->maxTtl)) {
             $this->stats['cache_denied']++;
 
             return false;
         }
-
         // 檢查值類型
         if (is_resource($value) || (is_object($value) && !method_exists($value, '__sleep'))) {
             $this->stats['cache_denied']++;
 
             return false;
         }
-
         $this->stats['cache_allowed']++;
 
         return true;
@@ -93,36 +81,29 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
     {
         $this->stats['driver_selections']++;
-
         if (empty($drivers)) {
             return null;
         }
-
         $serializedValue = serialize($value);
         $valueSize = strlen($serializedValue);
-
         // 根據資料大小選擇驅動
         foreach ($drivers as $name => $driver) {
             if (!$driver->isAvailable()) {
                 continue;
             }
-
             // 小資料優先使用記憶體快取
             if ($valueSize <= 1024 && str_contains(get_class($driver), 'Memory')) {
                 return $driver;
             }
-
             // 中等資料使用 Redis
             if ($valueSize <= 10240 && str_contains(get_class($driver), 'Redis')) {
                 return $driver;
             }
-
             // 大資料使用檔案快取
             if (str_contains(get_class($driver), 'File')) {
                 return $driver;
             }
         }
-
         // 回退到第一個可用的驅動
         foreach ($drivers as $driver) {
             if ($driver->isAvailable()) {
@@ -136,29 +117,23 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function decideTtl(string $key, mixed $value, int $requestedTtl): int
     {
         $this->stats['ttl_adjustments']++;
-
         // 如果請求的 TTL 為 0（永不過期），保持原樣
         if ($requestedTtl === 0) {
             return 0;
         }
-
         // 調整 TTL 在合理範圍內
         $adjustedTtl = max($this->minTtl, min($this->maxTtl, $requestedTtl));
-
         // 根據資料特性調整 TTL
         $serializedValue = serialize($value);
         $valueSize = strlen($serializedValue);
-
         // 小資料可以快取更長時間
         if ($valueSize <= 1024) {
             $adjustedTtl = min($this->maxTtl, $adjustedTtl * 2);
         }
-
         // 大資料縮短快取時間
         if ($valueSize > 10240) {
             $adjustedTtl = max($this->minTtl, (int) ($adjustedTtl * 0.5));
         }
-
         // 根據鍵類型調整
         if (str_contains($key, 'session:') || str_contains($key, 'user:')) {
             // 會話相關資料較短時間
@@ -174,15 +149,13 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function handleMiss(string $key, callable $callback): mixed
     {
         $this->stats['miss_handles']++;
-
         // 簡單的重試機制
         $maxRetries = 3;
         $retryDelay = 100000; // 100ms
-
         for ($i = 0; $i < $maxRetries; $i++) {
             try {
                 return $callback();
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 if ($i === $maxRetries - 1) {
                     throw $e;
                 }
@@ -200,7 +173,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         array $params,
     ): mixed {
         $this->stats['failure_handles']++;
-
         // 尋找替代驅動
         foreach ($availableDrivers as $driver) {
             if ($driver === $failedDriver || !$driver->isAvailable()) {
@@ -219,7 +191,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } catch (Exception) {
+            } catch (Throwable) {
                 // 繼續嘗試下一個驅動
                 continue;
             }
@@ -287,7 +259,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function removeExcludePattern(string $pattern): bool
     {
         $key = array_search($pattern, $this->excludePatterns, true);
-
         if ($key !== false) {
             unset($this->excludePatterns[$key]);
             $this->excludePatterns = array_values($this->excludePatterns);
@@ -314,7 +285,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if ($minTtl <= 0 || $maxTtl <= 0 || $minTtl > $maxTtl) {
             throw new InvalidArgumentException('無效的 TTL 範圍');
         }
-
         $this->minTtl = $minTtl;
         $this->maxTtl = $maxTtl;
     }
@@ -327,7 +297,6 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if ($maxValueSize <= 0) {
             throw new InvalidArgumentException('最大值大小必須大於 0');
         }
-
         $this->maxValueSize = $maxValueSize;
     }
 }

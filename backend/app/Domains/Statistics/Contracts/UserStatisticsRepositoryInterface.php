@@ -6,12 +6,6 @@ namespace App\Domains\Statistics\Contracts;
 
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 
-/**
- * 使用者統計查詢 Repository 介面.
- *
- * 專門處理使用者相關的統計查詢，提供使用者活躍度與行為分析。
- * 此介面遵循 ISP（Interface Segregation Principle），專注於使用者統計查詢。
- */
 interface UserStatisticsRepositoryInterface
 {
     /**

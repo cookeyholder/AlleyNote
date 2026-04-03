@@ -6,12 +6,6 @@ namespace App\Domains\Statistics\ValueObjects;
 
 use JsonSerializable;
 
-/**
- * 圖表資料值物件.
- *
- * 用於統一前端圖表庫（如 Chart.js）的資料格式
- * 支援多種圖表類型的資料結構
- */
 readonly class ChartData implements JsonSerializable
 {
     /**
@@ -38,12 +32,10 @@ readonly class ChartData implements JsonSerializable
     ): self {
         $labels = [];
         $data = [];
-
         foreach ($dataPoints as $point) {
             $labels[] = $point->timestamp;
             $data[] = $point->value;
         }
-
         $dataset = new ChartDataset(
             label: $label,
             data: $data,
@@ -72,13 +64,11 @@ readonly class ChartData implements JsonSerializable
         $labels = [];
         $data = [];
         $backgroundColors = [];
-
         foreach ($dataPoints as $point) {
             $labels[] = $point->category;
             $data[] = $point->value;
             $backgroundColors[] = $point->color;
         }
-
         $dataset = new ChartDataset(
             label: $label,
             data: $data,

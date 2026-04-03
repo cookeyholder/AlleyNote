@@ -14,11 +14,6 @@ use App\Infrastructure\Routing\Contracts\RouterInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由器核心實作.
- *
- * 提供路由註冊、解析和執行的完整功能
- */
 class Router implements RouterInterface
 {
     private RouteCollectionInterface $routes;
@@ -71,19 +66,15 @@ class Router implements RouterInterface
         if (!empty($this->currentGroupAttributes['prefix'])) {
             $pattern = $this->applyPrefix($this->currentGroupAttributes['prefix'], $pattern);
         }
-
         // 套用命名空間到處理器
         if (!empty($this->currentGroupAttributes['namespace']) && is_array($handler)) {
             $handler[0] = $this->currentGroupAttributes['namespace'] . '\\' . $handler[0];
         }
-
         $route = new Route($methods, $pattern, $handler);
-
         // 套用群組中間件
         if (!empty($this->currentGroupAttributes['middleware'])) {
             $route->middleware($this->currentGroupAttributes['middleware']);
         }
-
         $this->routes->add($route);
 
         return $route;
@@ -97,13 +88,10 @@ class Router implements RouterInterface
     public function group(array $attributes, callable $callback): void
     {
         $previousAttributes = $this->currentGroupAttributes;
-
         // 合併群組屬性
         $this->currentGroupAttributes = $this->mergeGroupAttributes($previousAttributes, $attributes);
-
         // 執行群組回呼
         $callback($this);
-
         // 恢復之前的群組屬性
         $this->currentGroupAttributes = $previousAttributes;
     }
@@ -117,14 +105,11 @@ class Router implements RouterInterface
                 $this->routes = $cachedRoutes;
             }
         }
-
         // 尋找匹配的路由
         $matchedRoute = $this->routes->match($request);
-
         if ($matchedRoute === null) {
             return RouteMatchResult::failed('No route matched the request');
         }
-
         // 擷取路由參數
         $parameters = $matchedRoute->extractParameters($request->getUri()->getPath());
 
@@ -139,18 +124,14 @@ class Router implements RouterInterface
     public function url(string $name, array $parameters = []): string
     {
         $route = $this->routes->getByName($name);
-
         if ($route === null) {
             throw new InvalidArgumentException("Route named '{$name}' not found");
         }
-
         $url = $route->getPattern();
-
         // 替換路徑參數
         foreach ($parameters as $key => $value) {
             $url = str_replace('{' . $key . '}', (string) $value, $url);
         }
-
         // 檢查是否還有未替換的參數
         if (preg_match('/\{[^}]+\}/', $url)) {
             throw new InvalidArgumentException("Missing required parameters for route '{$name}'");
@@ -212,11 +193,9 @@ class Router implements RouterInterface
     {
         $prefix = trim($prefix, '/');
         $pattern = trim($pattern, '/');
-
         if (empty($prefix)) {
             return '/' . $pattern;
         }
-
         if (empty($pattern)) {
             return '/' . $prefix;
         }
@@ -234,20 +213,17 @@ class Router implements RouterInterface
     private function mergeGroupAttributes(array $previous, array $new): array
     {
         $merged = $previous;
-
         // 合併前綴
         if (!empty($new['prefix'])) {
             $existingPrefix = $merged['prefix'] ?? '';
             $merged['prefix'] = $this->applyPrefix($existingPrefix, $new['prefix']);
         }
-
         // 合併中間件
         if (!empty($new['middleware'])) {
             $existingMiddleware = $merged['middleware'] ?? [];
             $newMiddleware = is_array($new['middleware']) ? $new['middleware'] : [$new['middleware']];
             $merged['middleware'] = array_merge($existingMiddleware, $newMiddleware);
         }
-
         // 合併命名空間
         if (!empty($new['namespace'])) {
             $existingNamespace = $merged['namespace'] ?? '';
@@ -255,7 +231,6 @@ class Router implements RouterInterface
                 ? $new['namespace']
                 : $existingNamespace . '\\' . $new['namespace'];
         }
-
         // 其他屬性直接覆蓋
         foreach ($new as $key => $value) {
             if (!in_array($key, ['prefix', 'middleware', 'namespace'], true)) {

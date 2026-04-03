@@ -6,12 +6,6 @@ namespace App\Domains\Statistics\Contracts;
 
 use DateTime;
 
-/**
- * 統計監控服務合約介面.
- *
- * 定義統計功能監控的標準操作，包括健康檢查、
- * 效能監控、事件記錄和警報系統。
- */
 interface StatisticsMonitoringServiceInterface
 {
     /**

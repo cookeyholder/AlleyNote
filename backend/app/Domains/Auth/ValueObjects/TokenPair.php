@@ -8,15 +8,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * Token Pair Value Object.
- *
- * 表示 Access Token 和 Refresh Token 的配對，用於 JWT 認證流程。
- * 此類別是不可變的，確保 token 配對的完整性和安全性。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final readonly class TokenPair implements JsonSerializable
 {
     /**
@@ -166,7 +157,6 @@ final readonly class TokenPair implements JsonSerializable
         if ($thresholdSeconds < 0) {
             throw new InvalidArgumentException('Threshold seconds must be non-negative');
         }
-
         $now ??= new DateTimeImmutable();
         $expiresIn = $this->getAccessTokenExpiresIn($now);
 
@@ -211,7 +201,6 @@ final readonly class TokenPair implements JsonSerializable
             'token_type' => $this->tokenType,
             'expires_in' => $this->getAccessTokenExpiresIn(),
         ];
-
         if ($includeRefreshToken) {
             $response['refresh_token'] = $this->refreshToken;
         }
@@ -280,13 +269,11 @@ final readonly class TokenPair implements JsonSerializable
         if (empty($accessToken)) {
             throw new InvalidArgumentException('Access token cannot be empty');
         }
-
         // 基本的 JWT 格式檢查（三個部分用點分隔）
         $parts = explode('.', $accessToken);
         if (count($parts) !== 3) {
             throw new InvalidArgumentException('Access token must be a valid JWT format (header.payload.signature)');
         }
-
         // 檢查每個部分是否為有效的 Base64URL 編碼
         foreach ($parts as $part) {
             if (empty($part) || !preg_match('/^[A-Za-z0-9_-]+$/', $part)) {
@@ -306,12 +293,10 @@ final readonly class TokenPair implements JsonSerializable
         if (empty($refreshToken)) {
             throw new InvalidArgumentException('Refresh token cannot be empty');
         }
-
         // 檢查 Refresh Token 長度（JWT refresh token 通常會比較長）
         if (mb_strlen($refreshToken) < 16) {
             throw new InvalidArgumentException('Refresh token must be at least 16 characters long');
         }
-
         if (mb_strlen($refreshToken) > 2000) {
             throw new InvalidArgumentException('Refresh token cannot exceed 2000 characters');
         }
@@ -328,7 +313,6 @@ final readonly class TokenPair implements JsonSerializable
         if (empty($tokenType)) {
             throw new InvalidArgumentException('Token type cannot be empty');
         }
-
         $validTypes = ['Bearer', 'Basic', 'Digest'];
         if (!in_array($tokenType, $validTypes, true)) {
             throw new InvalidArgumentException(
@@ -349,22 +333,18 @@ final readonly class TokenPair implements JsonSerializable
         DateTimeImmutable $refreshTokenExpiresAt,
     ): void {
         $now = new DateTimeImmutable();
-
         // Access Token 過期時間不能是過去的時間
         if ($accessTokenExpiresAt <= $now) {
             throw new InvalidArgumentException('Access token expiration time must be in the future');
         }
-
         // Refresh Token 過期時間不能是過去的時間
         if ($refreshTokenExpiresAt <= $now) {
             throw new InvalidArgumentException('Refresh token expiration time must be in the future');
         }
-
         // Refresh Token 的過期時間應該比 Access Token 晚
         if ($refreshTokenExpiresAt <= $accessTokenExpiresAt) {
             throw new InvalidArgumentException('Refresh token expiration time must be after access token expiration time');
         }
-
         // 檢查過期時間間隔是否合理（Access Token 不應該比 Refresh Token 晚太多）
         $maxInterval = 365 * 24 * 60 * 60; // 1年的秒數
         if (($refreshTokenExpiresAt->getTimestamp() - $accessTokenExpiresAt->getTimestamp()) > $maxInterval) {

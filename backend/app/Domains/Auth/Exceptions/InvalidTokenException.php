@@ -4,15 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-/**
- * 無效 Token 例外.
- *
- * 當 JWT Token 格式錯誤、簽章驗證失敗、或內容無效時拋出此例外。
- * 包含具體的驗證失敗原因和相關詳細資訊。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 class InvalidTokenException extends JwtException
 {
     /**
@@ -70,13 +61,11 @@ class InvalidTokenException extends JwtException
         array $additionalContext = [],
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
-
         $context = array_merge([
             'reason' => $reason,
             'token_type' => $tokenType,
             'timestamp' => time(),
         ], $additionalContext);
-
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
 

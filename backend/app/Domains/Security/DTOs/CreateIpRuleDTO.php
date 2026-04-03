@@ -8,11 +8,6 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
 
-/**
- * 建立 IP 規則的資料傳輸物件.
- *
- * 用於安全地傳輸建立 IP 規則所需的資料，防止巨量賦值攻擊
- */
 class CreateIpRuleDTO extends BaseDTO
 {
     public readonly string $ipAddress;
@@ -31,13 +26,10 @@ class CreateIpRuleDTO extends BaseDTO
     public function __construct(ValidatorInterface $validator, array $data)
     {
         parent::__construct($validator);
-
         // 添加 IP 規則專用驗證規則
         $this->addIpRuleValidationRules();
-
         // 驗證資料
         $validatedData = $this->validate($data);
-
         // 設定屬性
         $this->ipAddress = trim($validatedData['ip_address']);
         $this->action = strtolower(trim($validatedData['action']));
@@ -55,33 +47,26 @@ class CreateIpRuleDTO extends BaseDTO
             if (!is_string($value)) {
                 return false;
             }
-
             $ip = trim($value);
-
             // 檢查是否為空
             if (empty($ip)) {
                 return false;
             }
-
             // 檢查是否包含 CIDR 標記法
             if (strpos($ip, '/') !== false) {
                 $parts = explode('/', $ip, 2);
                 if (count($parts) !== 2) {
                     return false;
                 }
-
                 [$ipPart, $cidr] = $parts;
-
                 // 驗證 IP 部分
                 if (!filter_var($ipPart, FILTER_VALIDATE_IP)) {
                     return false;
                 }
-
                 // 驗證 CIDR 部分
                 if (!is_numeric($cidr)) {
                     return false;
                 }
-
                 $cidrInt = (int) $cidr;
                 if (filter_var($ipPart, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
                     return $cidrInt >= 0 && $cidrInt <= 32;
@@ -95,37 +80,30 @@ class CreateIpRuleDTO extends BaseDTO
             // 單純的 IP 位址
             return filter_var($ip, FILTER_VALIDATE_IP) !== false;
         });
-
         // IP 規則動作驗證
         $this->validator->addRule('ip_action', function ($value) {
             if (!is_string($value)) {
                 return false;
             }
-
             $action = strtolower(trim($value));
             $allowedActions = ['allow', 'block', 'deny'];
 
             return in_array($action, $allowedActions, true);
         });
-
         // 原因說明驗證規則（可選）
         $this->validator->addRule('ip_reason', function ($value, array $parameters) {
             if ($value === null || $value === '') {
                 return true; // 原因是可選的
             }
-
             if (!is_string($value)) {
                 return false;
             }
-
             $reason = trim($value);
             $maxLength = $parameters[0] ?? 500;
-
             // 檢查長度
             if (mb_strlen($reason, 'UTF-8') > $maxLength) {
                 return false;
             }
-
             // 檢查是否包含有效內容
             if (empty($reason)) {
                 return true; // 空字串也是有效的（可選欄位）
@@ -133,12 +111,10 @@ class CreateIpRuleDTO extends BaseDTO
 
             return true;
         });
-
         // 建立者 ID 驗證規則
         $this->validator->addRule('created_by', function ($value) {
             return is_numeric($value) && (int) $value > 0;
         });
-
         // 添加繁體中文錯誤訊息
         $this->validator->addMessage('ip_or_cidr', 'IP 地址格式不正確，請輸入有效的 IP 地址或 CIDR 格式（例如：192.168.1.1 或 192.168.1.0/24）');
         $this->validator->addMessage('ip_action', 'IP 規則動作必須是：allow（允許）、block（阻擋）或 deny（拒絕）');
@@ -240,7 +216,6 @@ class CreateIpRuleDTO extends BaseDTO
     public function isLoopback(): bool
     {
         $ip = $this->getIpPart();
-
         if ($this->isIpv4()) {
             return str_starts_with($ip, '127.');
         } elseif ($this->isIpv6()) {

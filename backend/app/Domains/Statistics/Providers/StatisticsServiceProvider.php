@@ -38,11 +38,6 @@ use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * 統計服務提供者.
- *
- * 負責註冊統計系統的所有組件到 DI 容器中
- */
 class StatisticsServiceProvider
 {
     /**
@@ -60,21 +55,18 @@ class StatisticsServiceProvider
 
                 return new StatisticsRepository($pdo);
             }),
-
             PostStatisticsRepositoryInterface::class => \DI\factory(function (ContainerInterface $container): PostStatisticsRepositoryInterface {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
 
                 return new PostStatisticsRepository($pdo);
             }),
-
             UserStatisticsRepositoryInterface::class => \DI\factory(function (ContainerInterface $container): UserStatisticsRepositoryInterface {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
 
                 return new UserStatisticsRepository($pdo);
             }),
-
             // 快取服務
             StatisticsCacheServiceInterface::class => \DI\factory(function (ContainerInterface $container): StatisticsCacheServiceInterface {
                 /** @var CacheServiceInterface $cacheService */
@@ -84,7 +76,6 @@ class StatisticsServiceProvider
 
                 return new StatisticsCacheService($cacheService, $logger);
             }),
-
             // SlowQueryMonitoringService
             SlowQueryMonitoringServiceInterface::class => \DI\factory(function (ContainerInterface $container): SlowQueryMonitoringServiceInterface {
                 /** @var PDO $pdo */
@@ -92,7 +83,6 @@ class StatisticsServiceProvider
 
                 return new SlowQueryMonitoringService($pdo);
             }),
-
             // 監控服務
             StatisticsMonitoringServiceInterface::class => \DI\factory(function (ContainerInterface $container): StatisticsMonitoringServiceInterface {
                 /** @var SlowQueryMonitoringServiceInterface $slowQueryService */
@@ -104,7 +94,6 @@ class StatisticsServiceProvider
 
                 return new StatisticsMonitoringService($slowQueryService, $pdo, $logger);
             }),
-
             // 事件分派器
             EventDispatcherInterface::class => \DI\factory(function (ContainerInterface $container): EventDispatcherInterface {
                 /** @var LoggerInterface|null $logger */
@@ -112,7 +101,6 @@ class StatisticsServiceProvider
 
                 return new SimpleEventDispatcher($logger);
             }),
-
             // 領域服務
             StatisticsAggregationService::class => \DI\factory(function (ContainerInterface $container): StatisticsAggregationService {
                 /** @var StatisticsRepositoryInterface $statisticsRepository */
@@ -131,10 +119,8 @@ class StatisticsServiceProvider
                     $eventDispatcher,
                 );
             }),
-
             // 綁定介面到實作
             StatisticsAggregationServiceInterface::class => \DI\get(StatisticsAggregationService::class),
-
             // 應用服務
             StatisticsQueryService::class => \DI\factory(function (ContainerInterface $container): StatisticsQueryService {
                 /** @var StatisticsRepositoryInterface $statisticsRepository */
@@ -148,15 +134,12 @@ class StatisticsServiceProvider
 
                 return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
             }),
-
             // 綁定介面到實作
             StatisticsQueryServiceInterface::class => \DI\get(StatisticsQueryService::class),
-
             // 配置服務
             StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
                 return new StatisticsConfigService();
             }),
-
             // 視覺化服務
             StatisticsVisualizationServiceInterface::class => \DI\factory(function (ContainerInterface $container): StatisticsVisualizationServiceInterface {
                 return new StatisticsVisualizationService(
@@ -167,7 +150,6 @@ class StatisticsServiceProvider
                     $container->get(PostStatisticsRepositoryInterface::class),
                 );
             }),
-
             // 文章瀏覽統計服務
             PostViewStatisticsService::class => \DI\factory(function (ContainerInterface $container): PostViewStatisticsService {
                 /** @var PDO $pdo */
@@ -175,12 +157,10 @@ class StatisticsServiceProvider
 
                 return new PostViewStatisticsService($pdo);
             }),
-
             // User-Agent 解析服務
             UserAgentParserService::class => \DI\factory(function (): UserAgentParserService {
                 return new UserAgentParserService();
             }),
-
             // 進階分析服務
             AdvancedAnalyticsService::class => \DI\factory(function (ContainerInterface $container): AdvancedAnalyticsService {
                 /** @var PDO $pdo */
@@ -190,7 +170,6 @@ class StatisticsServiceProvider
 
                 return new AdvancedAnalyticsService($pdo, $userAgentParser);
             }),
-
             // 統計報表匯出服務
             StatisticsExportService::class => \DI\factory(function (ContainerInterface $container): StatisticsExportService {
                 /** @var PDO $pdo */

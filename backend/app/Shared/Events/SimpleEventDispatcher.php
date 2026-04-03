@@ -10,11 +10,6 @@ use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * 簡單事件分派器實作.
- *
- * 提供輕量級的同步事件分派功能，適合統計功能使用
- */
 class SimpleEventDispatcher implements EventDispatcherInterface
 {
     /**
@@ -30,7 +25,6 @@ class SimpleEventDispatcher implements EventDispatcherInterface
     {
         $eventName = $event->getEventName();
         $listeners = $this->getListenersForEvent($eventName);
-
         if (empty($listeners)) {
             $this->logger?->debug("No listeners found for event: {$eventName}", [
                 'event_id' => $event->getEventId(),
@@ -38,16 +32,13 @@ class SimpleEventDispatcher implements EventDispatcherInterface
 
             return;
         }
-
         $this->logger?->info("Dispatching event: {$eventName}", [
             'event_id' => $event->getEventId(),
             'listeners_count' => count($listeners),
         ]);
-
         foreach ($listeners as $listener) {
             try {
                 $listener->handle($event);
-
                 $this->logger?->debug('Event handled successfully', [
                     'event_id' => $event->getEventId(),
                     'event_name' => $eventName,
@@ -61,7 +52,6 @@ class SimpleEventDispatcher implements EventDispatcherInterface
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
                 ]);
-
                 // 在統計功能中，我們選擇不讓事件處理失敗中斷主流程
                 // 只記錄錯誤，繼續執行其他監聽器
                 continue;
@@ -74,7 +64,6 @@ class SimpleEventDispatcher implements EventDispatcherInterface
         if (!isset($this->listeners[$eventName])) {
             $this->listeners[$eventName] = [];
         }
-
         // 檢查是否已經註冊相同名稱的監聽器
         $listenerName = $listener->getName();
         foreach ($this->listeners[$eventName] as $existingListener) {
@@ -87,9 +76,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
                 return;
             }
         }
-
         $this->listeners[$eventName][] = $listener;
-
         $this->logger?->debug('Event listener registered', [
             'event_name' => $eventName,
             'listener' => $listenerName,
@@ -101,17 +88,14 @@ class SimpleEventDispatcher implements EventDispatcherInterface
         if (!isset($this->listeners[$eventName])) {
             return;
         }
-
         $this->listeners[$eventName] = array_filter(
             $this->listeners[$eventName],
             fn(EventListenerInterface $listener): bool => $listener->getName() !== $listenerName,
         );
-
         // 如果沒有監聽器了，移除事件鍵
         if (empty($this->listeners[$eventName])) {
             unset($this->listeners[$eventName]);
         }
-
         $this->logger?->debug('Event listener removed', [
             'event_name' => $eventName,
             'listener' => $listenerName,
@@ -142,7 +126,6 @@ class SimpleEventDispatcher implements EventDispatcherInterface
     {
         foreach ($listeners as $listener) {
             $listenedEvents = $listener->getListenedEvents();
-
             foreach ($listenedEvents as $eventName) {
                 $this->listen($eventName, $listener);
             }
@@ -158,7 +141,6 @@ class SimpleEventDispatcher implements EventDispatcherInterface
     {
         $totalEvents = count($this->listeners);
         $totalListeners = 0;
-
         foreach ($this->listeners as $eventListeners) {
             $totalListeners += count($eventListeners);
         }

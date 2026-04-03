@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
 
-/**
- * User-Agent 解析服務
- * 用於從 User-Agent 字符串中提取瀏覽器和裝置資訊.
- */
 class UserAgentParserService
 {
     /**
@@ -47,7 +43,6 @@ class UserAgentParserService
             'Opera' => '/Opera\/([\d\.]+)/',
             'IE' => '/MSIE ([\d\.]+)/',
         ];
-
         foreach ($browsers as $browser => $pattern) {
             if (preg_match($pattern, $userAgent)) {
                 return $browser;
@@ -70,7 +65,6 @@ class UserAgentParserService
             '/Opera\/([\d\.]+)/',
             '/MSIE ([\d\.]+)/',
         ];
-
         foreach ($patterns as $pattern) {
             if (preg_match($pattern, $userAgent, $matches)) {
                 return $matches[1] ?? '';
@@ -114,7 +108,6 @@ class UserAgentParserService
             'Linux' => '/Linux/i',
             'Ubuntu' => '/Ubuntu/i',
         ];
-
         foreach ($osList as $os => $pattern) {
             if (preg_match($pattern, $userAgent)) {
                 return $os;

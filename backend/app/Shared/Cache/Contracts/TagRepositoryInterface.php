@@ -4,11 +4,6 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Contracts;
 
-/**
- * 標籤儲存庫介面.
- *
- * 負責管理快取標籤的持久化儲存和檢索
- */
 interface TagRepositoryInterface
 {
     /**

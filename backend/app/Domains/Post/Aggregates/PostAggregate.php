@@ -18,12 +18,6 @@ use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
 use InvalidArgumentException;
 
-/**
- * Post 聚合根.
- *
- * 負責維護 Post 實體的一致性邊界和業務規則
- * 所有對 Post 的修改都應通過此聚合根進行
- */
 final class PostAggregate
 {
     /** @var array<AbstractDomainEvent> */
@@ -81,7 +75,6 @@ final class PostAggregate
         if ($authorId <= 0) {
             throw new InvalidArgumentException('作者 ID 必須大於 0');
         }
-
         $aggregate = new self(
             id: $id,
             title: $title,
@@ -124,7 +117,6 @@ final class PostAggregate
         $seqNumber = $data['seq_number'] ?? null;
         /** @var string|null $creationSource */
         $creationSource = $data['creation_source'] ?? null;
-
         $aggregate = new self(
             id: is_int($uuid) ? PostId::fromInt($uuid) : PostId::fromString((string) $uuid),
             title: PostTitle::fromString($title),
@@ -136,19 +128,16 @@ final class PostAggregate
             slug: $seqNumber !== null ? PostSlug::fromString($seqNumber) : null,
             creationSource: $creationSource,
         );
-
         if (isset($data['created_at'])) {
             /** @var string $createdAt */
             $createdAt = $data['created_at'];
             $aggregate->createdAt = new DateTimeImmutable($createdAt);
         }
-
         if (isset($data['updated_at'])) {
             /** @var string $updatedAt */
             $updatedAt = $data['updated_at'];
             $aggregate->updatedAt = new DateTimeImmutable($updatedAt);
         }
-
         if (isset($data['publish_date'])) {
             /** @var string|null $publishDate */
             $publishDate = $data['publish_date'];
@@ -170,17 +159,13 @@ final class PostAggregate
         if ($this->status === PostStatus::PUBLISHED) {
             throw PostValidationException::alreadyPublished();
         }
-
         if ($this->status === PostStatus::ARCHIVED) {
             throw PostValidationException::archivedCannotPublish();
         }
-
         $this->ensureContentIsValid();
-
         $this->status = PostStatus::PUBLISHED;
         $this->publishedAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
-
         $this->recordEvent(new PostPublished(
             postId: $this->id->toString(),
             title: $this->title->toString(),
@@ -201,17 +186,14 @@ final class PostAggregate
         if ($this->status === PostStatus::ARCHIVED) {
             throw PostValidationException::archivedCannotEdit();
         }
-
         $oldTitle = $this->title;
         $this->title = $title;
         $this->content = $content;
         $this->updatedAt = new DateTimeImmutable();
-
         // 如果標題改變，更新 slug
         if (!$oldTitle->equals($title)) {
             $this->slug = PostSlug::fromTitle($title->toString());
         }
-
         $this->recordEvent(new PostContentUpdated(
             postId: $this->id->toString(),
             title: $this->title->toString(),
@@ -229,11 +211,9 @@ final class PostAggregate
         if ($this->status === PostStatus::ARCHIVED) {
             throw PostValidationException::alreadyArchived();
         }
-
         $oldStatus = $this->status;
         $this->status = PostStatus::ARCHIVED;
         $this->updatedAt = new DateTimeImmutable();
-
         $this->recordEvent(new PostStatusChanged(
             postId: $this->id->toString(),
             oldStatus: $oldStatus->value,
@@ -250,11 +230,9 @@ final class PostAggregate
         if ($this->status === PostStatus::DRAFT) {
             return;
         }
-
         $oldStatus = $this->status;
         $this->status = PostStatus::DRAFT;
         $this->updatedAt = new DateTimeImmutable();
-
         $this->recordEvent(new PostStatusChanged(
             postId: $this->id->toString(),
             oldStatus: $oldStatus->value,
@@ -273,7 +251,6 @@ final class PostAggregate
         if ($this->isPinned === $isPinned) {
             return;
         }
-
         $this->isPinned = $isPinned;
         $this->updatedAt = new DateTimeImmutable();
     }
@@ -438,7 +415,6 @@ final class PostAggregate
         if ($this->title->getLength() === 0) {
             throw PostValidationException::titleEmpty();
         }
-
         if ($this->content->getLength() === 0) {
             throw PostValidationException::contentEmpty();
         }

@@ -8,9 +8,9 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
-use Exception;
 use HTMLPurifier;
 use HTMLPurifier_Config;
+use Throwable;
 
 class XssProtectionService implements XssProtectionServiceInterface
 {
@@ -31,9 +31,7 @@ class XssProtectionService implements XssProtectionServiceInterface
         if (empty($input)) {
             return $input;
         }
-
         $cleaned = $this->purifier->purify($input);
-
         if ($cleaned !== $input) {
             $this->logXssAttempt($input, $cleaned);
         }
@@ -46,9 +44,7 @@ class XssProtectionService implements XssProtectionServiceInterface
         if (empty($input)) {
             return $input;
         }
-
         $cleaned = $this->strictPurifier->purify($input);
-
         if ($cleaned !== $input) {
             $this->logXssAttempt($input, $cleaned);
         }
@@ -61,10 +57,8 @@ class XssProtectionService implements XssProtectionServiceInterface
         if (empty($keys)) {
             return $this->cleanArrayRecursive($data);
         }
-
         // 支援兩種格式：索引陣列 ['title', 'content'] 或關聯陣列 ['title' => null, 'content' => null]
         $keysToClean = array_keys($keys) === range(0, count($keys) - 1) ? $keys : array_keys($keys);
-
         foreach ($keysToClean as $key) {
             if (isset($data[$key]) && is_string($data[$key])) {
                 $data[$key] = $this->clean($data[$key]);
@@ -79,7 +73,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         if (empty($input)) {
             return false;
         }
-
         $cleaned = $this->purifier->purify($input);
 
         return $cleaned !== $input;
@@ -129,7 +122,6 @@ class XssProtectionService implements XssProtectionServiceInterface
         $config->set('AutoFormat.RemoveEmpty', true);
         $config->set('AutoFormat.Linkify', false);
         $this->purifier = new HTMLPurifier($config);
-
         $strictConfig = HTMLPurifier_Config::createDefault();
         $strictConfig->set('Core.Encoding', 'UTF-8');
         $strictConfig->set('HTML.Allowed', '');
@@ -155,11 +147,9 @@ class XssProtectionService implements XssProtectionServiceInterface
         try {
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
-
             // 確保類型正確
             $ipAddress = is_string($ipAddress) ? $ipAddress : null;
             $userAgent = is_string($userAgent) ? $userAgent : null;
-
             $dto = CreateActivityLogDTO::securityEvent(
                 actionType: ActivityType::XSS_ATTACK_BLOCKED,
                 ipAddress: $ipAddress,
@@ -173,9 +163,8 @@ class XssProtectionService implements XssProtectionServiceInterface
                     'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 ],
             );
-
             $this->activityLogger->log($dto);
-        } catch (Exception) {
+        } catch (Throwable) {
             // 記錄失敗不應影響主要功能
         }
     }

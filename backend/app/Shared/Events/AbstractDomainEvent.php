@@ -8,11 +8,6 @@ use App\Shared\Events\Contracts\DomainEventInterface;
 use DateTimeImmutable;
 use Ramsey\Uuid\Uuid;
 
-/**
- * 抽象領域事件基底類別.
- *
- * 提供領域事件的基本實作，所有具體的領域事件都應繼承此類別
- */
 abstract class AbstractDomainEvent implements DomainEventInterface
 {
     private readonly string $eventId;

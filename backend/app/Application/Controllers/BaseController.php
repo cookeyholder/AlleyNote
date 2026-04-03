@@ -7,17 +7,17 @@ namespace App\Application\Controllers;
 use App\Shared\Enums\HttpStatusCode;
 use App\Shared\Enums\JsonFlag;
 use App\Shared\Http\ApiResponse;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
+use Throwable;
 
 abstract class BaseController
 {
     /** @var array<string, HttpStatusCode> */
     private const EXCEPTION_HTTP_CODES = [
         'App\Domains\Post\Exceptions\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::BAD_REQUEST,
+        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::CONFLICT,
+        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Shared\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
         'App\Domains\Auth\Exceptions\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
@@ -25,9 +25,6 @@ abstract class BaseController
         'App\Domains\Auth\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
     ];
 
-    /**
-     * 建立JSON回應.
-     */
     protected function json(
         ResponseInterface $response,
         array $data,
@@ -35,9 +32,7 @@ abstract class BaseController
         JsonFlag $jsonFlag = JsonFlag::DEFAULT,
     ): ResponseInterface {
         $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
-
         $response->getBody()->write($json);
-
         $statusCode = $status instanceof HttpStatusCode ? $status->value : (int) $status;
 
         return $response
@@ -47,10 +42,6 @@ abstract class BaseController
 
     protected function jsonResponse(array $data, HttpStatusCode|int $httpCode = HttpStatusCode::OK): string
     {
-        $code = $httpCode instanceof HttpStatusCode ? $httpCode->value : (int) $httpCode;
-        http_response_code($code);
-        header('Content-Type: application/json; charset=utf-8');
-
         return json_encode($data, JsonFlag::DEFAULT->value) ?: '{}';
     }
 
@@ -85,7 +76,7 @@ abstract class BaseController
         );
     }
 
-    protected function handleException(Exception $e): string
+    protected function handleException(Throwable $e): string
     {
         // 記錄錯誤日誌
         app_log('error', 'API Error', [
@@ -93,13 +84,12 @@ abstract class BaseController
             'file' => $e->getFile(),
             'line' => $e->getLine(),
         ]);
-
         $httpCode = $this->getHttpCodeFromException($e);
 
         return $this->errorResponse($e->getMessage(), $httpCode);
     }
 
-    private function getHttpCodeFromException(Exception $e): HttpStatusCode
+    private function getHttpCodeFromException(Throwable $e): HttpStatusCode
     {
         $className = get_class($e);
         if (array_key_exists($className, self::EXCEPTION_HTTP_CODES)) {

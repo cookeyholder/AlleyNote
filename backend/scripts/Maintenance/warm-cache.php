@@ -44,7 +44,7 @@ try {
         'App\Domains\Security\Contracts\CsrfProtectionServiceInterface',
         'App\Domains\Security\Contracts\LoggingSecurityServiceInterface',
         'App\Shared\Contracts\ValidatorInterface',
-        'App\Application\Controllers\PostController',
+        'App\Application\Controllers\Api\V1\PostController',
         'App\Application\Controllers\Api\V1\AttachmentController',
         'App\Application\Controllers\Api\V1\AuthController',
         'App\Application\Controllers\Api\V1\IpController',

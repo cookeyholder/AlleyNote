@@ -9,7 +9,7 @@ use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\CsrfTokenException;
-use Exception;
+use Throwable;
 
 class CsrfProtectionService implements CsrfProtectionServiceInterface
 {
@@ -28,21 +28,16 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     public function generateToken(): string
     {
         $token = bin2hex(random_bytes(self::TOKEN_LENGTH));
-
         // 初始化權杖池（如果不存在）
         if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             $_SESSION[self::TOKEN_POOL_KEY] = [];
         }
-
         // 加入新權杖到池中
         $_SESSION[self::TOKEN_POOL_KEY][$token] = time();
-
         // 清理過期的權杖
         $this->cleanExpiredTokens();
-
         // 限制池大小
         $this->limitPoolSize();
-
         // 設定當前權杖（向後相容）
         $_SESSION['csrf_token'] = $token;
         $_SESSION['csrf_token_time'] = time();
@@ -79,11 +74,9 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     private function validateTokenFromPool(string $token): void
     {
         $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
-
         // 使用恆定時間比較防止時序攻擊
         $found = false;
         $tokenTime = null;
-
         foreach ($tokenPool as $poolToken => $timestamp) {
             if (hash_equals($poolToken, $token)) {
                 $found = true;
@@ -91,19 +84,15 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 break;
             }
         }
-
         if (!$found) {
             throw new CsrfTokenException('CSRF token 驗證失敗');
         }
-
         // 檢查權杖是否過期
         if (time() - $tokenTime > self::TOKEN_EXPIRY) {
             throw new CsrfTokenException('CSRF token 已過期');
         }
-
         // 使用後移除權杖（單次使用）
         unset($_SESSION[self::TOKEN_POOL_KEY][$token]);
-
         // 產生新權杖以維持池的大小
         $this->generateToken();
     }
@@ -116,16 +105,13 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         if (!isset($_SESSION['csrf_token']) || !isset($_SESSION['csrf_token_time'])) {
             throw new CsrfTokenException('無效的 CSRF token');
         }
-
         // 使用恆定時間比較防止時序攻擊
         if (!hash_equals($_SESSION['csrf_token'], $token)) {
             throw new CsrfTokenException('CSRF token 驗證失敗');
         }
-
         if (time() - $_SESSION['csrf_token_time'] > self::TOKEN_EXPIRY) {
             throw new CsrfTokenException('CSRF token 已過期');
         }
-
         // 更新 token 以防止重放攻擊
         $this->generateToken();
     }
@@ -138,10 +124,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return;
         }
-
         $currentTime = time();
         $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
-
         foreach ($tokenPool as $token => $timestamp) {
             if ($currentTime - $timestamp > self::TOKEN_EXPIRY) {
                 unset($_SESSION[self::TOKEN_POOL_KEY][$token]);
@@ -157,9 +141,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return;
         }
-
         $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
-
         // 如果池大小超過限制，移除最舊的權杖
         while (count($tokenPool) > self::TOKEN_POOL_SIZE) {
             $oldestToken = array_key_first($tokenPool);
@@ -181,7 +163,6 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
                 $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
-
                 foreach ($tokenPool as $poolToken => $timestamp) {
                     if (hash_equals($poolToken, $token)) {
                         return (time() - $timestamp) <= self::TOKEN_EXPIRY;
@@ -196,7 +177,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
 
             return false;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return false;
         }
     }
@@ -207,7 +188,6 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     public function initializeTokenPool(): void
     {
         $_SESSION[self::TOKEN_POOL_KEY] = [];
-
         // 產生初始權杖填滿池
         for ($i = 0; $i < self::TOKEN_POOL_SIZE; $i++) {
             $this->generateToken();
@@ -226,10 +206,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 'tokens' => [],
             ];
         }
-
         $pool = $_SESSION[self::TOKEN_POOL_KEY];
         $currentTime = time();
-
         $tokens = [];
         foreach ($pool as $token => $timestamp) {
             $tokens[] = [
@@ -270,11 +248,9 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         try {
             $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
             $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
-
             // 確保類型正確
             $ipAddress = is_string($ipAddress) ? $ipAddress : null;
             $userAgent = is_string($userAgent) ? $userAgent : null;
-
             $dto = CreateActivityLogDTO::securityEvent(
                 actionType: ActivityType::CSRF_ATTACK_BLOCKED,
                 ipAddress: $ipAddress,
@@ -286,9 +262,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                     'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 ],
             );
-
             $this->activityLogger->log($dto);
-        } catch (Exception) {
+        } catch (Throwable) {
             // 記錄失敗不應影響主要功能
         }
     }

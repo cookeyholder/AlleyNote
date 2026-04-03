@@ -14,8 +14,7 @@ use App\Domains\Auth\ValueObjects\TokenPair;
 /**
  * JWT Token 服務介面.
  *
- * 定義JWT token的核心操作方法，包含token產生、驗證、解析等功能。
- * 採用RS256演算法進行token簽名，確保token的安全性和可驗證性。
+ * 定義JWT token的核心操作方法。
  */
 interface JwtTokenServiceInterface
 {

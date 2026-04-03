@@ -4,17 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
 
-use App\Domains\Auth\Models\Permission;
-use App\Domains\Auth\Models\Role;
-use App\Domains\Auth\Repositories\PermissionRepository;
-use App\Domains\Auth\Repositories\RoleRepository;
-use App\Shared\Exceptions\NotFoundException;
-use App\Shared\Exceptions\ValidationException;
 use RuntimeException;
 
-/**
- * 角色管理服務.
- */
 class RoleManagementService
 {
     public function __construct(
@@ -38,11 +29,9 @@ class RoleManagementService
     public function getRole(int $id): array
     {
         $role = $this->roleRepository->findById($id);
-
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
-
         $permissionIds = $this->roleRepository->getRolePermissionIds($id);
         $permissions = $this->permissionRepository->findByIds($permissionIds);
 
@@ -62,9 +51,7 @@ class RoleManagementService
         if ($this->roleRepository->findByName($name)) {
             throw ValidationException::fromSingleError('name', '角色名稱已存在');
         }
-
         $role = $this->roleRepository->create($name, $displayName, $description);
-
         // 分配權限
         if (!empty($permissionIds)) {
             $this->roleRepository->setRolePermissions($role->getId(), $permissionIds);
@@ -79,11 +66,9 @@ class RoleManagementService
     public function updateRole(int $id, ?string $displayName = null, ?string $description = null): Role
     {
         $role = $this->roleRepository->findById($id);
-
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
-
         $this->roleRepository->update($id, $displayName, $description);
 
         return $this->roleRepository->findById($id) ?? throw new RuntimeException('Failed to get updated role');
@@ -95,11 +80,9 @@ class RoleManagementService
     public function deleteRole(int $id): bool
     {
         $role = $this->roleRepository->findById($id);
-
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }
-
         // 不允許刪除系統預設角色
         if (in_array($role->getName(), ['super_admin', 'admin'], true)) {
             throw ValidationException::fromSingleError('id', '無法刪除系統預設角色');
@@ -116,7 +99,6 @@ class RoleManagementService
     public function setRolePermissions(int $roleId, array $permissionIds): bool
     {
         $role = $this->roleRepository->findById($roleId);
-
         if (!$role) {
             throw new NotFoundException('角色不存在');
         }

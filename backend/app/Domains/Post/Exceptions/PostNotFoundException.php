@@ -13,7 +13,6 @@ class PostNotFoundException extends NotFoundException
         if (empty($message)) {
             $message = "找不到 ID 為 {$postId} 的貼文";
         }
-
         parent::__construct($message, 404);
     }
 

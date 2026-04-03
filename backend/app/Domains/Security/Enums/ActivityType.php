@@ -4,222 +4,157 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Enums;
 
-/**
- * 使用者活動行為類型枚舉
- * 定義所有可追蹤的使用者行為類型.
- */
 enum ActivityType: string
 {
-    // === 認證相關行為 ===
-    case LOGIN_SUCCESS = 'auth.login.success';
-    case LOGIN_FAILED = 'auth.login.failed';
-    case LOGOUT = 'auth.logout';
-    case PASSWORD_CHANGED = 'auth.password.changed';
-    case PASSWORD_RESET_REQUESTED = 'auth.password.reset_requested';
-    case PASSWORD_RESET_COMPLETED = 'auth.password.reset_completed';
-    case TWO_FACTOR_ENABLED = 'auth.2fa.enabled';
-    case TWO_FACTOR_DISABLED = 'auth.2fa.disabled';
-    case SESSION_EXPIRED = 'auth.session.expired';
-    case ACCOUNT_LOCKED = 'auth.account.locked';
-    case ACCOUNT_UNLOCKED = 'auth.account.unlocked';
+    case ACCESS_DENIED = 'access_denied';
+    case ATTACHMENT_DELETED = 'attachment_deleted';
+    case ATTACHMENT_DOWNLOADED = 'attachment_downloaded';
+    case ATTACHMENT_PERMISSION_DENIED = 'attachment_permission_denied';
+    case ATTACHMENT_SIZE_EXCEEDED = 'attachment_size_exceeded';
+    case ATTACHMENT_UPLOADED = 'attachment_uploaded';
+    case ATTACHMENT_VIRUS_DETECTED = 'attachment_virus_detected';
+    case CSRF_ATTACK_BLOCKED = 'csrf_attack_blocked';
+    case IP_BLOCKED = 'ip_blocked';
+    case IP_UNBLOCKED = 'ip_unblocked';
+    case LOGIN_FAILED = 'login_failed';
+    case LOGIN_SUCCESS = 'login_success';
+    case LOGOUT = 'logout';
+    case PASSWORD_CHANGED = 'password_changed';
+    case POST_CREATED = 'post_created';
+    case POST_DELETED = 'post_deleted';
+    case POST_PINNED = 'post_pinned';
+    case POST_PUBLISHED = 'post_published';
+    case POST_UNPINNED = 'post_unpinned';
+    case POST_UPDATED = 'post_updated';
+    case POST_VIEWED = 'post_viewed';
+    case SECURITY_ACTIVITY_SCAN_COMPLETED = 'security_activity_scan_completed';
+    case SQL_INJECTION_BLOCKED = 'sql_injection_blocked';
+    case SUSPICIOUS_ACTIVITY_DETECTED = 'suspicious_activity_detected';
+    case USER_REGISTERED = 'user_registered';
+    case XSS_ATTACK_BLOCKED = 'xss_attack_blocked';
 
-    // === 文章管理行為 ===
-    case POST_CREATED = 'post.created';
-    case POST_UPDATED = 'post.updated';
-    case POST_DELETED = 'post.deleted';
-    case POST_PUBLISHED = 'post.published';
-    case POST_UNPUBLISHED = 'post.unpublished';
-    case POST_VIEWED = 'post.viewed';
-    case POST_PINNED = 'post.pinned';
-    case POST_UNPINNED = 'post.unpinned';
-
-    // === 附件管理行為 ===
-    case ATTACHMENT_UPLOADED = 'attachment.uploaded';
-    case ATTACHMENT_DOWNLOADED = 'attachment.downloaded';
-    case ATTACHMENT_DELETED = 'attachment.deleted';
-    case ATTACHMENT_VIRUS_DETECTED = 'attachment.virus_detected';
-    case ATTACHMENT_SIZE_EXCEEDED = 'attachment.size_exceeded';
-    case ATTACHMENT_PERMISSION_DENIED = 'attachment.permission_denied';
-
-    // === 使用者管理行為 ===
-    case USER_REGISTERED = 'user.registered';
-    case USER_PROFILE_UPDATED = 'user.profile.updated';
-    case USER_AVATAR_CHANGED = 'user.avatar.changed';
-    case USER_EMAIL_VERIFIED = 'user.email.verified';
-    case USER_BANNED = 'user.banned';
-    case USER_UNBANNED = 'user.unbanned';
-
-    // === 權限與角色管理 ===
-    case ROLE_ASSIGNED = 'role.assigned';
-    case ROLE_REMOVED = 'role.removed';
-    case PERMISSION_GRANTED = 'permission.granted';
-    case PERMISSION_REVOKED = 'permission.revoked';
-    case PERMISSION_DENIED = 'permission.denied';
-
-    // === 系統安全行為 ===
-    case SUSPICIOUS_ACTIVITY_DETECTED = 'security.suspicious_activity';
-    case SECURITY_ACTIVITY_SCAN_COMPLETED = 'security.scan.completed';
-    case BRUTE_FORCE_ATTEMPT = 'security.brute_force';
-    case IP_BLOCKED = 'security.ip.blocked';
-    case IP_UNBLOCKED = 'security.ip.unblocked';
-    case CSRF_ATTACK_BLOCKED = 'security.csrf.blocked';
-    case XSS_ATTACK_BLOCKED = 'security.xss.blocked';
-    case SQL_INJECTION_BLOCKED = 'security.sql_injection.blocked';
-
-    // === 管理員操作 ===
-    case ADMIN_LOGIN = 'admin.login';
-    case ADMIN_LOGOUT = 'admin.logout';
-    case SYSTEM_SETTINGS_CHANGED = 'admin.settings.changed';
-    case USER_IMPERSONATED = 'admin.user.impersonated';
-    case CACHE_CLEARED = 'admin.cache.cleared';
-    case BACKUP_CREATED = 'admin.backup.created';
-    case BACKUP_RESTORED = 'admin.backup.restored';
-
-    // === API 操作 ===
-    case API_KEY_CREATED = 'api.key.created';
-    case API_KEY_DELETED = 'api.key.deleted';
-    case API_RATE_LIMIT_EXCEEDED = 'api.rate_limit.exceeded';
-    case API_UNAUTHORIZED_ACCESS = 'api.unauthorized';
-
-    // === 資料匯出入 ===
-    case DATA_EXPORTED = 'data.exported';
-    case DATA_IMPORTED = 'data.imported';
-    case GDPR_DATA_REQUEST = 'gdpr.data.requested';
-    case GDPR_DATA_DELETED = 'gdpr.data.deleted';
-
-    /**
-     * 取得行為類型的分類.
-     */
     public function getCategory(): ActivityCategory
     {
         return match ($this) {
-            self::LOGIN_SUCCESS, self::LOGIN_FAILED, self::LOGOUT,
-            self::PASSWORD_CHANGED, self::PASSWORD_RESET_REQUESTED,
-            self::PASSWORD_RESET_COMPLETED, self::TWO_FACTOR_ENABLED,
-            self::TWO_FACTOR_DISABLED, self::SESSION_EXPIRED,
-            self::ACCOUNT_LOCKED, self::ACCOUNT_UNLOCKED => ActivityCategory::AUTHENTICATION,
+            self::LOGIN_SUCCESS,
+            self::LOGIN_FAILED,
+            self::LOGOUT,
+            self::USER_REGISTERED,
+            self::PASSWORD_CHANGED,
+            self::ACCESS_DENIED => ActivityCategory::AUTHENTICATION,
 
-            self::POST_CREATED, self::POST_UPDATED, self::POST_DELETED,
-            self::POST_PUBLISHED, self::POST_UNPUBLISHED, self::POST_VIEWED,
-            self::POST_PINNED, self::POST_UNPINNED => ActivityCategory::CONTENT,
+            self::POST_CREATED,
+            self::POST_UPDATED,
+            self::POST_DELETED,
+            self::POST_VIEWED,
+            self::POST_PUBLISHED,
+            self::POST_PINNED,
+            self::POST_UNPINNED => ActivityCategory::CONTENT,
 
-            self::ATTACHMENT_UPLOADED, self::ATTACHMENT_DOWNLOADED,
-            self::ATTACHMENT_DELETED, self::ATTACHMENT_VIRUS_DETECTED,
-            self::ATTACHMENT_SIZE_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED => ActivityCategory::FILE,
+            self::ATTACHMENT_UPLOADED,
+            self::ATTACHMENT_DOWNLOADED,
+            self::ATTACHMENT_DELETED,
+            self::ATTACHMENT_PERMISSION_DENIED,
+            self::ATTACHMENT_SIZE_EXCEEDED,
+            self::ATTACHMENT_VIRUS_DETECTED => ActivityCategory::ATTACHMENT,
 
-            self::USER_REGISTERED, self::USER_PROFILE_UPDATED,
-            self::USER_AVATAR_CHANGED, self::USER_EMAIL_VERIFIED,
-            self::USER_BANNED, self::USER_UNBANNED => ActivityCategory::USER_MANAGEMENT,
-
-            self::ROLE_ASSIGNED, self::ROLE_REMOVED,
-            self::PERMISSION_GRANTED, self::PERMISSION_REVOKED,
-            self::PERMISSION_DENIED => ActivityCategory::AUTHORIZATION,
-
-            self::SUSPICIOUS_ACTIVITY_DETECTED, self::SECURITY_ACTIVITY_SCAN_COMPLETED,
-            self::BRUTE_FORCE_ATTEMPT, self::IP_BLOCKED, self::IP_UNBLOCKED,
-            self::CSRF_ATTACK_BLOCKED, self::XSS_ATTACK_BLOCKED,
-            self::SQL_INJECTION_BLOCKED => ActivityCategory::SECURITY,
-
-            self::ADMIN_LOGIN, self::ADMIN_LOGOUT, self::SYSTEM_SETTINGS_CHANGED,
-            self::USER_IMPERSONATED, self::CACHE_CLEARED, self::BACKUP_CREATED,
-            self::BACKUP_RESTORED => ActivityCategory::ADMINISTRATION,
-
-            self::API_KEY_CREATED, self::API_KEY_DELETED,
-            self::API_RATE_LIMIT_EXCEEDED, self::API_UNAUTHORIZED_ACCESS => ActivityCategory::API,
-
-            self::DATA_EXPORTED, self::DATA_IMPORTED,
-            self::GDPR_DATA_REQUEST, self::GDPR_DATA_DELETED => ActivityCategory::DATA_MANAGEMENT,
+            self::CSRF_ATTACK_BLOCKED,
+            self::XSS_ATTACK_BLOCKED,
+            self::SQL_INJECTION_BLOCKED,
+            self::IP_BLOCKED,
+            self::IP_UNBLOCKED,
+            self::SUSPICIOUS_ACTIVITY_DETECTED,
+            self::SECURITY_ACTIVITY_SCAN_COMPLETED => ActivityCategory::SECURITY,
         };
     }
 
-    /**
-     * 取得行為類型的嚴重程度.
-     */
     public function getSeverity(): ActivitySeverity
     {
         return match ($this) {
-            // INFO 等級：一般性資訊操作
-            self::LOGIN_SUCCESS, self::LOGOUT, self::POST_VIEWED,
-            self::ATTACHMENT_DOWNLOADED, self::ADMIN_LOGIN, self::ADMIN_LOGOUT => ActivitySeverity::LOW,
+            self::CSRF_ATTACK_BLOCKED,
+            self::XSS_ATTACK_BLOCKED,
+            self::SQL_INJECTION_BLOCKED,
+            self::ATTACHMENT_VIRUS_DETECTED,
+            self::IP_BLOCKED,
+            self::SUSPICIOUS_ACTIVITY_DETECTED => ActivitySeverity::CRITICAL,
 
-            // LOW 等級：基本操作
-            self::POST_CREATED, self::POST_UPDATED, self::USER_REGISTERED,
-            self::PASSWORD_CHANGED, self::POST_PUBLISHED, self::POST_UNPUBLISHED,
-            self::POST_PINNED, self::POST_UNPINNED, self::ATTACHMENT_UPLOADED,
-            self::USER_PROFILE_UPDATED, self::USER_AVATAR_CHANGED,
-            self::USER_EMAIL_VERIFIED, self::PASSWORD_RESET_REQUESTED,
-            self::PASSWORD_RESET_COMPLETED, self::DATA_EXPORTED, self::DATA_IMPORTED,
-            self::API_KEY_CREATED, self::API_KEY_DELETED, self::CACHE_CLEARED,
-            self::BACKUP_CREATED, self::BACKUP_RESTORED,
-            self::SECURITY_ACTIVITY_SCAN_COMPLETED => ActivitySeverity::NORMAL,
+            self::LOGIN_FAILED,
+            self::ATTACHMENT_PERMISSION_DENIED,
+            self::ATTACHMENT_SIZE_EXCEEDED,
+            self::ACCESS_DENIED => ActivitySeverity::HIGH,
 
-            // MEDIUM 等級：中等重要操作
-            self::POST_DELETED, self::USER_BANNED, self::USER_UNBANNED,
-            self::ROLE_ASSIGNED, self::ROLE_REMOVED, self::PERMISSION_GRANTED,
-            self::PERMISSION_REVOKED, self::ATTACHMENT_DELETED,
-            self::TWO_FACTOR_ENABLED, self::TWO_FACTOR_DISABLED,
-            self::IP_BLOCKED, self::IP_UNBLOCKED, self::SESSION_EXPIRED,
-            self::ACCOUNT_LOCKED, self::ACCOUNT_UNLOCKED,
-            self::SYSTEM_SETTINGS_CHANGED, self::USER_IMPERSONATED,
-            self::ATTACHMENT_SIZE_EXCEEDED, self::GDPR_DATA_REQUEST,
-            self::GDPR_DATA_DELETED => ActivitySeverity::MEDIUM,
+            self::POST_DELETED,
+            self::PASSWORD_CHANGED,
+            self::SECURITY_ACTIVITY_SCAN_COMPLETED,
+            self::IP_UNBLOCKED => ActivitySeverity::MEDIUM,
 
-            // HIGH 等級：高重要性操作
-            self::LOGIN_FAILED, self::BRUTE_FORCE_ATTEMPT,
-            self::SUSPICIOUS_ACTIVITY_DETECTED, self::PERMISSION_DENIED,
-            self::API_UNAUTHORIZED_ACCESS, self::API_RATE_LIMIT_EXCEEDED,
-            self::ATTACHMENT_PERMISSION_DENIED => ActivitySeverity::HIGH,
+            self::POST_UPDATED,
+            self::POST_PINNED,
+            self::POST_UNPINNED,
+            self::POST_PUBLISHED,
+            self::ATTACHMENT_UPLOADED,
+            self::ATTACHMENT_DELETED => ActivitySeverity::NORMAL,
 
-            // CRITICAL 等級：關鍵安全事件
-            self::CSRF_ATTACK_BLOCKED, self::XSS_ATTACK_BLOCKED,
-            self::SQL_INJECTION_BLOCKED, self::ATTACHMENT_VIRUS_DETECTED => ActivitySeverity::CRITICAL,
+            self::LOGIN_SUCCESS,
+            self::LOGOUT,
+            self::POST_CREATED,
+            self::POST_VIEWED,
+            self::ATTACHMENT_DOWNLOADED,
+            self::USER_REGISTERED => ActivitySeverity::LOW,
         };
     }
 
-    /**
-     * 判斷是否為失敗的行為.
-     */
+    public function getDescription(): string
+    {
+        return match ($this) {
+            self::ACCESS_DENIED => '存取被拒絕',
+            self::ATTACHMENT_DELETED => '附件已刪除',
+            self::ATTACHMENT_DOWNLOADED => '附件已下載',
+            self::ATTACHMENT_PERMISSION_DENIED => '附件存取權限不足',
+            self::ATTACHMENT_SIZE_EXCEEDED => '附件大小超出限制',
+            self::ATTACHMENT_UPLOADED => '附件已上傳',
+            self::ATTACHMENT_VIRUS_DETECTED => '附件偵測到可疑內容',
+            self::CSRF_ATTACK_BLOCKED => '阻擋 CSRF 攻擊',
+            self::IP_BLOCKED => 'IP 已封鎖',
+            self::IP_UNBLOCKED => 'IP 已解除封鎖',
+            self::LOGIN_FAILED => '登入失敗',
+            self::LOGIN_SUCCESS => '登入成功',
+            self::LOGOUT => '使用者登出',
+            self::PASSWORD_CHANGED => '密碼已變更',
+            self::POST_CREATED => '文章已建立',
+            self::POST_DELETED => '文章已刪除',
+            self::POST_PINNED => '文章已置頂',
+            self::POST_PUBLISHED => '文章已發布',
+            self::POST_UNPINNED => '文章已取消置頂',
+            self::POST_UPDATED => '文章已更新',
+            self::POST_VIEWED => '文章已檢視',
+            self::SECURITY_ACTIVITY_SCAN_COMPLETED => '安全活動掃描完成',
+            self::SQL_INJECTION_BLOCKED => '阻擋 SQL 注入攻擊',
+            self::SUSPICIOUS_ACTIVITY_DETECTED => '偵測到可疑活動',
+            self::USER_REGISTERED => '使用者已註冊',
+            self::XSS_ATTACK_BLOCKED => '阻擋 XSS 攻擊',
+        };
+    }
+
     public function isFailureAction(): bool
     {
         return match ($this) {
-            self::LOGIN_FAILED, self::PERMISSION_DENIED,
-            self::API_UNAUTHORIZED_ACCESS, self::ATTACHMENT_SIZE_EXCEEDED,
-            self::API_RATE_LIMIT_EXCEEDED, self::ATTACHMENT_PERMISSION_DENIED => true,
+            self::ACCESS_DENIED,
+            self::LOGIN_FAILED,
+            self::ATTACHMENT_PERMISSION_DENIED,
+            self::ATTACHMENT_SIZE_EXCEEDED,
+            self::ATTACHMENT_VIRUS_DETECTED,
+            self::CSRF_ATTACK_BLOCKED,
+            self::SQL_INJECTION_BLOCKED,
+            self::XSS_ATTACK_BLOCKED,
+            self::IP_BLOCKED,
+            self::SUSPICIOUS_ACTIVITY_DETECTED => true,
             default => false,
         };
     }
 
-    /**
-     * 判斷是否為安全相關的行為.
-     */
     public function isSecurityRelated(): bool
     {
-        return $this->getCategory() === ActivityCategory::SECURITY
-            || $this->isFailureAction();
-    }
-
-    /**
-     * 取得人類可讀的描述.
-     */
-    public function getDescription(): string
-    {
-        return match ($this) {
-            self::LOGIN_SUCCESS => '使用者登入成功',
-            self::LOGIN_FAILED => '使用者登入失敗',
-            self::LOGOUT => '使用者登出',
-            self::POST_CREATED => '建立新文章',
-            self::POST_UPDATED => '更新文章',
-            self::POST_DELETED => '刪除文章',
-            self::ATTACHMENT_UPLOADED => '上傳附件',
-            self::ATTACHMENT_DOWNLOADED => '下載附件',
-            self::ATTACHMENT_DELETED => '刪除附件',
-            self::ATTACHMENT_VIRUS_DETECTED => '附件病毒檢測',
-            self::ATTACHMENT_SIZE_EXCEEDED => '附件大小超限',
-            self::ATTACHMENT_PERMISSION_DENIED => '附件權限被拒',
-            self::SUSPICIOUS_ACTIVITY_DETECTED => '檢測到可疑活動',
-            self::SECURITY_ACTIVITY_SCAN_COMPLETED => '安全掃描完成',
-            // ... 可以繼續添加更多描述
-            default => $this->value,
-        };
+        return $this->getCategory() === ActivityCategory::SECURITY || $this->isFailureAction();
     }
 }

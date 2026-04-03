@@ -9,12 +9,6 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
 use RuntimeException;
 
-/**
- * 統計快照 Repository 介面.
- *
- * 定義統計快照的基本存取操作，遵循 DDD Repository 模式。
- * 此介面專注於統計快照實體的持久化與檢索，不包含業務邏輯。
- */
 interface StatisticsRepositoryInterface
 {
     /**

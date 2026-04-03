@@ -6,16 +6,11 @@ namespace App\Domains\Shared\ValueObjects;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Exception;
 use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
+use Throwable;
 
-/**
- * Timestamp 值物件.
- *
- * 表示不可變的時間戳記，提供時間相關的領域邏輯
- */
 final readonly class Timestamp implements JsonSerializable, Stringable
 {
     private DateTimeImmutable $dateTime;
@@ -30,7 +25,7 @@ final readonly class Timestamp implements JsonSerializable, Stringable
         } elseif (is_string($timestamp)) {
             try {
                 $this->dateTime = new DateTimeImmutable($timestamp, $timezone);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 throw new InvalidArgumentException("無效的時間戳記格式: {$timestamp}");
             }
         } else {

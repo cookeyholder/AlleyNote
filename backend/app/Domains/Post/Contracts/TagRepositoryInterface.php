@@ -6,9 +6,6 @@ namespace App\Domains\Post\Contracts;
 
 use App\Domains\Post\Models\Tag;
 
-/**
- * 標籤資料存取介面.
- */
 interface TagRepositoryInterface
 {
     /**

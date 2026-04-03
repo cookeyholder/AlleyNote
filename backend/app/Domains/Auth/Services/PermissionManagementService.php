@@ -8,9 +8,6 @@ use App\Domains\Auth\Models\Permission;
 use App\Domains\Auth\Repositories\PermissionRepository;
 use App\Shared\Exceptions\NotFoundException;
 
-/**
- * 權限管理服務.
- */
 class PermissionManagementService
 {
     public function __construct(
@@ -35,7 +32,6 @@ class PermissionManagementService
     public function getPermission(int $id): Permission
     {
         $permission = $this->permissionRepository->findById($id);
-
         if (!$permission) {
             throw new NotFoundException("權限不存在 (ID: {$id})");
         }
@@ -51,7 +47,6 @@ class PermissionManagementService
     public function getPermissionByName(string $name): Permission
     {
         $permission = $this->permissionRepository->findByName($name);
-
         if (!$permission) {
             throw new NotFoundException("權限不存在 (名稱: {$name})");
         }

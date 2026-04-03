@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
 
-/**
- * 安全日誌記錄服務介面.
- */
 interface LoggingSecurityServiceInterface
 {
     /**

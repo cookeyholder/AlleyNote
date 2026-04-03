@@ -9,11 +9,6 @@ use App\Domains\Statistics\ValueObjects\ChartData;
 use App\Domains\Statistics\ValueObjects\ChartDataset;
 use App\Domains\Statistics\ValueObjects\ChartType;
 
-/**
- * 分類統計資料處理器.
- *
- * 處理圓餅圖、甜甜圈圖、長條圖等分類統計所需的資料格式化功能
- */
 class CategoryProcessor
 {
     /**
@@ -50,11 +45,9 @@ class CategoryProcessor
         if (empty($rawData)) {
             return new ChartData([], []);
         }
-
         // 排序並處理資料
         $processedData = $this->sortAndProcessData($rawData, 'desc');
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($processedData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($processedData as $index => $item) {
@@ -88,7 +81,6 @@ class CategoryProcessor
         array $options = [],
     ): ChartData {
         $pieChart = $this->processPieChartData($rawData, $label, $customColors, $options);
-
         // 轉換為甜甜圈圖
         $datasets = [];
         foreach ($pieChart->datasets as $dataset) {
@@ -118,11 +110,9 @@ class CategoryProcessor
         if (empty($rawData)) {
             return new ChartData([], []);
         }
-
         // 排序並處理資料
         $processedData = $this->sortAndProcessData($rawData, 'desc');
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($processedData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($processedData as $index => $item) {
@@ -159,14 +149,11 @@ class CategoryProcessor
         if (empty($rawData)) {
             return new ChartData([], []);
         }
-
         // 計算總和
         $total = array_sum(array_column($rawData, 'value'));
-
         if ($total <= 0) {
             return new ChartData([], []);
         }
-
         // 轉換為百分比並排序
         $percentageData = [];
         foreach ($rawData as $item) {
@@ -176,10 +163,8 @@ class CategoryProcessor
                 'value' => $percentage,
             ];
         }
-
         $processedData = $this->sortAndProcessData($percentageData, 'desc');
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($processedData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($processedData as $index => $item) {
@@ -219,14 +204,11 @@ class CategoryProcessor
         if (empty($rawData) || $topN <= 0) {
             return new ChartData([], []);
         }
-
         // 排序資料
         $sortedData = $this->sortAndProcessData($rawData, 'desc');
-
         // 取前 N 名
         $topData = array_slice($sortedData, 0, $topN);
         $remainingData = array_slice($sortedData, $topN);
-
         // 如果需要包含「其他」項目且有剩餘資料
         if ($includeOthers && !empty($remainingData)) {
             $othersValue = array_sum(array_column($remainingData, 'value'));
@@ -237,9 +219,7 @@ class CategoryProcessor
                 ];
             }
         }
-
         $colors = $customColors ?? array_slice(self::DEFAULT_COLORS, 0, count($topData));
-
         // 建立分類資料點
         $dataPoints = [];
         foreach ($topData as $index => $item) {
@@ -273,7 +253,6 @@ class CategoryProcessor
         if (empty($multiSeriesData)) {
             return new ChartData([], []);
         }
-
         // 收集所有分類
         $allCategories = [];
         foreach ($multiSeriesData as $seriesData) {
@@ -283,12 +262,10 @@ class CategoryProcessor
                 }
             }
         }
-
         // 為每個系列建立資料集
         $datasets = [];
         $colors = self::DEFAULT_COLORS;
         $colorIndex = 0;
-
         foreach ($multiSeriesData as $seriesLabel => $seriesData) {
             // 建立該系列的完整資料（包含所有分類）
             $seriesValues = [];
@@ -302,7 +279,6 @@ class CategoryProcessor
                 }
                 $seriesValues[] = $value;
             }
-
             $color = $colors[$colorIndex % count($colors)];
             $datasets[] = ChartDataset::forBarChart(
                 $seriesLabel,
@@ -331,7 +307,6 @@ class CategoryProcessor
         array $options = [],
     ): ChartData {
         $comparisonChart = $this->processComparisonData($stackedData, $label, $options);
-
         // 加入堆疊選項
         $existingScales = $comparisonChart->options['scales'] ?? [];
         $stackedOptions = array_merge($comparisonChart->options, [
@@ -359,7 +334,6 @@ class CategoryProcessor
         $filteredData = array_filter($data, function ($item) {
             return $item['value'] >= 0;
         });
-
         // 排序
         usort($filteredData, function ($a, $b) use ($order) {
             if ($order === 'asc') {
@@ -413,14 +387,12 @@ class CategoryProcessor
     ): ChartData {
         $labels = [];
         $values = [];
-
         // 依據排序欄位排序
         if ($sortBy === 'category') {
             usort($rawData, fn($a, $b) => strcmp($a['category'], $b['category']));
         } else {
             usort($rawData, fn($a, $b) => $b['value'] <=> $a['value']);
         }
-
         foreach ($rawData as $item) {
             if (!is_array($item) || !isset($item['category'], $item['value'])) {
                 continue;
@@ -428,7 +400,6 @@ class CategoryProcessor
             $labels[] = $item['category'];
             $values[] = $item['value'];
         }
-
         $dataset = new ChartDataset(
             $label,
             $values,

@@ -4,12 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
-/**
- * 統計快取服務介面.
- *
- * 定義統計功能專用的快取操作，擴展基本快取功能以支援標籤管理、
- * 批量失效等高級功能。
- */
 interface StatisticsCacheServiceInterface
 {
     /**

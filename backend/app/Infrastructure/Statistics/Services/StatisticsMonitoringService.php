@@ -7,16 +7,10 @@ namespace App\Infrastructure\Statistics\Services;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use DateTime;
-use Exception;
 use PDO;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
-/**
- * 統計監控服務.
- *
- * 負責監控統計功能的效能、健康狀態和記錄相關事件。
- * 提供統一的監控介面以便進行系統健康檢查和效能分析。
- */
 final class StatisticsMonitoringService implements StatisticsMonitoringServiceInterface
 {
     private const SLOW_QUERY_THRESHOLD = 10; // 慢查詢警告閾值
@@ -51,7 +45,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             if ($this->pdo === null) {
                 return $this->getMockCalculationMetrics();
             }
-
             $stmt = $this->pdo->prepare("
                 SELECT
                     AVG(execution_time) as avg_calculation_time,
@@ -62,10 +55,8 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 WHERE created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
                   AND query_type IN ('daily', 'monthly', 'calculation')
             ");
-
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
             if (!is_array($result)) {
                 return $this->getMockCalculationMetrics();
             }
@@ -76,7 +67,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'total_calculations' => (int) ($result['total_calculations'] ?? 0),
                 'failed_calculations' => (int) ($result['failed_calculations'] ?? 0),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to get calculation time metrics', [
                 'error' => $e->getMessage(),
             ]);
@@ -154,7 +145,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             // 取得慢查詢統計
             $slowQueryStats = $this->slowQueryService->getSlowQueryStats(7);
             $slowQueryCount = array_sum(array_column($slowQueryStats, 'slow_query_count'));
-
             $totalErrors = mt_rand(10, 100);
             $criticalErrors = mt_rand(0, 5);
 
@@ -164,7 +154,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'slow_query_count' => $slowQueryCount,
                 'critical_errors' => $criticalErrors,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to get error metrics', [
                 'error' => $e->getMessage(),
             ]);
@@ -198,11 +188,9 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'disk_space' => $this->checkDiskSpaceHealth(),
             'memory_usage' => $this->checkMemoryUsageHealth(),
         ];
-
         $healthyCount = count(array_filter($checks, fn($check) => $check['status'] === 'healthy'));
         $totalChecks = count($checks);
         $healthScore = (int) (($healthyCount / $totalChecks) * 100);
-
         $overallStatus = match (true) {
             $healthScore >= 90 => 'healthy',
             $healthScore >= 70 => 'degraded',
@@ -230,9 +218,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'memory_usage' => memory_get_usage(true),
                 'peak_memory' => memory_get_peak_usage(true),
             ];
-
             $this->logger?->info("Statistics event: {$eventType}", $logData);
-
             // 如果有資料庫連線，也可以儲存到監控表
             if ($this->pdo !== null) {
                 $stmt = $this->pdo->prepare("
@@ -244,7 +230,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             }
 
             return true;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to log statistics event', [
                 'event_type' => $eventType,
                 'error' => $e->getMessage(),
@@ -273,7 +259,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $apiMetrics = $this->getApiResponseTimeMetrics();
         $errorMetrics = $this->getErrorMetrics();
         $alerts = $this->checkAlertConditions();
-
         $summary = sprintf(
             '系統健康狀態: %s (%d%%), 總計算次數: %d, 平均回應時間: %.2fms, 錯誤率: %.2f%%',
             $healthCheck['status'],
@@ -312,16 +297,14 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 WHERE created_at < datetime('now', '-' || ? || ' days')
             ");
             $stmt->execute([self::MONITORING_DATA_RETENTION_DAYS]);
-
             $deletedRows = $stmt->rowCount();
-
             $this->logger?->info('Cleaned up old monitoring data', [
                 'deleted_rows' => $deletedRows,
                 'retention_days' => self::MONITORING_DATA_RETENTION_DAYS,
             ]);
 
             return $deletedRows;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->logger?->error('Failed to cleanup old monitoring data', [
                 'error' => $e->getMessage(),
             ]);
@@ -339,7 +322,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     {
         $alerts = [];
         $timestamp = new DateTime()->format('Y-m-d H:i:s');
-
         // 檢查慢查詢
         $errorMetrics = $this->getErrorMetrics();
         if ($errorMetrics['slow_query_count'] > self::SLOW_QUERY_THRESHOLD) {
@@ -350,7 +332,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'timestamp' => $timestamp,
             ];
         }
-
         // 檢查錯誤率
         if ($errorMetrics['error_rate'] > self::HIGH_ERROR_RATE_THRESHOLD) {
             $alerts[] = [
@@ -360,7 +341,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'timestamp' => $timestamp,
             ];
         }
-
         // 檢查快取命中率
         $cacheMetrics = $this->getCacheMetrics();
         if ($cacheMetrics['hit_rate'] < self::LOW_CACHE_HIT_RATE_THRESHOLD) {
@@ -371,7 +351,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'timestamp' => $timestamp,
             ];
         }
-
         // 檢查 API 回應時間
         $apiMetrics = $this->getApiResponseTimeMetrics();
         if ($apiMetrics['avg_response_time'] > self::HIGH_RESPONSE_TIME_THRESHOLD) {
@@ -400,7 +379,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     public function getMonitoringStatistics(DateTime $startDate, DateTime $endDate): array
     {
         $period = $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d');
-
         // 模擬時間範圍統計資料
         $totalCalculations = mt_rand(100, 1000);
         $avgResponseTime = mt_rand(100, 500) / 1.0;
@@ -440,14 +418,13 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             if ($this->pdo === null) {
                 return ['status' => 'healthy', 'message' => 'Database check skipped (no connection)'];
             }
-
             $stmt = $this->pdo->query('SELECT 1');
             $result = $stmt !== false;
 
             return $result
                 ? ['status' => 'healthy', 'message' => 'Database connection OK']
                 : ['status' => 'unhealthy', 'message' => 'Database connection failed'];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             return ['status' => 'unhealthy', 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
@@ -458,7 +435,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     private function checkCacheHealth(): array
     {
         $metrics = $this->getCacheMetrics();
-
         if ($metrics['hit_rate'] < self::LOW_CACHE_HIT_RATE_THRESHOLD) {
             return ['status' => 'degraded', 'message' => "Cache hit rate low: {$metrics['hit_rate']}%"];
         }
@@ -472,7 +448,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     private function checkStatisticsCalculationHealth(): array
     {
         $metrics = $this->getCalculationTimeMetrics();
-
         if ($metrics['failed_calculations'] > 0) {
             return ['status' => 'degraded', 'message' => "Failed calculations: {$metrics['failed_calculations']}"];
         }
@@ -486,7 +461,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     private function checkSlowQueryHealth(): array
     {
         $errorMetrics = $this->getErrorMetrics();
-
         if ($errorMetrics['slow_query_count'] > self::SLOW_QUERY_THRESHOLD) {
             return ['status' => 'degraded', 'message' => "High slow query count: {$errorMetrics['slow_query_count']}"];
         }
@@ -501,13 +475,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     {
         $freeSpace = disk_free_space('/');
         $totalSpace = disk_total_space('/');
-
         if ($freeSpace === false || $totalSpace === false) {
             return ['status' => 'unknown', 'message' => 'Unable to check disk space'];
         }
-
         $usagePercent = (($totalSpace - $freeSpace) / $totalSpace) * 100;
-
         if ($usagePercent > 90) {
             return ['status' => 'critical', 'message' => sprintf('Disk usage: %.1f%%', $usagePercent)];
         } elseif ($usagePercent > 80) {
@@ -525,10 +496,8 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $memoryUsage = memory_get_usage(true);
         $peakUsage = memory_get_peak_usage(true);
         $memoryLimit = $this->getMemoryLimit();
-
         if ($memoryLimit > 0) {
             $usagePercent = ($peakUsage / $memoryLimit) * 100;
-
             if ($usagePercent > 90) {
                 return ['status' => 'critical', 'message' => sprintf('Memory usage: %.1f%%', $usagePercent)];
             } elseif ($usagePercent > 80) {
@@ -548,7 +517,6 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         if ($memoryLimit === '-1') {
             return 0; // 無限制
         }
-
         $value = (int) $memoryLimit;
         $suffix = strtoupper(substr($memoryLimit, -1));
 

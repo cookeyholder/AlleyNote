@@ -6,11 +6,6 @@ namespace App\Infrastructure\Routing\Contracts;
 
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由收集器介面.
- *
- * 管理多個路由的收集和查詢
- */
 interface RouteCollectionInterface
 {
     /**

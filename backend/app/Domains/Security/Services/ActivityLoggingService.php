@@ -13,44 +13,6 @@ use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-/**
- * 活動記錄服務實作.
- *
- * 這是用戶活動記錄系統的核心服務類別，提供高層次的活動記錄功能，
- * 包括記錄控制、批次處理、錯誤處理和記錄清理等完整功能。
- *
- * 主要功能:
- * - 單一和批次活動記錄
- * - 記錄等級和類型控制
- * - 自動錯誤處理和日誌記錄
- * - 資料保留政策和自動清理
- * - 記錄效能監控
- *
- * 設計原則:
- * - 符合 SOLID 原則，特別是單一職責和開閉原則
- * - 使用依賴注入提高可測試性
- * - 提供豐富的日誌記錄用於監控和除錯
- * - 優雅的錯誤處理，不會因為記錄失敗影響業務邏輯
- *
- * @author AlleyNote Development Team
- * @since 1.0.0
- * @version 1.2.0
- *
- * @example
- * ```php
- * // 基本使用
- * $service = new ActivityLoggingService($repository, $logger);
- * $service->logSuccess(ActivityType::LOGIN_SUCCESS, 123);
- *
- * // 批次記錄
- * $activities = [dto1, dto2, dto3];
- * $results = $service->logBatch($activities);
- *
- * // 記錄控制
- * $service->setLogLevel(3);
- * $service->disableLogging(ActivityType::POST_VIEWED);
- * ```
- */
 class ActivityLoggingService implements ActivityLoggingServiceInterface
 {
     /** @var array<string, bool> 已停用的活動類型映射表 */
@@ -103,15 +65,12 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
 
                 return false;
             }
-
             // 檢查記錄等級
             if (!$this->shouldLogBasedOnSeverity($dto->getActionType())) {
                 return false;
             }
-
             // 記錄到資料庫
             $result = $this->repository->create($dto);
-
             if ($result === null) {
                 $this->logger->error('Repository returned null for activity log creation', [
                     'action_type' => $dto->getActionType()->value,
@@ -176,7 +135,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         if (!$this->shouldLogBasedOnSeverity($actionType)) {
             return false;
         }
-
         $dto = CreateActivityLogDTO::success(
             actionType: $actionType,
             userId: $userId,
@@ -303,7 +261,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                     ]);
                     continue;
                 }
-
                 if (
                     $this->isLoggingEnabled($dto->getActionType())
                     && $this->shouldLogBasedOnSeverity($dto->getActionType())
@@ -311,7 +268,6 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                     $filteredDtos[] = $dto;
                 }
             }
-
             if (empty($filteredDtos)) {
                 return 0;
             }
@@ -366,9 +322,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
     {
         try {
             $cutoffDate = new DateTimeImmutable('-' . self::DEFAULT_RETENTION_DAYS . ' days');
-
             $deletedCount = $this->repository->deleteOldRecords($cutoffDate);
-
             $this->logger->info('Activity log cleanup completed', [
                 'deleted_count' => $deletedCount,
                 'cutoff_date' => $cutoffDate->format('Y-m-d H:i:s'),
@@ -404,9 +358,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             ActivityType::CSRF_ATTACK_BLOCKED,
             ActivityType::XSS_ATTACK_BLOCKED,
             ActivityType::SQL_INJECTION_BLOCKED => ActivityStatus::BLOCKED,
-
             ActivityType::LOGIN_FAILED => ActivityStatus::FAILED,
-
             default => ActivityStatus::SUCCESS,
         };
     }

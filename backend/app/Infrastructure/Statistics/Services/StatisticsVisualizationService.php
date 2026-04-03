@@ -13,11 +13,6 @@ use App\Infrastructure\Statistics\Processors\CategoryProcessor;
 use App\Infrastructure\Statistics\Processors\TimeSeriesProcessor;
 use DateTimeInterface;
 
-/**
- * 統計可視化服務實作.
- *
- * 負責將統計資料加工為圖表所需的格式，並處理緩存。
- */
 class StatisticsVisualizationService implements StatisticsVisualizationServiceInterface
 {
     public function __construct(
@@ -37,7 +32,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
     ): ChartData {
         $cacheKey = 'posts_timeseries_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $granularity): ChartData {
@@ -56,7 +50,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             300, // 趨勢資料快取 5 分鐘
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -71,7 +64,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
     ): ChartData {
         $cacheKey = 'user_activity_timeseries_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $granularity): ChartData {
@@ -90,7 +82,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             300,
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -105,7 +96,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         int $limit = 10,
     ): ChartData {
         $cacheKey = 'post_source_dist_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $limit;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $limit): ChartData {
@@ -124,7 +114,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             3600,
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -139,7 +128,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         int $limit = 10,
     ): ChartData {
         $cacheKey = 'popular_tags_dist_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $limit;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $limit): ChartData {
@@ -158,7 +146,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             3600,
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -173,7 +160,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
     ): ChartData {
         $cacheKey = 'user_reg_trend_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $granularity): ChartData {
@@ -192,7 +178,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             300,
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -207,13 +192,11 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         string $granularity = 'day',
     ): ChartData {
         $cacheKey = 'content_growth_trend_' . $startDate->format('Y-m-d') . '_' . $endDate->format('Y-m-d') . '_' . $granularity;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $granularity): ChartData {
                 $metrics = ['posts', 'comments', 'attachments'];
                 $allData = [];
-
                 foreach ($metrics as $metric) {
                     $allData[$metric] = $this->queryAdapter->getTimeSeriesData(
                         $metric,
@@ -233,7 +216,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             3600,
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -249,7 +231,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         int $limit = 10,
     ): ChartData {
         $cacheKey = 'popular_content_ranking_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all') . '_' . $sortBy . '_' . $limit;
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate, $sortBy, $limit): ChartData {
@@ -267,7 +248,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             3600,
         );
-
         assert($result instanceof ChartData);
 
         return $result;
@@ -281,7 +261,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         ?DateTimeInterface $endDate = null,
     ): ChartData {
         $cacheKey = 'user_engagement_dist_' . ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' . ($endDate ? $endDate->format('Y-m-d') : 'all');
-
         $result = $this->cacheService->remember(
             $cacheKey,
             function () use ($startDate, $endDate): ChartData {
@@ -298,7 +277,6 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             },
             3600,
         );
-
         assert($result instanceof ChartData);
 
         return $result;

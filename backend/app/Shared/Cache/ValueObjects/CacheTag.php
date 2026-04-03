@@ -6,11 +6,6 @@ namespace App\Shared\Cache\ValueObjects;
 
 use InvalidArgumentException;
 
-/**
- * 快取標籤值物件.
- *
- * 表示快取項目的標籤，提供標籤驗證和正規化功能
- */
 class CacheTag
 {
     private string $name;
@@ -56,15 +51,12 @@ class CacheTag
         if (empty($name)) {
             throw new InvalidArgumentException('標籤名稱不能為空');
         }
-
         if (strlen($name) > 50) {
             throw new InvalidArgumentException('標籤名稱不能超過 50 個字符');
         }
-
         if (!preg_match('/^[a-z0-9_\-\.]+$/', $name)) {
             throw new InvalidArgumentException('標籤名稱只能包含英文字母、數字、底線、連字號和點號');
         }
-
         // 保留標籤名稱檢查
         $reserved = ['all', 'none', 'cache', 'tag', 'key', 'system', 'admin'];
         if (in_array($name, $reserved, true)) {

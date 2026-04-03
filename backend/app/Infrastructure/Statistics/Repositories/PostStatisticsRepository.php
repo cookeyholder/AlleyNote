@@ -8,19 +8,13 @@ use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
-use Exception;
 use InvalidArgumentException;
 use PDO;
 use PDOException;
 use PDOStatement;
 use RuntimeException;
+use Throwable;
 
-/**
- * 文章統計查詢 Repository 實作.
- *
- * 提供豐富的文章維度統計資料查詢功能，使用原生 SQL 最佳化效能。
- * 專注於文章相關的複雜統計查詢和分析。
- */
 final class PostStatisticsRepository implements PostStatisticsRepositoryInterface
 {
     public function __construct(
@@ -35,12 +29,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'start_date' => $period->startTime->format('Y-m-d H:i:s'),
                 'end_date' => $period->endTime->format('Y-m-d H:i:s'),
             ];
-
             if ($status !== null) {
                 $sql .= ' AND status = :status';
                 $params['status'] = $status;
             }
-
             $stmt = $this->db->prepare($sql);
             $this->bindParams($stmt, $params);
             $stmt->execute();
@@ -59,26 +51,20 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY status
                     ORDER BY count DESC';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $statusMap = [
                 '1' => 'published',
                 '0' => 'draft',
             ];
-
             $defaultStatuses = ['published', 'draft', 'archived'];
             $result = array_fill_keys($defaultStatuses, 0);
-
             while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
                 /** @var array<string, mixed> $row */
-
                 $statusFromDb = (string) ($row['status'] ?? '');
                 $statusValue = $statusMap[$statusFromDb] ?? null;
-
                 if ($statusValue && array_key_exists($statusValue, $result)) {
                     $count = isset($row['count']) && is_numeric($row['count'])
                         ? (int) $row['count']
@@ -87,6 +73,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 }
             }
 
+            /** @var array<string, int> $result */
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章狀態統計失敗: ' . $e->getMessage(), 0, $e);
@@ -101,26 +88,20 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY creation_source
                     ORDER BY count DESC';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $defaultSources = array_unique([...SourceType::getValidCodes(), 'unknown']);
             $result = array_fill_keys($defaultSources, 0);
-
             while (($row = $stmt->fetch(PDO::FETCH_ASSOC)) !== false) {
                 /** @var array<string, mixed> $row */
-
                 $sourceValue = isset($row['creation_source']) && is_string($row['creation_source'])
                     ? $row['creation_source']
                     : 'unknown';
-
                 if (!array_key_exists($sourceValue, $result)) {
                     $result[$sourceValue] = 0;
                 }
-
                 $result[$sourceValue] = isset($row['count']) && is_numeric($row['count'])
                     ? (int) $row['count']
                     : 0;
@@ -146,12 +127,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'end_date' => $period->endTime->format('Y-m-d H:i:s'),
                 'source' => $sourceType->code,
             ];
-
             if ($status !== null) {
                 $sql .= ' AND status = :status';
                 $params['status'] = $status;
             }
-
             $stmt = $this->db->prepare($sql);
             $this->bindParams($stmt, $params);
             $stmt->execute();
@@ -172,12 +151,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                         ROUND(AVG(COALESCE(views, 0)), 2) as avg_views_per_post
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return ['total_views' => 0, 'unique_views' => 0, 'avg_views_per_post' => 0.0];
@@ -199,7 +176,6 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         if ($limit <= 0 || $limit > 100) {
             throw new InvalidArgumentException('查詢數量必須在 1-100 之間');
         }
-
         $allowedMetrics = ['views', 'comments', 'likes'];
         if (!in_array($metric, $allowedMetrics, true)) {
             throw new InvalidArgumentException('不支援的排序指標: ' . $metric);
@@ -212,20 +188,17 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'comments' => 'COALESCE(comments_count, 0)',
                 'likes' => 'COALESCE(likes_count, 0)',
             };
-
             $sql = "SELECT id as post_id, title, {$orderField} as metric_value
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     AND status = 'published'
                     ORDER BY {$orderField} DESC, created_at DESC
                     LIMIT :limit";
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 /** @phpstan-ignore offsetAccess.nonOffsetAccessible, cast.int, cast.string */
@@ -258,13 +231,11 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     GROUP BY user_id
                     ORDER BY posts_count DESC, total_views DESC
                     LIMIT :limit';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 /** @phpstan-ignore offsetAccess.nonOffsetAccessible, cast.int */
@@ -295,18 +266,15 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'week' => "strftime('%Y-%W', created_at)",
                 'month' => "strftime('%Y-%m', created_at)",
             };
-
             $sql = "SELECT {$groupByClause} as time_period, COUNT(*) as count
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     GROUP BY {$groupByClause}
                     ORDER BY time_period";
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[(string) $row['time_period']] = (int) $row['count'];
@@ -323,7 +291,6 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         try {
             $currentCount = $this->getTotalPostsCount($currentPeriod);
             $previousCount = $this->getTotalPostsCount($previousPeriod);
-
             $growthCount = $currentCount - $previousCount;
             $growthRate = $previousCount > 0 ? ($growthCount / $previousCount) * 100 : 0.0;
 
@@ -333,7 +300,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'growth_rate' => round($growthRate, 2),
                 'growth_count' => $growthCount,
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new RuntimeException('取得文章成長趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
     }
@@ -349,19 +316,15 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date
                     AND content IS NOT NULL';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return ['avg_length' => 0.0, 'min_length' => 0, 'max_length' => 0, 'total_chars' => 0];
             }
-
             /** @var array<string, mixed> $row */
-
             $avgLength = isset($row['avg_length']) ? (float) $row['avg_length'] : 0.0;
             $minLength = isset($row['min_length']) ? (int) $row['min_length'] : 0;
             $maxLength = isset($row['max_length']) ? (int) $row['max_length'] : 0;
@@ -394,34 +357,27 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 if (!is_string($rangeName)) {
                     throw new InvalidArgumentException('字數範圍鍵必須為字串');
                 }
-
                 if (!isset($range['min'], $range['max'])) {
                     throw new InvalidArgumentException("字數範圍 '{$rangeName}' 必須包含 min 和 max 值");
                 }
-
                 $sql = 'SELECT COUNT(*) FROM posts
                         WHERE created_at >= :start_date AND created_at <= :end_date
                         AND LENGTH(content) >= :min_length
                         AND LENGTH(content) <= :max_length';
-
                 $stmt = $this->db->prepare($sql);
                 $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
                 $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
                 $stmt->bindValue(':min_length', (int) $range['min'], PDO::PARAM_INT);
                 $stmt->bindValue(':max_length', (int) $range['max'], PDO::PARAM_INT);
                 $stmt->execute();
-
                 $rawCount = $stmt->fetchColumn();
                 $counts[$rangeName] = is_numeric($rawCount) ? (int) $rawCount : 0;
             }
-
             $total = array_sum($counts);
             $result = [];
-
             foreach ($lengthRanges as $rangeName => $_) {
                 $count = $counts[$rangeName] ?? 0;
                 $percentage = $total > 0 ? round(($count / $total) * 100, 2) : 0.0;
-
                 $result[$rangeName] = [
                     'range' => (string) $rangeName,
                     'count' => $count,
@@ -444,19 +400,15 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                         SUM(CASE WHEN is_pinned = 1 THEN COALESCE(views, 0) ELSE 0 END) as pinned_views
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 return ['pinned_count' => 0, 'unpinned_count' => 0, 'pinned_views' => 0];
             }
-
             /** @var array<string, mixed> $row */
-
             $pinnedCount = isset($row['pinned_count']) ? (int) $row['pinned_count'] : 0;
             $unpinnedCount = isset($row['unpinned_count']) ? (int) $row['unpinned_count'] : 0;
             $pinnedViews = isset($row['pinned_views']) ? (int) $row['pinned_views'] : 0;
@@ -475,7 +427,6 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
     {
         try {
             $sql = 'SELECT COUNT(*) FROM posts WHERE created_at >= :start_date AND created_at <= :end_date LIMIT 1';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
@@ -498,12 +449,10 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                         COUNT(DISTINCT user_id) as active_authors
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date';
-
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
-
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 $basicStats = [
@@ -515,7 +464,6 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 ];
             } else {
                 /** @var array<string, mixed> $row */
-
                 $basicStats = [
                     'total_posts' => isset($row['total_posts']) ? (int) $row['total_posts'] : 0,
                     'published_posts' => isset($row['published_posts']) ? (int) $row['published_posts'] : 0,
@@ -524,7 +472,6 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     'active_authors' => isset($row['active_authors']) ? (int) $row['active_authors'] : 0,
                 ];
             }
-
             // 取得熱門來源
             $popularSources = $this->getPostsCountBySource($period);
 
@@ -550,7 +497,6 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 'month' => '%Y-%m',
                 default => '%Y-%m-%d',
             };
-
             $sql = "
                 SELECT 
                     strftime('{$dateFormat}', view_date) as date,
@@ -561,13 +507,11 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 GROUP BY date
                 ORDER BY date ASC
             ";
-
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'start_date' => $startDate->format('Y-m-d H:i:s'),
                 'end_date' => $endDate->format('Y-m-d 23:59:59'),
             ]);
-
             /** @var array<int, array{date: string, views: int, visitors: int}> */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

@@ -20,11 +20,6 @@ use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Shared\Config\JwtConfig;
 use Psr\Container\ContainerInterface;
 
-/**
- * JWT 認證服務提供者.
- *
- * 負責註冊所有 JWT 認證相關服務到 DI 容器
- */
 class AuthServiceProvider
 {
     /**
@@ -35,32 +30,23 @@ class AuthServiceProvider
         return [
             // JWT 配置
             JwtConfig::class => \DI\factory([self::class, 'createJwtConfig']),
-
             // JWT Provider
             FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
-
             // Repository 層
             RefreshTokenRepositoryInterface::class => \DI\create(RefreshTokenRepository::class),
             RefreshTokenRepository::class => \DI\create(RefreshTokenRepository::class),
-
             TokenBlacklistRepositoryInterface::class => \DI\create(TokenBlacklistRepository::class),
             TokenBlacklistRepository::class => \DI\create(TokenBlacklistRepository::class),
-
             // Service 層
             JwtTokenServiceInterface::class => \DI\factory([self::class, 'createJwtTokenService']),
             JwtTokenService::class => \DI\factory([self::class, 'createJwtTokenService']),
-
             AuthenticationServiceInterface::class => \DI\factory([self::class, 'createAuthenticationService']),
             AuthenticationService::class => \DI\factory([self::class, 'createAuthenticationService']),
-
             RefreshTokenService::class => \DI\factory([self::class, 'createRefreshTokenService']),
-
             TokenBlacklistService::class => \DI\factory([self::class, 'createTokenBlacklistService']),
-
             // Middleware
             JwtAuthenticationMiddleware::class => \DI\factory([self::class, 'createJwtAuthenticationMiddleware']),
             JwtAuthorizationMiddleware::class => \DI\factory([self::class, 'createJwtAuthorizationMiddleware']),
-
             // Middleware 別名（為路由配置使用）
             'jwt.auth' => \DI\get(JwtAuthenticationMiddleware::class),
             'jwt.authorize' => \DI\get(JwtAuthorizationMiddleware::class),

@@ -6,11 +6,6 @@ namespace App\Domains\Statistics\Models;
 
 use JsonSerializable;
 
-/**
- * 統計快照模型.
- *
- * 用於表示系統中的統計數據快照，支援不同類型和週期的統計資料存儲
- */
 class StatisticsSnapshot implements JsonSerializable
 {
     private int $id;
@@ -47,7 +42,6 @@ class StatisticsSnapshot implements JsonSerializable
         $this->periodType = isset($data['period_type']) ? (string) $data['period_type'] : '';
         $this->periodStart = isset($data['period_start']) ? (string) $data['period_start'] : '';
         $this->periodEnd = isset($data['period_end']) ? (string) $data['period_end'] : '';
-
         // 處理 JSON 資料
         if (isset($data['statistics_data'])) {
             if (is_string($data['statistics_data'])) {
@@ -61,7 +55,6 @@ class StatisticsSnapshot implements JsonSerializable
         } else {
             $this->statisticsData = [];
         }
-
         $this->totalViews = isset($data['total_views']) ? (int) $data['total_views'] : 0;
         $this->totalUniqueViewers = isset($data['total_unique_viewers']) ? (int) $data['total_unique_viewers'] : 0;
         $this->createdAt = isset($data['created_at']) ? (string) $data['created_at'] : '';

@@ -13,7 +13,6 @@ class RequestValidationException extends ValidationException
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';
         }
-
         parent::__construct($message, $errors);
     }
 
@@ -86,7 +85,6 @@ class RequestValidationException extends ValidationException
     public static function numericRangeError(string $field, $value, $min = null, mixed $max = null): self
     {
         $message = "欄位 '{$field}' 的值 '{$value}' 超出允許範圍";
-
         if ($min !== null && $max !== null) {
             $message .= "（範圍：{$min} - {$max}）";
         } elseif ($min !== null) {
@@ -94,7 +92,6 @@ class RequestValidationException extends ValidationException
         } elseif ($max !== null) {
             $message .= "（最大值：{$max}）";
         }
-
         $errors = [$field => $message];
 
         return new self('數值範圍錯誤', $errors);

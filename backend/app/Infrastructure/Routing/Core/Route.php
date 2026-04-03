@@ -10,11 +10,6 @@ use App\Infrastructure\Routing\Contracts\RouteMatchResult;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 路由實體類別.
- *
- * 實作 RouteInterface，代表單一路由的完整資訊
- */
 class Route implements RouteInterface
 {
     private ?string $name = null;
@@ -94,11 +89,9 @@ class Route implements RouteInterface
     public function matchesPath(string $path): RouteMatchResult
     {
         $compiledPattern = $this->compile();
-
         if (preg_match($compiledPattern, $path, $matches)) {
             // 移除第一個完整匹配
             array_shift($matches);
-
             // 建立參數陣列
             $parameters = [];
             foreach ($this->parameterNames as $index => $name) {
@@ -115,7 +108,6 @@ class Route implements RouteInterface
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
-
         // 檢查 HTTP 方法
         if (!$this->matchesMethod($method)) {
             return new RouteMatchResult(false, null);
@@ -128,24 +120,20 @@ class Route implements RouteInterface
     public function generateUrl(array $parameters = [], array $queryParams = []): string
     {
         $url = $this->pattern;
-
         // 替換路由參數
         foreach ($parameters as $name => $value) {
             if (!is_scalar($value)) {
                 throw new InvalidArgumentException("參數 '{$name}' 必須是純量值");
             }
-
             $placeholder = '{' . $name . '}';
             if (str_contains($url, $placeholder)) {
                 $url = str_replace($placeholder, (string) $value, $url);
             }
         }
-
         // 檢查是否還有未替換的參數
         if (preg_match('/\{([^}]+)\}/', $url, $matches)) {
             throw new InvalidArgumentException("缺少必要的路由參數: {$matches[1]}");
         }
-
         // 加入查詢參數
         if (!empty($queryParams)) {
             $url .= '?' . http_build_query($queryParams);
@@ -157,11 +145,9 @@ class Route implements RouteInterface
     public function withAttributes(array $attributes): self
     {
         $clone = clone $this;
-
         if (isset($attributes['name'])) {
             $clone->name = $attributes['name'];
         }
-
         if (isset($attributes['middlewares']) && is_array($attributes['middlewares'])) {
             $clone->middlewares = [];
             $clone->addMiddlewares($attributes['middlewares']);
@@ -212,18 +198,13 @@ class Route implements RouteInterface
         if ($this->compiledPattern !== null) {
             return $this->compiledPattern;
         }
-
         $pattern = $this->pattern;
-
         // 先將參數佔位符替換為特殊標記
         $pattern = preg_replace('/\{([^}]+)\}/', 'ROUTEPARAM', $pattern);
-
         // 轉義特殊字符
         $pattern = preg_quote($pattern, '/');
-
         // 將特殊標記轉換為正規表達式群組
         $pattern = str_replace('ROUTEPARAM', '([^\/]+)', $pattern);
-
         // 確保完整匹配
         $this->compiledPattern = '/^' . $pattern . '$/';
 

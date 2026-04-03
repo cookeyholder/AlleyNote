@@ -13,7 +13,6 @@ class ForbiddenException extends Exception
         if (empty($message)) {
             $message = '權限不足，無法執行此操作';
         }
-
         parent::__construct($message, $code);
     }
 

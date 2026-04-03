@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Tests\Security;
 
 use App\Application\Controllers\Api\V1\PostController;
+use App\Application\Middleware\AuthorizationResult;
+use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -78,6 +80,7 @@ class CsrfProtectionTest extends SecureDDDTestCase
             $this->sanitizer,
             $this->activityLogger,
             Mockery::mock(PostViewStatisticsService::class),
+            Mockery::mock(AuthorizationServiceInterface::class)->shouldReceive('authorize')->andReturn(new AuthorizationResult(true, 'Allowed', 'SUCCESS'))->getMock(),
         );
     }
 

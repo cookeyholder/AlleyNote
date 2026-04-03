@@ -13,11 +13,11 @@ use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
-use Exception;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use PDO;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
+use Throwable;
 
 class AttachmentService implements AttachmentServiceInterface
 {
@@ -31,45 +31,34 @@ class AttachmentService implements AttachmentServiceInterface
         'image/gif',
         'image/webp',
         'image/svg+xml',
-
         // PDF
         'application/pdf',
-
         // Microsoft Office - Word
         'application/msword', // .doc
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-
         // Microsoft Office - Excel
         'application/vnd.ms-excel', // .xls
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
-
         // Microsoft Office - PowerPoint
         'application/vnd.ms-powerpoint', // .ppt
         'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
-
         // LibreOffice - Writer
         'application/vnd.oasis.opendocument.text', // .odt
         'application/vnd.oasis.opendocument.text-template', // .ott
-
         // LibreOffice - Calc
         'application/vnd.oasis.opendocument.spreadsheet', // .ods
         'application/vnd.oasis.opendocument.spreadsheet-template', // .ots
-
         // LibreOffice - Impress
         'application/vnd.oasis.opendocument.presentation', // .odp
         'application/vnd.oasis.opendocument.presentation-template', // .otp
-
         // LibreOffice - Draw
         'application/vnd.oasis.opendocument.graphics', // .odg
-
         // 純文字
         'text/plain',
-
         // 壓縮檔
         'application/zip',
         'application/x-rar-compressed',
         'application/x-7z-compressed',
-
         // 媒體檔
         'audio/mpeg', // .mp3
         'video/mp4', // .mp4
@@ -113,12 +102,10 @@ class AttachmentService implements AttachmentServiceInterface
     public function validateFile(UploadedFileInterface $file): void
     {
         $filename = $file->getClientFilename();
-
         // 檢查檔案名稱是否包含路徑遍歷嘗試
         if (strpos($filename, '..') !== false || strpos($filename, '/') !== false || strpos($filename, '\\') !== false) {
             throw ValidationException::fromSingleError('file', '不支援的檔案類型');
         }
-
         // 檢查是否有多重副檔名
         $extensions = explode('.', $filename);
         array_shift($extensions); // 移除檔案名稱部分
@@ -127,7 +114,6 @@ class AttachmentService implements AttachmentServiceInterface
                 throw ValidationException::fromSingleError('file', '不支援的檔案類型');
             }
         }
-
         // 檢查檔案大小（從設定讀取）
         $maxSize = $this->getMaxFileSize();
         if ($file->getSize() > $maxSize) {
@@ -135,24 +121,18 @@ class AttachmentService implements AttachmentServiceInterface
 
             throw ValidationException::fromSingleError('file', "檔案大小超過限制（{$maxSizeMB}MB）");
         }
-
         // 取得檔案內容
         $stream = $file->getStream();
         $content = $stream->getContents();
         $stream->rewind(); // 重置串流位置
-
         // 1. 使用 magic numbers 檢測真實的 MIME 類型
         $realMimeType = $this->mimeDetector->detectMimeTypeFromBuffer($content);
-
         // 2. 取得客戶端宣告的 MIME 類型作為參考
         $clientMimeType = $file->getClientMediaType();
-
         // 3. 從副檔名取得預期的 MIME 類型
         $pathMimeType = $this->mimeDetector->detectMimeTypeFromPath($filename ?? '');
-
         // 4. 驗證 MIME 類型（優先使用 magic numbers 檢測結果）
         $finalMimeType = $realMimeType ?? $clientMimeType ?? $pathMimeType;
-
         // 檢查是否在允許的類型列表中
         $allowedTypes = $this->getAllowedFileTypes();
         if ($finalMimeType !== null && !in_array($finalMimeType, $allowedTypes, true)) {
@@ -163,7 +143,6 @@ class AttachmentService implements AttachmentServiceInterface
         } elseif ($finalMimeType === null) {
             throw ValidationException::fromSingleError('file', '無法識別檔案類型');
         }
-
         // 5. 驗證客戶端宣告的 MIME 與實際檢測的是否一致（防止偽裝）
         if ($realMimeType && $clientMimeType && $realMimeType !== $clientMimeType) {
             // 允許某些已知的合法差異（例如 text/plain 與 application/octet-stream）
@@ -171,7 +150,6 @@ class AttachmentService implements AttachmentServiceInterface
                 throw ValidationException::fromSingleError('file', '檔案類型驗證失敗：檔案內容與宣告不符');
             }
         }
-
         // 6. 掃描檔案內容是否含有潛在的惡意程式碼
         if ($this->containsMaliciousContent($content)) {
             throw ValidationException::fromSingleError('file', '檔案內容不安全');
@@ -191,11 +169,10 @@ class AttachmentService implements AttachmentServiceInterface
             $stmt->execute();
             /** @var array<string, mixed>|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
             if (is_array($result) && isset($result['value']) && is_numeric($result['value'])) {
                 return (int) $result['value'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
 
@@ -215,11 +192,10 @@ class AttachmentService implements AttachmentServiceInterface
             $stmt->execute();
             /** @var array<string, mixed>|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
             if (is_array($result) && isset($result['value']) && is_numeric($result['value'])) {
                 return (int) $result['value'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
 
@@ -238,7 +214,6 @@ class AttachmentService implements AttachmentServiceInterface
             $stmt = $pdo->prepare("SELECT value FROM settings WHERE key = 'allowed_file_types' LIMIT 1");
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
             if (is_array($result) && isset($result['value']) && is_string($result['value'])) {
                 $extensions = json_decode($result['value'], true);
                 if (is_array($extensions)) {
@@ -246,7 +221,7 @@ class AttachmentService implements AttachmentServiceInterface
                     return $this->extensionsToMimeTypes($extensions);
                 }
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
 
@@ -267,10 +242,8 @@ class AttachmentService implements AttachmentServiceInterface
             'gif' => 'image/gif',
             'webp' => 'image/webp',
             'svg' => 'image/svg+xml',
-
             // PDF
             'pdf' => 'application/pdf',
-
             // Microsoft Office
             'doc' => 'application/msword',
             'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
@@ -278,7 +251,6 @@ class AttachmentService implements AttachmentServiceInterface
             'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'ppt' => 'application/vnd.ms-powerpoint',
             'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-
             // LibreOffice
             'odt' => 'application/vnd.oasis.opendocument.text',
             'ott' => 'application/vnd.oasis.opendocument.text-template',
@@ -287,22 +259,18 @@ class AttachmentService implements AttachmentServiceInterface
             'odp' => 'application/vnd.oasis.opendocument.presentation',
             'otp' => 'application/vnd.oasis.opendocument.presentation-template',
             'odg' => 'application/vnd.oasis.opendocument.graphics',
-
             // 純文字
             'txt' => 'text/plain',
-
             // 壓縮檔
             'zip' => 'application/zip',
             'rar' => 'application/x-rar-compressed',
             '7z' => 'application/x-7z-compressed',
-
             // 媒體
             'mp3' => 'audio/mpeg',
             'mp4' => 'video/mp4',
             'avi' => 'video/x-msvideo',
             'mov' => 'video/quicktime',
         ];
-
         foreach ($extensions as $ext) {
             if (isset($extensionToMime[$ext])) {
                 $mimeTypes[] = $extensionToMime[$ext];
@@ -323,7 +291,6 @@ class AttachmentService implements AttachmentServiceInterface
             'application/x-zip' => ['application/zip'],
             'application/x-zip-compressed' => ['application/zip'],
         ];
-
         if (isset($alternatives[$mimeType])) {
             foreach ($alternatives[$mimeType] as $alt) {
                 if (in_array($alt, $allowedTypes, true)) {
@@ -345,15 +312,12 @@ class AttachmentService implements AttachmentServiceInterface
             // ZIP 檔案可能被識別為不同的 MIME 類型
             ['application/zip', 'application/x-zip-compressed'],
             ['application/zip', 'application/octet-stream'],
-
             // Office 檔案
             ['application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/octet-stream'],
             ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/octet-stream'],
-
             // 純文字
             ['text/plain', 'application/octet-stream'],
         ];
-
         foreach ($acceptableMismatches as [$type1, $type2]) {
             if (($realMimeType === $type1 && $clientMimeType === $type2)
                 || ($realMimeType === $type2 && $clientMimeType === $type1)) {
@@ -391,7 +355,6 @@ class AttachmentService implements AttachmentServiceInterface
             '/<asp/i',
             '/<jsp/i',
         ];
-
         foreach ($maliciousPatterns as $pattern) {
             if (preg_match($pattern, $content)) {
                 return true;
@@ -417,9 +380,7 @@ class AttachmentService implements AttachmentServiceInterface
 
                 return true; // 如果沒有 GD，跳過圖片處理
             }
-
             $image = null;
-
             // 根據 MIME 類型載入圖片
             switch ($mimeType) {
                 case 'image/jpeg':
@@ -432,25 +393,20 @@ class AttachmentService implements AttachmentServiceInterface
                     $image = imagecreatefromgif($filePath);
                     break;
             }
-
             if ($image === false) {
                 throw ValidationException::fromSingleError('file', '無法處理圖片檔案');
             }
-
             // 取得圖片尺寸
             $width = imagesx($image);
             $height = imagesy($image);
-
             // 檢查圖片尺寸是否合理（防止記憶體攻擊）
             if ($width > 4096 || $height > 4096) {
                 imagedestroy($image);
 
                 throw ValidationException::fromSingleError('file', '圖片尺寸過大');
             }
-
             // 建立新的乾淨畫布
             $cleanImage = imagecreatetruecolor($width, $height);
-
             // 處理透明度（PNG 和 GIF）
             if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
                 imagealphablending($cleanImage, false);
@@ -459,10 +415,8 @@ class AttachmentService implements AttachmentServiceInterface
                 imagefill($cleanImage, 0, 0, $transparent);
                 imagealphablending($cleanImage, true);
             }
-
             // 複製圖片到新畫布
             imagecopyresampled($cleanImage, $image, 0, 0, 0, 0, $width, $height, $width, $height);
-
             // 儲存乾淨的圖片（覆蓋原檔案）
             $result = false;
             switch ($mimeType) {
@@ -476,13 +430,12 @@ class AttachmentService implements AttachmentServiceInterface
                     $result = imagegif($cleanImage, $filePath);
                     break;
             }
-
             // 清理記憶體
             imagedestroy($image);
             imagedestroy($cleanImage);
 
             return $result;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             app_log('error', 'Image sanitization failed', ['exception' => $e->getMessage()]);
 
             throw ValidationException::fromSingleError('file', '圖片處理失敗：' . $e->getMessage());
@@ -500,12 +453,10 @@ class AttachmentService implements AttachmentServiceInterface
             // ClamAV 不可用，跳過掃描
             return true;
         }
-
         // 執行病毒掃描
         $command = escapeshellcmd(trim($clamavPath)) . ' --no-summary --infected ' . escapeshellarg($filePath);
         $output = shell_exec($command . ' 2>&1');
         $exitCode = shell_exec('echo $?');
-
         // ClamAV 回傳碼：0=乾淨, 1=感染, 2=錯誤
         if (intval($exitCode) === 1) {
             app_log('warning', 'Virus detected in file', ['file_path' => $filePath]);
@@ -525,34 +476,27 @@ class AttachmentService implements AttachmentServiceInterface
         $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
         $safeExtension = strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $extension));
         $newFilename = bin2hex(random_bytes(16)) . '.' . $safeExtension;
-
         // 建立安全的臨時目錄
         $tempDir = sys_get_temp_dir() . '/alleynote_upload_' . bin2hex(random_bytes(8));
         if (!mkdir($tempDir, 0o700, true)) {
             throw ValidationException::fromSingleError('directory', '無法建立臨時目錄');
         }
-
         $tempPath = $tempDir . '/' . $newFilename;
 
         try {
             // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
-
             // 在臨時位置進行所有驗證
             $this->validateFile($file);
-
             // 重新驗證檔案類型（基於實際內容）
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $actualMimeType = finfo_file($finfo, $tempPath);
             finfo_close($finfo);
-
             if (!in_array($actualMimeType, self::ALLOWED_MIME_TYPES, true)) {
                 throw ValidationException::fromSingleError('file', '檔案類型不符合預期');
             }
-
             // 圖片重新渲染
             $this->sanitizeImage($tempPath, $actualMimeType);
-
             // 病毒掃描
             if (!$this->scanForVirus($tempPath)) {
                 throw ValidationException::fromSingleError('file', '檔案包含惡意程式碼');
@@ -566,7 +510,7 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $actualMimeType,
                 'file_size' => filesize($tempPath),
             ];
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 清理臨時檔案
             if (file_exists($tempPath)) {
                 unlink($tempPath);
@@ -574,7 +518,6 @@ class AttachmentService implements AttachmentServiceInterface
             if (is_dir($tempDir)) {
                 rmdir($tempDir);
             }
-
             // 將 RuntimeException 轉換為 ValidationException
             if ($e instanceof RuntimeException) {
                 throw ValidationException::fromSingleError('file', '檔案上傳失敗');
@@ -593,14 +536,21 @@ class AttachmentService implements AttachmentServiceInterface
         if ($this->authService->isSuperAdmin($userId)) {
             return true;
         }
-
         // 檢查文章是否存在並且是否為文章的擁有者
-        $post = $this->postRepo->find($postId);
-        if (!$post) {
-            return false;
+        $postUserId = $this->extractPostUserId($this->postRepo->find($postId));
+
+        return $postUserId !== null && $postUserId === $userId;
+    }
+
+    private function extractPostUserId(mixed $post): ?int
+    {
+        if (!is_object($post) || !method_exists($post, 'getUserId')) {
+            return null;
         }
 
-        return $post->getUserId() === $userId;
+        $postUserId = $post->getUserId();
+
+        return is_int($postUserId) ? $postUserId : null;
     }
 
     /**
@@ -612,7 +562,6 @@ class AttachmentService implements AttachmentServiceInterface
         if ($this->authService->isSuperAdmin($userId)) {
             return true;
         }
-
         // 找到附件並檢查關聯的文章
         $attachment = $this->attachmentRepo->findByUuid($attachmentUuid);
         if (!$attachment) {
@@ -641,11 +590,9 @@ class AttachmentService implements AttachmentServiceInterface
 
             throw ValidationException::fromSingleError('post_id', '無權限上傳附件到此公告');
         }
-
         // 檢查附件數量限制
         $currentAttachmentCount = $this->attachmentRepo->countByPostId($postId);
         $maxAttachments = $this->getMaxAttachmentsPerPost();
-
         if ($currentAttachmentCount >= $maxAttachments) {
             throw ValidationException::fromSingleError('file', "此文章附件數量已達上限（{$maxAttachments} 個）");
         }
@@ -657,14 +604,12 @@ class AttachmentService implements AttachmentServiceInterface
             // 記錄不同類型的驗證失敗
             $error = $e->getErrors()[0] ?? ['message' => $e->getMessage()];
             $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED; // 預設
-
             // 根據錯誤訊息判斷具體的失敗類型
             if (str_contains($error['message'], '病毒') || str_contains($error['message'], '惡意程式碼')) {
                 $activityType = ActivityType::ATTACHMENT_VIRUS_DETECTED;
             } elseif (str_contains($error['message'], '大小超過')) {
                 $activityType = ActivityType::ATTACHMENT_SIZE_EXCEEDED;
             }
-
             $this->activityLogger->logFailure(
                 $activityType,
                 $currentUserId,
@@ -685,16 +630,13 @@ class AttachmentService implements AttachmentServiceInterface
             if (!is_dir($this->uploadDir)) {
                 mkdir($this->uploadDir, 0o755, true);
             }
-
             // 移動檔案到最終位置
             $finalPath = $this->uploadDir . '/' . $fileInfo['filename'];
             if (!rename($fileInfo['temp_path'], $finalPath)) {
                 throw ValidationException::fromSingleError('file', '檔案移動失敗');
             }
-
             // 清理臨時目錄
             rmdir($fileInfo['temp_dir']);
-
             // 儲存到資料庫
             $attachmentData = [
                 'post_id' => $postId,
@@ -704,9 +646,7 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $fileInfo['mime_type'],
                 'storage_path' => $finalPath,
             ];
-
             $attachment = $this->attachmentRepo->create($attachmentData);
-
             // 記錄成功上傳
             $this->activityLogger->logSuccess(
                 ActivityType::ATTACHMENT_UPLOADED,
@@ -722,7 +662,7 @@ class AttachmentService implements AttachmentServiceInterface
             );
 
             return $attachment;
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             // 清理失敗時的檔案
             if (file_exists($fileInfo['temp_path'])) {
                 unlink($fileInfo['temp_path']);
@@ -744,7 +684,6 @@ class AttachmentService implements AttachmentServiceInterface
         if (!$attachment) {
             throw new NotFoundException('找不到指定的附件');
         }
-
         // 檢查權限
         if (!$this->canAccessAttachment($currentUserId, $uuid)) {
             $this->activityLogger->logFailure(
@@ -760,21 +699,16 @@ class AttachmentService implements AttachmentServiceInterface
 
             throw ValidationException::fromSingleError('permission', '您沒有權限下載此附件');
         }
-
         $filePath = "{$this->uploadDir}/{$attachment->getStoragePath()}";
-
         // 確保檔案在允許的目錄中
         $realPath = realpath($filePath);
         $uploadDirReal = realpath($this->uploadDir);
-
         if ($realPath === false || strpos($realPath, $uploadDirReal) !== 0) {
             throw ValidationException::fromSingleError('path', '無效的檔案路徑');
         }
-
         if (!file_exists($filePath)) {
             throw new NotFoundException('找不到附件檔案');
         }
-
         // 記錄成功下載
         $this->activityLogger->logSuccess(
             ActivityType::ATTACHMENT_DOWNLOADED,
@@ -809,28 +743,22 @@ class AttachmentService implements AttachmentServiceInterface
 
             throw ValidationException::fromSingleError('permission', '您沒有權限刪除此附件');
         }
-
         $attachment = $this->attachmentRepo->findByUuid($uuid);
         if (!$attachment) {
             throw new NotFoundException('找不到指定的附件');
         }
-
         // 安全地刪除檔案
         $path = "{$this->uploadDir}/{$attachment->getStoragePath()}";
         if (file_exists($path)) {
             // 確保檔案在允許的目錄中
             $realPath = realpath($path);
             $uploadDirReal = realpath($this->uploadDir);
-
             if ($realPath === false || strpos($realPath, $uploadDirReal) !== 0) {
                 throw ValidationException::fromSingleError('path', '無效的檔案路徑');
             }
-
             unlink($path);
         }
-
         $this->attachmentRepo->delete($attachment->getId());
-
         // 記錄成功刪除
         $this->activityLogger->logSuccess(
             ActivityType::ATTACHMENT_DELETED,

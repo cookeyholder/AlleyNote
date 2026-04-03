@@ -7,11 +7,6 @@ namespace App\Infrastructure\Routing\Contracts;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 中介軟體管理器介面.
- *
- * 定義中介軟體管理器的標準行為，負責管理和執行中介軟體鏈
- */
 interface MiddlewareManagerInterface
 {
     /**

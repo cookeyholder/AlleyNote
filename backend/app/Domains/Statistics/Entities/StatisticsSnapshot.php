@@ -8,17 +8,11 @@ use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
 use DateTimeInterface;
-use Exception;
 use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
+use Throwable;
 
-/**
- * StatisticsSnapshot 統計快照實體.
- *
- * 代表某個時間週期內的統計資料快照，是統計領域的核心聚合根。
- * 負責管理統計資料的生命週期、驗證資料完整性，以及提供查詢介面。
- */
 class StatisticsSnapshot implements JsonSerializable
 {
     private int $id;
@@ -70,7 +64,6 @@ class StatisticsSnapshot implements JsonSerializable
     public function __construct(array $data)
     {
         $this->validateConstructorData($data);
-
         /** @phpstan-ignore-next-line cast.int */
         $this->id = (int) ($data['id'] ?? 0);
         /** @phpstan-ignore-next-line cast.string */
@@ -142,7 +135,6 @@ class StatisticsSnapshot implements JsonSerializable
     }
 
     // 領域方法
-
     /**
      * 檢查快照是否已過期
      */
@@ -202,7 +194,6 @@ class StatisticsSnapshot implements JsonSerializable
         if (!is_array($trends) || !array_key_exists('growth_rate', $trends)) {
             return null;
         }
-
         $growthRate = $trends['growth_rate'];
         if ($growthRate === null) {
             return null;
@@ -263,7 +254,6 @@ class StatisticsSnapshot implements JsonSerializable
         if ($expiresAt !== null && $expiresAt <= $this->createdAt) {
             throw new InvalidArgumentException('過期時間必須晚於建立時間');
         }
-
         $this->expiresAt = $expiresAt;
         $this->updatedAt = new DateTime();
     }
@@ -347,7 +337,6 @@ class StatisticsSnapshot implements JsonSerializable
     }
 
     // 私有方法
-
     /**
      * @param array<string, mixed> $data
      * @throws InvalidArgumentException
@@ -373,7 +362,6 @@ class StatisticsSnapshot implements JsonSerializable
         $periodStart = (string) ($data['period_start'] ?? '');
         /** @phpstan-ignore-next-line cast.string */
         $periodEnd = (string) ($data['period_end'] ?? '');
-
         if (empty($periodType) || empty($periodStart) || empty($periodEnd)) {
             throw new InvalidArgumentException('統計週期資料不完整');
         }
@@ -411,13 +399,12 @@ class StatisticsSnapshot implements JsonSerializable
         if ($dateTime === null || $dateTime === '') {
             return null;
         }
-
         /** @phpstan-ignore-next-line cast.string */
         $dateTimeString = is_string($dateTime) ? $dateTime : (string) $dateTime;
 
         try {
             return new DateTime($dateTimeString);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw new InvalidArgumentException("無效的日期時間格式: {$dateTimeString}");
         }
     }

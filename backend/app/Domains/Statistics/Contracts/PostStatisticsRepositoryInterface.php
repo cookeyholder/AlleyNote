@@ -8,12 +8,6 @@ use App\Domains\Statistics\ValueObjects\SourceType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
 
-/**
- * 文章統計查詢 Repository 介面.
- *
- * 專門處理文章相關的統計查詢，提供豐富的文章維度統計資料。
- * 此介面遵循 ISP（Interface Segregation Principle），專注於文章統計查詢。
- */
 interface PostStatisticsRepositoryInterface
 {
     /**

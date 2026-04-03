@@ -6,11 +6,6 @@ namespace App\Shared\Cache\Drivers;
 
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 
-/**
- * 檔案快取驅動。
- *
- * 使用檔案系統存儲快取資料，支援持久化存儲
- */
 class FileCacheDriver implements CacheDriverInterface
 {
     /** @var string 快取目錄路徑 */
@@ -40,27 +35,23 @@ class FileCacheDriver implements CacheDriverInterface
     public function get(string $key, mixed $default = null): mixed
     {
         $filePath = $this->getCacheFilePath($key);
-
         if (!file_exists($filePath)) {
             $this->stats['misses']++;
 
             return $default;
         }
-
         $content = file_get_contents($filePath);
         if ($content === false) {
             $this->stats['misses']++;
 
             return $default;
         }
-
         $data = unserialize($content);
         if (!is_array($data) || !isset($data['value'], $data['expires_at'])) {
             $this->stats['misses']++;
 
             return $default;
         }
-
         // 檢查過期
         if ($data['expires_at'] !== 0 && time() > $data['expires_at']) {
             unlink($filePath);
@@ -68,7 +59,6 @@ class FileCacheDriver implements CacheDriverInterface
 
             return $default;
         }
-
         $this->stats['hits']++;
 
         return $data['value'];
@@ -78,15 +68,12 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $filePath = $this->getCacheFilePath($key);
         $this->ensureDirectoryExists(dirname($filePath));
-
         $data = [
             'value' => $value,
             'expires_at' => $ttl > 0 ? time() + $ttl : 0,
             'created_at' => time(),
         ];
-
         $result = file_put_contents($filePath, serialize($data), LOCK_EX) !== false;
-
         if ($result) {
             $this->stats['sets']++;
         }
@@ -97,21 +84,17 @@ class FileCacheDriver implements CacheDriverInterface
     public function has(string $key): bool
     {
         $filePath = $this->getCacheFilePath($key);
-
         if (!file_exists($filePath)) {
             return false;
         }
-
         $content = file_get_contents($filePath);
         if ($content === false) {
             return false;
         }
-
         $data = unserialize($content);
         if (!is_array($data) || !isset($data['expires_at'])) {
             return false;
         }
-
         // 檢查過期
         if ($data['expires_at'] !== 0 && time() > $data['expires_at']) {
             unlink($filePath);
@@ -125,7 +108,6 @@ class FileCacheDriver implements CacheDriverInterface
     public function forget(string $key): bool
     {
         $filePath = $this->getCacheFilePath($key);
-
         if (file_exists($filePath)) {
             $result = unlink($filePath);
             if ($result) {
@@ -142,17 +124,14 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $success = true;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-
         if ($files === false) {
             return false;
         }
-
         foreach ($files as $file) {
             if (!unlink($file)) {
                 $success = false;
             }
         }
-
         if ($success) {
             $this->stats['clears']++;
         }
@@ -198,11 +177,9 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $deleted = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-
         if ($files === false) {
             return 0;
         }
-
         foreach ($files as $file) {
             $key = $this->getKeyFromFilePath($file);
             if ($this->matchesPattern($key, $pattern)) {
@@ -237,11 +214,9 @@ class FileCacheDriver implements CacheDriverInterface
     public function remember(string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
     {
         $value = $this->get($key);
-
         if ($value !== null) {
             return $value;
         }
-
         $value = $callback();
         if ($value !== null) {
             $this->put($key, $value, $ttl);
@@ -284,22 +259,18 @@ class FileCacheDriver implements CacheDriverInterface
         $cleaned = 0;
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-
         if ($files === false) {
             return 0;
         }
-
         foreach ($files as $file) {
             $content = file_get_contents($file);
             if ($content === false) {
                 continue;
             }
-
             $data = unserialize($content);
             if (!is_array($data) || !isset($data['expires_at'])) {
                 continue;
             }
-
             if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at']) {
                 if (unlink($file)) {
                     $cleaned++;
@@ -368,7 +339,6 @@ class FileCacheDriver implements CacheDriverInterface
     {
         $totalSize = 0;
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-
         if ($files !== false) {
             foreach ($files as $file) {
                 $totalSize += filesize($file);
@@ -386,22 +356,18 @@ class FileCacheDriver implements CacheDriverInterface
         $expired = 0;
         $currentTime = time();
         $files = glob($this->cachePath . '/*' . self::CACHE_EXTENSION);
-
         if ($files === false) {
             return 0;
         }
-
         foreach ($files as $file) {
             $content = file_get_contents($file);
             if ($content === false) {
                 continue;
             }
-
             $data = unserialize($content);
             if (!is_array($data) || !isset($data['expires_at'])) {
                 continue;
             }
-
             if ($data['expires_at'] !== 0 && $currentTime > $data['expires_at']) {
                 $expired++;
             }

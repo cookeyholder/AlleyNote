@@ -9,14 +9,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * 統計週期值物件.
- *
- * 表示統計資料的時間範圍，包含週期類型、開始時間、結束時間和時區。
- * 此值物件是 immutable 的，一旦建立就不能修改。
- *
- * @psalm-immutable
- */
 final readonly class StatisticsPeriod implements JsonSerializable
 {
     /**
@@ -45,7 +37,6 @@ final readonly class StatisticsPeriod implements JsonSerializable
         if (!isset($data['type'], $data['start_time'], $data['end_time'])) {
             throw new InvalidArgumentException('Missing required fields: type, start_time, end_time');
         }
-
         $type = PeriodType::from($data['type']);
         $startTime = new DateTimeImmutable($data['start_time']);
         $endTime = new DateTimeImmutable($data['end_time']);
@@ -197,12 +188,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
         if ($this->startTime >= $this->endTime) {
             throw new InvalidArgumentException('Start time must be before end time');
         }
-
         // 檢查時區格式是否有效
         if (!$this->isValidTimezone($this->timezone)) {
             throw new InvalidArgumentException("Invalid timezone: {$this->timezone}");
         }
-
         // 檢查週期長度是否符合類型定義
         $this->validatePeriodLength();
     }
@@ -215,7 +204,6 @@ final readonly class StatisticsPeriod implements JsonSerializable
     private function validatePeriodLength(): void
     {
         $durationInDays = $this->getDurationInDays();
-
         match ($this->type) {
             PeriodType::DAILY => $durationInDays === 1 ?: throw new InvalidArgumentException('Daily period must be exactly 1 day'),
             PeriodType::WEEKLY => $durationInDays === 7 ?: throw new InvalidArgumentException('Weekly period must be exactly 7 days'),

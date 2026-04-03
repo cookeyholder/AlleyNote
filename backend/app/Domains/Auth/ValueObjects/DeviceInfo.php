@@ -7,15 +7,6 @@ namespace App\Domains\Auth\ValueObjects;
 use InvalidArgumentException;
 use JsonSerializable;
 
-/**
- * Device Info Value Object.
- *
- * 表示使用者裝置的資訊，用於追蹤和管理不同裝置的 JWT Token。
- * 此類別是不可變的，確保裝置資訊的完整性和一致性。
- *
- * @author GitHub Copilot
- * @since 1.0.0
- */
 final readonly class DeviceInfo implements JsonSerializable
 {
     /**
@@ -53,7 +44,6 @@ final readonly class DeviceInfo implements JsonSerializable
         $this->validateUserAgent($userAgent);
         $this->validateIpAddress($ipAddress);
         $this->validateDeviceType($isMobile, $isTablet, $isDesktop);
-
         if ($platform !== null) {
             $this->validatePlatform($platform);
         }
@@ -72,7 +62,6 @@ final readonly class DeviceInfo implements JsonSerializable
     public static function fromUserAgent(string $userAgent, string $ipAddress, ?string $deviceName = null): self
     {
         $parsedInfo = self::parseUserAgent($userAgent);
-
         $deviceId = self::generateDeviceId($userAgent, $ipAddress);
         $deviceName ??= self::generateDeviceName($parsedInfo);
 
@@ -217,7 +206,6 @@ final readonly class DeviceInfo implements JsonSerializable
         if ($this->isMobile) {
             return 'mobile';
         }
-
         if ($this->isTablet) {
             return 'tablet';
         }
@@ -248,7 +236,6 @@ final readonly class DeviceInfo implements JsonSerializable
         if ($this->browser === null) {
             return 'Unknown Browser';
         }
-
         $browserInfo = $this->browser;
         if ($this->browserVersion !== null) {
             $browserInfo .= ' ' . $this->browserVersion;
@@ -265,7 +252,6 @@ final readonly class DeviceInfo implements JsonSerializable
         if ($this->platform === null) {
             return 'Unknown Platform';
         }
-
         $platformInfo = $this->platform;
         if ($this->osVersion !== null) {
             $platformInfo .= ' ' . $this->osVersion;
@@ -391,7 +377,6 @@ final readonly class DeviceInfo implements JsonSerializable
 
             return implode('.', $parts);
         }
-
         if (filter_var($this->ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
             // IPv6: 簡單處理，保留前面部分，後面用 xxxx 替換
             // 對於 2001:db8::1，我們要得到 2001:db8::xxxx
@@ -456,18 +441,14 @@ final readonly class DeviceInfo implements JsonSerializable
             'isTablet' => false,
             'isDesktop' => true,
         ];
-
         // 平板檢測（先檢測平板，因為某些平板也會匹配行動裝置）
         $tabletPattern = '/iPad|Android.*Tablet|Windows.*Touch/i';
         $info['isTablet'] = preg_match($tabletPattern, $userAgent) === 1;
-
         // 行動裝置檢測（排除平板）
         $mobilePattern = '/Mobile|Android|iPhone|iPod|Windows Phone|BlackBerry/i';
         $info['isMobile'] = !$info['isTablet'] && preg_match($mobilePattern, $userAgent) === 1;
-
         // 如果是行動裝置或平板，則不是桌面
         $info['isDesktop'] = !$info['isMobile'] && !$info['isTablet'];
-
         // 平台檢測 (先檢測更具體的模式)
         if (preg_match('/iPad.*CPU OS ([0-9_]+)/i', $userAgent, $matches)) {
             // iPad 專用檢測
@@ -489,7 +470,6 @@ final readonly class DeviceInfo implements JsonSerializable
         } elseif (preg_match('/Linux/i', $userAgent)) {
             $info['platform'] = 'Linux';
         }
-
         // 瀏覽器檢測
         if (preg_match('/Chrome\/([0-9.]+)/i', $userAgent, $matches)) {
             $info['browser'] = 'Chrome';
@@ -521,11 +501,9 @@ final readonly class DeviceInfo implements JsonSerializable
         if (empty($deviceId)) {
             throw new InvalidArgumentException('Device ID cannot be empty');
         }
-
         if (mb_strlen($deviceId) > 255) {
             throw new InvalidArgumentException('Device ID cannot exceed 255 characters');
         }
-
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $deviceId)) {
             throw new InvalidArgumentException('Device ID can only contain letters, numbers, underscores and hyphens');
         }
@@ -542,7 +520,6 @@ final readonly class DeviceInfo implements JsonSerializable
         if (empty($deviceName)) {
             throw new InvalidArgumentException('Device name cannot be empty');
         }
-
         if (mb_strlen($deviceName) > 255) {
             throw new InvalidArgumentException('Device name cannot exceed 255 characters');
         }
@@ -559,7 +536,6 @@ final readonly class DeviceInfo implements JsonSerializable
         if (empty($userAgent)) {
             throw new InvalidArgumentException('User agent cannot be empty');
         }
-
         if (mb_strlen($userAgent) > 1000) {
             throw new InvalidArgumentException('User agent cannot exceed 1000 characters');
         }
@@ -576,7 +552,6 @@ final readonly class DeviceInfo implements JsonSerializable
         if (empty($ipAddress)) {
             throw new InvalidArgumentException('IP address cannot be empty');
         }
-
         if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
             throw new InvalidArgumentException('IP address format is invalid');
         }
@@ -616,7 +591,6 @@ final readonly class DeviceInfo implements JsonSerializable
             'Chromium',
             'Other',
         ];
-
         if (!in_array($browser, $validBrowsers, true)) {
             throw new InvalidArgumentException(
                 'Browser must be one of: ' . implode(', ', $validBrowsers),
@@ -635,7 +609,6 @@ final readonly class DeviceInfo implements JsonSerializable
     private function validateDeviceType(bool $isMobile, bool $isTablet, bool $isDesktop): void
     {
         $trueCount = ($isMobile ? 1 : 0) + ($isTablet ? 1 : 0) + ($isDesktop ? 1 : 0);
-
         if ($trueCount !== 1) {
             throw new InvalidArgumentException('Exactly one device type (mobile, tablet, desktop) must be true');
         }

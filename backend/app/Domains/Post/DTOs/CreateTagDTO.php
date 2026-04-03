@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
 
-/**
- * 建立標籤 DTO.
- */
 readonly class CreateTagDTO
 {
     public function __construct(

@@ -9,9 +9,6 @@ use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivityType;
 use DateTimeInterface;
 
-/**
- * 活動記錄存儲庫介面.
- */
 interface ActivityLogRepositoryInterface
 {
     /**

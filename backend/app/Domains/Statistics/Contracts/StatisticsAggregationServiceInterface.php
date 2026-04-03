@@ -8,11 +8,6 @@ use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeInterface;
 
-/**
- * 統計聚合服務介面.
- *
- * 定義統計聚合服務的合約，用於統計資料的計算、聚合與快照管理。
- */
 interface StatisticsAggregationServiceInterface
 {
     /**

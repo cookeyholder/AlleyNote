@@ -8,16 +8,11 @@ use App\Application\Controllers\BaseController;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
-use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 use Throwable;
 
-/**
- * 統計可視化 API 控制器.
- *
- * 提供前端圖表所需的各種統計資料 API 端點
- */
 class StatisticsChartController extends BaseController
 {
     public function __construct(
@@ -36,13 +31,10 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = $this->visualizationService->getPostsTimeSeriesData(
                 $startDate,
                 $endDate,
@@ -62,7 +54,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -78,13 +70,10 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = $this->visualizationService->getUserActivityTimeSeriesData(
                 $startDate,
                 $endDate,
@@ -104,7 +93,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -120,13 +109,10 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = $this->visualizationService->getViewsTimeSeriesData($startDate, $endDate, $granularity);
 
             return $this->json($response, [
@@ -141,7 +127,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得瀏覽量統計失敗: ' . $e->getMessage());
+            throw new RuntimeException('取得瀏覽量統計失敗: ' . $e->getMessage());
         }
     }
 
@@ -159,16 +145,13 @@ class StatisticsChartController extends BaseController
             $type = $args['type'] ?? 'sources';
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             /** @var string|null $startDateStr */
             $startDateStr = $params['start_date'] ?? null;
             /** @var string|null $endDateStr */
             $endDateStr = $params['end_date'] ?? null;
-
             $startDate = $this->parseOptionalDate($startDateStr);
             $endDate = $this->parseOptionalDate($endDateStr);
             $limit = $this->parseIntParam($params, 'limit', 10, 1, 50);
-
             $chartData = match ($type) {
                 'sources' => $this->visualizationService->getPostSourceDistributionData(
                     $startDate,
@@ -201,7 +184,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -219,13 +202,10 @@ class StatisticsChartController extends BaseController
             $type = $args['type'] ?? 'registration';
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             [$startDate, $endDate] = $this->parseDateRange($params);
             /** @var string $granularity */
             $granularity = $params['granularity'] ?? 'day';
-
             $this->validateGranularity($granularity);
-
             $chartData = match ($type) {
                 'registration' => $this->visualizationService->getUserRegistrationTrendData(
                     $startDate,
@@ -254,7 +234,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -270,20 +250,16 @@ class StatisticsChartController extends BaseController
         try {
             /** @var array<string, mixed> $params */
             $params = $request->getQueryParams();
-
             /** @var string|null $startDateStr */
             $startDateStr = $params['start_date'] ?? null;
             /** @var string|null $endDateStr */
             $endDateStr = $params['end_date'] ?? null;
-
             $startDate = $this->parseOptionalDate($startDateStr);
             $endDate = $this->parseOptionalDate($endDateStr);
             /** @var string $sortBy */
             $sortBy = $params['sort_by'] ?? 'views';
             $limit = $this->parseIntParam($params, 'limit', 10, 1, 50);
-
             $this->validateSortBy($sortBy);
-
             $chartData = $this->visualizationService->getPopularContentRankingData(
                 $startDate,
                 $endDate,
@@ -305,7 +281,7 @@ class StatisticsChartController extends BaseController
         } catch (ValidationException $e) {
             throw $e;
         } catch (Throwable $e) {
-            throw new Exception('取得統計資料失敗');
+            throw new RuntimeException('取得統計資料失敗');
         }
     }
 
@@ -322,7 +298,6 @@ class StatisticsChartController extends BaseController
         $startDateStr = $params['start_date'] ?? null;
         /** @var string|null $endDateStr */
         $endDateStr = $params['end_date'] ?? null;
-
         if (!$startDateStr || !$endDateStr) {
             // 預設為最近 30 天
             $endDate = new DateTimeImmutable();
@@ -331,11 +306,10 @@ class StatisticsChartController extends BaseController
             try {
                 $startDate = new DateTimeImmutable($startDateStr);
                 $endDate = new DateTimeImmutable($endDateStr);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
                 throw ValidationException::fromSingleError('date_format', '日期格式無效，請使用 YYYY-MM-DD 格式');
             }
         }
-
         if ($startDate > $endDate) {
             throw ValidationException::fromSingleError('date_range', '開始日期不能晚於結束日期');
         }
@@ -354,7 +328,7 @@ class StatisticsChartController extends BaseController
 
         try {
             return new DateTimeImmutable($dateStr);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             throw ValidationException::fromSingleError('date_format', '日期格式無效，請使用 YYYY-MM-DD 格式');
         }
     }
@@ -372,13 +346,10 @@ class StatisticsChartController extends BaseController
         int $max = 100,
     ): int {
         $value = $params[$key] ?? $default;
-
         if (!is_numeric($value)) {
             throw ValidationException::fromSingleError($key, "參數 {$key} 必須為整數");
         }
-
         $intValue = (int) $value;
-
         if ($intValue < $min || $intValue > $max) {
             throw ValidationException::fromSingleError($key, "參數 {$key} 必須在 {$min} 到 {$max} 之間");
         }
@@ -392,7 +363,6 @@ class StatisticsChartController extends BaseController
     private function validateGranularity(string $granularity): void
     {
         $validGranularities = ['hour', 'day', 'week', 'month', 'year'];
-
         if (!in_array($granularity, $validGranularities)) {
             throw ValidationException::fromSingleError('granularity', '時間粒度無效，支援的粒度: ' . implode(', ', $validGranularities));
         }
@@ -404,7 +374,6 @@ class StatisticsChartController extends BaseController
     private function validateSortBy(string $sortBy): void
     {
         $validSortOptions = ['views', 'likes', 'comments'];
-
         if (!in_array($sortBy, $validSortOptions)) {
             throw ValidationException::fromSingleError('sort_by', '排序選項無效，支援的選項: ' . implode(', ', $validSortOptions));
         }

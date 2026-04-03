@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * CreationSource 值物件.
- *
- * 表示文章的建立來源
- */
 final readonly class CreationSource implements JsonSerializable, Stringable
 {
     private string $source;
@@ -26,17 +21,14 @@ final readonly class CreationSource implements JsonSerializable, Stringable
     public function __construct(string $source, string $detail = '')
     {
         $trimmedSource = trim(strtolower($source));
-
         if (empty($trimmedSource)) {
             throw new InvalidArgumentException('建立來源不能為空');
         }
-
         if (!in_array($trimmedSource, self::VALID_SOURCES, true)) {
             throw new InvalidArgumentException(
                 sprintf('無效的建立來源：%s。有效值：%s', $source, implode(', ', self::VALID_SOURCES)),
             );
         }
-
         $this->source = $trimmedSource;
         $this->detail = trim($detail);
     }

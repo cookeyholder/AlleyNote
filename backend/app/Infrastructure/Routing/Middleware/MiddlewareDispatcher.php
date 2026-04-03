@@ -10,11 +10,6 @@ use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * 中介軟體執行器.
- *
- * 負責執行中介軟體鏈，採用遞迴方式建立執行鏈
- */
 class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 {
     public function dispatch(
@@ -33,7 +28,6 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
     ): RequestHandlerInterface {
         // 反向遍歷中介軟體，從最後一個開始建立鏈
         $handler = $finalHandler;
-
         for ($i = count($middlewares) - 1; $i >= 0; $i--) {
             $middleware = $middlewares[$i];
             $handler = $this->createMiddlewareHandler($middleware, $handler);

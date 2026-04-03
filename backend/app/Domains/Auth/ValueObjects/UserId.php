@@ -8,11 +8,6 @@ use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
 
-/**
- * UserId 值物件.
- *
- * 表示使用者唯一識別符
- */
 final readonly class UserId implements JsonSerializable, Stringable
 {
     private int $value;
@@ -22,7 +17,6 @@ final readonly class UserId implements JsonSerializable, Stringable
         if ($userId <= 0) {
             throw new InvalidArgumentException('使用者 ID 必須是正整數');
         }
-
         $this->value = $userId;
     }
 

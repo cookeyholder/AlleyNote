@@ -6,10 +6,6 @@ namespace App\Domains\Statistics\Services;
 
 use PDO;
 
-/**
- * 進階分析服務
- * 提供裝置類型、瀏覽器、來源等進階統計分析.
- */
 class AdvancedAnalyticsService
 {
     public function __construct(
@@ -29,33 +25,27 @@ class AdvancedAnalyticsService
     {
         $query = 'SELECT user_agent FROM post_views WHERE 1=1';
         $params = [];
-
         if ($postId !== null) {
             $query .= ' AND post_id = :post_id';
             $params['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $query .= ' AND DATE(view_date) >= :start_date';
             $params['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $query .= ' AND DATE(view_date) <= :end_date';
             $params['end_date'] = $endDate;
         }
-
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         $deviceStats = [
             'Desktop' => 0,
             'Mobile' => 0,
             'Tablet' => 0,
             'Unknown' => 0,
         ];
-
         foreach ($userAgents as $ua) {
             $parsed = $this->userAgentParser->parse($ua);
             $deviceType = $parsed['device_type'];
@@ -74,34 +64,27 @@ class AdvancedAnalyticsService
     {
         $query = 'SELECT user_agent FROM post_views WHERE 1=1';
         $params = [];
-
         if ($postId !== null) {
             $query .= ' AND post_id = :post_id';
             $params['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $query .= ' AND DATE(view_date) >= :start_date';
             $params['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $query .= ' AND DATE(view_date) <= :end_date';
             $params['end_date'] = $endDate;
         }
-
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         $browserStats = [];
-
         foreach ($userAgents as $ua) {
             $parsed = $this->userAgentParser->parse($ua);
             $browser = $parsed['browser'];
             $browserStats[$browser] = ($browserStats[$browser] ?? 0) + 1;
         }
-
         arsort($browserStats);
 
         return $browserStats;
@@ -116,34 +99,27 @@ class AdvancedAnalyticsService
     {
         $query = 'SELECT user_agent FROM post_views WHERE 1=1';
         $params = [];
-
         if ($postId !== null) {
             $query .= ' AND post_id = :post_id';
             $params['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $query .= ' AND DATE(view_date) >= :start_date';
             $params['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $query .= ' AND DATE(view_date) <= :end_date';
             $params['end_date'] = $endDate;
         }
-
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         $osStats = [];
-
         foreach ($userAgents as $ua) {
             $parsed = $this->userAgentParser->parse($ua);
             $os = $parsed['os'];
             $osStats[$os] = ($osStats[$os] ?? 0) + 1;
         }
-
         arsort($osStats);
 
         return $osStats;
@@ -158,57 +134,44 @@ class AdvancedAnalyticsService
     {
         $query = 'SELECT referrer, COUNT(*) as count FROM post_views WHERE referrer IS NOT NULL AND referrer != ""';
         $params = [];
-
         if ($postId !== null) {
             $query .= ' AND post_id = :post_id';
             $params['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $query .= ' AND DATE(view_date) >= :start_date';
             $params['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $query .= ' AND DATE(view_date) <= :end_date';
             $params['end_date'] = $endDate;
         }
-
         $query .= ' GROUP BY referrer ORDER BY count DESC LIMIT :limit';
-
         $stmt = $this->pdo->prepare($query);
-
         foreach ($params as $key => $value) {
             $stmt->bindValue($key, $value);
         }
         $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         // 計算總數以計算百分比
         $totalQuery = 'SELECT COUNT(*) FROM post_views WHERE referrer IS NOT NULL AND referrer != ""';
         $totalParams = [];
-
         if ($postId !== null) {
             $totalQuery .= ' AND post_id = :post_id';
             $totalParams['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $totalQuery .= ' AND DATE(view_date) >= :start_date';
             $totalParams['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $totalQuery .= ' AND DATE(view_date) <= :end_date';
             $totalParams['end_date'] = $endDate;
         }
-
         $totalStmt = $this->pdo->prepare($totalQuery);
         $totalStmt->execute($totalParams);
         $total = (int) $totalStmt->fetchColumn();
-
         $stats = [];
         foreach ($results as $row) {
             $stats[] = [
@@ -236,31 +199,24 @@ class AdvancedAnalyticsService
             WHERE 1=1
         ";
         $params = [];
-
         if ($postId !== null) {
             $query .= ' AND post_id = :post_id';
             $params['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $query .= ' AND DATE(view_date) >= :start_date';
             $params['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $query .= ' AND DATE(view_date) <= :end_date';
             $params['end_date'] = $endDate;
         }
-
         $query .= ' GROUP BY hour ORDER BY hour';
-
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
         // 初始化所有小時為0
         $distribution = array_fill(0, 24, 0);
-
         foreach ($results as $row) {
             $distribution[(int) $row['hour']] = (int) $row['count'];
         }
@@ -286,22 +242,18 @@ class AdvancedAnalyticsService
         // 獲取總瀏覽量和獨立訪客
         $query = 'SELECT COUNT(*) as total_views, COUNT(DISTINCT user_ip) as unique_visitors FROM post_views WHERE 1=1';
         $params = [];
-
         if ($postId !== null) {
             $query .= ' AND post_id = :post_id';
             $params['post_id'] = $postId;
         }
-
         if ($startDate !== null) {
             $query .= ' AND DATE(view_date) >= :start_date';
             $params['start_date'] = $startDate;
         }
-
         if ($endDate !== null) {
             $query .= ' AND DATE(view_date) <= :end_date';
             $params['end_date'] = $endDate;
         }
-
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $totals = $stmt->fetch(PDO::FETCH_ASSOC);
