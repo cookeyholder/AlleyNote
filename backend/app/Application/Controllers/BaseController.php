@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Controllers;
 
+use App\Infrastructure\Http\ExceptionRegistry;
 use App\Shared\Enums\HttpStatusCode;
 use App\Shared\Enums\JsonFlag;
 use App\Shared\Http\ApiResponse;
@@ -12,18 +13,7 @@ use Throwable;
 
 abstract class BaseController
 {
-    /** @var array<string, HttpStatusCode> */
-    private const EXCEPTION_HTTP_CODES = [
-        'App\Domains\Post\Exceptions\PostNotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Domains\Post\Exceptions\PostStatusException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Shared\Exceptions\NotFoundException' => HttpStatusCode::NOT_FOUND,
-        'App\Shared\Exceptions\StateTransitionException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Shared\Exceptions\ValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Shared\Exceptions\Validation\RequestValidationException' => HttpStatusCode::UNPROCESSABLE_ENTITY,
-        'App\Domains\Auth\Exceptions\UnauthorizedException' => HttpStatusCode::UNAUTHORIZED,
-        'App\Domains\Auth\Exceptions\ForbiddenException' => HttpStatusCode::FORBIDDEN,
-        'App\Domains\Auth\Exceptions\CsrfTokenException' => HttpStatusCode::FORBIDDEN,
-    ];
+    private static ?ExceptionRegistry $exceptionRegistry = null;
 
     protected function json(
         ResponseInterface $response,
@@ -91,9 +81,9 @@ abstract class BaseController
 
     private function getHttpCodeFromException(Throwable $e): HttpStatusCode
     {
-        $className = get_class($e);
-        if (array_key_exists($className, self::EXCEPTION_HTTP_CODES)) {
-            return self::EXCEPTION_HTTP_CODES[$className];
+        $status = self::getExceptionRegistry()->resolve($e);
+        if ($status !== null) {
+            return $status;
         }
 
         return HttpStatusCode::INTERNAL_SERVER_ERROR;
@@ -102,5 +92,14 @@ abstract class BaseController
     private function getFallbackJson(): string
     {
         return '{"success":false,"error":{"message":"JSON encoding failed"}}';
+    }
+
+    private static function getExceptionRegistry(): ExceptionRegistry
+    {
+        if (self::$exceptionRegistry === null) {
+            self::$exceptionRegistry = ExceptionRegistry::createDefault();
+        }
+
+        return self::$exceptionRegistry;
     }
 }

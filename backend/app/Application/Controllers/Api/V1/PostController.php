@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
+use App\Application\Resources\PostResource;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
@@ -21,8 +22,6 @@ use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Helpers\NetworkHelper;
-use DateTime;
-use DateTimeZone;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -122,30 +121,20 @@ class PostController extends BaseController
                 $filters['status'] = $queryParams['status'];
             }
             $result = $this->postService->listPosts($page, $limit, $filters);
-            // 將 Post 對象正確序列化為數組
+            // 將 Post 透過 Resource 轉換為 API 陣列
             /** @var array<int, Post> $postItems */
             $postItems = $result['items'];
-            $items = array_map(
-                static fn(Post $post): array => $post->toArray(),
-                $postItems,
-            );
             // 批量獲取瀏覽統計
             $postIds = array_values(array_map(
                 static fn(Post $post): int => $post->getId(),
                 $postItems,
             ));
             $viewStats = $this->postViewStatsService->getBatchPostViewStats($postIds);
-            // 將瀏覽統計添加到每篇文章
-            foreach ($items as &$item) {
-                if (isset($item['id']) && isset($viewStats[$item['id']])) {
-                    $item['views'] = $viewStats[$item['id']]['views'];
-                    $item['unique_visitors'] = $viewStats[$item['id']]['unique_visitors'];
-                } else {
-                    $item['views'] = 0;
-                    $item['unique_visitors'] = 0;
-                }
-            }
-            unset($item);
+            $items = array_map(function (Post $post) use ($viewStats): array {
+                $stats = $viewStats[$post->getId()] ?? ['views' => 0, 'unique_visitors' => 0];
+
+                return (new PostResource($post, ['stats' => $stats]))->resolve();
+            }, $postItems);
             $responseData = $this->paginatedResponse(
                 $items,
                 $result['total'],
@@ -401,22 +390,12 @@ class PostController extends BaseController
                     'ip_address' => $userIp,
                 ],
             );
-            $postData = $post->toSafeArray($this->sanitizer);
-            // 確保 publish_date 是 RFC3339 格式
-            if (isset($postData['publish_date']) && is_string($postData['publish_date'])) {
-                if (strpos($postData['publish_date'], 'T') === false) {
-                    try {
-                        $dt = new DateTime($postData['publish_date'], new DateTimeZone('UTC'));
-                        $postData['publish_date'] = $dt->format(DateTime::ATOM);
-                    } catch (Throwable $e) {
-                        // 保持原值
-                    }
-                }
-            }
             // 添加瀏覽統計
             $viewStats = $this->postViewStatsService->getPostViewStats($id);
-            $postData['views'] = $viewStats['views'];
-            $postData['unique_visitors'] = $viewStats['unique_visitors'];
+            $postData = (new PostResource($post, [
+                'sanitizer' => $this->sanitizer,
+                'stats' => $viewStats,
+            ]))->resolve();
             $successResponse = $this->successResponse($postData, '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));
 

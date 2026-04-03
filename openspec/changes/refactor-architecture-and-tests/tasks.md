@@ -1,18 +1,18 @@
 ## 1. 架構基礎建設
 
-- [ ] 1.1 定義 `ApiExceptionInterface` 與其基礎實作
-- [ ] 1.2 實作 `ExceptionRegistry` 中央註冊器並配置預設映射
-- [ ] 1.3 建立 `App\Shared\Http\ApiResource` 基底類別
-- [ ] 1.4 實作 `PostResource` 並遷移現有的 `Post` 轉換邏輯
+- [x] 1.1 定義 `ApiExceptionInterface` 與其基礎實作
+- [x] 1.2 實作 `ExceptionRegistry` 中央註冊器並配置預設映射
+- [x] 1.3 建立 `App\Shared\Http\ApiResource` 基底類別
+- [x] 1.4 實作 `PostResource` 並遷移現有的 `Post` 轉換邏輯
 
 ## 2. 核心組件重構
 
 - [ ] 2.1 執行技術實驗 (Spike)：驗證 Swagger 能正確掃描 Interface 上的註解
-- [ ] 2.2 重構 `BaseController`：移除靜態對照表，整合 `ExceptionRegistry`
+- [x] 2.2 重構 `BaseController`：移除靜態對照表，整合 `ExceptionRegistry`
 - [ ] 2.3 建立 `PostApiInterface` 與 `AuthApiInterface`
 - [ ] 2.4 遷移 OpenAPI 註解至上述介面，並讓 Controller 實作之
-- [ ] 2.5 簡化 `PostController`：將資料轉換與統計合併邏輯移至 `PostResource`
-- [ ] 2.6 遷移系統內其餘控制器至新的例外處理機制 (一次到位)
+- [x] 2.5 簡化 `PostController`：將資料轉換與統計合併邏輯移至 `PostResource`
+- [x] 2.6 遷移系統內其餘控制器至新的例外處理機制 (一次到位)
 
 ## 3. 測試基礎設施與 DSL 構建
 
