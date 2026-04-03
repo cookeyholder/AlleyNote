@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Processors;
+
 use App\Domains\Statistics\ValueObjects\ChartData;
 use App\Domains\Statistics\ValueObjects\ChartDataset;
 use App\Domains\Statistics\ValueObjects\ChartType;
@@ -11,6 +12,7 @@ use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
+
 class TimeSeriesProcessor
 {
     private const SUPPORTED_GRANULARITIES = [
@@ -20,6 +22,7 @@ class TimeSeriesProcessor
         'month' => 'P1M',
         'year' => 'P1Y',
     ];
+
     public function processTimeSeriesData(
         array $rawData,
         string $metric,
@@ -44,12 +47,14 @@ class TimeSeriesProcessor
                 );
             }
         }
+
         return ChartData::forTimeSeries(
             $dataPoints,
             $metric,
             ChartType::Line->getDefaultOptions(),
         );
     }
+
     public function processMultiSeriesData(
         array $allData,
         string $title,
@@ -98,12 +103,14 @@ class TimeSeriesProcessor
             $datasets[] = $dataset;
             $colorIndex++;
         }
+
         return new ChartData(
             labels: array_keys($allData),
             datasets: $datasets,
             options: [],
         );
     }
+
     public function processEngagementData(
         array $rawData,
         string $granularity = 'day',
@@ -114,6 +121,7 @@ class TimeSeriesProcessor
             $granularity,
         );
     }
+
     public function processMultiMetricData(
         array $allData,
         string $title,
@@ -126,10 +134,12 @@ class TimeSeriesProcessor
             $granularity,
         );
     }
+
     private function inferDateRangeFromData(array $rawData): array
     {
         if (empty($rawData)) {
             $now = new DateTimeImmutable();
+
             return [$now->sub(new DateInterval('P30D')), $now];
         }
         $timestamps = array_map(function ($item) {
@@ -138,10 +148,13 @@ class TimeSeriesProcessor
                 $timestamp = $item['timestamp'] ?? $item['date'] ?? null;
             }
             $timestampStr = is_string($timestamp) ? $timestamp : 'now';
+
             return new DateTimeImmutable($timestampStr);
         }, $rawData);
+
         return [min($timestamps), max($timestamps)];
     }
+
     private function validateGranularity(string $granularity): void
     {
         if (!array_key_exists($granularity, self::SUPPORTED_GRANULARITIES)) {
@@ -151,6 +164,7 @@ class TimeSeriesProcessor
             );
         }
     }
+
     public function getDefaultColors(): array
     {
         return [

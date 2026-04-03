@@ -3,21 +3,26 @@
 declare(strict_types=1);
 
 namespace App\Application\Middleware;
+
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Services\RateLimitService;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class RateLimitMiddleware implements MiddlewareInterface
 {
     private RateLimitService $rateLimitService;
+
     private array $config;
+
     public function __construct(RateLimitService $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
+
     public function process(Request $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri()->getPath();
@@ -40,8 +45,10 @@ class RateLimitMiddleware implements MiddlewareInterface
         }
         // 設定速率限制標頭
         $response = $handler->handle($request);
+
         return $this->addRateLimitHeaders($response, $result);
     }
+
     /**
      * 判斷請求的操作類型.
      */
@@ -67,9 +74,11 @@ class RateLimitMiddleware implements MiddlewareInterface
         if ($method === 'POST' && strpos($uri, '/posts') !== false) {
             return 'post_create';
         }
+
         // 預設
         return 'default';
     }
+
     /**
      * 取得使用者 ID.
      */
@@ -77,8 +86,10 @@ class RateLimitMiddleware implements MiddlewareInterface
     {
         // 從 request attributes 中取得使用者 ID
         $userId = $request->getAttribute('user_id');
+
         return $userId ? (int) $userId : null;
     }
+
     /**
      * 建立速率限制回應.
      */
@@ -102,12 +113,14 @@ class RateLimitMiddleware implements MiddlewareInterface
             $body = $this->generateRateLimitHtml($result);
             $response = new Response(429, ['Content-Type' => 'text/html; charset=utf-8'], $body);
         }
+
         return $response
             ->withHeader('Retry-After', (string) ($result['reset'] - time()))
             ->withHeader('X-RateLimit-Limit', (string) $result['limit'])
             ->withHeader('X-RateLimit-Remaining', '0')
             ->withHeader('X-RateLimit-Reset', (string) $result['reset']);
     }
+
     /**
      * 添加速率限制標頭.
      */
@@ -118,6 +131,7 @@ class RateLimitMiddleware implements MiddlewareInterface
             ->withHeader('X-RateLimit-Remaining', (string) $result['remaining'])
             ->withHeader('X-RateLimit-Reset', (string) $result['reset']);
     }
+
     /**
      * 產生速率限制 HTML 頁面.
      */
@@ -125,6 +139,7 @@ class RateLimitMiddleware implements MiddlewareInterface
     {
         $retryAfter = $result['reset'] - time();
         $retryTime = date('H:i:s', $result['reset']);
+
         return <<<HTML
             <!DOCTYPE html>
             <html lang="zh-TW">
@@ -180,6 +195,7 @@ class RateLimitMiddleware implements MiddlewareInterface
             </html>
             HTML;
     }
+
     /**
      * 預設設定.
      */
@@ -193,6 +209,7 @@ class RateLimitMiddleware implements MiddlewareInterface
             ],
         ];
     }
+
     /**
      * 取得真實的客戶端 IP 位址.
      */
@@ -225,19 +242,24 @@ class RateLimitMiddleware implements MiddlewareInterface
                 }
             }
         }
+
         return $remoteAddr;
     }
+
     public function getPriority(): int
     {
         return 10; // 中等優先級
     }
+
     public function getName(): string
     {
         return 'rate-limit';
     }
+
     public function shouldProcess(Request $request): bool
     {
         $uri = $request->getUri()->getPath();
+
         // 檢查是否需要跳過速率限制
         return !in_array($uri, $this->config['skip_paths'], true);
     }

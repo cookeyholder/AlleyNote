@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Setting\Services;
+
 use RuntimeException;
+
 class SettingManagementService
 {
     /**
@@ -16,9 +18,11 @@ class SettingManagementService
         'site_timezone',
         'site_locale',
     ];
+
     public function __construct(
         private readonly SettingRepository $settingRepository,
     ) {}
+
     /**
      * 取得所有設定.
      *
@@ -43,8 +47,10 @@ class SettingManagementService
                 'description' => $setting['description'],
             ];
         }
+
         return $result;
     }
+
     /**
      * 取得單一設定.
      *
@@ -61,6 +67,7 @@ class SettingManagementService
         if (!$authenticated && !in_array($key, self::PUBLIC_KEYS, true)) {
             throw new NotFoundException("設定不存在 (Key: {$key})");
         }
+
         return [
             'key' => $setting['key'],
             'value' => $setting['value'],
@@ -68,6 +75,7 @@ class SettingManagementService
             'description' => $setting['description'],
         ];
     }
+
     /**
      * 批量更新設定.
      *
@@ -85,6 +93,7 @@ class SettingManagementService
             if (!is_string($key)) {
                 continue;
             }
+
             try {
                 $updated[$key] = $this->updateSetting($key, $value);
             } catch (NotFoundException $e) {
@@ -93,10 +102,13 @@ class SettingManagementService
         }
         if (!empty($errors)) {
             $validationResult = new ValidationResult(false, $errors);
+
             throw new ValidationException($validationResult, '部分設定更新失敗');
         }
+
         return $updated;
     }
+
     /**
      * 更新單一設定.
      *
@@ -114,6 +126,7 @@ class SettingManagementService
         if (!$updatedSetting) {
             throw new NotFoundException("設定更新失敗 (Key: {$key})");
         }
+
         return [
             'key' => $updatedSetting['key'],
             'value' => $updatedSetting['value'],
@@ -121,6 +134,7 @@ class SettingManagementService
             'description' => $updatedSetting['description'],
         ];
     }
+
     /**
      * 建立或更新設定.
      *
@@ -139,6 +153,7 @@ class SettingManagementService
             if (!$updatedSetting) {
                 throw new RuntimeException("設定更新失敗 (Key: {$key})");
             }
+
             return [
                 'key' => $updatedSetting['key'],
                 'value' => $updatedSetting['value'],
@@ -147,6 +162,7 @@ class SettingManagementService
             ];
         }
         $newSetting = $this->settingRepository->create($key, $value, $type ?? 'string', $description);
+
         return [
             'key' => $newSetting['key'],
             'value' => $newSetting['value'],
@@ -154,6 +170,7 @@ class SettingManagementService
             'description' => $newSetting['description'],
         ];
     }
+
     /**
      * 刪除設定.
      *

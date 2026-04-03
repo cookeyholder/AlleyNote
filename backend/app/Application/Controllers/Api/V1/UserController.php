@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\DTOs\UpdateUserDTO;
 use App\Domains\Auth\Services\UserManagementService;
@@ -11,11 +12,13 @@ use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class UserController
 {
     public function __construct(
         private readonly UserManagementService $userManagementService,
     ) {}
+
     /**
      * 取得使用者列表.
      *
@@ -103,8 +106,10 @@ class UserController
             ],
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
     /**
      * 取得單一使用者.
      *
@@ -167,6 +172,7 @@ class UserController
                 'data' => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -174,9 +180,11 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 建立使用者.
      *
@@ -247,6 +255,7 @@ class UserController
                 'data' => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -255,9 +264,11 @@ class UserController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 更新使用者.
      *
@@ -339,6 +350,7 @@ class UserController
                 'data' => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -346,6 +358,7 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -354,9 +367,11 @@ class UserController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 刪除使用者.
      *
@@ -410,6 +425,7 @@ class UserController
                 'message' => '使用者刪除成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -417,9 +433,11 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 分配角色給使用者.
      *
@@ -491,6 +509,7 @@ class UserController
                 'message' => '角色分配成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -498,9 +517,11 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 啟用使用者.
      *
@@ -556,6 +577,7 @@ class UserController
                 'data' => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -563,9 +585,11 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 停用使用者.
      *
@@ -621,6 +645,7 @@ class UserController
                 'data' => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -628,9 +653,11 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 重設使用者密碼（管理員）.
      *
@@ -716,6 +743,7 @@ class UserController
                 'message' => '密碼重設成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -723,6 +751,7 @@ class UserController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -731,6 +760,7 @@ class UserController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }

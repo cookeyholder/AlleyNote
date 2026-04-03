@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
+
 final readonly class BatchExportResult
 {
     /**
@@ -18,6 +19,7 @@ final readonly class BatchExportResult
         public string $batchId,
         public array $metadata = [],
     ) {}
+
     /**
      * 取得總記錄數.
      */
@@ -25,6 +27,7 @@ final readonly class BatchExportResult
     {
         return array_sum(array_map(fn($result) => $result->recordCount, $this->results));
     }
+
     /**
      * 取得總檔案大小.
      */
@@ -32,14 +35,17 @@ final readonly class BatchExportResult
     {
         return array_sum(array_map(fn($result) => $result->fileSize, $this->results));
     }
+
     /**
      * 取得成功率.
      */
     public function getSuccessRate(): float
     {
         $total = $this->successCount + $this->failureCount;
+
         return $total > 0 ? ($this->successCount / $total) * 100 : 0.0;
     }
+
     /**
      * 是否全部成功.
      */
@@ -47,6 +53,7 @@ final readonly class BatchExportResult
     {
         return $this->failureCount === 0 && $this->successCount > 0;
     }
+
     /**
      * 是否有失敗.
      */
@@ -54,6 +61,7 @@ final readonly class BatchExportResult
     {
         return $this->failureCount > 0;
     }
+
     /**
      * 取得格式化的總檔案大小.
      */
@@ -62,8 +70,10 @@ final readonly class BatchExportResult
         $totalSize = $this->getTotalFileSize();
         $units = ['B', 'KB', 'MB', 'GB'];
         $factor = (int) floor(log($totalSize, 1024));
+
         return sprintf('%.2f %s', $totalSize / (1024 ** $factor), $units[$factor] ?? 'TB');
     }
+
     /**
      * 轉換為陣列.
      *

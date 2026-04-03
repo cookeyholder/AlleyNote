@@ -3,16 +3,21 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Drivers;
+
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
+
 class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 {
     /** @var array<string, array{value: mixed, expires_at: int}> 快取資料 */
     private array $cache = [];
+
     /** @var array<string, array<string>> 標籤索引 */
     private array $tagIndex = [];
+
     /** @var array<string> 當前標籤 */
     private array $tags = [];
+
     /** @var array<string, int> 統計資料 */
     private array $stats = [
         'hits' => 0,
@@ -21,16 +26,20 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         'deletes' => 0,
         'clears' => 0,
     ];
+
     /** @var int 最大快取項目數量 */
     private int $maxItems;
+
     public function __construct(int $maxItems = 1000)
     {
         $this->maxItems = $maxItems;
     }
+
     public function get(string $key, mixed $default = null): mixed
     {
         if (!isset($this->cache[$key])) {
             $this->stats['misses']++;
+
             return $default;
         }
         $item = $this->cache[$key];
@@ -38,11 +47,14 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         if ($item['expires_at'] !== 0 && time() > $item['expires_at']) {
             unset($this->cache[$key]);
             $this->stats['misses']++;
+
             return $default;
         }
         $this->stats['hits']++;
+
         return $item['value'];
     }
+
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
         // 檢查是否達到最大項目數
@@ -59,8 +71,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $this->addKeyToTags($key, $this->tags);
         }
         $this->stats['sets']++;
+
         return true;
     }
+
     public function has(string $key): bool
     {
         if (!isset($this->cache[$key])) {
@@ -70,35 +84,45 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         // 檢查過期
         if ($item['expires_at'] !== 0 && time() > $item['expires_at']) {
             unset($this->cache[$key]);
+
             return false;
         }
+
         return true;
     }
+
     public function forget(string $key): bool
     {
         if (isset($this->cache[$key])) {
             unset($this->cache[$key]);
             $this->removeKeyFromAllTags($key);
             $this->stats['deletes']++;
+
             return true;
         }
+
         return false;
     }
+
     public function flush(): bool
     {
         $this->cache = [];
         $this->tagIndex = [];
         $this->stats['clears']++;
+
         return true;
     }
+
     public function many(array $keys): array
     {
         $result = [];
         foreach ($keys as $key) {
             $result[$key] = $this->get($key);
         }
+
         return $result;
     }
+
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $success = true;
@@ -107,8 +131,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $success = false;
             }
         }
+
         return $success;
     }
+
     public function forgetMany(array $keys): bool
     {
         $success = true;
@@ -117,8 +143,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $success = false;
             }
         }
+
         return $success;
     }
+
     public function forgetPattern(string $pattern): int
     {
         $deleted = 0;
@@ -130,22 +158,28 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 }
             }
         }
+
         return $deleted;
     }
+
     public function increment(string $key, int $value = 1): int
     {
         $current = $this->get($key, 0);
         $newValue = (is_int($current) || is_numeric($current)) ? (int) $current + $value : $value;
         $this->put($key, $newValue);
+
         return $newValue;
     }
+
     public function decrement(string $key, int $value = 1): int
     {
         $current = $this->get($key, 0);
         $newValue = (is_int($current) || is_numeric($current)) ? (int) $current - $value : -$value;
         $this->put($key, $newValue);
+
         return $newValue;
     }
+
     public function remember(string $key, callable $callback, int $ttl = 3600): mixed
     {
         $value = $this->get($key);
@@ -156,16 +190,20 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         if ($value !== null) {
             $this->put($key, $value, $ttl);
         }
+
         return $value;
     }
+
     public function rememberForever(string $key, callable $callback): mixed
     {
         return $this->remember($key, $callback, 0);
     }
+
     public function getStats(): array
     {
         $totalRequests = $this->stats['hits'] + $this->stats['misses'];
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;
+
         return array_merge($this->stats, [
             'total_items' => count($this->cache),
             'max_items' => $this->maxItems,
@@ -174,14 +212,17 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             'expired_items' => $this->getExpiredItemsCount(),
         ]);
     }
+
     public function getConnection(): mixed
     {
         return $this->cache;
     }
+
     public function isAvailable(): bool
     {
         return true; // 記憶體快取總是可用的
     }
+
     public function cleanup(): int
     {
         $cleaned = 0;
@@ -192,8 +233,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $cleaned++;
             }
         }
+
         return $cleaned;
     }
+
     /**
      * 計算記憶體使用量。
      */
@@ -201,6 +244,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return strlen(serialize($this->cache));
     }
+
     /**
      * 取得過期項目數量。
      */
@@ -213,8 +257,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $expired++;
             }
         }
+
         return $expired;
     }
+
     /**
      * 淘汰最舊的項目。
      */
@@ -227,6 +273,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         unset($this->cache[$oldestKey]);
         $this->stats['deletes']++;
     }
+
     /**
      * 檢查鍵是否符合模式。
      */
@@ -234,8 +281,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         // 簡單的萬用字元匹配
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
+
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
+
     /**
      * 設定最大項目數量。
      */
@@ -247,6 +296,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             $this->evictOldest();
         }
     }
+
     /**
      * 取得最大項目數量。
      */
@@ -254,6 +304,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->maxItems;
     }
+
     /**
      * 重設統計資料。
      */
@@ -267,6 +318,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             'clears' => 0,
         ];
     }
+
     /**
      * 增加新標籤到快取管理器.
      *
@@ -276,8 +328,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         $tagsArray = is_array($tags) ? $tags : [$tags];
         $this->tags = array_unique(array_merge($this->tags, $tagsArray));
+
         return $this;
     }
+
     /**
      * 取得當前標籤化快取的所有鍵.
      *
@@ -288,8 +342,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         if (empty($this->tags)) {
             return [];
         }
+
         return $this->getKeysByTags($this->tags);
     }
+
     /**
      * 使用指定標籤存放快取項目.
      *
@@ -305,8 +361,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         $this->tags = $tags;
         $result = $this->put($key, $value, $ttl);
         $this->tags = $oldTags;
+
         return $result;
     }
+
     /**
      * 取得快取項目的所有標籤.
      *
@@ -321,8 +379,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $tags[] = $tag;
             }
         }
+
         return $tags;
     }
+
     /**
      * 為現有快取項目添加標籤.
      *
@@ -337,8 +397,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
         $tagsArray = is_array($tags) ? $tags : [$tags];
         $this->addKeyToTags($key, $tagsArray);
+
         return true;
     }
+
     /**
      * 從快取項目移除標籤.
      *
@@ -365,8 +427,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 }
             }
         }
+
         return $removed;
     }
+
     /**
      * 檢查快取項目是否包含指定標籤.
      *
@@ -378,6 +442,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return isset($this->tagIndex[$tag]) && in_array($key, $this->tagIndex[$tag], true);
     }
+
     /**
      * 清除未使用的標籤.
      *
@@ -400,8 +465,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $this->tagIndex[$tag] = $validKeys;
             }
         }
+
         return $cleaned;
     }
+
     /**
      * 取得當前標籤.
      *
@@ -411,6 +478,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return $this->tags;
     }
+
     /**
      * 根據標籤清空快取.
      *
@@ -436,8 +504,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             unset($this->tagIndex[$tag]);
         }
         $this->stats['deletes'] += $deletedCount;
+
         return $deletedCount;
     }
+
     /**
      * 根據標籤取得快取鍵.
      *
@@ -456,8 +526,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 $validKeys[] = $key;
             }
         }
+
         return $validKeys;
     }
+
     /**
      * 根據多個標籤取得共同的快取鍵.
      *
@@ -482,8 +554,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 break;
             }
         }
+
         return $commonKeys;
     }
+
     /**
      * 檢查標籤是否存在.
      *
@@ -494,6 +568,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return isset($this->tagIndex[$tag]) && !empty($this->tagIndex[$tag]);
     }
+
     /**
      * 取得所有標籤.
      *
@@ -503,6 +578,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         return array_keys($this->tagIndex);
     }
+
     /**
      * 取得標籤統計資訊.
      *
@@ -521,8 +597,10 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
                 'sample_keys' => array_slice($validKeys, 0, 5), // 顯示前 5 個鍵作為範例
             ];
         }
+
         return $statistics;
     }
+
     /**
      * 將快取鍵添加到標籤索引.
      *
@@ -540,6 +618,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             }
         }
     }
+
     /**
      * 從所有標籤索引中移除快取鍵.
      *
@@ -560,6 +639,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
         unset($keys);
     }
+
     // ===== 標籤化快取介面實作 =====
     /**
      * 設定快取標籤.
@@ -573,6 +653,7 @@ class MemoryCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         // 建立新的驅動實例以避免標籤污染
         $driver = clone $this;
         $driver->tags = $tagsArray;
+
         return $driver;
     }
 }

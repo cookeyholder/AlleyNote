@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class JwtPayload implements JsonSerializable
 {
     /**
@@ -39,6 +41,7 @@ final readonly class JwtPayload implements JsonSerializable
         $this->validateTimes($iat, $exp, $nbf);
         $this->validateCustomClaims($customClaims);
     }
+
     /**
      * 從陣列建立 JWT Payload.
      *
@@ -68,6 +71,7 @@ final readonly class JwtPayload implements JsonSerializable
         // 提取自訂宣告 (排除標準宣告)
         $standardClaims = ['jti', 'sub', 'iss', 'aud', 'iat', 'exp', 'nbf'];
         $customClaims = array_diff_key($data, array_flip($standardClaims));
+
         return new self(
             jti: $data['jti'],
             sub: $data['sub'],
@@ -79,6 +83,7 @@ final readonly class JwtPayload implements JsonSerializable
             customClaims: $customClaims,
         );
     }
+
     /**
      * 取得 JWT ID.
      */
@@ -86,6 +91,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->jti;
     }
+
     /**
      * 取得主題 (通常是使用者 ID).
      */
@@ -93,6 +99,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->sub;
     }
+
     /**
      * 取得使用者 ID (subject 的別名).
      */
@@ -100,6 +107,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return (int) $this->sub;
     }
+
     /**
      * 取得發行者.
      */
@@ -107,6 +115,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->iss;
     }
+
     /**
      * 取得受眾.
      *
@@ -116,6 +125,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->aud;
     }
+
     /**
      * 取得發行時間.
      */
@@ -123,6 +133,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->iat;
     }
+
     /**
      * 取得過期時間.
      */
@@ -130,6 +141,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->exp;
     }
+
     /**
      * 取得生效時間.
      */
@@ -137,6 +149,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->nbf;
     }
+
     /**
      * 取得自訂宣告.
      *
@@ -146,6 +159,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->customClaims;
     }
+
     /**
      * 取得特定自訂宣告.
      *
@@ -156,6 +170,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->customClaims[$claim] ?? null;
     }
+
     /**
      * 檢查是否已過期
      *
@@ -164,8 +179,10 @@ final readonly class JwtPayload implements JsonSerializable
     public function isExpired(?DateTimeImmutable $now = null): bool
     {
         $now ??= new DateTimeImmutable();
+
         return $this->exp <= $now;
     }
+
     /**
      * 檢查是否已生效.
      *
@@ -178,9 +195,11 @@ final readonly class JwtPayload implements JsonSerializable
         if ($this->nbf !== null && $this->nbf > $now) {
             return false;
         }
+
         // 檢查是否未過期
         return !$this->isExpired($now);
     }
+
     /**
      * 檢查是否包含特定受眾.
      *
@@ -190,6 +209,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return in_array($audience, $this->aud, true);
     }
+
     /**
      * 轉換為陣列格式（用於 JWT 編碼）.
      *
@@ -208,9 +228,11 @@ final readonly class JwtPayload implements JsonSerializable
         if ($this->nbf !== null) {
             $payload['nbf'] = $this->nbf->getTimestamp();
         }
+
         // 合併自訂宣告
         return array_merge($payload, $this->customClaims);
     }
+
     /**
      * JsonSerializable 實作.
      *
@@ -220,6 +242,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查與另一個 JwtPayload 是否相等.
      *
@@ -236,6 +259,7 @@ final readonly class JwtPayload implements JsonSerializable
             && ($this->nbf?->getTimestamp()) === ($other->nbf?->getTimestamp())
             && $this->customClaims === $other->customClaims;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -243,6 +267,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         $nbf = $this->nbf?->format('Y-m-d H:i:s') ?? 'null';
         $customClaimsCount = count($this->customClaims);
+
         return sprintf(
             'JwtPayload(jti=%s, sub=%s, iss=%s, aud=[%s], iat=%s, exp=%s, nbf=%s, customClaims=%d)',
             $this->jti,
@@ -255,6 +280,7 @@ final readonly class JwtPayload implements JsonSerializable
             $customClaimsCount,
         );
     }
+
     /**
      * __toString 魔術方法.
      */
@@ -262,6 +288,7 @@ final readonly class JwtPayload implements JsonSerializable
     {
         return $this->toString();
     }
+
     /**
      * 驗證 JWT ID.
      *
@@ -277,6 +304,7 @@ final readonly class JwtPayload implements JsonSerializable
             throw new InvalidArgumentException('JWT ID (jti) cannot exceed 255 characters');
         }
     }
+
     /**
      * 驗證主題.
      *
@@ -293,6 +321,7 @@ final readonly class JwtPayload implements JsonSerializable
             throw new InvalidArgumentException('Subject (sub) must be a valid positive integer');
         }
     }
+
     /**
      * 驗證發行者.
      *
@@ -305,6 +334,7 @@ final readonly class JwtPayload implements JsonSerializable
             throw new InvalidArgumentException('Issuer (iss) cannot be empty');
         }
     }
+
     /**
      * 驗證受眾.
      *
@@ -322,6 +352,7 @@ final readonly class JwtPayload implements JsonSerializable
             }
         }
     }
+
     /**
      * 驗證時間相關宣告.
      *
@@ -339,6 +370,7 @@ final readonly class JwtPayload implements JsonSerializable
             throw new InvalidArgumentException('Not before time (nbf) cannot be after expiration time (exp)');
         }
     }
+
     /**
      * 驗證自訂宣告.
      *

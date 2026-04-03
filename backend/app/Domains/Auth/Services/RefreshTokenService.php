@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
@@ -19,30 +20,36 @@ use DateTime;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 final class RefreshTokenService
 {
     /**
      * 每個使用者最大 refresh token 數量.
      */
     private const MAX_TOKENS_PER_USER = 10;
+
     /**
      * 每次清理過期 token 的批次大小.
      */
     private const CLEANUP_BATCH_SIZE = 500;
+
     /**
      * 清理操作的安全時間間隔（秒）.
      */
     private const MIN_CLEANUP_INTERVAL = 300; // 5 分鐘
+
     /**
      * Token 輪轉檢查寬限期（秒）.
      */
     private const ROTATION_GRACE_PERIOD = 30;
+
     public function __construct(
         private readonly JwtTokenServiceInterface $jwtTokenService,
         private readonly RefreshTokenRepositoryInterface $refreshTokenRepository,
         private readonly TokenBlacklistRepositoryInterface $blacklistRepository,
         private readonly ?LoggerInterface $logger = null,
     ) {}
+
     /**
      * 建立新的 refresh token.
      *
@@ -99,6 +106,7 @@ final class RefreshTokenService
                 'device_id' => $deviceInfo->getDeviceId(),
                 'jti' => $refreshPayload->getJti(),
             ]);
+
             return $refreshToken;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to create refresh token', [
@@ -106,6 +114,7 @@ final class RefreshTokenService
                 'device_id' => $deviceInfo->getDeviceId(),
                 'error' => $e->getMessage(),
             ]);
+
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_CREATION_FAILED,
                 'Failed to create refresh token: ' . $e->getMessage(),
@@ -113,6 +122,7 @@ final class RefreshTokenService
             );
         }
     }
+
     /**
      * 使用 refresh token 產生新的 access token.
      *
@@ -164,6 +174,7 @@ final class RefreshTokenService
                 'jti' => $payload->getJti(),
                 'rotated' => $rotateToken,
             ]);
+
             return $newTokenPair;
         } catch (InvalidTokenException|TokenExpiredException|AuthenticationException $e) {
             throw $e;
@@ -172,6 +183,7 @@ final class RefreshTokenService
                 'error' => $e->getMessage(),
                 'device_id' => $deviceInfo->getDeviceId(),
             ]);
+
             throw new RefreshTokenException(
                 RefreshTokenException::REASON_ROTATION_FAILED,
                 'Failed to refresh access token: ' . $e->getMessage(),
@@ -179,6 +191,7 @@ final class RefreshTokenService
             );
         }
     }
+
     /**
      * 撤銷單個 refresh token.
      *
@@ -199,15 +212,18 @@ final class RefreshTokenService
                     'reason' => $reason,
                 ]);
             }
+
             return $result;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to revoke refresh token', [
                 'error' => $e->getMessage(),
                 'reason' => $reason,
             ]);
+
             return false;
         }
     }
+
     /**
      * 撤銷使用者的所有 refresh token.
      *
@@ -238,15 +254,18 @@ final class RefreshTokenService
                 'revoked_count' => $revokedCount,
                 'reason' => $reason,
             ]);
+
             return $revokedCount;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to revoke user tokens', [
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
+
     /**
      * 撤銷裝置的所有 refresh token.
      *
@@ -263,15 +282,18 @@ final class RefreshTokenService
                 'revoked_count' => $revokedCount,
                 'reason' => $reason,
             ]);
+
             return $revokedCount;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to revoke device tokens', [
                 'device_id' => $deviceId,
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
+
     /**
      * 清理過期的 refresh token.
      *
@@ -286,14 +308,17 @@ final class RefreshTokenService
                     'cleaned_count' => $cleanedCount,
                 ]);
             }
+
             return $cleanedCount;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to cleanup expired tokens', [
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
+
     /**
      * 取得使用者的活躍 refresh token 統計.
      *
@@ -319,12 +344,14 @@ final class RefreshTokenService
                 $status = is_scalar($statusValue) ? (string) $statusValue : 'unknown';
                 $stats['by_status'][$status] = ($stats['by_status'][$status] ?? 0) + 1;
             }
+
             return $stats;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to get user token stats', [
                 'user_id' => $userId,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'total' => 0,
                 'by_device' => [],
@@ -332,6 +359,7 @@ final class RefreshTokenService
             ];
         }
     }
+
     /**
      * 驗證 refresh token 的有效性.
      */
@@ -352,8 +380,10 @@ final class RefreshTokenService
         if ($this->shouldVerifyDeviceConsistency()) {
             $this->verifyDeviceConsistency($payload, $deviceInfo);
         }
+
         return $payload;
     }
+
     /**
      * 強制執行 token 數量限制.
      */
@@ -370,6 +400,7 @@ final class RefreshTokenService
             ]);
         }
     }
+
     /**
      * 驗證裝置匹配（從資料庫資料）.
      */
@@ -378,6 +409,7 @@ final class RefreshTokenService
         return $tokenData['device_id'] === $currentDevice->getDeviceId()
             && $tokenData['ip_address'] === $currentDevice->getIpAddress();
     }
+
     /**
      * 執行 token 輪轉（從資料庫資料）.
      */
@@ -395,6 +427,7 @@ final class RefreshTokenService
                 $tokenData['jti'],
                 RefreshToken::REVOKE_REASON_TOKEN_ROTATION,
             );
+
             return $newToken;
         } catch (Throwable $e) {
             $this->logger?->error('Token rotation failed', [
@@ -402,9 +435,11 @@ final class RefreshTokenService
                 'user_id' => $tokenData['user_id'],
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
+
     /**
      * 驗證裝置一致性.
      */
@@ -425,6 +460,7 @@ final class RefreshTokenService
             );
         }
     }
+
     /**
      * 將 token 加入黑名單.
      */
@@ -455,6 +491,7 @@ final class RefreshTokenService
             ]);
         }
     }
+
     /**
      * 是否應該驗證裝置一致性.
      */
@@ -463,6 +500,7 @@ final class RefreshTokenService
         // 可以從配置中讀取，這裡先返回 true
         return true;
     }
+
     /**
      * 獲取清理批次大小.
      */
@@ -470,6 +508,7 @@ final class RefreshTokenService
     {
         return self::CLEANUP_BATCH_SIZE;
     }
+
     /**
      * 取得最小清理間隔.
      */
@@ -477,6 +516,7 @@ final class RefreshTokenService
     {
         return self::MIN_CLEANUP_INTERVAL;
     }
+
     /**
      * 取得輪換寬限期
      */

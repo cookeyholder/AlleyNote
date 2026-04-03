@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Application\Controllers\BaseController;
 use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsQueryService;
@@ -13,12 +14,14 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+
 class StatisticsController extends BaseController
 {
     public function __construct(
         private readonly StatisticsQueryService $statisticsQueryService,
         private readonly ValidatorInterface $validator,
     ) {}
+
     /**
      * 取得統計概覽.
      *
@@ -100,6 +103,7 @@ class StatisticsController extends BaseController
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
             $overview = $this->statisticsQueryService->getOverview($queryDTO);
+
             return $this->json($response, [
                 'success' => true,
                 'data' => $overview,
@@ -128,6 +132,7 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 取得文章統計.
      *
@@ -203,6 +208,7 @@ class StatisticsController extends BaseController
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
             $paginatedResult = $this->statisticsQueryService->getPostStatistics($queryDTO);
+
             return $this->json($response, [
                 'success' => true,
                 'data' => $paginatedResult->getData(),
@@ -232,6 +238,7 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 取得來源分布統計.
      *
@@ -293,6 +300,7 @@ class StatisticsController extends BaseController
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
             $sourceDistribution = $this->statisticsQueryService->getSourceDistribution($queryDTO);
+
             return $this->json($response, [
                 'success' => true,
                 'data' => $sourceDistribution,
@@ -316,6 +324,7 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 取得使用者統計.
      *
@@ -390,6 +399,7 @@ class StatisticsController extends BaseController
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
             $paginatedResult = $this->statisticsQueryService->getUserStatistics($queryDTO);
+
             return $this->json($response, [
                 'success' => true,
                 'data' => $paginatedResult->getData(),
@@ -419,6 +429,7 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 取得熱門內容.
      *
@@ -487,6 +498,7 @@ class StatisticsController extends BaseController
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
             $popularContent = $this->statisticsQueryService->getPopularContent($queryDTO);
+
             return $this->json($response, [
                 'success' => true,
                 'data' => $popularContent,
@@ -510,6 +522,7 @@ class StatisticsController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 檢查使用者是否有統計查詢權限.
      */
@@ -532,6 +545,7 @@ class StatisticsController extends BaseController
             throw ValidationException::fromSingleError('permission', '沒有統計查詢權限');
         }
     }
+
     /**
      * 建構統計查詢 DTO.
      *
@@ -543,6 +557,7 @@ class StatisticsController extends BaseController
     {
         // 驗證查詢參數
         $this->validateQueryParams($queryParams);
+
         try {
             // 解析日期參數
             $startDate = null;
@@ -573,6 +588,7 @@ class StatisticsController extends BaseController
             if (isset($queryParams['sort_direction']) && is_string($queryParams['sort_direction'])) {
                 $sortDirection = $queryParams['sort_direction'];
             }
+
             // 建立查詢 DTO
             return new StatisticsQueryDTO(
                 startDate: $startDate,
@@ -586,6 +602,7 @@ class StatisticsController extends BaseController
             throw ValidationException::fromSingleError('date_format', '日期格式錯誤，請使用 YYYY-MM-DD 格式');
         }
     }
+
     /**
      * 驗證查詢參數.
      *
@@ -659,11 +676,13 @@ class StatisticsController extends BaseController
                 // enum 總是陣列，所以移除 is_array 檢查
                 if (!in_array($value, $rule['enum'], true)) {
                     $allowedValues = implode(', ', $rule['enum']);
+
                     throw ValidationException::fromSingleError($field, "參數 {$field} 必須為以下值之一：{$allowedValues}");
                 }
             }
         }
     }
+
     /**
      * 驗證欄位型別.
      *
@@ -682,6 +701,7 @@ class StatisticsController extends BaseController
             throw ValidationException::fromSingleError($field, "參數 {$field} 必須為 {$expectedType} 型別");
         }
     }
+
     /**
      * 驗證日期範圍.
      *

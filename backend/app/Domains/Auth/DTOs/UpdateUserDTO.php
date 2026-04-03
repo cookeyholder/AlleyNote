@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
+
 use App\Shared\ValueObjects\SecurePassword;
 use InvalidArgumentException;
+
 final readonly class UpdateUserDTO
 {
     /**
@@ -22,6 +24,7 @@ final readonly class UpdateUserDTO
             new SecurePassword($this->password, $this->username, $this->email);
         }
     }
+
     /** @param array<mixed> $data */
     public static function fromArray(array $data): self
     {
@@ -32,6 +35,7 @@ final readonly class UpdateUserDTO
             roleIds: self::normalizeRoleIds($data['role_ids'] ?? null),
         );
     }
+
     public function toArray(): array
     {
         $result = [];
@@ -47,8 +51,10 @@ final readonly class UpdateUserDTO
         if ($this->roleIds !== null) {
             $result['role_ids'] = $this->roleIds;
         }
+
         return $result;
     }
+
     public function hasUpdates(): bool
     {
         return $this->username !== null
@@ -56,6 +62,7 @@ final readonly class UpdateUserDTO
             || $this->password !== null
             || $this->roleIds !== null;
     }
+
     /**
      * @return list<int>|null
      */
@@ -70,8 +77,10 @@ final readonly class UpdateUserDTO
                 $normalizedRoleIds[] = $roleId;
             }
         }
+
         return $normalizedRoleIds === [] ? [] : array_values(array_unique($normalizedRoleIds));
     }
+
     /**
      * @param list<int>|null $roleIds
      */

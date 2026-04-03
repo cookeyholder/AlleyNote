@@ -3,19 +3,24 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
+
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Contracts\CacheServiceInterface;
 use DateTimeInterface;
+
 final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInterface
 {
     private const CACHE_PREFIX = 'statistics_snapshot';
+
     private const CACHE_TTL = 3600; // 1 小時
+
     public function __construct(
         private readonly StatisticsRepositoryInterface $repository,
         private readonly CacheServiceInterface $cache,
     ) {}
+
     public function findById(int $id): ?StatisticsSnapshot
     {
         $cacheKey = $this->getCacheKey('id', (string) $id);
@@ -28,8 +33,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if ($snapshot !== null) {
             $this->cacheSnapshot($snapshot, $cacheKey);
         }
+
         return $snapshot;
     }
+
     public function findByUuid(string $uuid): ?StatisticsSnapshot
     {
         $cacheKey = $this->getCacheKey('uuid', $uuid);
@@ -42,8 +49,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if ($snapshot !== null) {
             $this->cacheSnapshot($snapshot, $cacheKey);
         }
+
         return $snapshot;
     }
+
     public function findByTypeAndPeriod(string $snapshotType, StatisticsPeriod $period): ?StatisticsSnapshot
     {
         $cacheKey = $this->getCacheKey('type_period', $snapshotType . '_' . $this->getPeriodKey($period));
@@ -56,8 +65,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if ($snapshot !== null) {
             $this->cacheSnapshot($snapshot, $cacheKey);
         }
+
         return $snapshot;
     }
+
     public function findLatestByType(string $snapshotType): ?StatisticsSnapshot
     {
         $cacheKey = $this->getCacheKey('latest_type', $snapshotType);
@@ -70,8 +81,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if ($snapshot !== null) {
             $this->cacheSnapshot($snapshot, $cacheKey);
         }
+
         return $snapshot;
     }
+
     public function findByTypeAndDateRange(
         string $snapshotType,
         DateTimeInterface $startDate,
@@ -90,35 +103,44 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if (!empty($snapshots)) {
             $this->cache->set($cacheKey, $snapshots, self::CACHE_TTL);
         }
+
         return $snapshots;
     }
+
     public function findExpiredSnapshots(?DateTimeInterface $beforeDate = null): array
     {
         // 過期快照查詢不適合快取，直接委託給 Repository
         return $this->repository->findExpiredSnapshots($beforeDate);
     }
+
     public function save(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         $savedSnapshot = $this->repository->save($snapshot);
         // 儲存後清除相關快取
         $this->invalidateRelatedCache($savedSnapshot);
+
         return $savedSnapshot;
     }
+
     public function update(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         $updatedSnapshot = $this->repository->update($snapshot);
         // 更新後清除相關快取
         $this->invalidateRelatedCache($updatedSnapshot);
+
         return $updatedSnapshot;
     }
+
     public function delete(StatisticsSnapshot $snapshot): bool
     {
         $result = $this->repository->delete($snapshot);
         if ($result) {
             $this->invalidateRelatedCache($snapshot);
         }
+
         return $result;
     }
+
     public function deleteById(int $id): bool
     {
         // 先嘗試從快取或資料庫取得快照以便清除相關快取
@@ -127,8 +149,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if ($result && $snapshot !== null) {
             $this->invalidateRelatedCache($snapshot);
         }
+
         return $result;
     }
+
     public function deleteExpiredSnapshots(?DateTimeInterface $beforeDate = null): int
     {
         $deletedCount = $this->repository->deleteExpiredSnapshots($beforeDate);
@@ -136,8 +160,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
             // 批量刪除後清除統計相關的快取模式
             $this->cache->deletePattern(self::CACHE_PREFIX . ':*');
         }
+
         return $deletedCount;
     }
+
     public function exists(string $snapshotType, StatisticsPeriod $period): bool
     {
         // exists 查詢輕量，可以快取
@@ -149,8 +175,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         }
         $exists = $this->repository->exists($snapshotType, $period);
         $this->cache->set($cacheKey, $exists, self::CACHE_TTL);
+
         return $exists;
     }
+
     public function count(?string $snapshotType = null): int
     {
         $cacheKey = $this->getCacheKey('count', $snapshotType ?? 'all');
@@ -161,8 +189,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         }
         $count = $this->repository->count($snapshotType);
         $this->cache->set($cacheKey, $count, self::CACHE_TTL);
+
         return $count;
     }
+
     public function findByTypeWithPagination(
         string $snapshotType,
         int $page = 1,
@@ -189,8 +219,10 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
         if (!empty($snapshots)) {
             $this->cache->set($cacheKey, $snapshots, self::CACHE_TTL);
         }
+
         return $snapshots;
     }
+
     /**
      * 產生快取金鑰.
      */
@@ -198,6 +230,7 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
     {
         return self::CACHE_PREFIX . ':' . $operation . ':' . $identifier;
     }
+
     /**
      * 從統計週期產生快取金鑰識別符.
      */
@@ -207,6 +240,7 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
                . $period->startTime->format('Y-m-d-H-i') . '_'
                . $period->endTime->format('Y-m-d-H-i');
     }
+
     /**
      * 快取統計快照.
      */
@@ -214,6 +248,7 @@ final class StatisticsRepositoryCacheAdapter implements StatisticsRepositoryInte
     {
         $this->cache->set($cacheKey, $snapshot, self::CACHE_TTL);
     }
+
     /**
      * 清除與快照相關的快取.
      */

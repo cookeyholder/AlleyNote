@@ -3,15 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Repositories;
+
 use RuntimeException;
+
 class ActivityLogRepository implements ActivityLogRepositoryInterface
 {
     /** @var string 資料表名稱 */
     private const TABLE_NAME = 'user_activity_logs';
+
     /** @var string SELECT 查詢的預設欄位清單 */
     private const SELECT_FIELDS = 'id, uuid, user_id, session_id, action_type, action_category,
         target_type, target_id, status, description, metadata, ip_address, user_agent,
         request_method, request_path, created_at, occurred_at';
+
     /**
      * 建構存儲庫實例.
      *
@@ -24,6 +28,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $this->db->exec('PRAGMA foreign_keys = ON');
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
+
     /**
      * 建立新的活動記錄.
      *
@@ -97,13 +102,16 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             // 取得剛插入的記錄 ID
             $insertId = (int) $this->db->lastInsertId();
             $this->db->commit();
+
             // 回傳完整的實體資料
             return $this->findById($insertId);
         } catch (PDOException $e) {
             $this->db->rollBack();
+
             throw new RuntimeException('Failed to create activity log: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 批次建立多個活動記錄.
      */
@@ -112,6 +120,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         if (empty($dtos)) {
             return 0;
         }
+
         try {
             $this->db->beginTransaction();
             $sql = 'INSERT INTO ' . self::TABLE_NAME . ' (
@@ -165,12 +174,15 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 $count++;
             }
             $this->db->commit();
+
             return $count;
         } catch (PDOException $e) {
             $this->db->rollBack();
+
             throw new RuntimeException('Failed to create batch activity logs: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 根據 ID 查詢活動記錄.
      */
@@ -184,8 +196,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return null;
         }
         $entity = ActivityLog::fromDatabaseRow($data);
+
         return $entity->toArray();
     }
+
     /**
      * 根據 UUID 查詢活動記錄.
      */
@@ -199,8 +213,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             return null;
         }
         $entity = ActivityLog::fromDatabaseRow($data);
+
         return $entity->toArray();
     }
+
     /**
      * 取得所有活動記錄.
      */
@@ -216,8 +232,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map(function (array $row): array {
                 $entity = ActivityLog::fromDatabaseRow($row);
+
                 return $entity->toArray();
             }, $results);
         } catch (PDOException $e) {
@@ -228,6 +246,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             );
         }
     }
+
     /**
      * 查詢使用者的活動記錄.
      */
@@ -264,8 +283,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * 查詢指定時間範圍的活動記錄.
      */
@@ -301,8 +322,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * 查詢安全相關的活動記錄.
      */
@@ -333,8 +356,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * 查詢失敗的活動記錄.
      */
@@ -370,8 +395,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * 統計活動記錄數量.
      */
@@ -380,8 +407,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . ' WHERE action_category = :category';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':category' => $category->value]);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 統計使用者在指定時間內的活動數量.
      */
@@ -399,8 +428,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 取得活動統計資料（依類型分組）.
      */
@@ -418,8 +449,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
             ':end_time' => $endTime->format('Y-m-d H:i:s'),
         ]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * 取得熱門活動類型.
      */
@@ -433,8 +466,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
      */
@@ -460,8 +495,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         }
         $stmt->bindValue(':threshold', $failureThreshold, PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * 刪除舊的活動記錄.
      */
@@ -470,8 +507,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'DELETE FROM ' . self::TABLE_NAME . ' WHERE created_at < :before';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':before' => $before->format('Y-m-d H:i:s')]);
+
         return $stmt->rowCount();
     }
+
     /**
      * 根據條件刪除記錄.
      */
@@ -489,8 +528,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'DELETE FROM ' . self::TABLE_NAME . ' WHERE ' . implode(' AND ', $whereClauses);
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return $stmt->rowCount();
     }
+
     /**
      * 搜尋活動記錄.
      */
@@ -553,8 +594,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * 取得搜尋結果總數.
      */
@@ -596,8 +639,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $sql = 'SELECT COUNT(*) FROM ' . self::TABLE_NAME . " {$whereClause}";
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 取得可疑 IP 清單（基於失敗嘗試次數）.
      */
@@ -616,8 +661,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         ");
         $stmt->bindValue(':min_failed_attempts', $minFailedAttempts, PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * Find activity logs by user ID within time window.
      */
@@ -637,8 +684,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt->bindValue(':time_window', $timeWindow->format('Y-m-d H:i:s'));
         $stmt->execute();
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         return array_map([$this, 'mapToArray'], $results);
     }
+
     /**
      * 查詢使用者在指定時間範圍的活動記錄.
      */
@@ -666,8 +715,10 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * 查詢指定 IP 在指定時間範圍的活動記錄.
      */
@@ -695,16 +746,20 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             $entity = ActivityLog::fromDatabaseRow($data);
             $results[] = $entity->toArray();
         }
+
         return $results;
     }
+
     /**
      * Helper method to map database row to array.
      */
     private function mapToArray(array $data): array
     {
         $entity = ActivityLog::fromDatabaseRow($data);
+
         return $entity->toArray();
     }
+
     /**
      * 取得登入失敗統計資料.
      *
@@ -773,6 +828,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $trendStmt->execute();
         /** @var array<array<string, mixed>> $trend */
         $trend = $trendStmt->fetchAll(PDO::FETCH_ASSOC);
+
         return [
             'total' => $total,
             'accounts' => array_map(function (array $account): array {
@@ -780,6 +836,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 $username = $account['username'] ?? null;
                 $count = $account['count'] ?? 0;
                 $latestAttempt = $account['latest_attempt'] ?? null;
+
                 return [
                     'username' => is_string($email) ? $email : (is_string($username) ? $username : 'unknown'),
                     'email' => is_string($email) ? $email : null,
@@ -790,6 +847,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             'trend' => array_map(function (array $item): array {
                 $date = $item['date'] ?? '';
                 $count = $item['count'] ?? 0;
+
                 return [
                     'date' => is_string($date) ? $date : '',
                     'count' => is_numeric($count) ? (int) $count : 0,

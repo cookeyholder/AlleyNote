@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Application\Middleware;
+
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+
 class JwtAuthorizationMiddleware implements MiddlewareInterface
 {
     /**
@@ -16,24 +18,29 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 必須在 JwtAuthenticationMiddleware 之後執行。
      */
     private const DEFAULT_PRIORITY = 20;
+
     /**
      * 中介軟體名稱.
      */
     private const MIDDLEWARE_NAME = 'jwt-authorization';
+
     /**
      * 預設授權策略.
      */
     private const DEFAULT_POLICY = 'deny'; // 預設拒絕
+
     /**
      * 預設的系統管理員角色.
      */
     private const ADMIN_ROLES = ['admin', 'super_admin', 'system_admin'];
+
     /**
      * 授權策略配置.
      *
      * @var array<string, mixed>
      */
     private array $config;
+
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
@@ -41,6 +48,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ) {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
+
     /**
      * 處理 JWT 授權請求.
      *
@@ -55,6 +63,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if (!$this->enabled || !$this->shouldProcess($request)) {
             return $handler->handle($request);
         }
+
         try {
             // 1. 檢查使用者是否已認證
             if (!$request->getAttribute('authenticated', false)) {
@@ -84,11 +93,13 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             }
             // 5. 將授權資訊注入到請求中
             $request = $this->injectAuthorizationContext($request, $authorizationResult);
+
             return $handler->handle($request);
         } catch (Throwable $e) {
             return $this->createForbiddenResponse('授權檢查失敗', 'AUTHORIZATION_ERROR');
         }
     }
+
     /**
      * 執行授權檢查.
      *
@@ -137,6 +148,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if ($customResult->isAllowed()) {
             return $customResult;
         }
+
         // 6. 預設拒絕
         return new AuthorizationResult(
             allowed: false,
@@ -145,6 +157,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             appliedRules: ['default_deny'],
         );
     }
+
     /**
      * 基於角色的授權檢查.
      *
@@ -178,6 +191,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 appliedRules: ['role_specific'],
             );
         }
+
         return new AuthorizationResult(
             allowed: false,
             reason: "角色 {$userRole} 沒有權限 {$requiredPermission}",
@@ -185,6 +199,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             appliedRules: ['role_check'],
         );
     }
+
     /**
      * 基於權限的授權檢查.
      *
@@ -217,6 +232,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 appliedRules: ['permission_specific'],
             );
         }
+
         return new AuthorizationResult(
             allowed: false,
             reason: "使用者沒有權限 {$requiredPermission}",
@@ -224,6 +240,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             appliedRules: ['permission_check'],
         );
     }
+
     /**
      * 基於屬性的授權檢查 (ABAC).
      *
@@ -258,8 +275,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return $ownershipResult;
             }
         }
+
         return new AuthorizationResult(false, '屬性檢查未通過', 'ATTRIBUTE_CHECK_FAILED');
     }
+
     /**
      * 自訂授權策略.
      *
@@ -290,8 +309,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return $ruleResult;
             }
         }
+
         return new AuthorizationResult(false, '沒有適用的自訂規則', 'NO_CUSTOM_RULE');
     }
+
     /**
      * 檢查是否為超級管理員.
      *
@@ -302,9 +323,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if (empty($userRole)) {
             return false;
         }
+
         return in_array($userRole, self::ADMIN_ROLES, true)
             || in_array($userRole, $this->config['admin_roles'] ?? [], true);
     }
+
     /**
      * 時間基礎的存取控制檢查.
      *
@@ -324,6 +347,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             if (!$this->matchesTimeRestriction($restriction, $userRole, $action, $currentHour, $currentDay)) {
                 continue;
             }
+
             return new AuthorizationResult(
                 allowed: false,
                 reason: "操作 {$action} 在當前時間不被允許",
@@ -331,8 +355,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 appliedRules: ['time_restriction'],
             );
         }
+
         return new AuthorizationResult(true, '時間檢查通過', 'TIME_CHECK_PASSED');
     }
+
     /**
      * IP 基礎的存取控制檢查.
      *
@@ -378,8 +404,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 );
             }
         }
+
         return new AuthorizationResult(true, 'IP 檢查通過', 'IP_CHECK_PASSED');
     }
+
     /**
      * 資源擁有者檢查.
      *
@@ -407,6 +435,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 appliedRules: ['resource_ownership'],
             );
         }
+
         return new AuthorizationResult(
             allowed: false,
             reason: "使用者不是資源 {$resource}#{$resourceId} 的擁有者",
@@ -414,6 +443,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             appliedRules: ['resource_ownership'],
         );
     }
+
     /**
      * 從請求中提取資源名稱.
      *
@@ -433,9 +463,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if ($routeResource !== null) {
             return $routeResource;
         }
+
         // 預設回傳 'unknown'
         return 'unknown';
     }
+
     /**
      * 從請求中提取操作名稱.
      *
@@ -454,6 +486,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         }
         // 根據 HTTP method 和路徑推斷操作
         $resourceId = $this->extractResourceIdFromPath($segments);
+
         return match ($method) {
             'GET' => $resourceId ? 'show' : 'index',
             'POST' => 'create',
@@ -462,6 +495,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             default => 'unknown'
         };
     }
+
     /**
      * 從請求中提取資源 ID.
      *
@@ -489,8 +523,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return (int) $body['id'];
             }
         }
+
         return null;
     }
+
     /**
      * 從路徑片段中提取資源 ID.
      *
@@ -509,8 +545,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return (int) $segment;
             }
         }
+
         return null;
     }
+
     /**
      * 檢查使用者是否為資源擁有者.
      *
@@ -533,8 +571,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             // 目前為示例用途，假設使用者 ID 和資源 ID 相等表示擁有者
             return $userId === $resourceId;
         }
+
         return false;
     }
+
     /**
      * 取得客戶端真實 IP 位址.
      *
@@ -569,9 +609,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 }
             }
         }
+
         // 預設回傳 localhost（適用於開發環境）
         return '127.0.0.1';
     }
+
     /**
      * 檢查 IP 是否在指定清單中.
      *
@@ -585,8 +627,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查 IP 是否匹配指定的模式.
      *
@@ -602,6 +646,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         // 通配符匹配
         if (str_contains($pattern, '*')) {
             $regex = '/^' . str_replace('*', '.*', preg_quote($pattern, '/')) . '$/';
+
             return preg_match($regex, $ip) === 1;
         }
         // CIDR 匹配
@@ -610,10 +655,13 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             $ipLong = ip2long($ip);
             $subnetLong = ip2long($subnet);
             $maskLong = -1 << (32 - (int) $mask);
+
             return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
         }
+
         return false;
     }
+
     /**
      * 檢查時間限制是否匹配.
      */
@@ -641,8 +689,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return true; // 匹配限制（不允許的日期）
             }
         }
+
         return false;
     }
+
     /**
      * 檢查 IP 限制是否匹配.
      */
@@ -660,8 +710,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         if (isset($restriction['actions']) && !in_array($action, $restriction['actions'], true)) {
             return false;
         }
+
         return true;
     }
+
     /**
      * 檢查規則條件是否匹配.
      */
@@ -684,8 +736,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return false;
             }
         }
+
         return true;
     }
+
     /**
      * 執行自訂規則.
      */
@@ -699,6 +753,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     ): ?AuthorizationResult {
         $ruleType = $ruleConfig['type'] ?? 'allow';
         $ruleMessage = $ruleConfig['message'] ?? "自訂規則 {$ruleName} 生效";
+
         return match ($ruleType) {
             'allow' => new AuthorizationResult(
                 allowed: true,
@@ -716,6 +771,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             default => null,
         };
     }
+
     /**
      * 評估條件式規則.
      */
@@ -747,6 +803,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             }
         }
         $result = $ruleConfig['result'] ?? 'allow';
+
         return new AuthorizationResult(
             allowed: $result === 'allow',
             reason: $ruleConfig['message'] ?? '條件式規則評估完成',
@@ -754,6 +811,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             appliedRules: ['conditional_rule'],
         );
     }
+
     /**
      * 將授權資訊注入到請求中.
      *
@@ -772,6 +830,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             ->withAttribute('authorization_code', $result->getCode())
             ->withAttribute('applied_rules', $result->getAppliedRules());
     }
+
     /**
      * 建立禁止存取的回應.
      *
@@ -787,12 +846,14 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             'code' => $code,
             'timestamp' => date('c'),
         ];
+
         return new Response(
             statusCode: 403,
             headers: ['Content-Type' => 'application/json'],
             body: json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '',
         );
     }
+
     /**
      * 檢查是否應該處理此請求.
      *
@@ -829,8 +890,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 取得預設配置.
      *
@@ -855,6 +918,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             'custom_rules' => [],
         ];
     }
+
     /**
      * 取得中介軟體優先順序.
      *
@@ -864,6 +928,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         return $this->priority;
     }
+
     /**
      * 取得中介軟體名稱.
      *
@@ -873,6 +938,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         return self::MIDDLEWARE_NAME;
     }
+
     /**
      * 設定中介軟體優先順序.
      *
@@ -881,8 +947,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     public function setPriority(int $priority): self
     {
         $this->priority = $priority;
+
         return $this;
     }
+
     /**
      * 設定中介軟體是否啟用.
      *
@@ -891,8 +959,10 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
         return $this;
     }
+
     /**
      * 檢查中介軟體是否啟用.
      *
@@ -902,6 +972,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         return $this->enabled;
     }
+
     /**
      * 取得授權配置.
      *
@@ -911,6 +982,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     {
         return $this->config;
     }
+
     /**
      * 設定授權配置.
      *
@@ -919,6 +991,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     public function setConfig(array $config): self
     {
         $this->config = array_merge($this->config, $config);
+
         return $this;
     }
 }

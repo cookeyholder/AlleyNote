@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Shared\Helpers;
+
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 final class NetworkHelper
 {
     /**
@@ -42,8 +44,10 @@ final class NetworkHelper
                 }
             }
         }
+
         return $remoteAddr;
     }
+
     /**
      * 從環境變數取得信任的代理伺服器清單.
      *
@@ -55,11 +59,13 @@ final class NetworkHelper
         if (!is_string($rawTrustedProxies) || trim($rawTrustedProxies) === '') {
             return [];
         }
+
         return array_values(array_filter(array_map(
             static fn(string $proxy): string => trim($proxy),
             explode(',', $rawTrustedProxies),
         )));
     }
+
     /**
      * 檢查 IP 是否在指定的範圍內 (支援單一 IP 或 CIDR).
      */
@@ -77,8 +83,10 @@ final class NetworkHelper
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查 IP 是否屬於 CIDR 網路.
      */
@@ -104,8 +112,10 @@ final class NetworkHelper
             }
             $mask = -1 << (32 - $bits);
             $subnetAddr &= $mask;
+
             return ($ipAddr & $mask) === $subnetAddr;
         }
+
         // 目前僅實作 IPv4 範圍檢查，IPv6 可未來擴充
         return false;
     }

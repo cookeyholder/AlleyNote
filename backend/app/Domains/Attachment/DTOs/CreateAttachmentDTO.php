@@ -3,18 +3,27 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\DTOs;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
+
 class CreateAttachmentDTO extends BaseDTO
 {
     public readonly int $postId;
+
     public readonly string $filename;
+
     public readonly string $originalName;
+
     public readonly string $mimeType;
+
     public readonly int $fileSize;
+
     public readonly string $storagePath;
+
     public readonly int $uploadedBy;
+
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
@@ -36,6 +45,7 @@ class CreateAttachmentDTO extends BaseDTO
         $this->storagePath = trim($validatedData['storage_path']);
         $this->uploadedBy = (int) $validatedData['uploaded_by'];
     }
+
     /**
      * 添加附件專用驗證規則.
      */
@@ -64,6 +74,7 @@ class CreateAttachmentDTO extends BaseDTO
             if (empty($filename)) {
                 return false;
             }
+
             return true;
         });
         // 原始檔案名稱驗證規則
@@ -81,6 +92,7 @@ class CreateAttachmentDTO extends BaseDTO
             if (empty($originalName)) {
                 return false;
             }
+
             return true;
         });
         // MIME 類型驗證規則
@@ -107,6 +119,7 @@ class CreateAttachmentDTO extends BaseDTO
                 'application/x-zip-compressed',
                 'application/octet-stream',
             ];
+
             return in_array($value, $allowedMimeTypes, true);
         });
         // 檔案大小驗證規則
@@ -117,6 +130,7 @@ class CreateAttachmentDTO extends BaseDTO
             $fileSize = (int) $value;
             $minSize = $parameters[0] ?? 1;
             $maxSize = $parameters[1] ?? (10 * 1024 * 1024); // 預設 10MB
+
             return $fileSize >= $minSize && $fileSize <= $maxSize;
         });
         // 儲存路徑驗證規則
@@ -142,6 +156,7 @@ class CreateAttachmentDTO extends BaseDTO
             if (!str_starts_with($storagePath, 'uploads/')) {
                 return false;
             }
+
             return true;
         });
         // 上傳者 ID 驗證規則
@@ -157,6 +172,7 @@ class CreateAttachmentDTO extends BaseDTO
         $this->validator->addMessage('storage_path', '儲存路徑長度不能超過 :max 個字元，且不能包含危險字元');
         $this->validator->addMessage('uploaded_by', '上傳者 ID 必須是正整數');
     }
+
     /**
      * 取得驗證規則.
      */
@@ -172,6 +188,7 @@ class CreateAttachmentDTO extends BaseDTO
             'uploaded_by' => 'required|uploaded_by',
         ];
     }
+
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */
@@ -187,6 +204,7 @@ class CreateAttachmentDTO extends BaseDTO
             'uploaded_by' => $this->uploadedBy,
         ];
     }
+
     /**
      * 檢查是否為圖片檔案.
      */
@@ -194,6 +212,7 @@ class CreateAttachmentDTO extends BaseDTO
     {
         return str_starts_with($this->mimeType, 'image/');
     }
+
     /**
      * 檢查是否為文件檔案.
      */
@@ -210,8 +229,10 @@ class CreateAttachmentDTO extends BaseDTO
             'application/vnd.ms-powerpoint',
             'application/vnd.openxmlformats-officedocument.presentationml.presentation',
         ];
+
         return in_array($this->mimeType, $documentMimes, true);
     }
+
     /**
      * 檢查是否為壓縮檔案.
      */
@@ -221,8 +242,10 @@ class CreateAttachmentDTO extends BaseDTO
             'application/zip',
             'application/x-zip-compressed',
         ];
+
         return in_array($this->mimeType, $archiveMimes, true);
     }
+
     /**
      * 取得檔案副檔名.
      */
@@ -230,6 +253,7 @@ class CreateAttachmentDTO extends BaseDTO
     {
         return pathinfo($this->originalName, PATHINFO_EXTENSION);
     }
+
     /**
      * 取得人類可讀的檔案大小.
      */
@@ -242,8 +266,10 @@ class CreateAttachmentDTO extends BaseDTO
             $size /= 1024;
             $unitIndex++;
         }
+
         return round($size, 2) . ' ' . $units[$unitIndex];
     }
+
     /**
      * 取得檔案類型類別.
      */
@@ -258,6 +284,7 @@ class CreateAttachmentDTO extends BaseDTO
         if ($this->isArchive()) {
             return 'archive';
         }
+
         return 'other';
     }
 }

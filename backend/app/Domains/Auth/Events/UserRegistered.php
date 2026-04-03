@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Events;
+
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
+
 final class UserRegistered extends AbstractDomainEvent
 {
     public function __construct(
@@ -17,10 +19,12 @@ final class UserRegistered extends AbstractDomainEvent
     ) {
         parent::__construct();
     }
+
     public function getEventName(): string
     {
         return 'user.registered';
     }
+
     /**
      * @return array<string, mixed>
      */

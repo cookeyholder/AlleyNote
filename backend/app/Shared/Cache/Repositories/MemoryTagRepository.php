@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Repositories;
+
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
+
 class MemoryTagRepository implements TagRepositoryInterface
 {
     /**
@@ -11,11 +13,13 @@ class MemoryTagRepository implements TagRepositoryInterface
      * @var array<string, array<string, int>> key => [tag => expiry_time]
      */
     private array $keyToTags = [];
+
     /**
      * 標籤到快取鍵的對應.
      * @var array<string, array<string, int>> tag => [key => expiry_time]
      */
     private array $tagToKeys = [];
+
     /**
      * 為快取鍵設定標籤.
      */
@@ -34,8 +38,10 @@ class MemoryTagRepository implements TagRepositoryInterface
             }
             $this->tagToKeys[$tag][$key] = $expiryTime;
         }
+
         return true;
     }
+
     /**
      * 取得快取鍵的所有標籤.
      */
@@ -55,8 +61,10 @@ class MemoryTagRepository implements TagRepositoryInterface
         if (count($validTags) !== count($this->keyToTags[$key])) {
             $this->cleanupExpiredTags($key);
         }
+
         return $validTags;
     }
+
     /**
      * 為快取鍵添加標籤.
      */
@@ -83,8 +91,10 @@ class MemoryTagRepository implements TagRepositoryInterface
             }
             $this->tagToKeys[$tag][$key] = $maxExpiryTime;
         }
+
         return true;
     }
+
     /**
      * 從快取鍵移除標籤.
      */
@@ -110,16 +120,20 @@ class MemoryTagRepository implements TagRepositoryInterface
         if (empty($this->keyToTags[$key])) {
             unset($this->keyToTags[$key]);
         }
+
         return true;
     }
+
     /**
      * 檢查快取鍵是否包含指定標籤.
      */
     public function hasTag(string $key, string $tag): bool
     {
         $tags = $this->getTags($key);
+
         return in_array($tag, $tags, true);
     }
+
     /**
      * 取得指定標籤的所有快取鍵.
      */
@@ -139,8 +153,10 @@ class MemoryTagRepository implements TagRepositoryInterface
         if (count($validKeys) !== count($this->tagToKeys[$tag])) {
             $this->cleanupExpiredKeys($tag);
         }
+
         return $validKeys;
     }
+
     /**
      * 按標籤刪除快取鍵記錄.
      */
@@ -155,8 +171,10 @@ class MemoryTagRepository implements TagRepositoryInterface
                 $deletedKeys[] = $key;
             }
         }
+
         return array_unique($deletedKeys);
     }
+
     /**
      * 刪除快取鍵的標籤記錄.
      */
@@ -177,16 +195,20 @@ class MemoryTagRepository implements TagRepositoryInterface
         }
         // 移除快取鍵記錄
         unset($this->keyToTags[$key]);
+
         return true;
     }
+
     /**
      * 取得所有標籤.
      */
     public function getAllTags(): array
     {
         $this->cleanupExpiredData();
+
         return array_keys($this->tagToKeys);
     }
+
     /**
      * 清除未使用的標籤.
      */
@@ -200,8 +222,10 @@ class MemoryTagRepository implements TagRepositoryInterface
                 unset($this->tagToKeys[$tag]);
             }
         }
+
         return $initialCount - count($this->tagToKeys);
     }
+
     /**
      * 取得標籤統計資訊.
      */
@@ -212,16 +236,20 @@ class MemoryTagRepository implements TagRepositoryInterface
         foreach ($this->tagToKeys as $tag => $keys) {
             $statistics[$tag] = count($keys);
         }
+
         return $statistics;
     }
+
     /**
      * 檢查標籤是否存在.
      */
     public function tagExists(string $tag): bool
     {
         $this->cleanupExpiredData();
+
         return isset($this->tagToKeys[$tag]) && !empty($this->tagToKeys[$tag]);
     }
+
     /**
      * 更新快取鍵的過期時間.
      */
@@ -238,8 +266,10 @@ class MemoryTagRepository implements TagRepositoryInterface
                 $this->tagToKeys[$tag][$key] = $expiryTime;
             }
         }
+
         return true;
     }
+
     /**
      * 清除所有標籤記錄.
      */
@@ -247,8 +277,10 @@ class MemoryTagRepository implements TagRepositoryInterface
     {
         $this->keyToTags = [];
         $this->tagToKeys = [];
+
         return true;
     }
+
     /**
      * 正規化標籤陣列.
      *
@@ -259,6 +291,7 @@ class MemoryTagRepository implements TagRepositoryInterface
     {
         return array_unique(array_map('trim', array_filter($tags, static fn($tag) => !empty($tag))));
     }
+
     /**
      * 清理指定快取鍵的過期標籤.
      */
@@ -283,6 +316,7 @@ class MemoryTagRepository implements TagRepositoryInterface
             unset($this->keyToTags[$key]);
         }
     }
+
     /**
      * 清理指定標籤的過期快取鍵.
      */
@@ -307,6 +341,7 @@ class MemoryTagRepository implements TagRepositoryInterface
             unset($this->tagToKeys[$tag]);
         }
     }
+
     /**
      * 清理所有過期資料.
      */

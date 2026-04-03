@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
+
 use App\Domains\Statistics\ValueObjects\ChartData;
 use DateTimeInterface;
+
 interface StatisticsVisualizationServiceInterface
 {
     /**
@@ -19,6 +21,7 @@ interface StatisticsVisualizationServiceInterface
         DateTimeInterface $endDate,
         string $granularity = 'day',
     ): ChartData;
+
     /**
      * 取得使用者活動時間序列統計.
      *
@@ -31,6 +34,7 @@ interface StatisticsVisualizationServiceInterface
         DateTimeInterface $endDate,
         string $granularity = 'day',
     ): ChartData;
+
     /**
      * 取得文章來源分布統計.
      *
@@ -43,6 +47,7 @@ interface StatisticsVisualizationServiceInterface
         ?DateTimeInterface $endDate = null,
         int $limit = 10,
     ): ChartData;
+
     /**
      * 取得熱門標籤分布統計.
      *
@@ -55,6 +60,7 @@ interface StatisticsVisualizationServiceInterface
         ?DateTimeInterface $endDate = null,
         int $limit = 10,
     ): ChartData;
+
     /**
      * 取得使用者註冊趨勢分析.
      *
@@ -67,6 +73,7 @@ interface StatisticsVisualizationServiceInterface
         DateTimeInterface $endDate,
         string $granularity = 'day',
     ): ChartData;
+
     /**
      * 取得內容成長趨勢分析（包含多個指標）.
      *
@@ -79,6 +86,7 @@ interface StatisticsVisualizationServiceInterface
         DateTimeInterface $endDate,
         string $granularity = 'day',
     ): ChartData;
+
     /**
      * 取得熱門內容排行榜.
      *
@@ -93,6 +101,7 @@ interface StatisticsVisualizationServiceInterface
         string $sortBy = 'views',
         int $limit = 10,
     ): ChartData;
+
     /**
      * 取得使用者活躍度分布統計.
      *
@@ -103,6 +112,7 @@ interface StatisticsVisualizationServiceInterface
         ?DateTimeInterface $startDate = null,
         ?DateTimeInterface $endDate = null,
     ): ChartData;
+
     /**
      * 取得自訂統計圖表資料.
      *
@@ -115,6 +125,7 @@ interface StatisticsVisualizationServiceInterface
         array $parameters = [],
         array $chartOptions = [],
     ): ChartData;
+
     /**
      * 取得多指標組合圖表資料.
      *
@@ -131,6 +142,7 @@ interface StatisticsVisualizationServiceInterface
         string $granularity = 'day',
         array $chartOptions = [],
     ): ChartData;
+
     /**
      * 取得效能監控圖表資料.
      *
@@ -145,6 +157,7 @@ interface StatisticsVisualizationServiceInterface
         array $metrics = ['response_time', 'error_rate', 'throughput'],
         string $granularity = 'hour',
     ): ChartData;
+
     /**
      * 取得瀏覽量時間序列統計.
      *

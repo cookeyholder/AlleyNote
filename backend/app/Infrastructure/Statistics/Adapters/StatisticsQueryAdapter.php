@@ -3,16 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
+
 use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface as BaseQueryServiceInterface;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
+
 class StatisticsQueryAdapter
 {
     public function __construct(
         private BaseQueryServiceInterface $baseQueryService,
     ) {}
+
     /**
      * 取得文章時間序列資料.
      *
@@ -28,9 +31,11 @@ class StatisticsQueryAdapter
             'period_end' => DateTime::createFromInterface($endDate),
         ];
         $data = $this->baseQueryService->getPostStatistics($options);
+
         // 模擬時間序列資料生成
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'posts');
     }
+
     /**
      * 取得使用者活動時間序列資料.
      *
@@ -46,8 +51,10 @@ class StatisticsQueryAdapter
             'period_end' => DateTime::createFromInterface($endDate),
         ];
         $data = $this->baseQueryService->getUserStatistics($options);
+
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'users');
     }
+
     /**
      * 取得文章來源分布資料.
      *
@@ -66,8 +73,10 @@ class StatisticsQueryAdapter
             $options['period_end'] = DateTime::createFromInterface($endDate);
         }
         $data = $this->baseQueryService->getSourceDistribution($options);
+
         return $this->generateMockCategoryData('source', $limit);
     }
+
     /**
      * 取得熱門標籤分布資料.
      *
@@ -80,6 +89,7 @@ class StatisticsQueryAdapter
     ): array {
         return $this->generateMockCategoryData('tags', $limit);
     }
+
     /**
      * 取得使用者註冊趨勢資料.
      *
@@ -92,6 +102,7 @@ class StatisticsQueryAdapter
     ): array {
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'registrations');
     }
+
     /**
      * 取得留言時間序列資料.
      *
@@ -104,6 +115,7 @@ class StatisticsQueryAdapter
     ): array {
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'comments');
     }
+
     /**
      * 取得熱門內容排行資料.
      *
@@ -123,8 +135,10 @@ class StatisticsQueryAdapter
             $options['period_end'] = DateTime::createFromInterface($endDate);
         }
         $data = $this->baseQueryService->getPopularContent($options);
+
         return $this->generateMockCategoryData('content', $limit);
     }
+
     /**
      * 取得使用者活躍度分布資料.
      *
@@ -140,6 +154,7 @@ class StatisticsQueryAdapter
             ['category' => '低活躍', 'value' => 28.7],
         ];
     }
+
     /**
      * 取得自訂指標資料.
      *
@@ -158,15 +173,19 @@ class StatisticsQueryAdapter
                 if (!is_int($limitParam) && !is_numeric($limitParam)) {
                     $limitParam = 10;
                 }
+
                 return $this->generateMockCategoryData($metricName, (int) $limitParam);
             }
             $startDate = new DateTimeImmutable($startDateParam);
             $endDate = new DateTimeImmutable($endDateParam);
             $granularity = $granularityParam;
+
             return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, $metricName);
         }
+
         return $this->generateMockCategoryData($metricName, 5);
     }
+
     /**
      * 取得指標時間序列資料.
      *
@@ -180,8 +199,10 @@ class StatisticsQueryAdapter
     ): array {
         $startDate ??= new DateTimeImmutable('-30 days');
         $endDate ??= new DateTimeImmutable();
+
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, $metricName);
     }
+
     /**
      * 取得效能指標資料.
      *
@@ -195,6 +216,7 @@ class StatisticsQueryAdapter
     ): array {
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, $metric);
     }
+
     /**
      * 生成模擬時間序列資料.
      *
@@ -244,8 +266,10 @@ class StatisticsQueryAdapter
             ];
             $current = $current->add($interval);
         }
+
         return $data;
     }
+
     /**
      * 生成模擬分類資料.
      *
@@ -274,8 +298,10 @@ class StatisticsQueryAdapter
                 break;
             }
         }
+
         return $data;
     }
+
     /**
      * 取得內容成長趨勢資料.
      *
@@ -288,6 +314,7 @@ class StatisticsQueryAdapter
     ): array {
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'content_growth');
     }
+
     /**
      * 取得時間序列指標資料.
      *
@@ -301,6 +328,7 @@ class StatisticsQueryAdapter
     ): array {
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, $metricName);
     }
+
     /**
      * 取得多個效能指標資料.
      *
@@ -317,8 +345,10 @@ class StatisticsQueryAdapter
         foreach ($metrics as $metric) {
             $result[$metric] = $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, $metric);
         }
+
         return $result;
     }
+
     /**
      * 取得通用時間序列資料.
      */
@@ -330,8 +360,10 @@ class StatisticsQueryAdapter
     ): array {
         $startDate ??= new DateTimeImmutable('-30 days');
         $endDate ??= new DateTimeImmutable();
+
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, $metric);
     }
+
     /**
      * 取得分類分佈資料.
      */
@@ -351,8 +383,10 @@ class StatisticsQueryAdapter
                 'percentage' => rand(5, 30),
             ];
         }
+
         return $result;
     }
+
     /**
      * 取得熱門內容資料.
      */
@@ -367,8 +401,10 @@ class StatisticsQueryAdapter
                 'shares' => rand(5, 50),
             ];
         }
+
         return $result;
     }
+
     /**
      * 取得使用者參與度資料.
      */
@@ -379,6 +415,7 @@ class StatisticsQueryAdapter
     ): array {
         $startDate ??= new DateTimeImmutable('-30 days');
         $endDate ??= new DateTimeImmutable();
+
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'engagement');
     }
 }

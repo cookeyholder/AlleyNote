@@ -3,14 +3,17 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
+
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
+
 interface ActivityLoggingServiceInterface
 {
     /**
      * 記錄使用者活動.
      */
     public function log(CreateActivityLogDTO $dto): bool;
+
     /**
      * 記錄成功操作.
      */
@@ -21,6 +24,7 @@ interface ActivityLoggingServiceInterface
         ?string $targetId = null,
         ?array $metadata = null,
     ): bool;
+
     /**
      * 記錄失敗操作.
      */
@@ -30,6 +34,7 @@ interface ActivityLoggingServiceInterface
         string $reason = '',
         ?array $metadata = null,
     ): bool;
+
     /**
      * 記錄安全事件.
      */
@@ -38,23 +43,29 @@ interface ActivityLoggingServiceInterface
         string $description,
         ?array $metadata = null,
     ): bool;
+
     /**
      * 批次記錄多個活動.
      */
     public function logBatch(array $dtos): int;
+
     /**
      * 啟用/停用特定類型的記錄.
      */
     public function enableLogging(ActivityType $actionType): void;
+
     public function disableLogging(ActivityType $actionType): void;
+
     /**
      * 檢查特定類型是否啟用記錄.
      */
     public function isLoggingEnabled(ActivityType $actionType): bool;
+
     /**
      * 設定記錄等級（只記錄指定等級以上的活動）.
      */
     public function setLogLevel(int $level): void;
+
     /**
      * 清理舊的活動記錄（根據保留政策）.
      */

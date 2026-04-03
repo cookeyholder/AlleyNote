@@ -3,14 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
+
 final readonly class PostTitle implements JsonSerializable, Stringable
 {
     private const MIN_LENGTH = 1;
+
     private const MAX_LENGTH = 255;
+
     private string $value;
+
     public function __construct(string $title)
     {
         $trimmedTitle = trim($title);
@@ -34,6 +39,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
         }
         $this->value = $trimmedTitle;
     }
+
     /**
      * 從字串建立 PostTitle.
      */
@@ -41,6 +47,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return new self($title);
     }
+
     /**
      * 取得標題值
      */
@@ -48,6 +55,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 取得標題長度.
      */
@@ -55,6 +63,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return mb_strlen($this->value, 'UTF-8');
     }
+
     /**
      * 取得截斷的標題（用於預覽）.
      */
@@ -63,8 +72,10 @@ final readonly class PostTitle implements JsonSerializable, Stringable
         if ($this->getLength() <= $length) {
             return $this->value;
         }
+
         return mb_substr($this->value, 0, $length, 'UTF-8') . $suffix;
     }
+
     /**
      * 檢查是否與另一個 PostTitle 相等.
      */
@@ -72,6 +83,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return $this->value === $other->value;
     }
+
     /**
      * 轉換為字串.
      */
@@ -79,6 +91,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * __toString 魔術方法.
      */
@@ -86,6 +99,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * JsonSerializable 實作.
      */
@@ -93,6 +107,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 轉換為陣列.
      */

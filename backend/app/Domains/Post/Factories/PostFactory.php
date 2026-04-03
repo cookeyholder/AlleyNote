@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Factories;
+
 use App\Domains\Post\Aggregates\PostAggregate;
 use App\Domains\Post\ValueObjects\PostContent;
 use App\Domains\Post\ValueObjects\PostId;
 use App\Domains\Post\ValueObjects\PostTitle;
 use InvalidArgumentException;
 use Ramsey\Uuid\Uuid;
+
 final class PostFactory
 {
     /**
@@ -34,6 +36,7 @@ final class PostFactory
             creationSource: $creationSource ?? 'web',
         );
     }
+
     /**
      * 從請求資料建立草稿文章.
      *
@@ -49,6 +52,7 @@ final class PostFactory
         $creationSource = isset($data['creation_source']) && is_string($data['creation_source'])
             ? $data['creation_source']
             : null;
+
         return $this->createDraft(
             title: $title,
             content: $content,
@@ -56,6 +60,7 @@ final class PostFactory
             creationSource: $creationSource,
         );
     }
+
     /**
      * 從資料庫資料重建文章聚合.
      *
@@ -66,6 +71,7 @@ final class PostFactory
     {
         return PostAggregate::reconstitute($data);
     }
+
     /**
      * 批次從資料庫資料重建文章聚合.
      *
@@ -79,6 +85,7 @@ final class PostFactory
             $dataList,
         );
     }
+
     /**
      * 建立文章的副本（用於複製功能）.
      *
@@ -94,6 +101,7 @@ final class PostFactory
             $maxLength = 255 - mb_strlen($titleSuffix, 'UTF-8');
             $newTitle = mb_substr($original->getTitle()->toString(), 0, $maxLength, 'UTF-8') . $titleSuffix;
         }
+
         return $this->createDraft(
             title: $newTitle,
             content: $original->getContent()->toString(),
@@ -101,6 +109,7 @@ final class PostFactory
             creationSource: 'copy',
         );
     }
+
     /**
      * 建立測試用的文章（僅用於測試環境）.
      *
@@ -120,6 +129,7 @@ final class PostFactory
             creationSource: 'test',
         );
     }
+
     /**
      * 生成新的 Post ID.
      */
@@ -127,6 +137,7 @@ final class PostFactory
     {
         return PostId::fromString(Uuid::uuid4()->toString());
     }
+
     /**
      * 驗證請求資料.
      *

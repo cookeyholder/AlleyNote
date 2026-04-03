@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Error;
+
 use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
 use ErrorException;
 use Monolog\Formatter\LineFormatter;
@@ -11,11 +12,15 @@ use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
 use Monolog\Processor\WebProcessor;
 use Throwable;
+
 class ErrorHandlerService implements ErrorHandlerServiceInterface
 {
     private Logger $logger;
+
     private bool $isDevelopment;
+
     private array $sensitiveKeys;
+
     public function __construct(
         string $logPath = '',
         bool $isDevelopment = false,
@@ -42,6 +47,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->initializeLogger($logPath ?: __DIR__ . '/../../../storage/logs');
         $this->registerErrorHandlers();
     }
+
     public function handleException(Throwable $e, bool $isPublicError = false): array
     {
         // 記錄完整錯誤到日誌
@@ -56,12 +62,14 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
                 'type' => get_class($e),
             ];
         }
+
         return [
             'error' => $this->getPublicErrorMessage($e),
             'code' => $this->getErrorCode($e),
             'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
+
     public function logSecurityEvent(string $event, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeLogData($context);
@@ -73,6 +81,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => time(),
         ], $sanitizedContext));
     }
+
     public function logAuthenticationAttempt(bool $success, string $username, array $context = []): void
     {
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
@@ -81,6 +90,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'success' => $success,
         ], $context));
     }
+
     public function logSuspiciousActivity(string $activity, array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
@@ -90,6 +100,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             'timestamp' => time(),
         ], $this->sanitizeLogData($context)));
     }
+
     public function sanitizeLogData(array $data): array
     {
         $sanitized = [];
@@ -109,8 +120,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
                 $sanitized[$key] = $value;
             }
         }
+
         return $sanitized;
     }
+
     private function initializeLogger(string $logPath): void
     {
         $this->logger = new Logger('security');
@@ -158,6 +171,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $this->logger->pushProcessor(new IntrospectionProcessor());
         $this->logger->pushProcessor(new WebProcessor());
     }
+
     private function registerErrorHandlers(): void
     {
         // 設定全域例外處理器
@@ -167,6 +181,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         // 設定致命錯誤處理器
         register_shutdown_function([$this, 'shutdownHandler']);
     }
+
     public function globalExceptionHandler(Throwable $e): void
     {
         $errorData = $this->handleException($e, true);
@@ -177,6 +192,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         echo json_encode($errorData) ?? '';
         exit;
     }
+
     public function globalErrorHandler(int $severity, string $message, string $file, int $line): bool
     {
         if (!(error_reporting() & $severity)) {
@@ -187,8 +203,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         if ($severity === E_ERROR || $severity === E_CORE_ERROR || $severity === E_COMPILE_ERROR) {
             $this->globalExceptionHandler($exception);
         }
+
         return true;
     }
+
     public function shutdownHandler(): void
     {
         $error = error_get_last();
@@ -203,6 +221,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             $this->globalExceptionHandler($exception);
         }
     }
+
     private function logException(Throwable $e): void
     {
         $context = [
@@ -214,6 +233,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         ];
         $this->logger->error($e->getMessage(), $this->sanitizeLogData($context));
     }
+
     private function getPublicErrorMessage(Throwable $e): string
     {
         return match (get_class($e)) {
@@ -224,6 +244,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             default => '系統暫時無法處理您的請求，請稍後再試'
         };
     }
+
     private function getErrorCode(Throwable $e): string
     {
         return match (get_class($e)) {
@@ -234,6 +255,7 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
             default => 'INTERNAL_ERROR'
         };
     }
+
     private function isSensitiveKey(string $key): bool
     {
         $key = strtolower($key);
@@ -242,8 +264,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
                 return true;
             }
         }
+
         return false;
     }
+
     private function containsSensitiveData(string $value): bool
     {
         // 檢查是否像是密碼哈希、Token 等
@@ -258,13 +282,16 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
             return false; // 電子郵件可以記錄，但可能需要部分遮罩
         }
+
         return false;
     }
+
     private function truncateString(string $string, int $maxLength = 1000): string
     {
         if (strlen($string) > $maxLength) {
             return substr($string, 0, $maxLength) . '... [truncated]';
         }
+
         return $string;
     }
 }

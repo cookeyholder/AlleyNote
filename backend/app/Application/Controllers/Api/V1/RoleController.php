@@ -3,17 +3,20 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Domains\Auth\Services\RoleManagementService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class RoleController
 {
     public function __construct(
         private readonly RoleManagementService $roleManagementService,
     ) {}
+
     /**
      * 取得角色列表.
      *
@@ -58,8 +61,10 @@ class RoleController
             'data' => array_map(fn($role) => $role->toArray(), $roles),
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
     /**
      * 取得單一角色（包含權限）.
      *
@@ -132,6 +137,7 @@ class RoleController
                 'data' => $roleData,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -139,9 +145,11 @@ class RoleController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 建立角色.
      *
@@ -212,6 +220,7 @@ class RoleController
                 'data' => $role->toArray(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -220,9 +229,11 @@ class RoleController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 更新角色.
      *
@@ -291,6 +302,7 @@ class RoleController
                 'data' => $role->toArray(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -298,9 +310,11 @@ class RoleController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 刪除角色.
      *
@@ -365,6 +379,7 @@ class RoleController
                 'message' => '角色刪除成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -372,6 +387,7 @@ class RoleController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -380,9 +396,11 @@ class RoleController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 更新角色的權限.
      *
@@ -454,6 +472,7 @@ class RoleController
                 'message' => '權限更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -461,9 +480,11 @@ class RoleController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 取得所有權限.
      *
@@ -508,8 +529,10 @@ class RoleController
             'data' => array_map(fn($p) => $p->toArray(), $permissions),
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
     /**
      * 取得所有權限（按資源分組）.
      *
@@ -570,6 +593,7 @@ class RoleController
             'data' => $data,
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

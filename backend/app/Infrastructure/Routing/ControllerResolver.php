@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
+
 use RuntimeException;
+
 class ControllerResolver
 {
     public function __construct(
         private ContainerInterface $container,
     ) {}
+
     /**
      * 解析並執行控制器方法.
      */
@@ -30,8 +33,10 @@ class ControllerResolver
             // 處理器是閉包函式
             return $this->handleCallable($handler, $request, $parameters);
         }
+
         throw new RuntimeException('無效的路由處理器格式');
     }
+
     /**
      * 處理閉包函式處理器.
      */
@@ -46,9 +51,11 @@ class ControllerResolver
         if ($result instanceof ResponseInterface) {
             return $result;
         }
+
         // 否則將結果轉換為 JSON 回應
         return $this->createJsonResponse($result);
     }
+
     /**
      * 建立空的 PSR-7 Response 物件.
      */
@@ -56,6 +63,7 @@ class ControllerResolver
     {
         return new Response();
     }
+
     /**
      * 建立 JSON 回應.
      */
@@ -63,12 +71,14 @@ class ControllerResolver
     {
         $json = json_encode($data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) ?: '{}';
         $stream = new Stream($json);
+
         return new Response(
             $status,
             ['Content-Type' => 'application/json'],
             $stream,
         );
     }
+
     /**
      * 處理字串格式處理器 "ControllerClass@method".
      */
@@ -78,8 +88,10 @@ class ControllerResolver
             throw new RuntimeException("處理器格式錯誤: {$handler}，預期格式: ControllerClass@method");
         }
         [$controllerClass, $method] = explode('@', $handler, 2);
+
         return $this->handleArrayHandler([$controllerClass, $method], $request, $parameters);
     }
+
     /**
      * 處理陣列格式處理器 [ControllerClass::class, 'method'].
      */
@@ -94,9 +106,11 @@ class ControllerResolver
         }
         // 準備方法參數
         $methodArgs = $this->resolveMethodArguments($controller, $method, $request, $parameters);
+
         // 呼叫控制器方法
         return $controller->{$method}(...$methodArgs);
     }
+
     /**
      * 解析控制器實例.
      */
@@ -114,6 +128,7 @@ class ControllerResolver
         if ($this->container->has($controllerClass)) {
             return $this->container->get($controllerClass);
         }
+
         // 如果容器中沒有，嘗試建立實例
         try {
             $reflection = new ReflectionClass($controllerClass);
@@ -124,11 +139,13 @@ class ControllerResolver
             }
             // 解析建構子參數
             $args = $this->resolveConstructorArguments($constructor);
+
             return new $controllerClass(...$args);
         } catch (ReflectionException $e) {
             throw new RuntimeException("無法建立控制器實例: {$controllerClass}", 0, $e);
         }
     }
+
     /**
      * 解析建構子參數.
      */
@@ -159,8 +176,10 @@ class ControllerResolver
                 throw new RuntimeException("無法解析參數: {$parameter->getName()}，類型: {$typeName}");
             }
         }
+
         return $args;
     }
+
     /**
      * 解析控制器方法參數.
      */
@@ -217,10 +236,13 @@ class ControllerResolver
                 $args[] = null;
                 continue;
             }
+
             throw new RuntimeException("無法解析方法參數: {$paramName}");
         }
+
         return $args;
     }
+
     /**
      * 轉換參數類型.
      */
@@ -229,6 +251,7 @@ class ControllerResolver
         if ($type === null || !$type instanceof ReflectionNamedType) {
             return $value;
         }
+
         return match ($type->getName()) {
             'int' => (int) $value,
             'float' => (float) $value,

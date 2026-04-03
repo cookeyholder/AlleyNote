@@ -3,20 +3,29 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
+
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
 use DateTime;
+
 class CreatePostDTO extends BaseDTO
 {
     public readonly string $title;
+
     public readonly string $content;
+
     public readonly int $userId;
+
     public readonly string $userIp;
+
     public readonly bool $isPinned;
+
     public readonly PostStatus $status;
+
     public readonly ?string $publishDate;
+
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
@@ -48,6 +57,7 @@ class CreatePostDTO extends BaseDTO
         $publishDate = $this->getString($validatedData, 'publish_date');
         $this->publishDate = (!empty($publishDate)) ? $publishDate : null;
     }
+
     /**
      * 添加文章專用驗證規則.
      */
@@ -70,6 +80,7 @@ class CreatePostDTO extends BaseDTO
             if (!preg_match('/[\p{L}\p{N}]/u', $title)) {
                 return false;
             }
+
             return true;
         });
         // 文章內容驗證規則
@@ -88,6 +99,7 @@ class CreatePostDTO extends BaseDTO
             if (!preg_match('/[\p{L}\p{N}]/u', $content)) {
                 return false;
             }
+
             return true;
         });
         // 使用者 ID 驗證規則
@@ -104,6 +116,7 @@ class CreatePostDTO extends BaseDTO
                 return false;
             }
             $validStatuses = array_map(fn($status) => $status->value, PostStatus::cases());
+
             return in_array($value, $validStatuses, true);
         });
         // RFC3339 日期時間驗證規則
@@ -127,6 +140,7 @@ class CreatePostDTO extends BaseDTO
                     return true;
                 }
             }
+
             return false;
         });
         // 添加繁體中文錯誤訊息
@@ -137,6 +151,7 @@ class CreatePostDTO extends BaseDTO
         $this->validator->addMessage('post_status', '文章狀態必須是：draft（草稿）、published（已發布）或 archived（已封存）');
         $this->validator->addMessage('rfc3339_datetime', '發布日期必須是有效的 RFC3339 日期時間格式');
     }
+
     /**
      * 取得驗證規則.
      */
@@ -152,6 +167,7 @@ class CreatePostDTO extends BaseDTO
             'publish_date' => 'rfc3339_datetime',
         ];
     }
+
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
+
 use DateTime;
+
 interface StatisticsMonitoringServiceInterface
 {
     /**
@@ -17,6 +19,7 @@ interface StatisticsMonitoringServiceInterface
      * }
      */
     public function getCalculationTimeMetrics(): array;
+
     /**
      * 取得快取命中率監控資料.
      *
@@ -28,6 +31,7 @@ interface StatisticsMonitoringServiceInterface
      * }
      */
     public function getCacheMetrics(): array;
+
     /**
      * 取得 API 回應時間監控資料.
      *
@@ -40,6 +44,7 @@ interface StatisticsMonitoringServiceInterface
      * }
      */
     public function getApiResponseTimeMetrics(): array;
+
     /**
      * 取得錯誤率監控資料.
      *
@@ -51,6 +56,7 @@ interface StatisticsMonitoringServiceInterface
      * }
      */
     public function getErrorMetrics(): array;
+
     /**
      * 執行完整的健康檢查.
      *
@@ -62,10 +68,12 @@ interface StatisticsMonitoringServiceInterface
      * }
      */
     public function performHealthCheck(): array;
+
     /**
      * 記錄統計操作事件.
      */
     public function logStatisticsEvent(string $eventType, array $context = []): bool;
+
     /**
      * 產生監控摘要報告.
      *
@@ -78,16 +86,19 @@ interface StatisticsMonitoringServiceInterface
      * }
      */
     public function generateMonitoringSummary(): array;
+
     /**
      * 清理過期的監控記錄.
      */
     public function cleanupOldMonitoringData(): int;
+
     /**
      * 檢測系統警告條件.
      *
      * @return array<array{type: string, severity: string, message: string, timestamp: string}>
      */
     public function checkAlertConditions(): array;
+
     /**
      * 取得特定時間範圍的監控統計.
      *

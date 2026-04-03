@@ -3,26 +3,36 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
+
 use Throwable;
+
 class TokenValidationException extends JwtException
 {
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'token_validation_error';
+
     /**
      * 錯誤碼常數.
      */
     public const ERROR_CODE = 4003;
+
     /**
      * 驗證失敗原因常數.
      */
     public const INVALID_SIGNATURE = 'invalid_signature';
+
     public const INVALID_ISSUER = 'invalid_issuer';
+
     public const INVALID_AUDIENCE = 'invalid_audience';
+
     public const VALIDATION_FAILED = 'validation_failed';
+
     public const ALGORITHM_NOT_ALLOWED = 'algorithm_not_allowed';
+
     public const KEY_NOT_FOUND = 'key_not_found';
+
     /**
      * 建立 Token 驗證例外.
      *
@@ -43,6 +53,7 @@ class TokenValidationException extends JwtException
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
     }
+
     /**
      * 取得驗證失敗原因.
      */
@@ -50,12 +61,14 @@ class TokenValidationException extends JwtException
     {
         return $this->context['reason'] ?? self::VALIDATION_FAILED;
     }
+
     /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string
     {
         $reason = $this->getReason();
+
         return match ($reason) {
             self::INVALID_SIGNATURE => 'Token 簽名驗證失敗，請重新登入。',
             self::INVALID_ISSUER => 'Token 發行者無效，請重新登入。',
@@ -65,6 +78,7 @@ class TokenValidationException extends JwtException
             default => 'Token 驗證失敗，請重新登入。',
         };
     }
+
     /**
      * 靜態工廠方法：簽名無效.
      */
@@ -72,23 +86,27 @@ class TokenValidationException extends JwtException
     {
         return new self('Token 簽名驗證失敗', self::INVALID_SIGNATURE, $previous);
     }
+
     /**
      * 靜態工廠方法：發行者無效.
      */
     public static function invalidIssuer(string $expected, string $actual, ?Throwable $previous = null): self
     {
         $message = "Token 發行者無效，期望: {$expected}，實際: {$actual}";
+
         return new self($message, self::INVALID_ISSUER, $previous, [
             'expected_issuer' => $expected,
             'actual_issuer' => $actual,
         ]);
     }
+
     /**
      * 靜態工廠方法：受眾無效.
      */
     public static function invalidAudience(string $expected, string $actual, ?Throwable $previous = null): self
     {
         $message = "Token 受眾無效，期望: {$expected}，實際: {$actual}";
+
         return new self($message, self::INVALID_AUDIENCE, $previous, [
             'expected_audience' => $expected,
             'actual_audience' => $actual,

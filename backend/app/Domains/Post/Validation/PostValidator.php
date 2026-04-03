@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Validation;
+
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Validation\ValidationResult;
 use App\Shared\Validation\Validator;
 use DateTime;
+
 class PostValidator extends Validator
 {
     public function __construct()
@@ -14,6 +16,7 @@ class PostValidator extends Validator
         $this->addPostSpecificRules();
         $this->addPostSpecificMessages();
     }
+
     /**
      * 添加 Post 相關的自訂驗證規則.
      */
@@ -27,6 +30,7 @@ class PostValidator extends Validator
             if (!is_string($value)) {
                 return false;
             }
+
             return PostStatus::isValid($value);
         });
         // RFC3339 日期時間格式驗證
@@ -52,6 +56,7 @@ class PostValidator extends Validator
                     return true;
                 }
             }
+
             return false;
         });
         // 文章標題驗證（去除 HTML 標籤，檢查實際內容長度）
@@ -67,6 +72,7 @@ class PostValidator extends Validator
             $minLength = isset($parameters[0]) ? (int) $parameters[0] : 1;
             $maxLength = isset($parameters[1]) ? (int) $parameters[1] : 255;
             $length = mb_strlen($cleanTitle);
+
             return $length >= $minLength && $length <= $maxLength;
         });
         // 文章內容驗證（去除 HTML 標籤，檢查實際內容長度）
@@ -88,6 +94,7 @@ class PostValidator extends Validator
             if ($maxLength !== null && $length > $maxLength) {
                 return false;
             }
+
             return true;
         });
         // 使用者 ID 驗證（必須是正整數）
@@ -99,6 +106,7 @@ class PostValidator extends Validator
                 return false;
             }
             $userId = (int) $value;
+
             return $userId > 0;
         });
         // IP 地址驗證（支援 IPv4 和 IPv6）
@@ -119,6 +127,7 @@ class PostValidator extends Validator
                     return filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
                 }
             }
+
             return true;
         });
         // 發布日期驗證（不能是過去的日期，除非是草稿）
@@ -141,9 +150,11 @@ class PostValidator extends Validator
             }
             // 對於非草稿狀態，發布日期不能早於當前時間
             $now = new DateTime();
+
             return $date >= $now;
         });
     }
+
     /**
      * 添加 Post 相關的自訂錯誤訊息.
      */
@@ -157,6 +168,7 @@ class PostValidator extends Validator
         $this->addMessage('ip_address', 'IP 地址格式不正確');
         $this->addMessage('publish_date_future', '發布日期不能早於當前時間');
     }
+
     /**
      * 建立 Post 建立時的驗證規則.
      */
@@ -172,6 +184,7 @@ class PostValidator extends Validator
             'publish_date' => 'rfc3339_datetime',
         ];
     }
+
     /**
      * 建立 Post 更新時的驗證規則.
      */
@@ -185,6 +198,7 @@ class PostValidator extends Validator
             'publish_date' => 'rfc3339_datetime',
         ];
     }
+
     /**
      * 建立動態的更新驗證規則（只驗證提供的欄位）.
      *
@@ -199,8 +213,10 @@ class PostValidator extends Validator
                 $rules[$field] = $availableRules[$field];
             }
         }
+
         return $rules;
     }
+
     /**
      * 驗證 Post 資料的特殊邏輯.
      *
@@ -218,6 +234,7 @@ class PostValidator extends Validator
         }
         // 執行額外的業務邏輯驗證
         $validatedData = $result->getValidatedData();
+
         // 檢查發布日期與狀態的一致性
         return $result;
     }

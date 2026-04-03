@@ -3,36 +3,56 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
+
 class RefreshTokenException extends JwtException
 {
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'refresh_token_error';
+
     /**
      * 錯誤碼常數.
      */
     public const ERROR_CODE = 4003;
+
     /**
      * 操作失敗原因常數.
      */
     public const REASON_NOT_FOUND = 'not_found';
+
     public const REASON_REVOKED = 'revoked';
+
     public const REASON_ALREADY_USED = 'already_used';
+
     public const REASON_DEVICE_MISMATCH = 'device_mismatch';
+
     public const REASON_USER_MISMATCH = 'user_mismatch';
+
     public const REASON_STORAGE_FAILED = 'storage_failed';
+
     public const REASON_DELETION_FAILED = 'deletion_failed';
+
     public const REASON_ROTATION_FAILED = 'rotation_failed';
+
     public const REASON_LIMIT_EXCEEDED = 'limit_exceeded';
+
     public const REASON_FAMILY_MISMATCH = 'family_mismatch';
+
     public const REASON_CREATION_FAILED = 'creation_failed';
+
     public const REASON_DATABASE_ERROR = 'database_error';
+
     public const REASON_UPDATE_FAILED = 'update_failed';
+
     public const REASON_REVOCATION_FAILED = 'revocation_failed';
+
     public const REASON_CLEANUP_FAILED = 'cleanup_failed';
+
     public const REASON_FAMILY_REVOCATION_FAILED = 'family_revocation_failed';
+
     public const REASON_BATCH_OPERATION_FAILED = 'batch_operation_failed';
+
     /**
      * 建立 Refresh Token 操作例外.
      *
@@ -53,6 +73,7 @@ class RefreshTokenException extends JwtException
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
+
     /**
      * 建構預設錯誤訊息.
      *
@@ -81,12 +102,14 @@ class RefreshTokenException extends JwtException
             default => 'Refresh token operation failed',
         };
     }
+
     /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string
     {
         $reason = $this->getReason();
+
         return match ($reason) {
             self::REASON_NOT_FOUND => '找不到有效的 Refresh Token，請重新登入。',
             self::REASON_REVOKED => '您的登入憑證已被撤銷，請重新登入。',
@@ -101,6 +124,7 @@ class RefreshTokenException extends JwtException
             default => 'Token 操作失敗，請重新登入。',
         };
     }
+
     /**
      * 取得失敗原因.
      */
@@ -108,6 +132,7 @@ class RefreshTokenException extends JwtException
     {
         return $this->context['reason'] ?? self::REASON_NOT_FOUND;
     }
+
     /**
      * 取得操作 ID.
      */
@@ -115,6 +140,7 @@ class RefreshTokenException extends JwtException
     {
         return $this->context['operation_id'] ?? null;
     }
+
     /**
      * 取得用戶 ID（如果有）.
      */
@@ -122,6 +148,7 @@ class RefreshTokenException extends JwtException
     {
         return $this->context['user_id'] ?? null;
     }
+
     /**
      * 取得 Token ID（如果有）.
      */
@@ -129,6 +156,7 @@ class RefreshTokenException extends JwtException
     {
         return $this->context['token_id'] ?? null;
     }
+
     /**
      * 取得裝置資訊（如果有）.
      *
@@ -138,6 +166,7 @@ class RefreshTokenException extends JwtException
     {
         return $this->context['device_info'] ?? null;
     }
+
     /**
      * 檢查是否為特定失敗原因.
      *
@@ -147,6 +176,7 @@ class RefreshTokenException extends JwtException
     {
         return $this->getReason() === $reason;
     }
+
     /**
      * 檢查是否為安全相關錯誤.
      */
@@ -160,6 +190,7 @@ class RefreshTokenException extends JwtException
             self::REASON_FAMILY_MISMATCH,
         ]);
     }
+
     /**
      * 檢查是否為資料庫操作錯誤.
      */
@@ -170,6 +201,7 @@ class RefreshTokenException extends JwtException
             self::REASON_DELETION_FAILED,
         ]);
     }
+
     /**
      * 檢查是否為暫時性錯誤（可重試）.
      */
@@ -181,6 +213,7 @@ class RefreshTokenException extends JwtException
             self::REASON_ROTATION_FAILED,
         ]);
     }
+
     /**
      * 檢查是否需要重新登入.
      */
@@ -188,6 +221,7 @@ class RefreshTokenException extends JwtException
     {
         return !$this->isDatabaseRelated();
     }
+
     /**
      * 靜態工廠方法：Token 不存在.
      *
@@ -200,8 +234,10 @@ class RefreshTokenException extends JwtException
         if ($userId !== null) {
             $context['user_id'] = $userId;
         }
+
         return new self(self::REASON_NOT_FOUND, '', $context);
     }
+
     /**
      * 靜態工廠方法：Token 已被撤銷.
      *
@@ -218,6 +254,7 @@ class RefreshTokenException extends JwtException
             'revoked_reason' => $revokedReason,
         ]);
     }
+
     /**
      * 靜態工廠方法：Token 已使用.
      *
@@ -232,6 +269,7 @@ class RefreshTokenException extends JwtException
             'used_at_human' => date('Y-m-d H:i:s', $usedAt),
         ]);
     }
+
     /**
      * 靜態工廠方法：裝置不匹配.
      *
@@ -250,6 +288,7 @@ class RefreshTokenException extends JwtException
             'actual_fingerprint' => $actualFingerprint,
         ]);
     }
+
     /**
      * 靜態工廠方法：用戶不匹配.
      *
@@ -265,6 +304,7 @@ class RefreshTokenException extends JwtException
             'actual_user_id' => $actualUserId,
         ]);
     }
+
     /**
      * 靜態工廠方法：儲存失敗.
      *
@@ -278,6 +318,7 @@ class RefreshTokenException extends JwtException
             'token_data' => $tokenData,
         ]);
     }
+
     /**
      * 靜態工廠方法：刪除失敗.
      *
@@ -291,6 +332,7 @@ class RefreshTokenException extends JwtException
             'deletion_error' => $error,
         ]);
     }
+
     /**
      * 靜態工廠方法：輪換失敗.
      *
@@ -304,6 +346,7 @@ class RefreshTokenException extends JwtException
             'rotation_error' => $error,
         ]);
     }
+
     /**
      * 靜態工廠方法：數量限制超出.
      *
@@ -319,6 +362,7 @@ class RefreshTokenException extends JwtException
             'max_limit' => $maxLimit,
         ]);
     }
+
     /**
      * 靜態工廠方法：Token 系列不匹配.
      *

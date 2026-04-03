@@ -3,19 +3,31 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\Models;
+
 class Attachment
 {
     private ?int $id = null;
+
     private ?string $uuid = null;
+
     private int $postId;
+
     private string $filename;
+
     private string $originalName;
+
     private string $mimeType;
+
     private int $fileSize;
+
     private string $storagePath;
+
     private ?string $createdAt = null;
+
     private ?string $updatedAt = null;
+
     private ?string $deletedAt = null;
+
     public function __construct(array $attributes = [])
     {
         $this->id = $attributes['id'] ?? null;
@@ -30,50 +42,62 @@ class Attachment
         $this->updatedAt = $attributes['updated_at'] ?? null;
         $this->deletedAt = $attributes['deleted_at'] ?? null;
     }
+
     public function getId(): ?int
     {
         return $this->id;
     }
+
     public function getUuid(): ?string
     {
         return $this->uuid;
     }
+
     public function getPostId(): int
     {
         return $this->postId;
     }
+
     public function getFilename(): string
     {
         return $this->filename;
     }
+
     public function getOriginalName(): string
     {
         return $this->originalName;
     }
+
     public function getMimeType(): string
     {
         return $this->mimeType;
     }
+
     public function getFileSize(): int
     {
         return $this->fileSize;
     }
+
     public function getStoragePath(): string
     {
         return $this->storagePath;
     }
+
     public function getCreatedAt(): ?string
     {
         return $this->createdAt;
     }
+
     public function getUpdatedAt(): ?string
     {
         return $this->updatedAt;
     }
+
     public function getDeletedAt(): ?string
     {
         return $this->deletedAt;
     }
+
     public function toArray(): array
     {
         return [

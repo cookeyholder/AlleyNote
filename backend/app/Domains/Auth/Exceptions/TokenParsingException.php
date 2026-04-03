@@ -3,25 +3,34 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
+
 use Throwable;
+
 class TokenParsingException extends JwtException
 {
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'token_parsing_error';
+
     /**
      * 錯誤碼常數.
      */
     public const ERROR_CODE = 4004;
+
     /**
      * 解析失敗原因常數.
      */
     public const EMPTY_TOKEN = 'empty_token';
+
     public const INVALID_FORMAT = 'invalid_format';
+
     public const PARSING_FAILED = 'parsing_failed';
+
     public const JSON_DECODE_ERROR = 'json_decode_error';
+
     public const BASE64_DECODE_ERROR = 'base64_decode_error';
+
     /**
      * 建立 Token 解析例外.
      *
@@ -42,6 +51,7 @@ class TokenParsingException extends JwtException
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
     }
+
     /**
      * 取得解析失敗原因.
      */
@@ -49,12 +59,14 @@ class TokenParsingException extends JwtException
     {
         return $this->context['reason'] ?? self::PARSING_FAILED;
     }
+
     /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string
     {
         $reason = $this->getReason();
+
         return match ($reason) {
             self::EMPTY_TOKEN => 'Token 不能為空，請提供有效的 Token。',
             self::INVALID_FORMAT => 'Token 格式無效，請提供正確格式的 JWT Token。',
@@ -63,6 +75,7 @@ class TokenParsingException extends JwtException
             default => 'Token 解析失敗，請提供有效的 Token。',
         };
     }
+
     /**
      * 靜態工廠方法：空 Token.
      */
@@ -70,14 +83,17 @@ class TokenParsingException extends JwtException
     {
         return new self('Token 不能為空', self::EMPTY_TOKEN);
     }
+
     /**
      * 靜態工廠方法：無效格式.
      */
     public static function invalidFormat(string $details = '', ?Throwable $previous = null): self
     {
         $message = 'Token 格式無效' . ($details ? ': ' . $details : '');
+
         return new self($message, self::INVALID_FORMAT, $previous);
     }
+
     /**
      * 靜態工廠方法：JSON 解碼錯誤.
      */
@@ -85,6 +101,7 @@ class TokenParsingException extends JwtException
     {
         return new self('Token JSON 資料解碼失敗', self::JSON_DECODE_ERROR, $previous);
     }
+
     /**
      * 靜態工廠方法：Base64 解碼錯誤.
      */

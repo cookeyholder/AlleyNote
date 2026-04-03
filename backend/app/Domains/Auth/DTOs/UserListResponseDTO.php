@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
+
 final readonly class UserListResponseDTO
 {
     public function __construct(
@@ -13,6 +14,7 @@ final readonly class UserListResponseDTO
         public ?string $lastLogin,
         public string $createdAt,
     ) {}
+
     public static function fromArray(array $data): self
     {
         return new self(
@@ -24,6 +26,7 @@ final readonly class UserListResponseDTO
             createdAt: $data['created_at'],
         );
     }
+
     public function toArray(): array
     {
         return [

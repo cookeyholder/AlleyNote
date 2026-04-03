@@ -3,13 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Shared\ValueObjects;
+
 use App\Shared\Exceptions\ValidationException;
+
 final class SecurePassword
 {
     private const MIN_LENGTH = 8;
+
     private const MAX_LENGTH = 128;
+
     private static ?array $commonPasswords = null;
+
     private static ?array $commonWords = null;
+
     public function __construct(
         private readonly string $value,
         private readonly ?string $username = null,
@@ -17,6 +23,7 @@ final class SecurePassword
     ) {
         $this->validate();
     }
+
     private function validate(): void
     {
         $errors = [];
@@ -61,6 +68,7 @@ final class SecurePassword
             throw ValidationException::fromMultipleErrors(['password' => $errors]);
         }
     }
+
     /**
      * 檢查是否包含連續字元.
      */
@@ -118,8 +126,10 @@ final class SecurePassword
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查是否包含重複字元.
      */
@@ -128,6 +138,7 @@ final class SecurePassword
         // 檢查 3+ 個相同字元
         return preg_match('/(.)\\1{2,}/', $this->value) === 1;
     }
+
     /**
      * 檢查是否為常見密碼
      */
@@ -136,8 +147,10 @@ final class SecurePassword
         if (self::$commonPasswords === null) {
             self::$commonPasswords = $this->loadCommonPasswords();
         }
+
         return in_array(strtolower($this->value), self::$commonPasswords, true);
     }
+
     /**
      * 檢查是否包含常見單字.
      */
@@ -152,8 +165,10 @@ final class SecurePassword
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查是否包含個人資訊.
      */
@@ -173,8 +188,10 @@ final class SecurePassword
                 }
             }
         }
+
         return false;
     }
+
     /**
      * 載入常見密碼列表.
      */
@@ -188,8 +205,10 @@ final class SecurePassword
         if ($passwords === false) {
             return [];
         }
+
         return array_map('strtolower', array_map('trim', $passwords));
     }
+
     /**
      * 載入常見單字列表.
      */
@@ -203,8 +222,10 @@ final class SecurePassword
         if ($words === false) {
             return [];
         }
+
         return array_map('strtolower', array_map('trim', $words));
     }
+
     /**
      * 計算密碼強度分數 (0-100).
      */
@@ -242,8 +263,10 @@ final class SecurePassword
         if ($this->hasRepeatingChars()) {
             $score -= 10;
         }
+
         return max(0, min(100, $score));
     }
+
     /**
      * 獲取密碼強度等級.
      */
@@ -262,12 +285,15 @@ final class SecurePassword
         if ($score >= 20) {
             return 'weak';
         }
+
         return 'very-weak';
     }
+
     public function getValue(): string
     {
         return $this->value;
     }
+
     public function __toString(): string
     {
         return $this->value;

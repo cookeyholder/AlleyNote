@@ -3,19 +3,27 @@
 declare(strict_types=1);
 
 namespace App\Shared\Config;
+
 use RuntimeException;
+
 final class EnvironmentConfig
 {
     private string $environment;
+
     private string $configPath;
+
     private array $config = [];
+
     private bool $loaded = false;
+
     private const VALID_ENVIRONMENTS = ['development', 'testing', 'production'];
+
     private const REQUIRED_KEYS = [
         'APP_NAME',
         'APP_ENV',
         'DB_CONNECTION',
     ];
+
     public function __construct(?string $environment = null, ?string $configPath = null)
     {
         $this->environment = $environment ?: $this->detectEnvironment();
@@ -26,6 +34,7 @@ final class EnvironmentConfig
             );
         }
     }
+
     /**
      * 載入環境配置.
      */
@@ -42,6 +51,7 @@ final class EnvironmentConfig
         $this->validateRequired();
         $this->loaded = true;
     }
+
     /**
      * 取得配置值.
      */
@@ -64,10 +74,13 @@ final class EnvironmentConfig
             if (is_string($configValue)) {
                 return $this->parseValue($configValue);
             }
+
             return $configValue;
         }
+
         return $default;
     }
+
     /**
      * 設定配置值.
      */
@@ -77,6 +90,7 @@ final class EnvironmentConfig
         $_ENV[$key] = $value;
         putenv("{$key}={$value}");
     }
+
     /**
      * 取得目前環境.
      */
@@ -84,6 +98,7 @@ final class EnvironmentConfig
     {
         return $this->environment;
     }
+
     /**
      * 檢查是否為生產環境.
      */
@@ -91,6 +106,7 @@ final class EnvironmentConfig
     {
         return $this->environment === 'production';
     }
+
     /**
      * 檢查是否為開發環境.
      */
@@ -98,6 +114,7 @@ final class EnvironmentConfig
     {
         return $this->environment === 'development';
     }
+
     /**
      * 檢查是否為測試環境.
      */
@@ -105,14 +122,17 @@ final class EnvironmentConfig
     {
         return $this->environment === 'testing';
     }
+
     /**
      * 取得所有已載入的配置.
      */
     public function all(): array
     {
         $this->load();
+
         return $this->config;
     }
+
     /**
      * 驗證環境配置的完整性.
      */
@@ -128,8 +148,10 @@ final class EnvironmentConfig
         }
         // 環境特定的驗證
         $errors = array_merge($errors, $this->validateEnvironmentSpecific());
+
         return $errors;
     }
+
     /**
      * 自動偵測當前環境.
      */
@@ -145,8 +167,10 @@ final class EnvironmentConfig
         if (defined('PHPUNIT_RUNNING') || (function_exists('running_tests') && running_tests())) {
             return 'testing';
         }
+
         return $env;
     }
+
     /**
      * 取得預設配置路徑.
      */
@@ -154,6 +178,7 @@ final class EnvironmentConfig
     {
         return dirname(__DIR__, 3);
     }
+
     /**
      * 取得環境檔案路徑.
      */
@@ -161,6 +186,7 @@ final class EnvironmentConfig
     {
         return $this->configPath . "/.env.{$this->environment}";
     }
+
     /**
      * 從檔案載入配置.
      */
@@ -194,6 +220,7 @@ final class EnvironmentConfig
             }
         }
     }
+
     /**
      * 解析配置值.
      */
@@ -215,8 +242,10 @@ final class EnvironmentConfig
         if (is_numeric($value)) {
             return str_contains($value, '.') ? (float) $value : (int) $value;
         }
+
         return $value;
     }
+
     /**
      * 驗證必要配置項目.
      */
@@ -259,6 +288,7 @@ final class EnvironmentConfig
             );
         }
     }
+
     /**
      * 取得原始配置值（不觸發自動載入）.
      */
@@ -274,11 +304,14 @@ final class EnvironmentConfig
             if (is_string($envVar)) {
                 return $this->parseValue($envVar);
             }
+
             return $envVar;
         }
+
         // 從配置檔案中取得
         return $this->config[$key] ?? null;
     }
+
     /**
      * 環境特定的驗證.
      */
@@ -291,8 +324,10 @@ final class EnvironmentConfig
             'development' => $this->validateDevelopmentConfig(),
             default => [],
         };
+
         return array_merge($errors, $environmentErrors);
     }
+
     /**
      * 驗證生產環境配置.
      */
@@ -321,8 +356,10 @@ final class EnvironmentConfig
                 $errors[] = "生產環境必須修改 {$key} 的預設值";
             }
         }
+
         return $errors;
     }
+
     /**
      * 驗證測試環境配置.
      */
@@ -334,8 +371,10 @@ final class EnvironmentConfig
         if (is_string($dbDatabase) && $dbDatabase !== ':memory:' && !str_contains($dbDatabase, 'test')) {
             $errors[] = '測試環境建議使用記憶體資料庫或測試專用資料庫';
         }
+
         return $errors;
     }
+
     /**
      * 驗證開發環境配置.
      */
@@ -347,6 +386,7 @@ final class EnvironmentConfig
         if ($appDebug === false || $appDebug === 'false' || $appDebug === '0' || $appDebug === '') {
             $errors[] = '開發環境建議啟用 APP_DEBUG';
         }
+
         return $errors;
     }
 }

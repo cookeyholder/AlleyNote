@@ -3,14 +3,18 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Repositories;
+
 use RuntimeException;
 use Throwable;
+
 class TagRepository implements TagRepositoryInterface
 {
     private ?bool $usageCountColumnExists = null;
+
     public function __construct(
         private readonly PDO $db,
     ) {}
+
     /**
      * @param array<string, mixed> $filters
      * @return array{items: array<int, Tag>, total: int}
@@ -52,11 +56,13 @@ class TagRepository implements TagRepositoryInterface
                 $tags[] = $this->mapRowToTag($row);
             }
         }
+
         return [
             'items' => $tags,
             'total' => $total,
         ];
     }
+
     public function findById(int $id): ?Tag
     {
         $stmt = $this->db->prepare('SELECT * FROM tags WHERE id = :id');
@@ -65,9 +71,11 @@ class TagRepository implements TagRepositoryInterface
         if (!is_array($row) || empty($row)) {
             return null;
         }
+
         /** @var array<string, mixed> $row */
         return $this->mapRowToTag($row);
     }
+
     public function findByName(string $name): ?Tag
     {
         $stmt = $this->db->prepare('SELECT * FROM tags WHERE name = :name');
@@ -76,9 +84,11 @@ class TagRepository implements TagRepositoryInterface
         if (!is_array($row) || empty($row)) {
             return null;
         }
+
         /** @var array<string, mixed> $row */
         return $this->mapRowToTag($row);
     }
+
     public function findBySlug(string $slug): ?Tag
     {
         $stmt = $this->db->prepare('SELECT * FROM tags WHERE slug = :slug');
@@ -87,9 +97,11 @@ class TagRepository implements TagRepositoryInterface
         if (!is_array($row) || empty($row)) {
             return null;
         }
+
         /** @var array<string, mixed> $row */
         return $this->mapRowToTag($row);
     }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -129,8 +141,10 @@ class TagRepository implements TagRepositoryInterface
         if (!$tag) {
             throw new RuntimeException('建立標籤後無法取得標籤資料');
         }
+
         return $tag;
     }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -153,6 +167,7 @@ class TagRepository implements TagRepositoryInterface
             if (!$tag) {
                 throw new RuntimeException('標籤不存在');
             }
+
             return $tag;
         }
         $now = new DateTimeImmutable()->format('Y-m-d H:i:s');
@@ -165,18 +180,23 @@ class TagRepository implements TagRepositoryInterface
         if (!$tag) {
             throw new RuntimeException('更新標籤後無法取得標籤資料');
         }
+
         return $tag;
     }
+
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare('DELETE FROM tags WHERE id = :id');
+
         return $stmt->execute([':id' => $id]);
     }
+
     public function detachFromAllPosts(int $tagId): void
     {
         $stmt = $this->db->prepare('DELETE FROM post_tags WHERE tag_id = :tag_id');
         $stmt->execute([':tag_id' => $tagId]);
     }
+
     /**
      * @param array<string, mixed> $row
      */
@@ -197,6 +217,7 @@ class TagRepository implements TagRepositoryInterface
         $usageCount = isset($row['usage_count']) ? (is_int($row['usage_count']) ? $row['usage_count'] : (int) $row['usage_count']) : 0;
         // @phpstan-ignore-next-line
         $createdAtStr = is_string($row['created_at']) ? $row['created_at'] : (string) $row['created_at'];
+
         return new Tag(
             id: $id,
             name: $name,
@@ -208,23 +229,27 @@ class TagRepository implements TagRepositoryInterface
             updatedAt: $updatedAt ? new DateTimeImmutable($updatedAt) : null,
         );
     }
+
     private function hasUsageCountColumn(): bool
     {
         if ($this->usageCountColumnExists !== null) {
             return $this->usageCountColumnExists;
         }
+
         try {
             $stmt = $this->db->query('PRAGMA table_info(tags)');
             $columns = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
             foreach ($columns as $column) {
                 if (is_array($column) && isset($column['name']) && is_string($column['name']) && $column['name'] === 'usage_count') {
                     $this->usageCountColumnExists = true;
+
                     return true;
                 }
             }
         } catch (Throwable) {
         }
         $this->usageCountColumnExists = false;
+
         return false;
     }
 }

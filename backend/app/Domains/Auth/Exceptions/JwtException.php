@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
-use Throwable;
+
 abstract class JwtException extends Exception
 {
     /**
@@ -12,10 +12,12 @@ abstract class JwtException extends Exception
      * @var array<string, mixed>
      */
     protected array $context = [];
+
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'jwt_error';
+
     /**
      * 建構 JWT 例外.
      *
@@ -33,6 +35,7 @@ abstract class JwtException extends Exception
         parent::__construct($message, $code, $previous);
         $this->context = $context;
     }
+
     /**
      * 取得錯誤上下文資訊.
      *
@@ -42,6 +45,7 @@ abstract class JwtException extends Exception
     {
         return $this->context;
     }
+
     /**
      * 設定錯誤上下文資訊.
      *
@@ -50,8 +54,10 @@ abstract class JwtException extends Exception
     public function setContext(array $context): self
     {
         $this->context = $context;
+
         return $this;
     }
+
     /**
      * 加入上下文資訊.
      *
@@ -61,8 +67,10 @@ abstract class JwtException extends Exception
     public function addContext(string $key, mixed $value): self
     {
         $this->context[$key] = $value;
+
         return $this;
     }
+
     /**
      * 取得錯誤類型.
      */
@@ -70,6 +78,7 @@ abstract class JwtException extends Exception
     {
         return $this->errorType;
     }
+
     /**
      * 取得錯誤詳細資訊（用於 API 回應）.
      *
@@ -86,6 +95,7 @@ abstract class JwtException extends Exception
             'line' => $this->getLine(),
         ];
     }
+
     /**
      * 取得用戶友好的錯誤訊息.
      *
@@ -95,6 +105,7 @@ abstract class JwtException extends Exception
     {
         return $this->getMessage();
     }
+
     /**
      * 檢查是否為特定類型的錯誤.
      *
@@ -104,6 +115,7 @@ abstract class JwtException extends Exception
     {
         return $this->errorType === $type;
     }
+
     /**
      * 轉換為陣列格式（用於日誌記錄）.
      *
@@ -122,12 +134,14 @@ abstract class JwtException extends Exception
             'trace' => $this->getTraceAsString(),
         ];
     }
+
     /**
      * 轉換為字串.
      */
     public function __toString(): string
     {
         $context = empty($this->context) ? '' : ' Context: ' . json_encode($this->context);
+
         return sprintf(
             '[%s] %s (Code: %d)%s in %s:%d',
             $this->getErrorType(),

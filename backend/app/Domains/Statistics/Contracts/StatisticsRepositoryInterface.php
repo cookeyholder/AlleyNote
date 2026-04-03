@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
+
 interface StatisticsRepositoryInterface
 {
     /**
@@ -11,12 +12,14 @@ interface StatisticsRepositoryInterface
      * @param int $id 快照 ID
      */
     public function findById(int $id): ?StatisticsSnapshot;
+
     /**
      * 根據 UUID 查找統計快照.
      *
      * @param string $uuid 快照 UUID
      */
     public function findByUuid(string $uuid): ?StatisticsSnapshot;
+
     /**
      * 根據類型和週期查找統計快照.
      *
@@ -24,12 +27,14 @@ interface StatisticsRepositoryInterface
      * @param StatisticsPeriod $period 統計週期
      */
     public function findByTypeAndPeriod(string $snapshotType, StatisticsPeriod $period): ?StatisticsSnapshot;
+
     /**
      * 根據類型查找最新的統計快照.
      *
      * @param string $snapshotType 快照類型
      */
     public function findLatestByType(string $snapshotType): ?StatisticsSnapshot;
+
     /**
      * 查找指定類型在日期範圍內的所有快照.
      *
@@ -43,6 +48,7 @@ interface StatisticsRepositoryInterface
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
     ): array;
+
     /**
      * 查找已過期的統計快照.
      *
@@ -50,6 +56,7 @@ interface StatisticsRepositoryInterface
      * @return StatisticsSnapshot[] 過期快照陣列
      */
     public function findExpiredSnapshots(?DateTimeInterface $beforeDate = null): array;
+
     /**
      * 儲存統計快照.
      *
@@ -58,6 +65,7 @@ interface StatisticsRepositoryInterface
      * @throws RuntimeException 當儲存失敗時
      */
     public function save(StatisticsSnapshot $snapshot): StatisticsSnapshot;
+
     /**
      * 更新統計快照.
      *
@@ -66,6 +74,7 @@ interface StatisticsRepositoryInterface
      * @throws RuntimeException 當更新失敗時
      */
     public function update(StatisticsSnapshot $snapshot): StatisticsSnapshot;
+
     /**
      * 刪除統計快照.
      *
@@ -73,6 +82,7 @@ interface StatisticsRepositoryInterface
      * @return bool 刪除是否成功
      */
     public function delete(StatisticsSnapshot $snapshot): bool;
+
     /**
      * 根據 ID 刪除統計快照.
      *
@@ -80,6 +90,7 @@ interface StatisticsRepositoryInterface
      * @return bool 刪除是否成功
      */
     public function deleteById(int $id): bool;
+
     /**
      * 批量刪除過期的統計快照.
      *
@@ -87,6 +98,7 @@ interface StatisticsRepositoryInterface
      * @return int 刪除的快照數量
      */
     public function deleteExpiredSnapshots(?DateTimeInterface $beforeDate = null): int;
+
     /**
      * 檢查指定類型和週期的快照是否存在.
      *
@@ -95,6 +107,7 @@ interface StatisticsRepositoryInterface
      * @return bool 是否存在
      */
     public function exists(string $snapshotType, StatisticsPeriod $period): bool;
+
     /**
      * 計算指定類型的快照總數.
      *
@@ -102,6 +115,7 @@ interface StatisticsRepositoryInterface
      * @return int 快照總數
      */
     public function count(?string $snapshotType = null): int;
+
     /**
      * 查找指定類型的快照，支援分頁
      *

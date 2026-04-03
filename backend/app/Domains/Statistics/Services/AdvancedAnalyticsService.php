@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
+
 use PDO;
+
 class AdvancedAnalyticsService
 {
     public function __construct(
         private readonly PDO $pdo,
         private readonly UserAgentParserService $userAgentParser,
     ) {}
+
     /**
      * 獲取裝置類型統計.
      *
@@ -48,8 +51,10 @@ class AdvancedAnalyticsService
             $deviceType = $parsed['device_type'];
             $deviceStats[$deviceType] = ($deviceStats[$deviceType] ?? 0) + 1;
         }
+
         return $deviceStats;
     }
+
     /**
      * 獲取瀏覽器統計.
      *
@@ -81,8 +86,10 @@ class AdvancedAnalyticsService
             $browserStats[$browser] = ($browserStats[$browser] ?? 0) + 1;
         }
         arsort($browserStats);
+
         return $browserStats;
     }
+
     /**
      * 獲取操作系統統計.
      *
@@ -114,8 +121,10 @@ class AdvancedAnalyticsService
             $osStats[$os] = ($osStats[$os] ?? 0) + 1;
         }
         arsort($osStats);
+
         return $osStats;
     }
+
     /**
      * 獲取來源統計（Referrer）.
      *
@@ -171,8 +180,10 @@ class AdvancedAnalyticsService
                 'percentage' => $total > 0 ? round(((int) $row['count'] / $total) * 100, 2) : 0.0,
             ];
         }
+
         return $stats;
     }
+
     /**
      * 獲取時段分布統計（按小時）.
      *
@@ -209,8 +220,10 @@ class AdvancedAnalyticsService
         foreach ($results as $row) {
             $distribution[(int) $row['hour']] = (int) $row['count'];
         }
+
         return $distribution;
     }
+
     /**
      * 獲取綜合分析報告.
      *
@@ -244,6 +257,7 @@ class AdvancedAnalyticsService
         $stmt = $this->pdo->prepare($query);
         $stmt->execute($params);
         $totals = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return [
             'device_types' => $this->getDeviceTypeStats($postId, $startDate, $endDate),
             'browsers' => $this->getBrowserStats($postId, $startDate, $endDate),

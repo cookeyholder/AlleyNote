@@ -3,30 +3,44 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
+
 final readonly class TokenBlacklistEntry implements JsonSerializable
 {
     /**
      * Token 類型常數.
      */
     public const TOKEN_TYPE_ACCESS = 'access';
+
     public const TOKEN_TYPE_REFRESH = 'refresh';
+
     /**
      * 黑名單原因常數.
      */
     public const REASON_LOGOUT = 'user_logout';
+
     public const REASON_REVOKED = 'token_revoked';
+
     public const REASON_SECURITY_BREACH = 'security_breach';
+
     public const REASON_PASSWORD_CHANGED = 'password_changed';
+
     public const REASON_ACCOUNT_SUSPENDED = 'account_suspended';
+
     public const REASON_MANUAL_REVOCATION = 'manual_revocation';
+
     public const REASON_EXPIRED = 'token_expired';
+
     public const REASON_INVALID_SIGNATURE = 'invalid_signature';
+
     public const REASON_DEVICE_LOST = 'device_lost';
+
     public const REASON_SUSPICIOUS_ACTIVITY = 'suspicious_activity';
+
     /**
      * 建構黑名單項目.
      *
@@ -59,6 +73,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         $this->validateDeviceId($deviceId);
         $this->validateMetadata($metadata);
     }
+
     /**
      * 從陣列建立黑名單項目.
      *
@@ -79,6 +94,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         $blacklistedAt = $data['blacklisted_at'] instanceof DateTimeImmutable
             ? $data['blacklisted_at']
             : new DateTimeImmutable($data['blacklisted_at']);
+
         return new self(
             jti: $data['jti'],
             tokenType: $data['token_type'],
@@ -90,6 +106,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             metadata: $data['metadata'] ?? [],
         );
     }
+
     /**
      * 建立使用者登出的黑名單項目.
      *
@@ -116,6 +133,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             deviceId: $deviceId,
         );
     }
+
     /**
      * 建立安全性問題的黑名單項目.
      *
@@ -143,6 +161,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         if (!in_array($securityReason, $validSecurityReasons, true)) {
             $securityReason = self::REASON_SECURITY_BREACH;
         }
+
         return new self(
             jti: $jti,
             tokenType: $tokenType,
@@ -153,6 +172,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             metadata: $metadata,
         );
     }
+
     /**
      * 建立帳戶變更的黑名單項目.
      *
@@ -175,6 +195,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
                 'Change type must be one of: ' . implode(', ', $validChangeTypes),
             );
         }
+
         return new self(
             jti: $jti,
             tokenType: $tokenType,
@@ -184,6 +205,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             userId: $userId,
         );
     }
+
     /**
      * 取得 JWT ID.
      */
@@ -191,6 +213,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->jti;
     }
+
     /**
      * 取得 Token 類型.
      */
@@ -198,6 +221,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->tokenType;
     }
+
     /**
      * 取得原始過期時間.
      */
@@ -205,6 +229,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->expiresAt;
     }
+
     /**
      * 取得加入黑名單的時間.
      */
@@ -212,6 +237,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->blacklistedAt;
     }
+
     /**
      * 取得黑名單原因.
      */
@@ -219,6 +245,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->reason;
     }
+
     /**
      * 取得使用者 ID.
      */
@@ -226,6 +253,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->userId;
     }
+
     /**
      * 取得裝置 ID.
      */
@@ -233,6 +261,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->deviceId;
     }
+
     /**
      * 取得元資料.
      *
@@ -242,6 +271,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->metadata;
     }
+
     /**
      * 取得特定元資料.
      *
@@ -252,6 +282,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->metadata[$key] ?? null;
     }
+
     /**
      * 檢查是否為 Access Token.
      */
@@ -259,6 +290,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->tokenType === self::TOKEN_TYPE_ACCESS;
     }
+
     /**
      * 檢查是否為 Refresh Token.
      */
@@ -266,6 +298,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->tokenType === self::TOKEN_TYPE_REFRESH;
     }
+
     /**
      * 檢查是否已過原始過期時間（可以清理）.
      *
@@ -274,8 +307,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function canBeCleanedUp(?DateTimeImmutable $now = null): bool
     {
         $now ??= new DateTimeImmutable();
+
         return $this->expiresAt <= $now;
     }
+
     /**
      * 檢查是否因安全問題而被列入黑名單.
      */
@@ -287,8 +322,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_DEVICE_LOST,
             self::REASON_INVALID_SIGNATURE,
         ];
+
         return in_array($this->reason, $securityReasons, true);
     }
+
     /**
      * 檢查是否因使用者行為而被列入黑名單.
      */
@@ -299,8 +336,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_MANUAL_REVOCATION,
             self::REASON_DEVICE_LOST,
         ];
+
         return in_array($this->reason, $userReasons, true);
     }
+
     /**
      * 檢查是否因系統原因而被列入黑名單.
      */
@@ -312,8 +351,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_SECURITY_BREACH,
             self::REASON_PASSWORD_CHANGED,
         ];
+
         return in_array($this->reason, $systemReasons, true);
     }
+
     /**
      * 取得黑名單原因的描述.
      */
@@ -331,8 +372,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_DEVICE_LOST => 'Device reported lost',
             self::REASON_SUSPICIOUS_ACTIVITY => 'Suspicious activity detected',
         ];
+
         return $descriptions[$this->reason] ?? 'Unknown reason';
     }
+
     /**
      * 取得優先級（用於清理順序）.
      *
@@ -349,8 +392,10 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
         if ($this->isUserInitiated()) {
             return 3; // 使用者主動的再次之
         }
+
         return 4; // 其他系統原因的最後清理
     }
+
     /**
      * 檢查黑名單項目是否仍然有效.
      *
@@ -359,9 +404,11 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function isActive(?DateTimeImmutable $now = null): bool
     {
         $now ??= new DateTimeImmutable();
+
         // 如果原始 token 已過期，黑名單項目就沒有作用了
         return $this->expiresAt > $now;
     }
+
     /**
      * 轉換為陣列格式.
      *
@@ -385,6 +432,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             'priority' => $this->getPriority(),
         ];
     }
+
     /**
      * 轉換為資料庫儲存格式.
      *
@@ -403,6 +451,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             'metadata' => !empty($this->metadata) ? json_encode($this->metadata) : null,
         ];
     }
+
     /**
      * JsonSerializable 實作.
      *
@@ -412,6 +461,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查與另一個 TokenBlacklistEntry 是否相等.
      *
@@ -428,6 +478,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             && $this->deviceId === $other->deviceId
             && $this->metadata === $other->metadata;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -435,6 +486,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         $userInfo = $this->userId !== null ? "user:{$this->userId}" : 'no-user';
         $deviceInfo = $this->deviceId !== null ? "device:{$this->deviceId}" : 'no-device';
+
         return sprintf(
             'TokenBlacklistEntry(jti=%s, type=%s, reason=%s, %s, %s, blacklisted=%s)',
             $this->jti,
@@ -445,6 +497,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             $this->blacklistedAt->format('Y-m-d H:i:s'),
         );
     }
+
     /**
      * __toString 魔術方法.
      */
@@ -452,6 +505,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return $this->toString();
     }
+
     /**
      * 取得所有有效的 Token 類型.
      *
@@ -461,6 +515,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     {
         return [self::TOKEN_TYPE_ACCESS, self::TOKEN_TYPE_REFRESH];
     }
+
     /**
      * 取得所有有效的黑名單原因.
      *
@@ -481,6 +536,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             self::REASON_SUSPICIOUS_ACTIVITY,
         ];
     }
+
     /**
      * 驗證 JWT ID.
      *
@@ -496,6 +552,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             throw new InvalidArgumentException('JWT ID (jti) cannot exceed 255 characters');
         }
     }
+
     /**
      * 驗證 Token 類型.
      *
@@ -510,6 +567,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             );
         }
     }
+
     /**
      * 驗證黑名單原因.
      *
@@ -524,6 +582,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             );
         }
     }
+
     /**
      * 驗證時間設定.
      *
@@ -545,6 +604,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             throw new InvalidArgumentException('Blacklisted time cannot be more than 1 year in the future');
         }
     }
+
     /**
      * 驗證使用者 ID.
      *
@@ -557,6 +617,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             throw new InvalidArgumentException('User ID must be a positive integer');
         }
     }
+
     /**
      * 驗證裝置 ID.
      *
@@ -574,6 +635,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
             }
         }
     }
+
     /**
      * 驗證元資料.
      *

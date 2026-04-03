@@ -3,16 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\DTOs\UpdateUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+
 class UserManagementService
 {
     public function __construct(
         private readonly UserRepository $userRepository,
     ) {}
+
     /**
      * 取得使用者列表.
      */
@@ -20,6 +23,7 @@ class UserManagementService
     {
         return $this->userRepository->paginate($page, $perPage, $filters);
     }
+
     /**
      * 取得單一使用者.
      */
@@ -31,8 +35,10 @@ class UserManagementService
         }
         // 移除敏感資訊
         unset($user['password_hash']);
+
         return $user;
     }
+
     /**
      * 建立使用者.
      */
@@ -58,9 +64,11 @@ class UserManagementService
         if (!empty($dto->roleIds)) {
             $this->userRepository->setUserRoles($user['id'], $dto->roleIds);
         }
+
         // 重新取得完整資訊
         return $this->getUser($user['id']);
     }
+
     /**
      * 更新使用者.
      */
@@ -99,9 +107,11 @@ class UserManagementService
         if ($dto->roleIds !== null) {
             $this->userRepository->setUserRoles($id, $dto->roleIds);
         }
+
         // 重新取得完整資訊
         return $this->getUser($id);
     }
+
     /**
      * 刪除使用者.
      */
@@ -111,8 +121,10 @@ class UserManagementService
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
+
         return $this->userRepository->delete((string) $id);
     }
+
     /**
      * 分配角色給使用者.
      *
@@ -124,8 +136,10 @@ class UserManagementService
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
+
         return $this->userRepository->setUserRoles($userId, $roleIds);
     }
+
     /**
      * 取得使用者的角色.
      *
@@ -135,6 +149,7 @@ class UserManagementService
     {
         return $this->userRepository->getUserRoleIds($userId);
     }
+
     /**
      * 啟用使用者.
      */
@@ -145,8 +160,10 @@ class UserManagementService
             throw new NotFoundException('使用者不存在');
         }
         $this->userRepository->update((string) $id, ['is_active' => true]);
+
         return $this->getUser($id);
     }
+
     /**
      * 停用使用者.
      */
@@ -157,8 +174,10 @@ class UserManagementService
             throw new NotFoundException('使用者不存在');
         }
         $this->userRepository->update((string) $id, ['is_active' => false]);
+
         return $this->getUser($id);
     }
+
     /**
      * 重設使用者密碼
      */
@@ -175,8 +194,10 @@ class UserManagementService
         // 雜湊密碼
         $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+
         return true;
     }
+
     /**
      * 變更使用者密碼（需驗證舊密碼）.
      */
@@ -202,6 +223,7 @@ class UserManagementService
         // 雜湊新密碼
         $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
+
         return true;
     }
 }

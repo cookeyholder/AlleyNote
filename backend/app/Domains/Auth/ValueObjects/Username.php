@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
+
 final readonly class Username implements JsonSerializable, Stringable
 {
     private string $value;
+
     public function __construct(string $username)
     {
         $trimmedUsername = trim($username);
@@ -27,6 +30,7 @@ final readonly class Username implements JsonSerializable, Stringable
         }
         $this->value = $trimmedUsername;
     }
+
     /**
      * 從字串建立 Username.
      */
@@ -34,6 +38,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return new self($username);
     }
+
     /**
      * 取得使用者名稱.
      */
@@ -41,6 +46,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 取得長度.
      */
@@ -48,6 +54,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return mb_strlen($this->value);
     }
+
     /**
      * 轉換為小寫.
      */
@@ -55,6 +62,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return strtolower($this->value);
     }
+
     /**
      * 檢查是否與另一個 Username 相等.
      */
@@ -62,6 +70,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return $this->value === $other->value;
     }
+
     /**
      * 檢查是否與指定字串相等（不區分大小寫）.
      */
@@ -69,6 +78,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return strcasecmp($this->value, $username) === 0;
     }
+
     /**
      * 轉換為字串.
      */
@@ -76,10 +86,12 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     public function __toString(): string
     {
         return $this->value;
     }
+
     /**
      * JSON 序列化.
      */
@@ -87,6 +99,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 轉換為陣列.
      */

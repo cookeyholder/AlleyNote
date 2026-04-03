@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Repositories;
+
 use RuntimeException;
 use Throwable;
+
 class RoleRepository
 {
     public function __construct(
         private readonly PDO $db,
     ) {}
+
     /**
      * 取得所有角色.
      *
@@ -20,8 +23,10 @@ class RoleRepository
         $sql = 'SELECT * FROM roles ORDER BY id ASC';
         $stmt = $this->db->query($sql);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         return array_map(fn($row) => Role::fromArray($row), $rows);
     }
+
     /**
      * 根據 ID 取得角色.
      */
@@ -31,8 +36,10 @@ class RoleRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return $row ? Role::fromArray($row) : null;
     }
+
     /**
      * 根據名稱取得角色.
      */
@@ -42,8 +49,10 @@ class RoleRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['name' => $name]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return $row ? Role::fromArray($row) : null;
     }
+
     /**
      * 根據 IDs 取得多個角色.
      *
@@ -60,8 +69,10 @@ class RoleRepository
         $stmt = $this->db->prepare($sql);
         $stmt->execute($ids);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         return array_map(fn($row) => Role::fromArray($row), $rows);
     }
+
     /**
      * 建立角色.
      */
@@ -76,8 +87,10 @@ class RoleRepository
             'description' => $description,
         ]);
         $id = (int) $this->db->lastInsertId();
+
         return $this->findById($id) ?? throw new RuntimeException('Failed to create role');
     }
+
     /**
      * 更新角色.
      */
@@ -99,8 +112,10 @@ class RoleRepository
         }
         $sql = 'UPDATE roles SET ' . implode(', ', $updates) . ' WHERE id = :id';
         $stmt = $this->db->prepare($sql);
+
         return $stmt->execute($params);
     }
+
     /**
      * 刪除角色.
      */
@@ -108,8 +123,10 @@ class RoleRepository
     {
         $sql = 'DELETE FROM roles WHERE id = :id';
         $stmt = $this->db->prepare($sql);
+
         return $stmt->execute(['id' => $id]);
     }
+
     /**
      * 取得角色的權限 IDs.
      *
@@ -120,8 +137,10 @@ class RoleRepository
         $sql = 'SELECT permission_id FROM role_permissions WHERE role_id = :role_id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['role_id' => $roleId]);
+
         return array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN));
     }
+
     /**
      * 設定角色的權限.
      *
@@ -130,6 +149,7 @@ class RoleRepository
     public function setRolePermissions(int $roleId, array $permissionIds): bool
     {
         $this->db->beginTransaction();
+
         try {
             // 刪除舊的權限
             $deleteSql = 'DELETE FROM role_permissions WHERE role_id = :role_id';
@@ -148,9 +168,11 @@ class RoleRepository
                 }
             }
             $this->db->commit();
+
             return true;
         } catch (Throwable $e) {
             $this->db->rollBack();
+
             throw $e;
         }
     }

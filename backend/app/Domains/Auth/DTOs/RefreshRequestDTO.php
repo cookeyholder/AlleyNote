@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
+
 use InvalidArgumentException;
+
 final readonly class RefreshRequestDTO
 {
     /**
@@ -15,6 +17,7 @@ final readonly class RefreshRequestDTO
     ) {
         self::assertScopes($this->scopes);
     }
+
     /**
      * 從陣列建立 RefreshRequestDTO.
      *
@@ -27,6 +30,7 @@ final readonly class RefreshRequestDTO
             scopes: self::normalizeScopes($data['scopes'] ?? null),
         );
     }
+
     /**
      * 轉換為陣列.
      */
@@ -37,6 +41,7 @@ final readonly class RefreshRequestDTO
             'scopes' => $this->scopes,
         ];
     }
+
     /**
      * @return list<string>|null
      */
@@ -51,8 +56,10 @@ final readonly class RefreshRequestDTO
                 $normalizedScopes[] = $scope;
             }
         }
+
         return $normalizedScopes === [] ? null : $normalizedScopes;
     }
+
     /**
      * @param list<string>|null $scopes
      */

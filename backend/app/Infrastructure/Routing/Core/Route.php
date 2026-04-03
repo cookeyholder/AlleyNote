@@ -3,19 +3,25 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Core;
+
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RouteInterface;
 use App\Infrastructure\Routing\Contracts\RouteMatchResult;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+
 class Route implements RouteInterface
 {
     private ?string $name = null;
+
     /** @var MiddlewareInterface[]|string[] */
     private array $middlewares = [];
+
     private ?string $compiledPattern = null;
+
     /** @var string[] */
     private array $parameterNames = [];
+
     /**
      * @param string[] $methods HTTP 方法列表
      * @param string $pattern 路由路徑模式 (如 '/posts/{id}')
@@ -28,27 +34,34 @@ class Route implements RouteInterface
     ) {
         $this->parameterNames = $this->extractParameterNames($pattern);
     }
+
     public function getMethods(): array
     {
         return $this->methods;
     }
+
     public function getPattern(): string
     {
         return $this->pattern;
     }
+
     public function getName(): ?string
     {
         return $this->name;
     }
+
     public function getHandler(): callable|string|array
     {
         return $this->handler;
     }
+
     public function addMiddleware(MiddlewareInterface $middleware): self
     {
         $this->middlewares[] = $middleware;
+
         return $this;
     }
+
     public function addMiddlewares(array $middlewares): self
     {
         foreach ($middlewares as $middleware) {
@@ -59,16 +72,20 @@ class Route implements RouteInterface
                 $this->middlewares[] = $middleware;
             }
         }
+
         return $this;
     }
+
     public function getMiddlewares(): array
     {
         return $this->middlewares;
     }
+
     public function matchesMethod(string $method): bool
     {
         return in_array(strtoupper($method), array_map('strtoupper', $this->methods), true);
     }
+
     public function matchesPath(string $path): RouteMatchResult
     {
         $compiledPattern = $this->compile();
@@ -80,10 +97,13 @@ class Route implements RouteInterface
             foreach ($this->parameterNames as $index => $name) {
                 $parameters[$name] = $matches[$index] ?? null;
             }
+
             return new RouteMatchResult(true, $this, $parameters);
         }
+
         return new RouteMatchResult(false, null);
     }
+
     public function matches(ServerRequestInterface $request): RouteMatchResult
     {
         $method = $request->getMethod();
@@ -92,9 +112,11 @@ class Route implements RouteInterface
         if (!$this->matchesMethod($method)) {
             return new RouteMatchResult(false, null);
         }
+
         // 檢查路徑模式
         return $this->matchesPath($path);
     }
+
     public function generateUrl(array $parameters = [], array $queryParams = []): string
     {
         $url = $this->pattern;
@@ -116,8 +138,10 @@ class Route implements RouteInterface
         if (!empty($queryParams)) {
             $url .= '?' . http_build_query($queryParams);
         }
+
         return $url;
     }
+
     public function withAttributes(array $attributes): self
     {
         $clone = clone $this;
@@ -128,14 +152,18 @@ class Route implements RouteInterface
             $clone->middlewares = [];
             $clone->addMiddlewares($attributes['middlewares']);
         }
+
         return $clone;
     }
+
     // 保留原有的方法以向後相容
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
+
     /**
      * 添加中介軟體（支援字串別名、實例和陣列）.
      *
@@ -151,13 +179,17 @@ class Route implements RouteInterface
         } elseif (is_array($middleware)) {
             $this->addMiddlewares($middleware);
         }
+
         return $this;
     }
+
     public function extractParameters(string $path): array
     {
         $result = $this->matchesPath($path);
+
         return $result->isMatched() ? $result->getParameters() : [];
     }
+
     /**
      * 編譯路由模式為正規表達式.
      */
@@ -175,8 +207,10 @@ class Route implements RouteInterface
         $pattern = str_replace('ROUTEPARAM', '([^\/]+)', $pattern);
         // 確保完整匹配
         $this->compiledPattern = '/^' . $pattern . '$/';
+
         return $this->compiledPattern;
     }
+
     /**
      * 從路由模式中提取參數名稱.
      *
@@ -186,33 +220,41 @@ class Route implements RouteInterface
     private function extractParameterNames(string $pattern): array
     {
         preg_match_all('/\{([^}]+)\}/', $pattern, $matches);
+
         return $matches[1];
     }
+
     // HTTP 方法快捷方法
     public static function get(string $pattern, callable|string $handler): self
     {
         return new self(['GET'], $pattern, $handler);
     }
+
     public static function post(string $pattern, callable|string $handler): self
     {
         return new self(['POST'], $pattern, $handler);
     }
+
     public static function put(string $pattern, callable|string $handler): self
     {
         return new self(['PUT'], $pattern, $handler);
     }
+
     public static function patch(string $pattern, callable|string $handler): self
     {
         return new self(['PATCH'], $pattern, $handler);
     }
+
     public static function delete(string $pattern, callable|string $handler): self
     {
         return new self(['DELETE'], $pattern, $handler);
     }
+
     public static function any(string $pattern, callable|string $handler): self
     {
         return new self(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'], $pattern, $handler);
     }
+
     public static function match(array $methods, string $pattern, callable|string $handler): self
     {
         return new self($methods, $pattern, $handler);

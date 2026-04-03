@@ -3,15 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class Password implements JsonSerializable
 {
     private string $hashedValue;
+
     private function __construct(string $hashedValue)
     {
         $this->hashedValue = $hashedValue;
     }
+
     /**
      * 從明文密碼建立 Password.
      */
@@ -29,8 +33,10 @@ final readonly class Password implements JsonSerializable
         // 檢查密碼強度
         self::validatePasswordStrength($plainPassword);
         $hashedPassword = password_hash($plainPassword, PASSWORD_ARGON2ID);
+
         return new self($hashedPassword);
     }
+
     /**
      * 從已雜湊的密碼建立 Password.
      */
@@ -39,8 +45,10 @@ final readonly class Password implements JsonSerializable
         if (empty($hashedPassword)) {
             throw new InvalidArgumentException('雜湊密碼不能為空');
         }
+
         return new self($hashedPassword);
     }
+
     /**
      * 驗證密碼強度.
      */
@@ -55,6 +63,7 @@ final readonly class Password implements JsonSerializable
             );
         }
     }
+
     /**
      * 取得雜湊後的密碼.
      */
@@ -62,6 +71,7 @@ final readonly class Password implements JsonSerializable
     {
         return $this->hashedValue;
     }
+
     /**
      * 驗證明文密碼是否匹配.
      */
@@ -69,6 +79,7 @@ final readonly class Password implements JsonSerializable
     {
         return password_verify($plainPassword, $this->hashedValue);
     }
+
     /**
      * 檢查密碼是否需要重新雜湊.
      */
@@ -76,6 +87,7 @@ final readonly class Password implements JsonSerializable
     {
         return password_needs_rehash($this->hashedValue, PASSWORD_ARGON2ID);
     }
+
     /**
      * 重新雜湊密碼（如果需要）.
      */
@@ -84,8 +96,10 @@ final readonly class Password implements JsonSerializable
         if (!$this->verify($plainPassword)) {
             throw new InvalidArgumentException('密碼驗證失敗，無法重新雜湊');
         }
+
         return self::fromPlainText($plainPassword);
     }
+
     /**
      * JSON 序列化（不暴露密碼）.
      */
@@ -93,6 +107,7 @@ final readonly class Password implements JsonSerializable
     {
         return '********';
     }
+
     /**
      * 轉換為陣列（不暴露密碼）.
      */

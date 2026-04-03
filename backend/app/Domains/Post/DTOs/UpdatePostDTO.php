@@ -3,18 +3,25 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
+
 use App\Domains\Post\Enums\PostStatus;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
 use DateTime;
+
 class UpdatePostDTO extends BaseDTO
 {
     public readonly ?string $title;
+
     public readonly ?string $content;
+
     public readonly ?bool $isPinned;
+
     public readonly ?PostStatus $status;
+
     public readonly ?string $publishDate;
+
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
@@ -44,6 +51,7 @@ class UpdatePostDTO extends BaseDTO
             $this->isPinned = null;
             $this->status = null;
             $this->publishDate = null;
+
             return;
         }
         // 動態驗證資料（只驗證提供的欄位）
@@ -66,6 +74,7 @@ class UpdatePostDTO extends BaseDTO
             $this->publishDate = null;
         }
     }
+
     /**
      * 添加文章專用驗證規則.
      */
@@ -91,6 +100,7 @@ class UpdatePostDTO extends BaseDTO
             if (!preg_match('/[\p{L}\p{N}]/u', $title)) {
                 return false;
             }
+
             return true;
         });
         // 文章內容驗證規則（更新版本，允許空值）
@@ -112,6 +122,7 @@ class UpdatePostDTO extends BaseDTO
             if (!preg_match('/[\p{L}\p{N}]/u', $content)) {
                 return false;
             }
+
             return true;
         });
         // 文章狀態驗證規則
@@ -123,6 +134,7 @@ class UpdatePostDTO extends BaseDTO
                 return false;
             }
             $validStatuses = array_map(fn($status) => $status->value, PostStatus::cases());
+
             return in_array($value, $validStatuses, true);
         });
         // RFC3339 日期時間驗證規則
@@ -146,6 +158,7 @@ class UpdatePostDTO extends BaseDTO
                     return true;
                 }
             }
+
             return false;
         });
         // 添加繁體中文錯誤訊息
@@ -154,6 +167,7 @@ class UpdatePostDTO extends BaseDTO
         $this->validator->addMessage('post_status', '文章狀態必須是：draft（草稿）、published（已發布）或 archived（已封存）');
         $this->validator->addMessage('rfc3339_datetime', '發布日期必須是有效的 RFC3339 日期時間格式');
     }
+
     /**
      * 取得驗證規則（基礎方法，但 UpdatePostDTO 使用動態驗證）.
      */
@@ -168,6 +182,7 @@ class UpdatePostDTO extends BaseDTO
             'publish_date' => 'rfc3339_datetime',
         ];
     }
+
     /**
      * 動態驗證資料（只驗證提供的欄位）.
      *
@@ -189,8 +204,10 @@ class UpdatePostDTO extends BaseDTO
         if (empty($rules)) {
             return $data;
         }
+
         return $this->validator->validateOrFail($data, $rules);
     }
+
     /**
      * 轉換為陣列格式（供 Repository 使用）
      * 只包含有值的欄位.
@@ -213,8 +230,10 @@ class UpdatePostDTO extends BaseDTO
         if ($this->publishDate !== null) {
             $data['publish_date'] = $this->publishDate;
         }
+
         return $data;
     }
+
     /**
      * 檢查是否有任何資料需要更新.
      */
@@ -222,6 +241,7 @@ class UpdatePostDTO extends BaseDTO
     {
         return !empty($this->toArray());
     }
+
     /**
      * 取得更新的欄位名稱列表.
      */
@@ -229,6 +249,7 @@ class UpdatePostDTO extends BaseDTO
     {
         return array_keys($this->toArray());
     }
+
     /**
      * 檢查是否更新了特定欄位.
      *
@@ -238,6 +259,7 @@ class UpdatePostDTO extends BaseDTO
     {
         return in_array($field, $this->getUpdatedFields(), true);
     }
+
     /**
      * 正確轉換布林值
      */
@@ -248,11 +270,13 @@ class UpdatePostDTO extends BaseDTO
         }
         if (is_string($value)) {
             $value = strtolower(trim($value));
+
             return in_array($value, ['1', 'true', 'on', 'yes'], true);
         }
         if (is_numeric($value)) {
             return (int) $value === 1;
         }
+
         return false;
     }
 }

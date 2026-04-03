@@ -3,11 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Config;
+
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface;
+
 class ContainerFactory
 {
     private static ?ContainerInterface $container = null;
+
     /**
      * 建立 DI 容器.
      */
@@ -40,8 +43,10 @@ class ContainerFactory
             }
             self::$container = $builder->build();
         }
+
         return self::$container;
     }
+
     /**
      * 重設容器（主要用於測試）.
      */
@@ -49,6 +54,7 @@ class ContainerFactory
     {
         self::$container = null;
     }
+
     /**
      * 取得容器實例.
      */
@@ -56,6 +62,7 @@ class ContainerFactory
     {
         return self::create();
     }
+
     /**
      * 檢查是否已初始化.
      */

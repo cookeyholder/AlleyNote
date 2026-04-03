@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
+
 use RuntimeException;
 use Throwable;
+
 final class StatisticsExportService implements StatisticsExportServiceInterface
 {
     /** 預設匯出格式 */
     private const DEFAULT_FORMAT = 'json';
+
     /** 支援的統計類型 */
     private const SUPPORTED_TYPES = [
         'overview',
@@ -17,6 +20,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         'users',
         'popular',
     ];
+
     /**
      * @param array<string, StatisticsFormatterInterface> $formatters 格式化器陣列
      */
@@ -24,11 +28,13 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         private readonly StatisticsQueryServiceInterface $queryService,
         private readonly array $formatters,
     ) {}
+
     public function exportOverview(array $options = []): ExportResult
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
         $this->validateFormat($format);
+
         try {
             // 準備查詢選項
             $queryOptions = $this->prepareQueryOptions($options);
@@ -37,6 +43,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             // 格式化資料
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
+
             // 建立匯出結果
             return new ExportResult(
                 format: $format,
@@ -51,16 +58,19 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new RuntimeException("匯出概覽統計失敗: {$e->getMessage()}", 0, $e);
         }
     }
+
     public function exportPostStatistics(array $options = []): ExportResult
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
         $this->validateFormat($format);
+
         try {
             $queryOptions = $this->prepareQueryOptions($options);
             $data = $this->queryService->getPostStatistics($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
+
             return new ExportResult(
                 format: $format,
                 filename: $formatter->getRecommendedFilename('posts', $options),
@@ -74,16 +84,19 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new RuntimeException("匯出文章統計失敗: {$e->getMessage()}", 0, $e);
         }
     }
+
     public function exportSourceDistribution(array $options = []): ExportResult
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
         $this->validateFormat($format);
+
         try {
             $queryOptions = $this->prepareQueryOptions($options);
             $data = $this->queryService->getSourceDistribution($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
+
             return new ExportResult(
                 format: $format,
                 filename: $formatter->getRecommendedFilename('sources', $options),
@@ -97,16 +110,19 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new RuntimeException("匯出來源分布統計失敗: {$e->getMessage()}", 0, $e);
         }
     }
+
     public function exportUserStatistics(array $options = []): ExportResult
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
         $this->validateFormat($format);
+
         try {
             $queryOptions = $this->prepareQueryOptions($options);
             $data = $this->queryService->getUserStatistics($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
+
             return new ExportResult(
                 format: $format,
                 filename: $formatter->getRecommendedFilename('users', $options),
@@ -120,16 +136,19 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new RuntimeException("匯出使用者統計失敗: {$e->getMessage()}", 0, $e);
         }
     }
+
     public function exportPopularContent(array $options = []): ExportResult
     {
         $startTime = microtime(true);
         $format = $options['format'] ?? self::DEFAULT_FORMAT;
         $this->validateFormat($format);
+
         try {
             $queryOptions = $this->prepareQueryOptions($options);
             $data = $this->queryService->getPopularContent($queryOptions);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
+
             return new ExportResult(
                 format: $format,
                 filename: $formatter->getRecommendedFilename('popular', $options),
@@ -143,6 +162,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new RuntimeException("匯出熱門內容統計失敗: {$e->getMessage()}", 0, $e);
         }
     }
+
     public function exportBatch(array $types, array $options = []): BatchExportResult
     {
         $startTime = microtime(true);
@@ -169,6 +189,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
                 $failureCount++;
             }
         }
+
         return new BatchExportResult(
             results: $results,
             errors: $errors,
@@ -183,14 +204,17 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             ],
         );
     }
+
     public function getSupportedFormats(): array
     {
         return array_keys($this->formatters);
     }
+
     public function getSupportedTypes(): array
     {
         return self::SUPPORTED_TYPES;
     }
+
     /**
      * 驗證匯出格式是否支援.
      */
@@ -200,6 +224,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new InvalidArgumentException("不支援的匯出格式: {$format}");
         }
     }
+
     /**
      * 驗證統計類型是否支援.
      */
@@ -209,6 +234,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             throw new InvalidArgumentException("不支援的統計類型: {$type}");
         }
     }
+
     /**
      * 準備查詢選項.
      *
@@ -241,8 +267,10 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         if (isset($options['include_inactive'])) {
             $queryOptions['include_inactive'] = $options['include_inactive'];
         }
+
         return $queryOptions;
     }
+
     /**
      * 計算記錄數.
      */
@@ -260,8 +288,10 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
                 $count = max($count, 1);
             }
         }
+
         return $count;
     }
+
     /**
      * 檢查是否為順序陣列.
      */
@@ -269,6 +299,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     {
         return array_keys($array) === range(0, count($array) - 1);
     }
+
     /**
      * 建立元資料.
      *
@@ -290,6 +321,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
                 'end' => $options['period_end']->format('Y-m-d'),
             ];
         }
+
         return $metadata;
     }
 }

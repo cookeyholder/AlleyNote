@@ -3,13 +3,18 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
+
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
+
 class ContentModerationService
 {
     private XssProtectionService $xssProtection;
+
     private RichTextProcessorService $richTextProcessor;
+
     private array $config;
+
     public function __construct(
         XssProtectionService $xssProtection,
         RichTextProcessorService $richTextProcessor,
@@ -19,6 +24,7 @@ class ContentModerationService
         $this->richTextProcessor = $richTextProcessor;
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
+
     /**
      * 審核內容.
      */
@@ -62,8 +68,10 @@ class ContentModerationService
         }
         // 5. 決定最終狀態
         $this->determineFinalStatus($result);
+
         return $result;
     }
+
     /**
      * 安全檢查.
      */
@@ -93,8 +101,10 @@ class ContentModerationService
                 ];
             }
         }
+
         return $issues;
     }
+
     /**
      * 品質檢查.
      */
@@ -137,8 +147,10 @@ class ContentModerationService
                 'message' => '內容全為大寫字母',
             ];
         }
+
         return $issues;
     }
+
     /**
      * 敏感詞檢查.
      */
@@ -159,8 +171,10 @@ class ContentModerationService
                 }
             }
         }
+
         return $issues;
     }
+
     /**
      * 計算垃圾內容分數.
      */
@@ -190,9 +204,11 @@ class ContentModerationService
         if ($this->hasSuspiciousUrls($content)) {
             $score += 40;
         }
+
         // 發文頻率（如果有提供使用者資訊）
         return min($score, 100);
     }
+
     /**
      * 決定最終審核狀態.
      */
@@ -232,6 +248,7 @@ class ContentModerationService
             $result['confidence'] = max(50, 100 - ($totalIssues * 10));
         }
     }
+
     /**
      * 檢查是否為重複內容.
      */
@@ -243,8 +260,10 @@ class ContentModerationService
             return false;
         }
         $uniqueSentences = array_unique($sentences);
+
         return count($uniqueSentences) / count($sentences) < 0.7;
     }
+
     /**
      * 檢查是否全為大寫.
      */
@@ -254,8 +273,10 @@ class ContentModerationService
         if (strlen($alphaChars) < 10) {
             return false;
         }
+
         return strtoupper($alphaChars) === $alphaChars;
     }
+
     /**
      * 取得大寫字母比例.
      */
@@ -266,8 +287,10 @@ class ContentModerationService
             return 0;
         }
         $upperChars = preg_replace('/[^A-Z]/', '', $alphaChars);
+
         return strlen($upperChars) / strlen($alphaChars);
     }
+
     /**
      * 檢查是否有過度重複.
      */
@@ -277,6 +300,7 @@ class ContentModerationService
         return preg_match('/(.)\1{4,}/', $text) // 同一字元重複5次以上
             || preg_match('/(.{2,5})\1{3,}/', $text); // 短模式重複4次以上
     }
+
     /**
      * 檢查可疑 URL.
      */
@@ -294,8 +318,10 @@ class ContentModerationService
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 取得敏感詞嚴重程度.
      */
@@ -310,8 +336,10 @@ class ContentModerationService
             'spam' => ActivitySeverity::MEDIUM,
             'political' => ActivitySeverity::MEDIUM,
         ];
+
         return $severityMap[$category] ?? ActivitySeverity::MEDIUM;
     }
+
     /**
      * 預設設定.
      */

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
@@ -18,14 +19,17 @@ use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use Throwable;
+
 final class AuthenticationService implements AuthenticationServiceInterface
 {
     private const MAX_REFRESH_TOKENS_PER_USER = 50;
+
     public function __construct(
         private readonly JwtTokenServiceInterface $jwtTokenService,
         private readonly RefreshTokenRepositoryInterface $refreshTokenRepository,
         private readonly UserRepositoryInterface $userRepository,
     ) {}
+
     public function login(LoginRequestDTO $request, DeviceInfo $deviceInfo): LoginResponseDTO
     {
         try {
@@ -76,6 +80,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $this->userRepository->updateLastLogin($userId);
             // 8. 建立回應
             $payload = $this->jwtTokenService->extractPayload($tokenPair->getRefreshToken());
+
             return new LoginResponseDTO(
                 tokens: $tokenPair,
                 userId: $userId,
@@ -95,6 +100,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             );
         }
     }
+
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO
     {
         try {
@@ -103,6 +109,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             // 2. 建立回應
             $newPayload = $this->jwtTokenService->extractPayload($newTokenPair->getRefreshToken());
             $oldPayload = $this->jwtTokenService->extractPayload($request->refreshToken);
+
             return new RefreshResponseDTO(
                 tokens: $newTokenPair,
                 userId: $oldPayload->getUserId(),
@@ -122,6 +129,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             );
         }
     }
+
     public function logout(LogoutRequestDTO $request): bool
     {
         try {
@@ -139,38 +147,46 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if ($request->accessToken !== '') {
                 $this->jwtTokenService->revokeToken($request->accessToken, 'user_logout');
             }
+
             return true;
         } catch (Throwable $e) {
             throw new AuthenticationException('Invalid credentials provided', 'Logout failed: ' . $e->getMessage());
         }
     }
+
     public function validateAccessToken(string $accessToken): bool
     {
         try {
             $this->jwtTokenService->validateAccessToken($accessToken);
+
             return true;
         } catch (Throwable) {
             return false;
         }
     }
+
     public function validateRefreshToken(string $refreshToken): bool
     {
         try {
             $payload = $this->jwtTokenService->validateRefreshToken($refreshToken);
+
             return $this->refreshTokenRepository->isValid($payload->getJti());
         } catch (Throwable) {
             return false;
         }
     }
+
     public function revokeRefreshToken(string $refreshToken, string $reason = 'manual_revocation'): bool
     {
         try {
             $payload = $this->jwtTokenService->extractPayload($refreshToken);
+
             return $this->refreshTokenRepository->revoke($payload->getJti(), $reason);
         } catch (Throwable) {
             return false;
         }
     }
+
     public function revokeAllUserTokens(int $userId, ?string $excludeJti = null, string $reason = 'logout_all'): int
     {
         try {
@@ -179,6 +195,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return 0;
         }
     }
+
     public function revokeDeviceTokens(int $userId, string $deviceId, string $reason = 'device_logout'): int
     {
         try {
@@ -187,6 +204,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return 0;
         }
     }
+
     public function getUserTokenStats(int $userId): array
     {
         try {
@@ -200,6 +218,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             ];
         }
     }
+
     public function cleanupExpiredTokens(?DateTime $beforeDate = null): int
     {
         try {
@@ -208,6 +227,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return 0;
         }
     }
+
     public function cleanupRevokedTokens(int $days = 30): int
     {
         try {
@@ -216,6 +236,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return 0;
         }
     }
+
     /**
      * 從 access token 取得使用者資訊.
      */
@@ -234,6 +255,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             if (!$user) {
                 return null;
             }
+
             return [
                 'user' => $user,
                 'token_info' => [

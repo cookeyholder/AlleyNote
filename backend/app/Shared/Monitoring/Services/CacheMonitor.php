@@ -3,26 +3,35 @@
 declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Services;
+
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+
 class CacheMonitor implements CacheMonitorInterface
 {
     /** @var array<string, array<string, mixed>> 快取操作統計 */
     private array $operationStats = [];
+
     /** @var array<string, array<string, mixed>> 快取命中統計 */
     private array $hitStats = [];
+
     /** @var array<string, array<string, mixed>> 快取錯誤統計 */
     private array $errorStats = [];
+
     /** @var array<string, array<string, mixed>> 健康狀態記錄 */
     private array $healthRecords = [];
+
     /** @var array<array<string, mixed>> 操作歷史記錄 */
     private array $operationHistory = [];
+
     /** @var LoggerInterface 記錄器 */
     private LoggerInterface $logger;
+
     /** @var array<string, mixed> 設定 */
     private array $config;
+
     public function __construct(?LoggerInterface $logger = null, array $config = [])
     {
         $this->logger = $logger ?? new NullLogger();
@@ -31,6 +40,7 @@ class CacheMonitor implements CacheMonitorInterface
         $this->config = $mergedConfig;
         $this->initializeStats();
     }
+
     public function recordOperation(
         string $operation,
         string $driver,
@@ -109,6 +119,7 @@ class CacheMonitor implements CacheMonitorInterface
             ]);
         }
     }
+
     public function recordHit(string $driver, string $key, float $duration): void
     {
         if (!isset($this->hitStats[$driver])) {
@@ -137,6 +148,7 @@ class CacheMonitor implements CacheMonitorInterface
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'hit', 'key' => $key]);
     }
+
     public function recordMiss(string $driver, string $key, float $duration = 0.0): void
     {
         if (!isset($this->hitStats[$driver])) {
@@ -159,6 +171,7 @@ class CacheMonitor implements CacheMonitorInterface
         $this->updateHitRate($driver);
         $this->recordOperation('get', $driver, true, $duration, ['result' => 'miss', 'key' => $key]);
     }
+
     public function recordError(string $driver, string $operation, string $error, array $context = []): void
     {
         $timestamp = microtime(true);
@@ -199,6 +212,7 @@ class CacheMonitor implements CacheMonitorInterface
             'context' => $context,
         ]);
     }
+
     public function recordHealthStatus(string $driver, bool $healthy, array $details = []): void
     {
         $timestamp = microtime(true);
@@ -214,6 +228,7 @@ class CacheMonitor implements CacheMonitorInterface
             ]);
         }
     }
+
     public function getCacheStats(?string $driver = null, ?string $timeRange = null): array
     {
         if ($driver !== null) {
@@ -223,6 +238,7 @@ class CacheMonitor implements CacheMonitorInterface
         foreach ($this->operationStats as $driverName => $stats) {
             $allStats[$driverName] = $this->getDriverStats($driverName);
         }
+
         return [
             'summary' => $this->calculateGlobalStats(),
             'drivers' => $allStats,
@@ -230,6 +246,7 @@ class CacheMonitor implements CacheMonitorInterface
             'time_range' => $timeRange,
         ];
     }
+
     public function getHitRateStats(?string $timeRange = null): array
     {
         $stats = [];
@@ -254,6 +271,7 @@ class CacheMonitor implements CacheMonitorInterface
             $totalHits += is_numeric($hitsValue) ? (int) $hitsValue : 0;
         }
         $globalHitRate = $totalRequests > 0 ? ($totalHits / $totalRequests) * 100 : 0;
+
         return [
             'global_hit_rate' => round($globalHitRate, 2),
             'total_requests' => $totalRequests,
@@ -262,6 +280,7 @@ class CacheMonitor implements CacheMonitorInterface
             'time_range' => $timeRange,
         ];
     }
+
     public function getDriverPerformanceComparison(): array
     {
         $comparison = [];
@@ -289,15 +308,19 @@ class CacheMonitor implements CacheMonitorInterface
         }
         // 排序：按照平均響應時間排序
         uasort($comparison, fn($a, $b) => $a['avg_duration'] <=> $b['avg_duration']);
+
         return $comparison;
     }
+
     public function getSlowCacheOperations(int $limit = 10, int $thresholdMs = 100): array
     {
         $slowOps = array_filter($this->operationHistory, fn($op) => $op['duration'] >= $thresholdMs);
         // 按持續時間降序排序
         usort($slowOps, fn($a, $b) => $b['duration'] <=> $a['duration']);
+
         return array_slice($slowOps, 0, $limit);
     }
+
     public function getCacheCapacityStats(): array
     {
         // 這裡需要與具體的快取驅動整合來取得容量資訊
@@ -307,6 +330,7 @@ class CacheMonitor implements CacheMonitorInterface
             'note' => '需要與快取驅動整合來取得實際容量資訊',
         ];
     }
+
     public function getErrorStats(?string $timeRange = null): array
     {
         $stats = [];
@@ -328,12 +352,14 @@ class CacheMonitor implements CacheMonitorInterface
             ];
             $totalErrors += is_numeric($driverTotalErrors) ? (int) $driverTotalErrors : 0;
         }
+
         return [
             'global_error_count' => $totalErrors,
             'drivers' => $stats,
             'time_range' => $timeRange,
         ];
     }
+
     public function getHealthOverview(): array
     {
         $healthySystems = 0;
@@ -358,6 +384,7 @@ class CacheMonitor implements CacheMonitorInterface
                 ];
             }
         }
+
         return [
             'overall_health' => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100 : 0,
             'healthy_drivers' => $healthySystems,
@@ -366,6 +393,7 @@ class CacheMonitor implements CacheMonitorInterface
             'last_check' => date('Y-m-d H:i:s'),
         ];
     }
+
     public function cleanup(int $daysToKeep = 7): int
     {
         $cutoffTime = time() - ($daysToKeep * 24 * 3600);
@@ -390,11 +418,14 @@ class CacheMonitor implements CacheMonitorInterface
             'cleaned_records' => $cleaned,
             'days_kept' => $daysToKeep,
         ]);
+
         return $cleaned;
     }
+
     public function getMetrics(): array
     {
         $stats = $this->calculateGlobalStats();
+
         return [
             'total_hits' => array_sum(array_column($this->hitStats, 'hits')),
             'total_misses' => array_sum(array_column($this->hitStats, 'misses')),
@@ -407,6 +438,7 @@ class CacheMonitor implements CacheMonitorInterface
             'hit_rate' => $stats['global_hit_rate'],
         ];
     }
+
     public function getDriverPerformance(): array
     {
         $performance = [];
@@ -434,16 +466,20 @@ class CacheMonitor implements CacheMonitorInterface
                 'total_errors' => $this->errorStats[$driver]['total_errors'] ?? 0,
             ];
         }
+
         return $performance;
     }
+
     public function getHealth(): array
     {
         return $this->getHealthOverview();
     }
+
     public function reset(): void
     {
         $this->initializeStats();
     }
+
     public function exportData(string $format = 'json', ?string $timeRange = null): string
     {
         $data = [
@@ -458,12 +494,14 @@ class CacheMonitor implements CacheMonitorInterface
             'health_overview' => $this->getHealthOverview(),
             'performance_comparison' => $this->getDriverPerformanceComparison(),
         ];
+
         return match ($format) {
             'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
             'csv' => $this->convertToCsv($data),
             default => throw new InvalidArgumentException("不支援的匯出格式: {$format}"),
         };
     }
+
     /**
      * 初始化統計資料。
      */
@@ -475,6 +513,7 @@ class CacheMonitor implements CacheMonitorInterface
         $this->healthRecords = [];
         $this->operationHistory = [];
     }
+
     /**
      * 初始化驅動統計資料。
      */
@@ -491,6 +530,7 @@ class CacheMonitor implements CacheMonitorInterface
             'max_duration' => 0.0,
         ];
     }
+
     /**
      * 更新命中率。
      */
@@ -506,6 +546,7 @@ class CacheMonitor implements CacheMonitorInterface
         $hits = is_numeric($hitsValue) ? (float) $hitsValue : 0.0;
         $stats['hit_rate'] = $totalRequests > 0 ? ($hits / $totalRequests) * 100 : 0;
     }
+
     /**
      * 取得單一驅動統計資料。
      */
@@ -515,6 +556,7 @@ class CacheMonitor implements CacheMonitorInterface
         $hitStats = $this->hitStats[$driver] ?? $this->getEmptyHitStats();
         $errorStats = $this->errorStats[$driver] ?? $this->getEmptyErrorStats();
         $healthStatus = $this->healthRecords[$driver] ?? ['healthy' => true, 'timestamp' => time(), 'details' => []];
+
         return [
             'operations' => $operationStats,
             'hit_stats' => $hitStats,
@@ -522,6 +564,7 @@ class CacheMonitor implements CacheMonitorInterface
             'health_status' => $healthStatus,
         ];
     }
+
     /**
      * 計算全域統計資料。
      */
@@ -551,6 +594,7 @@ class CacheMonitor implements CacheMonitorInterface
             $errorsValue = $stats['total_errors'] ?? 0;
             $totalErrors += is_numeric($errorsValue) ? (float) $errorsValue : 0;
         }
+
         return [
             'total_operations' => $totalOps,
             'success_rate' => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100 : 0,
@@ -560,6 +604,7 @@ class CacheMonitor implements CacheMonitorInterface
             'total_errors' => $totalErrors,
         ];
     }
+
     /**
      * 計算每秒操作數。
      */
@@ -582,8 +627,10 @@ class CacheMonitor implements CacheMonitorInterface
         $firstTimestamp = is_numeric($firstTimestampValue) ? (float) $firstTimestampValue : 0.0;
         $lastTimestamp = is_numeric($lastTimestampValue) ? (float) $lastTimestampValue : 0.0;
         $timeSpan = $lastTimestamp - $firstTimestamp;
+
         return $timeSpan > 0 ? count($driverOps) / $timeSpan : 0.0;
     }
+
     /**
      * 計算錯誤率。
      */
@@ -593,8 +640,10 @@ class CacheMonitor implements CacheMonitorInterface
         $totalErrorsValue = $this->errorStats[$driver]['total_errors'] ?? 0;
         $totalOps = is_numeric($totalOpsValue) ? (float) $totalOpsValue : 0.0;
         $totalErrors = is_numeric($totalErrorsValue) ? (float) $totalErrorsValue : 0.0;
+
         return $totalOps > 0 ? ($totalErrors / $totalOps) * 100 : 0;
     }
+
     /**
      * 轉換為 CSV 格式。
      */
@@ -610,9 +659,11 @@ class CacheMonitor implements CacheMonitorInterface
             }
         }
         $csv .= '匯出時間,' . $exportTimestamp . "\n\n";
+
         // 可以根據需要擴展 CSV 格式
         return $csv . "請使用 JSON 格式取得完整資料\n";
     }
+
     /**
      * 取得空的驅動統計資料。
      */
@@ -629,6 +680,7 @@ class CacheMonitor implements CacheMonitorInterface
             'max_duration' => 0.0,
         ];
     }
+
     /**
      * 取得空的命中統計資料。
      */
@@ -643,6 +695,7 @@ class CacheMonitor implements CacheMonitorInterface
             'avg_hit_duration' => 0.0,
         ];
     }
+
     /**
      * 取得空的錯誤統計資料。
      */
@@ -654,6 +707,7 @@ class CacheMonitor implements CacheMonitorInterface
             'recent_errors' => [],
         ];
     }
+
     /**
      * 取得特定操作的總數。
      */
@@ -668,8 +722,10 @@ class CacheMonitor implements CacheMonitorInterface
             }
             $count += $operationValue;
         }
+
         return $count;
     }
+
     /**
      * 取得預設設定。
      */
@@ -681,6 +737,7 @@ class CacheMonitor implements CacheMonitorInterface
             'max_recent_errors' => 50,
         ];
     }
+
     /**
      * 計算成功率。
      *
@@ -695,6 +752,7 @@ class CacheMonitor implements CacheMonitorInterface
         }
         $total = (float) $totalOperations;
         $successful = (float) $successfulOperations;
+
         return $total > 0 ? ($successful / $total) * 100 : 0.0;
     }
 }

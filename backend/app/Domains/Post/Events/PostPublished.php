@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Events;
+
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
+
 final class PostPublished extends AbstractDomainEvent
 {
     public function __construct(
@@ -15,10 +17,12 @@ final class PostPublished extends AbstractDomainEvent
     ) {
         parent::__construct();
     }
+
     public function getEventName(): string
     {
         return 'post.published';
     }
+
     /**
      * @return array<string, mixed>
      */

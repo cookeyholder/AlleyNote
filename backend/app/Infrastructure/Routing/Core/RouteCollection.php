@@ -3,17 +3,22 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Core;
+
 use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 use App\Infrastructure\Routing\Contracts\RouteInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 class RouteCollection implements RouteCollectionInterface
 {
     /** @var RouteInterface[] */
     private array $routes = [];
+
     /** @var array<string, RouteInterface> */
     private array $namedRoutes = [];
+
     /** @var array<string, RouteInterface[]> */
     private array $routesByMethod = [];
+
     public function add(RouteInterface $route): void
     {
         $this->routes[] = $route;
@@ -30,6 +35,7 @@ class RouteCollection implements RouteCollectionInterface
             $this->routesByMethod[$method][] = $route;
         }
     }
+
     public function addRoutes(array $routes): void
     {
         foreach ($routes as $route) {
@@ -38,19 +44,24 @@ class RouteCollection implements RouteCollectionInterface
             }
         }
     }
+
     public function getByName(string $name): ?RouteInterface
     {
         return $this->namedRoutes[$name] ?? null;
     }
+
     public function all(): array
     {
         return $this->routes;
     }
+
     public function getByMethod(string $method): array
     {
         $method = strtoupper($method);
+
         return $this->routesByMethod[$method] ?? [];
     }
+
     public function match(ServerRequestInterface $request): ?RouteInterface
     {
         $method = $request->getMethod();
@@ -61,12 +72,15 @@ class RouteCollection implements RouteCollectionInterface
                 return $route;
             }
         }
+
         return null;
     }
+
     public function has(string $name): bool
     {
         return isset($this->namedRoutes[$name]);
     }
+
     public function remove(string $name): bool
     {
         if (!$this->has($name)) {
@@ -86,18 +100,22 @@ class RouteCollection implements RouteCollectionInterface
                 );
             }
         }
+
         return true;
     }
+
     public function clear(): void
     {
         $this->routes = [];
         $this->namedRoutes = [];
         $this->routesByMethod = [];
     }
+
     public function count(): int
     {
         return count($this->routes);
     }
+
     public function toArray(): array
     {
         $data = [];
@@ -110,8 +128,10 @@ class RouteCollection implements RouteCollectionInterface
                 'middleware' => $route->getMiddlewares(),
             ];
         }
+
         return $data;
     }
+
     public static function fromArray(array $data): RouteCollectionInterface
     {
         $collection = new self();
@@ -129,8 +149,10 @@ class RouteCollection implements RouteCollectionInterface
             }
             $collection->add($route);
         }
+
         return $collection;
     }
+
     /**
      * 序列化路由處理器.
      *
@@ -149,6 +171,7 @@ class RouteCollection implements RouteCollectionInterface
                 return [$class, $method];
             }
         }
+
         // 對於其他類型的處理器，這裡暫時回傳字串表示
         // 實際實作時可能需要更複雜的序列化邏輯
         return 'callable';

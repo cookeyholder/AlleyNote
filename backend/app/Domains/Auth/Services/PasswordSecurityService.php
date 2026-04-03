@@ -3,23 +3,28 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Services\Advanced\PwnedPasswordService;
 use App\Shared\Exceptions\ValidationException;
+
 class PasswordSecurityService implements PasswordSecurityServiceInterface
 {
     /**
      * 最小密碼長度.
      */
     private const MIN_LENGTH = 8;
+
     /**
      * 最大密碼長度.
      */
     private const MAX_LENGTH = 128;
+
     /**
      * 最小唯一字元數量.
      */
     private const MIN_UNIQUE_CHARS = 4;
+
     // 基本弱密碼清單（作為備選方案）
     private const FALLBACK_COMMON_PASSWORDS = [
         'password',
@@ -42,11 +47,14 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         '123123',
         'admin123',
     ];
+
     private PwnedPasswordService $pwnedPasswordService;
+
     public function __construct(?PwnedPasswordService $pwnedPasswordService = null)
     {
         $this->pwnedPasswordService = $pwnedPasswordService ?? new PwnedPasswordService();
     }
+
     public function hashPassword(string $password): string
     {
         $this->validatePassword($password);
@@ -66,15 +74,18 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                 'threads' => 3,
             ]);
         }
+
         // 最後降級到 bcrypt
         return password_hash($password, PASSWORD_BCRYPT, [
             'cost' => 12,
         ]);
     }
+
     public function verifyPassword(string $password, string $hash): bool
     {
         return password_verify($password, $hash);
     }
+
     public function needsRehash(string $hash): bool
     {
         // 檢查是否需要重新雜湊（演算法或參數已更新）
@@ -92,10 +103,12 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                 'threads' => 3,
             ]);
         }
+
         return password_needs_rehash($hash, PASSWORD_BCRYPT, [
             'cost' => 12,
         ]);
     }
+
     public function validatePassword(string $password): void
     {
         // 檢查長度
@@ -127,6 +140,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             throw ValidationException::fromSingleError('password', '密碼不能包含連續的字元序列');
         }
     }
+
     public function generateSecurePassword(int $length = 16): string
     {
         if ($length < self::MIN_LENGTH) {
@@ -150,9 +164,11 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         for ($i = 4; $i < $length; $i++) {
             $password .= $allChars[random_int(0, strlen($allChars) - 1)];
         }
+
         // 打亂字元順序
         return $this->secureShuffle($password);
     }
+
     /**
      * 使用 CSPRNG 安全地打亂字串.
      */
@@ -169,8 +185,10 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $j = $indices[$i] % ($i + 1);
             [$array[$i], $array[$j]] = [$array[$j], $array[$i]];
         }
+
         return implode('', $array);
     }
+
     public function calculatePasswordStrength(string $password): array
     {
         $score = 0;
@@ -237,12 +255,14 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $score >= 20 => 'weak',
             default => 'very_weak'
         };
+
         return [
             'score' => $score,
             'strength' => $strength,
             'feedback' => $feedback,
         ];
     }
+
     private function validatePasswordComplexity(string $password): void
     {
         $errors = [];
@@ -271,6 +291,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             throw ValidationException::fromErrors(['password' => $errors], '密碼必須' . implode('、', $errors));
         }
     }
+
     private function isCommonPassword(string $password): array
     {
         // 首先使用 HIBP API 檢查
@@ -299,6 +320,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                 ];
             }
         }
+
         return [
             'is_common' => false,
             'message' => null,
@@ -306,11 +328,13 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             'breach_count' => 0,
         ];
     }
+
     private function hasExcessiveRepetition(string $password): bool
     {
         // 檢查是否有超過 3 個連續相同字元
         return preg_match('/(.)\1{3,}/', $password) === 1;
     }
+
     private function hasSequentialChars(string $password): bool
     {
         $sequences = [
@@ -333,6 +357,7 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
                 }
             }
         }
+
         return false;
     }
 }

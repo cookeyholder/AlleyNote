@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Providers;
+
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\ControllerResolver;
 use App\Infrastructure\Routing\Core\Router;
@@ -13,6 +14,7 @@ use App\Infrastructure\Routing\RouteLoader;
 use App\Infrastructure\Routing\RouteValidator;
 use Psr\Container\ContainerInterface;
 use Throwable;
+
 class RoutingServiceProvider
 {
     /**
@@ -38,14 +40,17 @@ class RoutingServiceProvider
             RouteDispatcher::class => \DI\factory([self::class, 'createRouteDispatcher']),
         ];
     }
+
     /**
      * 建立路由載入器實例.
      */
     public static function createRouteLoader(ContainerInterface $container): RouteLoader
     {
         $validator = $container->get(RouteValidator::class);
+
         return new RouteLoader($validator);
     }
+
     /**
      * 建立控制器解析器實例.
      */
@@ -53,6 +58,7 @@ class RoutingServiceProvider
     {
         return new ControllerResolver($container);
     }
+
     /**
      * 建立中介軟體解析器實例.
      */
@@ -60,6 +66,7 @@ class RoutingServiceProvider
     {
         return new MiddlewareResolver($container);
     }
+
     /**
      * 建立路由分派器實例.
      */
@@ -69,6 +76,7 @@ class RoutingServiceProvider
         $controllerResolver = $container->get(ControllerResolver::class);
         $middlewareDispatcher = $container->get(MiddlewareDispatcher::class);
         $middlewareResolver = $container->get(MiddlewareResolver::class);
+
         return new RouteDispatcher(
             $router,
             $controllerResolver,
@@ -76,6 +84,7 @@ class RoutingServiceProvider
             $container,
         );
     }
+
     /**
      * 取得路由配置檔案清單.
      */
@@ -90,6 +99,7 @@ class RoutingServiceProvider
             'activity-logs' => __DIR__ . '/../../../../config/routes/activity-logs.php',
         ];
     }
+
     /**
      * 載入路由配置到路由器.
      */
@@ -97,6 +107,7 @@ class RoutingServiceProvider
     {
         $routeLoader = $container->get(RouteLoader::class);
         $router = $container->get(RouterInterface::class);
+
         try {
             // 載入各種路由配置檔案
             foreach (self::getRouteFiles() as $group => $filePath) {
@@ -119,6 +130,7 @@ class RoutingServiceProvider
             }
         }
     }
+
     /**
      * 取得路由系統統計資訊.
      */
@@ -126,6 +138,7 @@ class RoutingServiceProvider
     {
         try {
             $routeLoader = $container->get(RouteLoader::class);
+
             return $routeLoader->getRouteStats();
         } catch (Throwable $e) {
             return [

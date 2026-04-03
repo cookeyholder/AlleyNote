@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Application\Services\Statistics\DTOs;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
+
 final class StatisticsQueryDTO
 {
     public function __construct(
@@ -18,50 +20,62 @@ final class StatisticsQueryDTO
     ) {
         $this->validate();
     }
+
     public function getStartDate(): ?DateTimeImmutable
     {
         return $this->startDate;
     }
+
     public function getEndDate(): ?DateTimeImmutable
     {
         return $this->endDate;
     }
+
     public function getPage(): int
     {
         return $this->page;
     }
+
     public function getLimit(): int
     {
         return $this->limit;
     }
+
     public function getSortBy(): string
     {
         return $this->sortBy;
     }
+
     public function getSortDirection(): string
     {
         return $this->sortDirection;
     }
+
     public function getFilters(): array
     {
         return $this->filters;
     }
+
     public function getOffset(): int
     {
         return ($this->page - 1) * $this->limit;
     }
+
     public function hasDateRange(): bool
     {
         return $this->startDate !== null && $this->endDate !== null;
     }
+
     public function getDateRangeInDays(): ?int
     {
         if (!$this->hasDateRange() || $this->startDate === null || $this->endDate === null) {
             return null;
         }
         $diff = $this->startDate->diff($this->endDate);
+
         return $diff->days !== false ? $diff->days : null;
     }
+
     private function validate(): void
     {
         if ($this->page < 1) {

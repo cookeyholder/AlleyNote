@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 class StatisticsOverviewDTO implements JsonSerializable
 {
     /**
@@ -31,6 +33,7 @@ class StatisticsOverviewDTO implements JsonSerializable
     ) {
         $this->validateData();
     }
+
     /**
      * 從陣列建立 DTO.
      *
@@ -43,6 +46,7 @@ class StatisticsOverviewDTO implements JsonSerializable
         if (isset($data['generated_at']) && is_string($data['generated_at'])) {
             $generatedAt = new DateTimeImmutable($data['generated_at']);
         }
+
         return new self(
             totalPosts: isset($data['total_posts']) && is_numeric($data['total_posts']) ? (int) $data['total_posts'] : 0,
             activeUsers: isset($data['active_users']) && is_numeric($data['active_users']) ? (int) $data['active_users'] : 0,
@@ -55,6 +59,7 @@ class StatisticsOverviewDTO implements JsonSerializable
             metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
         );
     }
+
     /**
      * 確保回傳 array<string, mixed> 型別.
      *
@@ -72,8 +77,10 @@ class StatisticsOverviewDTO implements JsonSerializable
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 建立帶驗證的 DTO.
      *
@@ -95,21 +102,26 @@ class StatisticsOverviewDTO implements JsonSerializable
             'metadata' => 'sometimes|array',
         ];
         $validator->validate($data, $rules);
+
         return self::fromArray($data);
     }
+
     // Getters
     public function getTotalPosts(): int
     {
         return $this->totalPosts;
     }
+
     public function getActiveUsers(): int
     {
         return $this->activeUsers;
     }
+
     public function getNewUsers(): int
     {
         return $this->newUsers;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -117,6 +129,7 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->postActivity;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -124,6 +137,7 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->userActivity;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -131,6 +145,7 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->engagementMetrics;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -138,10 +153,12 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->periodSummary;
     }
+
     public function getGeneratedAt(): ?DateTimeImmutable
     {
         return $this->generatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -149,24 +166,30 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->metadata;
     }
+
     // 計算方法
     public function getGrowthRate(): float
     {
         if ($this->activeUsers === 0) {
             return $this->newUsers > 0 ? 100.0 : 0.0;
         }
+
         return round(($this->newUsers / $this->activeUsers) * 100, 2);
     }
+
     public function getPostsPerUser(): float
     {
         if ($this->activeUsers === 0) {
             return 0.0;
         }
+
         return round($this->totalPosts / $this->activeUsers, 2);
     }
+
     public function getActivityLevel(): string
     {
         $activityScore = $this->calculateActivityScore();
+
         return match (true) {
             $activityScore >= 80 => 'high',
             $activityScore >= 50 => 'medium',
@@ -174,6 +197,7 @@ class StatisticsOverviewDTO implements JsonSerializable
             default => 'inactive',
         };
     }
+
     /**
      * 轉換為陣列.
      *
@@ -201,8 +225,10 @@ class StatisticsOverviewDTO implements JsonSerializable
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
+
         return $data;
     }
+
     /**
      * JSON 序列化.
      *
@@ -212,6 +238,7 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查是否有有效資料.
      */
@@ -219,6 +246,7 @@ class StatisticsOverviewDTO implements JsonSerializable
     {
         return $this->totalPosts > 0 || $this->activeUsers > 0 || $this->newUsers > 0;
     }
+
     /**
      * 取得摘要資訊.
      *
@@ -234,6 +262,7 @@ class StatisticsOverviewDTO implements JsonSerializable
             'activity_level' => $this->getActivityLevel(),
         ];
     }
+
     /**
      * 驗證資料完整性.
      *
@@ -264,6 +293,7 @@ class StatisticsOverviewDTO implements JsonSerializable
             'type', 'duration_days',
         ]);
     }
+
     /**
      * 驗證陣列結構.
      *
@@ -280,6 +310,7 @@ class StatisticsOverviewDTO implements JsonSerializable
             }
         }
     }
+
     /**
      * 計算活動分數.
      */
@@ -288,6 +319,7 @@ class StatisticsOverviewDTO implements JsonSerializable
         $postScore = min(($this->totalPosts / 100) * 40, 40); // 最多40分
         $userScore = min(($this->activeUsers / 50) * 30, 30); // 最多30分
         $growthScore = min($this->getGrowthRate() / 10 * 30, 30); // 最多30分
+
         return round($postScore + $userScore + $growthScore, 2);
     }
 }

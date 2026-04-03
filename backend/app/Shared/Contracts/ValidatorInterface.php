@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Shared\Contracts;
+
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
+
 interface ValidatorInterface
 {
     /**
@@ -15,6 +17,7 @@ interface ValidatorInterface
      * @return ValidationResult 驗證結果
      */
     public function validate(array $data, array $rules): ValidationResult;
+
     /**
      * 快速驗證資料，失敗時拋出異常.
      *
@@ -24,6 +27,7 @@ interface ValidatorInterface
      * @return array 驗證通過的資料
      */
     public function validateOrFail(array $data, array $rules): array;
+
     /**
      * 檢查單一規則.
      *
@@ -33,6 +37,7 @@ interface ValidatorInterface
      * @return bool 是否通過驗證
      */
     public function checkRule(mixed $value, string $rule, array $parameters = []): bool;
+
     /**
      * 添加自訂驗證規則.
      *
@@ -40,6 +45,7 @@ interface ValidatorInterface
      * @param callable $callback 驗證回調函式
      */
     public function addRule(string $name, callable $callback): void;
+
     /**
      * 添加自訂錯誤訊息.
      *
@@ -47,6 +53,7 @@ interface ValidatorInterface
      * @param string $message 錯誤訊息
      */
     public function addMessage(string $rule, string $message): void;
+
     /**
      * 設定驗證失敗時是否立即停止.
      *

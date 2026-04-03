@@ -3,16 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Shared\Exceptions\ValidationException;
 use InvalidArgumentException;
+
 class PasswordManagementService
 {
     public function __construct(
         private UserRepository $userRepository,
         private PasswordSecurityServiceInterface $passwordService,
     ) {}
+
     /**
      * 變更使用者密碼
      *
@@ -35,9 +38,11 @@ class PasswordManagementService
         }
         // 驗證新密碼的安全性（包含 HIBP 檢查）
         $this->passwordService->validatePassword($newPassword);
+
         // 更新密碼
         return $this->userRepository->updatePassword($userId, $newPassword);
     }
+
     /**
      * 重設密碼（管理員或忘記密碼功能）.
      *
@@ -49,9 +54,11 @@ class PasswordManagementService
     {
         // 驗證新密碼的安全性（包含 HIBP 檢查）
         $this->passwordService->validatePassword($newPassword);
+
         // 更新密碼
         return $this->userRepository->updatePassword($userId, $newPassword);
     }
+
     /**
      * 檢查密碼強度並提供建議.
      *
@@ -62,6 +69,7 @@ class PasswordManagementService
     {
         return $this->passwordService->calculatePasswordStrength($password);
     }
+
     /**
      * 生成安全密碼
      *
@@ -72,6 +80,7 @@ class PasswordManagementService
     {
         return $this->passwordService->generateSecurePassword($length);
     }
+
     /**
      * 檢查密碼是否需要重新雜湊.
      *
@@ -82,6 +91,7 @@ class PasswordManagementService
     {
         return $this->passwordService->needsRehash($hash);
     }
+
     /**
      * 升級密碼雜湊（如果需要）.
      *
@@ -103,6 +113,7 @@ class PasswordManagementService
             // 重新雜湊密碼並透過 updatePassword 方法更新
             return $this->userRepository->updatePassword($userId, $plainPassword);
         }
+
         return false;
     }
 }

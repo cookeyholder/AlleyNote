@@ -215,7 +215,7 @@ class AuthControllerTest extends IntegrationTestCase
     {
         $credentials = ['email' => 'wrong@example.com', 'password' => 'wrong'];
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
-        
+
         $this->authenticationService->shouldReceive('login')
             ->once()
             ->with(Mockery::any(), Mockery::any())
@@ -249,7 +249,7 @@ class AuthControllerTest extends IntegrationTestCase
     public function logoutUserSuccessfully(): void
     {
         $this->authenticationService->shouldReceive('logout')->once()->with(Mockery::any());
-        
+
         $config = new EnvironmentConfig();
 
         /** @var AuthService $authService */

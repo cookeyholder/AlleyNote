@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Domains\Setting\Services\SettingManagementService;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
@@ -11,11 +12,13 @@ use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class SettingController
 {
     public function __construct(
         private readonly SettingManagementService $settingManagementService,
     ) {}
+
     /**
      * 取得系統設定列表.
      *
@@ -58,8 +61,10 @@ class SettingController
             'data' => $settings,
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
     /**
      * 取得單一設定.
      *
@@ -124,6 +129,7 @@ class SettingController
                 'data' => $setting,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -131,9 +137,11 @@ class SettingController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 批量更新系統設定.
      *
@@ -196,6 +204,7 @@ class SettingController
                 'message' => '系統設定更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -204,9 +213,11 @@ class SettingController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 更新單一設定.
      *
@@ -298,6 +309,7 @@ class SettingController
                 'message' => '設定更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -305,6 +317,7 @@ class SettingController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -313,9 +326,11 @@ class SettingController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 取得時區設定資訊.
      *
@@ -369,6 +384,7 @@ class SettingController
             ],
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
 }

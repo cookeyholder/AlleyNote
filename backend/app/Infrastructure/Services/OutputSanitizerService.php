@@ -3,19 +3,23 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
+
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Enums\SanitizerMode;
 use HTMLPurifier;
 use HTMLPurifier_Config;
+
 final readonly class OutputSanitizerService implements OutputSanitizerInterface
 {
     private HTMLPurifier $richTextPurifier;
+
     public function __construct(
         private int $defaultTruncateLength = 150,
         private string $encoding = 'UTF-8',
     ) {
         $this->richTextPurifier = $this->initializeRichTextPurifier();
     }
+
     /**
      * 清理 HTML 內容以防止 XSS 攻擊 (完全轉義).
      */
@@ -23,6 +27,7 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
     {
         return htmlspecialchars($content, ENT_QUOTES, $this->encoding);
     }
+
     /**
      * 清理富文本內容，保留安全的 HTML 標籤.
      */
@@ -31,8 +36,10 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
         if (empty($content)) {
             return '';
         }
+
         return $this->richTextPurifier->purify($content);
     }
+
     /**
      * 清理標題內容.
      */
@@ -40,6 +47,7 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
     {
         return htmlspecialchars($title, ENT_QUOTES, $this->encoding);
     }
+
     /**
      * 清理陣列中的所有字串值以供顯示.
      */
@@ -52,6 +60,7 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
             $data,
         );
     }
+
     /**
      * 清理字串，保留換行符號.
      */
@@ -59,6 +68,7 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
     {
         return nl2br(htmlspecialchars($content, ENT_QUOTES, $this->encoding));
     }
+
     /**
      * 清理並截斷文字，用於摘要顯示.
      */
@@ -68,10 +78,12 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
     ): string {
         $length ??= $this->defaultTruncateLength;
         $sanitized = htmlspecialchars($content, ENT_QUOTES, $this->encoding);
+
         return mb_strlen($sanitized) > $length
             ? mb_substr($sanitized, 0, $length) . '...'
             : $sanitized;
     }
+
     /**
      * 通用清理方法，支援多種模式.
      */
@@ -88,6 +100,7 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
             // 注意：這裡如果之後有新增模式需要更新
         };
     }
+
     /**
      * 初始化 HTMLPurifier 配置.
      */
@@ -100,6 +113,7 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
         $config->set('Attr.AllowedFrameTargets', ['_blank']);
         $config->set('HTML.TargetBlank', true);
         $config->set('AutoFormat.RemoveEmpty', false); // 保留空標籤（如 CKEditor 產生的）
+
         return new HTMLPurifier($config);
     }
 }

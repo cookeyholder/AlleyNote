@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
+
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
@@ -11,6 +12,7 @@ use App\Infrastructure\Statistics\Adapters\StatisticsQueryAdapter;
 use App\Infrastructure\Statistics\Processors\CategoryProcessor;
 use App\Infrastructure\Statistics\Processors\TimeSeriesProcessor;
 use DateTimeInterface;
+
 class StatisticsVisualizationService implements StatisticsVisualizationServiceInterface
 {
     public function __construct(
@@ -20,6 +22,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
         private readonly StatisticsCacheServiceInterface $cacheService,
         private readonly PostStatisticsRepositoryInterface $postRepository,
     ) {}
+
     /**
      * 取得文章發布時間序列統計.
      */
@@ -38,6 +41,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $endDate,
                     $granularity,
                 );
+
                 return $this->timeSeriesProcessor->processTimeSeriesData(
                     $rawData,
                     '文章發布趨勢',
@@ -47,8 +51,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             300, // 趨勢資料快取 5 分鐘
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得使用者活動時間序列統計.
      */
@@ -67,6 +73,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $endDate,
                     $granularity,
                 );
+
                 return $this->timeSeriesProcessor->processTimeSeriesData(
                     $rawData,
                     '使用者活動趨勢',
@@ -76,8 +83,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             300,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得文章來源分布統計.
      */
@@ -97,6 +106,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $endDate,
                     $limit,
                 );
+
                 return $this->categoryProcessor->processCategoryData(
                     $rawData,
                     '文章來源分布',
@@ -105,8 +115,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             3600,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得熱門標籤分布統計.
      */
@@ -126,6 +138,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $endDate,
                     $limit,
                 );
+
                 return $this->categoryProcessor->processCategoryData(
                     $rawData,
                     '熱門標籤分布',
@@ -134,8 +147,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             3600,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得使用者註冊趨勢分析.
      */
@@ -154,6 +169,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $endDate,
                     $granularity,
                 );
+
                 return $this->timeSeriesProcessor->processTimeSeriesData(
                     $rawData,
                     '使用者註冊趨勢',
@@ -163,8 +179,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             300,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得內容成長趨勢分析.
      */
@@ -187,6 +205,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                         $granularity,
                     );
                 }
+
                 // 這裡 TimeSeriesProcessor 可能沒有 processMultiTimeSeriesData
                 // 改用能正常編譯的方法
                 return $this->timeSeriesProcessor->processTimeSeriesData(
@@ -198,8 +217,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             3600,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得熱門內容排行榜.
      */
@@ -219,6 +240,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     ['start' => $startDate, 'end' => $endDate],
                     $sortBy,
                 );
+
                 return $this->categoryProcessor->processRankingData(
                     $rawData,
                     '熱門內容排行',
@@ -227,8 +249,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             3600,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得使用者活躍度分布統計.
      */
@@ -245,6 +269,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
                     $startDate,
                     $endDate,
                 );
+
                 return $this->categoryProcessor->processCategoryData(
                     $rawData,
                     '使用者活躍度分布',
@@ -253,8 +278,10 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             3600,
         );
         assert($result instanceof ChartData);
+
         return $result;
     }
+
     /**
      * 取得自訂統計圖表資料.
      */
@@ -265,6 +292,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
     ): ChartData {
         return new ChartData(['Labels'], []);
     }
+
     /**
      * 取得多指標組合圖表資料.
      */
@@ -292,6 +320,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             ]),
         );
     }
+
     /**
      * 取得效能監控圖表資料.
      */
@@ -303,6 +332,7 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
     ): ChartData {
         return new ChartData(['Labels'], []);
     }
+
     /**
      * 取得瀏覽量時間序列統計.
      */

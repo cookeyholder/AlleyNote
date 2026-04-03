@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Domains\Post\DTOs\CreateTagDTO;
 use App\Domains\Post\DTOs\UpdateTagDTO;
 use App\Domains\Post\Services\TagManagementService;
@@ -12,11 +13,13 @@ use InvalidArgumentException;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+
 class TagController
 {
     public function __construct(
         private readonly TagManagementService $tagManagementService,
     ) {}
+
     /**
      * 取得標籤列表.
      *
@@ -62,8 +65,10 @@ class TagController
             ],
         ]);
         $response->getBody()->write($responseData ?: '');
+
         return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
     }
+
     /**
      * 取得單一標籤.
      *
@@ -96,6 +101,7 @@ class TagController
                 'data' => $tag,
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -103,9 +109,11 @@ class TagController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }
+
     /**
      * 建立標籤.
      *
@@ -157,6 +165,7 @@ class TagController
                 'message' => '標籤建立成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -165,9 +174,11 @@ class TagController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 更新標籤.
      *
@@ -228,6 +239,7 @@ class TagController
                 'message' => '標籤更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -235,6 +247,7 @@ class TagController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         } catch (ValidationException $e) {
             $responseData = json_encode([
@@ -243,9 +256,11 @@ class TagController
                 'errors' => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(422);
         }
     }
+
     /**
      * 刪除標籤.
      *
@@ -278,6 +293,7 @@ class TagController
                 'message' => '標籤刪除成功',
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(200);
         } catch (NotFoundException $e) {
             $responseData = json_encode([
@@ -285,6 +301,7 @@ class TagController
                 'message' => $e->getMessage(),
             ]);
             $response->getBody()->write($responseData ?: '');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
         }
     }

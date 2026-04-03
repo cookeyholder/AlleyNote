@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Contracts;
+
 use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
 use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Exceptions\TokenParsingException;
 use App\Domains\Auth\Exceptions\TokenValidationException;
 use DateTimeImmutable;
+
 interface JwtProviderInterface
 {
     /**
@@ -21,6 +23,7 @@ interface JwtProviderInterface
      * @throws TokenGenerationException 當token生成失敗時
      */
     public function generateAccessToken(array $payload, ?int $ttl = null): string;
+
     /**
      * 生成 refresh token.
      *
@@ -31,6 +34,7 @@ interface JwtProviderInterface
      * @throws TokenGenerationException 當token生成失敗時
      */
     public function generateRefreshToken(array $payload, ?int $ttl = null): string;
+
     /**
      * 驗證 token.
      *
@@ -43,6 +47,7 @@ interface JwtProviderInterface
      * @throws TokenValidationException 當token驗證失敗時
      */
     public function validateToken(string $token, ?string $expectedType = null): array;
+
     /**
      * 解析 token payload（不進行驗證）.
      *
@@ -52,6 +57,7 @@ interface JwtProviderInterface
      * @throws TokenParsingException 當token解析失敗時
      */
     public function parseTokenUnsafe(string $token): array;
+
     /**
      * 取得 token 過期時間戳記.
      *
@@ -59,6 +65,7 @@ interface JwtProviderInterface
      * @return DateTimeImmutable|null 過期時間，如果無法取得則回傳null
      */
     public function getTokenExpiration(string $token): ?DateTimeImmutable;
+
     /**
      * 檢查 token 是否已過期.
      *

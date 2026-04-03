@@ -3,16 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
+
 use InvalidArgumentException;
 use PDO;
 use PDOException;
 use Throwable;
+
 final class StatisticsPerformanceReportGenerator
 {
     public function __construct(
         private readonly PDO $db,
         private readonly SlowQueryMonitoringService $monitoringService,
     ) {}
+
     /**
      * 生成完整效能測試報告.
      *
@@ -35,8 +38,10 @@ final class StatisticsPerformanceReportGenerator
         ];
         // 保存報告到檔案
         $this->saveReportToFile($report);
+
         return $report;
     }
+
     /**
      * 執行效能測試.
      *
@@ -89,12 +94,14 @@ final class StatisticsPerformanceReportGenerator
                 5, // 執行次數
             );
         }
+
         return [
             'test_data_count' => $testDataCount,
             'query_tests' => $testResults,
             'overall_performance' => $this->calculateOverallPerformance($testResults),
         ];
     }
+
     /**
      * 執行單個查詢效能測試.
      *
@@ -116,6 +123,7 @@ final class StatisticsPerformanceReportGenerator
         $resultCounts = [];
         for ($i = 0; $i < $iterations; $i++) {
             $startTime = microtime(true);
+
             try {
                 $stmt = $this->db->prepare($sql);
                 foreach ($params as $key => $value) {
@@ -134,6 +142,7 @@ final class StatisticsPerformanceReportGenerator
                 ];
             }
         }
+
         return [
             'description' => $description,
             'status' => 'success',
@@ -145,6 +154,7 @@ final class StatisticsPerformanceReportGenerator
             'performance_grade' => $this->calculatePerformanceGrade(array_sum($executionTimes) / count($executionTimes)),
         ];
     }
+
     /**
      * 分析索引有效性.
      *
@@ -170,6 +180,7 @@ final class StatisticsPerformanceReportGenerator
                     'usage_analysis' => $this->analyzeIndexUsage($indexName),
                 ];
             }
+
             return [
                 'total_indexes' => count($indexes),
                 'index_details' => $indexAnalysis,
@@ -181,6 +192,7 @@ final class StatisticsPerformanceReportGenerator
             ];
         }
     }
+
     /**
      * 分析索引使用情況.
      *
@@ -196,6 +208,7 @@ final class StatisticsPerformanceReportGenerator
             'recommendation' => '索引對統計查詢效能有顯著幫助',
         ];
     }
+
     /**
      * 生成最佳化摘要.
      *
@@ -205,12 +218,14 @@ final class StatisticsPerformanceReportGenerator
     {
         // 獲取最近的慢查詢統計
         $slowQueryStats = $this->monitoringService->getSlowQueryStats(7);
+
         return [
             'slow_queries_last_7_days' => count($slowQueryStats),
             'most_problematic_query_types' => array_slice($slowQueryStats, 0, 3),
             'optimization_impact' => $this->calculateOptimizationImpact(),
         ];
     }
+
     /**
      * 生成建議.
      *
@@ -234,8 +249,10 @@ final class StatisticsPerformanceReportGenerator
         $recommendations['future_optimizations'][] = '考慮實作查詢結果快取';
         $recommendations['future_optimizations'][] = '評估分片或讀寫分離的必要性';
         $recommendations['future_optimizations'][] = '定期審查和調整索引策略';
+
         return $recommendations;
     }
+
     /**
      * 生成測試元資料.
      *
@@ -253,6 +270,7 @@ final class StatisticsPerformanceReportGenerator
             'server_memory' => $this->getServerMemoryInfo(),
         ];
     }
+
     /**
      * 計算整體效能.
      *
@@ -272,6 +290,7 @@ final class StatisticsPerformanceReportGenerator
                 $grades[] = (string) ($result['performance_grade'] ?? 'F');
             }
         }
+
         return [
             'total_tests' => $totalTests,
             'average_execution_time' => $totalTests > 0 ? round($totalTime / $totalTests, 4) : 0,
@@ -279,6 +298,7 @@ final class StatisticsPerformanceReportGenerator
             'performance_summary' => $this->generatePerformanceSummary($totalTime, $totalTests),
         ];
     }
+
     /**
      * 計算效能等級.
      */
@@ -299,8 +319,10 @@ final class StatisticsPerformanceReportGenerator
         if ($executionTime < 1.0) {
             return 'D';
         }
+
         return 'F';
     }
+
     /**
      * 計算整體等級.
      *
@@ -315,8 +337,10 @@ final class StatisticsPerformanceReportGenerator
         $totalValue = array_sum(array_map(fn($grade) => $gradeValues[$grade] ?? 0, $grades));
         $avgValue = $totalValue / count($grades);
         $reverseGrades = array_flip($gradeValues);
+
         return $reverseGrades[(int) round($avgValue)] ?? 'N/A';
     }
+
     /**
      * 生成效能摘要.
      */
@@ -335,6 +359,7 @@ final class StatisticsPerformanceReportGenerator
             return '嚴重：查詢效能很慢，需要立即最佳化';
         }
     }
+
     /**
      * 計算最佳化影響.
      *
@@ -349,6 +374,7 @@ final class StatisticsPerformanceReportGenerator
             'resource_usage_reduction' => '60-80%',
         ];
     }
+
     /**
      * 評估最佳化狀態.
      *
@@ -365,6 +391,7 @@ final class StatisticsPerformanceReportGenerator
             return 'needs_optimization';
         }
     }
+
     /**
      * 獲取資料庫引擎資訊.
      */
@@ -379,11 +406,13 @@ final class StatisticsPerformanceReportGenerator
             if ($version === false) {
                 return 'Unknown';
             }
+
             return "SQLite {$version}";
         } catch (PDOException) {
             return 'Unknown';
         }
     }
+
     /**
      * 獲取伺服器記憶體資訊.
      */
@@ -391,8 +420,10 @@ final class StatisticsPerformanceReportGenerator
     {
         $memoryLimit = ini_get('memory_limit');
         $memoryUsage = round(memory_get_usage(true) / 1024 / 1024, 2);
+
         return "Limit: {$memoryLimit}, Used: {$memoryUsage}MB";
     }
+
     /**
      * 保存報告到檔案.
      *

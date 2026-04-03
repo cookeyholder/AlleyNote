@@ -3,20 +3,24 @@
 declare(strict_types=1);
 
 namespace App\Shared\Events;
+
 use App\Shared\Events\Contracts\DomainEventInterface;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
 use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class SimpleEventDispatcher implements EventDispatcherInterface
 {
     /**
      * @var array<string, EventListenerInterface[]>
      */
     private array $listeners = [];
+
     public function __construct(
         private readonly ?LoggerInterface $logger = null,
     ) {}
+
     public function dispatch(DomainEventInterface $event): void
     {
         $eventName = $event->getEventName();
@@ -25,6 +29,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             $this->logger?->debug("No listeners found for event: {$eventName}", [
                 'event_id' => $event->getEventId(),
             ]);
+
             return;
         }
         $this->logger?->info("Dispatching event: {$eventName}", [
@@ -53,6 +58,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             }
         }
     }
+
     public function listen(string $eventName, EventListenerInterface $listener): void
     {
         if (!isset($this->listeners[$eventName])) {
@@ -66,6 +72,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
                     'event_name' => $eventName,
                     'listener' => $listenerName,
                 ]);
+
                 return;
             }
         }
@@ -75,6 +82,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             'listener' => $listenerName,
         ]);
     }
+
     public function removeListener(string $eventName, string $listenerName): void
     {
         if (!isset($this->listeners[$eventName])) {
@@ -93,18 +101,22 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             'listener' => $listenerName,
         ]);
     }
+
     public function getListeners(): array
     {
         return $this->listeners;
     }
+
     public function getListenersForEvent(string $eventName): array
     {
         return $this->listeners[$eventName] ?? [];
     }
+
     public function hasListeners(string $eventName): bool
     {
         return !empty($this->listeners[$eventName]);
     }
+
     /**
      * 批量註冊監聽器.
      *
@@ -119,6 +131,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             }
         }
     }
+
     /**
      * 取得事件分派統計資訊.
      *
@@ -131,6 +144,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
         foreach ($this->listeners as $eventListeners) {
             $totalListeners += count($eventListeners);
         }
+
         return [
             'total_event_types' => $totalEvents,
             'total_listeners' => $totalListeners,

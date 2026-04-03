@@ -3,19 +3,26 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\DTOs;
+
 use App\Domains\Security\Enums\ActivityCategory;
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTime;
 use InvalidArgumentException;
+
 class ActivityLogSearchDTO
 {
     private const DEFAULT_PAGE = 1;
+
     private const DEFAULT_PER_PAGE = 20;
+
     private const MAX_PER_PAGE = 100;
+
     private const DEFAULT_SORT_BY = 'created_at';
+
     private const DEFAULT_SORT_ORDER = 'desc';
+
     public function __construct(
         private readonly ?int $userId = null,
         private readonly ?string $sessionId = null,
@@ -36,6 +43,7 @@ class ActivityLogSearchDTO
     ) {
         $this->validateSearchConditions();
     }
+
     /**
      * 建立搜尋 DTO 的 Builder.
      */
@@ -43,6 +51,7 @@ class ActivityLogSearchDTO
     {
         return new self();
     }
+
     /**
      * 設定使用者 ID.
      */
@@ -67,6 +76,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定 Session ID.
      */
@@ -91,6 +101,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定行為類型.
      */
@@ -115,6 +126,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定行為分類.
      */
@@ -139,6 +151,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定狀態.
      */
@@ -163,6 +176,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定最小嚴重程度.
      */
@@ -187,6 +201,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定目標類型和 ID.
      */
@@ -211,6 +226,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定 IP 位址
      */
@@ -235,6 +251,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定時間範圍.
      */
@@ -243,6 +260,7 @@ class ActivityLogSearchDTO
         if ($startDate > $endDate) {
             throw new InvalidArgumentException('開始時間不能大於結束時間');
         }
+
         return new self(
             userId: $this->userId,
             sessionId: $this->sessionId,
@@ -262,6 +280,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定搜尋關鍵字.
      */
@@ -286,6 +305,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定分頁參數.
      */
@@ -297,6 +317,7 @@ class ActivityLogSearchDTO
         if ($perPage < 1 || $perPage > self::MAX_PER_PAGE) {
             throw new InvalidArgumentException('每頁筆數必須介於 1 到 ' . self::MAX_PER_PAGE . ' 之間');
         }
+
         return new self(
             userId: $this->userId,
             sessionId: $this->sessionId,
@@ -316,6 +337,7 @@ class ActivityLogSearchDTO
             sortOrder: $this->sortOrder,
         );
     }
+
     /**
      * 設定排序參數.
      */
@@ -336,6 +358,7 @@ class ActivityLogSearchDTO
         if (!in_array($sortOrder, ['asc', 'desc'], true)) {
             throw new InvalidArgumentException('排序順序必須是 asc 或 desc');
         }
+
         return new self(
             userId: $this->userId,
             sessionId: $this->sessionId,
@@ -355,71 +378,88 @@ class ActivityLogSearchDTO
             sortOrder: $sortOrder,
         );
     }
+
     // Getters
     public function getUserId(): ?int
     {
         return $this->userId;
     }
+
     public function getSessionId(): ?string
     {
         return $this->sessionId;
     }
+
     public function getActionType(): ?ActivityType
     {
         return $this->actionType;
     }
+
     public function getActionCategory(): ?ActivityCategory
     {
         return $this->actionCategory;
     }
+
     public function getStatus(): ?ActivityStatus
     {
         return $this->status;
     }
+
     public function getMinSeverity(): ?ActivitySeverity
     {
         return $this->minSeverity;
     }
+
     public function getTargetType(): ?string
     {
         return $this->targetType;
     }
+
     public function getTargetId(): ?string
     {
         return $this->targetId;
     }
+
     public function getIpAddress(): ?string
     {
         return $this->ipAddress;
     }
+
     public function getStartDate(): ?DateTime
     {
         return $this->startDate;
     }
+
     public function getEndDate(): ?DateTime
     {
         return $this->endDate;
     }
+
     public function getSearchKeyword(): ?string
     {
         return $this->searchKeyword;
     }
+
     public function getPage(): int
     {
         return $this->page;
     }
+
     public function getPerPage(): int
     {
         return $this->perPage;
     }
+
     public function getSortBy(): string
     {
         return $this->sortBy;
     }
+
     public function getSortOrder(): string
     {
         return $this->sortOrder;
     }
+
     /**
      * 取得查詢偏移量.
      */
@@ -427,6 +467,7 @@ class ActivityLogSearchDTO
     {
         return ($this->page - 1) * $this->perPage;
     }
+
     /**
      * 判斷是否有搜尋條件.
      */
@@ -445,6 +486,7 @@ class ActivityLogSearchDTO
             || $this->endDate !== null
             || $this->searchKeyword !== null;
     }
+
     /**
      * 轉換為陣列格式.
      *
@@ -471,6 +513,7 @@ class ActivityLogSearchDTO
             'sort_order' => $this->sortOrder,
         ];
     }
+
     /**
      * 驗證搜尋條件.
      */

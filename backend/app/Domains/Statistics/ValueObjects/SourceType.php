@@ -3,11 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class SourceType implements JsonSerializable
 {
     private const VALID_CODES = ['web', 'api', 'mobile', 'import', 'migration'];
+
     /**
      * @param string $code 類型代碼
      * @param string $name 類型名稱
@@ -20,6 +23,7 @@ final readonly class SourceType implements JsonSerializable
     ) {
         $this->validate();
     }
+
     /**
      * 從陣列建立來源類型物件.
      *
@@ -31,12 +35,14 @@ final readonly class SourceType implements JsonSerializable
         if (!isset($data['code'], $data['name'])) {
             throw new InvalidArgumentException('Missing required fields: code, name');
         }
+
         return new self(
             code: $data['code'],
             name: $data['name'],
             description: $data['description'] ?? '',
         );
     }
+
     /**
      * 建立網頁來源類型.
      */
@@ -44,6 +50,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return new self('web', '網頁介面', '透過網頁界面建立的文章');
     }
+
     /**
      * 建立 API 來源類型.
      */
@@ -51,6 +58,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return new self('api', 'API 介面', '透過 REST API 建立的文章');
     }
+
     /**
      * 建立 Mobile App 來源類型.
      */
@@ -58,6 +66,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return new self('mobile', '行動裝置', '透過行動應用程式建立的文章');
     }
+
     /**
      * 建立匯入來源類型.
      */
@@ -65,6 +74,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return new self('import', '資料匯入', '透過批量匯入功能建立的文章');
     }
+
     /**
      * 建立遷移來源類型.
      */
@@ -72,6 +82,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return new self('migration', '資料遷移', '系統遷移過程中建立的文章');
     }
+
     /**
      * 從代碼建立來源類型.
      *
@@ -88,6 +99,7 @@ final readonly class SourceType implements JsonSerializable
             default => throw new InvalidArgumentException("Invalid source code: {$code}"),
         };
     }
+
     /**
      * 檢查是否為網頁來源.
      */
@@ -95,6 +107,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->code === 'web';
     }
+
     /**
      * 檢查是否為 API 來源.
      */
@@ -102,6 +115,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->code === 'api';
     }
+
     /**
      * 檢查是否為匯入來源.
      */
@@ -109,6 +123,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->code === 'import';
     }
+
     /**
      * 檢查是否為行動裝置來源.
      */
@@ -116,6 +131,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->code === 'mobile';
     }
+
     /**
      * 檢查是否為遷移來源.
      */
@@ -123,6 +139,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->code === 'migration';
     }
+
     /**
      * 取得來源類型的優先級（用於排序）.
      */
@@ -137,6 +154,7 @@ final readonly class SourceType implements JsonSerializable
             default => 999,
         };
     }
+
     /**
      * 轉換為陣列.
      *
@@ -150,6 +168,7 @@ final readonly class SourceType implements JsonSerializable
             'description' => $this->description,
         ];
     }
+
     /**
      * JSON 序列化.
      *
@@ -159,6 +178,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查兩個來源類型是否相等.
      */
@@ -168,6 +188,7 @@ final readonly class SourceType implements JsonSerializable
             && $this->name === $other->name
             && $this->description === $other->description;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -175,6 +196,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return $this->description ? "{$this->name} ({$this->description})" : $this->name;
     }
+
     /**
      * 取得所有有效的來源代碼.
      *
@@ -184,6 +206,7 @@ final readonly class SourceType implements JsonSerializable
     {
         return self::VALID_CODES;
     }
+
     /**
      * 取得所有預定義的來源類型.
      *
@@ -199,6 +222,7 @@ final readonly class SourceType implements JsonSerializable
             self::createMigration(),
         ];
     }
+
     /**
      * 驗證來源類型的有效性.
      *

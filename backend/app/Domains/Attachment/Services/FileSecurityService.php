@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\Services;
+
 use RuntimeException;
+
 class FileSecurityService implements FileSecurityServiceInterface
 {
     private const ALLOWED_MIME_TYPES = [
@@ -19,6 +21,7 @@ class FileSecurityService implements FileSecurityServiceInterface
         'text/plain' => ['txt'],
         'text/csv' => ['csv'],
     ];
+
     private const FORBIDDEN_EXTENSIONS = [
         'php',
         'php3',
@@ -55,8 +58,11 @@ class FileSecurityService implements FileSecurityServiceInterface
         'db',
         'sqlite',
     ];
+
     private const MAX_FILE_SIZE = 10485760; // 10MB
+
     private const MAX_FILENAME_LENGTH = 255;
+
     public function validateUpload(UploadedFileInterface $file): void
     {
         $this->validateBasicProperties($file);
@@ -64,13 +70,16 @@ class FileSecurityService implements FileSecurityServiceInterface
         $this->validateMimeType($file);
         $this->validateFileContent($file);
     }
+
     public function generateSecureFileName(string $originalName, string $prefix = ''): string
     {
         $extension = $this->extractSafeExtension($originalName);
         $timestamp = date('YmdHis');
         $random = bin2hex(random_bytes(8));
+
         return $prefix . $timestamp . '_' . $random . '.' . $extension;
     }
+
     public function detectActualMimeType(string $filePath): string
     {
         if (!file_exists($filePath)) {
@@ -85,8 +94,10 @@ class FileSecurityService implements FileSecurityServiceInterface
         if ($mimeType === false) {
             throw ValidationException::fromSingleError('file', '無法檢測檔案 MIME 類型');
         }
+
         return $mimeType;
     }
+
     public function sanitizeFileName(string $fileName): string
     {
         // 移除路徑分隔符號和其他危險字元
@@ -100,8 +111,10 @@ class FileSecurityService implements FileSecurityServiceInterface
         if (strlen($fileName) > self::MAX_FILENAME_LENGTH) {
             $fileName = substr($fileName, 0, self::MAX_FILENAME_LENGTH);
         }
+
         return $fileName;
     }
+
     public function isInAllowedDirectory(string $filePath, string $allowedBaseDir): bool
     {
         $realFilePath = realpath($filePath);
@@ -109,8 +122,10 @@ class FileSecurityService implements FileSecurityServiceInterface
         if ($realFilePath === false || $realBaseDir === false) {
             return false;
         }
+
         return str_starts_with($realFilePath, $realBaseDir);
     }
+
     private function validateBasicProperties(UploadedFileInterface $file): void
     {
         if ($file->getError() !== UPLOAD_ERR_OK) {
@@ -123,6 +138,7 @@ class FileSecurityService implements FileSecurityServiceInterface
             throw ValidationException::fromSingleError('file', '檔案大小超過限制（10MB）');
         }
     }
+
     private function validateFileName(?string $fileName): void
     {
         if (empty($fileName)) {
@@ -153,6 +169,7 @@ class FileSecurityService implements FileSecurityServiceInterface
             }
         }
     }
+
     private function validateMimeType(UploadedFileInterface $file): void
     {
         $clientMimeType = $file->getClientMediaType();
@@ -166,6 +183,7 @@ class FileSecurityService implements FileSecurityServiceInterface
             throw ValidationException::fromSingleError('file', '檔案副檔名與類型不匹配');
         }
     }
+
     private function validateFileContent(UploadedFileInterface $file): void
     {
         $stream = $file->getStream();
@@ -179,6 +197,7 @@ class FileSecurityService implements FileSecurityServiceInterface
             throw ValidationException::fromSingleError('file', '檔案格式驗證失敗');
         }
     }
+
     private function containsMaliciousContent(string $content): bool
     {
         $maliciousPatterns = [
@@ -207,8 +226,10 @@ class FileSecurityService implements FileSecurityServiceInterface
                 return true;
             }
         }
+
         return false;
     }
+
     private function validateFileSignature(string $content, string $mimeType): bool
     {
         $signatures = [
@@ -231,8 +252,10 @@ class FileSecurityService implements FileSecurityServiceInterface
                 return true;
             }
         }
+
         return false;
     }
+
     private function extractSafeExtension(string $fileName): string
     {
         $extension = pathinfo($fileName, PATHINFO_EXTENSION);
@@ -243,8 +266,10 @@ class FileSecurityService implements FileSecurityServiceInterface
                 return $extension;
             }
         }
+
         return 'bin'; // 預設副檔名
     }
+
     private function getUploadErrorMessage(int $errorCode): string
     {
         return match ($errorCode) {

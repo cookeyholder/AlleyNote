@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
+
 class UserAgentParserService
 {
     /**
@@ -20,6 +21,7 @@ class UserAgentParserService
                 'os' => 'Unknown',
             ];
         }
+
         return [
             'browser' => $this->detectBrowser($userAgent),
             'browser_version' => $this->detectBrowserVersion($userAgent),
@@ -27,6 +29,7 @@ class UserAgentParserService
             'os' => $this->detectOS($userAgent),
         ];
     }
+
     /**
      * 檢測瀏覽器類型.
      */
@@ -45,8 +48,10 @@ class UserAgentParserService
                 return $browser;
             }
         }
+
         return 'Other';
     }
+
     /**
      * 檢測瀏覽器版本.
      */
@@ -65,8 +70,10 @@ class UserAgentParserService
                 return $matches[1] ?? '';
             }
         }
+
         return '';
     }
+
     /**
      * 檢測裝置類型.
      */
@@ -76,10 +83,13 @@ class UserAgentParserService
             if (preg_match('/iPad|Tablet/i', $userAgent)) {
                 return 'Tablet';
             }
+
             return 'Mobile';
         }
+
         return 'Desktop';
     }
+
     /**
      * 檢測操作系統.
      */
@@ -103,8 +113,10 @@ class UserAgentParserService
                 return $os;
             }
         }
+
         return 'Other';
     }
+
     /**
      * 批量解析多個 User-Agent.
      *

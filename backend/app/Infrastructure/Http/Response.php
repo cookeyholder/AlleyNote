@@ -3,16 +3,24 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+
 class Response implements ResponseInterface
 {
     private string $protocolVersion = '1.1';
+
     private int $statusCode = 200;
+
     private string $reasonPhrase = '';
+
     private array $headers = [];
+
     private array $headerNames = [];
+
     private StreamInterface $body;
+
     public function __construct(
         int $statusCode = 200,
         array $headers = [],
@@ -34,24 +42,30 @@ class Response implements ResponseInterface
             $this->headers[$name] = is_array($value) ? $value : [$value];
         }
     }
+
     public function getProtocolVersion(): string
     {
         return $this->protocolVersion;
     }
+
     public function withProtocolVersion(string $version): self
     {
         $clone = clone $this;
         $clone->protocolVersion = $version;
+
         return $clone;
     }
+
     public function getHeaders(): array
     {
         return $this->headers;
     }
+
     public function hasHeader(string $name): bool
     {
         return isset($this->headerNames[strtolower($name)]);
     }
+
     public function getHeader(string $name): array
     {
         $name = strtolower($name);
@@ -62,20 +76,25 @@ class Response implements ResponseInterface
         if (!is_string($originalName)) {
             return [];
         }
+
         return $this->headers[$originalName] ?? [];
     }
+
     public function getHeaderLine(string $name): string
     {
         return implode(', ', $this->getHeader($name));
     }
+
     public function withHeader(string $name, mixed $value): self
     {
         $clone = clone $this;
         $normalizedName = strtolower($name);
         $clone->headerNames[$normalizedName] = $name;
         $clone->headers[$name] = is_array($value) ? $value : [$value];
+
         return $clone;
     }
+
     public function withAddedHeader(string $name, mixed $value): self
     {
         $clone = clone $this;
@@ -89,8 +108,10 @@ class Response implements ResponseInterface
             $clone->headerNames[$normalizedName] = $name;
             $clone->headers[$name] = is_array($value) ? $value : [$value];
         }
+
         return $clone;
     }
+
     public function withoutHeader(string $name): self
     {
         $clone = clone $this;
@@ -102,36 +123,46 @@ class Response implements ResponseInterface
         if (is_string($originalName)) {
             unset($clone->headers[$originalName], $clone->headerNames[$normalizedName]);
         }
+
         return $clone;
     }
+
     public function getBody(): StreamInterface
     {
         return $this->body;
     }
+
     public function withBody(StreamInterface $body): self
     {
         $clone = clone $this;
         $clone->body = $body;
+
         return $clone;
     }
+
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
+
     public function withStatus(int $code, string $reasonPhrase = ''): self
     {
         $clone = clone $this;
         $clone->statusCode = $code;
         $clone->reasonPhrase = $reasonPhrase;
+
         return $clone;
     }
+
     public function getReasonPhrase(): string
     {
         if ($this->reasonPhrase) {
             return $this->reasonPhrase;
         }
+
         return $this->getDefaultReasonPhrase($this->statusCode);
     }
+
     private function getDefaultReasonPhrase(int $code): string
     {
         $phrases = [
@@ -146,6 +177,7 @@ class Response implements ResponseInterface
             422 => 'Unprocessable Entity',
             500 => 'Internal Server Error',
         ];
+
         return $phrases[$code] ?? '';
     }
 }

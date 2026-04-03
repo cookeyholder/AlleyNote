@@ -3,21 +3,26 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Specifications;
+
 use App\Domains\Post\Aggregates\PostAggregate;
+
 abstract class AbstractPostSpecification implements PostSpecificationInterface
 {
     public function and(PostSpecificationInterface $other): PostSpecificationInterface
     {
         return new AndPostSpecification($this, $other);
     }
+
     public function or(PostSpecificationInterface $other): PostSpecificationInterface
     {
         return new OrPostSpecification($this, $other);
     }
+
     public function not(): PostSpecificationInterface
     {
         return new NotPostSpecification($this);
     }
+
     abstract public function isSatisfiedBy(PostAggregate $post): bool;
 }
 /**
@@ -29,6 +34,7 @@ final class AndPostSpecification extends AbstractPostSpecification
         private readonly PostSpecificationInterface $left,
         private readonly PostSpecificationInterface $right,
     ) {}
+
     public function isSatisfiedBy(PostAggregate $post): bool
     {
         return $this->left->isSatisfiedBy($post) && $this->right->isSatisfiedBy($post);
@@ -43,6 +49,7 @@ final class OrPostSpecification extends AbstractPostSpecification
         private readonly PostSpecificationInterface $left,
         private readonly PostSpecificationInterface $right,
     ) {}
+
     public function isSatisfiedBy(PostAggregate $post): bool
     {
         return $this->left->isSatisfiedBy($post) || $this->right->isSatisfiedBy($post);
@@ -56,6 +63,7 @@ final class NotPostSpecification extends AbstractPostSpecification
     public function __construct(
         private readonly PostSpecificationInterface $spec,
     ) {}
+
     public function isSatisfiedBy(PostAggregate $post): bool
     {
         return !$this->spec->isSatisfiedBy($post);

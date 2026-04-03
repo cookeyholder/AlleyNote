@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Services;
+
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\Contracts\TagRepositoryInterface;
@@ -10,6 +11,7 @@ use App\Shared\Cache\ValueObjects\CacheTag;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class TaggedCacheManager implements TaggedCacheInterface
 {
     /**
@@ -17,12 +19,14 @@ class TaggedCacheManager implements TaggedCacheInterface
      * @var array<string>
      */
     private array $tags = [];
+
     public function __construct(
         private CacheManagerInterface $cacheManager,
         private TagRepositoryInterface $tagRepository,
         private LoggerInterface $logger,
         private ?CacheMonitorInterface $monitor = null,
     ) {}
+
     /**
      * 取得快取資料.
      */
@@ -34,8 +38,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             // 記錄標籤化快取存取
             $this->logTaggedAccess('get', $key, $keyTags);
         }
+
         return $this->cacheManager->get($key, $default);
     }
+
     /**
      * 設定快取資料.
      */
@@ -54,8 +60,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             }
             $this->logTaggedAccess('put', $key, $this->tags);
         }
+
         return $success;
     }
+
     /**
      * 檢查快取是否存在.
      */
@@ -63,6 +71,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->cacheManager->has($key);
     }
+
     /**
      * 刪除快取.
      */
@@ -78,8 +87,10 @@ class TaggedCacheManager implements TaggedCacheInterface
                 $this->logTaggedAccess('forget', $key, $keyTags);
             }
         }
+
         return $success;
     }
+
     /**
      * 清空所有標籤化快取.
      */
@@ -91,8 +102,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             $this->tagRepository->flush();
             $this->logger->info('所有標籤化快取已清空');
         }
+
         return $success;
     }
+
     /**
      * 記憶化取得.
      */
@@ -102,9 +115,11 @@ class TaggedCacheManager implements TaggedCacheInterface
         if ($value !== null) {
             return $value;
         }
+
         try {
             $value = $callback();
             $this->put($key, $value, $ttl);
+
             return $value;
         } catch (Throwable $e) {
             $this->logger->error('標籤化快取記憶化失敗', [
@@ -112,9 +127,11 @@ class TaggedCacheManager implements TaggedCacheInterface
                 'tags' => $this->tags,
                 'error' => $e->getMessage(),
             ]);
+
             throw $e;
         }
     }
+
     /**
      * 增加新標籤到快取管理器.
      */
@@ -128,8 +145,10 @@ class TaggedCacheManager implements TaggedCacheInterface
                 $this->tags[] = $cacheTag->getName();
             }
         }
+
         return $this;
     }
+
     /**
      * 取得當前快取管理器的所有標籤.
      */
@@ -137,6 +156,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tags;
     }
+
     /**
      * 按標籤清空快取.
      */
@@ -158,8 +178,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             'tags' => $tagsArray,
             'deleted_keys_count' => $deletedCount,
         ]);
+
         return $deletedCount;
     }
+
     /**
      * 取得標籤下的所有快取鍵.
      */
@@ -170,8 +192,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             $tagKeys = $this->tagRepository->getKeysByTag($tag);
             $keys = array_merge($keys, $tagKeys);
         }
+
         return array_unique($keys);
     }
+
     // ========== 進階標籤功能實作 ==========
     /**
      * 使用指定標籤存放快取項目.
@@ -195,8 +219,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             }
             $this->logTaggedAccess('putWithTags', $key, $tags);
         }
+
         return $success;
     }
+
     /**
      * 取得指定標籤的所有快取鍵.
      */
@@ -204,6 +230,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tagRepository->getKeysByTag($tag);
     }
+
     /**
      * 取得快取項目的所有標籤.
      */
@@ -211,6 +238,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tagRepository->getTags($key);
     }
+
     /**
      * 為現有快取項目添加標籤.
      */
@@ -228,8 +256,10 @@ class TaggedCacheManager implements TaggedCacheInterface
         if ($success) {
             $this->logTaggedAccess('addTags', $key, $tagsArray);
         }
+
         return $success;
     }
+
     /**
      * 從快取項目移除標籤.
      */
@@ -240,8 +270,10 @@ class TaggedCacheManager implements TaggedCacheInterface
         if ($success) {
             $this->logTaggedAccess('removeTags', $key, $tagsArray);
         }
+
         return $success;
     }
+
     /**
      * 檢查快取項目是否包含指定標籤.
      */
@@ -249,6 +281,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tagRepository->hasTag($key, $tag);
     }
+
     /**
      * 取得所有系統標籤.
      */
@@ -256,6 +289,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tagRepository->getAllTags();
     }
+
     /**
      * 清除未使用的標籤.
      */
@@ -267,8 +301,10 @@ class TaggedCacheManager implements TaggedCacheInterface
                 'cleaned_count' => $cleanedCount,
             ]);
         }
+
         return $cleanedCount;
     }
+
     /**
      * 取得標籤統計資訊.
      */
@@ -276,6 +312,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tagRepository->getTagStatistics();
     }
+
     /**
      * 建立新的標籤化快取實例.
      */
@@ -284,8 +321,10 @@ class TaggedCacheManager implements TaggedCacheInterface
         $instance = clone $this;
         $instance->tags = [];
         $instance->addTags($tags);
+
         return $instance;
     }
+
     /**
      * 批量設定帶標籤的快取.
      *
@@ -305,8 +344,10 @@ class TaggedCacheManager implements TaggedCacheInterface
             'tags' => $tags,
             'success_count' => count(array_filter($results)),
         ]);
+
         return $results;
     }
+
     /**
      * 按標籤批量獲取快取.
      *
@@ -323,8 +364,10 @@ class TaggedCacheManager implements TaggedCacheInterface
                 $results[$key] = $value;
             }
         }
+
         return $results;
     }
+
     /**
      * 檢查標籤是否存在.
      *
@@ -335,6 +378,7 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         return $this->tagRepository->tagExists($tag);
     }
+
     /**
      * 記錄標籤化快取存取.
      *

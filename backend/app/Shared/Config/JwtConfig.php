@@ -3,23 +3,34 @@
 declare(strict_types=1);
 
 namespace App\Shared\Config;
+
 use InvalidArgumentException;
 use Throwable;
+
 final class JwtConfig
 {
     private string $algorithm;
+
     private ?string $privateKey = null;
+
     private ?string $publicKey = null;
+
     private ?string $secret = null;
+
     private string $issuer;
+
     private string $audience;
+
     private int $accessTokenTtl;
+
     private int $refreshTokenTtl;
+
     public function __construct()
     {
         $this->loadFromEnvironment();
         $this->validateConfiguration();
     }
+
     /**
      * 從環境變數載入配置.
      */
@@ -42,6 +53,7 @@ final class JwtConfig
         $this->accessTokenTtl = (int) ($_ENV['JWT_ACCESS_TOKEN_TTL'] ?? 3600);
         $this->refreshTokenTtl = (int) ($_ENV['JWT_REFRESH_TOKEN_TTL'] ?? 2592000);
     }
+
     /**
      * 檢查是否為對稱算法.
      */
@@ -49,6 +61,7 @@ final class JwtConfig
     {
         return in_array($algorithm, ['HS256', 'HS384', 'HS512'], true);
     }
+
     /**
      * 載入對稱金鑰（用於 HS256 等算法）.
      */
@@ -64,8 +77,10 @@ final class JwtConfig
         if (strlen($secret) < 32) {
             throw new InvalidArgumentException('JWT_SECRET 長度至少需要 32 個字元');
         }
+
         return $secret;
     }
+
     /**
      * 載入私鑰.
      */
@@ -88,8 +103,10 @@ final class JwtConfig
         if (!str_contains($privateKey, 'BEGIN PRIVATE KEY')) {
             throw new InvalidArgumentException('JWT_PRIVATE_KEY 格式無效，必須是 PEM 格式的私鑰');
         }
+
         return $privateKey;
     }
+
     /**
      * 載入公鑰.
      */
@@ -112,8 +129,10 @@ final class JwtConfig
         if (!str_contains($publicKey, 'BEGIN PUBLIC KEY')) {
             throw new InvalidArgumentException('JWT_PUBLIC_KEY 格式無效，必須是 PEM 格式的公鑰');
         }
+
         return $publicKey;
     }
+
     /**
      * 驗證配置完整性.
      */
@@ -139,6 +158,7 @@ final class JwtConfig
             $this->validateKeyPair();
         }
     }
+
     /**
      * 驗證金鑰對是否匹配.
      */
@@ -167,39 +187,48 @@ final class JwtConfig
             throw new InvalidArgumentException('金鑰驗證失敗: ' . $e->getMessage());
         }
     }
+
     // Getter 方法
     public function getAlgorithm(): string
     {
         return $this->algorithm;
     }
+
     public function getPrivateKey(): string
     {
         return $this->privateKey ?? '';
     }
+
     public function getPublicKey(): string
     {
         return $this->publicKey ?? '';
     }
+
     public function getSecret(): ?string
     {
         return $this->secret;
     }
+
     public function getIssuer(): string
     {
         return $this->issuer;
     }
+
     public function getAudience(): string
     {
         return $this->audience;
     }
+
     public function getAccessTokenTtl(): int
     {
         return $this->accessTokenTtl;
     }
+
     public function getRefreshTokenTtl(): int
     {
         return $this->refreshTokenTtl;
     }
+
     /**
      * 取得 access token 過期時間戳記.
      */
@@ -207,6 +236,7 @@ final class JwtConfig
     {
         return time() + $this->accessTokenTtl;
     }
+
     /**
      * 取得 refresh token 過期時間戳記.
      */
@@ -214,12 +244,14 @@ final class JwtConfig
     {
         return time() + $this->refreshTokenTtl;
     }
+
     /**
      * 取得基本 JWT payload 結構.
      */
     public function getBasePayload(): array
     {
         $now = time();
+
         return [
             'iss' => $this->issuer,
             'aud' => $this->audience,
@@ -227,6 +259,7 @@ final class JwtConfig
             'nbf' => $now,
         ];
     }
+
     /**
      * 檢查配置是否已正確載入.
      */
@@ -237,6 +270,7 @@ final class JwtConfig
             && !empty($this->issuer)
             && !empty($this->audience);
     }
+
     /**
      * 取得配置摘要（用於日誌記錄，不包含敏感資訊）.
      */
@@ -252,6 +286,7 @@ final class JwtConfig
             'public_key_configured' => !empty($this->publicKey),
         ];
     }
+
     private function loadKeyFromPath(string $pathEnvKey): ?string
     {
         $pathEnv = $_ENV[$pathEnvKey] ?? getenv($pathEnvKey);
@@ -273,9 +308,11 @@ final class JwtConfig
                         sprintf('%s 指定的金鑰檔案無法讀取: %s', $pathEnvKey, $candidatePath),
                     );
                 }
+
                 return trim($contents);
             }
         }
+
         // Only throw if the path was specified but no file was found/readable.
         throw new InvalidArgumentException(
             sprintf('%s 指定的金鑰檔案不存在或不可讀: %s', $pathEnvKey, $pathEnv),

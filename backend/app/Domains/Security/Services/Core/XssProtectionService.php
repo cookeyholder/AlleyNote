@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Core;
+
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
@@ -10,16 +11,21 @@ use App\Domains\Security\Enums\ActivityType;
 use HTMLPurifier;
 use HTMLPurifier_Config;
 use Throwable;
+
 class XssProtectionService implements XssProtectionServiceInterface
 {
     private HTMLPurifier $purifier;
+
     private HTMLPurifier $strictPurifier;
+
     private ActivityLoggingServiceInterface $activityLogger;
+
     public function __construct(ActivityLoggingServiceInterface $activityLogger)
     {
         $this->activityLogger = $activityLogger;
         $this->initializePurifiers();
     }
+
     public function clean(string $input): string
     {
         if (empty($input)) {
@@ -29,8 +35,10 @@ class XssProtectionService implements XssProtectionServiceInterface
         if ($cleaned !== $input) {
             $this->logXssAttempt($input, $cleaned);
         }
+
         return $cleaned;
     }
+
     public function strictClean(string $input): string
     {
         if (empty($input)) {
@@ -40,8 +48,10 @@ class XssProtectionService implements XssProtectionServiceInterface
         if ($cleaned !== $input) {
             $this->logXssAttempt($input, $cleaned);
         }
+
         return $cleaned;
     }
+
     public function cleanArray(array $data, array $keys = []): array
     {
         if (empty($keys)) {
@@ -54,24 +64,30 @@ class XssProtectionService implements XssProtectionServiceInterface
                 $data[$key] = $this->clean($data[$key]);
             }
         }
+
         return $data;
     }
+
     public function containsXss(string $input): bool
     {
         if (empty($input)) {
             return false;
         }
         $cleaned = $this->purifier->purify($input);
+
         return $cleaned !== $input;
     }
+
     public function sanitize(string $input): string
     {
         return $this->clean($input);
     }
+
     public function sanitizeArray(array $data): array
     {
         return $this->cleanArrayRecursive($data);
     }
+
     /**
      * 檢測 XSS 攻擊.
      */
@@ -79,6 +95,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     {
         return $this->containsXss($input);
     }
+
     /**
      * 清理 HTML（別名方法，對應舊的 cleanHtml）.
      */
@@ -86,6 +103,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     {
         return $this->clean($input);
     }
+
     /**
      * 清理用於 URL 的字串.
      */
@@ -93,6 +111,7 @@ class XssProtectionService implements XssProtectionServiceInterface
     {
         return $this->strictClean($input);
     }
+
     private function initializePurifiers(): void
     {
         $config = HTMLPurifier_Config::createDefault();
@@ -109,6 +128,7 @@ class XssProtectionService implements XssProtectionServiceInterface
         $strictConfig->set('AutoFormat.RemoveEmpty', true);
         $this->strictPurifier = new HTMLPurifier($strictConfig);
     }
+
     private function cleanArrayRecursive(array $data): array
     {
         foreach ($data as $key => $value) {
@@ -118,8 +138,10 @@ class XssProtectionService implements XssProtectionServiceInterface
                 $data[$key] = $this->cleanArrayRecursive($value);
             }
         }
+
         return $data;
     }
+
     private function logXssAttempt(string $originalInput, string $cleanedInput): void
     {
         try {

@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 class PostStatisticsDTO implements JsonSerializable
 {
     /**
@@ -35,6 +37,7 @@ class PostStatisticsDTO implements JsonSerializable
     ) {
         $this->validateData();
     }
+
     /**
      * 從陣列建立實例.
      *
@@ -50,6 +53,7 @@ class PostStatisticsDTO implements JsonSerializable
         $byStatus = self::filterIntegerMap($data['by_status'] ?? []);
         $bySource = self::filterIntegerMap($data['by_source'] ?? []);
         $timeDistribution = self::filterIntegerMap($data['time_distribution'] ?? []);
+
         return new self(
             totalPosts: isset($data['total_posts']) && is_numeric($data['total_posts']) ? (int) $data['total_posts'] : 0,
             byStatus: $byStatus,
@@ -64,6 +68,7 @@ class PostStatisticsDTO implements JsonSerializable
             metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
         );
     }
+
     /**
      * 過濾字串鍵和整數值的映射.
      *
@@ -81,8 +86,10 @@ class PostStatisticsDTO implements JsonSerializable
                 $filtered[$key] = (int) $value;
             }
         }
+
         return $filtered;
     }
+
     /**
      * 確保回傳 array<string, mixed> 型別.
      *
@@ -100,8 +107,10 @@ class PostStatisticsDTO implements JsonSerializable
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
@@ -125,13 +134,16 @@ class PostStatisticsDTO implements JsonSerializable
                 $result[] = $filteredItem;
             }
         }
+
         return $result;
     }
+
     // Getters
     public function getTotalPosts(): int
     {
         return $this->totalPosts;
     }
+
     /**
      * @return array<string, int>
      */
@@ -139,6 +151,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->byStatus;
     }
+
     /**
      * @return array<string, int>
      */
@@ -146,6 +159,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->bySource;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -153,6 +167,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->viewsStatistics;
     }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -160,6 +175,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->topPosts;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -167,6 +183,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->lengthStatistics;
     }
+
     /**
      * @return array<string, int>
      */
@@ -174,6 +191,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->timeDistribution;
     }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -181,6 +199,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->topAuthors;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -188,10 +207,12 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->pinnedStats;
     }
+
     public function getGeneratedAt(): ?DateTimeImmutable
     {
         return $this->generatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -199,86 +220,113 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->metadata;
     }
+
     // 計算方法
     public function getPublishedPosts(): int
     {
         return $this->byStatus['published'] ?? 0;
     }
+
     public function getPublishedCount(): int
     {
         return $this->getPublishedPosts();
     }
+
     public function getDraftPosts(): int
     {
         return $this->byStatus['draft'] ?? 0;
     }
+
     public function getDraftCount(): int
     {
         return $this->getDraftPosts();
     }
+
     public function getPendingPosts(): int
     {
         return $this->byStatus['pending'] ?? 0;
     }
+
     public function getArchivedPosts(): int
     {
         return $this->byStatus['archived'] ?? 0;
     }
+
     // 瀏覽統計方法
     public function getTotalViews(): int
     {
         $totalViews = $this->viewsStatistics['total_views'] ?? 0;
+
         return is_numeric($totalViews) ? (int) $totalViews : 0;
     }
+
     public function getAverageViewsPerPost(): float
     {
         $avgViews = $this->viewsStatistics['avg_views_per_post'] ?? 0.0;
+
         return is_numeric($avgViews) ? (float) $avgViews : 0.0;
     }
+
     public function getMostViewedPostViews(): int
     {
         $mostViewed = $this->viewsStatistics['most_viewed_post'] ?? 0;
+
         return is_numeric($mostViewed) ? (int) $mostViewed : 0;
     }
+
     // 其他計算方法
     public function getTopPost(): ?array
     {
         return $this->topPosts[0] ?? null;
     }
+
     public function getAverageLength(): int
     {
         $avgLength = $this->lengthStatistics['avg_length'] ?? 0;
+
         return is_numeric($avgLength) ? (int) $avgLength : 0;
     }
+
     public function getMinLength(): int
     {
         $minLength = $this->lengthStatistics['min_length'] ?? 0;
+
         return is_numeric($minLength) ? (int) $minLength : 0;
     }
+
     public function getMaxLength(): int
     {
         $maxLength = $this->lengthStatistics['max_length'] ?? 0;
+
         return is_numeric($maxLength) ? (int) $maxLength : 0;
     }
+
     public function getTopAuthor(): ?array
     {
         return $this->topAuthors[0] ?? null;
     }
+
     public function getTotalPinnedPosts(): int
     {
         $pinnedCount = $this->pinnedStats['total_pinned'] ?? 0;
+
         return is_numeric($pinnedCount) ? (int) $pinnedCount : 0;
     }
+
     public function getPinnedPostsViews(): int
     {
         $pinnedViews = $this->pinnedStats['pinned_views'] ?? 0;
+
         return is_numeric($pinnedViews) ? (int) $pinnedViews : 0;
     }
+
     public function getAveragePinnedEngagement(): float
     {
         $avgEngagement = $this->pinnedStats['avg_pinned_engagement'] ?? 0.0;
+
         return is_numeric($avgEngagement) ? (float) $avgEngagement : 0.0;
     }
+
     public function getMostActiveHour(): ?string
     {
         if (empty($this->timeDistribution)) {
@@ -286,15 +334,19 @@ class PostStatisticsDTO implements JsonSerializable
         }
         $maxCount = max($this->timeDistribution);
         $peakHours = array_keys($this->timeDistribution, $maxCount);
+
         return $peakHours[0] ?? null;
     }
+
     public function getPublishedPercentage(): float
     {
         if ($this->totalPosts === 0) {
             return 0.0;
         }
+
         return round(($this->getPublishedPosts() / $this->totalPosts) * 100, 2);
     }
+
     public function getEngagementMetrics(): array
     {
         $totalViews = $this->getTotalViews();
@@ -305,12 +357,14 @@ class PostStatisticsDTO implements JsonSerializable
             $totalPostCount = array_sum(array_column($this->topAuthors, 'posts_count'));
             $avgProductivity = $totalPostCount / count($this->topAuthors);
         }
+
         return [
             'views_per_post_ratio' => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
             'pinned_engagement_rate' => $totalViews > 0 ? round(($this->getPinnedPostsViews() / $totalViews) * 100, 2) : 0.0,
             'author_productivity' => $avgProductivity,
         ];
     }
+
     public function getContentAnalysis(): array
     {
         return [
@@ -323,26 +377,33 @@ class PostStatisticsDTO implements JsonSerializable
             'content_diversity' => $this->calculateContentDiversity(),
         ];
     }
+
     public function getPublishRate(): float
     {
         $total = $this->getTotalPosts();
         if ($total === 0) {
             return 0.0;
         }
+
         return round(($this->getPublishedCount() / $total) * 100, 2);
     }
+
     public function getAverageViews(): float
     {
         $avgViews = $this->viewsStatistics['avg_views_per_post'] ?? 0.0;
+
         return is_numeric($avgViews) ? (float) $avgViews : 0.0;
     }
+
     public function getMostPopularSource(): ?string
     {
         if (empty($this->bySource)) {
             return null;
         }
+
         return array_key_first($this->bySource);
     }
+
     public function getPeakHour(): ?string
     {
         if (empty($this->timeDistribution)) {
@@ -350,8 +411,10 @@ class PostStatisticsDTO implements JsonSerializable
         }
         $maxCount = max($this->timeDistribution);
         $peakHours = array_keys($this->timeDistribution, $maxCount);
+
         return $peakHours[0] ?? null;
     }
+
     /**
      * 取得內容品質指標.
      *
@@ -363,6 +426,7 @@ class PostStatisticsDTO implements JsonSerializable
         $avgLengthFloat = is_numeric($avgLength) ? (float) $avgLength : 0.0;
         $totalViews = $this->getTotalViews();
         $totalPosts = $this->getTotalPosts();
+
         return [
             'average_length' => $avgLengthFloat,
             'quality_score' => $this->calculateQualityScore(),
@@ -370,6 +434,7 @@ class PostStatisticsDTO implements JsonSerializable
             'publish_rate' => $this->getPublishRate(),
         ];
     }
+
     /**
      * 轉換為陣列.
      *
@@ -406,8 +471,10 @@ class PostStatisticsDTO implements JsonSerializable
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
+
         return $data;
     }
+
     /**
      * JSON 序列化.
      *
@@ -417,6 +484,7 @@ class PostStatisticsDTO implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查是否有有效資料.
      */
@@ -427,6 +495,7 @@ class PostStatisticsDTO implements JsonSerializable
             || !empty($this->viewsStatistics)
             || !empty($this->topPosts);
     }
+
     /**
      * 取得摘要資訊.
      *
@@ -435,6 +504,7 @@ class PostStatisticsDTO implements JsonSerializable
     public function getSummary(): array
     {
         $topAuthor = $this->getTopAuthor();
+
         return [
             'total_posts' => $this->getTotalPosts(),
             'published_posts' => $this->getPublishedCount(),
@@ -444,6 +514,7 @@ class PostStatisticsDTO implements JsonSerializable
             'most_active_hour' => $this->getMostActiveHour(),
         ];
     }
+
     /**
      * 驗證資料完整性.
      *
@@ -518,6 +589,7 @@ class PostStatisticsDTO implements JsonSerializable
             }
         }
     }
+
     /**
      * 計算內容品質分數.
      */
@@ -533,8 +605,10 @@ class PostStatisticsDTO implements JsonSerializable
         $publishScore = ($publishRate / 100) * 30;
         // 瀏覽量分數 (0-30分)
         $viewsScore = min(($avgViews / 100) * 30, 30);
+
         return round($lengthScore + $publishScore + $viewsScore, 2);
     }
+
     /**
      * 計算作者生產力.
      *
@@ -549,10 +623,13 @@ class PostStatisticsDTO implements JsonSerializable
                     $totalPostCount += (int) $author['posts_count'];
                 }
             }
+
             return ['average_posts_per_author' => $totalPostCount / count($this->topAuthors)];
         }
+
         return ['average_posts_per_author' => 0.0];
     }
+
     /**
      * 計算最佳長度分數.
      */
@@ -569,8 +646,10 @@ class PostStatisticsDTO implements JsonSerializable
         // 高於最佳範圍時，分數遞減
         $excess = $avgLength - $optimalRange[1];
         $penalty = min($excess / $optimalRange[1], 0.5); // 最多扣除50%
+
         return max(0.5, 1.0 - $penalty);
     }
+
     /**
      * 計算內容多樣性.
      */
@@ -585,6 +664,7 @@ class PostStatisticsDTO implements JsonSerializable
         }
         $lengthRange = $maxLength - $minLength;
         $diversityScore = min($lengthRange / $avgLength, 2.0); // 限制最大值為2.0
+
         return round($diversityScore, 2);
     }
 }

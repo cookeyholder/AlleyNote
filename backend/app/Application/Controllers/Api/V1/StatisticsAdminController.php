@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Application\Controllers\BaseController;
 use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsApplicationService;
@@ -16,6 +17,7 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+
 class StatisticsAdminController extends BaseController
 {
     public function __construct(
@@ -23,6 +25,7 @@ class StatisticsAdminController extends BaseController
         private readonly StatisticsQueryService $statisticsQueryService,
         private readonly StatisticsCacheServiceInterface $cacheService,
     ) {}
+
     /**
      * 手動刷新統計資料.
      *
@@ -133,6 +136,7 @@ class StatisticsAdminController extends BaseController
                     if (!is_string($type)) {
                         continue;
                     }
+
                     try {
                         $snapshot = match ($type) {
                             'overview' => $this->statisticsApplicationService->createOverviewSnapshot(
@@ -189,6 +193,7 @@ class StatisticsAdminController extends BaseController
                 'force_recalculate' => $forceRecalculate,
                 'execution_time' => $executionTime,
             ]);
+
             return $this->json($response, [
                 'success' => true,
                 'message' => '統計資料刷新成功',
@@ -214,6 +219,7 @@ class StatisticsAdminController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 清除統計快取.
      *
@@ -322,6 +328,7 @@ class StatisticsAdminController extends BaseController
                 'tags' => $clearedTags,
                 'all_cache_cleared' => $allCacheCleared,
             ]);
+
             return $this->json($response, [
                 'success' => true,
                 'message' => '快取清除成功',
@@ -345,6 +352,7 @@ class StatisticsAdminController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 統計系統健康檢查.
      *
@@ -421,6 +429,7 @@ class StatisticsAdminController extends BaseController
             $this->checkAdminPermission($request);
             $healthData = [];
             $overallStatus = 'healthy';
+
             // 檢查快取狀態
             try {
                 $cacheStats = $this->cacheService->getStats();
@@ -446,6 +455,7 @@ class StatisticsAdminController extends BaseController
                 ];
                 $overallStatus = 'critical';
             }
+
             // 檢查資料庫連接
             try {
                 $startTime = microtime(true);
@@ -486,6 +496,7 @@ class StatisticsAdminController extends BaseController
                 'warning' => 200,
                 'critical' => 503,
             };
+
             return $this->json($response, [
                 'success' => $overallStatus !== 'critical',
                 'message' => match ($overallStatus) {
@@ -503,6 +514,7 @@ class StatisticsAdminController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 檢查管理員權限.
      */
@@ -527,6 +539,7 @@ class StatisticsAdminController extends BaseController
             }
         }
     }
+
     /**
      * 記錄管理操作.
      */
@@ -551,6 +564,7 @@ class StatisticsAdminController extends BaseController
             'details' => $details,
         ]);
     }
+
     /**
      * 取得客戶端 IP 地址.
      */
@@ -585,6 +599,7 @@ class StatisticsAdminController extends BaseController
                 }
             }
         }
+
         return isset($serverParams['REMOTE_ADDR']) && is_string($serverParams['REMOTE_ADDR'])
             ? $serverParams['REMOTE_ADDR']
             : 'unknown';

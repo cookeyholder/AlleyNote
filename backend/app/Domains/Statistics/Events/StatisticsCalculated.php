@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Events;
+
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
+
 final class StatisticsCalculated extends AbstractDomainEvent
 {
     /**
@@ -20,10 +22,12 @@ final class StatisticsCalculated extends AbstractDomainEvent
     ) {
         parent::__construct();
     }
+
     public function getEventName(): string
     {
         return 'statistics.calculated';
     }
+
     /**
      * @return array<string, mixed>
      */

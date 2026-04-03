@@ -3,12 +3,17 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
+
 use App\Shared\Contracts\CacheServiceInterface;
+
 class CacheService implements CacheServiceInterface
 {
     private string $cachePath;
+
     private string $bucketPath;
+
     private const TTL = 3600;
+
     /** @var array{hits: int, misses: int, sets: int, deletes: int, size: int} */
     private array $stats = [
         'hits' => 0,
@@ -17,6 +22,7 @@ class CacheService implements CacheServiceInterface
         'deletes' => 0,
         'size' => 0,
     ];
+
     public function __construct()
     {
         $this->cachePath = dirname(__DIR__, 2) . '/storage/cache';
@@ -28,21 +34,25 @@ class CacheService implements CacheServiceInterface
             mkdir($this->bucketPath, 0o755, true);
         }
     }
+
     public function get(string $key): mixed
     {
         $filename = $this->getCacheFilename($key);
         if (!file_exists($filename)) {
             $this->incrementStat('misses');
+
             return null;
         }
         $data = file_get_contents($filename);
         if ($data === false) {
             $this->incrementStat('misses');
+
             return null;
         }
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'], $cacheData['data'])) {
             $this->incrementStat('misses');
+
             return null;
         }
         $expiry = $cacheData['expiry'];
@@ -51,17 +61,21 @@ class CacheService implements CacheServiceInterface
                 $expiry = (int) $expiry;
             } else {
                 $this->incrementStat('misses');
+
                 return null;
             }
         }
         if (time() > $expiry) {
             $this->delete($key);
             $this->incrementStat('misses');
+
             return null;
         }
         $this->incrementStat('hits');
+
         return $cacheData['data'];
     }
+
     public function set(string $key, mixed $value, int $ttl = 3600): bool
     {
         $filename = $this->getCacheFilename($key);
@@ -75,8 +89,10 @@ class CacheService implements CacheServiceInterface
         if ($result) {
             $this->updateIndex($key);
         }
+
         return $result;
     }
+
     public function delete(string $key): bool
     {
         $filename = $this->getCacheFilename($key);
@@ -88,8 +104,10 @@ class CacheService implements CacheServiceInterface
             $this->removeFromIndex($key);
             $this->incrementStat('deletes');
         }
+
         return $result;
     }
+
     public function deletePattern(string $pattern): int
     {
         if (strpos($pattern, '*') === false) {
@@ -105,8 +123,10 @@ class CacheService implements CacheServiceInterface
                 }
             }
         }
+
         return $deletedCount;
     }
+
     public function clear(): bool
     {
         $files = glob($this->cachePath . '/*');
@@ -119,8 +139,10 @@ class CacheService implements CacheServiceInterface
             }
         }
         $this->clearIndex();
+
         return true;
     }
+
     public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
         $value = $this->get($key);
@@ -130,12 +152,15 @@ class CacheService implements CacheServiceInterface
                 $this->set($key, $value, $ttl ?: self::TTL);
             }
         }
+
         return $value;
     }
+
     public function has(string $key): bool
     {
         return $this->get($key) !== null;
     }
+
     public function getMultiple(array $keys): array
     {
         $result = [];
@@ -143,31 +168,39 @@ class CacheService implements CacheServiceInterface
             $normalizedKey = $this->normalizeKey($key);
             $result[$normalizedKey] = $this->get($normalizedKey);
         }
+
         return $result;
     }
+
     public function setMultiple(array $values, int $ttl = 3600): bool
     {
         foreach ($values as $key => $value) {
             $this->set($this->normalizeKey($key), $value, $ttl);
         }
+
         return true;
     }
+
     public function deleteMultiple(array $keys): bool
     {
         foreach ($keys as $key) {
             $this->delete($this->normalizeKey($key));
         }
+
         return true;
     }
+
     private function getCacheFilename(string $key): string
     {
         return $this->cachePath . '/' . hash('sha256', $key) . '.cache';
     }
+
     // --- 索引管理邏輯 ---
     private function getIndexPath(): string
     {
         return $this->cachePath . '/_index.json';
     }
+
     /**
      * @return array<int, string>
      */
@@ -185,23 +218,28 @@ class CacheService implements CacheServiceInterface
         if (!is_array($decoded)) {
             return [];
         }
+
         return array_values(array_filter(array_map(
             static fn(mixed $value): ?string => is_string($value) ? $value : null,
             $decoded,
         )));
     }
+
     /** @param 'hits'|'misses'|'sets'|'deletes'|'size' $key */
     private function incrementStat(string $key): void
     {
         $this->stats[$key]++;
     }
+
     private function normalizeKey(mixed $key): string
     {
         if (is_string($key) || is_int($key)) {
             return (string) $key;
         }
+
         return '';
     }
+
     private function updateIndex(string $key): void
     {
         $index = $this->getIndex();
@@ -217,6 +255,7 @@ class CacheService implements CacheServiceInterface
             }
         }
     }
+
     private function removeFromIndex(string $key): void
     {
         $index = $this->getIndex();
@@ -242,6 +281,7 @@ class CacheService implements CacheServiceInterface
             }
         }
     }
+
     private function clearIndex(): void
     {
         if (file_exists($this->getIndexPath())) {
@@ -256,6 +296,7 @@ class CacheService implements CacheServiceInterface
             }
         }
     }
+
     /**
      * @return array<int, string>
      */
@@ -271,8 +312,10 @@ class CacheService implements CacheServiceInterface
         }
         $namespacePrefix = substr($prefix, 0, $namespaceSeparatorPos + 1);
         $bucket = $this->getBucket($namespacePrefix);
+
         return $bucket === [] ? $this->getIndex() : $bucket;
     }
+
     /**
      * @return array<int, string>
      */
@@ -288,12 +331,15 @@ class CacheService implements CacheServiceInterface
             $current .= $parts[$index] . ':';
             $prefixes[] = $current;
         }
+
         return $prefixes;
     }
+
     private function getBucketPath(string $prefix): string
     {
         return $this->bucketPath . '/' . hash('sha256', $prefix) . '.json';
     }
+
     /**
      * @return array<int, string>
      */
@@ -311,11 +357,13 @@ class CacheService implements CacheServiceInterface
         if (!is_array($decoded)) {
             return [];
         }
+
         return array_values(array_filter(array_map(
             static fn(mixed $value): ?string => is_string($value) ? $value : null,
             $decoded,
         )));
     }
+
     public function getStats(): array
     {
         return $this->stats; // 簡化回傳，僅作示範

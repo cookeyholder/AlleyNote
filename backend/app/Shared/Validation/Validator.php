@@ -3,14 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Shared\Validation;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTime;
+
 class Validator implements ValidatorInterface
 {
     private array $customRules = [];
+
     private array $customMessages = [];
+
     private bool $stopOnFirstFailure = false;
+
     private array $defaultMessages = [
         'required' => '欄位 :field 為必填項目',
         'required_if' => '當 :other 為 :value 時，欄位 :field 為必填項目',
@@ -47,6 +52,7 @@ class Validator implements ValidatorInterface
         'size' => '欄位 :field 大小必須為 :size',
         'max_file_size' => '欄位 :field 檔案大小不能超過 :max KB',
     ];
+
     public function validate(array $data, array $rules): ValidationResult
     {
         $errors = [];
@@ -89,22 +95,27 @@ class Validator implements ValidatorInterface
             }
         }
         $isValid = empty($errors);
+
         return new ValidationResult($isValid, $errors, $validatedData, $failedRules);
     }
+
     public function validateOrFail(array $data, array $rules): array
     {
         $result = $this->validate($data, $rules);
         if ($result->isInvalid()) {
             throw new ValidationException($result);
         }
+
         return $result->getValidatedData();
     }
+
     public function checkRule(mixed $value, string $rule, array $parameters = [], array $allData = [], string $currentField = ''): bool
     {
         // 檢查自訂規則
         if (isset($this->customRules[$rule])) {
             return call_user_func($this->customRules[$rule], $value, $parameters, $allData);
         }
+
         // 內建規則
         return match ($rule) {
             'required' => $this->validateRequired($value),
@@ -137,19 +148,24 @@ class Validator implements ValidatorInterface
             default => true, // 未知規則預設為通過
         };
     }
+
     public function addRule(string $name, callable $callback): void
     {
         $this->customRules[$name] = $callback;
     }
+
     public function addMessage(string $rule, string $message): void
     {
         $this->customMessages[$rule] = $message;
     }
+
     public function stopOnFirstFailure(bool $stopOnFirstFailure = true): self
     {
         $this->stopOnFirstFailure = $stopOnFirstFailure;
+
         return $this;
     }
+
     // 驗證規則實作
     private function validateRequired(mixed $value): bool
     {
@@ -162,66 +178,83 @@ class Validator implements ValidatorInterface
         if (is_array($value) && empty($value)) {
             return false;
         }
+
         return true;
     }
+
     private function validateRequiredIf(mixed $value, array $parameters): bool
     {
         if (count($parameters) < 2) {
             return true;
         }
+
         // TODO: 實作條件式必填驗證
         // 需要訪問整個資料陣列才能實作
         return true;
     }
+
     private function validateString(mixed $value): bool
     {
         return is_string($value);
     }
+
     private function validateInteger(mixed $value): bool
     {
         return filter_var($value, FILTER_VALIDATE_INT) !== false;
     }
+
     private function validateNumeric(mixed $value): bool
     {
         return is_numeric($value);
     }
+
     private function validateBoolean(mixed $value): bool
     {
         return is_bool($value) || in_array($value, [0, 1, '0', '1', 'true', 'false', 'on', 'yes'], true);
     }
+
     private function validateArray(mixed $value): bool
     {
         return is_array($value);
     }
+
     private function validateEmail(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
+
         return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
+
     private function validateUrl(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
+
         return filter_var($value, FILTER_VALIDATE_URL) !== false;
     }
+
     private function validateIp(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
+
         return filter_var($value, FILTER_VALIDATE_IP) !== false;
     }
+
     private function validateDate(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
         $date = DateTime::createFromFormat('Y-m-d', $value);
+
         return $date && $date->format('Y-m-d') === $value;
     }
+
     private function validateDateTime(mixed $value): bool
     {
         if (!is_string($value)) {
@@ -241,8 +274,10 @@ class Validator implements ValidatorInterface
                 return true;
             }
         }
+
         return false;
     }
+
     private function validateMin(mixed $value, array $parameters): bool
     {
         if (empty($parameters)) {
@@ -258,8 +293,10 @@ class Validator implements ValidatorInterface
         if (is_array($value)) {
             return count($value) >= $min;
         }
+
         return true;
     }
+
     private function validateMax(mixed $value, array $parameters): bool
     {
         if (empty($parameters)) {
@@ -275,32 +312,40 @@ class Validator implements ValidatorInterface
         if (is_array($value)) {
             return count($value) <= $max;
         }
+
         return true;
     }
+
     private function validateMinLength(mixed $value, array $parameters): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
         $minLength = (int) $parameters[0];
+
         return mb_strlen($value) >= $minLength;
     }
+
     private function validateMaxLength(mixed $value, array $parameters): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
         $maxLength = (int) $parameters[0];
+
         return mb_strlen($value) <= $maxLength;
     }
+
     private function validateLength(mixed $value, array $parameters): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
         $length = (int) $parameters[0];
+
         return mb_strlen($value) === $length;
     }
+
     private function validateBetween(mixed $value, array $parameters): bool
     {
         if (count($parameters) < 2) {
@@ -310,55 +355,70 @@ class Validator implements ValidatorInterface
         $max = (float) $parameters[1];
         if (is_numeric($value)) {
             $numValue = (float) $value;
+
             return $numValue >= $min && $numValue <= $max;
         }
         if (is_string($value)) {
             $length = mb_strlen($value);
+
             return $length >= $min && $length <= $max;
         }
         if (is_array($value)) {
             $count = count($value);
+
             return $count >= $min && $count <= $max;
         }
+
         return true;
     }
+
     private function validateIn(mixed $value, array $parameters): bool
     {
         return in_array($value, $parameters, true);
     }
+
     private function validateNotIn(mixed $value, array $parameters): bool
     {
         return !in_array($value, $parameters, true);
     }
+
     private function validateRegex(mixed $value, array $parameters): bool
     {
         if (empty($parameters) || !is_string($value)) {
             return true;
         }
         $pattern = $parameters[0];
+
         return preg_match($pattern, $value) === 1;
     }
+
     private function validateAlpha(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
+
         return preg_match('/^[a-zA-Z\p{L}]+$/u', $value) === 1;
     }
+
     private function validateAlphaNum(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
+
         return preg_match('/^[a-zA-Z0-9\p{L}\p{N}]+$/u', $value) === 1;
     }
+
     private function validateAlphaDash(mixed $value): bool
     {
         if (!is_string($value)) {
             return false;
         }
+
         return preg_match('/^[a-zA-Z0-9\p{L}\p{N}_-]+$/u', $value) === 1;
     }
+
     private function validateConfirmed(mixed $value, array $parameters, array $allData = [], string $currentField = ''): bool
     {
         // 預設確認欄位名稱為 field_confirmation
@@ -371,8 +431,10 @@ class Validator implements ValidatorInterface
         if (!isset($allData[$confirmationField])) {
             return false;
         }
+
         return $value === $allData[$confirmationField];
     }
+
     private function validateDifferent(mixed $value, array $parameters, array $allData = []): bool
     {
         if (empty($parameters)) {
@@ -382,8 +444,10 @@ class Validator implements ValidatorInterface
         if (!isset($allData[$otherField])) {
             return true;
         }
+
         return $value !== $allData[$otherField];
     }
+
     private function validateSame(mixed $value, array $parameters, array $allData = []): bool
     {
         if (empty($parameters)) {
@@ -393,8 +457,10 @@ class Validator implements ValidatorInterface
         if (!isset($allData[$otherField])) {
             return false;
         }
+
         return $value === $allData[$otherField];
     }
+
     // 錯誤訊息處理
     private function getErrorMessage(string $field, string $rule, array $parameters, mixed $value): string
     {
@@ -408,8 +474,10 @@ class Validator implements ValidatorInterface
         }
         // 使用預設訊息
         $message = $this->defaultMessages[$rule] ?? "欄位 {$field} 驗證失敗";
+
         return $this->replacePlaceholders($message, $field, $parameters, $value);
     }
+
     private function replacePlaceholders(string $message, string $field, array $parameters, mixed $value): string
     {
         $replacements = [
@@ -426,6 +494,7 @@ class Validator implements ValidatorInterface
             $replacements[':size'] = $parameters[0] ?? '';
             $replacements[':other'] = $parameters[0] ?? '';
         }
+
         return str_replace(array_keys($replacements), array_values($replacements), $message);
     }
 }

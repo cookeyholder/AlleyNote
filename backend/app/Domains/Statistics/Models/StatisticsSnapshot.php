@@ -3,21 +3,34 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Models;
+
 use JsonSerializable;
+
 class StatisticsSnapshot implements JsonSerializable
 {
     private int $id;
+
     private string $uuid;
+
     private string $snapshotType;
+
     private string $periodType;
+
     private string $periodStart;
+
     private string $periodEnd;
+
     /** @var array<string, mixed> */
     private array $statisticsData;
+
     private int $totalViews;
+
     private int $totalUniqueViewers;
+
     private string $createdAt;
+
     private ?string $updatedAt;
+
     /**
      * @param array<string, mixed> $data
      */
@@ -49,30 +62,37 @@ class StatisticsSnapshot implements JsonSerializable
             ? (string) $data['updated_at']
             : null;
     }
+
     public function getId(): int
     {
         return $this->id;
     }
+
     public function getUuid(): string
     {
         return $this->uuid;
     }
+
     public function getSnapshotType(): string
     {
         return $this->snapshotType;
     }
+
     public function getPeriodType(): string
     {
         return $this->periodType;
     }
+
     public function getPeriodStart(): string
     {
         return $this->periodStart;
     }
+
     public function getPeriodEnd(): string
     {
         return $this->periodEnd;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -80,22 +100,27 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return $this->statisticsData;
     }
+
     public function getTotalViews(): int
     {
         return $this->totalViews;
     }
+
     public function getTotalUniqueViewers(): int
     {
         return $this->totalUniqueViewers;
     }
+
     public function getCreatedAt(): string
     {
         return $this->createdAt;
     }
+
     public function getUpdatedAt(): ?string
     {
         return $this->updatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -115,6 +140,7 @@ class StatisticsSnapshot implements JsonSerializable
             'updated_at' => $this->updatedAt,
         ];
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -122,6 +148,7 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * @param array<string, mixed> $data
      */

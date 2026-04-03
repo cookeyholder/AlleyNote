@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services;
+
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
@@ -11,14 +12,18 @@ use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class ActivityLoggingService implements ActivityLoggingServiceInterface
 {
     /** @var array<string, bool> 已停用的活動類型映射表 */
     private array $disabledActionTypes = [];
+
     /** @var int 記錄等級閾值 (1-5，數字越高記錄越嚴格) */
     private int $logLevel = 1;
+
     /** @var int 預設的記錄保留天數 */
     private const DEFAULT_RETENTION_DAYS = 30;
+
     /**
      * 建構活動記錄服務.
      *
@@ -29,6 +34,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         private ActivityLogRepositoryInterface $repository,
         private LoggerInterface $logger,
     ) {}
+
     /**
      * 記錄使用者活動.
      *
@@ -56,6 +62,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                 $this->logger->warning('Logging disabled for action type', [
                     'action_type' => $dto->getActionType()->value,
                 ]);
+
                 return false;
             }
             // 檢查記錄等級
@@ -69,8 +76,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                     'action_type' => $dto->getActionType()->value,
                     'user_id' => $dto->getUserId(),
                 ]);
+
                 return false;
             }
+
             return true;
         } catch (Throwable $e) {
             $this->logger->error('Failed to log activity', [
@@ -79,9 +88,11 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return false;
         }
     }
+
     /**
      * 記錄成功操作.
      *
@@ -131,8 +142,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             targetId: $targetId,
             metadata: $metadata,
         );
+
         return $this->log($dto);
     }
+
     /**
      * 記錄失敗操作.
      *
@@ -176,8 +189,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             description: $reason ?: $actionType->getDescription(),
             metadata: $metadata,
         );
+
         return $this->log($dto);
     }
+
     /**
      * 記錄安全事件.
      *
@@ -227,8 +242,10 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             description: $description,
             metadata: $metadata,
         );
+
         return $this->log($dto);
     }
+
     /**
      * 批次記錄多個活動.
      */
@@ -254,15 +271,18 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             if (empty($filteredDtos)) {
                 return 0;
             }
+
             return $this->repository->createBatch($filteredDtos);
         } catch (Throwable $e) {
             $this->logger->error('Failed to log batch activities', [
                 'count' => count($dtos),
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
+
     /**
      * 啟用特定類型的記錄.
      */
@@ -270,6 +290,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
     {
         unset($this->disabledActionTypes[$actionType->value]);
     }
+
     /**
      * 停用特定類型的記錄.
      */
@@ -277,6 +298,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
     {
         $this->disabledActionTypes[$actionType->value] = true;
     }
+
     /**
      * 檢查特定類型是否啟用記錄.
      */
@@ -284,6 +306,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
     {
         return !isset($this->disabledActionTypes[$actionType->value]);
     }
+
     /**
      * 設定記錄等級（只記錄指定等級以上的活動）.
      */
@@ -291,6 +314,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
     {
         $this->logLevel = max(1, min(5, $level)); // 限制在 1-5 之間
     }
+
     /**
      * 清理舊的活動記錄（根據保留政策）.
      */
@@ -303,22 +327,27 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
                 'deleted_count' => $deletedCount,
                 'cutoff_date' => $cutoffDate->format('Y-m-d H:i:s'),
             ]);
+
             return $deletedCount;
         } catch (Throwable $e) {
             $this->logger->error('Failed to cleanup activity logs', [
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
+
     /**
      * 根據嚴重程度決定是否應該記錄.
      */
     private function shouldLogBasedOnSeverity(ActivityType $actionType): bool
     {
         $severity = $actionType->getSeverity();
+
         return $severity->value >= $this->logLevel;
     }
+
     /**
      * 為安全事件決定適當的狀態.
      */

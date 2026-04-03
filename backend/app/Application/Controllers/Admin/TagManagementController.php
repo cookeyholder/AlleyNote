@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Admin;
+
 use RuntimeException;
 use Throwable;
+
 class TagManagementController extends BaseController
 {
     public function __construct(
@@ -14,6 +16,7 @@ class TagManagementController extends BaseController
     ) {
         // 不調用 parent::__construct()，因為 BaseController 沒有構造函式
     }
+
     /**
      * 取得所有標籤列表.
      *
@@ -89,8 +92,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 取得特定標籤詳細資訊.
      *
@@ -143,8 +148,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 刪除標籤.
      *
@@ -197,8 +204,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 清理過期標籤.
      *
@@ -241,8 +250,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 取得標籤群組列表.
      *
@@ -287,8 +298,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 刪除標籤群組.
      *
@@ -327,8 +340,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 取得標籤類型.
      */
@@ -343,8 +358,10 @@ class TagManagementController extends BaseController
         if (str_starts_with($tagName, 'category:')) {
             return 'category';
         }
+
         return 'other';
     }
+
     /**
      * 清除單一標籤.
      *
@@ -402,8 +419,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 清除多個標籤.
      *
@@ -476,8 +495,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 取得標籤統計資訊.
      *
@@ -534,8 +555,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 建立標籤群組.
      *
@@ -589,8 +612,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 清除標籤群組.
      *
@@ -630,8 +655,10 @@ class TagManagementController extends BaseController
                 'timestamp' => time(),
             ];
         }
+
         return $this->json($response, $responseData);
     }
+
     /**
      * 取得標籤建立時間.
      */

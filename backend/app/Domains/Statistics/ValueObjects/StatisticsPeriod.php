@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\ValueObjects;
+
 use DateTime;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class StatisticsPeriod implements JsonSerializable
 {
     /**
@@ -23,6 +25,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
     ) {
         $this->validate();
     }
+
     /**
      * 從陣列建立統計週期物件.
      *
@@ -38,8 +41,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
         $startTime = new DateTimeImmutable($data['start_time']);
         $endTime = new DateTimeImmutable($data['end_time']);
         $timezone = $data['timezone'] ?? 'UTC';
+
         return new self($type, $startTime, $endTime, $timezone);
     }
+
     /**
      * 建立日統計週期.
      */
@@ -47,8 +52,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         $startTime = $date->setTime(0, 0, 0);
         $endTime = $date->setTime(23, 59, 59);
+
         return new self(PeriodType::DAILY, $startTime, $endTime, $timezone);
     }
+
     /**
      * 建立週統計週期（週一到週日）.
      */
@@ -58,8 +65,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
         $dayOfWeek = (int) $date->format('N'); // 1 = 週一, 7 = 週日
         $startTime = $date->modify('-' . ($dayOfWeek - 1) . ' days')->setTime(0, 0, 0);
         $endTime = $startTime->modify('+6 days')->setTime(23, 59, 59);
+
         return new self(PeriodType::WEEKLY, $startTime, $endTime, $timezone);
     }
+
     /**
      * 建立月統計週期.
      */
@@ -67,8 +76,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         $startTime = $date->modify('first day of this month')->setTime(0, 0, 0);
         $endTime = $date->modify('last day of this month')->setTime(23, 59, 59);
+
         return new self(PeriodType::MONTHLY, $startTime, $endTime, $timezone);
     }
+
     /**
      * 建立年統計週期.
      */
@@ -77,8 +88,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
         $year = (int) $date->format('Y');
         $startTime = (new DateTimeImmutable("{$year}-01-01 00:00:00"));
         $endTime = (new DateTimeImmutable("{$year}-12-31 23:59:59"));
+
         return new self(PeriodType::YEARLY, $startTime, $endTime, $timezone);
     }
+
     /**
      * 檢查是否包含指定日期.
      */
@@ -86,6 +99,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         return $date >= $this->startTime && $date <= $this->endTime;
     }
+
     /**
      * 取得週期持續時間（秒）.
      */
@@ -93,6 +107,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         return $this->endTime->getTimestamp() - $this->startTime->getTimestamp();
     }
+
     /**
      * 取得週期持續時間（天）.
      */
@@ -100,6 +115,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         return (int) ceil($this->getDurationInSeconds() / 86400);
     }
+
     /**
      * 格式化為可讀字串.
      */
@@ -112,6 +128,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
             PeriodType::YEARLY => $this->startTime->format('Y'),
         };
     }
+
     /**
      * 轉換為陣列.
      *
@@ -126,6 +143,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
             'timezone' => $this->timezone,
         ];
     }
+
     /**
      * JSON 序列化.
      *
@@ -135,6 +153,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查兩個統計週期是否相等.
      */
@@ -145,6 +164,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
             && $this->endTime->getTimestamp() === $other->endTime->getTimestamp()
             && $this->timezone === $other->timezone;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -156,6 +176,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
             $this->format(),
         );
     }
+
     /**
      * 驗證統計週期的有效性.
      *
@@ -174,6 +195,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
         // 檢查週期長度是否符合類型定義
         $this->validatePeriodLength();
     }
+
     /**
      * 驗證週期長度是否符合類型.
      *
@@ -189,6 +211,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
             PeriodType::YEARLY => ($durationInDays >= 365 && $durationInDays <= 366) ?: throw new InvalidArgumentException('Yearly period must be 365-366 days'),
         };
     }
+
     /**
      * 檢查時區字串是否有效.
      */

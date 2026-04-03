@@ -3,16 +3,23 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
+
 class RegisterUserDTO extends BaseDTO
 {
     public readonly string $username;
+
     public readonly string $email;
+
     public readonly string $password;
+
     public readonly string $confirmPassword;
+
     public readonly string $userIp;
+
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
@@ -32,6 +39,7 @@ class RegisterUserDTO extends BaseDTO
         $this->confirmPassword = $validatedData['confirm_password'];
         $this->userIp = $validatedData['user_ip'];
     }
+
     /**
      * 添加使用者註冊專用驗證規則.
      */
@@ -62,6 +70,7 @@ class RegisterUserDTO extends BaseDTO
             if (preg_match('/^[_-]+$/', $username)) {
                 return false;
             }
+
             return true;
         });
         // 密碼強度驗證規則
@@ -97,6 +106,7 @@ class RegisterUserDTO extends BaseDTO
             if (in_array(strtolower($password), $weakPasswords, true)) {
                 return false;
             }
+
             return true;
         });
         // 密碼確認驗證規則
@@ -106,6 +116,7 @@ class RegisterUserDTO extends BaseDTO
             }
             // 需要與 password 欄位比較
             $password = $allData['password'] ?? null;
+
             return $password === $value;
         });
         // 使用者 IP 驗證規則（擴展版本）
@@ -121,6 +132,7 @@ class RegisterUserDTO extends BaseDTO
             if (filter_var($value, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
                 // 私有 IP 在開發環境中是允許的，這裡只是記錄，不阻止
             }
+
             return true;
         });
         // 電子郵件格式增強驗證
@@ -160,6 +172,7 @@ class RegisterUserDTO extends BaseDTO
             if (in_array($domain, $disposableEmailDomains, true)) {
                 return false;
             }
+
             return true;
         });
         // 添加繁體中文錯誤訊息
@@ -169,6 +182,7 @@ class RegisterUserDTO extends BaseDTO
         $this->validator->addMessage('password_confirmed', '密碼與確認密碼不一致');
         $this->validator->addMessage('user_ip', 'IP 地址格式不正確');
     }
+
     /**
      * 取得驗證規則.
      */
@@ -182,6 +196,7 @@ class RegisterUserDTO extends BaseDTO
             'user_ip' => 'required|user_ip',
         ];
     }
+
     /**
      * 覆寫驗證方法以支援跨欄位驗證.
      *
@@ -197,10 +212,13 @@ class RegisterUserDTO extends BaseDTO
                 return false;
             }
             $password = $data['password'] ?? null;
+
             return $password === $value;
         });
+
         return parent::validate($data);
     }
+
     /**
      * 轉換為陣列格式（供 Service 使用）.
     /**
@@ -215,6 +233,7 @@ class RegisterUserDTO extends BaseDTO
             'user_ip' => $this->userIp,
         ];
     }
+
     /**
      * 取得用於密碼雜湊的資料.
      *
@@ -227,6 +246,7 @@ class RegisterUserDTO extends BaseDTO
             'confirm_password' => $this->confirmPassword,
         ];
     }
+
     /**
      * 檢查密碼強度等級.
      *
@@ -266,8 +286,10 @@ class RegisterUserDTO extends BaseDTO
         if ($score >= 4) {
             return 'medium';
         }
+
         return 'weak';
     }
+
     /**
      * 取得清理後的使用者名稱（用於顯示）.
      */
@@ -275,6 +297,7 @@ class RegisterUserDTO extends BaseDTO
     {
         return $this->username;
     }
+
     /**
      * 取得電子郵件的域名部分.
      */
@@ -282,6 +305,7 @@ class RegisterUserDTO extends BaseDTO
     {
         return substr(strrchr($this->email, '@'), 1);
     }
+
     /**
      * 檢查是否為企業郵箱.
      */
@@ -298,6 +322,7 @@ class RegisterUserDTO extends BaseDTO
             'sina.com',
         ];
         $domain = $this->getEmailDomain();
+
         return !in_array($domain, $businessDomains, true);
     }
 }

@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Web;
+
 use OpenApi\Generator;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
+
 class SwaggerController
 {
     /**
@@ -28,6 +30,7 @@ class SwaggerController
             ob_end_clean();
             $json = $openapi->toJson();
             $response->getBody()->write(($json ?: ''));
+
             return $response
                 ->withStatus(200)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8')
@@ -47,11 +50,13 @@ class SwaggerController
                 'trace' => $e->getTraceAsString(),
             ];
             $response->getBody()->write(((json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
+
             return $response
                 ->withStatus(500)
                 ->withHeader('Content-Type', 'application/json; charset=UTF-8');
         }
     }
+
     /**
      * 顯示 Swagger UI 介面.
      */
@@ -59,10 +64,12 @@ class SwaggerController
     {
         $html = $this->generateSwaggerUiHtml();
         $response->getBody()->write(($html ?: ''));
+
         return $response
             ->withStatus(200)
             ->withHeader('Content-Type', 'text/html; charset=UTF-8');
     }
+
     /**
      * 產生 Swagger UI HTML.
      */
@@ -104,6 +111,7 @@ class SwaggerController
             </html>
             HTML;
     }
+
     /**
      * 取得 API 基本資訊.
      */
@@ -125,6 +133,7 @@ class SwaggerController
             ],
         ];
         $response->getBody()->write(((json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
+
         return $response
             ->withStatus(200)
             ->withHeader('Content-Type', 'application/json; charset=UTF-8');

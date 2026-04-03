@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Shared\Validation\Factory;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Validator;
+
 class ValidatorFactory
 {
     /**
@@ -17,8 +19,10 @@ class ValidatorFactory
         $this->configureChineseMessages($validator);
         // 添加專案特定的驗證規則
         $this->addCustomRules($validator);
+
         return $validator;
     }
+
     /**
      * 建立具有自訂配置的驗證器實例.
      *
@@ -38,8 +42,10 @@ class ValidatorFactory
                 $validator->addRule($name, $callback);
             }
         }
+
         return $validator;
     }
+
     /**
      * 設定繁體中文錯誤訊息.
      */
@@ -80,6 +86,7 @@ class ValidatorFactory
         $validator->addMessage('unique', '欄位 :field 已存在');
         $validator->addMessage('exists', '選取的 :field 無效');
     }
+
     /**
      * 添加專案特定的自訂驗證規則.
      */
@@ -106,6 +113,7 @@ class ValidatorFactory
             if (preg_match('/^\d/', $username)) {
                 return false;
             }
+
             return true;
         });
         // 密碼強度驗證規則
@@ -129,6 +137,7 @@ class ValidatorFactory
             if (!preg_match('/\d/', $password)) {
                 return false;
             }
+
             return true;
         });
         // 增強型電子郵件驗證
@@ -159,6 +168,7 @@ class ValidatorFactory
             if (preg_match('/[<>"\'&]/', $email)) {
                 return false;
             }
+
             return true;
         });
         // IP 地址或 CIDR 格式驗證
@@ -191,8 +201,10 @@ class ValidatorFactory
                     // IPv6：遮罩範圍 0-128
                     return $mask >= 0 && $mask <= 128;
                 }
+
                 return false;
             }
+
             // 檢查是否為單一 IP 地址
             return filter_var($ip, FILTER_VALIDATE_IP) !== false;
         });
@@ -222,6 +234,7 @@ class ValidatorFactory
             if (strpos($filename, '.') === 0 || substr($filename, -1) === '.') {
                 return false;
             }
+
             return true;
         });
         // 設定對應的中文錯誤訊息
@@ -231,6 +244,7 @@ class ValidatorFactory
         $validator->addMessage('ip_or_cidr', 'IP 地址或 CIDR 格式不正確');
         $validator->addMessage('filename', '檔案名稱長度不能超過 :param1 個字元，且不能包含危險字元');
     }
+
     /**
      * 建立用於 DTO 的驗證器實例.
      */
@@ -239,8 +253,10 @@ class ValidatorFactory
         $validator = $this->create();
         // 為 DTO 添加額外的專用規則
         $this->addDTOSpecificRules($validator);
+
         return $validator;
     }
+
     /**
      * 添加 DTO 專用的驗證規則.
      */
@@ -257,6 +273,7 @@ class ValidatorFactory
             if ($password === null) {
                 return false;
             }
+
             return $value === $password;
         });
         $validator->addMessage('password_confirmed', '密碼確認不相符');

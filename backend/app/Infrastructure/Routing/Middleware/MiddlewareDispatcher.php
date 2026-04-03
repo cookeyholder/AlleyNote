@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
+
 use App\Infrastructure\Routing\Contracts\MiddlewareDispatcherInterface;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 class MiddlewareDispatcher implements MiddlewareDispatcherInterface
 {
     public function dispatch(
@@ -16,8 +18,10 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface {
         $chain = $this->buildChain($middlewares, $finalHandler);
+
         return $chain->handle($request);
     }
+
     public function buildChain(
         array $middlewares,
         RequestHandlerInterface $finalHandler,
@@ -28,8 +32,10 @@ class MiddlewareDispatcher implements MiddlewareDispatcherInterface
             $middleware = $middlewares[$i];
             $handler = $this->createMiddlewareHandler($middleware, $handler);
         }
+
         return $handler;
     }
+
     /**
      * 建立中介軟體處理器.
      *

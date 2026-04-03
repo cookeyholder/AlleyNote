@@ -3,29 +3,47 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
+
 use RuntimeException;
 use Throwable;
+
 final class StatisticsRepository implements StatisticsRepositoryInterface
 {
     // SQL 查詢常數
     private const SELECT_FIELDS = 'id, uuid, snapshot_type, period_type, period_start, period_end, statistics_data, metadata, expires_at, total_views, total_unique_viewers, created_at, updated_at';
+
     private const SQL_FIND_BY_ID = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE id = :id';
+
     private const SQL_FIND_BY_UUID = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE uuid = :uuid';
+
     private const SQL_FIND_BY_TYPE_AND_PERIOD = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type AND period_type = :period_type AND period_start = :period_start AND period_end = :period_end LIMIT 1';
+
     private const SQL_FIND_LATEST_BY_TYPE = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type ORDER BY created_at DESC, id DESC LIMIT 1';
+
     private const SQL_FIND_BY_TYPE_AND_DATE_RANGE = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type AND period_start >= :start_date AND period_end <= :end_date ORDER BY period_start ASC';
+
     private const SQL_FIND_EXPIRED = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE expires_at IS NOT NULL AND expires_at < :before_date ORDER BY expires_at ASC';
+
     private const SQL_INSERT = 'INSERT INTO statistics_snapshots (uuid, snapshot_type, period_type, period_start, period_end, statistics_data, metadata, expires_at, total_views, total_unique_viewers, created_at, updated_at) VALUES (:uuid, :snapshot_type, :period_type, :period_start, :period_end, :statistics_data, :metadata, :expires_at, :total_views, :total_unique_viewers, :created_at, :updated_at)';
+
     private const SQL_UPDATE = 'UPDATE statistics_snapshots SET snapshot_type = :snapshot_type, period_type = :period_type, period_start = :period_start, period_end = :period_end, statistics_data = :statistics_data, metadata = :metadata, expires_at = :expires_at, total_views = :total_views, total_unique_viewers = :total_unique_viewers, updated_at = :updated_at WHERE id = :id';
+
     private const SQL_DELETE = 'DELETE FROM statistics_snapshots WHERE id = :id';
+
     private const SQL_DELETE_EXPIRED = 'DELETE FROM statistics_snapshots WHERE expires_at IS NOT NULL AND expires_at < :before_date';
+
     private const SQL_EXISTS = 'SELECT COUNT(*) FROM statistics_snapshots WHERE snapshot_type = :snapshot_type AND period_type = :period_type AND period_start = :period_start AND period_end = :period_end';
+
     private const SQL_COUNT = 'SELECT COUNT(*) FROM statistics_snapshots';
+
     private const SQL_COUNT_BY_TYPE = 'SELECT COUNT(*) FROM statistics_snapshots WHERE snapshot_type = :snapshot_type';
+
     private const SQL_FIND_BY_TYPE_WITH_PAGINATION = 'SELECT ' . self::SELECT_FIELDS . ' FROM statistics_snapshots WHERE snapshot_type = :snapshot_type ORDER BY :order_by :direction LIMIT :limit OFFSET :offset';
+
     public function __construct(
         private readonly PDO $db,
     ) {}
+
     public function findById(int $id): ?StatisticsSnapshot
     {
         try {
@@ -36,17 +54,20 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             if (!is_array($row)) {
                 return null;
             }
+
             /** @phpstan-ignore-next-line argument.type */
             return $this->mapRowToEntity($row);
         } catch (PDOException $e) {
             throw new RuntimeException("查詢統計快照失敗 (ID: {$id}): " . $e->getMessage(), 0, $e);
         }
     }
+
     public function findByUuid(string $uuid): ?StatisticsSnapshot
     {
         if (empty(trim($uuid))) {
             throw new InvalidArgumentException('UUID 不能為空');
         }
+
         try {
             $stmt = $this->db->prepare(self::SQL_FIND_BY_UUID);
             $stmt->bindValue(':uuid', $uuid, PDO::PARAM_STR);
@@ -55,17 +76,20 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             if (!is_array($row)) {
                 return null;
             }
+
             /** @phpstan-ignore-next-line argument.type */
             return $this->mapRowToEntity($row);
         } catch (PDOException $e) {
             throw new RuntimeException("查詢統計快照失敗 (UUID: {$uuid}): " . $e->getMessage(), 0, $e);
         }
     }
+
     public function findByTypeAndPeriod(string $snapshotType, StatisticsPeriod $period): ?StatisticsSnapshot
     {
         if (empty(trim($snapshotType))) {
             throw new InvalidArgumentException('快照類型不能為空');
         }
+
         try {
             $stmt = $this->db->prepare(self::SQL_FIND_BY_TYPE_AND_PERIOD);
             $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
@@ -77,17 +101,20 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             if (!is_array($row)) {
                 return null;
             }
+
             /** @phpstan-ignore-next-line argument.type */
             return $this->mapRowToEntity($row);
         } catch (PDOException $e) {
             throw new RuntimeException("查詢統計快照失敗 (類型: {$snapshotType}): " . $e->getMessage(), 0, $e);
         }
     }
+
     public function findLatestByType(string $snapshotType): ?StatisticsSnapshot
     {
         if (empty(trim($snapshotType))) {
             throw new InvalidArgumentException('快照類型不能為空');
         }
+
         try {
             $stmt = $this->db->prepare(self::SQL_FIND_LATEST_BY_TYPE);
             $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
@@ -96,12 +123,14 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             if (!is_array($row)) {
                 return null;
             }
+
             /** @phpstan-ignore-next-line argument.type */
             return $this->mapRowToEntity($row);
         } catch (PDOException $e) {
             throw new RuntimeException("查詢最新統計快照失敗 (類型: {$snapshotType}): " . $e->getMessage(), 0, $e);
         }
     }
+
     public function findByTypeAndDateRange(
         string $snapshotType,
         DateTimeInterface $startDate,
@@ -113,6 +142,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
         if ($startDate >= $endDate) {
             throw new InvalidArgumentException('開始日期必須小於結束日期');
         }
+
         try {
             $stmt = $this->db->prepare(self::SQL_FIND_BY_TYPE_AND_DATE_RANGE);
             $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
@@ -120,24 +150,29 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt->bindValue(':end_date', $endDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map([$this, 'mapRowToEntity'], $rows);
         } catch (PDOException $e) {
             throw new RuntimeException('查詢日期範圍統計快照失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function findExpiredSnapshots(?DateTimeInterface $beforeDate = null): array
     {
         $beforeDate ??= new DateTimeImmutable();
+
         try {
             $stmt = $this->db->prepare(self::SQL_FIND_EXPIRED);
             $stmt->bindValue(':before_date', $beforeDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map([$this, 'mapRowToEntity'], $rows);
         } catch (PDOException $e) {
             throw new RuntimeException('查詢過期統計快照失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function save(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         try {
@@ -147,18 +182,22 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt->execute();
             $id = (int) $this->db->lastInsertId();
             $this->db->commit();
+
             // 返回帶有 ID 的快照實體
             return $this->findById($id) ?? $snapshot;
         } catch (PDOException $e) {
             $this->db->rollBack();
+
             throw new RuntimeException('儲存統計快照失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function update(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         if ($snapshot->getId() <= 0) {
             throw new InvalidArgumentException('無法更新沒有 ID 的統計快照');
         }
+
         try {
             $this->db->beginTransaction();
             $stmt = $this->db->prepare(self::SQL_UPDATE);
@@ -167,50 +206,62 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $affectedRows = $stmt->execute();
             if ($stmt->rowCount() === 0) {
                 $this->db->rollBack();
+
                 throw new RuntimeException("統計快照不存在或更新失敗 (ID: {$snapshot->getId()})");
             }
             $this->db->commit();
+
             return $this->findById($snapshot->getId()) ?? $snapshot;
         } catch (PDOException $e) {
             $this->db->rollBack();
+
             throw new RuntimeException("更新統計快照失敗 (ID: {$snapshot->getId()}): " . $e->getMessage(), 0, $e);
         }
     }
+
     public function delete(StatisticsSnapshot $snapshot): bool
     {
         if ($snapshot->getId() <= 0) {
             throw new InvalidArgumentException('無法刪除沒有 ID 的統計快照');
         }
+
         return $this->deleteById($snapshot->getId());
     }
+
     public function deleteById(int $id): bool
     {
         try {
             $stmt = $this->db->prepare(self::SQL_DELETE);
             $stmt->bindValue(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
+
             return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
             throw new RuntimeException("刪除統計快照失敗 (ID: {$id}): " . $e->getMessage(), 0, $e);
         }
     }
+
     public function deleteExpiredSnapshots(?DateTimeInterface $beforeDate = null): int
     {
         $beforeDate ??= new DateTimeImmutable();
+
         try {
             $stmt = $this->db->prepare(self::SQL_DELETE_EXPIRED);
             $stmt->bindValue(':before_date', $beforeDate->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
+
             return $stmt->rowCount();
         } catch (PDOException $e) {
             throw new RuntimeException('刪除過期統計快照失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function exists(string $snapshotType, StatisticsPeriod $period): bool
     {
         if (empty(trim($snapshotType))) {
             throw new InvalidArgumentException('快照類型不能為空');
         }
+
         try {
             $stmt = $this->db->prepare(self::SQL_EXISTS);
             $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
@@ -218,11 +269,13 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt->bindValue(':period_start', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':period_end', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
+
             return $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
             throw new RuntimeException('檢查統計快照存在性失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function count(?string $snapshotType = null): int
     {
         try {
@@ -233,11 +286,13 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
                 $stmt->bindValue(':snapshot_type', $snapshotType, PDO::PARAM_STR);
             }
             $stmt->execute();
+
             return (int) $stmt->fetchColumn();
         } catch (PDOException $e) {
             throw new RuntimeException('計算統計快照數量失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function findByTypeWithPagination(
         string $snapshotType,
         int $page = 1,
@@ -263,6 +318,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             throw new InvalidArgumentException('不支援的排序欄位: ' . $orderBy);
         }
         $offset = ($page - 1) * $limit;
+
         try {
             // 由於 PDO 不支援在 prepared statement 中綁定欄位名，我們需要手動構建 SQL
             $sql = str_replace(
@@ -276,11 +332,13 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map([$this, 'mapRowToEntity'], $rows);
         } catch (PDOException $e) {
             throw new RuntimeException('分頁查詢統計快照失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 將資料庫記錄映射為實體物件.
      *
@@ -326,13 +384,16 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
                 'created_at' => $createdAt,
                 'updated_at' => $updatedAt,
             ];
+
             return StatisticsSnapshot::fromArray($data);
         } catch (Throwable $e) {
             /** @phpstan-ignore-next-line cast.string */
             $idStr = isset($row['id']) ? (string) $row['id'] : 'unknown';
+
             throw new RuntimeException("實體映射失敗 (ID: {$idStr}): " . $e->getMessage(), 0, $e);
         }
     }
+
     private function bindInsertParams(PDOStatement $stmt, StatisticsSnapshot $snapshot): void
     {
         $now = new DateTimeImmutable();
@@ -350,6 +411,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
         $stmt->bindValue(':created_at', $snapshot->getCreatedAt()->format('Y-m-d H:i:s'), PDO::PARAM_STR);
         $stmt->bindValue(':updated_at', $now->format('Y-m-d H:i:s'), PDO::PARAM_STR);
     }
+
     private function bindUpdateParams(PDOStatement $stmt, StatisticsSnapshot $snapshot): void
     {
         $now = new DateTimeImmutable();

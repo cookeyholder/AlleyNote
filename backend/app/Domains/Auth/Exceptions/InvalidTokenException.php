@@ -3,34 +3,49 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
+
 class InvalidTokenException extends JwtException
 {
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'invalid_token';
+
     /**
      * 錯誤碼常數.
      */
     public const ERROR_CODE = 4002;
+
     /**
      * 驗證失敗原因常數.
      */
     public const REASON_MALFORMED = 'malformed';
+
     public const REASON_SIGNATURE_INVALID = 'signature_invalid';
+
     public const REASON_ALGORITHM_MISMATCH = 'algorithm_mismatch';
+
     public const REASON_ISSUER_INVALID = 'issuer_invalid';
+
     public const REASON_AUDIENCE_INVALID = 'audience_invalid';
+
     public const REASON_SUBJECT_MISSING = 'subject_missing';
+
     public const REASON_CLAIMS_INVALID = 'claims_invalid';
+
     public const REASON_DECODE_FAILED = 'decode_failed';
+
     public const REASON_BLACKLISTED = 'blacklisted';
+
     public const REASON_NOT_BEFORE = 'not_before';
+
     /**
      * Token 類型常數.
      */
     public const ACCESS_TOKEN = 'access_token';
+
     public const REFRESH_TOKEN = 'refresh_token';
+
     /**
      * 建立無效 Token 例外.
      *
@@ -53,6 +68,7 @@ class InvalidTokenException extends JwtException
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
+
     /**
      * 建構預設錯誤訊息.
      *
@@ -62,6 +78,7 @@ class InvalidTokenException extends JwtException
     private function buildDefaultMessage(string $reason, string $tokenType): string
     {
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
+
         return match ($reason) {
             self::REASON_MALFORMED => sprintf('%s format is malformed', $tokenName),
             self::REASON_SIGNATURE_INVALID => sprintf('%s signature verification failed', $tokenName),
@@ -75,12 +92,14 @@ class InvalidTokenException extends JwtException
             default => sprintf('%s is invalid', $tokenName),
         };
     }
+
     /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string
     {
         $reason = $this->getReason();
+
         return match ($reason) {
             self::REASON_MALFORMED,
             self::REASON_SIGNATURE_INVALID,
@@ -95,6 +114,7 @@ class InvalidTokenException extends JwtException
             default => '提供的 Token 無效，請重新登入。',
         };
     }
+
     /**
      * 取得失敗原因.
      */
@@ -102,6 +122,7 @@ class InvalidTokenException extends JwtException
     {
         return $this->context['reason'] ?? self::REASON_DECODE_FAILED;
     }
+
     /**
      * 取得 Token 類型.
      */
@@ -109,6 +130,7 @@ class InvalidTokenException extends JwtException
     {
         return $this->context['token_type'] ?? self::ACCESS_TOKEN;
     }
+
     /**
      * 檢查是否為特定失敗原因.
      *
@@ -118,6 +140,7 @@ class InvalidTokenException extends JwtException
     {
         return $this->getReason() === $reason;
     }
+
     /**
      * 檢查是否為 Access Token 無效.
      */
@@ -125,6 +148,7 @@ class InvalidTokenException extends JwtException
     {
         return $this->getTokenType() === self::ACCESS_TOKEN;
     }
+
     /**
      * 檢查是否為 Refresh Token 無效.
      */
@@ -132,6 +156,7 @@ class InvalidTokenException extends JwtException
     {
         return $this->getTokenType() === self::REFRESH_TOKEN;
     }
+
     /**
      * 檢查是否為簽章相關錯誤.
      */
@@ -142,6 +167,7 @@ class InvalidTokenException extends JwtException
             self::REASON_ALGORITHM_MISMATCH,
         ]);
     }
+
     /**
      * 檢查是否為格式相關錯誤.
      */
@@ -152,6 +178,7 @@ class InvalidTokenException extends JwtException
             self::REASON_DECODE_FAILED,
         ]);
     }
+
     /**
      * 檢查是否為聲明相關錯誤.
      */
@@ -164,6 +191,7 @@ class InvalidTokenException extends JwtException
             self::REASON_CLAIMS_INVALID,
         ]);
     }
+
     /**
      * 靜態工廠方法：格式錯誤.
      *
@@ -174,6 +202,7 @@ class InvalidTokenException extends JwtException
     {
         return new self(self::REASON_MALFORMED, $tokenType, '', $context);
     }
+
     /**
      * 靜態工廠方法：簽章無效.
      *
@@ -184,6 +213,7 @@ class InvalidTokenException extends JwtException
     {
         return new self(self::REASON_SIGNATURE_INVALID, $tokenType, '', $context);
     }
+
     /**
      * 靜態工廠方法：演算法不匹配.
      *
@@ -201,6 +231,7 @@ class InvalidTokenException extends JwtException
             'actual_algorithm' => $actualAlgorithm,
         ]);
     }
+
     /**
      * 靜態工廠方法：發行者無效.
      *
@@ -218,6 +249,7 @@ class InvalidTokenException extends JwtException
             'actual_issuer' => $actualIssuer,
         ]);
     }
+
     /**
      * 靜態工廠方法：受眾無效.
      *
@@ -235,6 +267,7 @@ class InvalidTokenException extends JwtException
             'actual_audience' => $actualAudience,
         ]);
     }
+
     /**
      * 靜態工廠方法：主題遺失.
      *
@@ -244,6 +277,7 @@ class InvalidTokenException extends JwtException
     {
         return new self(self::REASON_SUBJECT_MISSING, $tokenType);
     }
+
     /**
      * 靜態工廠方法：聲明無效.
      *
@@ -256,6 +290,7 @@ class InvalidTokenException extends JwtException
             'invalid_claims' => $invalidClaims,
         ]);
     }
+
     /**
      * 靜態工廠方法：Token 已被列入黑名單.
      *
@@ -268,6 +303,7 @@ class InvalidTokenException extends JwtException
             'token_id' => $tokenId,
         ]);
     }
+
     /**
      * 靜態工廠方法：Token 尚未生效.
      *

@@ -3,24 +3,31 @@
 declare(strict_types=1);
 
 namespace App\Application\Middleware;
+
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+
 class CsrfMiddleware implements MiddlewareInterface
 {
     private const DEFAULT_PRIORITY = 15;
+
     private const MIDDLEWARE_NAME = 'csrf';
+
     private const COOKIE_NAME = 'csrf_token';
+
     private const TOKEN_LENGTH = 32;
+
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
         private ?LoggerInterface $logger = null,
         private bool $secureCookie = true,
     ) {}
+
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if (!$this->enabled) {
@@ -30,6 +37,7 @@ class CsrfMiddleware implements MiddlewareInterface
         // 安全方法：直接通過，但附加 CSRF Cookie
         if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
             $response = $handler->handle($request);
+
             return $this->attachCsrfCookie($request, $response);
         }
         // 狀態變更請求：驗證 Double-Submit Cookie
@@ -52,12 +60,15 @@ class CsrfMiddleware implements MiddlewareInterface
                     'code' => 'CSRF_INVALID',
                 ], JSON_UNESCAPED_UNICODE),
             );
+
             return $this->attachCsrfCookie($request, $errorResponse);
         }
         // 驗證通過，繼續處理請求並確保回應中仍有 CSRF Cookie
         $response = $handler->handle($request);
+
         return $this->attachCsrfCookie($request, $response);
     }
+
     /**
      * 從 Cookie 取得 CSRF Token.
      */
@@ -65,8 +76,10 @@ class CsrfMiddleware implements MiddlewareInterface
     {
         $cookies = $request->getCookieParams();
         $token = $cookies[self::COOKIE_NAME] ?? '';
+
         return is_string($token) ? $token : '';
     }
+
     /**
      * 在回應中附加 CSRF Token Cookie（若 Cookie 尚未存在）.
      */
@@ -93,16 +106,20 @@ class CsrfMiddleware implements MiddlewareInterface
         // 保留既有 Set-Cookie headers
         $existingCookies = $response->getHeader('Set-Cookie');
         $existingCookies[] = $cookieValue;
+
         return $response->withHeader('Set-Cookie', $existingCookies);
     }
+
     public function getPriority(): int
     {
         return $this->priority;
     }
+
     public function getName(): string
     {
         return self::MIDDLEWARE_NAME;
     }
+
     public function shouldProcess(ServerRequestInterface $request): bool
     {
         return $this->enabled;

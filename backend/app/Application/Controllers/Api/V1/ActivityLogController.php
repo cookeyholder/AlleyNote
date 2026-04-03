@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Application\Controllers\BaseController;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
@@ -13,12 +14,14 @@ use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
+
 class ActivityLogController extends BaseController
 {
     public function __construct(
         private readonly ActivityLoggingServiceInterface $loggingService,
         private readonly ActivityLogRepositoryInterface $repository,
     ) {}
+
     #[OA\Post(
         path: '/api/v1/activity-logs',
         operationId: 'storeActivityLog',
@@ -56,6 +59,7 @@ class ActivityLogController extends BaseController
                     'error_code' => 400,
                 ]);
                 $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(400);
             }
             $dto = new CreateActivityLogDTO(
@@ -70,6 +74,7 @@ class ActivityLogController extends BaseController
                 'message' => 'Activity logged successfully',
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(201);
         } catch (Throwable $e) {
             $errorResponse = json_encode([
@@ -78,9 +83,11 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
     #[OA\Get(
         path: '/api/v1/activity-logs',
         operationId: 'getActivityLogs',
@@ -110,6 +117,7 @@ class ActivityLogController extends BaseController
                 'message' => 'Activity logs retrieved successfully',
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Throwable $e) {
             $errorResponse = json_encode([
@@ -118,9 +126,11 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
     #[OA\Get(
         path: '/api/v1/activity-logs/stats',
         operationId: 'getActivityLogStats',
@@ -152,6 +162,7 @@ class ActivityLogController extends BaseController
                 'message' => 'Activity log statistics retrieved successfully',
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Throwable $e) {
             $errorResponse = json_encode([
@@ -160,9 +171,11 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
     #[OA\Get(
         path: '/api/v1/activity-logs/me',
         operationId: 'getCurrentUserActivityLogs',
@@ -189,6 +202,7 @@ class ActivityLogController extends BaseController
                     'error_code' => 401,
                 ]);
                 $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
                 return $response->withHeader('Content-Type', 'application/json')->withStatus(401);
             }
             $params = $request->getQueryParams();
@@ -203,6 +217,7 @@ class ActivityLogController extends BaseController
                 'message' => 'Current user activity logs retrieved successfully',
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Throwable $e) {
             $errorResponse = json_encode([
@@ -211,9 +226,11 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }
+
     #[OA\Get(
         path: '/api/v1/activity-logs/login-failures',
         operationId: 'getLoginFailureStats',
@@ -249,6 +266,7 @@ class ActivityLogController extends BaseController
                 'message' => 'Login failure statistics retrieved successfully',
             ]);
             $response->getBody()->write($successResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json');
         } catch (Throwable $e) {
             $errorResponse = json_encode([
@@ -257,6 +275,7 @@ class ActivityLogController extends BaseController
                 'error_code' => 500,
             ]);
             $response->getBody()->write($errorResponse ?: '{"error": "JSON encoding failed"}');
+
             return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
         }
     }

@@ -3,28 +3,40 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Entities;
+
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use DateTime;
 use InvalidArgumentException;
 use JsonSerializable;
+
 class RefreshToken implements JsonSerializable
 {
     /**
      * RefreshToken 狀態常數.
      */
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_REVOKED = 'revoked';
+
     public const STATUS_EXPIRED = 'expired';
+
     public const STATUS_USED = 'used';
+
     /**
      * 撤銷原因常數.
      */
     public const REVOKE_REASON_MANUAL = 'manual_revocation';
+
     public const REVOKE_REASON_LOGOUT = 'user_logout';
+
     public const REVOKE_REASON_LOGOUT_ALL = 'logout_all_sessions';
+
     public const REVOKE_REASON_SECURITY = 'security_breach';
+
     public const REVOKE_REASON_TOKEN_ROTATION = 'token_rotation';
+
     public const REVOKE_REASON_EXPIRED = 'expired';
+
     /**
      * RefreshToken Entity 建構子.
      *
@@ -66,6 +78,7 @@ class RefreshToken implements JsonSerializable
         $this->validateExpirationTime($expiresAt);
         $this->validateRevokedData($status, $revokedReason, $revokedAt);
     }
+
     /**
      * 取得資料庫 ID.
      */
@@ -73,6 +86,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->id;
     }
+
     /**
      * 取得 JWT ID.
      */
@@ -80,6 +94,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->jti;
     }
+
     /**
      * 取得使用者 ID.
      */
@@ -87,6 +102,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->userId;
     }
+
     /**
      * 取得 token hash.
      */
@@ -94,6 +110,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->tokenHash;
     }
+
     /**
      * 取得過期時間.
      */
@@ -101,6 +118,7 @@ class RefreshToken implements JsonSerializable
     {
         return clone $this->expiresAt;
     }
+
     /**
      * 取得裝置資訊.
      */
@@ -108,6 +126,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->deviceInfo;
     }
+
     /**
      * 取得狀態.
      */
@@ -115,6 +134,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->status;
     }
+
     /**
      * 取得撤銷原因.
      */
@@ -122,6 +142,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->revokedReason;
     }
+
     /**
      * 取得撤銷時間.
      */
@@ -129,6 +150,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->revokedAt ? clone $this->revokedAt : null;
     }
+
     /**
      * 取得最後使用時間.
      */
@@ -136,6 +158,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->lastUsedAt ? clone $this->lastUsedAt : null;
     }
+
     /**
      * 取得父 token JTI.
      */
@@ -143,6 +166,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->parentTokenJti;
     }
+
     /**
      * 取得建立時間.
      */
@@ -150,6 +174,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->createdAt ? clone $this->createdAt : null;
     }
+
     /**
      * 取得更新時間.
      */
@@ -157,14 +182,17 @@ class RefreshToken implements JsonSerializable
     {
         return $this->updatedAt ? clone $this->updatedAt : null;
     }
+
     /**
      * 檢查 token 是否已過期.
      */
     public function isExpired(?DateTime $now = null): bool
     {
         $now ??= new DateTime();
+
         return $this->expiresAt <= $now;
     }
+
     /**
      * 檢查 token 是否已撤銷.
      */
@@ -172,6 +200,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->status === self::STATUS_REVOKED;
     }
+
     /**
      * 檢查 token 是否有效（未過期且未撤銷）.
      */
@@ -179,6 +208,7 @@ class RefreshToken implements JsonSerializable
     {
         return !$this->isExpired($now) && !$this->isRevoked();
     }
+
     /**
      * 檢查 token 是否可以用於刷新.
      */
@@ -186,6 +216,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->isValid($now) && $this->status === self::STATUS_ACTIVE;
     }
+
     /**
      * 撤銷 token.
      *
@@ -200,6 +231,7 @@ class RefreshToken implements JsonSerializable
             return $this;
         }
         $revokedAt ??= new DateTime();
+
         return new self(
             id: $this->id,
             jti: $this->jti,
@@ -216,6 +248,7 @@ class RefreshToken implements JsonSerializable
             updatedAt: new DateTime(),
         );
     }
+
     /**
      * 標記 token 為已使用.
      *
@@ -226,6 +259,7 @@ class RefreshToken implements JsonSerializable
     public function markAsUsed(?DateTime $usedAt = null): self
     {
         $usedAt ??= new DateTime();
+
         return new self(
             id: $this->id,
             jti: $this->jti,
@@ -242,6 +276,7 @@ class RefreshToken implements JsonSerializable
             updatedAt: new DateTime(),
         );
     }
+
     /**
      * 更新最後使用時間.
      *
@@ -252,6 +287,7 @@ class RefreshToken implements JsonSerializable
     public function updateLastUsed(?DateTime $lastUsedAt = null): self
     {
         $lastUsedAt ??= new DateTime();
+
         return new self(
             id: $this->id,
             jti: $this->jti,
@@ -268,6 +304,7 @@ class RefreshToken implements JsonSerializable
             updatedAt: new DateTime(),
         );
     }
+
     /**
      * 檢查是否為同一個 token.
      */
@@ -275,6 +312,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->jti === $other->jti;
     }
+
     /**
      * 檢查是否為同一個使用者的 token.
      */
@@ -282,6 +320,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->userId === $userId;
     }
+
     /**
      * 檢查是否為同一個裝置的 token.
      */
@@ -289,6 +328,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->deviceInfo->getDeviceId() === $deviceId;
     }
+
     /**
      * 取得 token 剩餘有效時間（秒數）.
      */
@@ -298,8 +338,10 @@ class RefreshToken implements JsonSerializable
         if ($this->isExpired($now)) {
             return 0;
         }
+
         return $this->expiresAt->getTimestamp() - $now->getTimestamp();
     }
+
     /**
      * 檢查 token 是否接近過期.
      *
@@ -310,6 +352,7 @@ class RefreshToken implements JsonSerializable
     {
         return $this->getRemainingTime($now) <= $thresholdSeconds;
     }
+
     /**
      * 實作 JsonSerializable 介面.
      *
@@ -332,6 +375,7 @@ class RefreshToken implements JsonSerializable
             'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
         ];
     }
+
     /**
      * 轉換為陣列（包含敏感資料）.
      *
@@ -355,6 +399,7 @@ class RefreshToken implements JsonSerializable
             'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
         ];
     }
+
     /**
      * 驗證 JTI 格式.
      */
@@ -371,6 +416,7 @@ class RefreshToken implements JsonSerializable
             throw new InvalidArgumentException('JTI contains invalid characters');
         }
     }
+
     /**
      * 驗證使用者 ID.
      */
@@ -380,6 +426,7 @@ class RefreshToken implements JsonSerializable
             throw new InvalidArgumentException('User ID must be a positive integer');
         }
     }
+
     /**
      * 驗證 token hash.
      */
@@ -393,6 +440,7 @@ class RefreshToken implements JsonSerializable
             throw new InvalidArgumentException('Token hash must be a valid SHA256 hash');
         }
     }
+
     /**
      * 驗證狀態.
      */
@@ -410,6 +458,7 @@ class RefreshToken implements JsonSerializable
             );
         }
     }
+
     /**
      * 驗證過期時間.
      */
@@ -423,6 +472,7 @@ class RefreshToken implements JsonSerializable
             throw new InvalidArgumentException('Expiration time cannot be more than 10 years in the future');
         }
     }
+
     /**
      * 驗證撤銷相關資料.
      */
@@ -439,6 +489,7 @@ class RefreshToken implements JsonSerializable
             throw new InvalidArgumentException('Revoked reason and time should only be set when status is revoked');
         }
     }
+
     /**
      * 字串表示.
      */

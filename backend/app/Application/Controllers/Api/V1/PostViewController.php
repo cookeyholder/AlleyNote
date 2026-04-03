@@ -3,14 +3,17 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use RuntimeException;
 use Throwable;
+
 class PostViewController extends BaseController
 {
     public function __construct(
         private readonly PostServiceInterface $postService,
         private readonly EventDispatcherInterface $eventDispatcher,
     ) {}
+
     /**
      * 記錄文章瀏覽.
      *
@@ -137,6 +140,7 @@ class PostViewController extends BaseController
                 'is_authenticated' => $event->isAuthenticatedUser(),
             ];
             $duration = round((microtime(true) - $startTime) * 1000, 2);
+
             return $this->json($response, [
                 'success' => true,
                 'message' => '已記錄瀏覽',
@@ -160,6 +164,7 @@ class PostViewController extends BaseController
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return $this->json($response, [
                 'success' => false,
                 'error' => [
@@ -174,6 +179,7 @@ class PostViewController extends BaseController
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return $this->json($response, [
                 'success' => false,
                 'error' => [
@@ -183,6 +189,7 @@ class PostViewController extends BaseController
             ], 500);
         }
     }
+
     /**
      * 驗證文章 ID.
      */
@@ -201,8 +208,10 @@ class PostViewController extends BaseController
         if ($postId === false) {
             throw new RuntimeException('無效的文章 ID');
         }
+
         return $postId;
     }
+
     /**
      * 從請求中提取瀏覽資料.
      *
@@ -236,6 +245,7 @@ class PostViewController extends BaseController
             $referrerHeader = $request->getHeaderLine('Referer');
             $referrer = !empty($referrerHeader) ? $referrerHeader : null;
         }
+
         return [
             'user_id' => $userId,
             'user_ip' => $userIp,
@@ -243,6 +253,7 @@ class PostViewController extends BaseController
             'referrer' => $referrer,
         ];
     }
+
     /**
      * 取得使用者真實 IP.
      */
@@ -269,8 +280,10 @@ class PostViewController extends BaseController
         }
         // 回退到 REMOTE_ADDR
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+
         return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';
     }
+
     /**
      * 輕量級文章存在性驗證.
      */
@@ -284,6 +297,7 @@ class PostViewController extends BaseController
             throw $e; // 重新拋出以便上層處理
         }
     }
+
     /**
      * 建立 PostViewed 事件.
      */
@@ -306,6 +320,7 @@ class PostViewController extends BaseController
                 referrer: is_string($referrer) ? $referrer : null,
             );
         }
+
         return PostViewed::createAnonymous(
             postId: $postId,
             userIp: $userIp,

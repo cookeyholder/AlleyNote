@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\OpenApi;
-use OpenApi\Attributes as OA;
+
 class OpenApiSpec
 {
     // 這個類別僅用於 OpenAPI 規範定義

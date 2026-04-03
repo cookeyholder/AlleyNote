@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 interface MiddlewareInterface
 {
     /**
@@ -18,6 +20,7 @@ interface MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface;
+
     /**
      * 取得中介軟體優先順序.
      *
@@ -26,12 +29,14 @@ interface MiddlewareInterface
      * @return int 優先順序
      */
     public function getPriority(): int;
+
     /**
      * 取得中介軟體名稱.
      *
      * @return string 中介軟體名稱
      */
     public function getName(): string;
+
     /**
      * 檢查中介軟體是否應該執行.
      *

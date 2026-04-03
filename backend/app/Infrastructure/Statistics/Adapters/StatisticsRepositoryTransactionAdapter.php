@@ -3,30 +3,37 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
+
 use RuntimeException;
 use Throwable;
+
 final class StatisticsRepositoryTransactionAdapter implements StatisticsRepositoryInterface
 {
     public function __construct(
         private readonly StatisticsRepositoryInterface $repository,
         private readonly PDO $db,
     ) {}
+
     public function findById(int $id): ?StatisticsSnapshot
     {
         return $this->repository->findById($id);
     }
+
     public function findByUuid(string $uuid): ?StatisticsSnapshot
     {
         return $this->repository->findByUuid($uuid);
     }
+
     public function findByTypeAndPeriod(string $snapshotType, StatisticsPeriod $period): ?StatisticsSnapshot
     {
         return $this->repository->findByTypeAndPeriod($snapshotType, $period);
     }
+
     public function findLatestByType(string $snapshotType): ?StatisticsSnapshot
     {
         return $this->repository->findLatestByType($snapshotType);
     }
+
     public function findByTypeAndDateRange(
         string $snapshotType,
         DateTimeInterface $startDate,
@@ -34,48 +41,57 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
     ): array {
         return $this->repository->findByTypeAndDateRange($snapshotType, $startDate, $endDate);
     }
+
     public function findExpiredSnapshots(?DateTimeInterface $beforeDate = null): array
     {
         return $this->repository->findExpiredSnapshots($beforeDate);
     }
+
     public function save(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         return $this->executeInTransaction(function () use ($snapshot) {
             return $this->repository->save($snapshot);
         });
     }
+
     public function update(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         return $this->executeInTransaction(function () use ($snapshot) {
             return $this->repository->update($snapshot);
         });
     }
+
     public function delete(StatisticsSnapshot $snapshot): bool
     {
         return $this->executeInTransaction(function () use ($snapshot) {
             return $this->repository->delete($snapshot);
         });
     }
+
     public function deleteById(int $id): bool
     {
         return $this->executeInTransaction(function () use ($id) {
             return $this->repository->deleteById($id);
         });
     }
+
     public function deleteExpiredSnapshots(?DateTimeInterface $beforeDate = null): int
     {
         return $this->executeInTransaction(function () use ($beforeDate) {
             return $this->repository->deleteExpiredSnapshots($beforeDate);
         });
     }
+
     public function exists(string $snapshotType, StatisticsPeriod $period): bool
     {
         return $this->repository->exists($snapshotType, $period);
     }
+
     public function count(?string $snapshotType = null): int
     {
         return $this->repository->count($snapshotType);
     }
+
     public function findByTypeWithPagination(
         string $snapshotType,
         int $page = 1,
@@ -85,6 +101,7 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
     ): array {
         return $this->repository->findByTypeWithPagination($snapshotType, $page, $limit, $orderBy, $direction);
     }
+
     /**
      * 批量儲存統計快照（事務處理）.
      *
@@ -99,9 +116,11 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
             foreach ($snapshots as $snapshot) {
                 $savedSnapshots[] = $this->repository->save($snapshot);
             }
+
             return $savedSnapshots;
         });
     }
+
     /**
      * 批量更新統計快照（事務處理）.
      *
@@ -116,9 +135,11 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
             foreach ($snapshots as $snapshot) {
                 $updatedSnapshots[] = $this->repository->update($snapshot);
             }
+
             return $updatedSnapshots;
         });
     }
+
     /**
      * 批量刪除統計快照（事務處理）.
      *
@@ -135,9 +156,11 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
                     $deletedCount++;
                 }
             }
+
             return $deletedCount;
         });
     }
+
     /**
      * 替換指定類型的統計快照（先刪除再新增）.
      *
@@ -164,9 +187,11 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
             foreach ($newSnapshots as $snapshot) {
                 $savedSnapshots[] = $this->repository->save($snapshot);
             }
+
             return $savedSnapshots;
         });
     }
+
     /**
      * 在事務中執行操作.
      *
@@ -181,9 +206,11 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
             $this->db->beginTransaction();
             $result = $operation();
             $this->db->commit();
+
             return $result;
         } catch (Throwable $e) {
             $this->db->rollBack();
+
             throw new RuntimeException(
                 '事務執行失敗: ' . $e->getMessage(),
                 $e->getCode(),

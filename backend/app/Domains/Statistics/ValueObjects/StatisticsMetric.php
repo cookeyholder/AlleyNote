@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class StatisticsMetric implements JsonSerializable
 {
     /**
@@ -21,6 +23,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     ) {
         $this->validate();
     }
+
     /**
      * 從陣列建立統計指標物件.
      *
@@ -32,6 +35,7 @@ final readonly class StatisticsMetric implements JsonSerializable
         if (!isset($data['name'], $data['value'])) {
             throw new InvalidArgumentException('Missing required fields: name, value');
         }
+
         return new self(
             name: $data['name'],
             value: $data['value'],
@@ -39,6 +43,7 @@ final readonly class StatisticsMetric implements JsonSerializable
             calculationMethod: $data['calculation_method'] ?? '',
         );
     }
+
     /**
      * 建立計數類型指標.
      */
@@ -46,6 +51,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return new self($name, $count, '個', $calculationMethod ?: '計數統計');
     }
+
     /**
      * 建立百分比類型指標.
      */
@@ -53,6 +59,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return new self($name, $percentage, '%', $calculationMethod ?: '百分比計算');
     }
+
     /**
      * 建立平均值類型指標.
      */
@@ -60,6 +67,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return new self($name, $average, '平均', $calculationMethod ?: '平均值計算');
     }
+
     /**
      * 建立比率類型指標.
      */
@@ -67,6 +75,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return new self($name, $rate, '比率', $calculationMethod ?: '比率計算');
     }
+
     /**
      * 檢查是否為百分比指標.
      */
@@ -74,6 +83,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return $this->unit === '%';
     }
+
     /**
      * 檢查是否為計數指標.
      */
@@ -81,6 +91,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return $this->unit === '個' || (is_int($this->value) && $this->unit === '');
     }
+
     /**
      * 格式化指標值為可讀字串.
      */
@@ -89,8 +100,10 @@ final readonly class StatisticsMetric implements JsonSerializable
         $formatted = is_int($this->value)
             ? (string) $this->value
             : number_format($this->value, $precision);
+
         return $this->unit ? "{$formatted} {$this->unit}" : $formatted;
     }
+
     /**
      * 轉換為陣列.
      *
@@ -106,6 +119,7 @@ final readonly class StatisticsMetric implements JsonSerializable
             'formatted_value' => $this->formatValue(),
         ];
     }
+
     /**
      * JSON 序列化.
      *
@@ -115,6 +129,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查兩個統計指標是否相等.
      */
@@ -125,6 +140,7 @@ final readonly class StatisticsMetric implements JsonSerializable
             && $this->unit === $other->unit
             && $this->calculationMethod === $other->calculationMethod;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -132,6 +148,7 @@ final readonly class StatisticsMetric implements JsonSerializable
     {
         return "{$this->name}: {$this->formatValue()}";
     }
+
     /**
      * 驗證統計指標的有效性.
      *

@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\Services;
+
 use Throwable;
+
 class AttachmentService implements AttachmentServiceInterface
 {
     /**
@@ -50,7 +52,9 @@ class AttachmentService implements AttachmentServiceInterface
         'video/x-msvideo', // .avi
         'video/quicktime', // .mov
     ];
+
     private const MAX_FILE_SIZE = 10485760; // 10MB（從設定讀取）
+
     private const FORBIDDEN_EXTENSIONS = [
         'php',
         'php3',
@@ -68,7 +72,9 @@ class AttachmentService implements AttachmentServiceInterface
         'aspx',
         'jsp',
     ];
+
     private FinfoMimeTypeDetector $mimeDetector;
+
     public function __construct(
         private AttachmentRepository $attachmentRepo,
         private PostRepository $postRepo,
@@ -79,6 +85,7 @@ class AttachmentService implements AttachmentServiceInterface
         // 使用 League MIME type detector（基於 magic numbers）
         $this->mimeDetector = new FinfoMimeTypeDetector();
     }
+
     public function validateFile(UploadedFileInterface $file): void
     {
         $filename = $file->getClientFilename();
@@ -98,6 +105,7 @@ class AttachmentService implements AttachmentServiceInterface
         $maxSize = $this->getMaxFileSize();
         if ($file->getSize() > $maxSize) {
             $maxSizeMB = round($maxSize / 1048576, 2);
+
             throw ValidationException::fromSingleError('file', "檔案大小超過限制（{$maxSizeMB}MB）");
         }
         // 取得檔案內容
@@ -134,6 +142,7 @@ class AttachmentService implements AttachmentServiceInterface
             throw ValidationException::fromSingleError('file', '檔案內容不安全');
         }
     }
+
     /**
      * 從設定讀取最大檔案大小.
      */
@@ -153,8 +162,10 @@ class AttachmentService implements AttachmentServiceInterface
         } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
+
         return self::MAX_FILE_SIZE;
     }
+
     /**
      * 從設定讀取單篇文章附件數量上限.
      */
@@ -174,8 +185,10 @@ class AttachmentService implements AttachmentServiceInterface
         } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
+
         return 10; // 預設值：10 個附件
     }
+
     /**
      * 從設定讀取允許的檔案類型.
      */
@@ -198,8 +211,10 @@ class AttachmentService implements AttachmentServiceInterface
         } catch (Throwable $e) {
             // 讀取失敗，使用預設值
         }
+
         return self::ALLOWED_MIME_TYPES;
     }
+
     /**
      * 將副檔名陣列轉換為 MIME 類型陣列.
      */
@@ -248,8 +263,10 @@ class AttachmentService implements AttachmentServiceInterface
                 $mimeTypes[] = $extensionToMime[$ext];
             }
         }
+
         return array_unique($mimeTypes);
     }
+
     /**
      * 檢查是否為可接受的替代 MIME 類型.
      */
@@ -268,8 +285,10 @@ class AttachmentService implements AttachmentServiceInterface
                 }
             }
         }
+
         return false;
     }
+
     /**
      * 檢查 MIME 類型不一致是否可接受.
      */
@@ -292,8 +311,10 @@ class AttachmentService implements AttachmentServiceInterface
                 return true;
             }
         }
+
         return false;
     }
+
     private function containsMaliciousContent(string $content): bool
     {
         $maliciousPatterns = [
@@ -326,8 +347,10 @@ class AttachmentService implements AttachmentServiceInterface
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 重新渲染圖片檔案以移除潛在的惡意程式碼
      */
@@ -336,10 +359,12 @@ class AttachmentService implements AttachmentServiceInterface
         if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif'], true)) {
             return true; // 非圖片檔案不需要處理
         }
+
         try {
             // 檢查 GD 擴充是否可用
             if (!extension_loaded('gd')) {
                 app_log('warning', 'GD extension not available for image sanitization');
+
                 return true; // 如果沒有 GD，跳過圖片處理
             }
             $image = null;
@@ -364,6 +389,7 @@ class AttachmentService implements AttachmentServiceInterface
             // 檢查圖片尺寸是否合理（防止記憶體攻擊）
             if ($width > 4096 || $height > 4096) {
                 imagedestroy($image);
+
                 throw ValidationException::fromSingleError('file', '圖片尺寸過大');
             }
             // 建立新的乾淨畫布
@@ -394,12 +420,15 @@ class AttachmentService implements AttachmentServiceInterface
             // 清理記憶體
             imagedestroy($image);
             imagedestroy($cleanImage);
+
             return $result;
         } catch (Throwable $e) {
             app_log('error', 'Image sanitization failed', ['exception' => $e->getMessage()]);
+
             throw ValidationException::fromSingleError('file', '圖片處理失敗：' . $e->getMessage());
         }
     }
+
     /**
      * 病毒掃描（如果可用）.
      */
@@ -418,10 +447,13 @@ class AttachmentService implements AttachmentServiceInterface
         // ClamAV 回傳碼：0=乾淨, 1=感染, 2=錯誤
         if (intval($exitCode) === 1) {
             app_log('warning', 'Virus detected in file', ['file_path' => $filePath]);
+
             return false;
         }
+
         return true;
     }
+
     /**
      * 改善的檔案驗證流程（減緩 TOCTOU 風險）.
      */
@@ -437,6 +469,7 @@ class AttachmentService implements AttachmentServiceInterface
             throw ValidationException::fromSingleError('directory', '無法建立臨時目錄');
         }
         $tempPath = $tempDir . '/' . $newFilename;
+
         try {
             // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
@@ -455,6 +488,7 @@ class AttachmentService implements AttachmentServiceInterface
             if (!$this->scanForVirus($tempPath)) {
                 throw ValidationException::fromSingleError('file', '檔案包含惡意程式碼');
             }
+
             return [
                 'temp_path' => $tempPath,
                 'temp_dir' => $tempDir,
@@ -475,9 +509,11 @@ class AttachmentService implements AttachmentServiceInterface
             if ($e instanceof RuntimeException) {
                 throw ValidationException::fromSingleError('file', '檔案上傳失敗');
             }
+
             throw $e;
         }
     }
+
     /**
      * 檢查使用者是否有權限操作指定文章.
      */
@@ -492,8 +528,10 @@ class AttachmentService implements AttachmentServiceInterface
         if (!$post) {
             return false;
         }
+
         return $post->getUserId() === $userId;
     }
+
     /**
      * 檢查使用者是否有權限操作指定附件.
      */
@@ -508,9 +546,11 @@ class AttachmentService implements AttachmentServiceInterface
         if (!$attachment) {
             return false;
         }
+
         // 透過附件找到文章，檢查是否為文章的擁有者
         return $this->canAccessPost($userId, $attachment->getPostId());
     }
+
     public function upload(int $postId, UploadedFileInterface $file, int $currentUserId): Attachment
     {
         if (!$this->canAccessPost($currentUserId, $postId)) {
@@ -526,6 +566,7 @@ class AttachmentService implements AttachmentServiceInterface
                     'mime_type' => $file->getClientMediaType(),
                 ],
             );
+
             throw ValidationException::fromSingleError('post_id', '無權限上傳附件到此公告');
         }
         // 檢查附件數量限制
@@ -534,6 +575,7 @@ class AttachmentService implements AttachmentServiceInterface
         if ($currentAttachmentCount >= $maxAttachments) {
             throw ValidationException::fromSingleError('file', "此文章附件數量已達上限（{$maxAttachments} 個）");
         }
+
         // 使用改善的檔案驗證流程
         try {
             $fileInfo = $this->secureFileValidation($file);
@@ -558,8 +600,10 @@ class AttachmentService implements AttachmentServiceInterface
                     'mime_type' => $file->getClientMediaType(),
                 ],
             );
+
             throw $e;
         }
+
         try {
             // 確保上傳目錄存在
             if (!is_dir($this->uploadDir)) {
@@ -595,6 +639,7 @@ class AttachmentService implements AttachmentServiceInterface
                     'mime_type' => $fileInfo['mime_type'],
                 ],
             );
+
             return $attachment;
         } catch (Throwable $e) {
             // 清理失敗時的檔案
@@ -607,9 +652,11 @@ class AttachmentService implements AttachmentServiceInterface
             if (isset($finalPath) && file_exists($finalPath)) {
                 unlink($finalPath);
             }
+
             throw $e;
         }
     }
+
     public function download(string $uuid, int $currentUserId): array
     {
         $attachment = $this->attachmentRepo->findByUuid($uuid);
@@ -628,6 +675,7 @@ class AttachmentService implements AttachmentServiceInterface
                     'filename' => $attachment->getOriginalName(),
                 ],
             );
+
             throw ValidationException::fromSingleError('permission', '您沒有權限下載此附件');
         }
         $filePath = "{$this->uploadDir}/{$attachment->getStoragePath()}";
@@ -652,6 +700,7 @@ class AttachmentService implements AttachmentServiceInterface
                 'mime_type' => $attachment->getMimeType(),
             ],
         );
+
         return [
             'path' => $filePath,
             'name' => $attachment->getOriginalName(),
@@ -659,6 +708,7 @@ class AttachmentService implements AttachmentServiceInterface
             'size' => $attachment->getFileSize(),
         ];
     }
+
     public function delete(string $uuid, int $currentUserId): void
     {
         // 檢查使用者是否有權限操作此附件
@@ -669,6 +719,7 @@ class AttachmentService implements AttachmentServiceInterface
                 reason: '嘗試刪除無權限的附件',
                 metadata: ['attachment_uuid' => $uuid],
             );
+
             throw ValidationException::fromSingleError('permission', '您沒有權限刪除此附件');
         }
         $attachment = $this->attachmentRepo->findByUuid($uuid);
@@ -699,6 +750,7 @@ class AttachmentService implements AttachmentServiceInterface
             ],
         );
     }
+
     public function getByPostId(int $postId): array
     {
         return $this->attachmentRepo->getByPostId($postId);

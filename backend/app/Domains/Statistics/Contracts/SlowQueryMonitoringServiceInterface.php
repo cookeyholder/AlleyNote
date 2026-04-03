@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
+
 interface SlowQueryMonitoringServiceInterface
 {
     /**
@@ -14,12 +15,14 @@ interface SlowQueryMonitoringServiceInterface
         float $executionTime,
         array $parameters = [],
     ): bool;
+
     /**
      * 取得慢查詢統計資料.
      *
      * @return array<array{query_type: string, slow_query_count: int}>
      */
     public function getSlowQueryStats(int $days = 7): array;
+
     /**
      * 取得慢查詢詳細資料.
      *
@@ -33,6 +36,7 @@ interface SlowQueryMonitoringServiceInterface
      * }>
      */
     public function getSlowQueryDetails(int $limit = 50): array;
+
     /**
      * 清理舊的慢查詢記錄.
      */

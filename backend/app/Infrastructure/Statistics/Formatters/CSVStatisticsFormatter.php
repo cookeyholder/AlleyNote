@@ -3,27 +3,35 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Formatters;
+
 use RuntimeException;
+
 final class CSVStatisticsFormatter implements StatisticsFormatterInterface
 {
     /** CSV 分隔符號 */
     private const DELIMITER = ',';
+
     /** CSV 引號字元 */
     private const ENCLOSURE = '"';
+
     /** CSV 跳脫字元 */
     private const ESCAPE_CHAR = '\\';
+
     public function getFormat(): string
     {
         return 'csv';
     }
+
     public function getFileExtension(): string
     {
         return 'csv';
     }
+
     public function getMimeType(): string
     {
         return 'text/csv';
     }
+
     public function format(array $data, array $options = []): string
     {
         if (empty($data)) {
@@ -43,6 +51,7 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
         if ($tempFile === false) {
             throw new RuntimeException('無法建立暫存檔案');
         }
+
         try {
             // 寫入標題行
             if ($includeHeaders) {
@@ -63,21 +72,26 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
             if ($encoding !== 'UTF-8' && function_exists('mb_convert_encoding')) {
                 $output = mb_convert_encoding($output, $encoding, 'UTF-8');
             }
+
             return $output;
         } finally {
             fclose($tempFile);
         }
     }
+
     public function supportsLargeData(): bool
     {
         return true;
     }
+
     public function getRecommendedFilename(string $type, array $options = []): string
     {
         $timestamp = new DateTime()->format('Y-m-d_H-i-s');
         $suffix = (string) ($options['filename_suffix'] ?? '');
+
         return "statistics_{$type}{$suffix}_{$timestamp}.csv";
     }
+
     /**
      * 扁平化巢狀資料結構.
      *
@@ -103,9 +117,11 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
                 $flattened[] = [$key => $value];
             }
         }
+
         // 確保所有行有相同的欄位
         return $this->normalizeRows((array) $flattened);
     }
+
     /**
      * 檢查是否為關聯陣列.
      */
@@ -114,8 +130,10 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
         if (empty($array)) {
             return false;
         }
+
         return array_keys($array) !== range(0, count($array) - 1);
     }
+
     /**
      * 檢查是否為關聯陣列的順序陣列.
      */
@@ -124,8 +142,10 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
         if (empty($array) || !is_array($array[0])) {
             return false;
         }
+
         return $this->isAssociativeArray($array[0]);
     }
+
     /**
      * 展開關聯陣列.
      *
@@ -142,16 +162,20 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
                 $result[$fullKey] = $value;
             }
         }
+
         return [$result];
     }
+
     /**
      * 將陣列轉換為字串.
      */
     private function arrayToString(array $array): string
     {
         $result = json_encode($array, JSON_UNESCAPED_UNICODE);
+
         return $result !== false ? $result : '[]';
     }
+
     /**
      * 標準化行資料，確保所有行有相同的欄位.
      *
@@ -178,6 +202,7 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
             }
             $normalizedRows[] = $normalizedRow;
         }
+
         return $normalizedRows;
     }
 }

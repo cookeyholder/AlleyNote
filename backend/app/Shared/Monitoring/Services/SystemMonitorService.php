@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Services;
+
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
 use PDO;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class SystemMonitorService implements SystemMonitorInterface
 {
     public function __construct(
@@ -15,6 +17,7 @@ class SystemMonitorService implements SystemMonitorInterface
         private PDO $database,
         private EnvironmentConfig $config,
     ) {}
+
     /**
      * 取得系統基本資訊。
      */
@@ -34,6 +37,7 @@ class SystemMonitorService implements SystemMonitorInterface
             'timestamp' => time(),
         ];
     }
+
     /**
      * 取得記憶體使用統計。
      */
@@ -42,6 +46,7 @@ class SystemMonitorService implements SystemMonitorInterface
         $memoryUsage = memory_get_usage(true);
         $memoryPeak = memory_get_peak_usage(true);
         $memoryLimit = $this->parseMemoryLimit(ini_get('memory_limit'));
+
         return [
             'current_usage_bytes' => $memoryUsage,
             'current_usage_mb' => round($memoryUsage / 1024 / 1024, 2),
@@ -54,12 +59,14 @@ class SystemMonitorService implements SystemMonitorInterface
             'available_mb' => round(max(0, $memoryLimit - $memoryUsage) / 1024 / 1024, 2),
         ];
     }
+
     /**
      * 取得 CPU 使用率（簡化版本）。
      */
     public function getCpuUsage(): array
     {
         $loadAvg = function_exists('sys_getloadavg') ? sys_getloadavg() : [0, 0, 0];
+
         return [
             'load_average_1min' => $loadAvg[0] ?? 0,
             'load_average_5min' => $loadAvg[1] ?? 0,
@@ -70,6 +77,7 @@ class SystemMonitorService implements SystemMonitorInterface
             'process_gid' => function_exists('posix_getgid') ? posix_getgid() : null,
         ];
     }
+
     /**
      * 取得磁碟使用統計。
      */
@@ -81,6 +89,7 @@ class SystemMonitorService implements SystemMonitorInterface
         $totalBytes = disk_total_space($path);
         $freeBytes = disk_free_space($path);
         $usedBytes = $totalBytes ? $totalBytes - $freeBytes : 0;
+
         return [
             'path' => $path,
             'total_bytes' => $totalBytes ?: 0,
@@ -92,6 +101,7 @@ class SystemMonitorService implements SystemMonitorInterface
             'usage_percentage' => $totalBytes ? round(($usedBytes / $totalBytes) * 100, 2) : 0,
         ];
     }
+
     /**
      * 取得資料庫連線狀態和統計。
      */
@@ -113,6 +123,7 @@ class SystemMonitorService implements SystemMonitorInterface
             if ($status['driver'] === 'sqlite') {
                 $status = array_merge($status, $this->getSqliteStats());
             }
+
             return $status;
         } catch (Throwable $e) {
             $this->logger->error('Database status check failed', [
@@ -120,6 +131,7 @@ class SystemMonitorService implements SystemMonitorInterface
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
+
             return [
                 'connected' => false,
                 'error' => $e->getMessage(),
@@ -127,6 +139,7 @@ class SystemMonitorService implements SystemMonitorInterface
             ];
         }
     }
+
     /**
      * 取得應用程式健康狀態。
      */
@@ -149,6 +162,7 @@ class SystemMonitorService implements SystemMonitorInterface
                 $overallHealth = false;
             }
         }
+
         return [
             'overall_status' => $overallHealth ? 'healthy' : 'unhealthy',
             'health_score' => round(($score / $totalChecks) * 100, 1),
@@ -157,6 +171,7 @@ class SystemMonitorService implements SystemMonitorInterface
             'environment' => $this->config->getEnvironment(),
         ];
     }
+
     /**
      * 記錄系統指標到日誌。
      */
@@ -248,14 +263,17 @@ class SystemMonitorService implements SystemMonitorInterface
             ]);
         }
     }
+
     /**
      * 檢查系統是否正常運作。
      */
     public function isSystemHealthy(): bool
     {
         $health = $this->getHealthCheck();
+
         return $health['overall_status'] === 'healthy' && $health['health_score'] >= 80;
     }
+
     /**
      * 取得所有系統指標。
      */
@@ -270,6 +288,7 @@ class SystemMonitorService implements SystemMonitorInterface
             'health' => $this->getHealthCheck(),
         ];
     }
+
     // ===== 私有方法 =====
     /**
      * 取得載入的 PHP 擴充功能。
@@ -278,8 +297,10 @@ class SystemMonitorService implements SystemMonitorInterface
     {
         $extensions = get_loaded_extensions();
         sort($extensions);
+
         return $extensions;
     }
+
     /**
      * 解析記憶體限制字串。
      */
@@ -291,6 +312,7 @@ class SystemMonitorService implements SystemMonitorInterface
         }
         $unit = strtolower(substr($memoryLimit, -1));
         $value = (int) substr($memoryLimit, 0, -1);
+
         return match ($unit) {
             'g' => $value * 1024 * 1024 * 1024,
             'm' => $value * 1024 * 1024,
@@ -298,6 +320,7 @@ class SystemMonitorService implements SystemMonitorInterface
             default => (int) $memoryLimit,
         };
     }
+
     /**
      * 取得 CPU 核心數量。
      */
@@ -309,10 +332,13 @@ class SystemMonitorService implements SystemMonitorInterface
         // 備選方案
         if (is_file('/proc/cpuinfo')) {
             $cpuinfo = file_get_contents('/proc/cpuinfo');
+
             return substr_count($cpuinfo ?: '', 'processor');
         }
+
         return 1;
     }
+
     /**
      * 取得 SQLite 統計資訊。
      */
@@ -335,11 +361,13 @@ class SystemMonitorService implements SystemMonitorInterface
             if (is_array($result) && isset($result['table_count']) && is_numeric($result['table_count'])) {
                 $stats['table_count'] = (int) $result['table_count'];
             }
+
             return $stats;
         } catch (Throwable $e) {
             return ['error' => $e->getMessage()];
         }
     }
+
     /**
      * 檢查資料庫健康狀態。
      */
@@ -360,6 +388,7 @@ class SystemMonitorService implements SystemMonitorInterface
             return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
         }
     }
+
     /**
      * 檢查記憶體健康狀態。
      */
@@ -375,6 +404,7 @@ class SystemMonitorService implements SystemMonitorInterface
             return ['status' => 'critical', 'message' => 'Memory usage is critical', 'usage_percent' => $usage];
         }
     }
+
     /**
      * 檢查磁碟健康狀態。
      */
@@ -390,6 +420,7 @@ class SystemMonitorService implements SystemMonitorInterface
             return ['status' => 'critical', 'message' => 'Disk usage is critical', 'usage_percent' => $usage];
         }
     }
+
     /**
      * 檢查環境配置健康狀態。
      */
@@ -406,6 +437,7 @@ class SystemMonitorService implements SystemMonitorInterface
             return ['status' => 'critical', 'message' => 'Environment configuration check failed: ' . $e->getMessage()];
         }
     }
+
     /**
      * 檢查日誌健康狀態。
      */

@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
+
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Shared\Contracts\CacheServiceInterface;
 use InvalidArgumentException;
 use PDO;
 use Psr\Log\LoggerInterface;
+
 final class StatisticsDatabaseAdapterFactory
 {
     public function __construct(
@@ -16,6 +18,7 @@ final class StatisticsDatabaseAdapterFactory
         private readonly ?LoggerInterface $logger = null,
         private readonly ?PDO $db = null,
     ) {}
+
     /**
      * 建立基礎適配器（無額外功能）.
      */
@@ -23,6 +26,7 @@ final class StatisticsDatabaseAdapterFactory
     {
         return $this->baseRepository;
     }
+
     /**
      * 建立帶快取功能的適配器.
      */
@@ -31,8 +35,10 @@ final class StatisticsDatabaseAdapterFactory
         if ($this->cache === null) {
             throw new InvalidArgumentException('Cache service is required for cache adapter');
         }
+
         return new StatisticsRepositoryCacheAdapter($this->baseRepository, $this->cache);
     }
+
     /**
      * 建立帶日誌記錄功能的適配器.
      */
@@ -41,8 +47,10 @@ final class StatisticsDatabaseAdapterFactory
         if ($this->logger === null) {
             throw new InvalidArgumentException('Logger is required for logging adapter');
         }
+
         return new StatisticsRepositoryLoggingAdapter($this->baseRepository, $this->logger);
     }
+
     /**
      * 建立帶事務管理功能的適配器.
      */
@@ -51,8 +59,10 @@ final class StatisticsDatabaseAdapterFactory
         if ($this->db === null) {
             throw new InvalidArgumentException('PDO connection is required for transaction adapter');
         }
+
         return new StatisticsRepositoryTransactionAdapter($this->baseRepository, $this->db);
     }
+
     /**
      * 建立組合適配器（快取 + 日誌記錄）.
      */
@@ -65,8 +75,10 @@ final class StatisticsDatabaseAdapterFactory
             throw new InvalidArgumentException('Logger is required for logging adapter');
         }
         $cachedAdapter = new StatisticsRepositoryCacheAdapter($this->baseRepository, $this->cache);
+
         return new StatisticsRepositoryLoggingAdapter($cachedAdapter, $this->logger);
     }
+
     /**
      * 建立組合適配器（事務 + 日誌記錄）.
      */
@@ -79,8 +91,10 @@ final class StatisticsDatabaseAdapterFactory
             throw new InvalidArgumentException('Logger is required for logging adapter');
         }
         $transactionAdapter = new StatisticsRepositoryTransactionAdapter($this->baseRepository, $this->db);
+
         return new StatisticsRepositoryLoggingAdapter($transactionAdapter, $this->logger);
     }
+
     /**
      * 建立完整功能的適配器（快取 + 事務 + 日誌記錄）.
      */
@@ -98,8 +112,10 @@ final class StatisticsDatabaseAdapterFactory
         // 構建適配器鏈：Base -> Cache -> Transaction -> Logging
         $cachedAdapter = new StatisticsRepositoryCacheAdapter($this->baseRepository, $this->cache);
         $transactionAdapter = new StatisticsRepositoryTransactionAdapter($cachedAdapter, $this->db);
+
         return new StatisticsRepositoryLoggingAdapter($transactionAdapter, $this->logger);
     }
+
     /**
      * 根據設定建立適配器.
      *
@@ -137,8 +153,10 @@ final class StatisticsDatabaseAdapterFactory
             }
             $adapter = new StatisticsRepositoryLoggingAdapter($adapter, $this->logger);
         }
+
         return $adapter;
     }
+
     /**
      * 檢查是否可以建立指定類型的適配器.
      */
@@ -155,6 +173,7 @@ final class StatisticsDatabaseAdapterFactory
             default => false,
         };
     }
+
     /**
      * 取得可用的適配器類型清單.
      *
@@ -181,6 +200,7 @@ final class StatisticsDatabaseAdapterFactory
         if ($this->cache !== null && $this->logger !== null && $this->db !== null) {
             $types[] = 'full';
         }
+
         return $types;
     }
 }

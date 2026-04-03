@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\DTOs;
+
 readonly class CreateTagDTO
 {
     public function __construct(
@@ -11,6 +12,7 @@ readonly class CreateTagDTO
         public ?string $description = null,
         public ?string $color = null,
     ) {}
+
     /**
      * 從陣列建立 DTO.
      *
@@ -22,6 +24,7 @@ readonly class CreateTagDTO
         $slug = isset($data['slug']) && is_string($data['slug']) ? $data['slug'] : null;
         $description = isset($data['description']) && is_string($data['description']) ? $data['description'] : null;
         $color = isset($data['color']) && is_string($data['color']) ? $data['color'] : null;
+
         return new self(
             name: $name,
             slug: $slug,
@@ -29,6 +32,7 @@ readonly class CreateTagDTO
             color: $color,
         );
     }
+
     /**
      * 轉換為陣列.
      *

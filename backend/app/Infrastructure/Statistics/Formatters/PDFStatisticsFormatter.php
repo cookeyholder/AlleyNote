@@ -3,22 +3,27 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Formatters;
+
 use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
 use DateTime;
+
 final class PDFStatisticsFormatter implements StatisticsFormatterInterface
 {
     public function getFormat(): string
     {
         return 'pdf';
     }
+
     public function getFileExtension(): string
     {
         return 'pdf';
     }
+
     public function getMimeType(): string
     {
         return 'application/pdf';
     }
+
     public function format(array $data, array $options = []): string
     {
         // 這是一個簡化的 PDF 實作
@@ -28,20 +33,25 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
         $date = new DateTime()->format('Y-m-d H:i:s');
         // 建立簡化的 HTML 內容用於轉換
         $htmlContent = $this->generateHtmlContent($data, $title, $date);
+
         // 這裡應該使用真正的 PDF 產生函式庫
         // 目前返回模擬的 PDF 內容標記
         return $this->generateMockPdf($htmlContent, $title, $author);
     }
+
     public function supportsLargeData(): bool
     {
         return false; // PDF 格式通常不適合大量資料
     }
+
     public function getRecommendedFilename(string $type, array $options = []): string
     {
         $timestamp = new DateTime()->format('Y-m-d_H-i-s');
         $suffix = (string) ($options['filename_suffix'] ?? '');
+
         return "statistics_{$type}{$suffix}_{$timestamp}.pdf";
     }
+
     /**
      * 產生 HTML 內容.
      */
@@ -85,8 +95,10 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
         $html .= '
         </body>
         </html>';
+
         return $html;
     }
+
     /**
      * 產生表格 HTML.
      *
@@ -115,8 +127,10 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
+
         return $html;
     }
+
     /**
      * 產生摘要 HTML.
      *
@@ -132,8 +146,10 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
             $html .= '<p><strong>' . htmlspecialchars($key) . ':</strong> ' . htmlspecialchars((string) $value) . '</p>';
         }
         $html .= '</div>';
+
         return $html;
     }
+
     /**
      * 產生模擬的 PDF 內容.
      */
@@ -157,8 +173,10 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
         $mockContent .= '% HTML Length: ' . strlen($htmlContent) . " characters\n";
         $mockContent .= '% Generated: ' . date('Y-m-d H:i:s') . "\n";
         $mockContent .= "%%EOF\n";
+
         return $mockContent;
     }
+
     /**
      * 檢查是否為順序陣列.
      */

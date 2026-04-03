@@ -3,13 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Shared\Validation;
+
 use JsonSerializable;
+
 class ValidationResult implements JsonSerializable
 {
     private bool $isValid;
+
     private array $errors;
+
     private array $validatedData;
+
     private array $failedRules;
+
     /**
      * @param bool $isValid 是否驗證通過
      * @param array<string, mixed> $errors 錯誤訊息陣列，格式為 ['field' => ['error1', 'error2']]
@@ -27,6 +33,7 @@ class ValidationResult implements JsonSerializable
         $this->validatedData = $validatedData;
         $this->failedRules = $failedRules;
     }
+
     /**
      * 建立驗證成功的結果.
      *
@@ -36,6 +43,7 @@ class ValidationResult implements JsonSerializable
     {
         return new self(true, [], $validatedData, []);
     }
+
     /**
      * 建立驗證失敗的結果.
      *
@@ -46,6 +54,7 @@ class ValidationResult implements JsonSerializable
     {
         return new self(false, $errors, [], $failedRules);
     }
+
     /**
      * 檢查驗證是否通過.
      */
@@ -53,6 +62,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->isValid;
     }
+
     /**
      * 檢查驗證是否失敗.
      */
@@ -60,6 +70,7 @@ class ValidationResult implements JsonSerializable
     {
         return !$this->isValid;
     }
+
     /**
      * 取得所有錯誤訊息.
      */
@@ -67,6 +78,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->errors;
     }
+
     /**
      * 取得特定欄位的錯誤訊息.
      *
@@ -76,6 +88,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->errors[$field] ?? [];
     }
+
     /**
      * 檢查特定欄位是否有錯誤.
      *
@@ -85,6 +98,7 @@ class ValidationResult implements JsonSerializable
     {
         return !empty($this->errors[$field]);
     }
+
     /**
      * 取得第一個錯誤訊息.
      */
@@ -95,8 +109,10 @@ class ValidationResult implements JsonSerializable
                 return $fieldErrors[0];
             }
         }
+
         return null;
     }
+
     /**
      * 取得特定欄位的第一個錯誤訊息.
      *
@@ -105,8 +121,10 @@ class ValidationResult implements JsonSerializable
     public function getFirstFieldError(string $field): ?string
     {
         $fieldErrors = $this->getFieldErrors($field);
+
         return !empty($fieldErrors) ? $fieldErrors[0] : null;
     }
+
     /**
      * 取得所有錯誤訊息的扁平陣列.
      */
@@ -116,8 +134,10 @@ class ValidationResult implements JsonSerializable
         foreach ($this->errors as $fieldErrors) {
             $allErrors = array_merge($allErrors, $fieldErrors);
         }
+
         return $allErrors;
     }
+
     /**
      * 取得驗證通過的資料.
      */
@@ -125,6 +145,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->validatedData;
     }
+
     /**
      * 取得特定欄位的驗證通過資料.
      *
@@ -135,6 +156,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->validatedData[$field] ?? $default;
     }
+
     /**
      * 取得失敗的規則.
      */
@@ -142,6 +164,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->failedRules;
     }
+
     /**
      * 取得特定欄位失敗的規則.
      *
@@ -151,6 +174,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->failedRules[$field] ?? [];
     }
+
     /**
      * 新增錯誤訊息.
      *
@@ -164,8 +188,10 @@ class ValidationResult implements JsonSerializable
         }
         $this->errors[$field][] = $error;
         $this->isValid = false;
+
         return $this;
     }
+
     /**
      * 新增失敗的規則.
      *
@@ -178,8 +204,10 @@ class ValidationResult implements JsonSerializable
             $this->failedRules[$field] = [];
         }
         $this->failedRules[$field][] = $rule;
+
         return $this;
     }
+
     /**
      * 合併另一個驗證結果.
      *
@@ -199,8 +227,10 @@ class ValidationResult implements JsonSerializable
             }
         }
         $this->validatedData = array_merge($this->validatedData, $other->getValidatedData());
+
         return $this;
     }
+
     /**
      * 取得總錯誤數量.
      */
@@ -208,6 +238,7 @@ class ValidationResult implements JsonSerializable
     {
         return count($this->getAllErrors());
     }
+
     /**
      * 取得受影響的欄位數量 (有錯誤的欄位).
      */
@@ -215,6 +246,7 @@ class ValidationResult implements JsonSerializable
     {
         return count($this->errors);
     }
+
     /**
      * 檢查是否有特定規則的驗證失敗.
      *
@@ -227,8 +259,10 @@ class ValidationResult implements JsonSerializable
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查特定欄位是否因特定規則失敗.
      *
@@ -239,6 +273,7 @@ class ValidationResult implements JsonSerializable
     {
         return isset($this->failedRules[$field]) && in_array($rule, $this->failedRules[$field], true);
     }
+
     /**
      * 轉換為陣列格式.
      */
@@ -251,6 +286,7 @@ class ValidationResult implements JsonSerializable
             'failed_rules' => $this->failedRules,
         ];
     }
+
     /**
      * 實作 JsonSerializable 介面.
      */
@@ -258,6 +294,7 @@ class ValidationResult implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 轉換為字串格式（用於除錯）.
      */
@@ -267,6 +304,7 @@ class ValidationResult implements JsonSerializable
             return 'Validation passed with ' . count($this->validatedData) . ' fields';
         }
         $errorCount = count($this->getAllErrors());
+
         return "Validation failed with {$errorCount} errors: " . implode(', ', $this->getAllErrors());
     }
 }

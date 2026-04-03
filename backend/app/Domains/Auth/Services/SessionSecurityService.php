@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\SessionSecurityServiceInterface;
+
 class SessionSecurityService implements SessionSecurityServiceInterface
 {
     /**
@@ -27,6 +29,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             session_start();
         }
     }
+
     /**
      * 在使用者登入後重新產生 Session ID.
      */
@@ -36,6 +39,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             session_regenerate_id(true); // 刪除舊的 Session 檔案
         }
     }
+
     /**
      * 安全地銷毀 Session.
      */
@@ -61,6 +65,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             session_destroy();
         }
     }
+
     /**
      * 檢查 Session 是否有效.
      */
@@ -86,8 +91,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if ((time() - $_SESSION['session_created_at']) > $maxLifetime) {
             return false;
         }
+
         return true;
     }
+
     /**
      * 更新 Session 活動時間.
      */
@@ -97,6 +104,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
             $_SESSION['last_activity'] = time();
         }
     }
+
     /**
      * 設定使用者登入後的 Session 資料.
      */
@@ -111,6 +119,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         // 重新產生 Session ID 防止 Session 固定攻擊
         $this->regenerateSessionId();
     }
+
     /**
      * 驗證 Session 的 IP 位址是否一致.
      */
@@ -119,8 +128,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (!isset($_SESSION['user_ip'])) {
             return false;
         }
+
         return $_SESSION['user_ip'] === $currentIp;
     }
+
     /**
      * 驗證 Session 的 User-Agent 是否一致.
      */
@@ -129,8 +140,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (!isset($_SESSION['user_agent'])) {
             return false;
         }
+
         return $_SESSION['user_agent'] === hash('sha256', $currentUserAgent);
     }
+
     /**
      * 檢查是否需要 IP 變更驗證.
      */
@@ -138,6 +151,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
     {
         return isset($_SESSION['requires_ip_verification']) && $_SESSION['requires_ip_verification'] === true;
     }
+
     /**
      * 標記需要 IP 變更驗證.
      */
@@ -147,6 +161,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         $_SESSION['new_detected_ip'] = $newIp;
         $_SESSION['ip_change_detected_at'] = time();
     }
+
     /**
      * 完成 IP 變更驗證.
      */
@@ -159,6 +174,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         $_SESSION['requires_ip_verification'] = false;
         unset($_SESSION['ip_change_detected_at']);
     }
+
     /**
      * 檢查 IP 變更驗證是否過期（5 分鐘）.
      */
@@ -167,8 +183,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (!isset($_SESSION['ip_change_detected_at'])) {
             return false;
         }
+
         return (time() - $_SESSION['ip_change_detected_at']) > 300; // 5 分鐘
     }
+
     /**
      * 全面的 Session 安全檢查.
      */
@@ -184,12 +202,14 @@ class SessionSecurityService implements SessionSecurityServiceInterface
         if (!$this->isSessionValid()) {
             $result['valid'] = false;
             $result['message'] = 'Session 已過期';
+
             return $result;
         }
         // User-Agent 檢查
         if (!$this->validateSessionUserAgent($currentUserAgent)) {
             $result['valid'] = false;
             $result['message'] = '瀏覽器指紋不符，可能的 Session 劫持';
+
             return $result;
         }
         // IP 變更檢查
@@ -212,6 +232,7 @@ class SessionSecurityService implements SessionSecurityServiceInterface
                 $result['message'] = '檢測到 IP 位址變更，請進行身分驗證以確保帳號安全';
             }
         }
+
         return $result;
     }
 }

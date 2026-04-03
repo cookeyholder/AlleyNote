@@ -3,16 +3,21 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Headers;
+
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use Throwable;
+
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
     private array $config;
+
     private ?string $currentNonce = null;
+
     public function __construct(array $config = [])
     {
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
+
     public function setSecurityHeaders(): void
     {
         // Content Security Policy
@@ -66,6 +71,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             header('Cache-Control: ' . $this->config['cache_control']['value']);
         }
     }
+
     /**
      * 產生 CSP nonce 值
      */
@@ -74,8 +80,10 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         if ($this->currentNonce === null) {
             $this->currentNonce = base64_encode(random_bytes(16));
         }
+
         return $this->currentNonce;
     }
+
     /**
      * 取得當前的 nonce 值
      */
@@ -83,6 +91,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         return $this->currentNonce;
     }
+
     /**
      * 建立 CSP 違規報告端點.
      */
@@ -90,6 +99,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
+
             return;
         }
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
@@ -98,18 +108,21 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             && strpos($contentType, 'application/json') === false
         ) {
             http_response_code(400);
+
             return;
         }
         $input = file_get_contents('php://input');
         $report = json_decode($input, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             http_response_code(400);
+
             return;
         }
         // 記錄 CSP 違規
         $this->logCSPViolation($report);
         http_response_code(204);
     }
+
     /**
      * 記錄 CSP 違規.
      */
@@ -128,6 +141,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             $this->sendToMonitoring($logData);
         }
     }
+
     /**
      * 發送到監控服務.
      */
@@ -149,6 +163,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             app_log('error', 'Failed to send CSP violation to monitoring', ['exception' => $e->getMessage()]);
         }
     }
+
     public function removeServerSignature(): void
     {
         // 移除可能洩漏伺服器資訊的標頭
@@ -159,6 +174,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             header('Server: ' . $this->config['server_signature']['value']);
         }
     }
+
     private function buildCSP(): string
     {
         $directives = [];
@@ -180,8 +196,10 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         if (isset($this->config['csp']['report_uri'])) {
             $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
         }
+
         return implode('; ', $directives);
     }
+
     private function buildPermissionsPolicy(): string
     {
         $policies = [];
@@ -192,14 +210,17 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 $policies[] = $feature . '=' . $allowlist;
             }
         }
+
         return implode(', ', $policies);
     }
+
     private function isHTTPS(): bool
     {
         return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
             || $_SERVER['SERVER_PORT'] == 443
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
+
     private function getDefaultConfig(): array
     {
         return [

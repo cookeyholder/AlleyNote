@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Specifications;
+
 use App\Domains\Post\Aggregates\PostAggregate;
+
 interface PostSpecificationInterface
 {
     /**
@@ -12,18 +14,21 @@ interface PostSpecificationInterface
      * @param PostAggregate $post 要檢查的 Post
      */
     public function isSatisfiedBy(PostAggregate $post): bool;
+
     /**
      * AND 組合規格.
      *
      * @param PostSpecificationInterface $other 另一個規格
      */
     public function and(PostSpecificationInterface $other): PostSpecificationInterface;
+
     /**
      * OR 組合規格.
      *
      * @param PostSpecificationInterface $other 另一個規格
      */
     public function or(PostSpecificationInterface $other): PostSpecificationInterface;
+
     /**
      * NOT 反轉規格.
      */

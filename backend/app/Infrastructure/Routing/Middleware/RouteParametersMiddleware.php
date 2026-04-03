@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
+
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 class RouteParametersMiddleware extends AbstractMiddleware
 {
     /**
@@ -14,6 +16,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
      * @var array<string, mixed>
      */
     private array $parameters = [];
+
     /**
      * 建構函式.
      *
@@ -25,6 +28,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
         parent::__construct('route-parameters', $priority);
         $this->parameters = $parameters;
     }
+
     protected function execute(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
@@ -35,8 +39,10 @@ class RouteParametersMiddleware extends AbstractMiddleware
         }
         // 加入特殊的路由參數集合屬性
         $request = $request->withAttribute('route_parameters', $this->parameters);
+
         return $handler->handle($request);
     }
+
     /**
      * 設定路由參數.
      *
@@ -45,8 +51,10 @@ class RouteParametersMiddleware extends AbstractMiddleware
     public function setParameters(array $parameters): self
     {
         $this->parameters = $parameters;
+
         return $this;
     }
+
     /**
      * 新增單一路由參數.
      *
@@ -56,8 +64,10 @@ class RouteParametersMiddleware extends AbstractMiddleware
     public function addParameter(string $name, mixed $value): self
     {
         $this->parameters[$name] = $value;
+
         return $this;
     }
+
     /**
      * 取得路由參數.
      *
@@ -67,6 +77,7 @@ class RouteParametersMiddleware extends AbstractMiddleware
     {
         return $this->parameters;
     }
+
     /**
      * 移除指定的路由參數.
      *
@@ -75,14 +86,17 @@ class RouteParametersMiddleware extends AbstractMiddleware
     public function removeParameter(string $name): self
     {
         unset($this->parameters[$name]);
+
         return $this;
     }
+
     /**
      * 清空所有路由參數.
      */
     public function clearParameters(): self
     {
         $this->parameters = [];
+
         return $this;
     }
 }

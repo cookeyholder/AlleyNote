@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
+
 use RuntimeException;
 use Throwable;
+
 final class PostStatisticsRepository implements PostStatisticsRepositoryInterface
 {
     public function __construct(
         private readonly PDO $db,
     ) {}
+
     public function getTotalPostsCount(StatisticsPeriod $period, ?string $status = null): int
     {
         try {
@@ -25,11 +28,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt = $this->db->prepare($sql);
             $this->bindParams($stmt, $params);
             $stmt->execute();
+
             return (int) $stmt->fetchColumn();
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章總數統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsCountByStatus(StatisticsPeriod $period): array
     {
         try {
@@ -59,11 +64,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     $result[$statusValue] = $count;
                 }
             }
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章狀態統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsCountBySource(StatisticsPeriod $period): array
     {
         try {
@@ -90,11 +97,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     ? (int) $row['count']
                     : 0;
             }
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章來源統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsCountBySourceType(
         StatisticsPeriod $period,
         SourceType $sourceType,
@@ -116,11 +125,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt = $this->db->prepare($sql);
             $this->bindParams($stmt, $params);
             $stmt->execute();
+
             return (int) $stmt->fetchColumn();
         } catch (PDOException $e) {
             throw new RuntimeException('取得指定來源文章數量失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostViewsStatistics(StatisticsPeriod $period): array
     {
         try {
@@ -139,6 +150,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             if (!is_array($row)) {
                 return ['total_views' => 0, 'unique_views' => 0, 'avg_views_per_post' => 0.0];
             }
+
             /** @phpstan-ignore cast.int, cast.double */
             return [
                 'total_views' => (int) $row['total_views'],
@@ -149,6 +161,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             throw new RuntimeException('取得文章瀏覽量統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPopularPosts(StatisticsPeriod $period, int $limit = 10, string $metric = 'views'): array
     {
         if ($limit <= 0 || $limit > 100) {
@@ -158,6 +171,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         if (!in_array($metric, $allowedMetrics, true)) {
             throw new InvalidArgumentException('不支援的排序指標: ' . $metric);
         }
+
         try {
             // 根據指標選擇排序欄位
             $orderField = match ($metric) {
@@ -185,16 +199,19 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     'metric_value' => (int) $row['metric_value'],
                 ];
             }
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得熱門文章失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsCountByUser(StatisticsPeriod $period, int $limit = 10): array
     {
         if ($limit <= 0 || $limit > 50) {
             throw new InvalidArgumentException('查詢數量必須在 1-50 之間');
         }
+
         try {
             $sql = 'SELECT
                         user_id,
@@ -219,17 +236,20 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     'total_views' => (int) $row['total_views'],
                 ];
             }
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得使用者文章統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsPublishTimeDistribution(StatisticsPeriod $period, string $groupBy = 'day'): array
     {
         $allowedGroupBy = ['hour', 'day', 'week', 'month'];
         if (!in_array($groupBy, $allowedGroupBy, true)) {
             throw new InvalidArgumentException('不支援的分組方式: ' . $groupBy);
         }
+
         try {
             $groupByClause = match ($groupBy) {
                 'hour' => "strftime('%H:00', created_at)",
@@ -250,11 +270,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[(string) $row['time_period']] = (int) $row['count'];
             }
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章發布時間分布統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsGrowthTrend(StatisticsPeriod $currentPeriod, StatisticsPeriod $previousPeriod): array
     {
         try {
@@ -262,6 +284,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $previousCount = $this->getTotalPostsCount($previousPeriod);
             $growthCount = $currentCount - $previousCount;
             $growthRate = $previousCount > 0 ? ($growthCount / $previousCount) * 100 : 0.0;
+
             return [
                 'current' => $currentCount,
                 'previous' => $previousCount,
@@ -272,6 +295,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             throw new RuntimeException('取得文章成長趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostsLengthStatistics(StatisticsPeriod $period): array
     {
         try {
@@ -296,6 +320,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $minLength = isset($row['min_length']) ? (int) $row['min_length'] : 0;
             $maxLength = isset($row['max_length']) ? (int) $row['max_length'] : 0;
             $totalChars = isset($row['total_chars']) ? (int) $row['total_chars'] : 0;
+
             return [
                 'avg_length' => $avgLength,
                 'min_length' => $minLength,
@@ -306,6 +331,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             throw new RuntimeException('取得文章長度統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * @param array<string, array{min: int, max: int}> $lengthRanges
      * @return array<string, array{range: string, count: int, percentage: float}>
@@ -315,6 +341,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         if (empty($lengthRanges)) {
             throw new InvalidArgumentException('字數範圍定義不能為空');
         }
+
         try {
             $counts = [];
             foreach ($lengthRanges as $rangeName => $range) {
@@ -348,11 +375,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     'percentage' => $percentage,
                 ];
             }
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得文章字數範圍統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPinnedPostsStatistics(StatisticsPeriod $period): array
     {
         try {
@@ -374,6 +403,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $pinnedCount = isset($row['pinned_count']) ? (int) $row['pinned_count'] : 0;
             $unpinnedCount = isset($row['unpinned_count']) ? (int) $row['unpinned_count'] : 0;
             $pinnedViews = isset($row['pinned_views']) ? (int) $row['pinned_views'] : 0;
+
             return [
                 'pinned_count' => $pinnedCount,
                 'unpinned_count' => $unpinnedCount,
@@ -383,6 +413,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             throw new RuntimeException('取得置頂文章統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function hasDataForPeriod(StatisticsPeriod $period): bool
     {
         try {
@@ -391,11 +422,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt->bindValue(':start_date', $period->startTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->bindValue(':end_date', $period->endTime->format('Y-m-d H:i:s'), PDO::PARAM_STR);
             $stmt->execute();
+
             return $stmt->fetchColumn() > 0;
         } catch (PDOException $e) {
             throw new RuntimeException('檢查資料存在性失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getPostActivitySummary(StatisticsPeriod $period): array
     {
         try {
@@ -432,6 +465,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             }
             // 取得熱門來源
             $popularSources = $this->getPostsCountBySource($period);
+
             return array_merge($basicStats, [
                 'popular_sources' => $popularSources,
             ]);
@@ -439,6 +473,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             throw new RuntimeException('取得文章活動摘要失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     public function getViewTimeSeriesData(
         DateTimeInterface $startDate,
         DateTimeInterface $endDate,
@@ -470,11 +505,13 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             ]);
             /** @var array<int, array{date: string, views: int, visitors: int}> */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('取得瀏覽量時間序列統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 綁定查詢參數.
      *

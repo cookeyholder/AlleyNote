@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Domains\Shared\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
+
 final readonly class Email implements JsonSerializable, Stringable
 {
     private string $value;
+
     public function __construct(string $email)
     {
         $trimmedEmail = trim($email);
@@ -24,6 +27,7 @@ final readonly class Email implements JsonSerializable, Stringable
         }
         $this->value = strtolower($trimmedEmail); // 統一轉換為小寫
     }
+
     /**
      * 從字串建立 Email.
      */
@@ -31,6 +35,7 @@ final readonly class Email implements JsonSerializable, Stringable
     {
         return new self($email);
     }
+
     /**
      * 取得 Email 值
      */
@@ -38,22 +43,27 @@ final readonly class Email implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 取得本地部分（@之前的部分）.
      */
     public function getLocalPart(): string
     {
         $parts = explode('@', $this->value);
+
         return $parts[0] ?? '';
     }
+
     /**
      * 取得網域部分（@之後的部分）.
      */
     public function getDomain(): string
     {
         $parts = explode('@', $this->value);
+
         return $parts[1] ?? '';
     }
+
     /**
      * 檢查是否與另一個 Email 相等.
      */
@@ -61,6 +71,7 @@ final readonly class Email implements JsonSerializable, Stringable
     {
         return $this->value === $other->value;
     }
+
     /**
      * 遮罩 Email 用於顯示（如：u***@example.com）
      */
@@ -72,8 +83,10 @@ final readonly class Email implements JsonSerializable, Stringable
         if (strlen($local) <= 2) {
             return $local[0] . '***@' . $domain;
         }
+
         return $local[0] . '***' . substr($local, -1) . '@' . $domain;
     }
+
     /**
      * 轉換為字串.
      */
@@ -81,6 +94,7 @@ final readonly class Email implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * __toString 魔術方法.
      */
@@ -88,6 +102,7 @@ final readonly class Email implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * JsonSerializable 實作.
      */
@@ -95,6 +110,7 @@ final readonly class Email implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 轉換為陣列.
      */

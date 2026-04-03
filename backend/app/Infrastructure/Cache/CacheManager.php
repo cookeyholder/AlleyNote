@@ -3,15 +3,20 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Cache;
+
 class CacheManager
 {
     private array $cache = [];
+
     private array $expiry = [];
+
     private int $defaultTtl = 3600; // 1 hour
+
     public function __construct(int $defaultTtl = 3600)
     {
         $this->defaultTtl = $defaultTtl;
     }
+
     /**
      * 取得快取值
      */
@@ -20,8 +25,10 @@ class CacheManager
         if (!$this->has($key)) {
             return $default;
         }
+
         return $this->cache[$key];
     }
+
     /**
      * 設定快取值
      */
@@ -30,8 +37,10 @@ class CacheManager
         $ttl ??= $this->defaultTtl;
         $this->cache[$key] = $value;
         $this->expiry[$key] = time() + $ttl;
+
         return true;
     }
+
     /**
      * 檢查快取是否存在且未過期
      */
@@ -42,18 +51,23 @@ class CacheManager
         }
         if (isset($this->expiry[$key]) && time() > $this->expiry[$key]) {
             $this->delete($key);
+
             return false;
         }
+
         return true;
     }
+
     /**
      * 刪除快取.
      */
     public function delete(string $key): bool
     {
         unset($this->cache[$key], $this->expiry[$key]);
+
         return true;
     }
+
     /**
      * 清空所有快取.
      */
@@ -61,8 +75,10 @@ class CacheManager
     {
         $this->cache = [];
         $this->expiry = [];
+
         return true;
     }
+
     /**
      * 記憶化取得（如果不存在則執行回調並快取結果）.
      */
@@ -73,8 +89,10 @@ class CacheManager
         }
         $value = $callback();
         $this->set($key, $value, $ttl);
+
         return $value;
     }
+
     /**
      * 永久記憶化取得（直到手動刪除）.
      */
@@ -86,8 +104,10 @@ class CacheManager
         $value = $callback();
         $this->cache[$key] = $value;
         unset($this->expiry[$key]); // 永不過期
+
         return $value;
     }
+
     /**
      * 取得或設定多個快取值
      */
@@ -98,8 +118,10 @@ class CacheManager
             $keyStr = (string) $key;
             $result[$keyStr] = $this->get($keyStr);
         }
+
         return $result;
     }
+
     /**
      * 設定多個快取值
      */
@@ -108,8 +130,10 @@ class CacheManager
         foreach ($values as $key => $value) {
             $this->set($key, $value, $ttl);
         }
+
         return true;
     }
+
     /**
      * 根據模式刪除快取.
      */
@@ -126,8 +150,10 @@ class CacheManager
                 $deleted++;
             }
         }
+
         return $deleted;
     }
+
     /**
      * 增加數值快取.
      */
@@ -136,8 +162,10 @@ class CacheManager
         $current = (int) $this->get($key, 0);
         $new = $current + $value;
         $this->set($key, $new);
+
         return $new;
     }
+
     /**
      * 減少數值快取.
      */
@@ -145,6 +173,7 @@ class CacheManager
     {
         return $this->increment($key, -$value);
     }
+
     /**
      * 取得快取統計資訊.
      */
@@ -160,6 +189,7 @@ class CacheManager
                 $active++;
             }
         }
+
         return [
             'total_keys' => count($this->cache),
             'active_keys' => $active,
@@ -167,6 +197,7 @@ class CacheManager
             'memory_usage' => $this->getMemoryUsage(),
         ];
     }
+
     /**
      * 估算記憶體使用量.
      */
@@ -181,6 +212,7 @@ class CacheManager
             return round($size / 1048576, 2) . ' MB';
         }
     }
+
     /**
      * 清理過期的快取.
      */
@@ -194,8 +226,10 @@ class CacheManager
                 $cleaned++;
             }
         }
+
         return $cleaned;
     }
+
     /**
      * 檢查快取鍵是否有效.
      */

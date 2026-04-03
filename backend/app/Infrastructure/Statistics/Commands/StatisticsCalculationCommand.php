@@ -3,22 +3,28 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Commands;
+
 use RuntimeException;
 use Throwable;
+
 final class StatisticsCalculationCommand
 {
     /** 預設重試次數 */
     private const DEFAULT_MAX_RETRIES = 3;
+
     /** 重試延遲（秒） */
     private const RETRY_DELAY_SECONDS = 5;
+
     /** 並行執行鎖定文件路徑 */
     private const LOCK_FILE_PREFIX = 'statistics_calculation_';
+
     /** 支援的統計週期類型 */
     private const SUPPORTED_PERIODS = [
         'daily' => PeriodType::DAILY,
         'weekly' => PeriodType::WEEKLY,
         'monthly' => PeriodType::MONTHLY,
     ];
+
     /** @var array<string, mixed> 執行統計 */
     private array $executionStats = [
         'start_time' => null,
@@ -29,6 +35,7 @@ final class StatisticsCalculationCommand
         'retries' => 0,
         'errors' => [],
     ];
+
     public function __construct(
         private readonly StatisticsAggregationServiceInterface $aggregationService,
         private readonly StatisticsRepositoryInterface $statisticsRepository,
@@ -36,6 +43,7 @@ final class StatisticsCalculationCommand
         private readonly LoggerInterface $logger,
         private readonly string $lockFileDir = '/tmp',
     ) {}
+
     /**
      * 執行統計計算任務.
      *
@@ -53,6 +61,7 @@ final class StatisticsCalculationCommand
         // 驗證輸入參數
         $this->validatePeriods($periods);
         $lockFile = null;
+
         try {
             // 獲取執行鎖定，確保並行安全
             $lockFile = $this->acquireExecutionLock($periods);
@@ -67,9 +76,11 @@ final class StatisticsCalculationCommand
             }
             $this->finalizeExecution();
             $this->logger->info('統計計算任務完成', $this->executionStats);
+
             return $this->executionStats;
         } catch (Throwable $e) {
             $this->handleExecutionError($e);
+
             throw $e;
         } finally {
             // 釋放執行鎖定
@@ -78,6 +89,7 @@ final class StatisticsCalculationCommand
             }
         }
     }
+
     /**
      * 獲取指定週期的可用統計快照類型.
      *
@@ -92,6 +104,7 @@ final class StatisticsCalculationCommand
             StatisticsSnapshot::TYPE_POPULAR,
         ];
     }
+
     /**
      * 驗證週期類型參數.
      *
@@ -108,6 +121,7 @@ final class StatisticsCalculationCommand
             throw new RuntimeException('不支援的統計週期: ' . implode(', ', $invalidPeriods));
         }
     }
+
     /**
      * 計算特定週期的統計快照.
      */
@@ -125,6 +139,7 @@ final class StatisticsCalculationCommand
             $this->calculateSnapshotWithRetry($snapshotType, $period, $maxRetries, $force);
         }
     }
+
     /**
      * 建立統計週期物件.
      */
@@ -146,8 +161,10 @@ final class StatisticsCalculationCommand
                 $now->modify('first day of last month midnight')->add(new DateInterval('P1M'))->modify('-1 second'),
             ],
         };
+
         return new StatisticsPeriod($periodTypeEnum, $startTime, $endTime);
     }
+
     /**
      * 帶重試機制計算統計快照.
      */
@@ -168,6 +185,7 @@ final class StatisticsCalculationCommand
                         'period_type' => $period->type->value,
                     ]);
                     $this->incrementStat('successful_snapshots');
+
                     return;
                 }
                 // 計算統計快照
@@ -182,6 +200,7 @@ final class StatisticsCalculationCommand
                     'retry_count' => $retryCount,
                 ]);
                 $this->incrementStat('successful_snapshots');
+
                 return;
             } catch (Throwable $e) {
                 $retryCount++;
@@ -216,12 +235,14 @@ final class StatisticsCalculationCommand
             }
         }
     }
+
     /**
      * 計算單一統計快照.
      */
     private function calculateSingleSnapshot(string $snapshotType, StatisticsPeriod $period): StatisticsSnapshot
     {
         $startTime = microtime(true);
+
         try {
             // 根據快照類型呼叫對應的聚合方法
             $snapshot = match ($snapshotType) {
@@ -237,6 +258,7 @@ final class StatisticsCalculationCommand
                 'period_type' => $period->type->value,
                 'duration_ms' => $duration,
             ]);
+
             return $snapshot;
         } catch (Throwable $e) {
             $this->logger->error('統計資料聚合失敗', [
@@ -244,6 +266,7 @@ final class StatisticsCalculationCommand
                 'period_type' => $period->type->value,
                 'error' => $e->getMessage(),
             ]);
+
             throw new RuntimeException(
                 "統計快照計算失敗: {$snapshotType} ({$period->type->value}): {$e->getMessage()}",
                 0,
@@ -251,6 +274,7 @@ final class StatisticsCalculationCommand
             );
         }
     }
+
     /**
      * 檢查統計快照是否已存在.
      */
@@ -258,6 +282,7 @@ final class StatisticsCalculationCommand
     {
         return $this->statisticsRepository->exists($snapshotType, $period);
     }
+
     /**
      * 清除相關快取.
      */
@@ -277,6 +302,7 @@ final class StatisticsCalculationCommand
             ]);
         }
     }
+
     /**
      * 獲取執行鎖定文件.
      */
@@ -308,8 +334,10 @@ final class StatisticsCalculationCommand
         if (!file_put_contents($lockFilePath, json_encode($lockData))) {
             throw new RuntimeException('無法建立執行鎖定文件');
         }
+
         return $lockFilePath;
     }
+
     /**
      * 釋放執行鎖定文件.
      */
@@ -319,6 +347,7 @@ final class StatisticsCalculationCommand
             unlink($lockFilePath);
         }
     }
+
     /**
      * 初始化執行統計.
      */
@@ -334,6 +363,7 @@ final class StatisticsCalculationCommand
             'errors' => [],
         ];
     }
+
     /**
      * 完成執行統計.
      */
@@ -344,6 +374,7 @@ final class StatisticsCalculationCommand
         $this->executionStats['end_time'] = $endTime;
         $this->executionStats['duration_ms'] = round(($endTime - $startTime) * 1000, 2);
     }
+
     /**
      * 增加統計計數器.
      */
@@ -352,6 +383,7 @@ final class StatisticsCalculationCommand
         $current = is_int($this->executionStats[$key] ?? null) ? $this->executionStats[$key] : 0;
         $this->executionStats[$key] = $current + 1;
     }
+
     /**
      * 新增錯誤記錄.
      *
@@ -363,6 +395,7 @@ final class StatisticsCalculationCommand
         $errors[] = $error;
         $this->executionStats['errors'] = $errors;
     }
+
     /**
      * 處理執行錯誤.
      */

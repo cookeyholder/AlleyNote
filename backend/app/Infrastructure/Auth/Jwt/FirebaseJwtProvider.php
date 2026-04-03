@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Auth\Jwt;
+
 use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Exceptions\InvalidTokenException;
 use App\Domains\Auth\Exceptions\JwtConfigurationException;
@@ -18,11 +19,15 @@ use Firebase\JWT\Key;
 use Firebase\JWT\SignatureInvalidException;
 use Throwable;
 use UnexpectedValueException;
+
 final class FirebaseJwtProvider implements JwtProviderInterface
 {
     private JwtConfig $config;
+
     private string $privateKey;
+
     private string $publicKey;
+
     /**
      * 建構函式.
      *
@@ -33,6 +38,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     public function __construct(JwtConfig $config)
     {
         $this->config = $config;
+
         try {
             $this->initializeKeys();
         } catch (Throwable $e) {
@@ -42,6 +48,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
     }
+
     /**
      * 產生 JWT access token.
      *
@@ -55,8 +62,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     public function generateAccessToken(array $payload, ?int $ttl = null): string
     {
         $ttl ??= $this->config->getAccessTokenTtl();
+
         return $this->generateToken($payload, $ttl, 'access');
     }
+
     /**
      * 產生 JWT refresh token.
      *
@@ -70,8 +79,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     public function generateRefreshToken(array $payload, ?int $ttl = null): string
     {
         $ttl ??= $this->config->getRefreshTokenTtl();
+
         return $this->generateToken($payload, $ttl, 'refresh');
     }
+
     /**
      * 驗證 JWT token.
      *
@@ -93,6 +104,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 'Token 不能為空',
             );
         }
+
         try {
             file_put_contents('php://stderr', "[JWT] 開始驗證 Token...\n");
             file_put_contents('php://stderr', '[JWT] Token 前 50 字元: ' . substr($token, 0, 50) . "...\n");
@@ -109,17 +121,20 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             // 驗證 issuer 和 audience
             $this->validateIssuerAndAudience($payload);
             file_put_contents('php://stderr', "[JWT] 所有驗證通過\n");
+
             return $payload;
         } catch (ExpiredException $e) {
             file_put_contents('php://stderr', "[JWT] Token 已過期\n");
             // 嘗試從過期的 token 中取得過期時間
             $expiredAt = null;
+
             try {
                 $unsafePayload = $this->parseTokenUnsafe($token);
                 $expiredAt = $unsafePayload['exp'] ?? null;
             } catch (Throwable) {
                 // 忽略解析錯誤
             }
+
             throw new TokenExpiredException(
                 TokenExpiredException::ACCESS_TOKEN,
                 $expiredAt,
@@ -128,9 +143,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         } catch (SignatureInvalidException $e) {
             file_put_contents('php://stderr', '[JWT] 簽名無效: ' . $e->getMessage() . "\n");
+
             throw TokenValidationException::invalidSignature($e);
         } catch (UnexpectedValueException $e) {
             file_put_contents('php://stderr', '[JWT] Token 格式無效: ' . $e->getMessage() . "\n");
+
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_MALFORMED,
                 InvalidTokenException::ACCESS_TOKEN,
@@ -144,6 +161,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             ) {
                 throw $e;
             }
+
             throw new TokenValidationException(
                 'Token 驗證失敗: ' . $e->getMessage(),
                 TokenValidationException::VALIDATION_FAILED,
@@ -151,6 +169,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
     }
+
     /**
      * 解析 JWT token 但不驗證（用於除錯或取得過期 token 的資訊）.
      *
@@ -165,6 +184,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         if (empty($token)) {
             throw TokenParsingException::emptyToken();
         }
+
         try {
             // 分割 JWT token
             $parts = explode('.', $token);
@@ -173,11 +193,13 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             }
             // 解碼 payload（第二部分）
             $payload = JWT::jsonDecode(JWT::urlsafeB64Decode($parts[1]));
+
             return (array) $payload;
         } catch (Throwable $e) {
             if ($e instanceof TokenParsingException) {
                 throw $e;
             }
+
             throw new TokenParsingException(
                 'Token 解析失敗: ' . $e->getMessage(),
                 TokenParsingException::PARSING_FAILED,
@@ -185,6 +207,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
     }
+
     /**
      * 取得 token 的過期時間.
      *
@@ -199,11 +222,13 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             if (!isset($payload['exp']) || !is_int($payload['exp'])) {
                 return null;
             }
+
             return DateTimeImmutable::createFromFormat('U', (string) $payload['exp']) ?: null;
         } catch (Throwable) {
             return null;
         }
     }
+
     /**
      * 檢查 token 是否已過期（不驗證簽名）.
      *
@@ -217,8 +242,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         if ($expiration === null) {
             return false; // 無法確定過期時間，假設未過期
         }
+
         return $expiration <= new DateTimeImmutable();
     }
+
     /**
      * 初始化 RSA 金鑰.
      *
@@ -232,6 +259,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         // 驗證金鑰格式
         $this->validateKeyFormats();
     }
+
     /**
      * 驗證 RSA 金鑰格式.
      *
@@ -263,6 +291,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
     }
+
     /**
      * 檢查私鑰和公鑰是否匹配.
      *
@@ -282,8 +311,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         }
         // 使用公鑰驗證
         $verifyResult = openssl_verify($testData, $signature, $publicKey, OPENSSL_ALGO_SHA256);
+
         return $verifyResult === 1;
     }
+
     /**
      * 產生 JWT token 的共用方法.
      *
@@ -309,6 +340,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         ];
         // 合併自訂載荷
         $finalPayload = array_merge($claims, $payload);
+
         try {
             return JWT::encode($finalPayload, $this->privateKey, $this->config->getAlgorithm());
         } catch (Throwable $e) {
@@ -317,6 +349,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
     }
+
     /**
      * 產生唯一的 JWT ID.
      *
@@ -329,8 +362,10 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         $randomBytes = bin2hex(random_bytes(16)); // 增加隨機位元組
         $processId = getmypid(); // 加入進程 ID
         $uniqid = uniqid('', true); // 加入 PHP 的 uniqid
+
         return $timestamp . $processId . $randomBytes . $uniqid;
     }
+
     /**
      * 驗證必要欄位.
      *
@@ -351,6 +386,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             }
         }
     }
+
     /**
      * 驗證 token 類型.
      *
@@ -369,6 +405,7 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             );
         }
     }
+
     /**
      * 驗證 issuer 和 audience.
      *

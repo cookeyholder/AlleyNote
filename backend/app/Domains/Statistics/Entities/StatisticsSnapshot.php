@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Entities;
+
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
@@ -11,25 +12,40 @@ use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
 use Throwable;
+
 class StatisticsSnapshot implements JsonSerializable
 {
     private int $id;
+
     private string $uuid;
+
     private string $snapshotType;
+
     private StatisticsPeriod $period;
+
     private array $statisticsData;
+
     private array $metadata;
+
     private ?DateTimeInterface $expiresAt;
+
     private DateTimeInterface $createdAt;
+
     private DateTimeInterface $updatedAt;
+
     /**
      * 支援的快照類型常數.
      */
     public const TYPE_OVERVIEW = 'overview';
+
     public const TYPE_POSTS = 'posts';
+
     public const TYPE_SOURCES = 'sources';
+
     public const TYPE_USERS = 'users';
+
     public const TYPE_POPULAR = 'popular';
+
     /**
      * 所有支援的快照類型.
      */
@@ -40,6 +56,7 @@ class StatisticsSnapshot implements JsonSerializable
         self::TYPE_USERS,
         self::TYPE_POPULAR,
     ];
+
     /**
      * @param array<string, mixed> $data 建構資料陣列
      * @throws InvalidArgumentException 當資料格式不正確時
@@ -62,23 +79,28 @@ class StatisticsSnapshot implements JsonSerializable
         $this->createdAt = $this->parseDateTime($data['created_at'] ?? null) ?? new DateTime();
         $this->updatedAt = $this->parseDateTime($data['updated_at'] ?? null) ?? new DateTime();
     }
+
     // Getters
     public function getId(): int
     {
         return $this->id;
     }
+
     public function getUuid(): string
     {
         return $this->uuid;
     }
+
     public function getSnapshotType(): string
     {
         return $this->snapshotType;
     }
+
     public function getPeriod(): StatisticsPeriod
     {
         return $this->period;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -87,6 +109,7 @@ class StatisticsSnapshot implements JsonSerializable
         /** @var array<string, mixed> */
         return $this->statisticsData;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -95,18 +118,22 @@ class StatisticsSnapshot implements JsonSerializable
         /** @var array<string, mixed> */
         return $this->metadata;
     }
+
     public function getExpiresAt(): ?DateTimeInterface
     {
         return $this->expiresAt;
     }
+
     public function getCreatedAt(): DateTimeInterface
     {
         return $this->createdAt;
     }
+
     public function getUpdatedAt(): DateTimeInterface
     {
         return $this->updatedAt;
     }
+
     // 領域方法
     /**
      * 檢查快照是否已過期
@@ -116,8 +143,10 @@ class StatisticsSnapshot implements JsonSerializable
         if ($this->expiresAt === null) {
             return false;
         }
+
         return new DateTime() > $this->expiresAt;
     }
+
     /**
      * 檢查快照是否為指定類型.
      */
@@ -125,6 +154,7 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return $this->snapshotType === $type;
     }
+
     /**
      * 取得特定統計指標的值
      *
@@ -135,6 +165,7 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return $this->statisticsData[$key] ?? $default;
     }
+
     /**
      * 檢查是否包含特定統計指標.
      */
@@ -142,15 +173,18 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return array_key_exists($key, $this->statisticsData);
     }
+
     /**
      * 取得統計資料總數.
      */
     public function getTotalCount(): int
     {
         $totalCount = $this->getStatistic('total_count', 0);
+
         /** @phpstan-ignore-next-line cast.int */
         return is_int($totalCount) ? $totalCount : (int) $totalCount;
     }
+
     /**
      * 取得與上一週期比較的成長率.
      */
@@ -164,9 +198,11 @@ class StatisticsSnapshot implements JsonSerializable
         if ($growthRate === null) {
             return null;
         }
+
         /** @phpstan-ignore-next-line cast.double */
         return is_float($growthRate) ? $growthRate : (float) $growthRate;
     }
+
     /**
      * 檢查資料完整性.
      */
@@ -176,6 +212,7 @@ class StatisticsSnapshot implements JsonSerializable
         if (empty($this->statisticsData)) {
             return false;
         }
+
         // 根據類型進行特定檢查
         return match ($this->snapshotType) {
             self::TYPE_OVERVIEW => $this->validateOverviewData(),
@@ -186,6 +223,7 @@ class StatisticsSnapshot implements JsonSerializable
             default => true,
         };
     }
+
     /**
      * 更新統計資料.
      *
@@ -196,6 +234,7 @@ class StatisticsSnapshot implements JsonSerializable
         $this->statisticsData = array_merge($this->statisticsData, $newData);
         $this->updatedAt = new DateTime();
     }
+
     /**
      * 更新元資料.
      *
@@ -206,6 +245,7 @@ class StatisticsSnapshot implements JsonSerializable
         $this->metadata = array_merge($this->metadata, $newMetadata);
         $this->updatedAt = new DateTime();
     }
+
     /**
      * 設定快照過期時間.
      */
@@ -217,6 +257,7 @@ class StatisticsSnapshot implements JsonSerializable
         $this->expiresAt = $expiresAt;
         $this->updatedAt = new DateTime();
     }
+
     /**
      * 建立新的統計快照.
      *
@@ -244,6 +285,7 @@ class StatisticsSnapshot implements JsonSerializable
             'expires_at' => $expiresAt?->format('Y-m-d H:i:s'),
         ]);
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -263,6 +305,7 @@ class StatisticsSnapshot implements JsonSerializable
             'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
         ];
     }
+
     /**
      * 取得清理過的資料陣列，適用於前端顯示.
      *
@@ -272,9 +315,11 @@ class StatisticsSnapshot implements JsonSerializable
     public function toSafeArray(OutputSanitizerInterface $sanitizer): array
     {
         $data = $this->toArray();
+
         // 統計資料通常不需要 HTML 清理，但保留介面一致性
         return $data;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -282,6 +327,7 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -289,6 +335,7 @@ class StatisticsSnapshot implements JsonSerializable
     {
         return new self($data);
     }
+
     // 私有方法
     /**
      * @param array<string, mixed> $data
@@ -303,6 +350,7 @@ class StatisticsSnapshot implements JsonSerializable
             ));
         }
     }
+
     /**
      * @param array<string, mixed> $data
      */
@@ -317,12 +365,14 @@ class StatisticsSnapshot implements JsonSerializable
         if (empty($periodType) || empty($periodStart) || empty($periodEnd)) {
             throw new InvalidArgumentException('統計週期資料不完整');
         }
+
         return StatisticsPeriod::fromArray([
             'type' => $periodType,
             'start_time' => $periodStart,
             'end_time' => $periodEnd,
         ]);
     }
+
     /**
      * 解析 JSON 資料.
      *
@@ -333,14 +383,17 @@ class StatisticsSnapshot implements JsonSerializable
         if (empty($json) || $json === '{}') {
             return [];
         }
+
         try {
             $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
             /** @var array<string, mixed> $data */
             return is_array($data) ? $data : [];
         } catch (JsonException $e) {
             throw new InvalidArgumentException("無效的 JSON 資料: {$e->getMessage()}");
         }
     }
+
     private function parseDateTime(mixed $dateTime): ?DateTimeInterface
     {
         if ($dateTime === null || $dateTime === '') {
@@ -348,12 +401,14 @@ class StatisticsSnapshot implements JsonSerializable
         }
         /** @phpstan-ignore-next-line cast.string */
         $dateTimeString = is_string($dateTime) ? $dateTime : (string) $dateTime;
+
         try {
             return new DateTime($dateTimeString);
         } catch (Throwable $e) {
             throw new InvalidArgumentException("無效的日期時間格式: {$dateTimeString}");
         }
     }
+
     private static function generateUuid(): string
     {
         // 使用專案現有的 UUID 生成函式
@@ -371,31 +426,42 @@ class StatisticsSnapshot implements JsonSerializable
                 mt_rand(0, 0xffff),
             );
     }
+
     private function validateOverviewData(): bool
     {
         $requiredKeys = ['total_posts'];
+
         return $this->hasRequiredKeys($requiredKeys);
     }
+
     private function validatePostsData(): bool
     {
         $requiredKeys = ['by_status'];
+
         return $this->hasRequiredKeys($requiredKeys);
     }
+
     private function validateSourcesData(): bool
     {
         $requiredKeys = ['by_source'];
+
         return $this->hasRequiredKeys($requiredKeys);
     }
+
     private function validateUsersData(): bool
     {
         $requiredKeys = ['active_users'];
+
         return $this->hasRequiredKeys($requiredKeys);
     }
+
     private function validatePopularData(): bool
     {
         $requiredKeys = ['top_posts'];
+
         return $this->hasRequiredKeys($requiredKeys);
     }
+
     /**
      * @param string[] $requiredKeys
      */
@@ -406,6 +472,7 @@ class StatisticsSnapshot implements JsonSerializable
                 return false;
             }
         }
+
         return true;
     }
 }

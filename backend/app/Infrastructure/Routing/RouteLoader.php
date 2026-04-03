@@ -3,19 +3,25 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
+
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Exceptions\RouteConfigurationException;
 use ParseError;
 use Throwable;
+
 class RouteLoader
 {
     private RouteValidator $validator;
+
     private array $loadedRoutes = [];
+
     private array $routeFiles = [];
+
     public function __construct(?RouteValidator $validator = null)
     {
         $this->validator = $validator ?? new RouteValidator();
     }
+
     /**
      * 新增路由配置檔案.
      */
@@ -31,8 +37,10 @@ class RouteLoader
             'path' => $filePath,
             'group' => $group,
         ];
+
         return $this;
     }
+
     /**
      * 載入所有路由配置檔案.
      */
@@ -44,6 +52,7 @@ class RouteLoader
             $this->loadRouteFile($router, $routeFile['path'], $routeFile['group']);
         }
     }
+
     /**
      * 載入單一路由配置檔案.
      */
@@ -65,12 +74,14 @@ class RouteLoader
             if ($e instanceof RouteConfigurationException) {
                 throw $e;
             }
+
             throw RouteConfigurationException::syntaxError(
                 $filePath,
                 '載入檔案時發生錯誤: ' . $e->getMessage(),
             );
         }
     }
+
     /**
      * 安全地載入路由配置檔案.
      */
@@ -79,6 +90,7 @@ class RouteLoader
         // 為路由檔案提供必要的變數
         return require $filePath;
     }
+
     /**
      * 處理陣列格式的路由定義.
      */
@@ -107,6 +119,7 @@ class RouteLoader
             $this->loadedRoutes[] = $routeConfig;
         }
     }
+
     /**
      * 註冊路由到路由器.
      */
@@ -133,6 +146,7 @@ class RouteLoader
             }
         }
     }
+
     /**
      * 取得已載入的路由資訊.
      */
@@ -140,6 +154,7 @@ class RouteLoader
     {
         return $this->loadedRoutes;
     }
+
     /**
      * 取得路由統計資訊.
      */
@@ -158,8 +173,10 @@ class RouteLoader
             }
             $stats['groups'][$group]++;
         }
+
         return $stats;
     }
+
     /**
      * 清除已載入的路由.
      */
@@ -169,6 +186,7 @@ class RouteLoader
         $this->routeFiles = [];
         $this->validator->reset();
     }
+
     /**
      * 透過群組篩選路由.
      */
@@ -178,6 +196,7 @@ class RouteLoader
             return ($route['group'] ?? 'default') === $group;
         });
     }
+
     /**
      * 搜尋路由.
      */

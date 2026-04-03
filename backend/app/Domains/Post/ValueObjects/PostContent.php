@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
 use Stringable;
+
 final readonly class PostContent implements JsonSerializable, Stringable
 {
     private string $value;
+
     public function __construct(string $content)
     {
         $trimmedContent = trim($content);
@@ -20,6 +23,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
         }
         $this->value = $trimmedContent;
     }
+
     /**
      * 從字串建立 PostContent.
      */
@@ -27,6 +31,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return new self($content);
     }
+
     /**
      * 取得內容值.
      */
@@ -34,6 +39,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 取得內容長度.
      */
@@ -41,6 +47,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return mb_strlen($this->value);
     }
+
     /**
      * 取得內容的摘要.
      */
@@ -49,8 +56,10 @@ final readonly class PostContent implements JsonSerializable, Stringable
         if ($this->getLength() <= $length) {
             return $this->value;
         }
+
         return mb_substr($this->value, 0, $length) . '...';
     }
+
     /**
      * 檢查內容是否包含特定文字.
      */
@@ -58,6 +67,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return str_contains($this->value, $needle);
     }
+
     /**
      * 計算字數（以空格分隔）.
      */
@@ -65,6 +75,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return str_word_count(strip_tags($this->value));
     }
+
     /**
      * 檢查內容是否為空.
      */
@@ -72,6 +83,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return empty($this->value);
     }
+
     /**
      * 檢查是否與另一個 PostContent 相等.
      */
@@ -79,6 +91,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return $this->value === $other->value;
     }
+
     /**
      * 轉換為字串.
      */
@@ -86,10 +99,12 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     public function __toString(): string
     {
         return $this->value;
     }
+
     /**
      * JSON 序列化.
      */
@@ -97,6 +112,7 @@ final readonly class PostContent implements JsonSerializable, Stringable
     {
         return $this->value;
     }
+
     /**
      * 轉換為陣列.
      */

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\DTOs;
+
 final readonly class LogoutRequestDTO
 {
     public function __construct(
@@ -11,6 +12,7 @@ final readonly class LogoutRequestDTO
         public bool $revokeAllTokens = false,
         public ?string $sessionId = null,
     ) {}
+
     /**
      * 從陣列建立 LogoutRequestDTO.
      */
@@ -23,6 +25,7 @@ final readonly class LogoutRequestDTO
             sessionId: $data['session_id'] ?? null,
         );
     }
+
     /**
      * 轉換為陣列.
      */

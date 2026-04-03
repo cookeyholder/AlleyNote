@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 class SourceDistributionDTO implements JsonSerializable
 {
     /**
@@ -38,6 +40,7 @@ class SourceDistributionDTO implements JsonSerializable
     ) {
         $this->validateData();
     }
+
     /**
      * 從陣列建立 DTO.
      *
@@ -50,6 +53,7 @@ class SourceDistributionDTO implements JsonSerializable
         if (isset($data['generated_at']) && is_string($data['generated_at'])) {
             $generatedAt = new DateTimeImmutable($data['generated_at']);
         }
+
         return new self(
             topSources: self::ensureIntArrayStringMixedArray($data['top_sources'] ?? []),
             byTrafficType: self::ensureStringIntArray($data['by_traffic_type'] ?? []),
@@ -65,6 +69,7 @@ class SourceDistributionDTO implements JsonSerializable
             metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
         );
     }
+
     // Getters
     /**
      * @return array<int, array<string, mixed>>
@@ -73,6 +78,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->topSources;
     }
+
     /**
      * @return array<string, int>
      */
@@ -80,6 +86,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->byTrafficType;
     }
+
     /**
      * @return array<string, int>
      */
@@ -87,6 +94,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->byChannel;
     }
+
     /**
      * @return array<string, int>
      */
@@ -94,6 +102,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->byDevice;
     }
+
     /**
      * @return array<string, int>
      */
@@ -101,6 +110,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->byGeographic;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -108,6 +118,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->searchEngines;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -115,6 +126,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->socialMedia;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -122,6 +134,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->referralSites;
     }
+
     /**
      * @return array<string, int>
      */
@@ -129,6 +142,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->contentTypes;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -136,10 +150,12 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->trends;
     }
+
     public function getGeneratedAt(): ?DateTimeImmutable
     {
         return $this->generatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -147,49 +163,62 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->metadata;
     }
+
     // 計算方法
     public function getTotalTraffic(): int
     {
         return array_sum($this->byTrafficType);
     }
+
     public function getOrganicTraffic(): int
     {
         return $this->byTrafficType['organic'] ?? 0;
     }
+
     public function getPaidTraffic(): int
     {
         return $this->byTrafficType['paid'] ?? 0;
     }
+
     public function getDirectTraffic(): int
     {
         return $this->byTrafficType['direct'] ?? 0;
     }
+
     public function getReferralTraffic(): int
     {
         return $this->byTrafficType['referral'] ?? 0;
     }
+
     public function getSocialTraffic(): int
     {
         return $this->byTrafficType['social'] ?? 0;
     }
+
     public function getEmailTraffic(): int
     {
         return $this->byTrafficType['email'] ?? 0;
     }
+
     public function getOrganicPercentage(): float
     {
         $total = $this->getTotalTraffic();
+
         return $total > 0 ? round(($this->getOrganicTraffic() / $total) * 100, 2) : 0.0;
     }
+
     public function getPaidPercentage(): float
     {
         $total = $this->getTotalTraffic();
+
         return $total > 0 ? round(($this->getPaidTraffic() / $total) * 100, 2) : 0.0;
     }
+
     public function getTopSource(): ?array
     {
         return $this->topSources[0] ?? null;
     }
+
     public function getTopSearchEngine(): ?string
     {
         if (!isset($this->searchEngines['engines']) || !is_array($this->searchEngines['engines'])) {
@@ -207,8 +236,10 @@ class SourceDistributionDTO implements JsonSerializable
                 $topEngine = $engine;
             }
         }
+
         return $topEngine;
     }
+
     public function getTopSocialPlatform(): ?string
     {
         if (!isset($this->socialMedia['platforms']) || !is_array($this->socialMedia['platforms'])) {
@@ -226,8 +257,10 @@ class SourceDistributionDTO implements JsonSerializable
                 $topPlatform = $platform;
             }
         }
+
         return $topPlatform;
     }
+
     public function getTopReferralSite(): ?string
     {
         if (!isset($this->referralSites['sites']) || !is_array($this->referralSites['sites'])) {
@@ -245,30 +278,39 @@ class SourceDistributionDTO implements JsonSerializable
                 $topSite = $site;
             }
         }
+
         return $topSite;
     }
+
     public function getDesktopTraffic(): int
     {
         return $this->byDevice['desktop'] ?? 0;
     }
+
     public function getMobileTraffic(): int
     {
         return $this->byDevice['mobile'] ?? 0;
     }
+
     public function getTabletTraffic(): int
     {
         return $this->byDevice['tablet'] ?? 0;
     }
+
     public function getMobilePercentage(): float
     {
         $totalDeviceTraffic = array_sum($this->byDevice);
+
         return $totalDeviceTraffic > 0 ? round(($this->getMobileTraffic() / $totalDeviceTraffic) * 100, 2) : 0.0;
     }
+
     public function getDesktopPercentage(): float
     {
         $totalDeviceTraffic = array_sum($this->byDevice);
+
         return $totalDeviceTraffic > 0 ? round(($this->getDesktopTraffic() / $totalDeviceTraffic) * 100, 2) : 0.0;
     }
+
     public function getTopGeographicLocation(): ?string
     {
         if (empty($this->byGeographic)) {
@@ -276,23 +318,31 @@ class SourceDistributionDTO implements JsonSerializable
         }
         $maxCount = max($this->byGeographic);
         $topLocations = array_keys($this->byGeographic, $maxCount);
+
         return $topLocations[0] ?? null;
     }
+
     public function getSearchEngineTraffic(): int
     {
         $traffic = $this->searchEngines['total_traffic'] ?? 0;
+
         return is_numeric($traffic) ? (int) $traffic : 0;
     }
+
     public function getSocialMediaTraffic(): int
     {
         $traffic = $this->socialMedia['total_traffic'] ?? 0;
+
         return is_numeric($traffic) ? (int) $traffic : 0;
     }
+
     public function getReferralTrafficCount(): int
     {
         $traffic = $this->referralSites['total_traffic'] ?? 0;
+
         return is_numeric($traffic) ? (int) $traffic : 0;
     }
+
     /**
      * 取得流量品質分析.
      *
@@ -304,6 +354,7 @@ class SourceDistributionDTO implements JsonSerializable
         $directPercentage = $this->getDirectPercentage();
         $socialPercentage = $this->getSocialPercentage();
         $qualityScore = $this->calculateQualityScore($organicPercentage, $directPercentage, $socialPercentage);
+
         return [
             'quality_score' => $qualityScore,
             'organic_percentage' => $organicPercentage,
@@ -313,6 +364,7 @@ class SourceDistributionDTO implements JsonSerializable
             'recommendations' => $this->getQualityRecommendations($organicPercentage, $directPercentage, $socialPercentage),
         ];
     }
+
     /**
      * 取得管道效能分析.
      *
@@ -336,12 +388,14 @@ class SourceDistributionDTO implements JsonSerializable
         foreach ($channelPerformance as &$performance) {
             $performance['rank'] = $rank++;
         }
+
         return [
             'channels' => $channelPerformance,
             'top_performer' => array_key_first($channelPerformance),
             'diversity_score' => $this->calculateChannelDiversity(),
         ];
     }
+
     /**
      * 取得裝置使用模式.
      *
@@ -359,6 +413,7 @@ class SourceDistributionDTO implements JsonSerializable
             abs($mobilePercentage - $desktopPercentage) < 20 => 'balanced',
             default => 'mixed',
         };
+
         return [
             'pattern' => $pattern,
             'mobile_percentage' => $mobilePercentage,
@@ -367,6 +422,7 @@ class SourceDistributionDTO implements JsonSerializable
             'is_mobile_first' => $mobilePercentage > 50,
         ];
     }
+
     /**
      * 取得趨勢洞察.
      *
@@ -376,6 +432,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         $growthRate = $this->trends['growth_rate'] ?? 0.0;
         $trendDirection = $this->trends['direction'] ?? 'stable';
+
         return [
             'growth_rate' => is_numeric($growthRate) ? (float) $growthRate : 0.0,
             'trend_direction' => is_string($trendDirection) ? $trendDirection : 'stable',
@@ -385,6 +442,7 @@ class SourceDistributionDTO implements JsonSerializable
             'seasonal_patterns' => $this->trends['seasonal_patterns'] ?? [],
         ];
     }
+
     /**
      * 轉換為陣列.
      *
@@ -426,8 +484,10 @@ class SourceDistributionDTO implements JsonSerializable
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
+
         return $data;
     }
+
     /**
      * JSON 序列化.
      *
@@ -437,6 +497,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查是否有有效資料.
      */
@@ -444,6 +505,7 @@ class SourceDistributionDTO implements JsonSerializable
     {
         return !empty($this->topSources) || !empty($this->byTrafficType) || !empty($this->byChannel);
     }
+
     /**
      * 取得摘要資訊.
      *
@@ -460,6 +522,7 @@ class SourceDistributionDTO implements JsonSerializable
             'device_pattern' => $this->getDeviceUsagePattern()['pattern'],
         ];
     }
+
     /**
      * 驗證資料完整性.
      *
@@ -504,22 +567,29 @@ class SourceDistributionDTO implements JsonSerializable
             }
         }
     }
+
     private function getDirectPercentage(): float
     {
         $total = $this->getTotalTraffic();
+
         return $total > 0 ? round(($this->getDirectTraffic() / $total) * 100, 2) : 0.0;
     }
+
     private function getSocialPercentage(): float
     {
         $total = $this->getTotalTraffic();
+
         return $total > 0 ? round(($this->getSocialTraffic() / $total) * 100, 2) : 0.0;
     }
+
     private function calculateQualityScore(float $organicPercentage, float $directPercentage, float $socialPercentage): float
     {
         // 品質評分邏輯：有機流量權重最高，直接流量次之，社群流量再次之
         $score = ($organicPercentage * 0.5) + ($directPercentage * 0.3) + ($socialPercentage * 0.2);
+
         return round($score, 2);
     }
+
     private function getQualityLevel(float $qualityScore): string
     {
         return match (true) {
@@ -529,6 +599,7 @@ class SourceDistributionDTO implements JsonSerializable
             default => 'poor',
         };
     }
+
     /**
      * @return array<string>
      */
@@ -544,8 +615,10 @@ class SourceDistributionDTO implements JsonSerializable
         if ($socialPercentage > 50) {
             $recommendations[] = '建議平衡流量來源，減少對社群媒體的過度依賴';
         }
+
         return $recommendations;
     }
+
     private function calculateChannelDiversity(): float
     {
         $totalTraffic = $this->getTotalTraffic();
@@ -562,8 +635,10 @@ class SourceDistributionDTO implements JsonSerializable
         }
         // 正規化到 0-100 分數
         $maxEntropy = log(count($this->byChannel), 2);
+
         return $maxEntropy > 0 ? round(($entropy / $maxEntropy) * 100, 2) : 0.0;
     }
+
     /**
      * 確保回傳 array<string, mixed> 型別.
      *
@@ -581,8 +656,10 @@ class SourceDistributionDTO implements JsonSerializable
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 確保回傳 array<string, int> 型別.
      *
@@ -600,8 +677,10 @@ class SourceDistributionDTO implements JsonSerializable
                 $result[$key] = (int) $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
@@ -625,6 +704,7 @@ class SourceDistributionDTO implements JsonSerializable
                 $result[] = $filteredItem;
             }
         }
+
         return $result;
     }
 }

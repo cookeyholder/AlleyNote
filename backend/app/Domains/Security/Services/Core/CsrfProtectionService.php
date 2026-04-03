@@ -3,21 +3,28 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Core;
+
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\DTOs\CreateActivityLogDTO;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\CsrfTokenException;
 use Throwable;
+
 class CsrfProtectionService implements CsrfProtectionServiceInterface
 {
     private const TOKEN_LENGTH = 32;
+
     private const TOKEN_EXPIRY = 3600; // 1 hour
+
     private const TOKEN_POOL_SIZE = 5; // 權杖池大小
+
     private const TOKEN_POOL_KEY = 'csrf_token_pool';
+
     public function __construct(
         private ActivityLoggingServiceInterface $activityLogger,
     ) {}
+
     public function generateToken(): string
     {
         $token = bin2hex(random_bytes(self::TOKEN_LENGTH));
@@ -34,14 +41,18 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         // 設定當前權杖（向後相容）
         $_SESSION['csrf_token'] = $token;
         $_SESSION['csrf_token_time'] = time();
+
         return $token;
     }
+
     public function validateToken(?string $token): void
     {
         if (empty($token)) {
             $this->logCsrfAttack($token);
+
             throw new CsrfTokenException('缺少 CSRF token');
         }
+
         try {
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
@@ -52,9 +63,11 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
         } catch (CsrfTokenException $e) {
             $this->logCsrfAttack($token);
+
             throw $e;
         }
     }
+
     /**
      * 從權杖池中驗證權杖.
      */
@@ -83,6 +96,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         // 產生新權杖以維持池的大小
         $this->generateToken();
     }
+
     /**
      * 單一權杖驗證（向後相容）.
      */
@@ -101,6 +115,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         // 更新 token 以防止重放攻擊
         $this->generateToken();
     }
+
     /**
      * 清理過期的權杖.
      */
@@ -117,6 +132,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             }
         }
     }
+
     /**
      * 限制權杖池大小.
      */
@@ -133,6 +149,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             $tokenPool = $_SESSION[self::TOKEN_POOL_KEY];
         }
     }
+
     /**
      * 檢查權杖是否有效（不會使用掉權杖）.
      */
@@ -141,6 +158,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         if (empty($token)) {
             return false;
         }
+
         try {
             // 檢查權杖池模式
             if (isset($_SESSION[self::TOKEN_POOL_KEY]) && is_array($_SESSION[self::TOKEN_POOL_KEY])) {
@@ -157,11 +175,13 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                         && (time() - $_SESSION['csrf_token_time']) <= self::TOKEN_EXPIRY;
                 }
             }
+
             return false;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     /**
      * 預填權杖池.
      */
@@ -173,6 +193,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             $this->generateToken();
         }
     }
+
     /**
      * 取得權杖池狀態（用於除錯）.
      */
@@ -196,6 +217,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 'expired' => ($currentTime - $timestamp) > self::TOKEN_EXPIRY,
             ];
         }
+
         return [
             'enabled' => true,
             'size' => count($pool),
@@ -203,6 +225,7 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
             'tokens' => $tokens,
         ];
     }
+
     /**
      * 從請求中取得 CSRF token.
      *
@@ -212,9 +235,11 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
     {
         // 從請求標頭、POST 資料或查詢參數中尋找 token
         $token = $_POST['_token'] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_GET['_token'] ?? null;
+
         // 確保返回類型是 string|null
         return is_string($token) ? $token : null;
     }
+
     /**
      * 記錄 CSRF 攻擊事件.
      */

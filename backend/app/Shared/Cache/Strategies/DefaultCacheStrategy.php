@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Strategies;
+
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
 use InvalidArgumentException;
 use Throwable;
+
 class DefaultCacheStrategy implements CacheStrategyInterface
 {
     /** @var array<string, int> 統計資料 */
@@ -19,14 +21,19 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         'miss_handles' => 0,
         'failure_handles' => 0,
     ];
+
     /** @var int 最小快取 TTL */
     private int $minTtl;
+
     /** @var int 最大快取 TTL */
     private int $maxTtl;
+
     /** @var array<string> 不快取的鍵模式 */
     private array $excludePatterns;
+
     /** @var int 最大值大小（位元組） */
     private int $maxValueSize;
+
     public function __construct(array $config = [])
     {
         $this->minTtl = is_int($config['min_ttl'] ?? null) ? $config['min_ttl'] : 60;
@@ -35,6 +42,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $this->excludePatterns = is_array($patterns) ? array_filter($patterns, 'is_string') : [];
         $this->maxValueSize = is_int($config['max_value_size'] ?? null) ? $config['max_value_size'] : 1024 * 1024; // 1MB
     }
+
     public function shouldCache(string $key, mixed $value, int $ttl): bool
     {
         $this->stats['cache_decisions']++;
@@ -42,6 +50,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         foreach ($this->excludePatterns as $pattern) {
             if ($this->matchesPattern($key, $pattern)) {
                 $this->stats['cache_denied']++;
+
                 return false;
             }
         }
@@ -49,21 +58,26 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $serializedValue = serialize($value);
         if (strlen($serializedValue) > $this->maxValueSize) {
             $this->stats['cache_denied']++;
+
             return false;
         }
         // 檢查 TTL 範圍
         if ($ttl > 0 && ($ttl < $this->minTtl || $ttl > $this->maxTtl)) {
             $this->stats['cache_denied']++;
+
             return false;
         }
         // 檢查值類型
         if (is_resource($value) || (is_object($value) && !method_exists($value, '__sleep'))) {
             $this->stats['cache_denied']++;
+
             return false;
         }
         $this->stats['cache_allowed']++;
+
         return true;
     }
+
     public function selectDriver(array $drivers, string $key, mixed $value): ?CacheDriverInterface
     {
         $this->stats['driver_selections']++;
@@ -96,8 +110,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 return $driver;
             }
         }
+
         return null;
     }
+
     public function decideTtl(string $key, mixed $value, int $requestedTtl): int
     {
         $this->stats['ttl_adjustments']++;
@@ -126,8 +142,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             // 配置相關資料較長時間
             $adjustedTtl = max(7200, $adjustedTtl);
         }
+
         return $adjustedTtl;
     }
+
     public function handleMiss(string $key, callable $callback): mixed
     {
         $this->stats['miss_handles']++;
@@ -144,8 +162,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 usleep($retryDelay * ($i + 1)); // 指數退避
             }
         }
+
         return null;
     }
+
     public function handleDriverFailure(
         CacheDriverInterface $failedDriver,
         array $availableDrivers,
@@ -158,9 +178,11 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             if ($driver === $failedDriver || !$driver->isAvailable()) {
                 continue;
             }
+
             try {
                 $key = is_string($params['key'] ?? null) ? $params['key'] : '';
                 $ttl = is_int($params['ttl'] ?? null) ? $params['ttl'] : 3600;
+
                 return match ($operation) {
                     'get' => $driver->get($key, $params['default'] ?? null),
                     'put' => $driver->put($key, $params['value'] ?? null, $ttl),
@@ -174,6 +196,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 continue;
             }
         }
+
         // 所有驅動都失敗，根據操作返回合適的預設值
         return match ($operation) {
             'get' => $params['default'] ?? null,
@@ -182,10 +205,12 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             default => null,
         };
     }
+
     public function getStats(): array
     {
         $totalDecisions = $this->stats['cache_decisions'];
         $allowRate = $totalDecisions > 0 ? ($this->stats['cache_allowed'] / $totalDecisions) * 100 : 0;
+
         return array_merge($this->stats, [
             'cache_allow_rate' => round($allowRate, 2),
             'min_ttl' => $this->minTtl,
@@ -194,6 +219,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             'exclude_patterns_count' => count($this->excludePatterns),
         ]);
     }
+
     public function resetStats(): void
     {
         $this->stats = [
@@ -206,14 +232,17 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             'failure_handles' => 0,
         ];
     }
+
     /**
      * 檢查鍵是否符合模式。
      */
     private function matchesPattern(string $key, string $pattern): bool
     {
         $pattern = str_replace(['*', '?'], ['.*', '.'], $pattern);
+
         return preg_match('/^' . $pattern . '$/', $key) === 1;
     }
+
     /**
      * 新增排除模式。
      */
@@ -223,6 +252,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
             $this->excludePatterns[] = $pattern;
         }
     }
+
     /**
      * 移除排除模式。
      */
@@ -232,10 +262,13 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         if ($key !== false) {
             unset($this->excludePatterns[$key]);
             $this->excludePatterns = array_values($this->excludePatterns);
+
             return true;
         }
+
         return false;
     }
+
     /**
      * 取得排除模式。
      */
@@ -243,6 +276,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     {
         return $this->excludePatterns;
     }
+
     /**
      * 設定 TTL 範圍。
      */
@@ -254,6 +288,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $this->minTtl = $minTtl;
         $this->maxTtl = $maxTtl;
     }
+
     /**
      * 設定最大值大小。
      */

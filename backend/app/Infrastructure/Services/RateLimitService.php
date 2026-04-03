@@ -3,15 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
+
 use Throwable;
+
 class RateLimitService
 {
     public function __construct(
         private readonly CacheService $cache,
     ) {}
+
     public function checkLimit(string $ip, int $maxRequests = 60, int $timeWindow = 60): array
     {
         $key = "rate_limit:{$ip}";
+
         try {
             $data = $this->cache->get($key);
             if ($data === null) {
@@ -33,6 +37,7 @@ class RateLimitService
             $data['count']++;
             // 更新快取
             $this->cache->set($key, $data, $timeWindow);
+
             return [
                 'allowed' => $data['count'] <= $maxRequests,
                 'remaining' => max(0, $maxRequests - $data['count']),
@@ -41,6 +46,7 @@ class RateLimitService
         } catch (Throwable $e) {
             // 如果快取服務不可用，預設允許請求
             app_log('error', '速率限制檢查失敗', ['exception' => $e->getMessage()]);
+
             return [
                 'allowed' => true,
                 'remaining' => $maxRequests,
@@ -48,12 +54,14 @@ class RateLimitService
             ];
         }
     }
+
     /**
      * 檢查請求是否被允許（簡化版本的 checkLimit）.
      */
     public function isAllowed(string $ip, int $maxRequests = 60, int $timeWindow = 60): bool
     {
         $result = $this->checkLimit($ip, $maxRequests, $timeWindow);
+
         return $result['allowed'];
     }
 }

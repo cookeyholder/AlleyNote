@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Shared\Services;
+
 class PasswordValidationService
 {
     /**
@@ -80,6 +81,7 @@ class PasswordValidationService
         }
         // 確保分數在 0-100 之間
         $score = max(0, min(100, $score));
+
         return [
             'is_valid' => empty($errors),
             'score' => $score,
@@ -89,6 +91,7 @@ class PasswordValidationService
             'suggestions' => $this->getSuggestions($errors, $warnings),
         ];
     }
+
     /**
      * 檢查是否包含連續字元.
      */
@@ -146,8 +149,10 @@ class PasswordValidationService
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查是否包含重複字元.
      */
@@ -155,6 +160,7 @@ class PasswordValidationService
     {
         return preg_match('/(.)\\1{2,}/', $password) === 1;
     }
+
     /**
      * 檢查是否為常見密碼
      */
@@ -173,8 +179,10 @@ class PasswordValidationService
                 $commonPasswords = [];
             }
         }
+
         return in_array(strtolower($password), $commonPasswords, true);
     }
+
     /**
      * 檢查是否包含個人資訊.
      */
@@ -197,8 +205,10 @@ class PasswordValidationService
                 }
             }
         }
+
         return false;
     }
+
     /**
      * 獲取強度等級.
      */
@@ -216,8 +226,10 @@ class PasswordValidationService
         if ($score >= 20) {
             return 'weak';
         }
+
         return 'very-weak';
     }
+
     /**
      * 獲取建議.
      *
@@ -262,6 +274,7 @@ class PasswordValidationService
         if (empty($suggestions) && !empty($warnings)) {
             $suggestions[] = '已經很好！可以加入特殊符號讓密碼更安全';
         }
+
         return array_values(array_unique($suggestions));
     }
 }

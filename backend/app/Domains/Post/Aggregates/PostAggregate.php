@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Aggregates;
+
 use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Events\PostContentUpdated;
 use App\Domains\Post\Events\PostPublished;
@@ -16,13 +17,18 @@ use App\Domains\Post\ValueObjects\ViewCount;
 use App\Shared\Events\AbstractDomainEvent;
 use DateTimeImmutable;
 use InvalidArgumentException;
+
 final class PostAggregate
 {
     /** @var array<AbstractDomainEvent> */
     private array $domainEvents = [];
+
     private DateTimeImmutable $createdAt;
+
     private DateTimeImmutable $updatedAt;
+
     private ?DateTimeImmutable $publishedAt = null;
+
     /**
      * @param PostId $id 文章唯一識別碼
      * @param PostTitle $title 文章標題
@@ -48,6 +54,7 @@ final class PostAggregate
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
     }
+
     /**
      * 建立新的文章聚合.
      *
@@ -79,8 +86,10 @@ final class PostAggregate
             slug: PostSlug::fromTitle($title->toString()),
             creationSource: $creationSource,
         );
+
         return $aggregate;
     }
+
     /**
      * 從現有資料重建聚合.
      *
@@ -136,8 +145,10 @@ final class PostAggregate
                 $aggregate->publishedAt = new DateTimeImmutable($publishDate);
             }
         }
+
         return $aggregate;
     }
+
     /**
      * 發佈文章.
      *
@@ -162,6 +173,7 @@ final class PostAggregate
             publishedAt: $this->publishedAt,
         ));
     }
+
     /**
      * 更新文章內容.
      *
@@ -188,6 +200,7 @@ final class PostAggregate
             updatedAt: $this->updatedAt,
         ));
     }
+
     /**
      * 封存文章.
      *
@@ -208,6 +221,7 @@ final class PostAggregate
             changedAt: $this->updatedAt,
         ));
     }
+
     /**
      * 設為草稿.
      */
@@ -226,6 +240,7 @@ final class PostAggregate
             changedAt: $this->updatedAt,
         ));
     }
+
     /**
      * 設定置頂狀態.
      *
@@ -239,6 +254,7 @@ final class PostAggregate
         $this->isPinned = $isPinned;
         $this->updatedAt = new DateTimeImmutable();
     }
+
     /**
      * 增加瀏覽次數.
      */
@@ -247,6 +263,7 @@ final class PostAggregate
         $this->viewCount = $this->viewCount->increment();
         // 瀏覽次數增加不更新 updatedAt，因為這不是實質性的內容變更
     }
+
     /**
      * 檢查是否為草稿.
      */
@@ -254,6 +271,7 @@ final class PostAggregate
     {
         return $this->status === PostStatus::DRAFT;
     }
+
     /**
      * 檢查是否已發佈.
      */
@@ -261,6 +279,7 @@ final class PostAggregate
     {
         return $this->status === PostStatus::PUBLISHED;
     }
+
     /**
      * 檢查是否已封存.
      */
@@ -268,6 +287,7 @@ final class PostAggregate
     {
         return $this->status === PostStatus::ARCHIVED;
     }
+
     /**
      * 檢查是否由特定作者撰寫.
      *
@@ -277,55 +297,68 @@ final class PostAggregate
     {
         return $this->authorId === $authorId;
     }
+
     // Getters
     public function getId(): PostId
     {
         return $this->id;
     }
+
     public function getTitle(): PostTitle
     {
         return $this->title;
     }
+
     public function getContent(): PostContent
     {
         return $this->content;
     }
+
     public function getAuthorId(): int
     {
         return $this->authorId;
     }
+
     public function getStatus(): PostStatus
     {
         return $this->status;
     }
+
     public function getViewCount(): ViewCount
     {
         return $this->viewCount;
     }
+
     public function isPinned(): bool
     {
         return $this->isPinned;
     }
+
     public function getSlug(): ?PostSlug
     {
         return $this->slug;
     }
+
     public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }
+
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
     }
+
     public function getPublishedAt(): ?DateTimeImmutable
     {
         return $this->publishedAt;
     }
+
     public function getCreationSource(): ?string
     {
         return $this->creationSource;
     }
+
     /**
      * 取得所有領域事件.
      *
@@ -335,8 +368,10 @@ final class PostAggregate
     {
         $events = $this->domainEvents;
         $this->domainEvents = [];
+
         return $events;
     }
+
     /**
      * 轉換為陣列表示.
      *
@@ -359,6 +394,7 @@ final class PostAggregate
             'creation_source' => $this->creationSource,
         ];
     }
+
     /**
      * 記錄領域事件.
      *
@@ -368,6 +404,7 @@ final class PostAggregate
     {
         $this->domainEvents[] = $event;
     }
+
     /**
      * 確保內容有效.
      *

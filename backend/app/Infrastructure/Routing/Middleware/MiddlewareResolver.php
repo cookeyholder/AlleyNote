@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
+
 use App\Application\Middleware\CsrfMiddleware;
 use App\Application\Middleware\PostViewRateLimitMiddleware;
 use App\Application\Middleware\RateLimitMiddleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
+
 class MiddlewareResolver
 {
     /**
@@ -24,9 +26,11 @@ class MiddlewareResolver
         'rate_limit' => RateLimitMiddleware::class,
         'post_view_rate_limit' => PostViewRateLimitMiddleware::class,
     ];
+
     public function __construct(
         private readonly ContainerInterface $container,
     ) {}
+
     /**
      * 解析中介軟體（支援字串別名和實例）.
      *
@@ -47,6 +51,7 @@ class MiddlewareResolver
                 if ($resolved instanceof MiddlewareInterface) {
                     return $resolved;
                 }
+
                 throw new InvalidArgumentException(
                     "Container entry '{$resolvedAlias}' does not implement MiddlewareInterface",
                 );
@@ -60,14 +65,17 @@ class MiddlewareResolver
                     }
                 }
             }
+
             throw new InvalidArgumentException(
                 "Cannot resolve middleware: '{$middleware}' (resolved from '{$resolvedAlias}')",
             );
         }
+
         throw new InvalidArgumentException(
             'Middleware must be a string or MiddlewareInterface instance',
         );
     }
+
     /**
      * 解析中介軟體陣列.
      *
@@ -80,8 +88,10 @@ class MiddlewareResolver
         foreach ($middlewares as $middleware) {
             $resolved[] = $this->resolve($middleware);
         }
+
         return $resolved;
     }
+
     /**
      * 檢查中介軟體是否可以解析.
      *
@@ -94,10 +104,13 @@ class MiddlewareResolver
         }
         if (is_string($middleware)) {
             $resolvedAlias = $this->resolveAlias($middleware);
+
             return $this->container->has($resolvedAlias) || class_exists($middleware);
         }
+
         return false;
     }
+
     /**
      * 解析中介軟體別名.
      */
@@ -105,6 +118,7 @@ class MiddlewareResolver
     {
         return self::$middlewareAliases[$alias] ?? $alias;
     }
+
     /**
      * 取得所有可用的中介軟體別名.
      *
@@ -114,6 +128,7 @@ class MiddlewareResolver
     {
         return self::$middlewareAliases;
     }
+
     /**
      * 註冊新的中介軟體別名.
      */

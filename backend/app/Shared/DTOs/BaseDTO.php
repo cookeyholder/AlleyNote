@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Shared\DTOs;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use JsonSerializable;
+
 abstract class BaseDTO implements JsonSerializable
 {
     protected ValidatorInterface $validator;
+
     /**
      * 建構函式.
      *
@@ -18,14 +21,17 @@ abstract class BaseDTO implements JsonSerializable
     {
         $this->validator = $validator;
     }
+
     /**
      * 將 DTO 轉換為陣列.
      */
     abstract public function toArray(): array;
+
     /**
      * 取得驗證規則.
      */
     abstract protected function getValidationRules(): array;
+
     /**
      * 實作 JsonSerializable 介面.
      */
@@ -33,6 +39,7 @@ abstract class BaseDTO implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 驗證資料.
      *
@@ -44,6 +51,7 @@ abstract class BaseDTO implements JsonSerializable
     {
         return $this->validator->validateOrFail($data, $this->getValidationRules());
     }
+
     /**
      * 安全地取得值
      */
@@ -51,22 +59,27 @@ abstract class BaseDTO implements JsonSerializable
     {
         return $data[$key] ?? $default;
     }
+
     /**
      * 安全地取得字串值
      */
     protected function getString(array $data, string $key, ?string $default = null): ?string
     {
         $value = $this->getValue($data, $key, $default);
+
         return $value !== null ? trim((string) $value) : null;
     }
+
     /**
      * 安全地取得整數值
      */
     protected function getInt(array $data, string $key, ?int $default = null): ?int
     {
         $value = $this->getValue($data, $key, $default);
+
         return $value !== null ? (int) $value : null;
     }
+
     /**
      * 安全地取得布林值
      */
@@ -79,6 +92,7 @@ abstract class BaseDTO implements JsonSerializable
         if (is_bool($value)) {
             return $value;
         }
+
         return in_array($value, [1, '1', 'true', 'on', 'yes'], true);
     }
 }

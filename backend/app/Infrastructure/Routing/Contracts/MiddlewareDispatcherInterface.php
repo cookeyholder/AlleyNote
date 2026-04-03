@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 interface MiddlewareDispatcherInterface
 {
     /**
@@ -20,6 +22,7 @@ interface MiddlewareDispatcherInterface
         array $middlewares,
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface;
+
     /**
      * 建立中介軟體執行鏈.
      *

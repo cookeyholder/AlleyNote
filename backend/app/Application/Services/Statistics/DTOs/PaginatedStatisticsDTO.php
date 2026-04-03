@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Services\Statistics\DTOs;
+
 final class PaginatedStatisticsDTO
 {
     public function __construct(
@@ -12,53 +13,66 @@ final class PaginatedStatisticsDTO
         private readonly int $perPage,
         private readonly array $metadata = [],
     ) {}
+
     public function getData(): array
     {
         return $this->data;
     }
+
     public function getTotalCount(): int
     {
         return $this->totalCount;
     }
+
     public function getCurrentPage(): int
     {
         return $this->currentPage;
     }
+
     public function getPerPage(): int
     {
         return $this->perPage;
     }
+
     public function getMetadata(): array
     {
         return $this->metadata;
     }
+
     public function getTotalPages(): int
     {
         return (int) ceil($this->totalCount / $this->perPage);
     }
+
     public function hasNextPage(): bool
     {
         return $this->currentPage < $this->getTotalPages();
     }
+
     public function hasPreviousPage(): bool
     {
         return $this->currentPage > 1;
     }
+
     public function getFrom(): int
     {
         if ($this->totalCount === 0) {
             return 0;
         }
+
         return (($this->currentPage - 1) * $this->perPage) + 1;
     }
+
     public function getTo(): int
     {
         if ($this->totalCount === 0) {
             return 0;
         }
         $to = $this->currentPage * $this->perPage;
+
         return min($to, $this->totalCount);
     }
+
     public function toArray(): array
     {
         return [

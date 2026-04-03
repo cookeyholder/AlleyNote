@@ -3,4 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Shared\Exceptions;
-class NotFoundException extends \Exception {}
+
+use Exception;
+
+class NotFoundException extends Exception {}

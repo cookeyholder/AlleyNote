@@ -3,24 +3,29 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
+
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 abstract class AbstractMiddleware implements MiddlewareInterface
 {
     /**
      * 中介軟體名稱.
      */
     protected string $name;
+
     /**
      * 中介軟體優先順序.
      */
     protected int $priority;
+
     /**
      * 是否啟用.
      */
     protected bool $enabled;
+
     /**
      * 建構函式.
      *
@@ -37,6 +42,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         $this->priority = $priority;
         $this->enabled = $enabled;
     }
+
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
@@ -44,8 +50,10 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         if (!$this->enabled || !$this->shouldProcess($request)) {
             return $handler->handle($request);
         }
+
         return $this->execute($request, $handler);
     }
+
     /**
      * 執行中介軟體邏輯.
      *
@@ -59,18 +67,22 @@ abstract class AbstractMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface;
+
     public function getPriority(): int
     {
         return $this->priority;
     }
+
     public function getName(): string
     {
         return $this->name;
     }
+
     public function shouldProcess(ServerRequestInterface $request): bool
     {
         return $this->enabled;
     }
+
     /**
      * 設定中介軟體優先順序.
      *
@@ -79,8 +91,10 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     public function setPriority(int $priority): self
     {
         $this->priority = $priority;
+
         return $this;
     }
+
     /**
      * 設定中介軟體名稱.
      *
@@ -89,24 +103,30 @@ abstract class AbstractMiddleware implements MiddlewareInterface
     public function setName(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
+
     /**
      * 啟用中介軟體.
      */
     public function enable(): self
     {
         $this->enabled = true;
+
         return $this;
     }
+
     /**
      * 停用中介軟體.
      */
     public function disable(): self
     {
         $this->enabled = false;
+
         return $this;
     }
+
     /**
      * 檢查中介軟體是否啟用.
      */

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Models\IpList;
 use App\Domains\Security\Services\IpService;
@@ -11,6 +12,7 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use InvalidArgumentException;
 use Throwable;
+
 class IpController
 {
     public function __construct(
@@ -18,11 +20,13 @@ class IpController
         private ValidatorInterface $validator,
         private OutputSanitizerInterface $sanitizer,
     ) {}
+
     public function create(array $request): array
     {
         try {
             $dto = new CreateIpRuleDTO($this->validator, $request);
             $ipList = $this->service->createIpRule($dto);
+
             return [
                 'status' => 201,
                 'data' => $ipList->toSafeArray($this->sanitizer),
@@ -44,6 +48,7 @@ class IpController
             ];
         }
     }
+
     public function getByType(array $request): array
     {
         try {
@@ -51,6 +56,7 @@ class IpController
                 throw new InvalidArgumentException('必須指定名單類型');
             }
             $rules = $this->service->getRulesByType((int) $request['type']);
+
             return [
                 'status' => 200,
                 'data' => array_map(
@@ -70,6 +76,7 @@ class IpController
             ];
         }
     }
+
     public function checkAccess(array $request): array
     {
         try {
@@ -77,6 +84,7 @@ class IpController
                 throw new InvalidArgumentException('必須提供 IP 位址');
             }
             $isAllowed = $this->service->isIpAllowed($request['ip']);
+
             return [
                 'status' => 200,
                 'data' => [

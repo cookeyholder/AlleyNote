@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
+
 use PDO;
+
 class StatisticsExportService
 {
     public function __construct(
         private readonly PDO $pdo,
         private readonly AdvancedAnalyticsService $analyticsService,
     ) {}
+
     /**
      * 匯出文章瀏覽統計為 CSV.
      *
@@ -71,8 +74,10 @@ class StatisticsExportService
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);
+
         return $csv;
     }
+
     /**
      * 匯出綜合分析報告為 CSV.
      *
@@ -124,8 +129,10 @@ class StatisticsExportService
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);
+
         return $csv;
     }
+
     /**
      * 匯出為 JSON.
      *
@@ -134,6 +141,7 @@ class StatisticsExportService
     public function exportToJSON(?int $postId = null, ?string $startDate = null, ?string $endDate = null): string
     {
         $report = $this->analyticsService->getComprehensiveReport($postId, $startDate, $endDate);
+
         return json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 }

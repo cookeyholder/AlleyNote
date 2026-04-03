@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Providers;
+
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
@@ -17,6 +18,7 @@ use App\Domains\Security\Services\IpService;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Stringable;
+
 class SecurityServiceProvider
 {
     /**
@@ -40,6 +42,7 @@ class SecurityServiceProvider
             IpService::class => \DI\get(IpServiceInterface::class),
         ];
     }
+
     /**
      * 建立 ActivityLoggingService 實例.
      */
@@ -52,34 +55,42 @@ class SecurityServiceProvider
             {
                 app_log('emergency', (string) $message, $context);
             }
+
             public function alert(Stringable|string $message, array $context = []): void
             {
                 app_log('alert', (string) $message, $context);
             }
+
             public function critical(Stringable|string $message, array $context = []): void
             {
                 app_log('critical', (string) $message, $context);
             }
+
             public function error(Stringable|string $message, array $context = []): void
             {
                 app_log('error', (string) $message, $context);
             }
+
             public function warning(Stringable|string $message, array $context = []): void
             {
                 app_log('warning', (string) $message, $context);
             }
+
             public function notice(Stringable|string $message, array $context = []): void
             {
                 app_log('notice', (string) $message, $context);
             }
+
             public function info(Stringable|string $message, array $context = []): void
             {
                 app_log('info', (string) $message, $context);
             }
+
             public function debug(Stringable|string $message, array $context = []): void
             {
                 app_log('debug', (string) $message, $context);
             }
+
             public function log($level, Stringable|string $message, array $context = []): void
             {
                 $normalizedLevel = is_string($level) || $level instanceof Stringable
@@ -88,8 +99,10 @@ class SecurityServiceProvider
                 app_log($normalizedLevel, (string) $message, $context);
             }
         };
+
         return new ActivityLoggingService($repository, $logger);
     }
+
     /**
      * 建立 CsrfProtectionService 實例.
      */
@@ -97,8 +110,10 @@ class SecurityServiceProvider
     {
         /** @var ActivityLoggingServiceInterface $activityLogger */
         $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
         return new CsrfProtectionService($activityLogger);
     }
+
     /**
      * 建立 XssProtectionService 實例.
      */
@@ -106,8 +121,10 @@ class SecurityServiceProvider
     {
         /** @var ActivityLoggingServiceInterface $activityLogger */
         $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
         return new XssProtectionService($activityLogger);
     }
+
     /**
      * 建立 IpService 實例.
      */
@@ -117,6 +134,7 @@ class SecurityServiceProvider
         $repository = $container->get(IpRepositoryInterface::class);
         /** @var ActivityLoggingServiceInterface $activityLogger */
         $activityLogger = $container->get(ActivityLoggingServiceInterface::class);
+
         return new IpService($repository, $activityLogger);
     }
 }

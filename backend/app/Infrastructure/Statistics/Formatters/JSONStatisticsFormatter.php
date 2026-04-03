@@ -3,21 +3,26 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Formatters;
+
 use RuntimeException;
+
 final class JSONStatisticsFormatter implements StatisticsFormatterInterface
 {
     public function getFormat(): string
     {
         return 'json';
     }
+
     public function getFileExtension(): string
     {
         return 'json';
     }
+
     public function getMimeType(): string
     {
         return 'application/json';
     }
+
     public function format(array $data, array $options = []): string
     {
         $jsonOptions = JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES;
@@ -38,16 +43,20 @@ final class JSONStatisticsFormatter implements StatisticsFormatterInterface
         if ($result === false) {
             throw new RuntimeException('JSON 編碼失敗: ' . json_last_error_msg());
         }
+
         return $result;
     }
+
     public function supportsLargeData(): bool
     {
         return true;
     }
+
     public function getRecommendedFilename(string $type, array $options = []): string
     {
         $timestamp = new DateTime()->format('Y-m-d_H-i-s');
         $suffix = (string) ($options['filename_suffix'] ?? '');
+
         return "statistics_{$type}{$suffix}_{$timestamp}.json";
     }
 }

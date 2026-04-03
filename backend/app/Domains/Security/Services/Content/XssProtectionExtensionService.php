@@ -3,15 +3,21 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Content;
+
 use App\Domains\Post\Services\ContentModerationService;
 use App\Domains\Post\Services\RichTextProcessorService;
 use App\Domains\Security\Services\Core\XssProtectionService;
+
 class XssProtectionExtensionService
 {
     private XssProtectionService $baseXssProtection;
+
     private RichTextProcessorService $richTextProcessor;
+
     private ContentModerationService $contentModerator;
+
     private array $config;
+
     public function __construct(
         XssProtectionService $baseXssProtection,
         RichTextProcessorService $richTextProcessor,
@@ -23,6 +29,7 @@ class XssProtectionExtensionService
         $this->contentModerator = $contentModerator;
         $this->config = array_merge($this->getDefaultConfig(), $config);
     }
+
     /**
      * 情境感知的 XSS 防護.
      */
@@ -41,6 +48,7 @@ class XssProtectionExtensionService
             default => $this->protectGeneric($input, $options),
         };
     }
+
     /**
      * 富文本編輯器防護.
      */
@@ -64,8 +72,10 @@ class XssProtectionExtensionService
                 'filtered_length' => strlen($processResult['content']),
             ];
         }
+
         return $result;
     }
+
     /**
      * 使用者簡介防護.
      */
@@ -75,6 +85,7 @@ class XssProtectionExtensionService
         $allowedTags = '<b><strong><i><em><u><br><p>';
         $cleaned = strip_tags($input, $allowedTags);
         $cleaned = $this->baseXssProtection->clean($cleaned);
+
         return [
             'protected_content' => $cleaned,
             'context' => 'user_bio',
@@ -84,6 +95,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, $cleaned),
         ];
     }
+
     /**
      * 文章標題防護.
      */
@@ -95,6 +107,7 @@ class XssProtectionExtensionService
         if (strlen($cleaned) > $this->config['max_title_length']) {
             $cleaned = mb_substr($cleaned, 0, $this->config['max_title_length']);
         }
+
         return [
             'protected_content' => $cleaned,
             'context' => 'post_title',
@@ -104,6 +117,7 @@ class XssProtectionExtensionService
             'security_score' => 100, // 標題經過最嚴格過濾
         ];
     }
+
     /**
      * 文章內容防護.
      */
@@ -124,6 +138,7 @@ class XssProtectionExtensionService
         }
         // 進行富文本處理
         $processResult = $this->richTextProcessor->processContent($input, $userLevel);
+
         return [
             'protected_content' => $processResult['content'],
             'context' => 'post_content',
@@ -133,6 +148,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
         ];
     }
+
     /**
      * 評論防護.
      */
@@ -146,6 +162,7 @@ class XssProtectionExtensionService
         if (strlen($cleaned) > $this->config['max_comment_length']) {
             $cleaned = mb_substr($cleaned, 0, $this->config['max_comment_length']) . '...';
         }
+
         return [
             'protected_content' => $cleaned,
             'context' => 'comment',
@@ -155,6 +172,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, $cleaned),
         ];
     }
+
     /**
      * 搜尋查詢防護.
      */
@@ -168,6 +186,7 @@ class XssProtectionExtensionService
         if (strlen($cleaned) > $this->config['max_search_length']) {
             $cleaned = mb_substr($cleaned, 0, $this->config['max_search_length']);
         }
+
         return [
             'protected_content' => $cleaned,
             'context' => 'search_query',
@@ -177,12 +196,14 @@ class XssProtectionExtensionService
             'security_score' => 100,
         ];
     }
+
     /**
      * URL 參數防護.
      */
     private function protectUrlParameter(string $input, array $options): array
     {
         $cleaned = $this->baseXssProtection->cleanForUrl($input);
+
         return [
             'protected_content' => $cleaned,
             'context' => 'url_parameter',
@@ -192,6 +213,7 @@ class XssProtectionExtensionService
             'security_score' => 100,
         ];
     }
+
     /**
      * JSON 資料防護.
      */
@@ -211,6 +233,7 @@ class XssProtectionExtensionService
         }
         // 遞迴清理 JSON 資料
         $cleaned = $this->cleanJsonRecursively($decoded);
+
         return [
             'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?? ''),
             'context' => 'json_data',
@@ -220,6 +243,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
         ];
     }
+
     /**
      * 檔案上傳防護.
      */
@@ -240,6 +264,7 @@ class XssProtectionExtensionService
         }
         // 清理檔案名稱
         $cleanFilename = $this->cleanFilename($filename);
+
         return [
             'protected_content' => $cleanFilename,
             'context' => 'file_upload',
@@ -249,12 +274,14 @@ class XssProtectionExtensionService
             'security_score' => 90,
         ];
     }
+
     /**
      * 通用防護.
      */
     private function protectGeneric(string $input, array $options): array
     {
         $cleaned = $this->baseXssProtection->clean($input);
+
         return [
             'protected_content' => $cleaned,
             'context' => 'generic',
@@ -264,6 +291,7 @@ class XssProtectionExtensionService
             'security_score' => $this->calculateSecurityScore($input, $cleaned),
         ];
     }
+
     /**
      * 遞迴清理 JSON 資料.
      */
@@ -275,8 +303,10 @@ class XssProtectionExtensionService
         if (is_string($data)) {
             return $this->baseXssProtection->clean($data);
         }
+
         return $data;
     }
+
     /**
      * 清理檔案名稱.
      */
@@ -290,8 +320,10 @@ class XssProtectionExtensionService
         if (empty($cleaned)) {
             $cleaned = 'file_' . time();
         }
+
         return $cleaned;
     }
+
     /**
      * 計算安全分數.
      */
@@ -317,6 +349,7 @@ class XssProtectionExtensionService
             return 95; // 幾乎沒有變化
         }
     }
+
     /**
      * 預設設定.
      */

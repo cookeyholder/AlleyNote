@@ -3,18 +3,22 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Security;
+
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Enums\ActivitySeverity;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
+
 class CSPReportController
 {
     private LoggingSecurityServiceInterface $logger;
+
     public function __construct(LoggingSecurityServiceInterface $logger)
     {
         $this->logger = $logger;
     }
+
     /**
      * 處理 CSP 違規報告.
      */
@@ -45,6 +49,7 @@ class CSPReportController
             }
             // 記錄違規
             $this->logViolation($report, $request);
+
             return $response->withStatus(204);
         } catch (Throwable $e) {
             $this->logger->error('CSP Report handling error', [
@@ -52,9 +57,11 @@ class CSPReportController
                 'error_file' => $e->getFile(),
                 'error_line' => $e->getLine(),
             ]);
+
             return $response->withStatus(500);
         }
     }
+
     /**
      * 驗證 CSP 報告格式.
      */
@@ -72,8 +79,10 @@ class CSPReportController
                 return false;
             }
         }
+
         return true;
     }
+
     /**
      * 記錄 CSP 違規.
      */
@@ -95,6 +104,7 @@ class CSPReportController
         // 檢查是否需要立即警報
         $this->checkForAlert($logData);
     }
+
     /**
      * 取得客戶端真實 IP.
      */
@@ -124,8 +134,10 @@ class CSPReportController
                 }
             }
         }
+
         return $serverParams['REMOTE_ADDR'] ?? 'unknown';
     }
+
     /**
      * 計算違規嚴重程度.
      */
@@ -151,9 +163,11 @@ class CSPReportController
         ) {
             return ActivitySeverity::MEDIUM;
         }
+
         // 低風險情況
         return ActivitySeverity::LOW;
     }
+
     /**
      * 檢查是否需要發送警報.
      */
@@ -171,6 +185,7 @@ class CSPReportController
             ]);
         }
     }
+
     /**
      * 取得最近的違規記錄.
      */
@@ -196,8 +211,10 @@ class CSPReportController
                 $recentViolations[] = $data;
             }
         }
+
         return $recentViolations;
     }
+
     /**
      * 發送警報.
      */

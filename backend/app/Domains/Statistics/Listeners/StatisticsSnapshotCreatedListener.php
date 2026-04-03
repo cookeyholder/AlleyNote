@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Listeners;
+
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Events\StatisticsSnapshotCreated;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
@@ -10,6 +11,7 @@ use App\Shared\Events\Contracts\DomainEventInterface;
 use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class StatisticsSnapshotCreatedListener implements EventListenerInterface
 {
     public function __construct(
@@ -17,6 +19,7 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         private readonly StatisticsMonitoringService $monitoringService,
         private readonly ?LoggerInterface $logger = null,
     ) {}
+
     public function handle(DomainEventInterface $event): void
     {
         if (!$event instanceof StatisticsSnapshotCreated) {
@@ -24,8 +27,10 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
                 'event_type' => $event->getEventName(),
                 'event_id' => $event->getEventId(),
             ]);
+
             return;
         }
+
         try {
             $this->handleSnapshotCreated($event);
         } catch (Throwable $e) {
@@ -37,18 +42,22 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             // 重新拋出異常，讓事件分派器處理
             throw $e;
         }
     }
+
     public function getListenedEvents(): array
     {
         return ['statistics.snapshot.created'];
     }
+
     public function getName(): string
     {
         return 'statistics.snapshot_created_listener';
     }
+
     private function handleSnapshotCreated(StatisticsSnapshotCreated $event): void
     {
         $snapshot = $event->getSnapshot();
@@ -73,6 +82,7 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             'snapshot_type' => $snapshotType,
         ]);
     }
+
     private function recordSnapshotEvent(StatisticsSnapshotCreated $event): void
     {
         $eventType = $event->isUpdate() ? 'snapshot_updated' : 'snapshot_created';
@@ -83,6 +93,7 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             'is_update' => $event->isUpdate(),
             'event_id' => $event->getEventId(),
         ];
+
         try {
             $this->monitoringService->logStatisticsEvent($eventType, $context);
         } catch (Throwable $e) {
@@ -94,9 +105,11 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             // 不重新拋出異常，因為監控記錄失敗不應該影響主流程
         }
     }
+
     private function handleCacheInvalidation(StatisticsSnapshotCreated $event): void
     {
         $snapshotType = $event->getSnapshotType();
+
         try {
             // 根據快照類型決定要失效的快取標籤
             $tagsToInvalidate = $this->getCacheTagsForInvalidation($snapshotType);
@@ -117,9 +130,11 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             // 不重新拋出異常，快取失效失敗不應該中斷統計流程
         }
     }
+
     private function handleCachePrewarming(StatisticsSnapshotCreated $event): void
     {
         $snapshotType = $event->getSnapshotType();
+
         try {
             // 根據快照類型決定要預熱的快取回調
             $warmupCallbacks = $this->getWarmupCallbacks($snapshotType);
@@ -140,6 +155,7 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             ]);
         }
     }
+
     /**
      * 根據快照類型獲取需要失效的快取標籤.
      *
@@ -154,8 +170,10 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             'popular' => ['statistics', 'popular', 'trends'],
             'sources' => ['statistics', 'sources'],
         ];
+
         return $tagsMap[$snapshotType] ?? ['statistics'];
     }
+
     /**
      * 根據快照類型取得需要預熱的快取回調函式.
      *

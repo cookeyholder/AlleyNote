@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
+
 use Psr\Http\Message\ServerRequestInterface;
+
 class ServerRequestFactory
 {
     public static function fromGlobals(): ServerRequestInterface
@@ -31,8 +33,10 @@ class ServerRequestFactory
                 $request = $request->withParsedBody($jsonData);
             }
         }
+
         return $request;
     }
+
     private static function createUriFromGlobals(): Uri
     {
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
@@ -53,13 +57,16 @@ class ServerRequestFactory
         if (!empty($_SERVER['QUERY_STRING'])) {
             $uri = $uri->withQuery($_SERVER['QUERY_STRING']);
         }
+
         return $uri;
     }
+
     private static function isDefaultPort(string $scheme, int $port): bool
     {
         return ($scheme === 'http' && $port === 80)
             || ($scheme === 'https' && $port === 443);
     }
+
     private static function parseHeaders(): array
     {
         $headers = [];
@@ -72,6 +79,7 @@ class ServerRequestFactory
                 $headers[$name] = [$value];
             }
         }
+
         return $headers;
     }
 }

@@ -3,15 +3,21 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\DTOs;
+
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\DTOs\BaseDTO;
 use App\Shared\Exceptions\ValidationException;
+
 class CreateIpRuleDTO extends BaseDTO
 {
     public readonly string $ipAddress;
+
     public readonly string $action;
+
     public readonly ?string $reason;
+
     public readonly int $createdBy;
+
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
@@ -30,6 +36,7 @@ class CreateIpRuleDTO extends BaseDTO
         $this->reason = isset($validatedData['reason']) ? trim($validatedData['reason']) : null;
         $this->createdBy = (int) $validatedData['created_by'];
     }
+
     /**
      * 添加 IP 規則專用驗證規則.
      */
@@ -66,8 +73,10 @@ class CreateIpRuleDTO extends BaseDTO
                 } elseif (filter_var($ipPart, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
                     return $cidrInt >= 0 && $cidrInt <= 128;
                 }
+
                 return false;
             }
+
             // 單純的 IP 位址
             return filter_var($ip, FILTER_VALIDATE_IP) !== false;
         });
@@ -78,6 +87,7 @@ class CreateIpRuleDTO extends BaseDTO
             }
             $action = strtolower(trim($value));
             $allowedActions = ['allow', 'block', 'deny'];
+
             return in_array($action, $allowedActions, true);
         });
         // 原因說明驗證規則（可選）
@@ -98,6 +108,7 @@ class CreateIpRuleDTO extends BaseDTO
             if (empty($reason)) {
                 return true; // 空字串也是有效的（可選欄位）
             }
+
             return true;
         });
         // 建立者 ID 驗證規則
@@ -110,6 +121,7 @@ class CreateIpRuleDTO extends BaseDTO
         $this->validator->addMessage('ip_reason', '原因說明長度不能超過 :max 個字元');
         $this->validator->addMessage('created_by', '建立者 ID 必須是正整數');
     }
+
     /**
      * 取得驗證規則.
      */
@@ -122,6 +134,7 @@ class CreateIpRuleDTO extends BaseDTO
             'created_by' => 'required|created_by',
         ];
     }
+
     /**
      * 轉換為陣列格式（供 Repository 使用）.
      */
@@ -134,6 +147,7 @@ class CreateIpRuleDTO extends BaseDTO
             'created_by' => $this->createdBy,
         ];
     }
+
     /**
      * 檢查是否為 CIDR 格式.
      */
@@ -141,6 +155,7 @@ class CreateIpRuleDTO extends BaseDTO
     {
         return strpos($this->ipAddress, '/') !== false;
     }
+
     /**
      * 取得 IP 部分（去除 CIDR 後綴）.
      */
@@ -149,8 +164,10 @@ class CreateIpRuleDTO extends BaseDTO
         if ($this->isCidrFormat()) {
             return explode('/', $this->ipAddress, 2)[0];
         }
+
         return $this->ipAddress;
     }
+
     /**
      * 取得 CIDR 後綴（如果有的話）.
      */
@@ -159,32 +176,40 @@ class CreateIpRuleDTO extends BaseDTO
         if ($this->isCidrFormat()) {
             return (int) explode('/', $this->ipAddress, 2)[1];
         }
+
         return null;
     }
+
     /**
      * 檢查是否為 IPv4 地址
      */
     public function isIpv4(): bool
     {
         $ip = $this->getIpPart();
+
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false;
     }
+
     /**
      * 檢查是否為 IPv6 地址
      */
     public function isIpv6(): bool
     {
         $ip = $this->getIpPart();
+
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false;
     }
+
     /**
      * 檢查是否為私有 IP 地址
      */
     public function isPrivateIp(): bool
     {
         $ip = $this->getIpPart();
+
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) === false;
     }
+
     /**
      * 檢查是否為本地回環地址
      */
@@ -196,8 +221,10 @@ class CreateIpRuleDTO extends BaseDTO
         } elseif ($this->isIpv6()) {
             return $ip === '::1';
         }
+
         return false;
     }
+
     /**
      * 取得 IP 規則的描述性名稱.
      */
@@ -206,8 +233,10 @@ class CreateIpRuleDTO extends BaseDTO
         $type = $this->isIpv4() ? 'IPv4' : ($this->isIpv6() ? 'IPv6' : 'IP');
         $format = $this->isCidrFormat() ? ' 網段' : ' 地址';
         $action = $this->action === 'allow' ? '允許' : ($this->action === 'block' ? '阻擋' : '拒絕');
+
         return $action . ' ' . $type . $format . '：' . $this->ipAddress;
     }
+
     /**
      * 取得 IP 規則的詳細資訊.
      */

@@ -3,12 +3,14 @@
 declare(strict_types=1);
 
 namespace App\Domains\Setting\Models;
-use Carbon\Carbon;
+
 use Illuminate\Database\Eloquent\Model;
+
 class Setting extends Model
 {
     /** @var string */
     protected $table = 'settings';
+
     /** @var array<int, string> */
     protected $fillable = [
         'key',
@@ -16,11 +18,13 @@ class Setting extends Model
         'type',
         'description',
     ];
+
     /** @var array<string, string> */
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
     /**
      * 取得設定值（根據類型轉換）.
      */
@@ -34,6 +38,7 @@ class Setting extends Model
             default => $this->value,
         };
     }
+
     /**
      * 轉換為陣列.
      *

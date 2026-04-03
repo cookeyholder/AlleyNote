@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Application\Middleware;
+
 use JsonSerializable;
+
 final readonly class AuthorizationResult implements JsonSerializable
 {
     /**
@@ -22,6 +24,7 @@ final readonly class AuthorizationResult implements JsonSerializable
         private array $appliedRules = [],
         private array $metadata = [],
     ) {}
+
     /**
      * 檢查是否允許存取.
      *
@@ -31,6 +34,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->allowed;
     }
+
     /**
      * 檢查是否拒絕存取.
      *
@@ -40,6 +44,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return !$this->allowed;
     }
+
     /**
      * 取得授權原因.
      *
@@ -49,6 +54,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->reason;
     }
+
     /**
      * 取得結果代碼.
      *
@@ -58,6 +64,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->code;
     }
+
     /**
      * 取得應用的授權規則.
      *
@@ -67,6 +74,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->appliedRules;
     }
+
     /**
      * 取得元資料.
      *
@@ -76,6 +84,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->metadata;
     }
+
     /**
      * 取得特定的元資料值.
      *
@@ -87,6 +96,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->metadata[$key] ?? $default;
     }
+
     /**
      * 檢查是否包含特定規則.
      *
@@ -97,6 +107,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return in_array($rule, $this->appliedRules, true);
     }
+
     /**
      * 建立允許的授權結果.
      *
@@ -119,6 +130,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             metadata: $metadata,
         );
     }
+
     /**
      * 建立拒絕的授權結果.
      *
@@ -141,6 +153,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             metadata: $metadata,
         );
     }
+
     /**
      * 建立超級管理員允許結果.
      */
@@ -152,6 +165,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             appliedRules: ['super_admin'],
         );
     }
+
     /**
      * 建立權限不足的拒絕結果.
      *
@@ -166,6 +180,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             appliedRules: ['permission_check'],
         );
     }
+
     /**
      * 建立未認證的拒絕結果.
      */
@@ -177,6 +192,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             appliedRules: ['authentication_check'],
         );
     }
+
     /**
      * 建立 IP 限制的拒絕結果.
      *
@@ -190,6 +206,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             appliedRules: ['ip_restriction'],
         );
     }
+
     /**
      * 建立時間限制的拒絕結果.
      *
@@ -203,6 +220,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             appliedRules: ['time_restriction'],
         );
     }
+
     /**
      * 轉換為陣列格式.
      *
@@ -218,6 +236,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             'metadata' => $this->metadata,
         ];
     }
+
     /**
      * JsonSerializable 實作.
      *
@@ -227,6 +246,7 @@ final readonly class AuthorizationResult implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查與另一個 AuthorizationResult 是否相等.
      *
@@ -241,6 +261,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             && $this->appliedRules === $other->appliedRules
             && $this->metadata === $other->metadata;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -249,6 +270,7 @@ final readonly class AuthorizationResult implements JsonSerializable
         $status = $this->allowed ? 'ALLOWED' : 'DENIED';
         $rulesCount = count($this->appliedRules);
         $metadataCount = count($this->metadata);
+
         return sprintf(
             'AuthorizationResult(%s, code=%s, reason="%s", rules=%d, metadata=%d)',
             $status,
@@ -258,6 +280,7 @@ final readonly class AuthorizationResult implements JsonSerializable
             $metadataCount,
         );
     }
+
     /**
      * __toString 魔術方法.
      */

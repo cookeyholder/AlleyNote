@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
+
 use RuntimeException;
 use Throwable;
+
 class StatisticsAggregationService implements StatisticsAggregationServiceInterface
 {
     public function __construct(
@@ -13,6 +15,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         private readonly UserStatisticsRepositoryInterface $userStatisticsRepository,
         private readonly ?EventDispatcherInterface $eventDispatcher = null,
     ) {}
+
     /**
      * 建立綜合統計快照.
      *
@@ -49,8 +52,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
         return $savedSnapshot;
     }
+
     /**
      * 建立文章統計快照.
      *
@@ -84,8 +89,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
         return $savedSnapshot;
     }
+
     /**
      * 建立使用者統計快照.
      *
@@ -119,8 +126,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
         return $savedSnapshot;
     }
+
     /**
      * 建立熱門內容統計快照.
      *
@@ -149,8 +158,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $savedSnapshot = $this->statisticsRepository->save($snapshot);
         // 發布統計快照已建立事件
         $this->dispatchSnapshotCreatedEvent($savedSnapshot);
+
         return $savedSnapshot;
     }
+
     /**
      * 批量建立多種類型的統計快照.
      *
@@ -189,8 +200,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if (!empty($errors)) {
             throw new RuntimeException('Failed to create some snapshots: ' . json_encode($errors, JSON_THROW_ON_ERROR));
         }
+
         return $snapshots;
     }
+
     /**
      * 更新現有的統計快照.
      *
@@ -219,8 +232,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             'data_points' => count($newData),
             'calculation_method' => 'aggregated',
         ]);
+
         return $this->statisticsRepository->update($snapshot);
     }
+
     /**
      * 計算統計趨勢.
      *
@@ -248,8 +263,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if ($previousSnapshot === null) {
             throw new RuntimeException('Previous period snapshot not found');
         }
+
         return $this->computeTrendMetrics($currentSnapshot, $previousSnapshot);
     }
+
     /**
      * 清理過期的統計快照.
      *
@@ -262,6 +279,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     {
         return $this->statisticsRepository->deleteExpiredSnapshots($beforeDate);
     }
+
     /**
      * 驗證統計週期的有效性.
      *
@@ -273,6 +291,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             throw new InvalidArgumentException('Invalid period duration');
         }
     }
+
     /**
      * 驗證統計快照的有效性.
      *
@@ -287,6 +306,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             throw new InvalidArgumentException('Snapshot data integrity validation failed');
         }
     }
+
     /**
      * 驗證快照類型陣列的有效性.
      *
@@ -306,6 +326,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             throw new InvalidArgumentException('Invalid snapshot types: ' . implode(', ', $invalidTypes));
         }
     }
+
     /**
      * 聚合綜合統計資料.
      *
@@ -322,6 +343,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $postActivity = $this->postStatisticsRepository->getPostActivitySummary($period);
         // 獲取使用者活動摘要
         $userActivity = $this->userStatisticsRepository->getUserActivitySummary($period);
+
         return [
             'total_posts' => $postsCount,
             'active_users' => $activeUsersCount,
@@ -341,6 +363,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             ],
         ];
     }
+
     /**
      * 聚合文章統計資料.
      *
@@ -360,6 +383,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             'pinned_stats' => $this->postStatisticsRepository->getPinnedPostsStatistics($period),
         ];
     }
+
     /**
      * 聚合使用者統計資料.
      *
@@ -379,6 +403,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             'by_role' => $this->userStatisticsRepository->getUsersCountByRole($period),
         ];
     }
+
     /**
      * 聚合熱門內容資料.
      *
@@ -402,6 +427,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             'peak_activity_times' => $this->userStatisticsRepository->getUserActivityTimeDistribution($period),
         ];
     }
+
     /**
      * 生成基礎元資料.
      *
@@ -419,6 +445,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             ],
         ];
     }
+
     /**
      * 計算成長率.
      *
@@ -431,8 +458,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if ($previous === 0) {
             return $current > 0 ? 100.0 : 0.0;
         }
+
         return round(($current - $previous) / $previous * 100, 2);
     }
+
     /**
      * 計算內容速度（每日平均發布量）.
      *
@@ -443,8 +472,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     private function calculateContentVelocity(StatisticsPeriod $period, int $totalPosts): float
     {
         $days = max(1, $period->getDurationInDays());
+
         return round($totalPosts / $days, 2);
     }
+
     /**
      * 計算趨勢指標.
      *
@@ -456,6 +487,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     {
         $currentTotal = $current->getTotalCount();
         $previousTotal = $previous->getTotalCount();
+
         return [
             'current_value' => $currentTotal,
             'previous_value' => $previousTotal,
@@ -468,6 +500,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             ],
         ];
     }
+
     /**
      * 判斷趨勢方向.
      *
@@ -483,8 +516,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if ($current < $previous) {
             return 'down';
         }
+
         return 'stable';
     }
+
     /**
      * 發布統計快照已建立事件.
      */
@@ -493,6 +528,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         if ($this->eventDispatcher === null) {
             return;
         }
+
         try {
             $event = StatisticsSnapshotCreated::forNewSnapshot($snapshot);
             $this->eventDispatcher->dispatch($event);

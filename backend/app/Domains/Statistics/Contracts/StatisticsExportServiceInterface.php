@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
+
 use DateTime;
+
 interface StatisticsExportServiceInterface
 {
     /**
@@ -17,6 +19,7 @@ interface StatisticsExportServiceInterface
      * } $options
      */
     public function exportOverview(array $options = []): ExportResult;
+
     /**
      * 匯出文章統計資料.
      *
@@ -29,6 +32,7 @@ interface StatisticsExportServiceInterface
      * } $options
      */
     public function exportPostStatistics(array $options = []): ExportResult;
+
     /**
      * 匯出來源分布統計資料.
      *
@@ -40,6 +44,7 @@ interface StatisticsExportServiceInterface
      * } $options
      */
     public function exportSourceDistribution(array $options = []): ExportResult;
+
     /**
      * 匯出使用者活動統計資料.
      *
@@ -51,6 +56,7 @@ interface StatisticsExportServiceInterface
      * } $options
      */
     public function exportUserStatistics(array $options = []): ExportResult;
+
     /**
      * 匯出熱門內容統計資料.
      *
@@ -62,6 +68,7 @@ interface StatisticsExportServiceInterface
      * } $options
      */
     public function exportPopularContent(array $options = []): ExportResult;
+
     /**
      * 批次匯出多種統計資料.
      *
@@ -74,12 +81,14 @@ interface StatisticsExportServiceInterface
      * } $options
      */
     public function exportBatch(array $types, array $options = []): BatchExportResult;
+
     /**
      * 取得支援的匯出格式.
      *
      * @return array<string>
      */
     public function getSupportedFormats(): array;
+
     /**
      * 取得支援的統計類型.
      *

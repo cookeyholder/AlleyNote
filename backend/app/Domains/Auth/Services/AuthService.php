@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
@@ -10,6 +11,7 @@ use App\Domains\Auth\Exceptions\TokenGenerationException;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use Throwable;
+
 class AuthService
 {
     public function __construct(
@@ -18,6 +20,7 @@ class AuthService
         private ?JwtTokenServiceInterface $jwtTokenService = null,
         private bool $jwtEnabled = false,
     ) {}
+
     public function register(RegisterUserDTO $dto, ?DeviceInfo $deviceInfo = null): array
     {
         // DTO 已經在建構時進行基本驗證，這裡進行密碼安全性檢查
@@ -38,6 +41,7 @@ class AuthService
                         'email' => $user['email'],
                     ],
                 );
+
                 return [
                     'success' => true,
                     'message' => '註冊成功',
@@ -55,6 +59,7 @@ class AuthService
                 app_log('error', 'JWT token generation failed during registration', ['exception' => $e->getMessage()]);
             }
         }
+
         // 傳統回傳格式（向後相容）
         return [
             'success' => true,
@@ -62,6 +67,7 @@ class AuthService
             'user' => $user,
         ];
     }
+
     public function login(array $credentials, ?DeviceInfo $deviceInfo = null): array
     {
         $user = $this->userRepository->findByEmail($credentials['email']);
@@ -98,6 +104,7 @@ class AuthService
                         'role' => $user['role'] ?? 'user',
                     ],
                 );
+
                 return [
                     'success' => true,
                     'message' => '登入成功',
@@ -115,6 +122,7 @@ class AuthService
                 app_log('error', 'JWT token generation failed during login', ['exception' => $e->getMessage()]);
             }
         }
+
         // 傳統回傳格式（向後相容）
         return [
             'success' => true,
@@ -122,6 +130,7 @@ class AuthService
             'user' => $user,
         ];
     }
+
     public function logout(?string $accessToken = null, ?DeviceInfo $deviceInfo = null): array
     {
         // 如果啟用 JWT 且有提供 JWT 服務和 access token
@@ -129,6 +138,7 @@ class AuthService
             try {
                 // 撤銷 access token（將其加入黑名單）
                 $this->jwtTokenService->revokeToken($accessToken);
+
                 return [
                     'success' => true,
                     'message' => '登出成功',
@@ -138,6 +148,7 @@ class AuthService
                 app_log('error', 'JWT token revocation failed during logout', ['exception' => $e->getMessage()]);
             }
         }
+
         // 傳統模式或 JWT 撤銷失敗時的回傳格式
         return [
             'success' => true,

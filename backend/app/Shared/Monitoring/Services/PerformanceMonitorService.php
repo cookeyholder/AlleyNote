@@ -3,26 +3,35 @@
 declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Services;
+
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
+
 class PerformanceMonitorService implements PerformanceMonitorInterface
 {
     /** @var array<string, array> 進行中的監控會話 */
     private array $activeMonitoringSessions = [];
+
     /** @var array<string, array<int, array<string, mixed>>> 效能指標暫存 */
     private array $metrics = [];
+
     /** @var array<string, int> 計數器暫存 */
     private array $counters = [];
+
     /** @var array<string, array> 直方圖資料暫存 */
     private array $histograms = [];
+
     /** @var array<array> 慢查詢記錄 */
     private array $slowQueries = [];
+
     /** @var float 慢查詢閾值（毫秒） */
     private float $slowQueryThreshold = 1000.0;
+
     public function __construct(
         private LoggerInterface $logger,
     ) {}
+
     /**
      * 設定慢查詢閾值。
      */
@@ -30,6 +39,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $this->slowQueryThreshold = $threshold;
     }
+
     /**
      * 設定慢操作閾值（別名方法）。
      */
@@ -37,6 +47,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $this->setSlowQueryThreshold($threshold);
     }
+
     /**
      * 開始監控一個操作。
      */
@@ -54,8 +65,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'monitoring_id' => $monitoringId,
             'context' => $context,
         ]);
+
         return $monitoringId;
     }
+
     /**
      * 結束監控一個操作。
      */
@@ -63,11 +76,13 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         if (!isset($this->activeMonitoringSessions[$monitoringId])) {
             $this->logger->warning("Attempted to end non-existent monitoring session: {$monitoringId}");
+
             return;
         }
         $session = $this->activeMonitoringSessions[$monitoringId];
         if (!is_array($session)) {
             $this->logger->warning('Invalid monitoring session data', ['monitoring_id' => $monitoringId]);
+
             return;
         }
         $sessionStartTime = $session['start_time'] ?? 0;
@@ -102,6 +117,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'context' => $context,
         ]);
     }
+
     /**
      * 記錄一個性能指標。
      */
@@ -126,6 +142,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'tags' => $tags,
         ]);
     }
+
     /**
      * 記錄一個計數器指標。
      */
@@ -143,6 +160,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'tags' => $tags,
         ]);
     }
+
     /**
      * 記錄一個計量表指標。
      */
@@ -150,6 +168,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $this->recordMetric($name, $value, 'gauge', $tags);
     }
+
     /**
      * 記錄一個直方圖指標。
      */
@@ -168,6 +187,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'tags' => $tags,
         ]);
     }
+
     /**
      * 取得效能統計資料。
      */
@@ -188,8 +208,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $stats['metrics_summary'] = $this->calculateMetricsSummary();
         $stats['counters_summary'] = $this->counters;
         $stats['histogram_summary'] = $this->calculateHistogramSummary();
+
         return $stats;
     }
+
     /**
      * 取得慢查詢記錄。
      */
@@ -198,8 +220,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 按持續時間排序
         $sorted = $this->slowQueries;
         usort($sorted, fn($a, $b) => $b['duration'] <=> $a['duration']);
+
         return array_slice($sorted, 0, $limit);
     }
+
     /**
      * 取得效能警告。
      */
@@ -246,8 +270,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 ];
             }
         }
+
         return $warnings;
     }
+
     /**
      * 清除舊的效能資料。
      */
@@ -292,8 +318,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'days_kept' => $daysToKeep,
             'items_cleaned' => $cleanedCount,
         ]);
+
         return $cleanedCount;
     }
+
     // ===== 私有方法 =====
     /**
      * 建立指標鍵名。
@@ -309,8 +337,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             array_keys($tags),
             array_values($tags),
         ));
+
         return "{$name}[{$tagString}]";
     }
+
     /**
      * 記錄慢操作。
      */
@@ -328,6 +358,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'context' => $context,
         ]);
     }
+
     /**
      * 取得特定操作的統計。
      */
@@ -354,8 +385,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         if (!empty($operationMetrics)) {
             $stats['metrics_summary'] = $this->calculateMetricsSummary($operationMetrics);
         }
+
         return $stats;
     }
+
     /**
      * 計算指標摘要。
      */
@@ -378,8 +411,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 ];
             }
         }
+
         return $summary;
     }
+
     /**
      * 計算直方圖摘要。
      */
@@ -403,8 +438,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 ];
             }
         }
+
         return $summary;
     }
+
     /**
      * 計算百分位數。
      */
@@ -419,6 +456,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $upper = (int) ceil($index);
         if ($lower === $upper) {
             $value = $values[$lower] ?? 0;
+
             return is_numeric($value) ? (float) $value : 0.0;
         }
         $lowerValue = $values[$lower] ?? 0;
@@ -427,8 +465,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             return 0.0;
         }
         $weight = $index - $lower;
+
         return (float) $lowerValue * (1 - $weight) + (float) $upperValue * $weight;
     }
+
     /**
      * 解析記憶體限制。
      */
@@ -440,6 +480,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
         $unit = strtolower(substr($memoryLimit, -1));
         $value = (int) substr($memoryLimit, 0, -1);
+
         return match ($unit) {
             'g' => $value * 1024 * 1024 * 1024,
             'm' => $value * 1024 * 1024,

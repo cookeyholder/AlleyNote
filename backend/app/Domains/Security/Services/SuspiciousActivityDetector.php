@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services;
+
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\ActivityLogRepositoryInterface;
 use App\Domains\Security\Contracts\SuspiciousActivityDetectorInterface;
@@ -13,14 +14,18 @@ use App\Domains\Security\Enums\ActivityType;
 use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 {
     /** @var array<string, array<string, int>> 失敗閾值配置 */
     private array $failureThresholds = [];
+
     /** @var array<string, array<string, int>> 頻率閾值配置 */
     private array $frequencyThresholds = [];
+
     /** @var array<string, bool> 檢測類型啟用狀態 */
     private array $detectionEnabled = [];
+
     /** 預設檢測類型 */
     private const DETECTION_TYPES = [
         'failure_rate',       // 失敗率檢測
@@ -29,6 +34,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         'time_based',         // 時間基礎分析
         'ip_reputation',      // IP 信譽分析
     ];
+
     /** 預設失敗閾值 */
     private const DEFAULT_FAILURE_THRESHOLDS = [
         'auth.login.failed' => ['threshold' => 5, 'timeWindow' => 60],
@@ -36,12 +42,14 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         'post.permission_denied' => ['threshold' => 10, 'timeWindow' => 60],
         'attachment.virus_detected' => ['threshold' => 1, 'timeWindow' => 60],
     ];
+
     /** 預設頻率閾值 */
     private const DEFAULT_FREQUENCY_THRESHOLDS = [
         'auth.login.success' => ['threshold' => 100, 'timeWindow' => 60],
         'post.viewed' => ['threshold' => 500, 'timeWindow' => 60],
         'attachment.downloaded' => ['threshold' => 200, 'timeWindow' => 60],
     ];
+
     public function __construct(
         private ActivityLogRepositoryInterface $repository,
         private ActivityLoggingServiceInterface $activityLogger,
@@ -49,6 +57,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     ) {
         $this->initializeDefaults();
     }
+
     /**
      * 初始化預設配置.
      */
@@ -62,6 +71,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $this->detectionEnabled[$type] = true;
         }
     }
+
     /**
      * 檢測指定使用者的可疑活動.
      */
@@ -85,6 +95,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $analysisResult = $this->analyzeUserActivities($activities, $timeWindowMinutes);
             // 記錄檢測活動
             $this->logDetectionActivity((string) $userId, 'user', $analysisResult);
+
             return $analysisResult;
         } catch (Throwable $e) {
             $this->logger->error('Failed to detect suspicious activity for user', [
@@ -92,6 +103,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             // 回傳預設分析結果
             return SuspiciousActivityAnalysisDTO::forUser(
                 userId: $userId,
@@ -107,6 +119,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             );
         }
     }
+
     /**
      * 檢測指定IP位址的可疑活動.
      */
@@ -130,6 +143,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $analysisResult = $this->analyzeIpActivities($activities, $ipAddress, $timeWindowMinutes);
             // 記錄檢測活動
             $this->logDetectionActivity($ipAddress, 'ip', $analysisResult);
+
             return $analysisResult;
         } catch (Throwable $e) {
             $this->logger->error('Failed to detect suspicious IP activity', [
@@ -137,6 +151,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             // 回傳預設分析結果
             return SuspiciousActivityAnalysisDTO::forIpAddress(
                 ipAddress: $ipAddress,
@@ -152,6 +167,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             );
         }
     }
+
     /**
      * 檢測全域可疑活動模式.
      */
@@ -172,15 +188,18 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             foreach ($patterns as $pattern) {
                 $this->logDetectionActivity(null, 'global', $pattern);
             }
+
             return $patterns;
         } catch (Throwable $e) {
             $this->logger->error('Failed to detect global suspicious patterns', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return [];
         }
     }
+
     /**
      * 分析使用者活動.
      */
@@ -244,6 +263,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $userId = $activities[0]['user_id'] ?? 0;
         // 產生建議動作
         $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRules);
+
         // DEBUG: 確認最終參數
         return SuspiciousActivityAnalysisDTO::forUser(
             userId: (int) $userId,
@@ -262,6 +282,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             confidenceScore: $confidence,
         );
     }
+
     /**
      * 分析IP活動.
      */
@@ -330,6 +351,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
         // 產生建議動作
         $recommendedAction = $this->generateRecommendedAction($isSuspicious, $severityLevel, $detectionRules);
+
         return SuspiciousActivityAnalysisDTO::forIpAddress(
             ipAddress: $ipAddress,
             timeWindowMinutes: $timeWindowMinutes,
@@ -348,6 +370,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             confidenceScore: $confidence,
         );
     }
+
     /**
      * 分析全域模式.
      */
@@ -383,8 +406,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 );
             }
         }
+
         return $patterns;
     }
+
     /**
      * 檢測失敗率異常.
      */
@@ -412,6 +437,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 ];
             }
         }
+
         return [
             'suspicious' => false,
             'rules' => [],
@@ -419,6 +445,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'confidence' => 0.0,
         ];
     }
+
     /**
      * 檢測頻率異常.
      */
@@ -446,8 +473,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 ];
             }
         }
+
         return ['suspicious' => false];
     }
+
     /**
      * 檢測模式異常.
      */
@@ -475,8 +504,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'confidence' => 0.7,
             ];
         }
+
         return ['suspicious' => false];
     }
+
     /**
      * 檢測IP信譽問題.
      */
@@ -496,8 +527,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 'confidence' => 0.9,
             ];
         }
+
         return ['suspicious' => false];
     }
+
     /**
      * 檢查是否為可疑IP範圍.
      */
@@ -514,8 +547,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 根據失敗數量計算嚴重程度.
      */
@@ -529,8 +564,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         } elseif ($ratio >= 1.5) {
             return ActivitySeverity::MEDIUM;
         }
+
         return ActivitySeverity::LOW;
     }
+
     /**
      * 根據頻率計算嚴重程度.
      */
@@ -542,8 +579,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         } elseif ($ratio >= 1.5) {
             return ActivitySeverity::MEDIUM;
         }
+
         return ActivitySeverity::LOW;
     }
+
     /**
      * 提升嚴重程度等級.
      */
@@ -551,6 +590,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     {
         return $new->isAtLeast($current) ? $new : $current;
     }
+
     /**
      * 產生建議動作.
      */
@@ -576,8 +616,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 break;
             }
         }
+
         return $actions;
     }
+
     /**
      * 記錄檢測活動.
      */
@@ -608,6 +650,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             ]);
         }
     }
+
     // 設定相關方法實作
     public function setFailureThreshold(ActivityType $activityType, int $threshold, int $timeWindowMinutes = 60): void
     {
@@ -616,6 +659,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'timeWindow' => $timeWindowMinutes,
         ];
     }
+
     public function setFrequencyThreshold(ActivityType $activityType, int $threshold, int $timeWindowMinutes = 60): void
     {
         $this->frequencyThresholds[$activityType->value] = [
@@ -623,10 +667,12 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'timeWindow' => $timeWindowMinutes,
         ];
     }
+
     public function shouldTriggerAlert(SuspiciousActivityAnalysisDTO $analysis): bool
     {
         return $analysis->requiresImmediateAction();
     }
+
     public function triggerAlert(SuspiciousActivityAnalysisDTO $analysis): void
     {
         // 觸發警報邏輯（簡化實作）
@@ -638,6 +684,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'summary' => $analysis->getSummary(),
         ]);
     }
+
     public function getThresholdConfiguration(): array
     {
         return [
@@ -645,19 +692,23 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             'frequency_thresholds' => $this->frequencyThresholds,
         ];
     }
+
     public function resetThresholdsToDefaults(): void
     {
         $this->failureThresholds = self::DEFAULT_FAILURE_THRESHOLDS;
         $this->frequencyThresholds = self::DEFAULT_FREQUENCY_THRESHOLDS;
     }
+
     public function enableDetection(string $detectionType): void
     {
         $this->detectionEnabled[$detectionType] = true;
     }
+
     public function disableDetection(string $detectionType): void
     {
         $this->detectionEnabled[$detectionType] = false;
     }
+
     public function isDetectionEnabled(string $detectionType): bool
     {
         return $this->detectionEnabled[$detectionType] ?? false;

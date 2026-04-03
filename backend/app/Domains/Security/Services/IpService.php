@@ -3,14 +3,17 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services;
+
 use RuntimeException;
 use Throwable;
+
 class IpService implements IpServiceInterface
 {
     public function __construct(
         private IpRepositoryInterface $repository,
         private ActivityLoggingServiceInterface $activityLogger,
     ) {}
+
     public function createIpRule(CreateIpRuleDTO $dto): IpList
     {
         // DTO 已經在建構時驗證過資料，這裡直接轉換為陣列
@@ -25,8 +28,10 @@ class IpService implements IpServiceInterface
         }
         // 記錄 IP 封鎖/解封事件
         $this->logIpRuleEvent($result, $isBlocked);
+
         return $result;
     }
+
     public function isIpAllowed(string $ip): bool
     {
         if (!filter_var($ip, FILTER_VALIDATE_IP)) {
@@ -40,16 +45,20 @@ class IpService implements IpServiceInterface
         if ($this->repository->isBlacklisted($ip)) {
             return false;
         }
+
         // 預設允許存取
         return true;
     }
+
     public function getRulesByType(int $type): array
     {
         if (!in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('無效的名單類型，必須是 0（黑名單）或 1（白名單）');
         }
+
         return $this->repository->getByType($type);
     }
+
     /**
      * 記錄 IP 規則事件.
      */

@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
+
 use App\Domains\Security\DTOs\CreateIpRuleDTO;
 use App\Domains\Security\Models\IpList;
+
 interface IpServiceInterface
 {
     /**
@@ -14,6 +16,7 @@ interface IpServiceInterface
      * @return IpList 建立的 IP 規則實體
      */
     public function createIpRule(CreateIpRuleDTO $dto): IpList;
+
     /**
      * 檢查 IP 是否被允許存取.
      *
@@ -21,6 +24,7 @@ interface IpServiceInterface
      * @return bool true 如果 IP 被允許存取，否則 false
      */
     public function isIpAllowed(string $ip): bool;
+
     /**
      * 根據類型取得 IP 規則清單.
      *

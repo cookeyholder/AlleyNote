@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Commands;
+
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod as DomainStatisticsPeriod;
 use DateTimeImmutable;
@@ -15,22 +16,27 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Throwable;
+
 final class StatisticsRecalculationCommand extends Command
 {
     private const COMMAND_NAME = 'statistics:recalculate';
+
     private const SUPPORTED_TYPES = [
         'overview' => '總覽統計',
         'posts' => '文章統計',
         'users' => '使用者統計',
         'popular' => '熱門內容統計',
     ];
+
     private const DEFAULT_BATCH_SIZE = 30; // 預設每30天為一批
+
     public function __construct(
         private readonly StatisticsAggregationService $aggregationService,
         private readonly LoggerInterface $logger,
     ) {
         parent::__construct();
     }
+
     protected function configure(): void
     {
         $this
@@ -75,9 +81,11 @@ final class StatisticsRecalculationCommand extends Command
                 '試執行模式，只顯示將要處理的項目，不實際執行',
             );
     }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+
         try {
             // 解析輸入參數
             $config = $this->parseInputs($input, $io);
@@ -96,6 +104,7 @@ final class StatisticsRecalculationCommand extends Command
                 return $this->performRecalculation($io, $config);
             } else {
                 $io->warning('操作已取消');
+
                 return Command::SUCCESS;
             }
         } catch (Throwable $e) {
@@ -104,9 +113,11 @@ final class StatisticsRecalculationCommand extends Command
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             return Command::FAILURE;
         }
     }
+
     /**
      * 解析輸入參數.
      *
@@ -131,12 +142,14 @@ final class StatisticsRecalculationCommand extends Command
                     $type,
                     implode(', ', array_keys(self::SUPPORTED_TYPES)),
                 ));
+
                 return null;
             }
             $types = [$type];
         } else {
             $types = array_keys(self::SUPPORTED_TYPES);
         }
+
         // 解析日期範圍
         try {
             $startDate = is_string($startDateStr)
@@ -147,21 +160,26 @@ final class StatisticsRecalculationCommand extends Command
                 : new DateTimeImmutable('-1 day');
             if ($startDate > $endDate) {
                 $io->error('開始日期不能晚於結束日期');
+
                 return null;
             }
             if ($endDate >= new DateTimeImmutable('today')) {
                 $io->error('結束日期不能是今天或未來日期');
+
                 return null;
             }
         } catch (Throwable $e) {
             $io->error('日期格式錯誤: ' . $e->getMessage());
+
             return null;
         }
         // 驗證批次大小
         if ($batchSize <= 0 || $batchSize > 365) {
             $io->error('批次大小必須在 1-365 天之間');
+
             return null;
         }
+
         return [
             'types' => $types,
             'start_date' => $startDate,
@@ -171,6 +189,7 @@ final class StatisticsRecalculationCommand extends Command
             'dry_run' => $dryRun,
         ];
     }
+
     /**
      * 顯示配置資訊.
      *
@@ -199,6 +218,7 @@ final class StatisticsRecalculationCommand extends Command
             ['試執行模式' => $config['dry_run'] ? '是' : '否'],
         );
     }
+
     /**
      * 試執行模式.
      *
@@ -210,6 +230,7 @@ final class StatisticsRecalculationCommand extends Command
         $tasks = $this->generateProcessingTasks($config);
         if (empty($tasks)) {
             $io->warning('沒有需要處理的項目');
+
             return Command::SUCCESS;
         }
         $table = $io->createTable();
@@ -226,8 +247,10 @@ final class StatisticsRecalculationCommand extends Command
         $table->render();
         $willProcess = count(array_filter($tasks, fn(array $task): bool => !$task['exists'] || $config['force']));
         $io->success(sprintf('共 %d 個項目，其中 %d 個將被處理', count($tasks), $willProcess));
+
         return Command::SUCCESS;
     }
+
     /**
      * 確認執行.
      *
@@ -239,6 +262,7 @@ final class StatisticsRecalculationCommand extends Command
         $willProcess = count(array_filter($tasks, fn(array $task): bool => !$task['exists'] || $config['force']));
         if ($willProcess === 0) {
             $io->warning('沒有需要處理的項目');
+
             return false;
         }
         $warning = [];
@@ -252,8 +276,10 @@ final class StatisticsRecalculationCommand extends Command
         if (!empty($warning)) {
             $io->warning($warning);
         }
+
         return $io->confirm(sprintf('確定要處理 %d 個統計快照嗎？', $willProcess));
     }
+
     /**
      * 執行回填.
      *
@@ -265,6 +291,7 @@ final class StatisticsRecalculationCommand extends Command
         $willProcess = array_filter($tasks, fn(array $task): bool => !$task['exists'] || $config['force']);
         if (empty($willProcess)) {
             $io->success('沒有需要處理的項目');
+
             return Command::SUCCESS;
         }
         $io->section('開始執行統計回填');
@@ -304,8 +331,10 @@ final class StatisticsRecalculationCommand extends Command
         $io->newLine(2);
         // 顯示結果
         $this->displayResults($io, $results);
+
         return $results['failed'] > 0 ? Command::FAILURE : Command::SUCCESS;
     }
+
     /**
      * 產生處理任務清單.
      *
@@ -338,8 +367,10 @@ final class StatisticsRecalculationCommand extends Command
             }
             $currentDate = $batchEndDate->modify('+1 day');
         }
+
         return $tasks;
     }
+
     /**
      * 檢查快照是否存在.
      */
@@ -349,6 +380,7 @@ final class StatisticsRecalculationCommand extends Command
         // 暫時返回 false，表示需要處理
         return false;
     }
+
     /**
      * 處理單個任務.
      *
@@ -372,6 +404,7 @@ final class StatisticsRecalculationCommand extends Command
             $currentDate = $currentDate->modify('+1 day');
         }
     }
+
     /**
      * 顯示執行結果.
      *

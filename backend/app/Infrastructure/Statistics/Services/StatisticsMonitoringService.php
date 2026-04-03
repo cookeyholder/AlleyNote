@@ -3,24 +3,32 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
+
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use DateTime;
 use PDO;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 final class StatisticsMonitoringService implements StatisticsMonitoringServiceInterface
 {
     private const SLOW_QUERY_THRESHOLD = 10; // 慢查詢警告閾值
+
     private const HIGH_ERROR_RATE_THRESHOLD = 5.0; // 高錯誤率警告閾值 (%)
+
     private const LOW_CACHE_HIT_RATE_THRESHOLD = 80.0; // 低快取命中率警告閾值 (%)
+
     private const HIGH_RESPONSE_TIME_THRESHOLD = 1000; // 高回應時間警告閾值 (ms)
+
     private const MONITORING_DATA_RETENTION_DAYS = 30; // 監控資料保留天數
+
     public function __construct(
         private readonly SlowQueryMonitoringServiceInterface $slowQueryService,
         private readonly ?PDO $pdo = null,
         private readonly ?LoggerInterface $logger = null,
     ) {}
+
     /**
      * 取得統計計算時間監控資料.
      *
@@ -52,6 +60,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             if (!is_array($result)) {
                 return $this->getMockCalculationMetrics();
             }
+
             return [
                 'avg_calculation_time' => (float) ($result['avg_calculation_time'] ?? 0.0),
                 'max_calculation_time' => (float) ($result['max_calculation_time'] ?? 0.0),
@@ -62,9 +71,11 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $this->logger?->error('Failed to get calculation time metrics', [
                 'error' => $e->getMessage(),
             ]);
+
             return $this->getMockCalculationMetrics();
         }
     }
+
     /**
      * 取得快取命中率監控資料.
      *
@@ -82,6 +93,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $totalRequests = mt_rand(1000, 5000);
         $hits = (int) ($totalRequests * $hitRate / 100);
         $misses = $totalRequests - $hits;
+
         return [
             'hit_rate' => $hitRate,
             'miss_rate' => 100.0 - $hitRate,
@@ -89,6 +101,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'cache_size' => mt_rand(100, 1000), // KB
         ];
     }
+
     /**
      * 取得 API 回應時間監控資料.
      *
@@ -106,6 +119,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $avgResponseTime = mt_rand(50, 300) / 1.0; // 50-300ms
         $totalRequests = mt_rand(500, 2000);
         $errorRate = mt_rand(0, 50) / 10.0; // 0-5%
+
         return [
             'avg_response_time' => $avgResponseTime,
             'p95_response_time' => $avgResponseTime * 1.5,
@@ -114,6 +128,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'error_rate' => $errorRate,
         ];
     }
+
     /**
      * 取得錯誤率監控資料.
      *
@@ -132,6 +147,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $slowQueryCount = array_sum(array_column($slowQueryStats, 'slow_query_count'));
             $totalErrors = mt_rand(10, 100);
             $criticalErrors = mt_rand(0, 5);
+
             return [
                 'total_errors' => $totalErrors,
                 'error_rate' => ($totalErrors / 1000) * 100, // 假設 1000 次請求
@@ -142,6 +158,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $this->logger?->error('Failed to get error metrics', [
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'total_errors' => 0,
                 'error_rate' => 0.0,
@@ -150,6 +167,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             ];
         }
     }
+
     /**
      * 執行完整的健康檢查.
      *
@@ -178,6 +196,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $healthScore >= 70 => 'degraded',
             default => 'unhealthy'
         };
+
         return [
             'status' => $overallStatus,
             'timestamp' => new DateTime()->format('Y-m-d H:i:s'),
@@ -185,6 +204,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'overall_health' => $healthScore,
         ];
     }
+
     /**
      * 記錄統計操作事件.
      */
@@ -208,15 +228,18 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 ");
                 $stmt->execute([$eventType, json_encode($context)]);
             }
+
             return true;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to log statistics event', [
                 'event_type' => $eventType,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
+
     /**
      * 產生監控摘要報告.
      *
@@ -244,6 +267,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $apiMetrics['avg_response_time'],
             $errorMetrics['error_rate'],
         );
+
         return [
             'summary' => $summary,
             'metrics' => [
@@ -257,6 +281,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'generated_at' => new DateTime()->format('Y-m-d H:i:s'),
         ];
     }
+
     /**
      * 清理過期的監控記錄.
      */
@@ -265,6 +290,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         if ($this->pdo === null) {
             return 0;
         }
+
         try {
             $stmt = $this->pdo->prepare("
                 DELETE FROM statistics_query_monitoring
@@ -276,14 +302,17 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'deleted_rows' => $deletedRows,
                 'retention_days' => self::MONITORING_DATA_RETENTION_DAYS,
             ]);
+
             return $deletedRows;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to cleanup old monitoring data', [
                 'error' => $e->getMessage(),
             ]);
+
             return 0;
         }
     }
+
     /**
      * 檢測系統警告條件.
      *
@@ -332,8 +361,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 'timestamp' => $timestamp,
             ];
         }
+
         return $alerts;
     }
+
     /**
      * 取得特定時間範圍的監控統計.
      *
@@ -352,6 +383,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $totalCalculations = mt_rand(100, 1000);
         $avgResponseTime = mt_rand(100, 500) / 1.0;
         $errorCount = mt_rand(5, 50);
+
         return [
             'period' => $period,
             'total_calculations' => $totalCalculations,
@@ -363,6 +395,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             ],
         ];
     }
+
     /**
      * 取得模擬的統計計算指標.
      */
@@ -375,6 +408,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'failed_calculations' => mt_rand(0, 5),
         ];
     }
+
     /**
      * 檢查資料庫健康狀態.
      */
@@ -386,6 +420,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             }
             $stmt = $this->pdo->query('SELECT 1');
             $result = $stmt !== false;
+
             return $result
                 ? ['status' => 'healthy', 'message' => 'Database connection OK']
                 : ['status' => 'unhealthy', 'message' => 'Database connection failed'];
@@ -393,6 +428,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             return ['status' => 'unhealthy', 'message' => 'Database error: ' . $e->getMessage()];
         }
     }
+
     /**
      * 檢查快取健康狀態.
      */
@@ -402,8 +438,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         if ($metrics['hit_rate'] < self::LOW_CACHE_HIT_RATE_THRESHOLD) {
             return ['status' => 'degraded', 'message' => "Cache hit rate low: {$metrics['hit_rate']}%"];
         }
+
         return ['status' => 'healthy', 'message' => "Cache hit rate: {$metrics['hit_rate']}%"];
     }
+
     /**
      * 檢查統計計算健康狀態.
      */
@@ -413,8 +451,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         if ($metrics['failed_calculations'] > 0) {
             return ['status' => 'degraded', 'message' => "Failed calculations: {$metrics['failed_calculations']}"];
         }
+
         return ['status' => 'healthy', 'message' => 'Calculations running normally'];
     }
+
     /**
      * 檢查慢查詢健康狀態.
      */
@@ -424,8 +464,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         if ($errorMetrics['slow_query_count'] > self::SLOW_QUERY_THRESHOLD) {
             return ['status' => 'degraded', 'message' => "High slow query count: {$errorMetrics['slow_query_count']}"];
         }
+
         return ['status' => 'healthy', 'message' => 'Slow queries within normal range'];
     }
+
     /**
      * 檢查磁碟空間健康狀態.
      */
@@ -442,8 +484,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         } elseif ($usagePercent > 80) {
             return ['status' => 'degraded', 'message' => sprintf('Disk usage: %.1f%%', $usagePercent)];
         }
+
         return ['status' => 'healthy', 'message' => sprintf('Disk usage: %.1f%%', $usagePercent)];
     }
+
     /**
      * 檢查記憶體使用健康狀態.
      */
@@ -460,8 +504,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
                 return ['status' => 'degraded', 'message' => sprintf('Memory usage: %.1f%%', $usagePercent)];
             }
         }
+
         return ['status' => 'healthy', 'message' => sprintf('Memory usage: %s', $this->formatBytes($memoryUsage))];
     }
+
     /**
      * 取得 PHP 記憶體限制.
      */
@@ -473,6 +519,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         }
         $value = (int) $memoryLimit;
         $suffix = strtoupper(substr($memoryLimit, -1));
+
         return match ($suffix) {
             'G' => $value * 1024 * 1024 * 1024,
             'M' => $value * 1024 * 1024,
@@ -480,6 +527,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             default => $value
         };
     }
+
     /**
      * 格式化位元組大小.
      */
@@ -487,6 +535,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     {
         $units = ['B', 'KB', 'MB', 'GB'];
         $factor = (int) floor(log($bytes, 1024));
+
         return sprintf('%.2f %s', $bytes / (1024 ** $factor), $units[$factor] ?? 'TB');
     }
 }

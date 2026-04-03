@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 class UserStatisticsDTO implements JsonSerializable
 {
     /**
@@ -35,6 +37,7 @@ class UserStatisticsDTO implements JsonSerializable
     ) {
         $this->validateData();
     }
+
     /**
      * 從陣列建立 DTO.
      *
@@ -47,6 +50,7 @@ class UserStatisticsDTO implements JsonSerializable
         if (isset($data['generated_at']) && is_string($data['generated_at'])) {
             $generatedAt = new DateTimeImmutable($data['generated_at']);
         }
+
         return new self(
             activeUsers: isset($data['active_users']) && is_numeric($data['active_users']) ? (int) $data['active_users'] : 0,
             byActivityType: self::ensureStringIntArray($data['by_activity_type'] ?? []),
@@ -61,11 +65,13 @@ class UserStatisticsDTO implements JsonSerializable
             metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
         );
     }
+
     // Getters
     public function getActiveUsers(): int
     {
         return $this->activeUsers;
     }
+
     /**
      * @return array<string, int>
      */
@@ -73,6 +79,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->byActivityType;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -80,6 +87,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->loginActivity;
     }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -87,6 +95,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->mostActive;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -94,6 +103,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->engagementStats;
     }
+
     /**
      * @return array<string, int>
      */
@@ -101,6 +111,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->registrationSources;
     }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -108,6 +119,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->geographicalDistribution;
     }
+
     /**
      * @return array<string, int>
      */
@@ -115,6 +127,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->byRole;
     }
+
     /**
      * @return array<string, int>
      */
@@ -122,10 +135,12 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->activityTimeDistribution;
     }
+
     public function getGeneratedAt(): ?DateTimeImmutable
     {
         return $this->generatedAt;
     }
+
     /**
      * @return array<string, mixed>
      */
@@ -133,64 +148,86 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->metadata;
     }
+
     // 計算方法
     public function getTotalLogins(): int
     {
         $totalLogins = $this->loginActivity['total_logins'] ?? 0;
+
         return is_numeric($totalLogins) ? (int) $totalLogins : 0;
     }
+
     public function getUniqueLoggedInUsers(): int
     {
         $uniqueUsers = $this->loginActivity['unique_users'] ?? 0;
+
         return is_numeric($uniqueUsers) ? (int) $uniqueUsers : 0;
     }
+
     public function getAverageLoginsPerUser(): float
     {
         $avgLogins = $this->loginActivity['avg_logins_per_user'] ?? 0.0;
+
         return is_numeric($avgLogins) ? (float) $avgLogins : 0.0;
     }
+
     public function getPeakHour(): int
     {
         $peakHour = $this->loginActivity['peak_hour'] ?? 0;
+
         return is_numeric($peakHour) ? (int) $peakHour : 0;
     }
+
     public function getHighEngagementUsers(): int
     {
         $highEngagement = $this->engagementStats['high_engagement'] ?? 0;
+
         return is_numeric($highEngagement) ? (int) $highEngagement : 0;
     }
+
     public function getMediumEngagementUsers(): int
     {
         $mediumEngagement = $this->engagementStats['medium_engagement'] ?? 0;
+
         return is_numeric($mediumEngagement) ? (int) $mediumEngagement : 0;
     }
+
     public function getLowEngagementUsers(): int
     {
         $lowEngagement = $this->engagementStats['low_engagement'] ?? 0;
+
         return is_numeric($lowEngagement) ? (int) $lowEngagement : 0;
     }
+
     public function getInactiveUsers(): int
     {
         $inactiveUsers = $this->engagementStats['inactive'] ?? 0;
+
         return is_numeric($inactiveUsers) ? (int) $inactiveUsers : 0;
     }
+
     public function getAverageEngagementScore(): float
     {
         $avgScore = $this->engagementStats['avg_engagement_score'] ?? 0.0;
+
         return is_numeric($avgScore) ? (float) $avgScore : 0.0;
     }
+
     public function getEngagementRate(): float
     {
         if ($this->activeUsers === 0) {
             return 0.0;
         }
         $engagedUsers = $this->getHighEngagementUsers() + $this->getMediumEngagementUsers();
+
         return round(($engagedUsers / $this->activeUsers) * 100, 2);
     }
+
     public function getMostActiveUser(): ?array
     {
         return $this->mostActive[0] ?? null;
     }
+
     public function getTopRegistrationSource(): ?string
     {
         if (empty($this->registrationSources)) {
@@ -198,8 +235,10 @@ class UserStatisticsDTO implements JsonSerializable
         }
         $maxCount = max($this->registrationSources);
         $topSources = array_keys($this->registrationSources, $maxCount);
+
         return $topSources[0] ?? null;
     }
+
     public function getTopLocation(): ?string
     {
         if (empty($this->geographicalDistribution)) {
@@ -209,8 +248,10 @@ class UserStatisticsDTO implements JsonSerializable
         if (!is_array($topLocation) || !isset($topLocation['location'])) {
             return null;
         }
+
         return is_string($topLocation['location']) ? $topLocation['location'] : null;
     }
+
     /**
      * 取得使用者參與度分析.
      *
@@ -222,6 +263,7 @@ class UserStatisticsDTO implements JsonSerializable
                      + $this->getMediumEngagementUsers()
                      + $this->getLowEngagementUsers()
                      + $this->getInactiveUsers();
+
         return [
             'total_users' => $totalUsers,
             'engagement_rate' => $this->getEngagementRate(),
@@ -234,6 +276,7 @@ class UserStatisticsDTO implements JsonSerializable
             ],
         ];
     }
+
     /**
      * 取得活動時間洞察.
      *
@@ -242,6 +285,7 @@ class UserStatisticsDTO implements JsonSerializable
     public function getActivityInsights(): array
     {
         $peakHour = $this->getPeakActiveHour();
+
         return [
             'peak_login_hour' => $this->getPeakHour(),
             'peak_activity_hour' => $peakHour,
@@ -249,6 +293,7 @@ class UserStatisticsDTO implements JsonSerializable
             'weekend_vs_weekday' => $this->getWeekendVsWeekdayActivity(),
         ];
     }
+
     /**
      * 轉換為陣列.
      *
@@ -284,8 +329,10 @@ class UserStatisticsDTO implements JsonSerializable
         if (!empty($this->metadata)) {
             $data['metadata'] = $this->metadata;
         }
+
         return $data;
     }
+
     /**
      * JSON 序列化.
      *
@@ -295,6 +342,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查是否有有效資料.
      */
@@ -302,6 +350,7 @@ class UserStatisticsDTO implements JsonSerializable
     {
         return $this->activeUsers > 0 || !empty($this->byActivityType) || !empty($this->loginActivity);
     }
+
     /**
      * 取得摘要資訊.
      *
@@ -317,6 +366,7 @@ class UserStatisticsDTO implements JsonSerializable
             'top_location' => $this->getTopLocation(),
         ];
     }
+
     /**
      * 驗證資料完整性.
      *
@@ -376,6 +426,7 @@ class UserStatisticsDTO implements JsonSerializable
             }
         }
     }
+
     /**
      * 取得最活躍的時間.
      */
@@ -387,8 +438,10 @@ class UserStatisticsDTO implements JsonSerializable
         /** @var int $maxCount */
         $maxCount = max($this->activityTimeDistribution);
         $peakHours = array_keys($this->activityTimeDistribution, $maxCount);
+
         return $peakHours[0] ?? null;
     }
+
     /**
      * 取得活動模式.
      */
@@ -400,12 +453,14 @@ class UserStatisticsDTO implements JsonSerializable
         }
         $peakCount = max($this->activityTimeDistribution);
         $concentration = ($peakCount / $totalActivity) * 100;
+
         return match (true) {
             $concentration >= 50 => 'concentrated',
             $concentration >= 30 => 'moderate',
             default => 'distributed',
         };
     }
+
     /**
      * 取得週末與工作日活動比較.
      *
@@ -422,6 +477,7 @@ class UserStatisticsDTO implements JsonSerializable
             'weekday_activity_score' => 0.7,
         ];
     }
+
     /**
      * 確保回傳 array<string, mixed> 型別.
      *
@@ -439,8 +495,10 @@ class UserStatisticsDTO implements JsonSerializable
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 確保回傳 array<string, int> 型別.
      *
@@ -458,8 +516,10 @@ class UserStatisticsDTO implements JsonSerializable
                 $result[$key] = (int) $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
@@ -483,6 +543,7 @@ class UserStatisticsDTO implements JsonSerializable
                 $result[] = $filteredItem;
             }
         }
+
         return $result;
     }
 }

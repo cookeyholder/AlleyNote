@@ -3,36 +3,46 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
 use Throwable;
+
 class AuthorizationService implements AuthorizationServiceInterface
 {
     private PDO $db;
+
     private CacheServiceInterface $cache;
+
     private const CACHE_TTL = 3600; // 1 hour
+
     public function __construct(PDO $db, CacheServiceInterface $cache)
     {
         $this->db = $db;
         $this->cache = $cache;
     }
+
     public function hasPermission(int $userId, string $permission): bool
     {
         $cacheKey = "user_permissions:{$userId}";
         $permissions = $this->cache->remember($cacheKey, function () use ($userId) {
             return $this->getUserPermissions($userId);
         }, self::CACHE_TTL);
+
         return in_array($permission, $permissions, true);
     }
+
     public function hasRole(int $userId, string $roleName): bool
     {
         $cacheKey = "user_roles:{$userId}";
         $roles = $this->cache->remember($cacheKey, function () use ($userId) {
             return $this->getUserRoles($userId);
         }, self::CACHE_TTL);
+
         return in_array($roleName, array_column($roles, 'name'), true);
     }
+
     public function can(int $userId, string $resource, string $action): bool
     {
         // 檢查是否為超級管理員
@@ -41,8 +51,10 @@ class AuthorizationService implements AuthorizationServiceInterface
         }
         // 檢查具體權限
         $permission = "{$resource}:{$action}";
+
         return $this->hasPermission($userId, $permission);
     }
+
     public function assignRole(int $userId, string $roleName): bool
     {
         try {
@@ -65,11 +77,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             if ($result) {
                 $this->clearUserCache($userId);
             }
+
             return $result;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     public function removeRole(int $userId, string $roleName): bool
     {
         try {
@@ -83,11 +97,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             if ($result) {
                 $this->clearUserCache($userId);
             }
+
             return $result;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     public function givePermission(int $userId, string $permission): bool
     {
         try {
@@ -110,11 +126,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             if ($result) {
                 $this->clearUserCache($userId);
             }
+
             return $result;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     public function revokePermission(int $userId, string $permission): bool
     {
         try {
@@ -128,11 +146,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             if ($result) {
                 $this->clearUserCache($userId);
             }
+
             return $result;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     public function getUserRoles(int $userId): array
     {
         $stmt = $this->db->prepare('
@@ -142,8 +162,10 @@ class AuthorizationService implements AuthorizationServiceInterface
             WHERE ur.user_id = ?
         ');
         $stmt->execute([$userId]);
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     public function getUserPermissions(int $userId): array
     {
         // 取得角色權限
@@ -165,42 +187,51 @@ class AuthorizationService implements AuthorizationServiceInterface
         ');
         $stmt->execute([$userId]);
         $directPermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
         // 合併並去重
         return array_unique(array_merge($rolePermissions, $directPermissions));
     }
+
     public function isSuperAdmin(int $userId): bool
     {
         return $this->hasRole($userId, 'admin');
     }
+
     public function canUploadAttachment(int $userId, int $postId): bool
     {
         // 檢查是否為超級管理員
         if ($this->isSuperAdmin($userId)) {
             return true;
         }
+
         // 檢查是否為文章的擁有者
         return $this->canAccessPost($userId, $postId);
     }
+
     public function canDeleteAttachment(int $userId, string $attachmentUuid): bool
     {
         // 檢查是否為超級管理員
         if ($this->isSuperAdmin($userId)) {
             return true;
         }
+
         // 檢查是否為附件相關文章的擁有者
         return $this->canAccessAttachment($userId, $attachmentUuid);
     }
+
     private function canAccessPost(int $userId, int $postId): bool
     {
         try {
             $stmt = $this->db->prepare('SELECT user_id FROM posts WHERE id = ? AND deleted_at IS NULL');
             $stmt->execute([$postId]);
             $post = $stmt->fetch(PDO::FETCH_ASSOC);
+
             return $post && (int) $post['user_id'] === $userId;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     private function canAccessAttachment(int $userId, string $attachmentUuid): bool
     {
         try {
@@ -212,11 +243,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             ');
             $stmt->execute([$attachmentUuid]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
             return $result && (int) $result['user_id'] === $userId;
         } catch (Throwable $e) {
             return false;
         }
     }
+
     private function clearUserCache(int $userId): void
     {
         $this->cache->delete("user_permissions:{$userId}");

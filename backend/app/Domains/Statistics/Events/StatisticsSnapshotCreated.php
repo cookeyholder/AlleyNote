@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Events;
+
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Shared\Events\AbstractDomainEvent;
+
 class StatisticsSnapshotCreated extends AbstractDomainEvent
 {
     public function __construct(
@@ -13,10 +15,12 @@ class StatisticsSnapshotCreated extends AbstractDomainEvent
     ) {
         parent::__construct();
     }
+
     public function getEventName(): string
     {
         return 'statistics.snapshot.created';
     }
+
     public function getEventData(): array
     {
         return [
@@ -32,26 +36,32 @@ class StatisticsSnapshotCreated extends AbstractDomainEvent
             'updated_at' => $this->snapshot->getUpdatedAt()->format('Y-m-d H:i:s'),
         ];
     }
+
     public function getSnapshot(): StatisticsSnapshot
     {
         return $this->snapshot;
     }
+
     public function isUpdate(): bool
     {
         return $this->isUpdate;
     }
+
     public function getSnapshotType(): string
     {
         return $this->snapshot->getSnapshotType();
     }
+
     public function getSnapshotId(): int
     {
         return $this->snapshot->getId();
     }
+
     public function getSnapshotUuid(): string
     {
         return $this->snapshot->getUuid();
     }
+
     /**
      * 建立新快照事件.
      */
@@ -59,6 +69,7 @@ class StatisticsSnapshotCreated extends AbstractDomainEvent
     {
         return new self($snapshot, false);
     }
+
     /**
      * 建立快照更新事件.
      */

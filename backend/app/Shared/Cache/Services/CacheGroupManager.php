@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Services;
+
 use App\Shared\Cache\Contracts\TaggedCacheInterface;
 use App\Shared\Cache\ValueObjects\CacheTag;
 use Psr\Log\LoggerInterface;
+
 class CacheGroupManager
 {
     /**
@@ -13,20 +15,24 @@ class CacheGroupManager
      * @var array<string, TaggedCacheInterface>
      */
     private array $groups = [];
+
     /**
      * 分組依賴關係
      * @var array<string, array<string>>
      */
     private array $dependencies = [];
+
     /**
      * 分組自動失效規則.
      * @var array<string, array<string>|array<string, mixed>>
      */
     private array $invalidationRules = [];
+
     public function __construct(
         private TaggedCacheInterface $taggedCache,
         private LoggerInterface $logger,
     ) {}
+
     /**
      * 建立快取分組.
      *
@@ -46,8 +52,10 @@ class CacheGroupManager
             'group_name' => $groupName,
             'tags' => $allTags,
         ]);
+
         return $groupCache;
     }
+
     /**
      * 取得快取分組.
      *
@@ -58,6 +66,7 @@ class CacheGroupManager
     {
         return $this->groups[$groupName] ?? null;
     }
+
     /**
      * 設定分組依賴關係
      *
@@ -81,6 +90,7 @@ class CacheGroupManager
             'child_groups' => $childGroupsArray,
         ]);
     }
+
     /**
      * 設定自動失效規則.
      *
@@ -99,6 +109,7 @@ class CacheGroupManager
             'target_groups' => $targetGroupsArray,
         ]);
     }
+
     /**
      * 清空分組快取.
      *
@@ -133,8 +144,10 @@ class CacheGroupManager
         }
         // 移除分組實例
         unset($this->groups[$groupName]);
+
         return $clearedCount;
     }
+
     /**
      * 檢查並觸發自動失效規則.
      *
@@ -157,6 +170,7 @@ class CacheGroupManager
             }
         }
     }
+
     /**
      * 取得分組統計資訊.
      *
@@ -180,8 +194,10 @@ class CacheGroupManager
                 'child_groups_count' => count($this->dependencies[$groupName] ?? []),
             ];
         }
+
         return $statistics;
     }
+
     /**
      * 取得所有分組名稱.
      *
@@ -191,6 +207,7 @@ class CacheGroupManager
     {
         return array_keys($this->groups);
     }
+
     /**
      * 檢查分組是否存在.
      *
@@ -201,6 +218,7 @@ class CacheGroupManager
     {
         return isset($this->groups[$groupName]);
     }
+
     /**
      * 移除分組.
      *
@@ -228,8 +246,10 @@ class CacheGroupManager
             'group_name' => $groupName,
             'flush_cache' => $flushCache,
         ]);
+
         return true;
     }
+
     /**
      * 建立使用者相關的快取分組.
      *
@@ -242,8 +262,10 @@ class CacheGroupManager
         $userTag = CacheTag::user($userId);
         $groupName = "user_{$userId}";
         $tags = array_merge([$userTag->getName()], $additionalTags);
+
         return $this->group($groupName, $tags);
     }
+
     /**
      * 建立模組相關的快取分組.
      *
@@ -256,8 +278,10 @@ class CacheGroupManager
         $moduleTag = CacheTag::module($moduleName);
         $groupName = "module_{$moduleName}";
         $tags = array_merge([$moduleTag->getName()], $additionalTags);
+
         return $this->group($groupName, $tags);
     }
+
     /**
      * 建立時間相關的快取分組.
      *
@@ -270,8 +294,10 @@ class CacheGroupManager
         $temporalTag = CacheTag::temporal($period);
         $groupName = "temporal_{$period}";
         $tags = array_merge([$temporalTag->getName()], $additionalTags);
+
         return $this->group($groupName, $tags);
     }
+
     /**
      * 批量清空多個分組.
      *
@@ -285,8 +311,10 @@ class CacheGroupManager
         foreach ($groupNames as $groupName) {
             $totalCleared += $this->flushGroup($groupName, $cascade);
         }
+
         return $totalCleared;
     }
+
     /**
      * 按模式清空分組.
      *
@@ -302,8 +330,10 @@ class CacheGroupManager
                 $matchingGroups[] = $groupName;
             }
         }
+
         return $this->flushGroups($matchingGroups, $cascade);
     }
+
     /**
      * 設定分組失效規則.
      *
@@ -318,6 +348,7 @@ class CacheGroupManager
             'rules' => $rules,
         ]);
     }
+
     /**
      * 取得分組失效規則.
      *
@@ -337,8 +368,10 @@ class CacheGroupManager
                 $result[$key] = $value;
             }
         }
+
         return $result;
     }
+
     /**
      * 取得分組依賴關係
      *
@@ -349,6 +382,7 @@ class CacheGroupManager
     {
         return $this->dependencies[$groupName] ?? [];
     }
+
     /**
      * 檢查分組是否應該失效.
      *
@@ -368,8 +402,10 @@ class CacheGroupManager
                 return true;
             }
         }
+
         return false;
     }
+
     /**
      * 檢查分組是否過期
      *
@@ -384,11 +420,14 @@ class CacheGroupManager
         static $groupCreationTimes = [];
         if (!isset($groupCreationTimes[$groupName])) {
             $groupCreationTimes[$groupName] = time();
+
             return false;
         }
         $creationTime = $groupCreationTimes[$groupName];
+
         return (time() - $creationTime) > $maxAge;
     }
+
     /**
      * 批量清空多個分組.
      *
@@ -402,8 +441,10 @@ class CacheGroupManager
         foreach ($groupNames as $groupName) {
             $results[$groupName] = $this->flushGroup($groupName, $cascade);
         }
+
         return $results;
     }
+
     /**
      * 檢查模式匹配.
      *
@@ -418,6 +459,7 @@ class CacheGroupManager
         $escapedPattern = str_replace('*', $placeholder, $pattern);
         $quotedPattern = preg_quote($escapedPattern, '/');
         $regex = '/^' . str_replace($placeholder, '.*', $quotedPattern) . '$/';
+
         return preg_match($regex, $text) === 1;
     }
 }

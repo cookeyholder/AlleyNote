@@ -3,10 +3,12 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Processors;
+
 use App\Domains\Statistics\ValueObjects\ChartData;
 use App\Domains\Statistics\ValueObjects\ChartDataset;
 use App\Domains\Statistics\ValueObjects\ChartType;
 use InvalidArgumentException;
+
 class TrendAnalysisProcessor
 {
     /**
@@ -42,12 +44,14 @@ class TrendAnalysisProcessor
             default => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
         };
         $datasets = array_merge($datasets, $additionalDatasets);
+
         return new ChartData(
             $baseChart->labels,
             $datasets,
             $baseChart->options,
         );
     }
+
     /**
      * 計算線性趨勢線.
      *
@@ -78,6 +82,7 @@ class TrendAnalysisProcessor
         for ($i = 0; $i < $n; $i++) {
             $trendData[] = $slope * ($i + 1) + $intercept;
         }
+
         return new ChartDataset(
             '趨勢線',
             $trendData,
@@ -87,6 +92,7 @@ class TrendAnalysisProcessor
             2,
         );
     }
+
     /**
      * 計算移動平均線.
      *
@@ -109,6 +115,7 @@ class TrendAnalysisProcessor
                 $movingAvg[] = $sum / $period;
             }
         }
+
         return new ChartDataset(
             "{$period}日移動平均",
             $movingAvg,
@@ -119,6 +126,7 @@ class TrendAnalysisProcessor
             false,
         );
     }
+
     /**
      * 計算季節性趨勢.
      *
@@ -140,6 +148,7 @@ class TrendAnalysisProcessor
             $seasonalAdjustment = $seasonalPattern[$seasonalIndex] ?? 1.0;
             $seasonalData[] = $data[$i] * $seasonalAdjustment;
         }
+
         return new ChartDataset(
             '季節性調整',
             $seasonalData,
@@ -150,6 +159,7 @@ class TrendAnalysisProcessor
             false,
         );
     }
+
     /**
      * 計算成長率.
      *
@@ -173,6 +183,7 @@ class TrendAnalysisProcessor
                 }
             }
         }
+
         return new ChartDataset(
             '成長率 (%)',
             $growthRates,
@@ -183,6 +194,7 @@ class TrendAnalysisProcessor
             true,
         );
     }
+
     /**
      * 計算季節性模式.
      *
@@ -216,8 +228,10 @@ class TrendAnalysisProcessor
                 $pattern[$i] = 1.0;
             }
         }
+
         return $pattern;
     }
+
     /**
      * 預測未來資料點.
      *
@@ -231,6 +245,7 @@ class TrendAnalysisProcessor
         if ($n < 3) {
             // 資料不足，返回最後一個值
             $lastValue = (float) end($data);
+
             return array_fill(0, $periods, $lastValue);
         }
         // 使用簡單線性回歸預測
@@ -252,8 +267,10 @@ class TrendAnalysisProcessor
             $prediction = $slope * $nextX + $intercept;
             $predictions[] = max(0, $prediction); // 確保預測值不為負
         }
+
         return $predictions;
     }
+
     /**
      * 計算資料的統計摘要
      *
@@ -283,6 +300,7 @@ class TrendAnalysisProcessor
         } else {
             $median = $sortedData[(int) floor($n / 2)];
         }
+
         return [
             'count' => $n,
             'sum' => $sum,
@@ -295,6 +313,7 @@ class TrendAnalysisProcessor
             'range' => max($data) - min($data),
         ];
     }
+
     /**
      * 處理趨勢分析資料.
      */

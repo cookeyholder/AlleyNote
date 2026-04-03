@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Advanced;
+
 use App\Domains\Attachment\Contracts\FileSecurityServiceInterface;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Auth\Contracts\PasswordSecurityServiceInterface;
@@ -12,16 +13,25 @@ use App\Domains\Security\Contracts\SecretsManagerInterface;
 use App\Domains\Security\Contracts\SecurityHeaderServiceInterface;
 use App\Domains\Security\Contracts\SecurityTestInterface;
 use Throwable;
+
 class SecurityTestService implements SecurityTestInterface
 {
     private SessionSecurityServiceInterface $sessionService;
+
     private AuthorizationServiceInterface $authService;
+
     private FileSecurityServiceInterface $fileService;
+
     private SecurityHeaderServiceInterface $headerService;
+
     private ErrorHandlerServiceInterface $errorService;
+
     private PasswordSecurityServiceInterface $passwordService;
+
     private SecretsManagerInterface $secretsManager;
+
     private array $testResults = [];
+
     public function __construct(
         SessionSecurityServiceInterface $sessionService,
         AuthorizationServiceInterface $authService,
@@ -39,6 +49,7 @@ class SecurityTestService implements SecurityTestInterface
         $this->passwordService = $passwordService;
         $this->secretsManager = $secretsManager;
     }
+
     public function runAllTests(): array
     {
         $this->testResults = [];
@@ -51,8 +62,10 @@ class SecurityTestService implements SecurityTestInterface
         $this->testPasswordSecurity();
         $this->testSecretsManagement();
         $this->testSystemSecurity();
+
         return $this->testResults;
     }
+
     public function testSessionSecurity(): array
     {
         $results = [
@@ -61,6 +74,7 @@ class SecurityTestService implements SecurityTestInterface
             'passed' => 0,
             'failed' => 0,
         ];
+
         // 測試 Session 初始化
         try {
             $this->sessionService->initializeSecureSession();
@@ -78,6 +92,7 @@ class SecurityTestService implements SecurityTestInterface
             ];
             $results['failed']++;
         }
+
         // 測試 Session ID 重新產生
         try {
             $oldSessionId = session_id();
@@ -107,8 +122,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['session_security'] = $results;
+
         return $results;
     }
+
     public function testAuthorization(): array
     {
         $results = [
@@ -117,6 +134,7 @@ class SecurityTestService implements SecurityTestInterface
             'passed' => 0,
             'failed' => 0,
         ];
+
         // 測試權限檢查
         try {
             $hasPermission = $this->authService->hasPermission(1, 'read_posts');
@@ -134,6 +152,7 @@ class SecurityTestService implements SecurityTestInterface
             ];
             $results['failed']++;
         }
+
         // 測試角色檢查
         try {
             $can = $this->authService->can(1, 'manage_posts', 'posts');
@@ -152,8 +171,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['authorization'] = $results;
+
         return $results;
     }
+
     public function testFileSecurity(): array
     {
         $results = [
@@ -171,6 +192,7 @@ class SecurityTestService implements SecurityTestInterface
             'message' => '檔案驗證功能需要真實檔案進行測試',
         ];
         $results['passed']++;
+
         // 測試檔名清理
         try {
             $cleanName = $this->fileService->sanitizeFileName('test<script>alert("xss")</script>.txt');
@@ -198,8 +220,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['file_security'] = $results;
+
         return $results;
     }
+
     public function testSecurityHeaders(): array
     {
         $results = [
@@ -208,6 +232,7 @@ class SecurityTestService implements SecurityTestInterface
             'passed' => 0,
             'failed' => 0,
         ];
+
         // 測試安全標頭設定
         try {
             ob_start();
@@ -254,8 +279,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['security_headers'] = $results;
+
         return $results;
     }
+
     public function testErrorHandling(): array
     {
         $results = [
@@ -264,6 +291,7 @@ class SecurityTestService implements SecurityTestInterface
             'passed' => 0,
             'failed' => 0,
         ];
+
         // 測試錯誤處理
         try {
             $exception = new Exception('Test exception');
@@ -292,8 +320,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['error_handling'] = $results;
+
         return $results;
     }
+
     public function testPasswordSecurity(): array
     {
         $results = [
@@ -302,6 +332,7 @@ class SecurityTestService implements SecurityTestInterface
             'passed' => 0,
             'failed' => 0,
         ];
+
         // 測試密碼雜湊
         try {
             $password = 'TestPassword123!';
@@ -329,6 +360,7 @@ class SecurityTestService implements SecurityTestInterface
             ];
             $results['failed']++;
         }
+
         // 測試密碼強度檢查
         try {
             $weakPassword = '123456';
@@ -359,8 +391,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['password_security'] = $results;
+
         return $results;
     }
+
     public function testSecretsManagement(): array
     {
         $results = [
@@ -369,6 +403,7 @@ class SecurityTestService implements SecurityTestInterface
             'passed' => 0,
             'failed' => 0,
         ];
+
         // 測試秘密載入
         try {
             $this->secretsManager->load();
@@ -386,6 +421,7 @@ class SecurityTestService implements SecurityTestInterface
             ];
             $results['failed']++;
         }
+
         // 測試 .env 檔案驗證
         try {
             $issues = $this->secretsManager->validateEnvFile();
@@ -408,8 +444,10 @@ class SecurityTestService implements SecurityTestInterface
             $results['failed']++;
         }
         $this->testResults['secrets_management'] = $results;
+
         return $results;
     }
+
     public function testSystemSecurity(): array
     {
         $results = [
@@ -468,8 +506,10 @@ class SecurityTestService implements SecurityTestInterface
             }
         }
         $this->testResults['system_security'] = $results;
+
         return $results;
     }
+
     public function generateSecurityReport(): array
     {
         $allResults = $this->runAllTests();
@@ -492,6 +532,7 @@ class SecurityTestService implements SecurityTestInterface
             }
         }
         $successRate = $totalTests > 0 ? round(($totalPassed / $totalTests) * 100, 2) : 0;
+
         return [
             'summary' => [
                 'total_tests' => $totalTests,
@@ -505,6 +546,7 @@ class SecurityTestService implements SecurityTestInterface
             'recommendations' => $this->getRecommendations($criticalIssues),
         ];
     }
+
     private function createMockUploadedFile()
     {
         // 建立簡單的模擬檔案物件
@@ -513,24 +555,29 @@ class SecurityTestService implements SecurityTestInterface
             {
                 return 'test.txt';
             }
+
             public function getClientMediaType(): string
             {
                 return 'text/plain';
             }
+
             public function getSize(): int
             {
                 return 100;
             }
+
             public function getError(): int
             {
                 return UPLOAD_ERR_OK;
             }
+
             public function getStream(): string
             {
                 return 'test content';
             }
         };
     }
+
     private function getSecurityLevel(float $successRate): string
     {
         if ($successRate >= 90) {
@@ -543,6 +590,7 @@ class SecurityTestService implements SecurityTestInterface
             return '需要改善 (Needs Improvement)';
         }
     }
+
     private function getRecommendations(array $criticalIssues): array
     {
         $recommendations = [];
@@ -557,6 +605,7 @@ class SecurityTestService implements SecurityTestInterface
         $recommendations[] = '定期更新相依套件和安全補丁';
         $recommendations[] = '實施定期的滲透測試和漏洞掃描';
         $recommendations[] = '確保所有開發人員接受安全培訓';
+
         return $recommendations;
     }
 }

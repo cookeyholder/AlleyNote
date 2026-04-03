@@ -3,16 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
+
 use App\Application\Controllers\BaseController;
 use App\Domains\Statistics\Services\StatisticsExportService;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 class StatisticsExportController extends BaseController
 {
     public function __construct(
         private readonly StatisticsExportService $exportService,
     ) {}
+
     /**
      * 匯出文章瀏覽統計為 CSV.
      *
@@ -40,11 +43,13 @@ class StatisticsExportController extends BaseController
         $csv = $this->exportService->exportViewsToCSV($postId, $startDate, $endDate);
         $filename = 'post_views_' . date('Y-m-d_His') . '.csv';
         $response->getBody()->write($csv);
+
         return $response
             ->withHeader('Content-Type', 'text/csv; charset=utf-8')
             ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->withHeader('Cache-Control', 'max-age=0');
     }
+
     /**
      * 匯出綜合分析報告為 CSV.
      *
@@ -72,11 +77,13 @@ class StatisticsExportController extends BaseController
         $csv = $this->exportService->exportComprehensiveReportToCSV($postId, $startDate, $endDate);
         $filename = 'comprehensive_report_' . date('Y-m-d_His') . '.csv';
         $response->getBody()->write($csv);
+
         return $response
             ->withHeader('Content-Type', 'text/csv; charset=utf-8')
             ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
             ->withHeader('Cache-Control', 'max-age=0');
     }
+
     /**
      * 匯出為 JSON.
      *
@@ -104,6 +111,7 @@ class StatisticsExportController extends BaseController
         $json = $this->exportService->exportToJSON($postId, $startDate, $endDate);
         $filename = 'comprehensive_report_' . date('Y-m-d_His') . '.json';
         $response->getBody()->write($json);
+
         return $response
             ->withHeader('Content-Type', 'application/json; charset=utf-8')
             ->withHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')

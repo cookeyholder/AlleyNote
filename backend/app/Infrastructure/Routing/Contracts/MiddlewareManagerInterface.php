@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Contracts;
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 interface MiddlewareManagerInterface
 {
     /**
@@ -13,46 +15,54 @@ interface MiddlewareManagerInterface
      * @param MiddlewareInterface $middleware 中介軟體實例
      */
     public function add(MiddlewareInterface $middleware): self;
+
     /**
      * 新增多個中介軟體.
      *
      * @param MiddlewareInterface[] $middlewares 中介軟體陣列
      */
     public function addMultiple(array $middlewares): self;
+
     /**
      * 移除指定名稱的中介軟體.
      *
      * @param string $name 中介軟體名稱
      */
     public function remove(string $name): self;
+
     /**
      * 清除所有中介軟體.
      */
     public function clear(): self;
+
     /**
      * 檢查是否存在指定名稱的中介軟體.
      *
      * @param string $name 中介軟體名稱
      */
     public function has(string $name): bool;
+
     /**
      * 取得指定名稱的中介軟體.
      *
      * @param string $name 中介軟體名稱
      */
     public function get(string $name): ?MiddlewareInterface;
+
     /**
      * 取得所有中介軟體.
      *
      * @return MiddlewareInterface[]
      */
     public function getAll(): array;
+
     /**
      * 取得按優先順序排序的中介軟體.
      *
      * @return MiddlewareInterface[]
      */
     public function getSorted(): array;
+
     /**
      * 處理請求透過中介軟體鏈.
      *
@@ -64,6 +74,7 @@ interface MiddlewareManagerInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $finalHandler,
     ): ResponseInterface;
+
     /**
      * 取得中介軟體數量.
      */

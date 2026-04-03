@@ -3,16 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
+
 use App\Domains\Post\Contracts\TagRepositoryInterface;
 use App\Domains\Post\DTOs\CreateTagDTO;
 use App\Domains\Post\DTOs\UpdateTagDTO;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+
 class TagManagementService
 {
     public function __construct(
         private readonly TagRepositoryInterface $tagRepository,
     ) {}
+
     /**
      * 取得標籤列表.
      *
@@ -23,6 +26,7 @@ class TagManagementService
     {
         $result = $this->tagRepository->list($page, $perPage, $filters);
         $lastPage = (int) ceil($result['total'] / $perPage);
+
         return [
             'items' => array_map(fn($tag) => $tag->toArray(), $result['items']),
             'total' => $result['total'],
@@ -31,6 +35,7 @@ class TagManagementService
             'last_page' => $lastPage,
         ];
     }
+
     /**
      * 取得單一標籤.
      *
@@ -43,8 +48,10 @@ class TagManagementService
         if (!$tag) {
             throw new NotFoundException("標籤不存在 (ID: {$id})");
         }
+
         return $tag->toArray();
     }
+
     /**
      * 建立標籤.
      *
@@ -81,8 +88,10 @@ class TagManagementService
             'color' => $dto->color,
             'usage_count' => 0,
         ]);
+
         return $tag->toArray();
     }
+
     /**
      * 更新標籤.
      *
@@ -136,8 +145,10 @@ class TagManagementService
             $updateData['color'] = $dto->color;
         }
         $updatedTag = $this->tagRepository->update($dto->id, $updateData);
+
         return $updatedTag->toArray();
     }
+
     /**
      * 刪除標籤.
      *
@@ -154,6 +165,7 @@ class TagManagementService
         // 刪除標籤
         $this->tagRepository->delete($id);
     }
+
     /**
      * 生成 URL slug.
      */
@@ -169,6 +181,7 @@ class TagManagementService
         $slug = preg_replace('/-+/', '-', $slug) ?? $slug;
         // 移除頭尾的連字號
         $slug = trim($slug, '-');
+
         return $slug !== '' ? $slug : 'tag-' . uniqid();
     }
 }

@@ -3,15 +3,20 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Cache;
+
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use App\Infrastructure\Routing\Contracts\RouteCollectionInterface;
 use Redis;
 use RedisException;
+
 class RedisRouteCache implements RouteCacheInterface
 {
     private const CACHE_KEY_PREFIX = 'route_cache:';
+
     private const STATS_KEY = 'route_cache:stats';
+
     private int $ttl = 3600; // 預設 1 小時
+
     private array $stats = [
         'hits' => 0,
         'misses' => 0,
@@ -19,22 +24,26 @@ class RedisRouteCache implements RouteCacheInterface
         'created_at' => 0,
         'last_used' => 0,
     ];
+
     public function __construct(
         private readonly Redis $redis,
         private readonly string $keyPrefix = 'routes',
     ) {
         $this->loadStats();
     }
+
     public function isValid(): bool
     {
         try {
             $cacheKey = $this->getCacheKey();
             $exists = $this->redis->exists($cacheKey);
+
             return is_int($exists) && $exists > 0;
         } catch (RedisException) {
             return false;
         }
     }
+
     public function load(): ?RouteCollectionInterface
     {
         try {
@@ -43,24 +52,29 @@ class RedisRouteCache implements RouteCacheInterface
             if ($content === false) {
                 $this->stats['misses']++;
                 $this->saveStats();
+
                 return null;
             }
             $data = unserialize($content);
             if (!$data instanceof RouteCollectionInterface) {
                 $this->stats['misses']++;
                 $this->saveStats();
+
                 return null;
             }
             $this->stats['hits']++;
             $this->stats['last_used'] = time();
             $this->saveStats();
+
             return $data;
         } catch (RedisException) {
             $this->stats['misses']++;
             $this->saveStats();
+
             return null;
         }
     }
+
     public function store(RouteCollectionInterface $routes): bool
     {
         try {
@@ -73,13 +87,16 @@ class RedisRouteCache implements RouteCacheInterface
                 $this->stats['size'] = strlen($content);
                 $this->stats['created_at'] = time();
                 $this->saveStats();
+
                 return true;
             }
+
             return false;
         } catch (RedisException) {
             return false;
         }
     }
+
     public function clear(): bool
     {
         try {
@@ -98,27 +115,33 @@ class RedisRouteCache implements RouteCacheInterface
                 'created_at' => 0,
                 'last_used' => 0,
             ];
+
             return is_array($results) && count($results) === 2;
         } catch (RedisException) {
             return false;
         }
     }
+
     public function getCachePath(): string
     {
         return "redis://{$this->keyPrefix}";
     }
+
     public function setTtl(int $ttl): void
     {
         $this->ttl = $ttl;
     }
+
     public function getTtl(): int
     {
         return $this->ttl;
     }
+
     public function getStats(): array
     {
         return $this->stats;
     }
+
     /**
      * 取得 Redis 連線物件.
      */
@@ -126,6 +149,7 @@ class RedisRouteCache implements RouteCacheInterface
     {
         return $this->redis;
     }
+
     /**
      * 檢查 Redis 連線狀態.
      */
@@ -137,6 +161,7 @@ class RedisRouteCache implements RouteCacheInterface
             return false;
         }
     }
+
     /**
      * 取得快取鍵名.
      */
@@ -144,6 +169,7 @@ class RedisRouteCache implements RouteCacheInterface
     {
         return self::CACHE_KEY_PREFIX . $this->keyPrefix;
     }
+
     /**
      * 載入統計資料.
      */
@@ -161,6 +187,7 @@ class RedisRouteCache implements RouteCacheInterface
             // 忽略載入錯誤，使用預設值
         }
     }
+
     /**
      * 儲存統計資料.
      */

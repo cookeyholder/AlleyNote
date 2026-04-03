@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
+
 use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
@@ -18,6 +19,7 @@ use DateTime;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Throwable;
+
 final class JwtTokenService implements JwtTokenServiceInterface
 {
     public function __construct(
@@ -26,6 +28,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
         private readonly TokenBlacklistRepositoryInterface $blacklistRepository,
         private readonly JwtConfig $config,
     ) {}
+
     public function generateTokenPair(int $userId, DeviceInfo $deviceInfo, array $customClaims = []): TokenPair
     {
         try {
@@ -72,6 +75,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             // 計算過期時間
             $accessTokenExpiresAt = $now->modify('+' . $this->config->getAccessTokenTtl() . ' seconds');
             $refreshTokenExpiresAt = $now->modify('+' . $this->config->getRefreshTokenTtl() . ' seconds');
+
             return new TokenPair(
                 accessToken: $accessToken,
                 refreshToken: $refreshToken,
@@ -86,6 +90,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             );
         }
     }
+
     public function validateAccessToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
         // 檢查黑名單
@@ -98,8 +103,10 @@ final class JwtTokenService implements JwtTokenServiceInterface
         }
         // 驗證 token 並確認是 access token
         $payload = $this->jwtProvider->validateToken($token, 'access');
+
         return $this->createJwtPayloadFromArray($payload);
     }
+
     public function validateRefreshToken(string $token, bool $checkBlacklist = true): JwtPayload
     {
         // 檢查黑名單
@@ -129,13 +136,17 @@ final class JwtTokenService implements JwtTokenServiceInterface
                 'Refresh token has been revoked',
             );
         }
+
         return $jwtPayload;
     }
+
     public function extractPayload(string $token): JwtPayload
     {
         $payload = $this->jwtProvider->parseTokenUnsafe($token);
+
         return $this->createJwtPayloadFromArray($payload);
     }
+
     public function refreshTokens(string $refreshToken, DeviceInfo $deviceInfo): TokenPair
     {
         // 驗證 refresh token
@@ -143,9 +154,11 @@ final class JwtTokenService implements JwtTokenServiceInterface
         $userId = (int) $payload->getSubject();
         // 撤銷舊的 refresh token
         $this->refreshTokenRepository->delete($payload->getJti());
+
         // 產生新的 token pair
         return $this->generateTokenPair($userId, $deviceInfo);
     }
+
     public function revokeToken(string $token, string $reason = 'manual_revocation'): bool
     {
         try {
@@ -164,75 +177,92 @@ final class JwtTokenService implements JwtTokenServiceInterface
             if ($payload->getCustomClaim('type') === 'refresh') {
                 $this->refreshTokenRepository->delete($payload->getJti());
             }
+
             return true;
         } catch (Throwable $e) {
             app_log('error', 'JWT token revocation failed', [
                 'reason' => $reason,
                 'exception' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
+
     public function revokeAllUserTokens(int $userId, string $reason = 'revoke_all_sessions'): int
     {
         return $this->refreshTokenRepository->revokeAllByUserId($userId, $reason);
     }
+
     public function isTokenRevoked(string $token): bool
     {
         try {
             $payload = $this->extractPayload($token);
+
             return $this->blacklistRepository->isBlacklisted($payload->getJti());
         } catch (Throwable $e) {
             return true; // 無法解析的 token 視為已撤銷
         }
     }
+
     public function getTokenRemainingTime(string $token): int
     {
         try {
             $payload = $this->extractPayload($token);
             $now = new DateTimeImmutable();
             $remaining = $payload->getExpiresAt()->getTimestamp() - $now->getTimestamp();
+
             return max(0, $remaining);
         } catch (Throwable) {
             return 0;
         }
     }
+
     public function isTokenNearExpiry(string $token, int $thresholdSeconds = 300): bool
     {
         $remainingTime = $this->getTokenRemainingTime($token);
+
         return $remainingTime > 0 && $remainingTime <= $thresholdSeconds;
     }
+
     public function isTokenOwnedBy(string $token, int $userId): bool
     {
         try {
             $payload = $this->extractPayload($token);
+
             return (int) $payload->getSubject() === $userId;
         } catch (Throwable) {
             return false;
         }
     }
+
     public function isTokenFromDevice(string $token, DeviceInfo $deviceInfo): bool
     {
         try {
             $payload = $this->extractPayload($token);
             $tokenDeviceId = $payload->getCustomClaim('device_id');
+
             return $tokenDeviceId === $deviceInfo->getDeviceId();
         } catch (Throwable) {
             return false;
         }
     }
+
     public function getAlgorithm(): string
     {
         return 'RS256';
     }
+
     public function getAccessTokenTtl(): int
     {
         return $this->config->getAccessTokenTtl();
     }
+
     public function getRefreshTokenTtl(): int
     {
         return $this->config->getRefreshTokenTtl();
     }
+
     /**
      * 從陣列建立 JwtPayload 物件.
      *
@@ -268,6 +298,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
                     throw new InvalidArgumentException("Invalid nbf timestamp: {$payload['nbf']}");
                 }
             }
+
             return new JwtPayload(
                 jti: $payload['jti'],
                 sub: $payload['sub'],

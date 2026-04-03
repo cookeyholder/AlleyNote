@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
+
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class TokenPair implements JsonSerializable
 {
     /**
@@ -31,6 +33,7 @@ final readonly class TokenPair implements JsonSerializable
         $this->validateTokenType($tokenType);
         $this->validateExpirationTimes($accessTokenExpiresAt, $refreshTokenExpiresAt);
     }
+
     /**
      * 取得 Access Token.
      */
@@ -38,6 +41,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->accessToken;
     }
+
     /**
      * 取得 Refresh Token.
      */
@@ -45,6 +49,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->refreshToken;
     }
+
     /**
      * 取得 Access Token 過期時間.
      */
@@ -52,6 +57,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->accessTokenExpiresAt;
     }
+
     /**
      * 取得 Refresh Token 過期時間.
      */
@@ -59,6 +65,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->refreshTokenExpiresAt;
     }
+
     /**
      * 取得 Token 類型.
      */
@@ -66,6 +73,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->tokenType;
     }
+
     /**
      * 取得 Access Token 剩餘有效秒數.
      *
@@ -76,8 +84,10 @@ final readonly class TokenPair implements JsonSerializable
     {
         $now ??= new DateTimeImmutable();
         $diff = $this->accessTokenExpiresAt->getTimestamp() - $now->getTimestamp();
+
         return max(0, $diff);
     }
+
     /**
      * 取得 Refresh Token 剩餘有效秒數.
      *
@@ -88,8 +98,10 @@ final readonly class TokenPair implements JsonSerializable
     {
         $now ??= new DateTimeImmutable();
         $diff = $this->refreshTokenExpiresAt->getTimestamp() - $now->getTimestamp();
+
         return max(0, $diff);
     }
+
     /**
      * 檢查 Access Token 是否已過期
      *
@@ -98,8 +110,10 @@ final readonly class TokenPair implements JsonSerializable
     public function isAccessTokenExpired(?DateTimeImmutable $now = null): bool
     {
         $now ??= new DateTimeImmutable();
+
         return $this->accessTokenExpiresAt <= $now;
     }
+
     /**
      * 檢查 Refresh Token 是否已過期
      *
@@ -108,8 +122,10 @@ final readonly class TokenPair implements JsonSerializable
     public function isRefreshTokenExpired(?DateTimeImmutable $now = null): bool
     {
         $now ??= new DateTimeImmutable();
+
         return $this->refreshTokenExpiresAt <= $now;
     }
+
     /**
      * 檢查是否兩個 token 都已過期
      *
@@ -119,6 +135,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->isAccessTokenExpired($now) && $this->isRefreshTokenExpired($now);
     }
+
     /**
      * 檢查是否可以進行 token 刷新（Access Token 過期但 Refresh Token 有效）.
      *
@@ -128,6 +145,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->isAccessTokenExpired($now) && !$this->isRefreshTokenExpired($now);
     }
+
     /**
      * 檢查 Access Token 是否即將過期
      *
@@ -141,8 +159,10 @@ final readonly class TokenPair implements JsonSerializable
         }
         $now ??= new DateTimeImmutable();
         $expiresIn = $this->getAccessTokenExpiresIn($now);
+
         return $expiresIn > 0 && $expiresIn <= $thresholdSeconds;
     }
+
     /**
      * 建立帶有完整認證標頭的 Access Token.
      */
@@ -150,6 +170,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->tokenType . ' ' . $this->accessToken;
     }
+
     /**
      * 轉換為陣列格式.
      *
@@ -166,6 +187,7 @@ final readonly class TokenPair implements JsonSerializable
             'refresh_token_expires_at' => $this->refreshTokenExpiresAt->format(DateTimeImmutable::ATOM),
         ];
     }
+
     /**
      * 轉換為 API 回應格式（隱藏敏感資訊）.
      *
@@ -182,8 +204,10 @@ final readonly class TokenPair implements JsonSerializable
         if ($includeRefreshToken) {
             $response['refresh_token'] = $this->refreshToken;
         }
+
         return $response;
     }
+
     /**
      * JsonSerializable 實作.
      *
@@ -193,6 +217,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查與另一個 TokenPair 是否相等.
      *
@@ -206,6 +231,7 @@ final readonly class TokenPair implements JsonSerializable
             && $this->accessTokenExpiresAt->getTimestamp() === $other->accessTokenExpiresAt->getTimestamp()
             && $this->refreshTokenExpiresAt->getTimestamp() === $other->refreshTokenExpiresAt->getTimestamp();
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -213,6 +239,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         $accessTokenPreview = substr($this->accessToken, 0, 20) . '...';
         $refreshTokenPreview = substr($this->refreshToken, 0, 20) . '...';
+
         return sprintf(
             'TokenPair(accessToken=%s, refreshToken=%s, tokenType=%s, accessExpiresAt=%s, refreshExpiresAt=%s)',
             $accessTokenPreview,
@@ -222,6 +249,7 @@ final readonly class TokenPair implements JsonSerializable
             $this->refreshTokenExpiresAt->format('Y-m-d H:i:s'),
         );
     }
+
     /**
      * __toString 魔術方法.
      */
@@ -229,6 +257,7 @@ final readonly class TokenPair implements JsonSerializable
     {
         return $this->toString();
     }
+
     /**
      * 驗證 Access Token.
      *
@@ -252,6 +281,7 @@ final readonly class TokenPair implements JsonSerializable
             }
         }
     }
+
     /**
      * 驗證 Refresh Token.
      *
@@ -271,6 +301,7 @@ final readonly class TokenPair implements JsonSerializable
             throw new InvalidArgumentException('Refresh token cannot exceed 2000 characters');
         }
     }
+
     /**
      * 驗證 Token 類型.
      *
@@ -289,6 +320,7 @@ final readonly class TokenPair implements JsonSerializable
             );
         }
     }
+
     /**
      * 驗證過期時間.
      *

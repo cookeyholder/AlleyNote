@@ -3,12 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
+
 use RuntimeException;
 use Throwable;
+
 final class StatisticsQueryService
 {
     private const CACHE_TTL = 3600; // 1 小時
+
     private const MAX_QUERY_DAYS = 365; // 最大查詢範圍：1 年
+
     public function __construct(
         /** @phpstan-ignore-next-line property.onlyWritten */
         private readonly StatisticsRepositoryInterface $statisticsRepository,
@@ -16,6 +20,7 @@ final class StatisticsQueryService
         private readonly LoggerInterface $logger,
         private readonly PDO $db,
     ) {}
+
     /**
      * 取得統計概覽資料.
      *
@@ -26,10 +31,12 @@ final class StatisticsQueryService
     {
         $this->validateQuery($query);
         $cacheKey = $this->generateCacheKey('overview', $query);
+
         try {
             $cached = $this->cacheService->get($cacheKey);
             if ($cached instanceof StatisticsOverviewDTO) {
                 $this->logger->debug('統計概覽快取命中', ['cache_key' => $cacheKey]);
+
                 return $cached;
             }
             $this->logger->debug('開始查詢統計概覽', [
@@ -42,6 +49,7 @@ final class StatisticsQueryService
             $overview = $this->buildOverviewFromRepository($query);
             $this->cacheService->put($cacheKey, $overview, self::CACHE_TTL, ['statistics', 'overview']);
             $this->logger->debug('統計概覽已快取', ['cache_key' => $cacheKey]);
+
             return $overview;
         } catch (Throwable $e) {
             $this->logger->error('統計概覽查詢失敗', [
@@ -51,9 +59,11 @@ final class StatisticsQueryService
                     'end_date' => $query->getEndDate()?->format('Y-m-d'),
                 ],
             ]);
+
             throw $e;
         }
     }
+
     /**
      * 取得文章統計資料（分頁）.
      */
@@ -61,10 +71,12 @@ final class StatisticsQueryService
     {
         $this->validateQuery($query);
         $cacheKey = $this->generateCacheKey('posts', $query);
+
         try {
             $cached = $this->cacheService->get($cacheKey);
             if ($cached instanceof PaginatedStatisticsDTO) {
                 $this->logger->debug('文章統計快取命中', ['cache_key' => $cacheKey]);
+
                 return $cached;
             }
             $this->logger->debug('開始查詢文章統計', [
@@ -75,6 +87,7 @@ final class StatisticsQueryService
             $result = $this->buildPostStatisticsFromRepository($query);
             $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'posts']);
             $this->logger->debug('文章統計已快取', ['cache_key' => $cacheKey]);
+
             return $result;
         } catch (Throwable $e) {
             $this->logger->error('文章統計查詢失敗', [
@@ -82,9 +95,11 @@ final class StatisticsQueryService
                 'page' => $query->getPage(),
                 'limit' => $query->getLimit(),
             ]);
+
             throw $e;
         }
     }
+
     /**
      * 取得來源分佈統計.
      */
@@ -92,22 +107,27 @@ final class StatisticsQueryService
     {
         $this->validateQuery($query);
         $cacheKey = $this->generateCacheKey('sources', $query);
+
         try {
             $cached = $this->cacheService->get($cacheKey);
             if ($cached !== null && is_array($cached)) {
                 $this->logger->debug('來源分佈快取命中', ['cache_key' => $cacheKey]);
+
                 return $cached;
             }
             $this->logger->debug('開始查詢來源分佈');
             $distribution = $this->buildSourceDistributionFromRepository($query);
             $this->cacheService->put($cacheKey, $distribution, self::CACHE_TTL, ['statistics', 'sources']);
             $this->logger->debug('來源分佈已快取', ['cache_key' => $cacheKey]);
+
             return $distribution;
         } catch (Throwable $e) {
             $this->logger->error('來源分佈查詢失敗', ['error' => $e->getMessage()]);
+
             throw $e;
         }
     }
+
     /**
      * 取得使用者統計資料（分頁）.
      */
@@ -115,22 +135,27 @@ final class StatisticsQueryService
     {
         $this->validateQuery($query);
         $cacheKey = $this->generateCacheKey('users', $query);
+
         try {
             $cached = $this->cacheService->get($cacheKey);
             if ($cached instanceof PaginatedStatisticsDTO) {
                 $this->logger->debug('使用者統計快取命中', ['cache_key' => $cacheKey]);
+
                 return $cached;
             }
             $this->logger->debug('開始查詢使用者統計');
             $result = $this->buildUserStatisticsFromRepository($query);
             $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'users']);
             $this->logger->debug('使用者統計已快取', ['cache_key' => $cacheKey]);
+
             return $result;
         } catch (Throwable $e) {
             $this->logger->error('使用者統計查詢失敗', ['error' => $e->getMessage()]);
+
             throw $e;
         }
     }
+
     /**
      * 取得熱門內容統計.
      */
@@ -138,22 +163,27 @@ final class StatisticsQueryService
     {
         $this->validateQuery($query);
         $cacheKey = $this->generateCacheKey('popular', $query);
+
         try {
             $cached = $this->cacheService->get($cacheKey);
             if ($cached !== null && is_array($cached)) {
                 $this->logger->debug('熱門內容快取命中', ['cache_key' => $cacheKey]);
+
                 return $cached;
             }
             $this->logger->debug('開始查詢熱門內容');
             $popular = $this->buildPopularContentFromRepository($query);
             $this->cacheService->put($cacheKey, $popular, self::CACHE_TTL, ['statistics', 'popular']);
             $this->logger->debug('熱門內容已快取', ['cache_key' => $cacheKey]);
+
             return $popular;
         } catch (Throwable $e) {
             $this->logger->error('熱門內容查詢失敗', ['error' => $e->getMessage()]);
+
             throw $e;
         }
     }
+
     /**
      * 搜尋統計資料.
      */
@@ -164,25 +194,30 @@ final class StatisticsQueryService
         }
         $this->validateQuery($query);
         $cacheKey = $this->generateSearchCacheKey($keyword, $query);
+
         try {
             $cached = $this->cacheService->get($cacheKey);
             if ($cached instanceof PaginatedStatisticsDTO) {
                 $this->logger->debug('統計搜尋快取命中', ['cache_key' => $cacheKey, 'keyword' => $keyword]);
+
                 return $cached;
             }
             $this->logger->debug('開始搜尋統計資料', ['keyword' => $keyword]);
             $result = $this->buildSearchResultsFromRepository($keyword, $query);
             $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'search']);
             $this->logger->debug('統計搜尋已快取', ['cache_key' => $cacheKey, 'keyword' => $keyword]);
+
             return $result;
         } catch (Throwable $e) {
             $this->logger->error('統計搜尋失敗', [
                 'error' => $e->getMessage(),
                 'keyword' => $keyword,
             ]);
+
             throw $e;
         }
     }
+
     /**
      * 驗證查詢參數.
      */
@@ -197,6 +232,7 @@ final class StatisticsQueryService
             throw new InvalidArgumentException('每頁筆數不能超過 100');
         }
     }
+
     /**
      * 生成快取鍵.
      */
@@ -214,8 +250,10 @@ final class StatisticsQueryService
                 'filters' => $query->getFilters(),
             ])),
         ];
+
         return implode(':', $parts);
     }
+
     /**
      * 生成搜尋快取鍵.
      */
@@ -234,8 +272,10 @@ final class StatisticsQueryService
                 'filters' => $query->getFilters(),
             ])),
         ];
+
         return implode(':', $parts);
     }
+
     /**
      * 從 Repository 建構概覽資料.
      */
@@ -257,6 +297,7 @@ final class StatisticsQueryService
         $newUsers = $this->queryNewUsers($startDate, $endDate);
         // 查詢總瀏覽量
         $totalViews = $this->queryTotalViews($startDate, $endDate);
+
         return new StatisticsOverviewDTO(
             totalPosts: $totalPosts,
             activeUsers: $activeUsers,
@@ -281,6 +322,7 @@ final class StatisticsQueryService
             ],
         );
     }
+
     /**
      * 查詢指定時間範圍內的總文章數.
      */
@@ -295,8 +337,10 @@ final class StatisticsQueryService
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 查詢已發布文章數.
      */
@@ -311,8 +355,10 @@ final class StatisticsQueryService
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 查詢草稿文章數.
      */
@@ -327,8 +373,10 @@ final class StatisticsQueryService
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 查詢活躍使用者數（在時間範圍內有登入或發文行為）.
      */
@@ -355,8 +403,10 @@ final class StatisticsQueryService
             'start_date' => $startDate,
             'end_date' => $endDate,
         ]);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 查詢新使用者數.
      */
@@ -371,8 +421,10 @@ final class StatisticsQueryService
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 查詢總使用者數.
      */
@@ -382,8 +434,10 @@ final class StatisticsQueryService
         if ($stmt === false) {
             throw new RuntimeException('查詢總使用者數失敗');
         }
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 查詢總瀏覽量.
      */
@@ -398,8 +452,10 @@ final class StatisticsQueryService
         }
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+
         return (int) $stmt->fetchColumn();
     }
+
     /**
      * 計算使用者成長率.
      */
@@ -417,8 +473,10 @@ final class StatisticsQueryService
         if ($previousUsers === 0) {
             return $currentUsers > 0 ? 100.0 : 0.0;
         }
+
         return round((($currentUsers - $previousUsers) / $previousUsers) * 100, 2);
     }
+
     /**
      * 決定週期類型.
      */
@@ -438,6 +496,7 @@ final class StatisticsQueryService
             return 'custom';
         }
     }
+
     /**
      * 計算持續天數.
      */
@@ -448,8 +507,10 @@ final class StatisticsQueryService
         }
         $start = new DateTimeImmutable($startDate);
         $end = new DateTimeImmutable($endDate);
+
         return $start->diff($end)->days + 1;
     }
+
     /**
      * 從 Repository 建構文章統計資料.
      */
@@ -469,6 +530,7 @@ final class StatisticsQueryService
                 'created_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
         }
+
         return new PaginatedStatisticsDTO(
             data: $posts,
             totalCount: 1000,
@@ -476,6 +538,7 @@ final class StatisticsQueryService
             perPage: $query->getLimit(),
         );
     }
+
     /**
      * 從 Repository 建構來源分佈資料.
      */
@@ -500,6 +563,7 @@ final class StatisticsQueryService
             ],
         ];
     }
+
     /**
      * 從 Repository 建構使用者統計資料.
      */
@@ -517,6 +581,7 @@ final class StatisticsQueryService
                 'last_active_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
         }
+
         return new PaginatedStatisticsDTO(
             data: $users,
             totalCount: 200,
@@ -524,6 +589,7 @@ final class StatisticsQueryService
             perPage: $query->getLimit(),
         );
     }
+
     /**
      * 從 Repository 建構熱門內容資料.
      */
@@ -556,8 +622,10 @@ final class StatisticsQueryService
         }
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
+
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
     /**
      * 從 Repository 建構搜尋結果.
      */
@@ -577,6 +645,7 @@ final class StatisticsQueryService
                 ],
             ];
         }
+
         return new PaginatedStatisticsDTO(
             data: $results,
             totalCount: 50,

@@ -3,12 +3,15 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
+
 use PDO;
+
 class PostViewStatisticsService
 {
     public function __construct(
         private readonly PDO $pdo,
     ) {}
+
     /**
      * 取得單篇文章的瀏覽統計.
      *
@@ -25,11 +28,13 @@ class PostViewStatisticsService
         ');
         $stmt->execute(['post_id' => $postId]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
         return [
             'views' => (int) ($result['views'] ?? 0),
             'unique_visitors' => (int) ($result['unique_visitors'] ?? 0),
         ];
     }
+
     /**
      * 取得多篇文章的瀏覽統計（批量查詢）.
      *
@@ -69,8 +74,10 @@ class PostViewStatisticsService
                 ];
             }
         }
+
         return $stats;
     }
+
     /**
      * 記錄文章瀏覽.
      */
@@ -81,6 +88,7 @@ class PostViewStatisticsService
             INSERT INTO post_views (uuid, post_id, user_id, user_ip, user_agent, referrer, view_date)
             VALUES (:uuid, :post_id, :user_id, :user_ip, :user_agent, :referrer, :view_date)
         ');
+
         return $stmt->execute([
             'uuid' => $uuid,
             'post_id' => $postId,
@@ -91,6 +99,7 @@ class PostViewStatisticsService
             'view_date' => date('Y-m-d H:i:s'),
         ]);
     }
+
     /**
      * 生成 UUID.
      */

@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
+
 use InvalidArgumentException;
 use JsonSerializable;
+
 final readonly class DeviceInfo implements JsonSerializable
 {
     /**
@@ -49,6 +51,7 @@ final readonly class DeviceInfo implements JsonSerializable
             $this->validateBrowser($browser);
         }
     }
+
     /**
      * 從使用者代理和 IP 建立裝置資訊.
      *
@@ -61,6 +64,7 @@ final readonly class DeviceInfo implements JsonSerializable
         $parsedInfo = self::parseUserAgent($userAgent);
         $deviceId = self::generateDeviceId($userAgent, $ipAddress);
         $deviceName ??= self::generateDeviceName($parsedInfo);
+
         return new self(
             deviceId: $deviceId,
             deviceName: $deviceName,
@@ -75,6 +79,7 @@ final readonly class DeviceInfo implements JsonSerializable
             isDesktop: $parsedInfo['isDesktop'],
         );
     }
+
     /**
      * 從陣列建立裝置資訊.
      *
@@ -89,6 +94,7 @@ final readonly class DeviceInfo implements JsonSerializable
                 throw new InvalidArgumentException("Missing required field: {$field}");
             }
         }
+
         return new self(
             deviceId: $data['device_id'],
             deviceName: $data['device_name'],
@@ -103,6 +109,7 @@ final readonly class DeviceInfo implements JsonSerializable
             isDesktop: $data['is_desktop'] ?? true,
         );
     }
+
     /**
      * 取得裝置 ID.
      */
@@ -110,6 +117,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->deviceId;
     }
+
     /**
      * 取得裝置名稱.
      */
@@ -117,6 +125,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->deviceName;
     }
+
     /**
      * 取得使用者代理.
      */
@@ -124,6 +133,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->userAgent;
     }
+
     /**
      * 取得 IP 位址
      */
@@ -131,6 +141,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->ipAddress;
     }
+
     /**
      * 取得平台資訊.
      */
@@ -138,6 +149,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->platform;
     }
+
     /**
      * 取得瀏覽器資訊.
      */
@@ -145,6 +157,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->browser;
     }
+
     /**
      * 取得瀏覽器版本.
      */
@@ -152,6 +165,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->browserVersion;
     }
+
     /**
      * 取得作業系統版本.
      */
@@ -159,6 +173,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->osVersion;
     }
+
     /**
      * 檢查是否為行動裝置.
      */
@@ -166,6 +181,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->isMobile;
     }
+
     /**
      * 檢查是否為平板裝置.
      */
@@ -173,6 +189,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->isTablet;
     }
+
     /**
      * 檢查是否為桌面裝置.
      */
@@ -180,6 +197,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->isDesktop;
     }
+
     /**
      * 取得裝置類型描述.
      */
@@ -191,8 +209,10 @@ final readonly class DeviceInfo implements JsonSerializable
         if ($this->isTablet) {
             return 'tablet';
         }
+
         return 'desktop';
     }
+
     /**
      * 取得裝置指紋（用於識別相同裝置）.
      */
@@ -204,8 +224,10 @@ final readonly class DeviceInfo implements JsonSerializable
             $this->getDeviceType(),
             substr(md5($this->userAgent), 0, 8),
         ];
+
         return implode('-', $components);
     }
+
     /**
      * 取得完整的瀏覽器資訊.
      */
@@ -218,8 +240,10 @@ final readonly class DeviceInfo implements JsonSerializable
         if ($this->browserVersion !== null) {
             $browserInfo .= ' ' . $this->browserVersion;
         }
+
         return $browserInfo;
     }
+
     /**
      * 取得完整的平台資訊.
      */
@@ -232,8 +256,10 @@ final readonly class DeviceInfo implements JsonSerializable
         if ($this->osVersion !== null) {
             $platformInfo .= ' ' . $this->osVersion;
         }
+
         return $platformInfo;
     }
+
     /**
      * 檢查是否與另一個裝置資訊匹配.
      *
@@ -243,6 +269,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->getFingerprint() === $other->getFingerprint();
     }
+
     /**
      * 轉換為陣列格式.
      *
@@ -266,6 +293,7 @@ final readonly class DeviceInfo implements JsonSerializable
             'fingerprint' => $this->getFingerprint(),
         ];
     }
+
     /**
      * 轉換為摘要格式（隱藏敏感資訊）.
      *
@@ -282,6 +310,7 @@ final readonly class DeviceInfo implements JsonSerializable
             'ip_address_masked' => $this->maskIpAddress(),
         ];
     }
+
     /**
      * JsonSerializable 實作.
      *
@@ -291,6 +320,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->toArray();
     }
+
     /**
      * 檢查與另一個 DeviceInfo 是否相等.
      *
@@ -310,6 +340,7 @@ final readonly class DeviceInfo implements JsonSerializable
             && $this->isTablet === $other->isTablet
             && $this->isDesktop === $other->isDesktop;
     }
+
     /**
      * 轉換為字串表示.
      */
@@ -325,6 +356,7 @@ final readonly class DeviceInfo implements JsonSerializable
             $this->maskIpAddress(),
         );
     }
+
     /**
      * __toString 魔術方法.
      */
@@ -332,6 +364,7 @@ final readonly class DeviceInfo implements JsonSerializable
     {
         return $this->toString();
     }
+
     /**
      * 遮罩 IP 位址以保護隱私
      */
@@ -341,6 +374,7 @@ final readonly class DeviceInfo implements JsonSerializable
             // IPv4: 隱藏最後一段
             $parts = explode('.', $this->ipAddress);
             $parts[3] = 'xxx';
+
             return implode('.', $parts);
         }
         if (filter_var($this->ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
@@ -349,6 +383,7 @@ final readonly class DeviceInfo implements JsonSerializable
             if (strpos($this->ipAddress, '::') !== false) {
                 // 處理簡寫格式
                 $parts = explode('::', $this->ipAddress);
+
                 return $parts[0] . '::xxxx';
             } else {
                 // 處理完整格式
@@ -358,8 +393,10 @@ final readonly class DeviceInfo implements JsonSerializable
                 }
             }
         }
+
         return substr($this->ipAddress, 0, -4) . 'xxxx';
     }
+
     /**
      * 生成裝置 ID.
      *
@@ -369,8 +406,10 @@ final readonly class DeviceInfo implements JsonSerializable
     private static function generateDeviceId(string $userAgent, string $ipAddress): string
     {
         $data = $userAgent . $ipAddress . date('Y-m-d');
+
         return 'dev_' . substr(hash('sha256', $data), 0, 32);
     }
+
     /**
      * 生成裝置名稱.
      *
@@ -381,8 +420,10 @@ final readonly class DeviceInfo implements JsonSerializable
         $platform = $parsedInfo['platform'] ?? 'Unknown';
         $browser = $parsedInfo['browser'] ?? 'Browser';
         $deviceType = $parsedInfo['isMobile'] ? 'Mobile' : ($parsedInfo['isTablet'] ? 'Tablet' : 'Desktop');
+
         return "{$platform} {$deviceType} ({$browser})";
     }
+
     /**
      * 解析使用者代理字串.
      *
@@ -445,8 +486,10 @@ final readonly class DeviceInfo implements JsonSerializable
             $info['browser'] = 'Edge';
             $info['browserVersion'] = $matches[1];
         }
+
         return $info;
     }
+
     /**
      * 驗證裝置 ID.
      *
@@ -465,6 +508,7 @@ final readonly class DeviceInfo implements JsonSerializable
             throw new InvalidArgumentException('Device ID can only contain letters, numbers, underscores and hyphens');
         }
     }
+
     /**
      * 驗證裝置名稱.
      *
@@ -480,6 +524,7 @@ final readonly class DeviceInfo implements JsonSerializable
             throw new InvalidArgumentException('Device name cannot exceed 255 characters');
         }
     }
+
     /**
      * 驗證使用者代理.
      *
@@ -495,6 +540,7 @@ final readonly class DeviceInfo implements JsonSerializable
             throw new InvalidArgumentException('User agent cannot exceed 1000 characters');
         }
     }
+
     /**
      * 驗證 IP 位址
      *
@@ -510,6 +556,7 @@ final readonly class DeviceInfo implements JsonSerializable
             throw new InvalidArgumentException('IP address format is invalid');
         }
     }
+
     /**
      * 驗證平台.
      *
@@ -525,6 +572,7 @@ final readonly class DeviceInfo implements JsonSerializable
             );
         }
     }
+
     /**
      * 驗證瀏覽器.
      *
@@ -549,6 +597,7 @@ final readonly class DeviceInfo implements JsonSerializable
             );
         }
     }
+
     /**
      * 驗證裝置類型.
      *

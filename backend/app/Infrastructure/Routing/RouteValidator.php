@@ -3,7 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
+
 use App\Infrastructure\Routing\Exceptions\RouteConfigurationException;
+
 class RouteValidator
 {
     /**
@@ -18,10 +20,12 @@ class RouteValidator
         'OPTIONS',
         'HEAD',
     ];
+
     /**
      * 已註冊的路由，用於檢查重複.
      */
     private array $registeredRoutes = [];
+
     /**
      * 驗證路由配置.
      */
@@ -33,6 +37,7 @@ class RouteValidator
         $this->validateHandler($routeConfig);
         $this->checkDuplicateRoute($routeConfig);
     }
+
     /**
      * 驗證路由基本結構.
      */
@@ -48,6 +53,7 @@ class RouteValidator
             }
         }
     }
+
     /**
      * 驗證 HTTP 方法.
      */
@@ -77,6 +83,7 @@ class RouteValidator
             }
         }
     }
+
     /**
      * 驗證路由路径.
      */
@@ -108,6 +115,7 @@ class RouteValidator
             }
         }
     }
+
     /**
      * 驗證處理器.
      */
@@ -129,6 +137,7 @@ class RouteValidator
                 if (count($parts) !== 2 || empty($parts[0]) || empty($parts[1])) {
                     throw RouteConfigurationException::invalidHandler($routeName, $handler);
                 }
+
                 return;
             }
         }
@@ -143,8 +152,10 @@ class RouteValidator
                 return;
             }
         }
+
         throw RouteConfigurationException::invalidHandler($routeName, $handler);
     }
+
     /**
      * 檢查重複路由.
      */
@@ -161,6 +172,7 @@ class RouteValidator
             $this->registeredRoutes[$key] = true;
         }
     }
+
     /**
      * 重設驗證狀態（用於測試或重新驗證）.
      */
@@ -168,6 +180,7 @@ class RouteValidator
     {
         $this->registeredRoutes = [];
     }
+
     /**
      * 取得已註冊的路由清單.
      */

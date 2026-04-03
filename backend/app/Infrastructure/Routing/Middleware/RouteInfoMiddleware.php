@@ -3,29 +3,35 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Middleware;
+
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 class RouteInfoMiddleware extends AbstractMiddleware
 {
     /**
      * 路由名稱.
      */
     private ?string $routeName = null;
+
     /**
      * 路由模式.
      */
     private ?string $routePattern = null;
+
     /**
      * HTTP 方法.
      *
      * @var string[]
      */
     private array $methods = [];
+
     /**
      * 路由處理器.
      */
     private mixed $handler = null;
+
     /**
      * 建構函式.
      *
@@ -48,6 +54,7 @@ class RouteInfoMiddleware extends AbstractMiddleware
         $this->methods = $methods;
         $this->handler = $handler;
     }
+
     protected function execute(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
@@ -73,8 +80,10 @@ class RouteInfoMiddleware extends AbstractMiddleware
         if ($this->handler !== null) {
             $request = $request->withAttribute('route_handler', $this->handler);
         }
+
         return $handler->handle($request);
     }
+
     /**
      * 設定路由名稱.
      *
@@ -83,8 +92,10 @@ class RouteInfoMiddleware extends AbstractMiddleware
     public function setRouteName(string $name): self
     {
         $this->routeName = $name;
+
         return $this;
     }
+
     /**
      * 設定路由模式.
      *
@@ -93,8 +104,10 @@ class RouteInfoMiddleware extends AbstractMiddleware
     public function setRoutePattern(string $pattern): self
     {
         $this->routePattern = $pattern;
+
         return $this;
     }
+
     /**
      * 設定 HTTP 方法.
      *
@@ -103,8 +116,10 @@ class RouteInfoMiddleware extends AbstractMiddleware
     public function setMethods(array $methods): self
     {
         $this->methods = $methods;
+
         return $this;
     }
+
     /**
      * 設定路由處理器.
      *
@@ -113,8 +128,10 @@ class RouteInfoMiddleware extends AbstractMiddleware
     public function setHandler(mixed $handler): self
     {
         $this->handler = $handler;
+
         return $this;
     }
+
     /**
      * 取得路由名稱.
      */
@@ -122,6 +139,7 @@ class RouteInfoMiddleware extends AbstractMiddleware
     {
         return $this->routeName;
     }
+
     /**
      * 取得路由模式.
      */
@@ -129,6 +147,7 @@ class RouteInfoMiddleware extends AbstractMiddleware
     {
         return $this->routePattern;
     }
+
     /**
      * 取得 HTTP 方法.
      *
@@ -138,6 +157,7 @@ class RouteInfoMiddleware extends AbstractMiddleware
     {
         return $this->methods;
     }
+
     /**
      * 取得路由處理器.
      */

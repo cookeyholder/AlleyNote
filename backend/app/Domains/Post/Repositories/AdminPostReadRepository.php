@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Repositories;
+
 use PDO;
 use PDOStatement;
+
 final class AdminPostReadRepository
 {
     public function __construct(
         private readonly PDO $pdo,
     ) {}
+
     /**
      * @return array{items: array<int, array<string, mixed>>, total: int}
      */
@@ -80,13 +83,16 @@ final class AdminPostReadRepository
             }
             /** @var array<string, mixed> $post */
             $post['author'] ??= 'Unknown';
+
             return $post;
         }, $posts));
+
         return [
             'items' => $items,
             'total' => $total,
         ];
     }
+
     /**
      * @return array<string, mixed>|null
      */
@@ -118,9 +124,11 @@ final class AdminPostReadRepository
         }
         $post['author'] ??= 'Unknown';
         $post['tags'] = $this->fetchTagsForPost($id);
+
         /** @var array<string, mixed> */
         return $post;
     }
+
     /**
      * @return array<int, array<string, mixed>>
      */
@@ -134,16 +142,20 @@ final class AdminPostReadRepository
         $tagsStmt = $this->pdo->prepare($tagsSql);
         $tagsStmt->execute([':post_id' => $postId]);
         $tags = $tagsStmt->fetchAll(PDO::FETCH_ASSOC);
+
         /** @var array<int, array<string, mixed>> */
         return is_array($tags) ? $tags : [];
     }
+
     private function hasTableColumn(string $table, string $column): bool
     {
         if (!preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
             return false;
         }
+
         return in_array($column, $this->loadTableColumnNames($table), true);
     }
+
     /**
      * @return array<int, string>
      */
@@ -163,8 +175,10 @@ final class AdminPostReadRepository
                 $columnNames[] = $column['name'];
             }
         }
+
         return $columnNames;
     }
+
     private function resolvePostsUserColumn(): ?string
     {
         if ($this->hasTableColumn('posts', 'user_id')) {
@@ -173,8 +187,10 @@ final class AdminPostReadRepository
         if ($this->hasTableColumn('posts', 'author_id')) {
             return 'author_id';
         }
+
         return null;
     }
+
     private function resolvePostsPublishColumn(): ?string
     {
         if ($this->hasTableColumn('posts', 'publish_date')) {
@@ -183,6 +199,7 @@ final class AdminPostReadRepository
         if ($this->hasTableColumn('posts', 'published_at')) {
             return 'published_at';
         }
+
         return null;
     }
 }

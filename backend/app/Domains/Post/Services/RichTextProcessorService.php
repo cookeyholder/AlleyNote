@@ -3,21 +3,28 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
+
 use App\Domains\Security\Enums\ActivitySeverity;
 use App\Domains\Security\Services\Core\XssProtectionService;
 use HTMLPurifier;
 use HTMLPurifier_Config;
+
 class RichTextProcessorService
 {
     private HTMLPurifier $basicPurifier;
+
     private HTMLPurifier $extendedPurifier;
+
     private HTMLPurifier $adminPurifier;
+
     private XssProtectionService $xssProtection;
+
     public function __construct(XssProtectionService $xssProtection)
     {
         $this->xssProtection = $xssProtection;
         $this->initializePurifiers();
     }
+
     /**
      * 初始化不同層級的 HTML Purifier.
      */
@@ -73,6 +80,7 @@ class RichTextProcessorService
         $adminConfig->set('Cache.SerializerPath', $this->getCachePath());
         $this->adminPurifier = new HTMLPurifier($adminConfig);
     }
+
     /**
      * 根據使用者層級處理富文本內容.
      */
@@ -99,8 +107,10 @@ class RichTextProcessorService
                 'filtered_length'   => strlen($result['content']),
             ];
         }
+
         return $result;
     }
+
     /**
      * 驗證和清理來自 CKEditor 的內容.
      */
@@ -108,9 +118,11 @@ class RichTextProcessorService
     {
         // CKEditor 特定的前置處理
         $content = $this->preprocessCKEditorContent($content);
+
         // 使用標準處理流程
         return $this->processContent($content, $userLevel);
     }
+
     /**
      * CKEditor 前置處理.
      */
@@ -124,8 +136,10 @@ class RichTextProcessorService
         $content = str_replace(["\r\n", "\r"], "\n", $content);
         // 移除空的段落
         $content = preg_replace('/]*>(\s|&nbsp;)*/i', '', $content);
+
         return trim($content);
     }
+
     /**
      * 取得允許的標籤和屬性清單.
      */
@@ -143,11 +157,13 @@ class RichTextProcessorService
         foreach ($allowedElements as $element) {
             $attributes = array_merge($attributes, array_keys($element->attr));
         }
+
         return [
             'tags' => array_unique($tags),
             'attributes' => array_unique($attributes),
         ];
     }
+
     /**
      * 生成內容統計資訊.
      */
@@ -165,6 +181,7 @@ class RichTextProcessorService
             'image_count' => substr_count(strtolower($filtered), '<img '),
         ];
     }
+
     /**
      * 預覽內容（生成安全的預覽版本）.
      */
@@ -178,8 +195,10 @@ class RichTextProcessorService
         if (mb_strlen($text) > $maxLength) {
             $text = mb_substr($text, 0, $maxLength) . '...';
         }
+
         return $text;
     }
+
     /**
      * 檢查內容是否安全.
      */
@@ -215,8 +234,10 @@ class RichTextProcessorService
                 'details'  => ['tag_count' => $tagCount],
             ];
         }
+
         return $issues;
     }
+
     /**
      * 取得快取路徑.
      */
@@ -226,6 +247,7 @@ class RichTextProcessorService
         if (!is_dir($cachePath)) {
             @mkdir($cachePath, 0o750, true);
         }
+
         return $cachePath;
     }
 }

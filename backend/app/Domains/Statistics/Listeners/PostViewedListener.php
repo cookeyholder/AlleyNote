@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Listeners;
+
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Events\PostViewed;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
@@ -10,6 +11,7 @@ use App\Shared\Events\Contracts\DomainEventInterface;
 use App\Shared\Events\Contracts\EventListenerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+
 class PostViewedListener implements EventListenerInterface
 {
     public function __construct(
@@ -17,6 +19,7 @@ class PostViewedListener implements EventListenerInterface
         private readonly PostViewStatisticsService $postViewStatsService,
         private readonly ?LoggerInterface $logger = null,
     ) {}
+
     public function handle(DomainEventInterface $event): void
     {
         if (!$event instanceof PostViewed) {
@@ -24,8 +27,10 @@ class PostViewedListener implements EventListenerInterface
                 'event_type' => $event->getEventName(),
                 'event_id' => $event->getEventId(),
             ]);
+
             return;
         }
+
         try {
             $this->handlePostViewed($event);
         } catch (Throwable $e) {
@@ -36,18 +41,22 @@ class PostViewedListener implements EventListenerInterface
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
+
             // 重新拋出異常，讓事件分派器處理
             throw $e;
         }
     }
+
     public function getListenedEvents(): array
     {
         return ['statistics.post.viewed'];
     }
+
     public function getName(): string
     {
         return 'statistics.post_viewed_listener';
     }
+
     private function handlePostViewed(PostViewed $event): void
     {
         $postId = $event->getPostId();
@@ -60,6 +69,7 @@ class PostViewedListener implements EventListenerInterface
             'is_authenticated' => $event->isAuthenticatedUser(),
             'user_agent' => $event->getUserAgent(),
         ]);
+
         // 記錄瀏覽到資料庫
         try {
             $this->postViewStatsService->recordView(
@@ -88,6 +98,7 @@ class PostViewedListener implements EventListenerInterface
             'post_id' => $postId,
         ]);
     }
+
     private function recordViewEvent(PostViewed $event): void
     {
         $context = [
@@ -100,6 +111,7 @@ class PostViewedListener implements EventListenerInterface
             'is_authenticated' => $event->isAuthenticatedUser(),
             'event_id' => $event->getEventId(),
         ];
+
         try {
             $this->monitoringService->logStatisticsEvent('post_viewed', $context);
         } catch (Throwable $e) {

@@ -3,32 +3,48 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
+
 class AuthenticationException extends JwtException
 {
     /**
      * 錯誤類型標識.
      */
     protected string $errorType = 'authentication_failed';
+
     /**
      * 錯誤碼常數.
      */
     public const ERROR_CODE = 4001;
+
     /**
      * 驗證失敗原因常數.
      */
     public const REASON_INVALID_CREDENTIALS = 'invalid_credentials';
+
     public const REASON_ACCOUNT_LOCKED = 'account_locked';
+
     public const REASON_ACCOUNT_DISABLED = 'account_disabled';
+
     public const REASON_ACCOUNT_NOT_VERIFIED = 'account_not_verified';
+
     public const REASON_TOO_MANY_ATTEMPTS = 'too_many_attempts';
+
     public const REASON_USER_NOT_FOUND = 'user_not_found';
+
     public const REASON_PASSWORD_EXPIRED = 'password_expired';
+
     public const REASON_MISSING_CREDENTIALS = 'missing_credentials';
+
     public const REASON_INVALID_TOKEN = 'invalid_token';
+
     public const REASON_INVALID_REFRESH_TOKEN = 'invalid_refresh_token';
+
     public const REASON_TOKEN_REFRESH_FAILED = 'token_refresh_failed';
+
     public const REASON_TOKEN_REQUIRED = 'token_required';
+
     public const REASON_INSUFFICIENT_PRIVILEGES = 'insufficient_privileges';
+
     /**
      * 建立身份驗證失敗例外.
      *
@@ -49,6 +65,7 @@ class AuthenticationException extends JwtException
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
+
     /**
      * 建構預設錯誤訊息.
      *
@@ -73,12 +90,14 @@ class AuthenticationException extends JwtException
             default => 'Authentication failed',
         };
     }
+
     /**
      * 取得用戶友好的錯誤訊息.
      */
     public function getUserFriendlyMessage(): string
     {
         $reason = $this->getReason();
+
         return match ($reason) {
             self::REASON_INVALID_CREDENTIALS => '用戶名或密碼錯誤，請檢查後重新輸入。',
             self::REASON_ACCOUNT_LOCKED => '您的帳戶已被鎖定，請聯絡系統管理員。',
@@ -96,6 +115,7 @@ class AuthenticationException extends JwtException
             default => '身份驗證失敗，請重新嘗試。',
         };
     }
+
     /**
      * 取得失敗原因.
      */
@@ -103,6 +123,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['reason'] ?? self::REASON_INVALID_CREDENTIALS;
     }
+
     /**
      * 取得嘗試 ID.
      */
@@ -110,6 +131,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['attempt_id'] ?? null;
     }
+
     /**
      * 取得用戶 ID（如果有）.
      */
@@ -117,6 +139,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['user_id'] ?? null;
     }
+
     /**
      * 取得用戶名（如果有）.
      */
@@ -124,6 +147,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['username'] ?? null;
     }
+
     /**
      * 取得 IP 位址（如果有）.
      */
@@ -131,6 +155,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['ip_address'] ?? null;
     }
+
     /**
      * 取得嘗試次數（如果有）.
      */
@@ -138,6 +163,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['attempt_count'] ?? null;
     }
+
     /**
      * 取得鎖定時間（如果有）.
      */
@@ -145,6 +171,7 @@ class AuthenticationException extends JwtException
     {
         return $this->context['lockout_until'] ?? null;
     }
+
     /**
      * 檢查是否為特定失敗原因.
      *
@@ -154,6 +181,7 @@ class AuthenticationException extends JwtException
     {
         return $this->getReason() === $reason;
     }
+
     /**
      * 檢查是否為帳戶相關錯誤.
      */
@@ -166,6 +194,7 @@ class AuthenticationException extends JwtException
             self::REASON_PASSWORD_EXPIRED,
         ]);
     }
+
     /**
      * 檢查是否為憑證相關錯誤.
      */
@@ -177,6 +206,7 @@ class AuthenticationException extends JwtException
             self::REASON_USER_NOT_FOUND,
         ]);
     }
+
     /**
      * 檢查是否為 Token 相關錯誤.
      */
@@ -189,6 +219,7 @@ class AuthenticationException extends JwtException
             self::REASON_TOKEN_REQUIRED,
         ]);
     }
+
     /**
      * 檢查是否為安全相關錯誤.
      */
@@ -199,6 +230,7 @@ class AuthenticationException extends JwtException
             self::REASON_TOO_MANY_ATTEMPTS,
         ]);
     }
+
     /**
      * 檢查是否可以重試.
      */
@@ -210,6 +242,7 @@ class AuthenticationException extends JwtException
             self::REASON_TOO_MANY_ATTEMPTS,
         ]);
     }
+
     /**
      * 檢查是否需要帳戶操作.
      */
@@ -220,6 +253,7 @@ class AuthenticationException extends JwtException
             self::REASON_PASSWORD_EXPIRED,
         ]);
     }
+
     /**
      * 靜態工廠方法：無效憑證.
      *
@@ -235,8 +269,10 @@ class AuthenticationException extends JwtException
         if ($ipAddress) {
             $context['ip_address'] = $ipAddress;
         }
+
         return new self(self::REASON_INVALID_CREDENTIALS, '', $context);
     }
+
     /**
      * 靜態工廠方法：帳戶已鎖定.
      *
@@ -253,6 +289,7 @@ class AuthenticationException extends JwtException
             'lock_reason' => $reason,
         ]);
     }
+
     /**
      * 靜態工廠方法：帳戶已停用.
      *
@@ -266,6 +303,7 @@ class AuthenticationException extends JwtException
             'disable_reason' => $reason,
         ]);
     }
+
     /**
      * 靜態工廠方法：帳戶未驗證.
      *
@@ -278,8 +316,10 @@ class AuthenticationException extends JwtException
         if ($email) {
             $context['email'] = $email;
         }
+
         return new self(self::REASON_ACCOUNT_NOT_VERIFIED, '', $context);
     }
+
     /**
      * 靜態工廠方法：嘗試次數過多.
      *
@@ -303,8 +343,10 @@ class AuthenticationException extends JwtException
         if ($ipAddress) {
             $context['ip_address'] = $ipAddress;
         }
+
         return new self(self::REASON_TOO_MANY_ATTEMPTS, '', $context);
     }
+
     /**
      * 靜態工廠方法：用戶不存在.
      *
@@ -316,6 +358,7 @@ class AuthenticationException extends JwtException
             'username' => $username,
         ]);
     }
+
     /**
      * 靜態工廠方法：密碼已過期
      *
@@ -330,6 +373,7 @@ class AuthenticationException extends JwtException
             'expired_at_human' => date('Y-m-d H:i:s', $expiredAt),
         ]);
     }
+
     /**
      * 靜態工廠方法：憑證遺失.
      *
@@ -341,6 +385,7 @@ class AuthenticationException extends JwtException
             'missing_fields' => $missingFields,
         ]);
     }
+
     /**
      * 靜態工廠方法：無效 Token.
      *
@@ -354,6 +399,7 @@ class AuthenticationException extends JwtException
             'invalid_reason' => $reason,
         ]);
     }
+
     /**
      * 靜態工廠方法：需要 Token.
      *
@@ -362,8 +408,10 @@ class AuthenticationException extends JwtException
     public static function tokenRequired(string $resource = ''): self
     {
         $context = $resource ? ['required_for_resource' => $resource] : [];
+
         return new self(self::REASON_TOKEN_REQUIRED, '', $context);
     }
+
     /**
      * 靜態工廠方法：權限不足.
      *
@@ -383,6 +431,7 @@ class AuthenticationException extends JwtException
         if ($userId !== null) {
             $context['user_id'] = $userId;
         }
+
         return new self(self::REASON_INSUFFICIENT_PRIVILEGES, '', $context);
     }
 }

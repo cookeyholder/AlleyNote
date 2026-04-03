@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Shared\Monitoring\Providers;
+
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
@@ -16,6 +17,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
+
 class MonitoringServiceProvider
 {
     /**
@@ -38,18 +40,21 @@ class MonitoringServiceProvider
                 if (!($config instanceof EnvironmentConfig)) {
                     throw new RuntimeException('Config 型別錯誤');
                 }
+
                 return new SystemMonitorService($logger, $database, $config);
             }),
             // 效能監控服務
             PerformanceMonitorInterface::class => \DI\factory(function (ContainerInterface $c) {
                 $logger = $c->get(LoggerInterface::class);
                 assert($logger instanceof LoggerInterface);
+
                 return new PerformanceMonitorService($logger);
             }),
             // 錯誤追蹤服務
             ErrorTrackerInterface::class => \DI\factory(function (ContainerInterface $c) {
                 $logger = $c->get(LoggerInterface::class);
                 assert($logger instanceof LoggerInterface);
+
                 return new ErrorTrackerService($logger);
             }),
             // 註冊具體實現類別的別名
@@ -58,6 +63,7 @@ class MonitoringServiceProvider
             ErrorTrackerService::class => \DI\get(ErrorTrackerInterface::class),
         ];
     }
+
     /**
      * 註冊監控服務到容器（舊版方法，保留向後相容）。
      */
@@ -77,6 +83,7 @@ class MonitoringServiceProvider
             if (!($config instanceof EnvironmentConfig)) {
                 throw new RuntimeException('Config must be EnvironmentConfig instance');
             }
+
             return new SystemMonitorService($logger, $database, $config);
         });
         // 效能監控服務
@@ -85,6 +92,7 @@ class MonitoringServiceProvider
             if (!($logger instanceof LoggerInterface)) {
                 throw new RuntimeException('Logger must implement LoggerInterface');
             }
+
             return new PerformanceMonitorService($logger);
         });
         // 錯誤追蹤服務
@@ -93,6 +101,7 @@ class MonitoringServiceProvider
             if (!($logger instanceof LoggerInterface)) {
                 throw new RuntimeException('Logger must implement LoggerInterface');
             }
+
             return new ErrorTrackerService($logger);
         });
         // 註冊具體實現類別的別名
@@ -106,6 +115,7 @@ class MonitoringServiceProvider
             return $c->get(ErrorTrackerInterface::class);
         });
     }
+
     /**
      * 初始化監控服務（設置預設配置和事件監聽器）。
      */
@@ -132,6 +142,7 @@ class MonitoringServiceProvider
                     return false; // 不記錄這些資訊級別的錯誤
                 }
             }
+
             return true;
         });
         // 設置預設的通知處理器（用於關鍵錯誤）
@@ -149,6 +160,7 @@ class MonitoringServiceProvider
             }
         });
     }
+
     /**
      * 設置效能基準測試。
      */
@@ -166,6 +178,7 @@ class MonitoringServiceProvider
             'max_execution_time' => ini_get('max_execution_time'),
         ]);
     }
+
     /**
      * 設置系統健康檢查排程。
      */

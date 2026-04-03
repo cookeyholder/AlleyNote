@@ -3,15 +3,19 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
+
 use RuntimeException;
 use Throwable;
+
 final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInterface
 {
     /** 慢查詢閾值（秒） */
     private const SLOW_QUERY_THRESHOLD = 1.0;
+
     public function __construct(
         private readonly PDO $db,
     ) {}
+
     /**
      * 記錄慢查詢（實作介面方法）.
      */
@@ -24,12 +28,14 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
         try {
             $queryHash = $this->generateQueryHash($query);
             $this->recordSlowQueryInternal($query, $queryType, $executionTime, $parameters, $queryHash);
+
             return true;
         } catch (Throwable $e) {
             // 記錄錯誤但不中斷主要流程
             return false;
         }
     }
+
     /**
      * 執行查詢並監控效能.
      *
@@ -42,6 +48,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
     {
         $startTime = microtime(true);
         $queryHash = $this->generateQueryHash($query);
+
         try {
             $stmt = $this->db->prepare($query);
             // 綁定參數
@@ -58,13 +65,16 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             if ($executionTime > self::SLOW_QUERY_THRESHOLD) {
                 $this->recordSlowQueryInternal($query, $queryType, $executionTime, $params, $queryHash);
             }
+
             return $result;
         } catch (PDOException $e) {
             $executionTime = microtime(true) - $startTime;
             $this->recordFailedQuery($query, $queryType, $executionTime, $e->getMessage(), $queryHash);
+
             throw new RuntimeException('查詢執行失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 獲取慢查詢統計.
      *
@@ -93,11 +103,13 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $stmt->execute();
             /** @var array<string, mixed> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('獲取慢查詢統計失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 獲取查詢效能趨勢.
      *
@@ -130,11 +142,13 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $stmt->execute();
             /** @var array<string, mixed> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('獲取效能趨勢失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 獲取最慢的查詢列表.
      *
@@ -166,11 +180,13 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $stmt->execute();
             /** @var array<string, mixed> $result */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return $result;
         } catch (PDOException $e) {
             throw new RuntimeException('獲取最慢查詢失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 分析查詢效能問題.
      *
@@ -197,6 +213,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             // 計算統計指標
             $executionTimes = array_column($history, 'execution_time');
             $resultCounts = array_column($history, 'result_count');
+
             return [
                 'query_hash' => $queryHash,
                 'total_executions' => count($history),
@@ -212,6 +229,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             throw new RuntimeException('分析查詢效能失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 取得慢查詢詳細資料.
      *
@@ -242,18 +260,21 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             // 處理 JSON 參數
             return array_map(function ($row): array {
                 if (!is_array($row)) {
                     return [];
                 }
                 $row['parameters'] = json_decode((string) ($row['parameters'] ?? '{}'), true) ?? [];
+
                 return $row;
             }, $results);
         } catch (PDOException $e) {
             throw new RuntimeException('無法取得慢查詢詳細資料: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 清理舊的監控記錄.
      */
@@ -277,11 +298,13 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $slowStmt->bindValue(':cutoff_date', $cutoffDate);
             $slowStmt->execute();
             $slowDeleted = $slowStmt->rowCount();
+
             return $performanceDeleted + $slowDeleted;
         } catch (PDOException $e) {
             throw new RuntimeException('清理舊記錄失敗: ' . $e->getMessage(), 0, $e);
         }
     }
+
     /**
      * 記錄查詢效能.
      */
@@ -309,6 +332,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             app_log('error', '記錄查詢效能失敗', ['exception' => $e->getMessage()]);
         }
     }
+
     /**
      * 記錄慢查詢（內部方法）.
      *
@@ -338,6 +362,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             app_log('error', '記錄慢查詢失敗', ['exception' => $e->getMessage()]);
         }
     }
+
     /**
      * 記錄失敗查詢.
      */
@@ -365,6 +390,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             app_log('error', '記錄失敗查詢失敗', ['exception' => $e->getMessage()]);
         }
     }
+
     /**
      * 產生查詢雜湊.
      */
@@ -379,8 +405,10 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
         if ($normalizedQuery === null) {
             $normalizedQuery = trim($query); // 如果正則表達式失敗，使用去除空白的原始查詢
         }
+
         return md5($normalizedQuery);
     }
+
     /**
      * 計算效能趨勢.
      *

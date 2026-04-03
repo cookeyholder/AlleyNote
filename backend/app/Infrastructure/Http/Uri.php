@@ -3,22 +3,32 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
+
 use Psr\Http\Message\UriInterface;
+
 class Uri implements UriInterface
 {
     private string $scheme = '';
+
     private string $host = '';
+
     private ?int $port = null;
+
     private string $path = '';
+
     private string $query = '';
+
     private string $fragment = '';
+
     private string $userInfo = '';
+
     public function __construct(string $uri = '')
     {
         if ($uri !== '') {
             $this->parseUri($uri);
         }
     }
+
     private function parseUri(string $uri): void
     {
         $parts = parse_url($uri);
@@ -35,10 +45,12 @@ class Uri implements UriInterface
             }
         }
     }
+
     public function getScheme(): string
     {
         return $this->scheme;
     }
+
     public function getAuthority(): string
     {
         $authority = '';
@@ -49,43 +61,54 @@ class Uri implements UriInterface
         if ($this->port !== null && !$this->isDefaultPort()) {
             $authority .= ':' . $this->port;
         }
+
         return $authority;
     }
+
     private function isDefaultPort(): bool
     {
         return ($this->scheme === 'http' && $this->port === 80)
             || ($this->scheme === 'https' && $this->port === 443);
     }
+
     public function getUserInfo(): string
     {
         return $this->userInfo;
     }
+
     public function getHost(): string
     {
         return $this->host;
     }
+
     public function getPort(): ?int
     {
         return $this->port;
     }
+
     public function getPath(): string
     {
         return $this->path;
     }
+
     public function getQuery(): string
     {
         return $this->query;
     }
+
     public function getFragment(): string
     {
         return $this->fragment;
     }
+
     public function withScheme(string $scheme): self
     {
         $new = clone $this;
         $new->scheme = strtolower($scheme);
+
         return $new;
     }
+
     public function withUserInfo(string $user, ?string $password = null): self
     {
         $new = clone $this;
@@ -93,38 +116,50 @@ class Uri implements UriInterface
         if ($password !== null) {
             $new->userInfo .= ':' . $password;
         }
+
         return $new;
     }
+
     public function withHost(string $host): self
     {
         $new = clone $this;
         $new->host = strtolower($host);
+
         return $new;
     }
+
     public function withPort(?int $port): self
     {
         $new = clone $this;
         $new->port = $port;
+
         return $new;
     }
+
     public function withPath(string $path): self
     {
         $new = clone $this;
         $new->path = $path;
+
         return $new;
     }
+
     public function withQuery(string $query): self
     {
         $new = clone $this;
         $new->query = $query;
+
         return $new;
     }
+
     public function withFragment(string $fragment): self
     {
         $new = clone $this;
         $new->fragment = $fragment;
+
         return $new;
     }
+
     public function __toString(): string
     {
         $uri = '';
@@ -141,6 +176,7 @@ class Uri implements UriInterface
         if ($this->fragment !== '') {
             $uri .= '#' . $this->fragment;
         }
+
         return $uri;
     }
 }

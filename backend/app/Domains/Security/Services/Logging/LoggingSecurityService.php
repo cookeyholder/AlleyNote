@@ -3,16 +3,21 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Services\Logging;
+
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+
 class LoggingSecurityService implements LoggingSecurityServiceInterface
 {
     private Logger $logger;
+
     private Logger $securityLogger;
+
     private Logger $auditLogger;
+
     /**
      * 請求資料白名單 - 只記錄這些安全的欄位.
      */
@@ -27,6 +32,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         'client_ip',
         'user_agent_hash', // 只記錄雜湊值，不記錄完整 User-Agent
     ];
+
     /**
      * 敏感資料清單 - 這些欄位需要被遮罩或移除.
      */
@@ -42,10 +48,12 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         'x-api-key',
         'authentication',
     ];
+
     public function __construct()
     {
         $this->initializeLoggers();
     }
+
     /**
      * 初始化日誌記錄器.
      */
@@ -83,6 +91,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         // 設定所有日誌檔案權限
         $this->setLogFilePermissions($logsDir);
     }
+
     /**
      * 確保日誌目錄存在且權限正確.
      */
@@ -93,6 +102,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         }
         chmod($path, 0o750);
     }
+
     /**
      * 設定日誌檔案權限為 0640.
      */
@@ -116,6 +126,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             chmod($file, 0o640);
         }
     }
+
     /**
      * 記錄一般應用日誌.
      */
@@ -124,16 +135,19 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->info($message, $sanitizedContext);
     }
+
     public function warning(string $message, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->warning($message, $sanitizedContext);
     }
+
     public function error(string $message, array $context = []): void
     {
         $sanitizedContext = $this->sanitizeContext($context);
         $this->logger->error($message, $sanitizedContext);
     }
+
     /**
      * 記錄安全事件.
      */
@@ -143,6 +157,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
         $this->securityLogger->warning($event, $enrichedContext);
     }
+
     /**
      * 記錄高風險安全事件.
      */
@@ -154,6 +169,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         // 同時記錄到審計日誌
         $this->auditLogger->critical($event, $enrichedContext);
     }
+
     /**
      * 記錄請求日誌（使用白名單模式）.
      */
@@ -163,6 +179,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $enrichedData = $this->enrichRequestContext($whitelistedData);
         $this->logger->info('HTTP Request', $enrichedData);
     }
+
     /**
      * 記錄驗證失敗事件.
      */
@@ -172,6 +189,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         $enrichedContext = $this->enrichSecurityContext($sanitizedContext);
         $this->securityLogger->warning('Authentication Failure: ' . $reason, $enrichedContext);
     }
+
     /**
      * 記錄授權失敗事件.
      */
@@ -184,6 +202,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             $enrichedContext,
         );
     }
+
     /**
      * 應用請求資料白名單.
      */
@@ -195,8 +214,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
                 $filtered[$allowedField] = $data[$allowedField];
             }
         }
+
         return $filtered;
     }
+
     /**
      * 淨化上下文資料，移除敏感資訊.
      */
@@ -204,6 +225,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         return $this->recursiveSanitize($context);
     }
+
     /**
      * 遞迴淨化陣列，移除敏感資料.
      */
@@ -231,8 +253,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
                 $sanitized[$key] = $value;
             }
         }
+
         return $sanitized;
     }
+
     /**
      * 豐富安全上下文資訊.
      */
@@ -246,8 +270,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         if (!isset($context['user_id']) && isset($_SESSION['user_id'])) {
             $context['user_id'] = $_SESSION['user_id'];
         }
+
         return $context;
     }
+
     /**
      * 豐富請求上下文資訊.
      */
@@ -258,8 +284,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
         if (isset($_SERVER['HTTP_USER_AGENT'])) {
             $context['user_agent_hash'] = hash('sha256', $_SERVER['HTTP_USER_AGENT']);
         }
+
         return $context;
     }
+
     /**
      * 檢查並修正日誌檔案權限.
      */
@@ -288,8 +316,10 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
                 }
             }
         }
+
         return $results;
     }
+
     /**
      * 取得日誌統計資訊.
      */
@@ -309,6 +339,7 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
                 'last_modified' => date('Y-m-d H:i:s', (int) filemtime($file)),
             ];
         }
+
         return $stats;
     }
 }

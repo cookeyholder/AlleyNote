@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Post\Services;
+
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\DTOs\CreatePostDTO;
@@ -13,11 +14,13 @@ use App\Domains\Post\Models\Post;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
 use Throwable;
+
 class PostService implements PostServiceInterface
 {
     public function __construct(
         private readonly PostRepositoryInterface $repository,
     ) {}
+
     /**
      * 建立新貼文.
      */
@@ -25,6 +28,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->create($dto->toArray());
     }
+
     /**
      * 更新貼文.
      */
@@ -32,6 +36,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->update($id, $dto->toArray());
     }
+
     /**
      * 刪除貼文.
      */
@@ -39,6 +44,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->delete($id);
     }
+
     /**
      * 取得單一貼文.
      */
@@ -48,8 +54,10 @@ class PostService implements PostServiceInterface
         if (!$post) {
             throw new PostNotFoundException($id);
         }
+
         return $post;
     }
+
     /**
      * 取得分頁貼文列表.
      */
@@ -57,6 +65,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->paginate($page, $perPage, $filters);
     }
+
     /**
      * 取得置頂貼文.
      */
@@ -64,6 +73,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->getPinnedPosts($limit);
     }
+
     /**
      * 設定貼文置頂狀態.
      */
@@ -71,6 +81,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->setPinned($id, $isPinned);
     }
+
     /**
      * 取得貼文標籤.
      */
@@ -78,6 +89,7 @@ class PostService implements PostServiceInterface
     {
         return $this->repository->getPostTags($id);
     }
+
     /**
      * 設定貼文標籤.
      */
@@ -85,6 +97,7 @@ class PostService implements PostServiceInterface
     {
         $this->repository->setTags($id, $tagIds);
     }
+
     public function recordView(int $id, string $userIp, ?int $userId = null): bool
     {
         $post = $this->findById($id);
@@ -96,14 +109,17 @@ class PostService implements PostServiceInterface
         if (!$post->hasStatus(PostStatus::PUBLISHED)) {
             return false;
         }
+
         return $this->repository->incrementViews($id, $userIp, $userId);
     }
+
     /**
      * 更新貼文狀態.
      */
     public function updatePostStatus(int $id, string $status): Post
     {
         $post = $this->findById($id);
+
         // 將字串狀態轉換為 PostStatus 枚舉
         try {
             $targetStatus = PostStatus::from($status);
@@ -125,23 +141,28 @@ class PostService implements PostServiceInterface
                 ),
             );
         }
+
         /** @var Post */
         return $this->repository->update($id, ['status' => $targetStatus->value]);
     }
+
     /**
      * 置頂貼文.
      */
     public function pinPost(int $id): Post
     {
         $this->setPinned($id, true);
+
         return $this->findById($id);
     }
+
     /**
      * 取消置頂貼文.
      */
     public function unpinPost(int $id): Post
     {
         $this->setPinned($id, false);
+
         return $this->findById($id);
     }
 }

@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Security\Contracts;
+
 use App\Shared\Exceptions\ValidationException;
+
 interface SecretsManagerInterface
 {
     /**
      * 載入所有秘密設定.
      */
     public function load(): void;
+
     /**
      * 取得設定值
      *
@@ -18,6 +21,7 @@ interface SecretsManagerInterface
      * @return mixed
      */
     public function get(string $key, mixed $default = null);
+
     /**
      * 設定秘密值
      *
@@ -25,12 +29,14 @@ interface SecretsManagerInterface
      * @param string $value 設定值
      */
     public function set(string $key, string $value): void;
+
     /**
      * 檢查設定是否存在.
      *
      * @param string $key 設定鍵名
      */
     public function has(string $key): bool;
+
     /**
      * 取得必需的設定值
      *
@@ -38,6 +44,7 @@ interface SecretsManagerInterface
      * @throws ValidationException 如果設定不存在
      */
     public function getRequired(string $key): string;
+
     /**
      * 驗證必需的秘密設定.
      *
@@ -45,24 +52,29 @@ interface SecretsManagerInterface
      * @throws ValidationException 如果有缺少的設定
      */
     public function validateRequiredSecrets(array $requiredKeys): void;
+
     /**
      * 檢查是否為正式環境.
      */
     public function isProduction(): bool;
+
     /**
      * 檢查是否為開發環境.
      */
     public function isDevelopment(): bool;
+
     /**
      * 取得秘密設定摘要（敏感資料會被遮蔽）.
      */
     public function getSecretsSummary(): array;
+
     /**
      * 產生安全的隨機秘密.
      *
      * @param int $length 長度
      */
     public function generateSecret(int $length = 32): string;
+
     /**
      * 驗證 .env 檔案的安全性.
      *

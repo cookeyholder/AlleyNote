@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Routing\Cache;
+
 use App\Infrastructure\Routing\Contracts\RouteCacheInterface;
 use InvalidArgumentException;
+
 class RouteCacheFactory
 {
     /**
@@ -15,6 +17,7 @@ class RouteCacheFactory
         'memory' => MemoryRouteCache::class,
         // 'redis' => RedisRouteCache::class, // 如果 Redis 可用時啟用
     ];
+
     /**
      * 建立路由快取實例.
      *
@@ -29,12 +32,14 @@ class RouteCacheFactory
                     . implode(', ', array_keys(self::SUPPORTED_DRIVERS)),
             );
         }
+
         return match ($driver) {
             'file' => $this->createFileCache($config),
             'memory' => $this->createMemoryCache($config),
             // 'redis' => $this->createRedisCache($config),
         };
     }
+
     /**
      * 建立檔案快取實例.
      *
@@ -47,8 +52,10 @@ class RouteCacheFactory
         if (isset($config['ttl'])) {
             $cache->setTtl((int) $config['ttl']);
         }
+
         return $cache;
     }
+
     /**
      * 建立記憶體快取實例.
      *
@@ -60,8 +67,10 @@ class RouteCacheFactory
         if (isset($config['ttl'])) {
             $cache->setTtl((int) $config['ttl']);
         }
+
         return $cache;
     }
+
     /**
      * 取得支援的快取驅動程式列表.
      *
@@ -71,6 +80,7 @@ class RouteCacheFactory
     {
         return array_keys(self::SUPPORTED_DRIVERS);
     }
+
     /**
      * 檢查指定驅動程式是否支援.
      */
@@ -78,6 +88,7 @@ class RouteCacheFactory
     {
         return isset(self::SUPPORTED_DRIVERS[$driver]);
     }
+
     /**
      * 取得快取驅動程式的類別名稱.
      */
@@ -85,6 +96,7 @@ class RouteCacheFactory
     {
         return self::SUPPORTED_DRIVERS[$driver] ?? null;
     }
+
     /**
      * 建立預設快取實例（記憶體快取）.
      */
@@ -92,6 +104,7 @@ class RouteCacheFactory
     {
         return $this->create(['driver' => 'memory']);
     }
+
     /**
      * 驗證快取配置.
      *
@@ -123,6 +136,7 @@ class RouteCacheFactory
                 }
             }
         }
+
         return $errors;
     }
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Providers;
+
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
@@ -23,6 +24,7 @@ use App\Infrastructure\Auth\Repositories\TokenBlacklistRepository;
 use App\Shared\Config\JwtConfig;
 use PDO;
 use Psr\Container\ContainerInterface;
+
 class SimpleAuthServiceProvider
 {
     /**
@@ -54,6 +56,7 @@ class SimpleAuthServiceProvider
             'jwt.authorize' => \DI\get(JwtAuthorizationMiddleware::class),
         ];
     }
+
     /**
      * 建立 JWT 配置實例.
      */
@@ -61,30 +64,37 @@ class SimpleAuthServiceProvider
     {
         return new JwtConfig();
     }
+
     /**
      * 建立 RefreshToken Repository 實例.
      */
     public static function createRefreshTokenRepository(ContainerInterface $container): RefreshTokenRepository
     {
         $pdo = $container->get(PDO::class);
+
         return new RefreshTokenRepository($pdo);
     }
+
     /**
      * 建立 TokenBlacklist Repository 實例.
      */
     public static function createTokenBlacklistRepository(ContainerInterface $container): TokenBlacklistRepository
     {
         $pdo = $container->get(PDO::class);
+
         return new TokenBlacklistRepository($pdo);
     }
+
     /**
      * 建立 Firebase JWT Provider 實例.
      */
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
+
         return new FirebaseJwtProvider($config);
     }
+
     /**
      * 建立 JWT Token Service 實例（簡化版）.
      */
@@ -94,16 +104,20 @@ class SimpleAuthServiceProvider
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
         $config = $container->get(JwtConfig::class);
+
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
+
     /**
      * 建立 Token Blacklist Service 實例.
      */
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+
         return new TokenBlacklistService($blacklistRepository);
     }
+
     /**
      * 建立 User Repository 實例.
      */
@@ -114,8 +128,10 @@ class SimpleAuthServiceProvider
         /** @var PasswordSecurityServiceInterface $passwordService */
         $passwordService = $container->get(PasswordSecurityServiceInterface::class);
         $userRepository = new UserRepository($pdo, $passwordService);
+
         return new UserRepositoryAdapter($userRepository);
     }
+
     /**
      * 建立 Authentication Service 實例.
      */
@@ -127,16 +143,20 @@ class SimpleAuthServiceProvider
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
         /** @var UserRepositoryInterface $userRepository */
         $userRepository = $container->get(UserRepositoryInterface::class);
+
         return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);
     }
+
     /**
      * 建立 JWT 認證中介軟體實例.
      */
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+
         return new JwtAuthenticationMiddleware($jwtTokenService);
     }
+
     /**
      * 建立 JWT 授權中介軟體實例.
      */

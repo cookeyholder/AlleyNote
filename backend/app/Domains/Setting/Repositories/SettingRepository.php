@@ -3,13 +3,16 @@
 declare(strict_types=1);
 
 namespace App\Domains\Setting\Repositories;
+
 use PDO;
 use Throwable;
+
 class SettingRepository
 {
     public function __construct(
         private readonly PDO $db,
     ) {}
+
     /**
      * 取得所有設定.
      *
@@ -45,8 +48,10 @@ class SettingRepository
                 'updated_at' => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
             ];
         }
+
         return $result;
     }
+
     /**
      * 根據 key 取得設定.
      *
@@ -68,6 +73,7 @@ class SettingRepository
         $type = is_string($row['type'] ?? null) ? $row['type'] : 'string';
         $valueStr = is_string($row['value'] ?? null) ? $row['value'] : null;
         $value = $this->castValue($valueStr, $type);
+
         return [
             'id' => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
             'key' => is_string($row['key'] ?? null) ? $row['key'] : '',
@@ -78,6 +84,7 @@ class SettingRepository
             'updated_at' => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
         ];
     }
+
     /**
      * 更新設定值.
      *
@@ -92,8 +99,10 @@ class SettingRepository
         if ($stmt->rowCount() === 0) {
             return null;
         }
+
         return $this->findByKey($key);
     }
+
     /**
      * 建立設定.
      *
@@ -112,8 +121,10 @@ class SettingRepository
             'description' => $description,
         ]);
         $result = $this->findByKey($key);
+
         return $result ?? [];
     }
+
     /**
      * 刪除設定.
      */
@@ -122,8 +133,10 @@ class SettingRepository
         $sql = 'DELETE FROM settings WHERE key = :key';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['key' => $key]);
+
         return $stmt->rowCount() > 0;
     }
+
     /**
      * 根據類型轉換值.
      */
@@ -137,6 +150,7 @@ class SettingRepository
             default => $value,
         };
     }
+
     /**
      * 準備要儲存的值.
      */

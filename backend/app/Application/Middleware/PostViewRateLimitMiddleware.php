@@ -3,31 +3,39 @@
 declare(strict_types=1);
 
 namespace App\Application\Middleware;
+
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface as RoutingMiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Services\RateLimitService;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
 {
     /** @var int 每個 IP 每分鐘最大請求數 */
     private const MAX_REQUESTS_PER_MINUTE = 120;
+
     /** @var int 每個認證使用者每分鐘最大請求數 */
     private const MAX_REQUESTS_PER_USER_PER_MINUTE = 300;
+
     /** @var int 時間窗口（秒） */
     private const TIME_WINDOW = 60;
+
     public function __construct(
         private readonly RateLimitService $rateLimitService,
     ) {}
+
     public function getPriority(): int
     {
         return 50;
     }
+
     public function getName(): string
     {
         return 'post_view_rate_limit';
     }
+
     public function shouldProcess(ServerRequestInterface $request): bool
     {
         $routeName = $request->getAttribute('route_name');
@@ -42,8 +50,10 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
             }
         }
         $path = $request->getUri()->getPath();
+
         return str_contains($path, '/post-view') || str_contains($path, '/posts');
     }
+
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
@@ -63,9 +73,11 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         }
         // 處理請求
         $response = $handler->handle($request);
+
         // 添加速率限制標頭
         return $this->addRateLimitHeaders($response, $rateLimitResult, $startTime);
     }
+
     /**
      * 檢查速率限制.
      *
@@ -88,6 +100,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         $allowed = $result['allowed'] ?? false;
         $remaining = $result['remaining'] ?? 0;
         $reset = $result['reset'] ?? ($now + self::TIME_WINDOW);
+
         return [
             'allowed' => is_bool($allowed) ? $allowed : false,
             'limit' => $limit,
@@ -96,6 +109,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
             'key' => $key,
         ];
     }
+
     /**
      * 建立速率限制回應.
      */
@@ -124,6 +138,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         }
         $limitStr = is_numeric($rateLimitResult['limit']) ? (string) $rateLimitResult['limit'] : '100';
         $resetStr = is_numeric($resetTime) ? (string) $resetTime : (string) (time() + 60);
+
         return new Response(429, [
             'Content-Type' => 'application/json',
             'Retry-After' => (string) $retryAfter,
@@ -132,6 +147,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
             'X-RateLimit-Reset' => $resetStr,
         ], $json);
     }
+
     /**
      * 添加速率限制標頭.
      */
@@ -144,12 +160,14 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         $limitStr = is_numeric($rateLimitResult['limit']) ? (string) $rateLimitResult['limit'] : '100';
         $remainingStr = is_numeric($rateLimitResult['remaining']) ? (string) $rateLimitResult['remaining'] : '0';
         $resetStr = is_numeric($rateLimitResult['reset']) ? (string) $rateLimitResult['reset'] : (string) (time() + 60);
+
         return $response
             ->withHeader('X-RateLimit-Limit', $limitStr)
             ->withHeader('X-RateLimit-Remaining', $remainingStr)
             ->withHeader('X-RateLimit-Reset', $resetStr)
             ->withHeader('X-Processing-Time', "{$processingTime}ms");
     }
+
     /**
      * 取得真實的客戶端 IP 位址.
      */
@@ -177,6 +195,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
             }
         }
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
+
         return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';
     }
 }

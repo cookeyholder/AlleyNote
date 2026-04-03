@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Domains\Statistics\Providers;
+
 use App\Application\Services\Statistics\StatisticsQueryService;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
@@ -36,6 +37,7 @@ use App\Shared\Events\SimpleEventDispatcher;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+
 class StatisticsServiceProvider
 {
     /**
@@ -50,16 +52,19 @@ class StatisticsServiceProvider
             StatisticsRepositoryInterface::class => \DI\factory(function (ContainerInterface $container): StatisticsRepositoryInterface {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
+
                 return new StatisticsRepository($pdo);
             }),
             PostStatisticsRepositoryInterface::class => \DI\factory(function (ContainerInterface $container): PostStatisticsRepositoryInterface {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
+
                 return new PostStatisticsRepository($pdo);
             }),
             UserStatisticsRepositoryInterface::class => \DI\factory(function (ContainerInterface $container): UserStatisticsRepositoryInterface {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
+
                 return new UserStatisticsRepository($pdo);
             }),
             // 快取服務
@@ -68,12 +73,14 @@ class StatisticsServiceProvider
                 $cacheService = $container->get(CacheService::class);
                 /** @var LoggerInterface $logger */
                 $logger = $container->get(LoggerInterface::class);
+
                 return new StatisticsCacheService($cacheService, $logger);
             }),
             // SlowQueryMonitoringService
             SlowQueryMonitoringServiceInterface::class => \DI\factory(function (ContainerInterface $container): SlowQueryMonitoringServiceInterface {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
+
                 return new SlowQueryMonitoringService($pdo);
             }),
             // 監控服務
@@ -84,12 +91,14 @@ class StatisticsServiceProvider
                 $pdo = $container->has(PDO::class) ? $container->get(PDO::class) : null;
                 /** @var LoggerInterface|null $logger */
                 $logger = $container->has(LoggerInterface::class) ? $container->get(LoggerInterface::class) : null;
+
                 return new StatisticsMonitoringService($slowQueryService, $pdo, $logger);
             }),
             // 事件分派器
             EventDispatcherInterface::class => \DI\factory(function (ContainerInterface $container): EventDispatcherInterface {
                 /** @var LoggerInterface|null $logger */
                 $logger = $container->has(LoggerInterface::class) ? $container->get(LoggerInterface::class) : null;
+
                 return new SimpleEventDispatcher($logger);
             }),
             // 領域服務
@@ -102,6 +111,7 @@ class StatisticsServiceProvider
                 $userStatisticsRepository = $container->get(UserStatisticsRepositoryInterface::class);
                 /** @var EventDispatcherInterface|null $eventDispatcher */
                 $eventDispatcher = $container->has(EventDispatcherInterface::class) ? $container->get(EventDispatcherInterface::class) : null;
+
                 return new StatisticsAggregationService(
                     $statisticsRepository,
                     $postStatisticsRepository,
@@ -121,6 +131,7 @@ class StatisticsServiceProvider
                 $logger = $container->get(LoggerInterface::class);
                 /** @var PDO $db */
                 $db = $container->get(PDO::class);
+
                 return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
             }),
             // 綁定介面到實作
@@ -143,6 +154,7 @@ class StatisticsServiceProvider
             PostViewStatisticsService::class => \DI\factory(function (ContainerInterface $container): PostViewStatisticsService {
                 /** @var PDO $pdo */
                 $pdo = $container->get(PDO::class);
+
                 return new PostViewStatisticsService($pdo);
             }),
             // User-Agent 解析服務
@@ -155,6 +167,7 @@ class StatisticsServiceProvider
                 $pdo = $container->get(PDO::class);
                 /** @var UserAgentParserService $userAgentParser */
                 $userAgentParser = $container->get(UserAgentParserService::class);
+
                 return new AdvancedAnalyticsService($pdo, $userAgentParser);
             }),
             // 統計報表匯出服務
@@ -163,6 +176,7 @@ class StatisticsServiceProvider
                 $pdo = $container->get(PDO::class);
                 /** @var AdvancedAnalyticsService $analyticsService */
                 $analyticsService = $container->get(AdvancedAnalyticsService::class);
+
                 return new StatisticsExportService($pdo, $analyticsService);
             }),
         ];

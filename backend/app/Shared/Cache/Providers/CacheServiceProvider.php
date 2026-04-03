@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Providers;
+
 use App\Shared\Cache\Contracts\CacheDriverInterface;
 use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Contracts\CacheStrategyInterface;
@@ -26,12 +27,15 @@ use Psr\Log\NullLogger;
 use Redis;
 use RuntimeException;
 use Throwable;
+
 class CacheServiceProvider
 {
     /** @var Container DI 容器 */
     private Container $container;
+
     /** @var array<string, mixed> 設定 */
     private array $config;
+
     public function __construct(Container $container, array $config = [])
     {
         $this->container = $container;
@@ -40,6 +44,7 @@ class CacheServiceProvider
         $mergedConfig = array_merge($defaultConfig, $config);
         $this->config = $mergedConfig;
     }
+
     /**
      * 註冊快取服務。
      */
@@ -50,6 +55,7 @@ class CacheServiceProvider
         $this->registerManager();
         $this->registerLegacyService();
     }
+
     /**
      * 註冊快取策略。
      */
@@ -58,9 +64,11 @@ class CacheServiceProvider
         $this->container->set(CacheStrategyInterface::class, function (Container $container) {
             $strategyConfig = $this->config['strategy'] ?? [];
             assert(is_array($strategyConfig), 'Strategy config must be an array');
+
             return new DefaultCacheStrategy($strategyConfig);
         });
     }
+
     /**
      * 註冊快取驅動。
      */
@@ -78,6 +86,7 @@ class CacheServiceProvider
             if (!is_int($maxItems)) {
                 $maxItems = 1000;
             }
+
             return new MemoryCacheDriver($maxItems);
         });
         // 檔案快取驅動
@@ -92,6 +101,7 @@ class CacheServiceProvider
             if (!is_string($path)) {
                 $path = $this->getDefaultCachePath();
             }
+
             return new FileCacheDriver($path);
         });
         // Redis 快取驅動
@@ -105,6 +115,7 @@ class CacheServiceProvider
             }
             /** @var array<string, mixed> $redisConfig */
             $redisConfig = $driversConfig[CacheType::REDIS->value] ?? [];
+
             return new RedisCacheDriver($redisConfig);
         });
         // 註冊驅動別名
@@ -120,6 +131,7 @@ class CacheServiceProvider
             });
         }
     }
+
     /**
      * 註冊快取管理器。
      */
@@ -143,6 +155,7 @@ class CacheServiceProvider
             if ($manager->getDriver($defaultDriver)) {
                 $manager->setDefaultDriver($defaultDriver);
             }
+
             return $manager;
         });
         // 註冊別名
@@ -150,6 +163,7 @@ class CacheServiceProvider
             return $container->get(CacheManagerInterface::class);
         });
     }
+
     /**
      * 註冊舊版快取服務（向後相容）。
      */
@@ -160,6 +174,7 @@ class CacheServiceProvider
             return $container->get('cache.driver.' . CacheType::FILE->value);
         });
     }
+
     /**
      * 新增驅動到管理器。
      */
@@ -203,6 +218,7 @@ class CacheServiceProvider
             }
         }
     }
+
     /**
      * 建立設定建構器。
      */
@@ -210,6 +226,7 @@ class CacheServiceProvider
     {
         return new CacheConfigBuilder();
     }
+
     /**
      * 取得 DI 容器定義。
      */
@@ -219,6 +236,7 @@ class CacheServiceProvider
             CacheStrategyInterface::class => \DI\factory(function (ContainerInterface $c) {
                 /** @var array<string, mixed> $config */
                 $config = $c->has('cache.strategy') ? $c->get('cache.strategy') : [];
+
                 return new DefaultCacheStrategy($config);
             }),
             'cache.driver.' . CacheType::MEMORY->value => \DI\factory(function (ContainerInterface $c) {
@@ -229,6 +247,7 @@ class CacheServiceProvider
                 $maxItems = isset($config['max_size']) && is_int($config['max_size'])
                     ? $config['max_size']
                     : 1000;
+
                 return new MemoryCacheDriver($maxItems);
             }),
             'cache.driver.' . CacheType::FILE->value => \DI\factory(function (ContainerInterface $c) {
@@ -240,6 +259,7 @@ class CacheServiceProvider
                 $path = isset($config['path']) && is_string($config['path'])
                     ? $config['path']
                     : (is_string($defaultPath) ? $defaultPath : '/tmp/cache');
+
                 return new FileCacheDriver($path);
             }),
             'cache.driver.' . CacheType::REDIS->value => \DI\factory(function (ContainerInterface $c) {
@@ -250,6 +270,7 @@ class CacheServiceProvider
                 if (!is_array($config)) {
                     $config = [];
                 }
+
                 return new RedisCacheDriver($config);
             }),
             MemoryCacheDriver::class => \DI\get('cache.driver.' . CacheType::MEMORY->value),
@@ -270,6 +291,7 @@ class CacheServiceProvider
                 if (!($redis instanceof Redis)) {
                     throw new RuntimeException('Redis 實例不可用');
                 }
+
                 return new RedisTagRepository($redis);
             }),
             TagRepositoryInterface::class => \DI\factory(function (ContainerInterface $c) {
@@ -281,6 +303,7 @@ class CacheServiceProvider
                         return $c->get('cache.tag.repository.memory');
                     }
                 }
+
                 return $c->get('cache.tag.repository.memory');
             }),
             // 快取分組管理器
@@ -298,6 +321,7 @@ class CacheServiceProvider
                 if (!($logger instanceof LoggerInterface)) {
                     $logger = new NullLogger();
                 }
+
                 return new CacheGroupManager($tagsResult, $logger);
             }),
             CacheManagerInterface::class => \DI\factory(function (ContainerInterface $c) {
@@ -314,6 +338,7 @@ class CacheServiceProvider
                     $config = [];
                 }
                 $tagRepository = null;
+
                 try {
                     $tagRepositoryTmp = $c->get(TagRepositoryInterface::class);
                     if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
@@ -322,6 +347,7 @@ class CacheServiceProvider
                 } catch (Throwable) {
                 }
                 $monitor = null;
+
                 try {
                     $monitorTmp = $c->get(CacheMonitorInterface::class);
                     if ($monitorTmp instanceof CacheMonitorInterface) {
@@ -361,6 +387,7 @@ class CacheServiceProvider
                 if (is_string($defaultDriver) && $manager->getDriver($defaultDriver)) {
                     $manager->setDefaultDriver($defaultDriver);
                 }
+
                 return $manager;
             }),
             CacheManager::class => \DI\get(CacheManagerInterface::class),
@@ -368,6 +395,7 @@ class CacheServiceProvider
             CacheServiceInterface::class => \DI\get('cache.driver.' . CacheType::FILE->value),
         ];
     }
+
     /**
      * 取得預設設定。
      */
@@ -412,6 +440,7 @@ class CacheServiceProvider
             ],
         ];
     }
+
     /**
      * 取得預設快取路徑。
      */
@@ -419,6 +448,7 @@ class CacheServiceProvider
     {
         return dirname(__DIR__, 4) . '/storage/cache';
     }
+
     /**
      * 取得設定。
      */
@@ -426,6 +456,7 @@ class CacheServiceProvider
     {
         return $this->config;
     }
+
     /**
      * 更新設定。
      */
@@ -445,14 +476,17 @@ class CacheConfigBuilder
 {
     /** @var array<string, mixed> 設定 */
     private array $config = [];
+
     /**
      * 設定預設驅動。
      */
     public function defaultDriver(CacheType $driver): self
     {
         $this->config['default_driver'] = $driver->value;
+
         return $this;
     }
+
     /**
      * 設定記憶體驅動。
      */
@@ -467,8 +501,10 @@ class CacheConfigBuilder
             'max_size' => 1000,
             'ttl' => 3600,
         ], $config);
+
         return $this;
     }
+
     /**
      * 設定檔案驅動。
      */
@@ -486,8 +522,10 @@ class CacheConfigBuilder
             $this->config['drivers'] = [];
         }
         $this->config['drivers'][CacheType::FILE->value] = array_merge($defaultConfig, $config);
+
         return $this;
     }
+
     /**
      * 設定 Redis 驅動。
      */
@@ -505,8 +543,10 @@ class CacheConfigBuilder
             'timeout' => 2.0,
             'prefix' => 'alleynote:cache:',
         ], $config);
+
         return $this;
     }
+
     /**
      * 設定快取策略。
      */
@@ -518,8 +558,10 @@ class CacheConfigBuilder
             'max_value_size' => 1024 * 1024,
             'exclude_patterns' => ['temp:*', 'debug:*'],
         ], $config);
+
         return $this;
     }
+
     /**
      * 設定管理器。
      */
@@ -531,8 +573,10 @@ class CacheConfigBuilder
             'max_retry_attempts' => 3,
             'retry_delay' => 100,
         ], $config);
+
         return $this;
     }
+
     /**
      * 建構設定。
      */
