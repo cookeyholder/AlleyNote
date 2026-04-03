@@ -1,8 +1,5 @@
-# Capability: Dev Environment
+## MODIFIED Requirements
 
-## Purpose
-提供一個標準化、基於容器的開發環境，確保所有開發者能在一致的環境下作業，並預裝必要的開發工具與擴充套件。
-## Requirements
 ### Requirement: 標準化開發環境
 系統 SHALL 提供基於 Docker 容器的標準化開發環境，包含 PHP 8.4、Node.js 24+ 與 Git，並且 MUST 在開發文件中以單一 canonical 入口維護啟動、測試與除錯流程，避免多份文件描述不一致。
 
@@ -13,11 +10,3 @@
 #### Scenario: 查詢開發流程文件
 - **WHEN** 使用者需要查詢本機啟動、測試與偵錯步驟
 - **THEN** 使用者 MUST 可透過 canonical 文件入口取得與目前程式碼與工作流程一致的說明
-
-### Requirement: VS Code 擴充套件預裝
-系統 SHALL 在開發容器啟動時自動安裝必要的 VS Code 擴充套件（如 PHP Intelephense, ESLint, Tailwind CSS IntelliSense）。
-
-#### Scenario: 檢查擴充套件
-- **WHEN** 使用者進入開發容器後
-- **THEN** VS Code 應已啟用配置在 devcontainer.json 中的所有擴充套件
-
