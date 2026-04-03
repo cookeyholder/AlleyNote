@@ -47,10 +47,6 @@ abstract class BaseController
 
     protected function jsonResponse(array $data, HttpStatusCode|int $httpCode = HttpStatusCode::OK): string
     {
-        $code = $httpCode instanceof HttpStatusCode ? $httpCode->value : (int) $httpCode;
-        http_response_code($code);
-        header('Content-Type: application/json; charset=utf-8');
-
         return json_encode($data, JsonFlag::DEFAULT->value) ?: '{}';
     }
 

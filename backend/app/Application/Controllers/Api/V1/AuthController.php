@@ -462,20 +462,22 @@ class AuthController extends BaseController
         }
     }
 
-    private function withAuthCookies(Response $response, TokenPair $tokens): Response
+    private function withAuthCookies(ResponseInterface $response, TokenPair $tokens): ResponseInterface
     {
-        return $response
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', $tokens->getRefreshToken(), $tokens->getRefreshTokenExpiresAt()->getTimestamp(), true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true));
+        return $response->withHeader('Set-Cookie', [
+            $this->buildCookieHeader('access_token', $tokens->getAccessToken(), $tokens->getAccessTokenExpiresAt()->getTimestamp(), true),
+            $this->buildCookieHeader('refresh_token', $tokens->getRefreshToken(), $tokens->getRefreshTokenExpiresAt()->getTimestamp(), true),
+            $this->buildCookieHeader('auth_mode', 'cookie', $tokens->getRefreshTokenExpiresAt()->getTimestamp(), false),
+        ]);
     }
 
-    private function expireAuthCookies(Response $response): Response
+    private function expireAuthCookies(ResponseInterface $response): ResponseInterface
     {
-        return $response
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('access_token', '', time() - 3600, true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('refresh_token', '', time() - 3600, true))
-            ->withAddedHeader('Set-Cookie', $this->buildCookieHeader('auth_mode', '', time() - 3600, false));
+        return $response->withHeader('Set-Cookie', [
+            $this->buildCookieHeader('access_token', '', time() - 3600, true),
+            $this->buildCookieHeader('refresh_token', '', time() - 3600, true),
+            $this->buildCookieHeader('auth_mode', '', time() - 3600, false),
+        ]);
     }
 
     private function buildCookieHeader(string $name, string $value, int $expiresAt, bool $httpOnly): string

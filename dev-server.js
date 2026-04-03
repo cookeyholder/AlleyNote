@@ -1,66 +1,52 @@
 /**
  * 輕量開發伺服器：靜態檔案服務 + API 代理
- * 取代 live-server 以避免供應鏈漏洞（chokidar -> braces/micromatch/readdirp）
- * 使用 Node.js 原生 http.request 代理，不依賴第三方套件
+ * 支持 SPA 路由（所有非檔案請求導向 index.html）
  *
  * 使用方法：
  *   node dev-server.js <static-dir> --port <port> --proxy <path>:<target>
- *
- * 範例：
- *   node dev-server.js ./frontend --port 3000 --proxy /api:http://127.0.0.1:8081/api
  */
 
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
-const { URL } = require("url");
 
-function parseArgs(argv) {
+const MIME_TYPES = {
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".gif": "image/gif",
+  ".svg": "image/svg+xml",
+  ".ico": "image/x-icon",
+};
+
+function parseArgs() {
   const args = {
-    staticDir: ".",
+    staticDir: process.argv[2] || ".",
     port: 3000,
     proxyPath: null,
     proxyTarget: null,
   };
-  let i = 2;
-  if (i < argv.length && !argv[i].startsWith("--")) {
-    args.staticDir = argv[i++];
-  }
-  while (i < argv.length) {
-    if (argv[i] === "--port" && i + 1 < argv.length) {
-      args.port = parseInt(argv[++i], 10);
-    } else if (argv[i] === "--proxy" && i + 1 < argv.length) {
-      const proxyArg = argv[++i];
-      const colonIndex = proxyArg.indexOf(":");
-      args.proxyPath = proxyArg.substring(0, colonIndex);
-      args.proxyTarget = proxyArg.substring(colonIndex + 1);
+
+  for (let i = 3; i < process.argv.length; i++) {
+    if (process.argv[i] === "--port") {
+      args.port = parseInt(process.argv[++i], 10);
+    } else if (process.argv[i] === "--proxy") {
+      const [p, t] = process.argv[++i].split(":");
+      args.proxyPath = p;
+      args.proxyTarget = t.startsWith("http") ? t : `http://${t}`;
     }
-    i++;
   }
   return args;
 }
 
-const MIME_TYPES = {
-  ".html": "text/html; charset=utf-8",
-  ".css": "text/css; charset=utf-8",
-  ".js": "application/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8",
-  ".png": "image/png",
-  ".jpg": "image/jpeg",
-  ".jpeg": "image/jpeg",
-  ".gif": "image/gif",
-  ".svg": "image/svg+xml",
-  ".ico": "image/x-icon",
-  ".woff": "font/woff",
-  ".woff2": "font/woff2",
-  ".ttf": "font/ttf",
-  ".eot": "application/vnd.ms-fontobject",
-};
-
 function serveStaticFile(res, filePath) {
   fs.readFile(filePath, (err, data) => {
     if (err) {
+      console.error(`[static-error] Failed to read ${filePath}: ${err.message}`);
       res.writeHead(404);
       res.end("Not Found");
       return;
@@ -68,6 +54,7 @@ function serveStaticFile(res, filePath) {
     const ext = path.extname(filePath).toLowerCase();
     res.writeHead(200, {
       "Content-Type": MIME_TYPES[ext] || "application/octet-stream",
+      "Cache-Control": "no-cache",
     });
     res.end(data);
   });
@@ -108,104 +95,58 @@ function proxyRequest(req, res, targetUrl) {
 }
 
 function main() {
-  const args = parseArgs(process.argv);
+  const args = parseArgs();
+  const staticRootDir = path.resolve(args.staticDir);
 
   const server = http.createServer((req, res) => {
-    // 解析 URL 以取得乾淨的路徑（不含查詢字串）
     const parsedUrl = new URL(req.url, `http://localhost:${args.port}`);
     const urlPath = parsedUrl.pathname;
     const queryString = parsedUrl.search;
 
     console.log(`[request] ${req.method} ${req.url}`);
 
-    // 代理請求：精確匹配路徑前綴（避免 /api.evil.com 被誤判）
-    if (
-      args.proxyPath &&
-      (urlPath === args.proxyPath || urlPath.startsWith(args.proxyPath + "/"))
-    ) {
-      // 從 proxyTarget 提取 origin（不含 path），避免路徑重複拼接
+    // 1. API 代理
+    if (args.proxyPath && (urlPath === args.proxyPath || urlPath.startsWith(args.proxyPath + "/"))) {
       const targetUrl = new URL(args.proxyTarget);
-      const origin = targetUrl.origin;
-      const proxyUrl = origin + urlPath + queryString;
+      const proxyUrl = targetUrl.origin + urlPath + queryString;
       proxyRequest(req, res, proxyUrl);
       return;
     }
 
-    // 靜態檔案：先解碼 URL 再解析路徑，防止 %2e%2e 繞過
-    let decodedPath;
-    try {
-      decodedPath = decodeURIComponent(urlPath);
-    } catch {
-      res.writeHead(400);
-      res.end("Bad Request");
-      return;
-    }
+    // 2. 靜態檔案
+    const decodedPath = decodeURIComponent(urlPath);
+    let filePath = path.join(staticRootDir, decodedPath === "/" ? "index.html" : decodedPath);
 
-    let filePath = path.join(
-      args.staticDir,
-      decodedPath === "/" ? "index.html" : decodedPath,
-    );
-
-    console.log(`[static] serving: ${filePath}`);
-    const resolved = path.resolve(filePath);
-    const staticResolved = path.resolve(args.staticDir);
-
-    // 防止路徑穿越：確保解析後的路徑在靜態目錄內
-    // 使用 staticResolved + path.sep 避免同前綴路徑繞過
-    // 例如：/repo/frontend-secrets 不會被 /repo/frontend 匹配
-    if (
-      resolved !== staticResolved &&
-      !resolved.startsWith(staticResolved + path.sep)
-    ) {
+    // 路徑穿越保護
+    if (!filePath.startsWith(staticRootDir)) {
+      console.warn(`[security] Blocked path traversal attempt: ${filePath}`);
       res.writeHead(403);
       res.end("Forbidden");
       return;
     }
 
+    // 檢查檔案是否存在
     if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-      // 解析真實路徑，防止 symlink 繞過
-      const realPath = fs.realpathSync(filePath);
-      if (
-        realPath !== staticResolved &&
-        !realPath.startsWith(staticResolved + path.sep)
-      ) {
-        res.writeHead(403);
-        res.end("Forbidden");
-        return;
-      }
+      console.log(`[static] Serving file: ${filePath}`);
       serveStaticFile(res, filePath);
-      return;
-    }
-
-    const indexPath = path.join(args.staticDir, "index.html");
-    if (fs.existsSync(indexPath)) {
+    } else {
+      // SPA 模式：如果不是檔案，回傳 index.html
+      const indexPath = path.join(staticRootDir, "index.html");
+      console.log(`[static-spa] Routing to index.html for: ${urlPath}`);
       serveStaticFile(res, indexPath);
-      return;
     }
-
-    res.writeHead(404);
-    res.end("Not Found");
   });
 
   server.listen(args.port, "0.0.0.0", () => {
     console.log(`[dev-server] Listening on http://0.0.0.0:${args.port}`);
-    console.log(`[dev-server] Static directory: ${path.resolve(args.staticDir)}`);
+    console.log(`[dev-server] Static root: ${staticRootDir}`);
     if (args.proxyPath) {
-      console.log(
-        `[dev-server] Proxy: ${args.proxyPath} -> ${args.proxyTarget}`,
-      );
+      console.log(`[dev-server] Proxy: ${args.proxyPath} -> ${args.proxyTarget}`);
     }
   });
 
-  process.on("SIGTERM", () => {
-    console.log("[dev-server] SIGTERM received, shutting down gracefully");
-    server.close(() => process.exit(0));
-  });
-
-  process.on("SIGINT", () => {
-    console.log("[dev-server] SIGINT received, shutting down gracefully");
-    server.close(() => process.exit(0));
-  });
+  process.on("SIGTERM", () => server.close(() => process.exit(0)));
+  process.on("SIGINT", () => server.close(() => process.exit(0)));
 }
 
 main();
