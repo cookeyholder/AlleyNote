@@ -3,14 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Repositories;
-
-use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
-use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use Throwable;
-use InvalidArgumentException;
-use PDO;
-use PDOException;
-use RuntimeException;
+
 
 /**
  * 使用者統計查詢 Repository 實作.

@@ -3,12 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
-
-use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use Throwable;
-use PDO;
-use PDOException;
-use RuntimeException;
+
 
 /**
  * 慢查詢監控服務.

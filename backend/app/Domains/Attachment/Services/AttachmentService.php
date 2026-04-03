@@ -3,21 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Domains\Attachment\Services;
-
-use App\Domains\Attachment\Contracts\AttachmentServiceInterface;
-use App\Domains\Attachment\Models\Attachment;
-use App\Domains\Attachment\Repositories\AttachmentRepository;
-use App\Domains\Auth\Services\AuthorizationService;
-use App\Domains\Post\Repositories\PostRepository;
-use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
-use App\Domains\Security\Enums\ActivityType;
-use App\Shared\Exceptions\NotFoundException;
-use App\Shared\Exceptions\ValidationException;
 use Throwable;
-use League\MimeTypeDetection\FinfoMimeTypeDetector;
-use PDO;
-use Psr\Http\Message\UploadedFileInterface;
-use RuntimeException;
+
 
 class AttachmentService implements AttachmentServiceInterface
 {

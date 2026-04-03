@@ -3,16 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Api\V1;
-
-use App\Application\Controllers\BaseController;
-use App\Domains\Post\Contracts\PostServiceInterface;
-use App\Domains\Post\Exceptions\PostNotFoundException;
-use App\Domains\Statistics\Events\PostViewed;
-use App\Shared\Events\Contracts\EventDispatcherInterface;
 use Throwable;
-use OpenApi\Attributes as OA;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+
 
 /**
  * 文章瀏覽追蹤控制器.
@@ -219,16 +211,16 @@ class PostViewController extends BaseController
         }
 
         if ($id === null || $id === '') {
-            throw new \RuntimeException('文章 ID 不能為空');
+            throw new RuntimeException('文章 ID 不能為空');
         }
 
         if (!is_string($id) && !is_numeric($id)) {
-            throw new \RuntimeException('無效的文章 ID 格式');
+            throw new RuntimeException('無效的文章 ID 格式');
         }
 
         $postId = filter_var((string) $id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if ($postId === false) {
-            throw new \RuntimeException('無效的文章 ID');
+            throw new RuntimeException('無效的文章 ID');
         }
 
         return $postId;

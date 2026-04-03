@@ -3,17 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Application\Controllers\Admin;
-
-use App\Application\Controllers\BaseController;
-use App\Shared\Cache\Contracts\CacheManagerInterface;
-use App\Shared\Cache\Contracts\TaggedCacheInterface;
-use App\Shared\Cache\Services\CacheGroupManager;
 use Throwable;
-use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
-use RuntimeException;
+
 
 /**
  * 標籤管理控制器.

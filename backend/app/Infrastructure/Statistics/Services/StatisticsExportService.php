@@ -3,16 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Services;
-
-use App\Domains\Statistics\Contracts\BatchExportResult;
-use App\Domains\Statistics\Contracts\ExportResult;
-use App\Domains\Statistics\Contracts\StatisticsExportServiceInterface;
-use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
-use DateTime;
-use InvalidArgumentException;
-use RuntimeException;
 use Throwable;
+
 
 /**
  * 統計資料匯出服務.

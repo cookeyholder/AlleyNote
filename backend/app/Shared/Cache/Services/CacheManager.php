@@ -3,18 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Shared\Cache\Services;
-
-use App\Shared\Cache\Contracts\CacheDriverInterface;
-use App\Shared\Cache\Contracts\CacheManagerInterface;
-use App\Shared\Cache\Contracts\CacheStrategyInterface;
-use App\Shared\Cache\Contracts\TaggedCacheInterface;
-use App\Shared\Cache\Contracts\TagRepositoryInterface;
-use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use Throwable;
-use InvalidArgumentException;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use RuntimeException;
+
 
 /**
  * 快取管理器。
@@ -795,7 +785,7 @@ class CacheManager implements CacheManagerInterface
     /**
      * 處理驅動錯誤。
      */
-    private function handleDriverError(string $driverName , Throwable $error, string $operation, array $params): mixed
+    private function handleDriverError(string $driverName, Throwable $error, string $operation, array $params): mixed
     {
         $this->stats['driver_failures']++;
 

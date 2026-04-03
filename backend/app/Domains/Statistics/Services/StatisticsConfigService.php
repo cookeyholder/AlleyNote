@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Services;
 
-use RuntimeException;
 
 /**
  * 統計配置服務.

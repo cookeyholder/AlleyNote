@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Post\Contracts;
 
-use App\Domains\Post\Models\Post;
-use App\Shared\Contracts\RepositoryInterface;
-use RuntimeException;
 
 interface PostRepositoryInterface extends RepositoryInterface
 {

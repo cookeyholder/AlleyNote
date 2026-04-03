@@ -175,7 +175,7 @@ class XssProtectionService implements XssProtectionServiceInterface
             );
 
             $this->activityLogger->log($dto);
-        } catch (Throwable ) {
+        } catch (Throwable) {
             // 記錄失敗不應影響主要功能
         }
     }

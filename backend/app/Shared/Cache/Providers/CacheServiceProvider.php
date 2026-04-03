@@ -21,12 +21,12 @@ use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Enums\CacheType;
 use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use DI\Container;
-use Throwable;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Redis;
 use RuntimeException;
+use Throwable;
 
 /**
  * 快取服務提供者。
@@ -330,7 +330,7 @@ class CacheServiceProvider
                 if (extension_loaded('redis')) {
                     try {
                         return $c->get('cache.tag.repository.redis');
-                    } catch (Throwable ) {
+                    } catch (Throwable) {
                         return $c->get('cache.tag.repository.memory');
                     }
                 }
@@ -377,7 +377,7 @@ class CacheServiceProvider
                     if ($tagRepositoryTmp instanceof TagRepositoryInterface) {
                         $tagRepository = $tagRepositoryTmp;
                     }
-                } catch (Throwable ) {
+                } catch (Throwable) {
                 }
                 $monitor = null;
 
@@ -386,7 +386,7 @@ class CacheServiceProvider
                     if ($monitorTmp instanceof CacheMonitorInterface) {
                         $monitor = $monitorTmp;
                     }
-                } catch (Throwable ) {
+                } catch (Throwable) {
                 }
                 $manager = new CacheManager($strategy, $logger, $config, $monitor, $tagRepository);
                 // 新增記憶體驅動

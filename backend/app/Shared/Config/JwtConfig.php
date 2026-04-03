@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Config;
 
-use Throwable;
 use InvalidArgumentException;
+use Throwable;
 
 /**
  * JWT 配置管理類別.

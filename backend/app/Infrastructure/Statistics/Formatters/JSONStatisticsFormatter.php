@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Formatters;
 
-use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
-use DateTime;
-use RuntimeException;
 
 /**
  * JSON 統計資料格式化器.

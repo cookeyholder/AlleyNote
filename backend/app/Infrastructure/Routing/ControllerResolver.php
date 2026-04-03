@@ -4,18 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
-use App\Infrastructure\Http\Response;
-use App\Infrastructure\Http\Stream;
-use App\Infrastructure\Routing\Contracts\RouteInterface;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use ReflectionClass;
-use ReflectionException;
-use ReflectionMethod;
-use ReflectionNamedType;
-use ReflectionType;
-use RuntimeException;
 
 /**
  * 控制器解析器.

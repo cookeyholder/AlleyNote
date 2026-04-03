@@ -3,11 +3,8 @@
 declare(strict_types=1);
 
 namespace App\Domains\Auth\Repositories;
-
-use App\Domains\Auth\Models\Role;
 use Throwable;
-use PDO;
-use RuntimeException;
+
 
 /**
  * 角色 Repository.

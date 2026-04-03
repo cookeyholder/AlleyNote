@@ -219,7 +219,7 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                     'flush' => $driver->flush(),
                     default => null,
                 };
-            } catch (Throwable ) {
+            } catch (Throwable) {
                 // 繼續嘗試下一個驅動
                 continue;
             }

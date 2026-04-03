@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
-use InvalidArgumentException;
-use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 
 /**
  * PSR-7 Stream 實作.

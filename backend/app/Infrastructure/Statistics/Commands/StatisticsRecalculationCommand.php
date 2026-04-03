@@ -7,14 +7,15 @@ namespace App\Infrastructure\Statistics\Commands;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod as DomainStatisticsPeriod;
 use DateTimeImmutable;
-use Throwable;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
 /**
  * 統計資料回填指令.
@@ -439,7 +440,7 @@ final class StatisticsRecalculationCommand extends Command
                 'posts' => $this->aggregationService->createPostsSnapshot($period),
                 'users' => $this->aggregationService->createUsersSnapshot($period),
                 'popular' => $this->aggregationService->createPopularSnapshot($period),
-                default => throw new \RuntimeException('不支援的統計類型: ' . $task['type']),
+                default => throw new RuntimeException('不支援的統計類型: ' . $task['type']),
             };
 
             $currentDate = $currentDate->modify('+1 day');
