@@ -31,21 +31,15 @@ abstract class BaseController
         HttpStatusCode|int $status = HttpStatusCode::OK,
         JsonFlag $jsonFlag = JsonFlag::DEFAULT,
     ): ResponseInterface {
-        try {
-            $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
+        $json = json_encode($data, $jsonFlag->value) ?: $this->getFallbackJson();
 
-            $response->getBody()->write($json);
+        $response->getBody()->write($json);
 
-            $statusCode = $status instanceof HttpStatusCode ? $status->value : (int) $status;
+        $statusCode = $status instanceof HttpStatusCode ? $status->value : (int) $status;
 
-            return $response
-                ->withHeader('Content-Type', 'application/json')
-                ->withStatus($statusCode);
-        } catch (\Throwable $e) {
-            echo "\n[CRITICAL ERROR] BaseController::json() failed: " . get_class($e) . ": " . $e->getMessage() . "\n";
-            echo $e->getTraceAsString() . "\n";
-            throw $e;
-        }
+        return $response
+            ->withHeader('Content-Type', 'application/json')
+            ->withStatus($statusCode);
     }
 
     protected function jsonResponse(array $data, HttpStatusCode|int $httpCode = HttpStatusCode::OK): string
@@ -84,7 +78,7 @@ abstract class BaseController
         );
     }
 
-    protected function handleException(Exception $e): string
+    protected function handleException(\Throwable $e): string
     {
         // 記錄錯誤日誌
         app_log('error', 'API Error', [
@@ -98,7 +92,7 @@ abstract class BaseController
         return $this->errorResponse($e->getMessage(), $httpCode);
     }
 
-    private function getHttpCodeFromException(Exception $e): HttpStatusCode
+    private function getHttpCodeFromException(\Throwable $e): HttpStatusCode
     {
         $className = get_class($e);
         if (array_key_exists($className, self::EXCEPTION_HTTP_CODES)) {

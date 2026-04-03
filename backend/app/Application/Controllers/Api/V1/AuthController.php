@@ -106,7 +106,7 @@ class AuthController extends BaseController
                 'message' => '註冊成功',
                 'data' => $user,
             ], 201);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -171,7 +171,7 @@ class AuthController extends BaseController
             ], 200);
 
             return $this->withAuthCookies($response, $loginResponse->tokens);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             if (isset($credentials['email'])) {
                 $this->logLoginFailure($request, $credentials['email'], $e->getMessage());
             }
@@ -230,7 +230,7 @@ class AuthController extends BaseController
             ], 200);
 
             return $this->expireAuthCookies($response);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -278,7 +278,7 @@ class AuthController extends BaseController
                     ],
                 ],
             ], 200);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -326,7 +326,7 @@ class AuthController extends BaseController
             ], 200);
 
             return $this->withAuthCookies($response, $refreshResponse->tokens);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -349,7 +349,7 @@ class AuthController extends BaseController
             );
 
             $this->activityLoggingService->log($activityDto);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             app_log('error', 'Failed to log login failure activity', ['exception' => $e->getMessage()]);
         }
     }
@@ -405,7 +405,7 @@ class AuthController extends BaseController
                     'roles' => $user['roles'] ?? [],
                 ],
             ], 200);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);
@@ -455,7 +455,7 @@ class AuthController extends BaseController
                 'success' => true,
                 'message' => '密碼變更成功',
             ], 200);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
 
             return $this->json($response, $responseData, $responseData['error']['code'] ?? 500);

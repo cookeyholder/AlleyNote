@@ -45,7 +45,7 @@ class PostControllerTest extends IntegrationTestCase
         parent::setUp();
         $this->postService = Mockery::mock(PostServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
-        $this->sanitizer = Mockery::mock(OutputSanitizerInterface::class);
+        $this->sanitizer = $this->mockOutputSanitizer();
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class)->shouldIgnoreMissing();
         $this->postViewStatsService = Mockery::mock(PostViewStatisticsService::class);
 
@@ -53,10 +53,14 @@ class PostControllerTest extends IntegrationTestCase
         $this->response = new Response();
 
         // 預設行為
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->byDefault();
         $this->request->shouldReceive('getQueryParams')->andReturn([])->byDefault();
         $this->request->shouldReceive('getParsedBody')->andReturn([])->byDefault();
         $this->request->shouldReceive('getHeaderLine')->andReturn('')->byDefault();
         $this->request->shouldReceive('getAttribute')->andReturn(null)->byDefault();
+        $this->request->shouldReceive('getCookieParams')->andReturn([])->byDefault();
+        $this->validator->shouldReceive('addRule')->zeroOrMoreTimes()->andReturnSelf();
+        $this->validator->shouldReceive('addMessage')->zeroOrMoreTimes()->andReturnSelf();
     }
 
     /**
@@ -114,7 +118,7 @@ class PostControllerTest extends IntegrationTestCase
         ]);
 
         $this->postService->shouldReceive('findById')->once()->with($postId)->andReturn($post);
-        $this->postService->shouldReceive('recordView')->once();
+        $this->postService->shouldReceive('recordView')->once()->with($postId, Mockery::any());
         $this->postViewStatsService->shouldReceive('getPostViewStats')->once()->andReturn(['views' => 10, 'unique_visitors' => 5]);
 
         /** @var AuthorizationServiceInterface $authService */
@@ -171,8 +175,8 @@ class PostControllerTest extends IntegrationTestCase
     public function storeShouldCreateNewPost(): void
     {
         $createdPost = new Post(['id' => 1, 'title' => '新文章', 'user_id' => 1]);
-        $this->validator->shouldReceive('validateOrFail')->andReturn(['title' => '新文章']);
-        $this->postService->shouldReceive('createPost')->once()->andReturn($createdPost);
+        $this->validator->shouldReceive('validateOrFail')->andReturn(['title' => '新文章', 'status' => 'published']);
+        $this->postService->shouldReceive('createPost')->once()->with(Mockery::any())->andReturn($createdPost);
 
         /** @var AuthorizationServiceInterface $authService */
         $authService = $this->mockAuthorizationService();
@@ -199,7 +203,8 @@ class PostControllerTest extends IntegrationTestCase
     #[Test]
     public function storeShouldReturn400OnValidationFailure(): void
     {
-        $this->postService->shouldReceive('createPost')->once()->andThrow(new ValidationException(new ValidationResult(false, ['title' => ['Required']])));
+        $this->validator->shouldReceive('validateOrFail')->andReturn(['title' => '新文章', 'status' => 'published']);
+        $this->postService->shouldReceive('createPost')->once()->with(Mockery::any())->andThrow(new ValidationException(new ValidationResult(false, ['title' => ['Required']])));
 
         /** @var AuthorizationServiceInterface $authService */
         $authService = $this->mockAuthorizationService();

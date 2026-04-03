@@ -8,6 +8,7 @@ use App\Application\Controllers\Api\V1\AuthController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\Exceptions\UnauthorizedException;
 use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\TokenPair;
@@ -18,7 +19,6 @@ use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Validation\ValidationResult;
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\Test;
@@ -63,8 +63,11 @@ class AuthControllerTest extends IntegrationTestCase
         $this->response = new Response();
 
         // 預設行為
+        $this->request->shouldReceive('getServerParams')->andReturn(['REMOTE_ADDR' => '127.0.0.1'])->byDefault();
         $this->request->shouldReceive('getParsedBody')->andReturn([])->byDefault();
         $this->request->shouldReceive('getHeaderLine')->andReturn('')->byDefault();
+        $this->request->shouldReceive('getAttribute')->andReturn(null)->byDefault();
+        $this->request->shouldReceive('getCookieParams')->andReturn([])->byDefault();
         $this->validator->shouldReceive('addRule')->zeroOrMoreTimes()->andReturnSelf();
         $this->validator->shouldReceive('addMessage')->zeroOrMoreTimes()->andReturnSelf();
     }
@@ -91,6 +94,7 @@ class AuthControllerTest extends IntegrationTestCase
 
         $this->authService->shouldReceive('register')
             ->once()
+            ->with(Mockery::any())
             ->andReturn([
                 'id' => 1,
                 'username' => 'testuser',
@@ -153,7 +157,7 @@ class AuthControllerTest extends IntegrationTestCase
         $controller = new AuthController($authService, $authenticationService, $jwtTokenService, $validator, $activityLoggingService, $userRepository, $userManagementService, $config);
         $response = $controller->register($this->request, $this->response);
 
-        $this->assertEquals(400, $response->getStatusCode());
+        $this->assertEquals(422, $response->getStatusCode());
     }
 
     #[Test]
@@ -167,15 +171,19 @@ class AuthControllerTest extends IntegrationTestCase
         $tokens = new TokenPair($jwt, $jwt, new DateTimeImmutable('+1 hour'), new DateTimeImmutable('+30 days'));
         
         $loginResponse = new \App\Domains\Auth\DTOs\LoginResponseDTO(
+            tokens: $tokens,
             userId: 1,
-            username: 'test',
-            email: 'test@example.com',
+            userEmail: 'test@example.com',
+            expiresAt: $tokens->getAccessTokenExpiresAt()->getTimestamp(),
+            userName: 'test',
             roles: [],
-            permissions: [],
-            tokens: $tokens
+            permissions: []
         );
 
-        $this->authenticationService->shouldReceive('login')->once()->andReturn($loginResponse);
+        $this->authenticationService->shouldReceive('login')
+            ->once()
+            ->with(Mockery::any(), Mockery::any())
+            ->andReturn($loginResponse);
 
         $config = new EnvironmentConfig();
 
@@ -207,7 +215,10 @@ class AuthControllerTest extends IntegrationTestCase
         $credentials = ['email' => 'wrong@example.com', 'password' => 'wrong'];
         $this->request->shouldReceive('getParsedBody')->andReturn($credentials);
         
-        $this->authenticationService->shouldReceive('login')->once()->andThrow(new InvalidArgumentException('Invalid credentials'));
+        $this->authenticationService->shouldReceive('login')
+            ->once()
+            ->with(Mockery::any(), Mockery::any())
+            ->andThrow(new UnauthorizedException('Invalid credentials'));
 
         $config = new EnvironmentConfig();
 
@@ -236,7 +247,7 @@ class AuthControllerTest extends IntegrationTestCase
     #[Test]
     public function logoutUserSuccessfully(): void
     {
-        $this->authenticationService->shouldReceive('logout')->once();
+        $this->authenticationService->shouldReceive('logout')->once()->with(Mockery::any());
         
         $config = new EnvironmentConfig();
 
