@@ -86,13 +86,19 @@ class SecretsManager implements SecretsManagerInterface
     {
         $missing = [];
         foreach ($requiredKeys as $key) {
+            if (!is_string($key)) {
+                continue;
+            }
             if (!$this->has($key) || $this->get($key) === '') {
                 $missing[] = $key;
             }
         }
         if (!empty($missing)) {
             throw new ValidationException(
-                '缺少必需的環境變數: ' . implode(', ', $missing),
+                '缺少必需的環境變數: ' . implode(', ', array_map(
+                    static fn(mixed $key): string => (string) $key,
+                    $missing,
+                )),
             );
         }
     }
@@ -125,6 +131,9 @@ class SecretsManager implements SecretsManagerInterface
             'db',
         ];
         foreach (array_keys($this->secrets) as $key) {
+            if (!is_string($key)) {
+                continue;
+            }
             $isSensitive = false;
             foreach ($sensitiveKeys as $sensitiveKey) {
                 if (stripos($key, $sensitiveKey) !== false) {
@@ -132,11 +141,15 @@ class SecretsManager implements SecretsManagerInterface
                     break;
                 }
             }
+            $value = $this->get($key);
+            $valueString = is_scalar($value) || $value === null
+                ? (string) $value
+                : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: get_debug_type($value));
             $summary[$key] = [
                 'set' => $this->has($key),
-                'length' => strlen((string) $this->get($key)),
+                'length' => strlen($valueString),
                 'sensitive' => $isSensitive,
-                'value' => $isSensitive ? '[REDACTED]' : $this->get($key),
+                'value' => $isSensitive ? '[REDACTED]' : $value,
             ];
         }
 

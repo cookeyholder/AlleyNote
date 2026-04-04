@@ -233,7 +233,12 @@ final class StatisticsIndexOptimizationTest extends IntegrationTestCase
                 }
 
                 // 檢查是否使用了索引（SQLite 特有）
-                $planText = implode(' ', array_column($plan, 'detail'));
+                $planText = implode(' ', array_map(
+                    static fn(mixed $detail): string => is_scalar($detail) || $detail === null
+                        ? (string) $detail
+                        : (json_encode($detail, JSON_UNESCAPED_UNICODE) ?: get_debug_type($detail)),
+                    array_column($plan, 'detail'),
+                ));
                 $this->assertStringContainsString('INDEX', $planText, "{$queryName} 應該使用索引");
             } catch (PDOException $e) {
                 $this->markTestSkipped('無法分析查詢計劃: ' . $e->getMessage());

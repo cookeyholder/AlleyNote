@@ -305,6 +305,11 @@ class ValidationResult implements JsonSerializable
         }
         $errorCount = count($this->getAllErrors());
 
-        return "Validation failed with {$errorCount} errors: " . implode(', ', $this->getAllErrors());
+        return "Validation failed with {$errorCount} errors: " . implode(', ', array_map(
+            static fn(mixed $error): string => is_scalar($error) || $error === null
+                ? (string) $error
+                : (json_encode($error, JSON_UNESCAPED_UNICODE) ?: get_debug_type($error)),
+            $this->getAllErrors(),
+        ));
     }
 }

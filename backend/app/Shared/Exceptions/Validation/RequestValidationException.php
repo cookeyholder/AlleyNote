@@ -76,7 +76,12 @@ class RequestValidationException extends ValidationException
 
     public static function valueNotInList(string $field, $value, array $allowedValues): self
     {
-        $allowedList = implode(', ', $allowedValues);
+        $allowedList = implode(', ', array_map(
+            static fn(mixed $allowedValue): string => is_scalar($allowedValue) || $allowedValue === null
+                ? (string) $allowedValue
+                : (json_encode($allowedValue, JSON_UNESCAPED_UNICODE) ?: get_debug_type($allowedValue)),
+            $allowedValues,
+        ));
         $errors = [$field => "'{$value}' 不在允許的值清單中：{$allowedList}"];
 
         return new self('欄位值不在允許範圍內', $errors);
@@ -106,7 +111,12 @@ class RequestValidationException extends ValidationException
 
     public static function invalidFileType(string $field, string $actualType, array $allowedTypes): self
     {
-        $allowedList = implode(', ', $allowedTypes);
+        $allowedList = implode(', ', array_map(
+            static fn(mixed $allowedType): string => is_scalar($allowedType) || $allowedType === null
+                ? (string) $allowedType
+                : (json_encode($allowedType, JSON_UNESCAPED_UNICODE) ?: get_debug_type($allowedType)),
+            $allowedTypes,
+        ));
         $errors = [$field => "檔案類型 '{$actualType}' 不被支援，允許的類型：{$allowedList}"];
 
         return new self('檔案類型不支援', $errors);

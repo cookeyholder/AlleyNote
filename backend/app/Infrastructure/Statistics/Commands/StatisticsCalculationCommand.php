@@ -314,10 +314,15 @@ final class StatisticsCalculationCommand
 
     /**
      * 獲取執行鎖定文件.
+     *
+     * @param array<int|string, string> $periods
      */
     private function acquireExecutionLock(array $periods): string
     {
-        $lockFileName = self::LOCK_FILE_PREFIX . md5(implode('_', $periods));
+        $lockFileName = self::LOCK_FILE_PREFIX . md5(implode('_', array_map(
+            static fn(mixed $period): string => (string) $period,
+            $periods,
+        )));
         $lockFilePath = $this->lockFileDir . '/' . $lockFileName . '.lock';
         // 檢查是否已有其他進程在執行
         if (file_exists($lockFilePath)) {

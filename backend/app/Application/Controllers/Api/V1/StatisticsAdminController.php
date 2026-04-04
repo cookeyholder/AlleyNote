@@ -115,6 +115,14 @@ class StatisticsAdminController extends BaseController
             if (!is_array($types)) {
                 $types = ['overview', 'posts', 'users', 'popular', 'sources'];
             }
+            /** @var array<string> $types */
+            $types = array_values(array_filter(
+                array_map(
+                    static fn(mixed $type): ?string => is_string($type) ? $type : null,
+                    $types,
+                ),
+                static fn(?string $type): bool => $type !== null,
+            ));
             // 驗證統計類型
             $validTypes = ['overview', 'posts', 'users', 'popular', 'sources'];
             $invalidTypes = array_diff($types, $validTypes);

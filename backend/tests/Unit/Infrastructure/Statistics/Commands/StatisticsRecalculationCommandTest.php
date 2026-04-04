@@ -41,9 +41,11 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
         );
 
         $application = new Application();
+        $application->setAutoExit(false);
         $application->add($this->command);
+        $registeredCommand = $application->find('statistics:recalculate');
 
-        $this->commandTester = new CommandTester($this->command);
+        $this->commandTester = new CommandTester($registeredCommand);
     }
 
     public function testCommandCanBeInstantiated(): void
