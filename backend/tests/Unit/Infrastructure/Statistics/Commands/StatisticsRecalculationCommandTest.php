@@ -9,7 +9,6 @@ use App\Infrastructure\Statistics\Commands\StatisticsRecalculationCommand;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\Support\UnitTestCase;
 
@@ -40,12 +39,7 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             $this->mockLogger,
         );
 
-        $application = new Application();
-        $application->setAutoExit(false);
-        $application->add($this->command);
-        $registeredCommand = $application->find('statistics:recalculate');
-
-        $this->commandTester = new CommandTester($registeredCommand);
+        $this->commandTester = new CommandTester($this->command);
     }
 
     public function testCommandCanBeInstantiated(): void
@@ -66,7 +60,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testDryRunModeShowsTasksWithoutExecution(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             '--dry-run' => true,
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-03',
@@ -86,7 +79,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
@@ -99,7 +91,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandWithInvalidType(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'invalid_type',
         ]);
 
@@ -112,7 +103,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandWithInvalidDateFormat(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'start_date' => 'invalid-date',
         ]);
 
@@ -125,7 +115,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandWithStartDateAfterEndDate(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'start_date' => '2023-01-10',
             'end_date' => '2023-01-01',
         ]);
@@ -141,7 +130,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
         $futureDate = date('Y-m-d', strtotime('+1 day'));
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'start_date' => '2023-01-01',
             'end_date' => $futureDate,
         ]);
@@ -155,7 +143,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandWithInvalidBatchSize(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             '--batch-size' => '0',
         ]);
 
@@ -168,7 +155,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandWithLargeBatchSize(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             '--batch-size' => '400',
         ]);
 
@@ -185,7 +171,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
@@ -202,7 +187,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createPostsSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'posts',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
@@ -219,7 +203,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createUsersSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'users',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
@@ -236,7 +219,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createPopularSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'popular',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
@@ -265,7 +247,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createPopularSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
             '--force' => true,
@@ -286,7 +267,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('error');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',
@@ -305,7 +285,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-02',
@@ -325,7 +304,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-05',
@@ -343,7 +321,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandDisplaysConfiguration(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-03',
@@ -364,7 +341,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandWithoutArgumentsUsesDefaults(): void
     {
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             '--dry-run' => true,
         ]);
 
@@ -390,7 +366,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             }));
 
         $this->commandTester->execute([
-            'command' => $this->command->getName(),
             'type' => 'overview',
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-01',

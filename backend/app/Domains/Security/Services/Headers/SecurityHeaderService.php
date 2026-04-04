@@ -177,6 +177,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private function buildCSP(): string
     {
+        /** @var list<string> $directives */
         $directives = [];
         $nonce = $this->generateNonce();
         foreach ($this->config['csp']['directives'] as $directive => $sources) {
