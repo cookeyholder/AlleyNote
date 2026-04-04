@@ -10,4 +10,3 @@ interface ApiExceptionInterface
 {
     public function getHttpStatusCode(): HttpStatusCode|int;
 }
-

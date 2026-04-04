@@ -13,9 +13,10 @@ class OpenApiInterfaceScanTest extends UnitTestCase
     #[Test]
     public function swaggerCanScanInterfaceAnnotations(): void
     {
-        $openapi = (new Generator())->generate([
+        $openapi = new Generator()->generate([
             dirname(__DIR__, 4) . '/app/Application/Contracts',
         ]);
+        $this->assertNotNull($openapi);
 
         /** @var array<string, mixed> $spec */
         $spec = json_decode($openapi->toJson(), true) ?? [];

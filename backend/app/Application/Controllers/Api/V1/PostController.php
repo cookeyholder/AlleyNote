@@ -134,7 +134,7 @@ class PostController extends BaseController implements PostApiInterface
             $items = array_map(function (Post $post) use ($viewStats): array {
                 $stats = $viewStats[$post->getId()] ?? ['views' => 0, 'unique_visitors' => 0];
 
-                return (new PostResource($post, ['stats' => $stats]))->resolve();
+                return new PostResource($post, ['stats' => $stats])->resolve();
             }, $postItems);
             $responseData = $this->paginatedResponse(
                 $items,
@@ -393,10 +393,10 @@ class PostController extends BaseController implements PostApiInterface
             );
             // 添加瀏覽統計
             $viewStats = $this->postViewStatsService->getPostViewStats($id);
-            $postData = (new PostResource($post, [
+            $postData = new PostResource($post, [
                 'sanitizer' => $this->sanitizer,
                 'stats' => $viewStats,
-            ]))->resolve();
+            ])->resolve();
             $successResponse = $this->successResponse($postData, '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));
 

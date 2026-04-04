@@ -6,6 +6,7 @@ namespace App\Shared\Exceptions;
 
 use App\Shared\Enums\HttpStatusCode;
 use RuntimeException;
+use Throwable;
 
 abstract class ApiException extends RuntimeException implements ApiExceptionInterface
 {
@@ -13,7 +14,7 @@ abstract class ApiException extends RuntimeException implements ApiExceptionInte
         string $message,
         private readonly HttpStatusCode|int $httpStatusCode,
         int $code = 0,
-        ?\Throwable $previous = null,
+        ?Throwable $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
     }
@@ -23,4 +24,3 @@ abstract class ApiException extends RuntimeException implements ApiExceptionInte
         return $this->httpStatusCode;
     }
 }
-

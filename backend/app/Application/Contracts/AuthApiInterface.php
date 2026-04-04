@@ -31,4 +31,3 @@ interface AuthApiInterface
     #[OA\Post(path: '/api/auth/change-password', summary: '變更密碼', tags: ['auth'])]
     public function changePassword(Request $request, Response $response): Response;
 }
-

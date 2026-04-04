@@ -35,10 +35,11 @@ class PostResource extends ApiResource
         } else {
             $data = $post->toArray();
         }
+        /** @var array<string, mixed> $data */
 
         if (isset($data['publish_date']) && is_string($data['publish_date']) && strpos($data['publish_date'], 'T') === false) {
             try {
-                $data['publish_date'] = (new DateTime($data['publish_date'], new DateTimeZone('UTC')))->format(DateTime::ATOM);
+                $data['publish_date'] = new DateTime($data['publish_date'], new DateTimeZone('UTC'))->format(DateTime::ATOM);
             } catch (Throwable) {
                 // ignore publish_date format fallback
             }
@@ -46,11 +47,12 @@ class PostResource extends ApiResource
 
         $stats = $this->context['stats'] ?? [];
         if (is_array($stats)) {
-            $data['views'] = (int) ($stats['views'] ?? 0);
-            $data['unique_visitors'] = (int) ($stats['unique_visitors'] ?? 0);
+            $views = $stats['views'] ?? 0;
+            $uniqueVisitors = $stats['unique_visitors'] ?? 0;
+            $data['views'] = is_numeric($views) ? (int) $views : 0;
+            $data['unique_visitors'] = is_numeric($uniqueVisitors) ? (int) $uniqueVisitors : 0;
         }
 
         return $data;
     }
 }
-

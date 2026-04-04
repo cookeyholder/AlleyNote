@@ -16,6 +16,9 @@ class ExceptionRegistry
     /** @var array<class-string, HttpStatusCode> */
     private array $interfaceMappings = [];
 
+    /**
+     * @param class-string<Throwable> $exceptionClass
+     */
     public function register(string $exceptionClass, HttpStatusCode $status): self
     {
         $this->classMappings[$exceptionClass] = $status;
@@ -23,6 +26,9 @@ class ExceptionRegistry
         return $this;
     }
 
+    /**
+     * @param class-string $interfaceClass
+     */
     public function registerInterface(string $interfaceClass, HttpStatusCode $status): self
     {
         $this->interfaceMappings[$interfaceClass] = $status;
@@ -61,7 +67,7 @@ class ExceptionRegistry
 
     public static function createDefault(): self
     {
-        return (new self())
+        return new self()
             ->register('App\Domains\Post\Exceptions\PostNotFoundException', HttpStatusCode::NOT_FOUND)
             ->register('App\Domains\Post\Exceptions\PostStatusException', HttpStatusCode::UNPROCESSABLE_ENTITY)
             ->register('App\Shared\Exceptions\NotFoundException', HttpStatusCode::NOT_FOUND)
@@ -76,4 +82,3 @@ class ExceptionRegistry
             ->register('App\Shared\Exceptions\CsrfTokenException', HttpStatusCode::FORBIDDEN);
     }
 }
-

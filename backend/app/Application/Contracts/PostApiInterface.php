@@ -43,4 +43,3 @@ interface PostApiInterface
     #[OA\Patch(path: '/api/posts/{id}/unpin', summary: '取消置頂貼文', tags: ['posts'])]
     public function unpin(Request $request, Response $response, array $args): Response;
 }
-
