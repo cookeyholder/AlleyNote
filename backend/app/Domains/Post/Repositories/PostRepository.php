@@ -703,7 +703,10 @@ class PostRepository implements PostRepositoryInterface
             }
             // 更新受影響標籤的 usage_count
             /** @var array<int> $affectedTagIds */
-            $affectedTagIds = array_unique(array_merge($oldTagIds, $tagIds));
+            $affectedTagIds = array_values(array_unique(array_map(
+                static fn(mixed $tagId): int => (int) $tagId,
+                array_merge($oldTagIds, $tagIds),
+            )));
             $this->updateTagsUsageCount($affectedTagIds);
             $this->db->commit();
             $this->invalidateCache($id);

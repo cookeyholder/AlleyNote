@@ -131,7 +131,7 @@ class PostController extends BaseController implements PostApiInterface
                 $postItems,
             ));
             $viewStats = $this->postViewStatsService->getBatchPostViewStats($postIds);
-            $items = array_map(function (Post $post) use ($viewStats): array {
+            $items = array_map(static function (Post $post) use ($viewStats): array {
                 $stats = $viewStats[$post->getId()] ?? ['views' => 0, 'unique_visitors' => 0];
 
                 return new PostResource($post, ['stats' => $stats])->resolve();

@@ -95,13 +95,16 @@ abstract class ApiTestCase extends IntegrationTestCase
         $uri = new Uri('http://localhost' . $normalizedPath);
         $body = new Stream(fopen('php://temp', 'r+'));
 
+        $isGet = strtoupper($method) === 'GET';
         $defaultHeaders = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
         ];
+        if (!$isGet) {
+            $defaultHeaders['Content-Type'] = 'application/json';
+        }
         $allHeaders = array_merge($defaultHeaders, $headers);
 
-        if ($data !== []) {
+        if ($data !== [] && !$isGet) {
             $encoded = json_encode($data, JSON_UNESCAPED_UNICODE) ?: '{}';
             $body->write($encoded);
             $body->rewind();
@@ -117,7 +120,7 @@ abstract class ApiTestCase extends IntegrationTestCase
         );
 
         if ($data !== []) {
-            if (strtoupper($method) === 'GET') {
+            if ($isGet) {
                 $request = $request->withQueryParams($data);
             } else {
                 $request = $request->withParsedBody($data);

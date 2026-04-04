@@ -71,6 +71,9 @@ class FileSystemBackupTest extends IntegrationTestCase
 
         // 取得最新的備份檔案
         $backupFiles = glob($this->backupDir . '/files_*.tar.gz');
+        if (!is_array($backupFiles)) {
+            $backupFiles = [];
+        }
         rsort($backupFiles);
         $backupFile = $backupFiles[0] ?? null;
 

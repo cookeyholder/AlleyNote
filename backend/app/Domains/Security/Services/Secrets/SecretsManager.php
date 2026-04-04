@@ -91,8 +91,13 @@ class SecretsManager implements SecretsManagerInterface
             }
         }
         if (!empty($missing)) {
+            $missingKeys = array_values(array_filter(
+                $missing,
+                static fn(mixed $value): bool => is_string($value),
+            ));
+
             throw new ValidationException(
-                '缺少必需的環境變數: ' . implode(', ', $missing),
+                '缺少必需的環境變數: ' . implode(', ', $missingKeys),
             );
         }
     }

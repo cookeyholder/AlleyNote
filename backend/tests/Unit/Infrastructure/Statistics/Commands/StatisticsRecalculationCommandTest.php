@@ -9,7 +9,6 @@ use App\Infrastructure\Statistics\Commands\StatisticsRecalculationCommand;
 use Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\Support\UnitTestCase;
 
@@ -39,9 +38,6 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             $this->mockAggregationService,
             $this->mockLogger,
         );
-
-        $application = new Application();
-        $application->add($this->command);
 
         $this->commandTester = new CommandTester($this->command);
     }

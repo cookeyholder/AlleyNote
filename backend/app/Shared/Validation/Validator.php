@@ -486,11 +486,17 @@ class Validator implements ValidatorInterface
         ];
         // 添加參數替換
         if (!empty($parameters)) {
+            $parameterStrings = array_map(
+                static fn(mixed $parameter): string => is_scalar($parameter)
+                    ? (string) $parameter
+                    : (json_encode($parameter, JSON_UNESCAPED_UNICODE) ?: gettype($parameter)),
+                $parameters,
+            );
             $replacements[':min'] = $parameters[0] ?? '';
             $replacements[':max'] = $parameters[1] ?? $parameters[0] ?? '';
             $replacements[':length'] = $parameters[0] ?? '';
-            $replacements[':values'] = implode(', ', $parameters);
-            $replacements[':types'] = implode(', ', $parameters);
+            $replacements[':values'] = implode(', ', $parameterStrings);
+            $replacements[':types'] = implode(', ', $parameterStrings);
             $replacements[':size'] = $parameters[0] ?? '';
             $replacements[':other'] = $parameters[0] ?? '';
         }

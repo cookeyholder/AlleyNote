@@ -4,8 +4,20 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
+use App\Domains\Auth\Exceptions\AuthenticationException;
+use App\Domains\Auth\Exceptions\ForbiddenException;
+use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Exceptions\UnauthorizedException;
+use App\Domains\Post\Exceptions\PostNotFoundException;
+use App\Domains\Post\Exceptions\PostStatusException;
 use App\Shared\Enums\HttpStatusCode;
 use App\Shared\Exceptions\ApiExceptionInterface;
+use App\Shared\Exceptions\CsrfTokenException;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\StateTransitionException;
+use App\Shared\Exceptions\Validation\RequestValidationException;
+use App\Shared\Exceptions\ValidationException;
 use Throwable;
 
 class ExceptionRegistry
@@ -41,7 +53,9 @@ class ExceptionRegistry
         if ($exception instanceof ApiExceptionInterface) {
             $status = $exception->getHttpStatusCode();
 
-            return $status instanceof HttpStatusCode ? $status : HttpStatusCode::from((int) $status);
+            return $status instanceof HttpStatusCode
+                ? $status
+                : HttpStatusCode::tryFrom((int) $status) ?? HttpStatusCode::INTERNAL_SERVER_ERROR;
         }
 
         $exceptionClass = get_class($exception);
@@ -68,17 +82,17 @@ class ExceptionRegistry
     public static function createDefault(): self
     {
         return new self()
-            ->register('App\Domains\Post\Exceptions\PostNotFoundException', HttpStatusCode::NOT_FOUND)
-            ->register('App\Domains\Post\Exceptions\PostStatusException', HttpStatusCode::UNPROCESSABLE_ENTITY)
-            ->register('App\Shared\Exceptions\NotFoundException', HttpStatusCode::NOT_FOUND)
-            ->register('App\Shared\Exceptions\StateTransitionException', HttpStatusCode::UNPROCESSABLE_ENTITY)
-            ->register('App\Shared\Exceptions\ValidationException', HttpStatusCode::UNPROCESSABLE_ENTITY)
-            ->register('App\Shared\Exceptions\Validation\RequestValidationException', HttpStatusCode::UNPROCESSABLE_ENTITY)
-            ->register('App\Domains\Auth\Exceptions\UnauthorizedException', HttpStatusCode::UNAUTHORIZED)
-            ->register('App\Domains\Auth\Exceptions\ForbiddenException', HttpStatusCode::FORBIDDEN)
-            ->register('App\Domains\Auth\Exceptions\TokenExpiredException', HttpStatusCode::UNAUTHORIZED)
-            ->register('App\Domains\Auth\Exceptions\InvalidTokenException', HttpStatusCode::UNAUTHORIZED)
-            ->register('App\Domains\Auth\Exceptions\AuthenticationException', HttpStatusCode::UNAUTHORIZED)
-            ->register('App\Shared\Exceptions\CsrfTokenException', HttpStatusCode::FORBIDDEN);
+            ->register(PostNotFoundException::class, HttpStatusCode::NOT_FOUND)
+            ->register(PostStatusException::class, HttpStatusCode::UNPROCESSABLE_ENTITY)
+            ->register(NotFoundException::class, HttpStatusCode::NOT_FOUND)
+            ->register(StateTransitionException::class, HttpStatusCode::UNPROCESSABLE_ENTITY)
+            ->register(ValidationException::class, HttpStatusCode::UNPROCESSABLE_ENTITY)
+            ->register(RequestValidationException::class, HttpStatusCode::UNPROCESSABLE_ENTITY)
+            ->register(UnauthorizedException::class, HttpStatusCode::UNAUTHORIZED)
+            ->register(ForbiddenException::class, HttpStatusCode::FORBIDDEN)
+            ->register(TokenExpiredException::class, HttpStatusCode::UNAUTHORIZED)
+            ->register(InvalidTokenException::class, HttpStatusCode::UNAUTHORIZED)
+            ->register(AuthenticationException::class, HttpStatusCode::UNAUTHORIZED)
+            ->register(CsrfTokenException::class, HttpStatusCode::FORBIDDEN);
     }
 }

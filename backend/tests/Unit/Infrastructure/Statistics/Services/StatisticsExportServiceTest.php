@@ -377,11 +377,20 @@ final class StatisticsExportServiceTest extends UnitTestCase
                 $output = '';
                 $firstKey = array_key_first($data);
                 if (is_array($data[$firstKey]) && !empty($data[$firstKey])) {
-                    $headers = array_keys($data[$firstKey][0]);
+                    $headers = array_map(
+                        static fn(mixed $header): string => (string) $header,
+                        array_keys($data[$firstKey][0]),
+                    );
                     $output .= implode(',', $headers) . "\n";
 
                     foreach ($data[$firstKey] as $row) {
-                        $output .= implode(',', array_values($row)) . "\n";
+                        $values = array_map(
+                            static fn(mixed $value): string => is_scalar($value)
+                                ? (string) $value
+                                : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: gettype($value)),
+                            array_values($row),
+                        );
+                        $output .= implode(',', $values) . "\n";
                     }
                 }
 

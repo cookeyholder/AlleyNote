@@ -304,7 +304,13 @@ class ValidationResult implements JsonSerializable
             return 'Validation passed with ' . count($this->validatedData) . ' fields';
         }
         $errorCount = count($this->getAllErrors());
+        $errorMessages = array_map(
+            static fn(mixed $error): string => is_scalar($error)
+                ? (string) $error
+                : (json_encode($error, JSON_UNESCAPED_UNICODE) ?: gettype($error)),
+            $this->getAllErrors(),
+        );
 
-        return "Validation failed with {$errorCount} errors: " . implode(', ', $this->getAllErrors());
+        return "Validation failed with {$errorCount} errors: " . implode(', ', $errorMessages);
     }
 }

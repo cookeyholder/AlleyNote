@@ -189,7 +189,14 @@ class AuthorizationService implements AuthorizationServiceInterface
         $directPermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
         // 合併並去重
-        return array_unique(array_merge($rolePermissions, $directPermissions));
+        $permissions = array_merge($rolePermissions, $directPermissions);
+        /** @var list<string> $normalizedPermissions */
+        $normalizedPermissions = array_values(array_filter(
+            $permissions,
+            static fn(mixed $permission): bool => is_string($permission),
+        ));
+
+        return array_values(array_unique($normalizedPermissions));
     }
 
     public function isSuperAdmin(int $userId): bool

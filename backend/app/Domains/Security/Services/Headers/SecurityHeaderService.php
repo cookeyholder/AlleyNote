@@ -187,7 +187,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     $sources = array_diff($sources, ["'unsafe-inline'"]);
                     $sources[] = "'nonce-{$nonce}'";
                 }
-                $directives[] = $directive . ' ' . implode(' ', (array) $sources);
+                $sourceList = array_values(array_filter(
+                    (array) $sources,
+                    static fn(mixed $source): bool => is_string($source),
+                ));
+                $directives[] = $directive . ' ' . implode(' ', $sourceList);
             } else {
                 $directives[] = $directive;
             }
@@ -205,7 +209,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         $policies = [];
         foreach ($this->config['permissions_policy']['directives'] as $feature => $allowlist) {
             if (is_array($allowlist)) {
-                $policies[] = $feature . '=(' . implode(' ', $allowlist) . ')';
+                $policyItems = array_values(array_filter(
+                    $allowlist,
+                    static fn(mixed $item): bool => is_string($item),
+                ));
+                $policies[] = $feature . '=(' . implode(' ', $policyItems) . ')';
             } else {
                 $policies[] = $feature . '=' . $allowlist;
             }
