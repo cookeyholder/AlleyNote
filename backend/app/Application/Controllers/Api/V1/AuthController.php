@@ -23,7 +23,6 @@ use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Helpers\NetworkHelper;
-use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
@@ -41,30 +40,6 @@ class AuthController extends BaseController implements AuthApiInterface
         private EnvironmentConfig $config,
     ) {}
 
-    #[OA\Post(
-        path: '/api/auth/register',
-        summary: '使用者註冊',
-        description: '建立新的使用者帳號，需要提供使用者名稱、電子郵件和密碼',
-        operationId: 'registerUser',
-        tags: ['auth'],
-        requestBody: new OA\RequestBody(
-            description: '註冊資料',
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: 'username', type: 'string', example: 'johndoe'),
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
-                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
-                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123'),
-                ],
-                required: ['username', 'email', 'password', 'password_confirmation'],
-            ),
-        ),
-        responses: [
-            new OA\Response(response: 201, description: '註冊成功'),
-            new OA\Response(response: 400, description: '註冊資料驗證失敗'),
-        ],
-    )]
     public function register(Request $request, Response $response): Response
     {
         try {
@@ -104,22 +79,6 @@ class AuthController extends BaseController implements AuthApiInterface
         }
     }
 
-    #[OA\Post(
-        path: '/api/auth/login',
-        summary: '使用者登入',
-        description: '使用帳號密碼或電子郵件密碼進行登入驗證',
-        operationId: 'loginUser',
-        tags: ['auth'],
-        requestBody: new OA\RequestBody(
-            description: '登入憑證',
-            required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/LoginRequest'),
-        ),
-        responses: [
-            new OA\Response(response: 200, description: '登入成功'),
-            new OA\Response(response: 401, description: '登入失敗'),
-        ],
-    )]
     public function login(Request $request, Response $response): Response
     {
         try {
@@ -165,15 +124,6 @@ class AuthController extends BaseController implements AuthApiInterface
         }
     }
 
-    #[OA\Post(
-        path: '/api/auth/logout',
-        summary: '使用者登出',
-        tags: ['auth'],
-        security: [['bearerAuth' => []]],
-        responses: [
-            new OA\Response(response: 200, description: '登出成功'),
-        ],
-    )]
     public function logout(Request $request, Response $response): Response
     {
         try {
@@ -215,15 +165,6 @@ class AuthController extends BaseController implements AuthApiInterface
         }
     }
 
-    #[OA\Get(
-        path: '/api/auth/me',
-        summary: '取得當前使用者資訊',
-        tags: ['auth'],
-        security: [['bearerAuth' => []]],
-        responses: [
-            new OA\Response(response: 200, description: '成功取得使用者資訊'),
-        ],
-    )]
     public function me(Request $request, Response $response): Response
     {
         try {
@@ -260,14 +201,6 @@ class AuthController extends BaseController implements AuthApiInterface
         }
     }
 
-    #[OA\Post(
-        path: '/api/auth/refresh',
-        summary: '刷新認證 Token',
-        tags: ['auth'],
-        responses: [
-            new OA\Response(response: 200, description: 'Token 刷新成功'),
-        ],
-    )]
     public function refresh(Request $request, Response $response): Response
     {
         try {
@@ -322,15 +255,6 @@ class AuthController extends BaseController implements AuthApiInterface
         }
     }
 
-    #[OA\Put(
-        path: '/api/auth/profile',
-        summary: '更新個人資料',
-        tags: ['auth'],
-        security: [['bearerAuth' => []]],
-        responses: [
-            new OA\Response(response: 200, description: '更新成功'),
-        ],
-    )]
     public function updateProfile(Request $request, Response $response): Response
     {
         try {
@@ -377,15 +301,6 @@ class AuthController extends BaseController implements AuthApiInterface
         }
     }
 
-    #[OA\Post(
-        path: '/api/auth/change-password',
-        summary: '變更密碼',
-        tags: ['auth'],
-        security: [['bearerAuth' => []]],
-        responses: [
-            new OA\Response(response: 200, description: '密碼變更成功'),
-        ],
-    )]
     public function changePassword(Request $request, Response $response): Response
     {
         try {

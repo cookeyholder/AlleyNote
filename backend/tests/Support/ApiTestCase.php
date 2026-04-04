@@ -91,24 +91,27 @@ abstract class ApiTestCase extends IntegrationTestCase
         array $data = [],
         array $headers = [],
     ): ServerRequestInterface {
+        $normalizedMethod = strtoupper($method);
         $normalizedPath = '/' . ltrim($path, '/');
         $uri = new Uri('http://localhost' . $normalizedPath);
         $body = new Stream(fopen('php://temp', 'r+'));
 
         $defaultHeaders = [
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
         ];
         $allHeaders = array_merge($defaultHeaders, $headers);
+        if ($normalizedMethod !== 'GET') {
+            $allHeaders['Content-Type'] ??= 'application/json';
+        }
 
-        if ($data !== []) {
+        if ($data !== [] && $normalizedMethod !== 'GET') {
             $encoded = json_encode($data, JSON_UNESCAPED_UNICODE) ?: '{}';
             $body->write($encoded);
             $body->rewind();
         }
 
         $request = new ServerRequest(
-            strtoupper($method),
+            $normalizedMethod,
             $uri,
             $allHeaders,
             $body,
@@ -117,7 +120,7 @@ abstract class ApiTestCase extends IntegrationTestCase
         );
 
         if ($data !== []) {
-            if (strtoupper($method) === 'GET') {
+            if ($normalizedMethod === 'GET') {
                 $request = $request->withQueryParams($data);
             } else {
                 $request = $request->withParsedBody($data);
