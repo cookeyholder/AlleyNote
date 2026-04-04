@@ -14,11 +14,11 @@
 
 ### code-reviewer 執行紀錄
 
-- `pr_analyzer.py /Users/cookeyholder/projects/AlleyNote` → `Status: success`, `Findings: 0`
-- `code_quality_checker.py /Users/cookeyholder/projects/AlleyNote` → `Status: success`, `Findings: 0`
-- `review_report_generator.py /Users/cookeyholder/projects/AlleyNote` → `Status: success`, `Findings: 0`
+- 已執行：`pr_analyzer.py .`
+- 已執行：`code_quality_checker.py .`
+- 已執行：`review_report_generator.py .`
 
-註：上述三支腳本目前輸出為通用骨架報告，實際重構影響面以下列程式碼盤點為準。
+註：上述三支腳本目前僅輸出通用骨架報告；本文件未將其輸出視為可驗證 findings，實際重構影響面以下列程式碼盤點為準。
 
 ### 核心入口與相依檔案
 
