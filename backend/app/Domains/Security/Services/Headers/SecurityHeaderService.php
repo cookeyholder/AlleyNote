@@ -177,7 +177,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private function buildCSP(): string
     {
-        /** @var array<string> $directives */
+        /** @var array<int, string> $directives */
         $directives = [];
         $nonce = $this->generateNonce();
         foreach ($this->config['csp']['directives'] as $directive => $sources) {
@@ -203,15 +203,23 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             }
         }
         // 添加 CSP 違規報告
-        if (isset($this->config['csp']['report_uri'])) {
-            $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
+        if (isset($this->config['csp']['report_uri']) && is_scalar($this->config['csp']['report_uri'])) {
+            $directives[] = 'report-uri ' . (string) $this->config['csp']['report_uri'];
         }
 
-        return implode('; ', $directives);
+        $directiveStrings = [];
+        foreach ($directives as $directive) {
+            if (is_string($directive)) {
+                $directiveStrings[] = $directive;
+            }
+        }
+
+        return implode('; ', $directiveStrings);
     }
 
     private function buildPermissionsPolicy(): string
     {
+        /** @var array<int, string> $policies */
         $policies = [];
         foreach ($this->config['permissions_policy']['directives'] as $feature => $allowlist) {
             if (is_array($allowlist)) {
@@ -225,12 +233,19 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     static fn(?string $item): bool => $item !== null,
                 ));
                 $policies[] = $feature . '=(' . implode(' ', $allowlistValues) . ')';
-            } else {
-                $policies[] = $feature . '=' . $allowlist;
+            } elseif (is_scalar($allowlist)) {
+                $policies[] = $feature . '=' . (string) $allowlist;
             }
         }
 
-        return implode(', ', $policies);
+        $policyStrings = [];
+        foreach ($policies as $policy) {
+            if (is_string($policy)) {
+                $policyStrings[] = $policy;
+            }
+        }
+
+        return implode(', ', $policyStrings);
     }
 
     private function isHTTPS(): bool
