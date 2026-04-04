@@ -8,6 +8,7 @@
 |---|---|
 | 專案概覽 | [README.md](../README.md) |
 | 本機安裝／開發流程 | [docs/runbooks/DEVELOPMENT.md](runbooks/DEVELOPMENT.md) |
+| 重構後後端技術細節（2026-04） | [docs/architecture/BACKEND_REFACTOR_2026-04.md](architecture/BACKEND_REFACTOR_2026-04.md) |
 | CI/CD 與品質關卡 | [docs/runbooks/CI_CD.md](runbooks/CI_CD.md) |
 | 安全控制與維運 | [docs/runbooks/SECURITY.md](runbooks/SECURITY.md) |
 | API 使用與參考 | [docs/api/README.md](api/README.md) |
@@ -22,6 +23,7 @@
 | `README.md` | Canonical | 僅保留專案概覽，細節統一導向 `docs/INDEX.md` |
 | `QUICK_START.md` | Canonical | 保留為精簡啟動頁，內容與 runbook 對齊 |
 | `docs/runbooks/DEVELOPMENT.md` | Canonical | 本機開發／執行／測試唯一來源 |
+| `docs/architecture/BACKEND_REFACTOR_2026-04.md` | Canonical | PR #78 架構重構後技術決策與擴充邊界唯一來源 |
 | `docs/runbooks/CI_CD.md` | Canonical | CI 模擬與故障排查唯一來源 |
 | `docs/runbooks/SECURITY.md` | Canonical | 安全標頭與密碼安全說明整併後唯一來源 |
 | `docs/api/README.md` | Canonical | API 文件入口 |

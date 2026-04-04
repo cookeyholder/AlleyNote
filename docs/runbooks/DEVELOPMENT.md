@@ -4,6 +4,9 @@
 
 本文件為本機安裝、啟動與驗證流程的 canonical 指南。
 
+重構後後端技術決策與擴充邊界請參考：
+- [docs/architecture/BACKEND_REFACTOR_2026-04.md](../architecture/BACKEND_REFACTOR_2026-04.md)
+
 ## 環境需求
 
 - Docker 20.10+
@@ -64,6 +67,7 @@ cd tests/e2e && CI=true npm test
 - Domain 例外優先實作 `ApiExceptionInterface`，可在例外類別中直接定義狀態碼。
 - 若無法修改例外類別，改在 `ExceptionRegistry::createDefault()` 註冊映射。
 - 控制器中不要再維護私有靜態例外對照表，統一走 `handleException()`。
+- 優先順序固定為：`ApiExceptionInterface` → `ExceptionRegistry` 類別映射 → 介面映射；不得在個別控制器覆寫此判定流程。
 
 ## 測試規範（ApiTestCase）
 
@@ -76,6 +80,13 @@ cd tests/e2e && CI=true npm test
   - `$this->assertDatabaseHas($table, $attrs)`
   - `$this->assertDatabaseMissing($table, $attrs)`
 - `ApiTestCase` 內建 JWT 測試環境快照/還原，避免污染其他測試；新增 helper 時必須維持此隔離性。
+- `ApiTestCase`、`DatabaseConnection::getInstance()`、DI `PDO::class` 必須共用同一個 PDO，避免 `:memory:` 測試觀測不一致。
+
+### 反模式（避免）
+
+- 在控制器直接手刻資料轉換欄位，應改以 `ApiResource`（例如 `PostResource`）統一輸出。
+- 在控制器維護私有例外映射表，應統一走 `BaseController::handleException()`。
+- 在 API 測試中手動拼接假 JWT，應使用 `$this->actingAs(...)` 產生真實簽章 token。
 
 ## 常用操作
 
