@@ -489,8 +489,14 @@ class Validator implements ValidatorInterface
             $replacements[':min'] = $parameters[0] ?? '';
             $replacements[':max'] = $parameters[1] ?? $parameters[0] ?? '';
             $replacements[':length'] = $parameters[0] ?? '';
-            $replacements[':values'] = implode(', ', $parameters);
-            $replacements[':types'] = implode(', ', $parameters);
+            $parameterStrings = array_map(
+                static fn(mixed $parameter): string => is_scalar($parameter) || $parameter === null
+                    ? (string) $parameter
+                    : (json_encode($parameter, JSON_UNESCAPED_UNICODE) ?: get_debug_type($parameter)),
+                $parameters,
+            );
+            $replacements[':values'] = implode(', ', $parameterStrings);
+            $replacements[':types'] = implode(', ', $parameterStrings);
             $replacements[':size'] = $parameters[0] ?? '';
             $replacements[':other'] = $parameters[0] ?? '';
         }

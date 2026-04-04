@@ -49,6 +49,34 @@ npx playwright install --with-deps chromium
 CI=true npm test
 ```
 
+若本機沒有原生 `php`，可使用容器等價流程（先啟動臨時 API 服務，再跑 Playwright）：
+
+```bash
+docker run -d --name alleynote_e2e_php -p 18080:8080 -v "$PWD/backend":/var/www/html -w /var/www/html alleynote-web \
+  sh -lc 'APP_ENV=development DB_DATABASE=/var/www/html/database/alleynote.sqlite3 JWT_PRIVATE_KEY_PATH=/var/www/html/keys/private.pem JWT_PUBLIC_KEY_PATH=/var/www/html/keys/public.pem php -S 0.0.0.0:8080 -t public'
+node dev-server.js frontend --port 3000 --proxy /api:http://127.0.0.1:18080/api
+cd tests/e2e && CI=true npm test
+```
+
+## BaseController 例外處理指引
+
+- `BaseController` 已改為透過 `ExceptionRegistry` 統一解析例外對應 HTTP 狀態碼。
+- Domain 例外優先實作 `ApiExceptionInterface`，可在例外類別中直接定義狀態碼。
+- 若無法修改例外類別，改在 `ExceptionRegistry::createDefault()` 註冊映射。
+- 控制器中不要再維護私有靜態例外對照表，統一走 `handleException()`。
+
+## 測試規範（ApiTestCase）
+
+- API 整合測試請優先繼承 `Tests\Support\ApiTestCase`。
+- 請求建立統一使用：
+  - `$this->json('POST', '/api/...', $payload)`
+  - `$this->withHeaders([...])->json(...)`
+  - `$this->actingAs($userId)`（真實 JWT）
+- 資料庫斷言統一使用：
+  - `$this->assertDatabaseHas($table, $attrs)`
+  - `$this->assertDatabaseMissing($table, $attrs)`
+- `ApiTestCase` 內建 JWT 測試環境快照/還原，避免污染其他測試；新增 helper 時必須維持此隔離性。
+
 ## 常用操作
 
 ```bash

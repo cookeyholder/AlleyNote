@@ -21,9 +21,10 @@ class SwaggerController
             ob_start();
             // 掃描專案中的註解以產生 OpenAPI 規格
             $basePath = dirname(__DIR__, 3); // 調整到正確的 app 目錄
-            $openapi = Generator::scan([
+            $openapi = new Generator()->generate([
                 $basePath . '/Application/Controllers',
-                $basePath . '/Domain',
+                $basePath . '/Application/Contracts',
+                $basePath . '/Domains',
                 $basePath . '/Infrastructure',
             ]);
             // 清除任何輸出的警告訊息

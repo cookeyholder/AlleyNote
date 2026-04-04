@@ -177,41 +177,75 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     private function buildCSP(): string
     {
+        /** @var array<int, string> $directives */
         $directives = [];
         $nonce = $this->generateNonce();
         foreach ($this->config['csp']['directives'] as $directive => $sources) {
-            if (!empty($sources)) {
+            $sourceList = array_values(array_filter(
+                array_map(
+                    static fn(mixed $source): ?string => is_scalar($source) || $source === null
+                        ? (string) $source
+                        : null,
+                    (array) $sources,
+                ),
+                static fn(?string $source): bool => $source !== null,
+            ));
+            if (!empty($sourceList)) {
                 // 對於 script-src 和 style-src，添加 nonce 支援
                 if (($directive === 'script-src' || $directive === 'style-src') && $nonce) {
                     // 移除 unsafe-inline 並添加 nonce
-                    $sources = array_diff($sources, ["'unsafe-inline'"]);
-                    $sources[] = "'nonce-{$nonce}'";
+                    $sourceList = array_values(array_diff($sourceList, ["'unsafe-inline'"]));
+                    $sourceList[] = "'nonce-{$nonce}'";
                 }
-                $directives[] = $directive . ' ' . implode(' ', (array) $sources);
+                $directives[] = $directive . ' ' . implode(' ', $sourceList);
             } else {
                 $directives[] = $directive;
             }
         }
         // 添加 CSP 違規報告
-        if (isset($this->config['csp']['report_uri'])) {
-            $directives[] = 'report-uri ' . $this->config['csp']['report_uri'];
+        if (isset($this->config['csp']['report_uri']) && is_scalar($this->config['csp']['report_uri'])) {
+            $directives[] = 'report-uri ' . (string) $this->config['csp']['report_uri'];
         }
 
-        return implode('; ', $directives);
+        $directiveStrings = [];
+        foreach ($directives as $directive) {
+            if (is_string($directive)) {
+                $directiveStrings[] = $directive;
+            }
+        }
+
+        return implode('; ', $directiveStrings);
     }
 
     private function buildPermissionsPolicy(): string
     {
+        /** @var array<int, string> $policies */
         $policies = [];
         foreach ($this->config['permissions_policy']['directives'] as $feature => $allowlist) {
             if (is_array($allowlist)) {
-                $policies[] = $feature . '=(' . implode(' ', $allowlist) . ')';
-            } else {
-                $policies[] = $feature . '=' . $allowlist;
+                $allowlistValues = array_values(array_filter(
+                    array_map(
+                        static fn(mixed $item): ?string => is_scalar($item) || $item === null
+                            ? (string) $item
+                            : null,
+                        $allowlist,
+                    ),
+                    static fn(?string $item): bool => $item !== null,
+                ));
+                $policies[] = $feature . '=(' . implode(' ', $allowlistValues) . ')';
+            } elseif (is_scalar($allowlist)) {
+                $policies[] = $feature . '=' . (string) $allowlist;
             }
         }
 
-        return implode(', ', $policies);
+        $policyStrings = [];
+        foreach ($policies as $policy) {
+            if (is_string($policy)) {
+                $policyStrings[] = $policy;
+            }
+        }
+
+        return implode(', ', $policyStrings);
     }
 
     private function isHTTPS(): bool

@@ -674,8 +674,16 @@ class PostRepository implements PostRepositoryInterface
         $this->db->beginTransaction();
 
         try {
+            /** @var array<int> $normalizedTagIds */
+            $normalizedTagIds = array_values(array_filter(
+                array_map(
+                    static fn(mixed $tagId): ?int => is_numeric($tagId) ? (int) $tagId : null,
+                    $tagIds,
+                ),
+                static fn(?int $tagId): bool => $tagId !== null,
+            ));
             // 驗證標籤是否存在
-            if (!empty($tagIds) && !$this->tagsExist($tagIds)) {
+            if (!empty($normalizedTagIds) && !$this->tagsExist($normalizedTagIds)) {
                 throw new PDOException('部分標籤不存在');
             }
             // 取得舊標籤列表以便後續更新 usage_count
@@ -693,17 +701,17 @@ class PostRepository implements PostRepositoryInterface
             $stmt = $this->db->prepare('DELETE FROM post_tags WHERE post_id = ?');
             $stmt->execute([$id]);
             // 新增標籤
-            if (!empty($tagIds)) {
+            if (!empty($normalizedTagIds)) {
                 $sql = 'INSERT INTO post_tags (post_id, tag_id, created_at) VALUES (?, ?, ?)';
                 $stmt = $this->db->prepare($sql);
                 $now = format_datetime();
-                foreach ($tagIds as $tagId) {
+                foreach ($normalizedTagIds as $tagId) {
                     $stmt->execute([$id, $tagId, $now]);
                 }
             }
             // 更新受影響標籤的 usage_count
             /** @var array<int> $affectedTagIds */
-            $affectedTagIds = array_unique(array_merge($oldTagIds, $tagIds));
+            $affectedTagIds = array_values(array_unique(array_merge($oldTagIds, $normalizedTagIds)));
             $this->updateTagsUsageCount($affectedTagIds);
             $this->db->commit();
             $this->invalidateCache($id);

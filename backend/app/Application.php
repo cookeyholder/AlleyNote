@@ -71,7 +71,12 @@ class Application
         // 驗證配置的完整性
         $errors = $config->validate();
         if (!empty($errors)) {
-            $errorMessage = "環境配置錯誤:\n" . implode("\n", $errors);
+            $errorMessage = "環境配置錯誤:\n" . implode("\n", array_map(
+                static fn(mixed $error): string => is_scalar($error) || $error === null
+                    ? (string) $error
+                    : (json_encode($error, JSON_UNESCAPED_UNICODE) ?: get_debug_type($error)),
+                $errors,
+            ));
 
             throw new RuntimeException($errorMessage);
         }

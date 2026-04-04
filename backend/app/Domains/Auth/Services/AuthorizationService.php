@@ -177,7 +177,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             WHERE ur.user_id = ?
         ');
         $stmt->execute([$userId]);
-        $rolePermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $rolePermissions = array_values(array_filter(
+            array_map(
+                static fn(mixed $permission): ?string => is_string($permission) ? $permission : null,
+                $stmt->fetchAll(PDO::FETCH_COLUMN),
+            ),
+            static fn(?string $permission): bool => $permission !== null,
+        ));
         // 取得直接權限
         $stmt = $this->db->prepare('
             SELECT DISTINCT p.name
@@ -186,7 +192,13 @@ class AuthorizationService implements AuthorizationServiceInterface
             WHERE up.user_id = ?
         ');
         $stmt->execute([$userId]);
-        $directPermissions = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $directPermissions = array_values(array_filter(
+            array_map(
+                static fn(mixed $permission): ?string => is_string($permission) ? $permission : null,
+                $stmt->fetchAll(PDO::FETCH_COLUMN),
+            ),
+            static fn(?string $permission): bool => $permission !== null,
+        ));
 
         // 合併並去重
         return array_unique(array_merge($rolePermissions, $directPermissions));
