@@ -202,13 +202,8 @@ class AuthorizationService implements AuthorizationServiceInterface
 
         // 合併並去重
         $permissions = array_merge($rolePermissions, $directPermissions);
-        /** @var list<string> $normalizedPermissions */
-        $normalizedPermissions = array_values(array_filter(
-            $permissions,
-            static fn(mixed $permission): bool => is_string($permission),
-        ));
 
-        return array_values(array_unique($normalizedPermissions));
+        return array_values(array_unique($permissions));
     }
 
     public function isSuperAdmin(int $userId): bool

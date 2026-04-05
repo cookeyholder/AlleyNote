@@ -319,12 +319,8 @@ final class StatisticsCalculationCommand
      */
     private function acquireExecutionLock(array $periods): string
     {
-        $normalizedPeriods = array_map(static function (mixed $period): string {
-            if (is_scalar($period) || $period === null) {
-                return (string) $period;
-            }
-
-            return json_encode($period, JSON_UNESCAPED_UNICODE) ?: get_debug_type($period);
+        $normalizedPeriods = array_map(static function (string $period): string {
+            return $period;
         }, $periods);
         $lockFileName = self::LOCK_FILE_PREFIX . md5(implode('_', $normalizedPeriods));
         $lockFilePath = $this->lockFileDir . '/' . $lockFileName . '.lock';

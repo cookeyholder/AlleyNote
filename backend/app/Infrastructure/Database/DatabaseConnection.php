@@ -37,9 +37,7 @@ class DatabaseConnection
                     default => throw new RuntimeException('不支援的資料庫類型')
                 };
                 self::$instance = new PDO($dsn, null, null, self::$options);
-                if ($connection === 'sqlite') {
-                    self::$instance->exec('PRAGMA foreign_keys = ON');
-                }
+                self::$instance->exec('PRAGMA foreign_keys = ON');
             }
         }
 
