@@ -10,7 +10,6 @@ use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\DTOs\LoginResponseDTO;
 use App\Domains\Auth\Exceptions\UnauthorizedException;
-use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\TokenPair;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
@@ -24,8 +23,6 @@ use Tests\Support\ApiTestCase;
 
 class AuthControllerTest extends ApiTestCase
 {
-    private AuthService|MockInterface $authService;
-
     private AuthenticationServiceInterface|MockInterface $authenticationService;
 
     private JwtTokenServiceInterface|MockInterface $jwtTokenService;
@@ -42,7 +39,6 @@ class AuthControllerTest extends ApiTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->authService = Mockery::mock(AuthService::class);
         $this->authenticationService = Mockery::mock(AuthenticationServiceInterface::class);
         $this->jwtTokenService = Mockery::mock(JwtTokenServiceInterface::class);
         $this->validator = Mockery::mock(ValidatorInterface::class);
@@ -58,8 +54,6 @@ class AuthControllerTest extends ApiTestCase
 
     private function controller(): AuthController
     {
-        /** @var AuthService $authService */
-        $authService = $this->authService;
         /** @var AuthenticationServiceInterface $authenticationService */
         $authenticationService = $this->authenticationService;
         /** @var JwtTokenServiceInterface $jwtTokenService */
@@ -74,7 +68,6 @@ class AuthControllerTest extends ApiTestCase
         $userManagementService = $this->userManagementService;
 
         return new AuthController(
-            $authService,
             $authenticationService,
             $jwtTokenService,
             $validator,
@@ -97,7 +90,7 @@ class AuthControllerTest extends ApiTestCase
             'user_ip' => '127.0.0.1',
         ]);
 
-        $this->authService->shouldReceive('register')->once()->andReturn([
+        $this->userManagementService->shouldReceive('createUser')->once()->andReturn([
             'id' => 1,
             'username' => 'testuser',
             'email' => 'test@example.com',

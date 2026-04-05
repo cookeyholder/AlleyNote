@@ -13,7 +13,7 @@ use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
-use App\Domains\Auth\Services\AuthService;
+use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\TokenPair;
@@ -30,7 +30,6 @@ use Throwable;
 class AuthController extends BaseController implements AuthApiInterface
 {
     public function __construct(
-        private AuthService $authService,
         private AuthenticationServiceInterface $authenticationService,
         private JwtTokenServiceInterface $jwtTokenService,
         private ValidatorInterface $validator,
@@ -51,7 +50,13 @@ class AuthController extends BaseController implements AuthApiInterface
                 ], 400);
             }
             $dto = new RegisterUserDTO($this->validator, $data);
-            $user = $this->authService->register($dto);
+            $createUserDto = new CreateUserDTO(
+                username: $dto->username,
+                email: $dto->email,
+                password: $dto->password,
+                roleIds: []
+            );
+            $user = $this->userManagementService->createUser($createUserDto);
             // 記錄成功註冊活動
             $activityDto = CreateActivityLogDTO::success(
                 actionType: ActivityType::USER_REGISTERED,
