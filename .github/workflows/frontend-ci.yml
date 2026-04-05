@@ -9,6 +9,7 @@ on:
       - main
       - develop
       - "feature/**"
+      - "feat/**"
     paths:
       - "frontend/**"
   pull_request:
