@@ -40,18 +40,18 @@
 
 ## 5. Value Object 全面收斂 (Email, Password, UUID)
 
-- [ ] 5.1 將 `RegisterUserDTO.php`、`ValidatorFactory.php`、`Validator.php` 內直接使用 `filter_var(..., FILTER_VALIDATE_EMAIL)` 的邏輯，改為使用 `new Email($email)`（留意 Exceptions 處理與向下相容）
-- [ ] 5.2 將 `UserManagementService.php`、`UserRepository.php` 直接依賴 `password_hash` 的地方，改為使用 `(new Password($password))->getHash()`（若已有 plain_password 檢查則一併整合）
-- [ ] 5.3 搜尋 `Uuid::uuid4()->toString()`，統一替換為呼叫全域 helper `generate_uuid()`
-- [ ] 5.4 執行 `composer test` 確認 Auth 與 Shared 等相關測試無回歸
+- [x] 5.1 將 `RegisterUserDTO.php`、`ValidatorFactory.php`、`Validator.php` 內直接使用 `filter_var(..., FILTER_VALIDATE_EMAIL)` 的邏輯，改為使用 `new Email($email)`（留意 Exceptions 處理與向下相容）
+- [x] 5.2 將 `UserManagementService.php`、`UserRepository.php` 直接依賴 `password_hash` 的地方，改為使用 `(new Password($password))->getHash()`（若已有 plain_password 檢查則一併整合）
+- [x] 5.3 搜尋 `Uuid::uuid4()->toString()`，統一替換為呼叫全域 helper `generate_uuid()`
+- [x] 5.4 執行 `composer test` 確認 Auth 與 Shared 等相關測試無回歸
 
 **驗收標準**：`rg 'FILTER_VALIDATE_EMAIL'` 大幅減少；`password_hash` 收斂至特定 Value Object 內；UUID 生成統一；測試全數通過。
 
-## 6. 更新文件
+## 6. 更新文件 (Documentation)
 
-- [ ] 6.1 更新開發者指南或架構文件（例如 `docs/` 內的相關說明），明文規定 Email、Password、IP 等核心資料格式「統一使用 Value Object 驗證」，並避免使用原生 filter_var 等函式
-- [ ] 6.2 更新系統規格或維護手冊，說明 `AuthService` 已被移除，驗證相關服務由 `AuthenticationService` 統管
-- [ ] 6.3 確認 `docs/testing_matrix.md`（如有）或其他測試紀錄有反映此次對 AuthenticationService 與 PostService 的測試案例變動
+- [x] 6.1 更新開發者指南或架構文件，明文規定 Email、Password、IP 等核心資料格式「統一使用 Value Object 驗證」，並避免使用原生 `filter_var` 等函式
+- [x] 6.2 更新系統規格或維護手冊，說明 `AuthService` 已被移除，驗證相關服務由 `AuthenticationService` 統管
+- [x] 6.3 確認 `docs/testing_matrix.md`（如有）或其他測試紀錄有反映此次對 `AuthenticationService` 與 `PostService` 的測試案例變動
 
 **驗收標準**：相關說明文件反映了單一真理來源（Single Source of Truth）與 Value Object 強制使用的規範；無過期的 AuthService 資訊。
 
