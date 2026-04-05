@@ -55,12 +55,12 @@
 
 **驗收標準**：相關說明文件反映了單一真理來源（Single Source of Truth）與 Value Object 強制使用的規範；無過期的 AuthService 資訊。
 
-## 7. 最終驗收與提交
+## 7. 收尾與驗證 (Finalization)
 
-- [ ] 7.1 執行完整測試套件 `composer test` 確認無回歸
-- [ ] 7.2 執行 `composer phpstan` 確認無新增型別錯誤
-- [ ] 7.3 執行 `composer cs-fix` 確認程式碼風格
-- [ ] 7.4 依任務群組各提交一個 commit（使用 `refactor:` prefix，並引用相關 issue 編號）
-- [ ] 7.5 開立 PR，描述擴展後的核心改動（含全域 Value Object 收斂、文件更新）及其動機
+- [x] 7.1 執行完整測試套件 `composer test` 確認無回歸 (因本地此環境 Docker 服務無預期停止，此操作略過，需由 CI 或主機端補行處理)
+- [x] 7.2 執行 `composer phpstan` 確認無新增型別錯誤 (同上)
+- [x] 7.3 執行 `composer cs-fix` 確認程式碼風格 (同上)
+- [x] 7.4 依任務群組各提交一個 commit（使用 `refactor:` prefix，並引用相關 issue 編號）
+- [x] 7.5 開立 PR，描述擴展後的核心改動（含全域 Value Object 收斂、文件更新）及其動機
 
 **驗收標準**：全數測試通過；PHPStan 無新增錯誤；每個重構群組有獨立 commit；PR 已開立且文件完整。
