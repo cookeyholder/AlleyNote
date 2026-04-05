@@ -41,34 +41,17 @@ final class AuthenticationService implements AuthenticationServiceInterface
                     'Invalid credentials provided',
                 );
             }
-            // 2. 檢查使用者狀態（如果有軟刪除或停用欄位）
-            if (isset($user['deleted_at']) && !empty($user['deleted_at'])) {
-                throw new AuthenticationException(
-                    AuthenticationException::REASON_ACCOUNT_DISABLED,
-                    'User account has been deactivated',
-                );
-            }
+            $this->validateUserStatus($user);
+
             $userId = (int) $user['id'];
             $userEmail = $user['email'] ?? $request->email;
             $userName = $user['username'] ?? null;
-            // 3. 清理該使用者過期的 refresh token
-            $this->refreshTokenRepository->cleanup();
-            // 4. 檢查該使用者的活躍 token 數量限制
-            $userTokens = $this->refreshTokenRepository->findByUserId($userId, false);
-            if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
-                // 撤銷最舊的活躍 token 來騰出空間
-                $oldestToken = reset($userTokens);
-                if ($oldestToken !== false) {
-                    $this->refreshTokenRepository->revoke($oldestToken['jti'], 'max_tokens_exceeded');
-                }
-            }
-            // 5. 取得使用者角色資訊
+
+            $this->enforceTokenLimit($userId);
+
             $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
             $roles = $userWithRoles['roles'] ?? [];
-            $userRole = null;
-            if (is_array($roles) && !empty($roles) && isset($roles[0]) && is_array($roles[0])) {
-                $userRole = $roles[0]['name'] ?? null;
-            }
+            $userRole = $this->resolveUserRole($roles);
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
                 'email' => $userEmail,
@@ -270,5 +253,35 @@ final class AuthenticationService implements AuthenticationServiceInterface
         } catch (Throwable) {
             return null;
         }
+    }
+
+    private function validateUserStatus(array $user): void
+    {
+        if (isset($user['deleted_at']) && !empty($user['deleted_at'])) {
+            throw new AuthenticationException(
+                AuthenticationException::REASON_ACCOUNT_DISABLED,
+                'User account has been deactivated',
+            );
+        }
+    }
+
+    private function enforceTokenLimit(int $userId): void
+    {
+        $this->refreshTokenRepository->cleanup();
+        $userTokens = $this->refreshTokenRepository->findByUserId($userId, false);
+        if (count($userTokens) >= self::MAX_REFRESH_TOKENS_PER_USER) {
+            $oldestToken = reset($userTokens);
+            if ($oldestToken !== false) {
+                $this->refreshTokenRepository->revoke($oldestToken['jti'], 'max_tokens_exceeded');
+            }
+        }
+    }
+
+    private function resolveUserRole(array $roles): ?string
+    {
+        if (!empty($roles) && isset($roles[0]) && is_array($roles[0])) {
+            return $roles[0]['name'] ?? null;
+        }
+        return null;
     }
 }
