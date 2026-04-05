@@ -7,6 +7,7 @@ namespace Tests\Integration\Http;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
+use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
@@ -106,7 +107,7 @@ class PostControllerTest extends ApiTestCase
             ->shouldReceive('findById')
             ->once()
             ->with(999)
-            ->andThrow(new \App\Domains\Post\Exceptions\PostNotFoundException(999, 'Post not found'));
+            ->andThrow(new PostNotFoundException(999, 'Post not found'));
 
         $this->postService->shouldReceive('recordView')->never();
         $this->postViewStatsService->shouldReceive('getPostViewStats')->never();
