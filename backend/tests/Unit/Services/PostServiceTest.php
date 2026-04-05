@@ -118,4 +118,29 @@ class PostServiceTest extends UnitTestCase
         $this->assertIsArray($result);
         $this->assertArrayHasKey('items', $result);
     }
+
+    public function testRecordViewWithValidIP(): void
+    {
+        $id = 1;
+        $ip = '127.0.0.1';
+        $post = new Post(['id' => $id, 'status' => PostStatus::PUBLISHED->value]);
+        
+        $this->repository->shouldReceive('find')->once()->with($id)->andReturn($post);
+        $this->repository->shouldReceive('incrementViews')->once()->with($id, $ip, null)->andReturn(true);
+        
+        $result = $this->service->recordView($id, $ip);
+        $this->assertTrue($result);
+    }
+
+    public function testRecordViewWithInvalidIP(): void
+    {
+        $id = 1;
+        $ip = 'invalid-ip';
+        $post = new Post(['id' => $id, 'status' => PostStatus::PUBLISHED->value]);
+
+        $this->repository->shouldReceive('find')->once()->with($id)->andReturn($post);
+
+        $this->expectException(\App\Shared\Exceptions\ValidationException::class);
+        $this->service->recordView($id, $ip);
+    }
 }
