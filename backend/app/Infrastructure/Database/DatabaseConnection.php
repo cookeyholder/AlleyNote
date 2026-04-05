@@ -28,14 +28,18 @@ class DatabaseConnection
             $database = getenv('DB_DATABASE');
             if ($env === 'testing' && ($database === ':memory:' || empty($database))) {
                 self::$instance = new PDO('sqlite::memory:', null, null, self::$options);
-                self::$instance->exec('PRAGMA foreign_keys = ON');
+                if ($connection === 'sqlite') {
+                    self::$instance->exec('PRAGMA foreign_keys = ON');
+                }
             } else {
                 $dsn = match ($connection) {
                     'sqlite' => sprintf('sqlite:%s', $database),
                     default => throw new RuntimeException('不支援的資料庫類型')
                 };
                 self::$instance = new PDO($dsn, null, null, self::$options);
-                self::$instance->exec('PRAGMA foreign_keys = ON');
+                if ($connection === 'sqlite') {
+                    self::$instance->exec('PRAGMA foreign_keys = ON');
+                }
             }
         }
 
