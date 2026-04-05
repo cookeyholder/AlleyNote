@@ -197,6 +197,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                     $sourceList = array_values(array_diff($sourceList, ["'unsafe-inline'"]));
                     $sourceList[] = "'nonce-{$nonce}'";
                 }
+
                 $directives[] = $directive . ' ' . implode(' ', $sourceList);
             } else {
                 $directives[] = $directive;

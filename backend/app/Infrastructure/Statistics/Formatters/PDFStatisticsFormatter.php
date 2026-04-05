@@ -81,17 +81,20 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
         foreach ($data as $section => $sectionData) {
             $html .= '<h2>' . ucfirst($section) . '</h2>';
             if (is_array($sectionData)) {
-                if ($this->isSequentialArray($sectionData) && !empty($sectionData) && is_array($sectionData[0])) {
+                if ($this->isTableData($sectionData)) {
                     // 表格資料
                     /** @var array<array<string, mixed>> $tableData */
-                    $tableData = array_values(array_filter(
-                        $sectionData,
-                        static fn(mixed $row): bool => is_array($row),
-                    ));
+                    $tableData = array_values($sectionData);
                     $html .= $this->generateTable($tableData);
                 } else {
                     // 摘要資料
-                    $html .= $this->generateSummary($sectionData);
+                    $summaryData = [];
+                    foreach ($sectionData as $key => $value) {
+                        if (is_string($key)) {
+                            $summaryData[$key] = $value;
+                        }
+                    }
+                    $html .= $this->generateSummary($summaryData);
                 }
             } else {
                 $html .= "<p>{$sectionData}</p>";
@@ -188,5 +191,30 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
     private function isSequentialArray(array $array): bool
     {
         return array_keys($array) === range(0, count($array) - 1);
+    }
+
+    /**
+     * @param array<mixed> $sectionData
+     * @phpstan-assert-if-true array<array<string, mixed>> $sectionData
+     */
+    private function isTableData(array $sectionData): bool
+    {
+        if (!$this->isSequentialArray($sectionData) || $sectionData === []) {
+            return false;
+        }
+
+        foreach ($sectionData as $row) {
+            if (!is_array($row)) {
+                return false;
+            }
+
+            foreach (array_keys($row) as $key) {
+                if (!is_string($key)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

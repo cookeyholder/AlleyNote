@@ -115,36 +115,29 @@ class StatisticsAdminController extends BaseController
             if (!is_array($types)) {
                 $types = ['overview', 'posts', 'users', 'popular', 'sources'];
             }
-            /** @var array<string> $types */
-            $types = array_values(array_filter(
-                array_map(
-                    static fn(mixed $type): ?string => is_string($type) ? $type : null,
-                    $types,
-                ),
-                static fn(?string $type): bool => $type !== null,
+            /** @var list<string> $normalizedTypes */
+            $normalizedTypes = array_values(array_filter(
+                $types,
+                static fn(mixed $type): bool => is_string($type),
             ));
             // 驗證統計類型
             $validTypes = ['overview', 'posts', 'users', 'popular', 'sources'];
-            $invalidTypes = array_diff($types, $validTypes);
+            $invalidTypes = array_diff($normalizedTypes, $validTypes);
             if (!empty($invalidTypes)) {
                 throw ValidationException::fromSingleError(
                     'types',
-                    '無效的統計類型：' . implode(', ', $invalidTypes),
+                    '無效的統計類型：' . implode(', ', array_values($invalidTypes)),
                 );
             }
             $refreshedTypes = [];
             $snapshotsCreated = 0;
             // 清除相關快取
             /** @var array<string> $cacheTags */
-            $cacheTags = array_merge(['statistics'], $types);
+            $cacheTags = array_merge(['statistics'], $normalizedTypes);
             $this->cacheService->flushByTags($cacheTags);
             if ($forceRecalculate) {
                 // 強制重新計算統計快照
-                foreach ($types as $type) {
-                    if (!is_string($type)) {
-                        continue;
-                    }
-
+                foreach ($normalizedTypes as $type) {
                     try {
                         $snapshot = match ($type) {
                             'overview' => $this->statisticsApplicationService->createOverviewSnapshot(

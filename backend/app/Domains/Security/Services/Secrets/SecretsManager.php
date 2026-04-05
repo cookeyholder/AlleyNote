@@ -95,10 +95,7 @@ class SecretsManager implements SecretsManagerInterface
         }
         if (!empty($missing)) {
             throw new ValidationException(
-                '缺少必需的環境變數: ' . implode(', ', array_map(
-                    static fn(mixed $key): string => (string) $key,
-                    $missing,
-                )),
+                '缺少必需的環境變數: ' . implode(', ', $missing),
             );
         }
     }

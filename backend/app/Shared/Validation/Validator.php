@@ -485,21 +485,19 @@ class Validator implements ValidatorInterface
             ':value' => is_scalar($value) ? (string) $value : gettype($value),
         ];
         // 添加參數替換
-        if (!empty($parameters)) {
-            $replacements[':min'] = $parameters[0] ?? '';
-            $replacements[':max'] = $parameters[1] ?? $parameters[0] ?? '';
-            $replacements[':length'] = $parameters[0] ?? '';
-            $parameterStrings = array_map(
-                static fn(mixed $parameter): string => is_scalar($parameter) || $parameter === null
-                    ? (string) $parameter
-                    : (json_encode($parameter, JSON_UNESCAPED_UNICODE) ?: get_debug_type($parameter)),
-                $parameters,
-            );
-            $replacements[':values'] = implode(', ', $parameterStrings);
-            $replacements[':types'] = implode(', ', $parameterStrings);
-            $replacements[':size'] = $parameters[0] ?? '';
-            $replacements[':other'] = $parameters[0] ?? '';
-        }
+        $parameterStrings = array_map(
+            static fn(mixed $parameter): string => is_scalar($parameter) || $parameter === null
+                ? (string) $parameter
+                : (json_encode($parameter, JSON_UNESCAPED_UNICODE) ?: get_debug_type($parameter)),
+            $parameters,
+        );
+        $replacements[':min'] = $parameterStrings[0] ?? '';
+        $replacements[':max'] = $parameterStrings[1] ?? $parameterStrings[0] ?? '';
+        $replacements[':length'] = $parameterStrings[0] ?? '';
+        $replacements[':values'] = implode(', ', $parameterStrings);
+        $replacements[':types'] = implode(', ', $parameterStrings);
+        $replacements[':size'] = $parameterStrings[0] ?? '';
+        $replacements[':other'] = $parameterStrings[0] ?? '';
 
         return str_replace(array_keys($replacements), array_values($replacements), $message);
     }

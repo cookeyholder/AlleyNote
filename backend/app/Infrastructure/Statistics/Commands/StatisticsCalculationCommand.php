@@ -319,10 +319,10 @@ final class StatisticsCalculationCommand
      */
     private function acquireExecutionLock(array $periods): string
     {
-        $lockFileName = self::LOCK_FILE_PREFIX . md5(implode('_', array_map(
-            static fn(mixed $period): string => (string) $period,
-            $periods,
-        )));
+        $normalizedPeriods = array_map(static function (string $period): string {
+            return $period;
+        }, $periods);
+        $lockFileName = self::LOCK_FILE_PREFIX . md5(implode('_', $normalizedPeriods));
         $lockFilePath = $this->lockFileDir . '/' . $lockFileName . '.lock';
         // 檢查是否已有其他進程在執行
         if (file_exists($lockFilePath)) {

@@ -79,7 +79,7 @@ abstract class BaseController
         return $this->errorResponse($e->getMessage(), $httpCode);
     }
 
-    private function getHttpCodeFromException(Throwable $e): HttpStatusCode
+    protected function getHttpCodeFromException(Throwable $e): HttpStatusCode
     {
         $status = self::getExceptionRegistry()->resolve($e);
         if ($status !== null) {

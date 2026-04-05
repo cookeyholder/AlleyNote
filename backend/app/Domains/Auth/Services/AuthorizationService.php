@@ -201,7 +201,9 @@ class AuthorizationService implements AuthorizationServiceInterface
         ));
 
         // 合併並去重
-        return array_unique(array_merge($rolePermissions, $directPermissions));
+        $permissions = array_merge($rolePermissions, $directPermissions);
+
+        return array_values(array_unique($permissions));
     }
 
     public function isSuperAdmin(int $userId): bool
