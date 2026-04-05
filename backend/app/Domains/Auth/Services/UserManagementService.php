@@ -7,8 +7,10 @@ namespace App\Domains\Auth\Services;
 use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\DTOs\UpdateUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\ValueObjects\Password;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+use InvalidArgumentException;
 
 class UserManagementService
 {
@@ -52,10 +54,11 @@ class UserManagementService
         if ($this->userRepository->findByEmail($dto->email)) {
             throw ValidationException::fromSingleError('email', 'Email 已被使用');
         }
+
         // 驗證並雜湊密碼
         try {
-            $hashedPassword = \App\Domains\Auth\ValueObjects\Password::fromPlainText($dto->password)->getHash();
-        } catch (\InvalidArgumentException $e) {
+            $hashedPassword = Password::fromPlainText($dto->password)->getHash();
+        } catch (InvalidArgumentException $e) {
             throw ValidationException::fromSingleError('password', $e->getMessage());
         }
         // 建立使用者
@@ -102,8 +105,8 @@ class UserManagementService
         // 更新密碼
         if ($dto->password !== null) {
             try {
-                $updateData['password'] = \App\Domains\Auth\ValueObjects\Password::fromPlainText($dto->password)->getHash();
-            } catch (\InvalidArgumentException $e) {
+                $updateData['password'] = Password::fromPlainText($dto->password)->getHash();
+            } catch (InvalidArgumentException $e) {
                 throw ValidationException::fromSingleError('password', $e->getMessage());
             }
         }
@@ -195,10 +198,11 @@ class UserManagementService
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
+
         // 驗證並雜湊密碼
         try {
-            $hashedPassword = \App\Domains\Auth\ValueObjects\Password::fromPlainText($newPassword)->getHash();
-        } catch (\InvalidArgumentException $e) {
+            $hashedPassword = Password::fromPlainText($newPassword)->getHash();
+        } catch (InvalidArgumentException $e) {
             throw ValidationException::fromSingleError('password', $e->getMessage());
         }
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
@@ -220,10 +224,11 @@ class UserManagementService
         if (!password_verify($currentPassword, $passwordHash)) {
             throw ValidationException::fromSingleError('current_password', '當前密碼不正確');
         }
+
         // 驗證並雜湊新密碼
         try {
-            $hashedPassword = \App\Domains\Auth\ValueObjects\Password::fromPlainText($newPassword)->getHash();
-        } catch (\InvalidArgumentException $e) {
+            $hashedPassword = Password::fromPlainText($newPassword)->getHash();
+        } catch (InvalidArgumentException $e) {
             throw ValidationException::fromSingleError('new_password', $e->getMessage());
         }
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);

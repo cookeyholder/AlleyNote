@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Shared\Validation;
 
+use App\Domains\Shared\ValueObjects\Email;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTime;
+use InvalidArgumentException;
 
 class Validator implements ValidatorInterface
 {
@@ -225,9 +227,10 @@ class Validator implements ValidatorInterface
         }
 
         try {
-            new \App\Domains\Shared\ValueObjects\Email($value);
+            new Email($value);
+
             return true;
-        } catch (\InvalidArgumentException) {
+        } catch (InvalidArgumentException) {
             return false;
         }
     }

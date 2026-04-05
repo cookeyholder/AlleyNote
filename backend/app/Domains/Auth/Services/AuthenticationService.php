@@ -282,6 +282,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
         if (!empty($roles) && isset($roles[0]) && is_array($roles[0])) {
             return $roles[0]['name'] ?? null;
         }
+
         return null;
     }
 }

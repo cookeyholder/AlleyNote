@@ -217,8 +217,11 @@ final class AuthenticationServiceTest extends UnitTestCase
         $this->refreshTokenRepository->expects($this->once())->method('revoke')->with('oldest-jti', 'max_tokens_exceeded');
 
         // Mock token generation
-        $tokenPair = new TokenPair('access', 'refresh', new DateTimeImmutable('+1H'), new DateTimeImmutable('+7D'));
-        $payload = new JwtPayload('new-jti', '1', 'iss', [], new DateTimeImmutable(), new DateTimeImmutable('+1H'), new DateTimeImmutable());
+        $now = new DateTimeImmutable();
+        $accessTokenExpiresAt = $now->modify('+1 hour');
+        $refreshTokenExpiresAt = $now->modify('+7 days');
+        $tokenPair = new TokenPair('header.payload.signature', 'a-long-enough-refresh-token-string', $accessTokenExpiresAt, $refreshTokenExpiresAt);
+        $payload = new JwtPayload('new-jti', '1', 'iss', ['aud'], $now, $accessTokenExpiresAt, $now);
         $this->jwtTokenService->method('generateTokenPair')->willReturn($tokenPair);
         $this->jwtTokenService->method('extractPayload')->willReturn($payload);
 
@@ -240,17 +243,20 @@ final class AuthenticationServiceTest extends UnitTestCase
         $this->userRepository->method('findByIdWithRoles')->willReturn($userWithRoles);
         $this->refreshTokenRepository->method('findByUserId')->willReturn([]);
 
-        $tokenPair = new TokenPair('access', 'refresh', new DateTimeImmutable('+1H'), new DateTimeImmutable('+7D'));
-        $payload = new JwtPayload('new-jti', '1', 'iss', [], new DateTimeImmutable(), new DateTimeImmutable('+1H'), new DateTimeImmutable());
-        
+        $now = new DateTimeImmutable();
+        $accessTokenExpiresAt = $now->modify('+1 hour');
+        $refreshTokenExpiresAt = $now->modify('+7 days');
+        $tokenPair = new TokenPair('header.payload.signature', 'a-long-enough-refresh-token-string', $accessTokenExpiresAt, $refreshTokenExpiresAt);
+        $payload = new JwtPayload('new-jti', '1', 'iss', ['aud'], $now, $accessTokenExpiresAt, $now);
+
         // Assert generateTokenPair is called with empty role
         $this->jwtTokenService->expects($this->once())
             ->method('generateTokenPair')
-            ->with($this->anything(), $this->anything(), $this->callback(function($claims) {
+            ->with($this->anything(), $this->anything(), $this->callback(function ($claims) {
                 return $claims['role'] === null;
             }))
             ->willReturn($tokenPair);
-            
+
         $this->jwtTokenService->method('extractPayload')->willReturn($payload);
 
         $response = $this->authenticationService->login($request, $this->deviceInfo);

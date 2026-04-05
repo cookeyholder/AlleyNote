@@ -9,7 +9,6 @@ use App\Domains\Post\ValueObjects\PostContent;
 use App\Domains\Post\ValueObjects\PostId;
 use App\Domains\Post\ValueObjects\PostTitle;
 use InvalidArgumentException;
-use Ramsey\Uuid\Uuid;
 
 final class PostFactory
 {

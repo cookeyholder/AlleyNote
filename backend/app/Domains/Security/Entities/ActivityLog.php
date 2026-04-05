@@ -10,7 +10,6 @@ use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTime;
 use DateTimeImmutable;
-use Ramsey\Uuid\Uuid;
 use ReflectionObject;
 
 class ActivityLog

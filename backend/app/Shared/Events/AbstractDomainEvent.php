@@ -6,7 +6,6 @@ namespace App\Shared\Events;
 
 use App\Shared\Events\Contracts\DomainEventInterface;
 use DateTimeImmutable;
-use Ramsey\Uuid\Uuid;
 
 abstract class AbstractDomainEvent implements DomainEventInterface
 {

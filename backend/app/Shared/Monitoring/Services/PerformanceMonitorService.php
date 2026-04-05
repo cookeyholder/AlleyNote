@@ -6,7 +6,6 @@ namespace App\Shared\Monitoring\Services;
 
 use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
 
 class PerformanceMonitorService implements PerformanceMonitorInterface
 {

@@ -7,7 +7,6 @@ namespace App\Domains\Attachment\Repositories;
 use App\Domains\Attachment\Models\Attachment;
 use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
-use Ramsey\Uuid\Uuid;
 
 class AttachmentRepository
 {

@@ -50,11 +50,11 @@ class UserRepository
         $fields = [];
         $params = ['id' => $id];
         foreach ($data as $key => $value) {
-            if (in_array($key, ['username', 'email', 'status', 'password'])) {
-                // 如果是 password 欄位，要對應到資料庫的 password_hash
-                if ($key === 'password') {
+            if (in_array($key, ['username', 'email', 'status', 'password', 'password_hash'])) {
+                // 如果是 password 或 password_hash 欄位，都要對應到資料庫的 password_hash
+                if ($key === 'password' || $key === 'password_hash') {
                     $fields[] = 'password_hash = :password_hash';
-                    $params['password_hash'] = password_hash($value, PASSWORD_ARGON2ID);
+                    $params['password_hash'] = $value;
                 } else {
                     $fields[] = "{$key} = :{$key}";
                     $params[$key] = $value;
@@ -146,7 +146,7 @@ class UserRepository
             ? $this->passwordService->hashPassword($newPassword)
             : password_hash($newPassword, PASSWORD_ARGON2ID);
         // 更新密碼
-        $sql = 'UPDATE users SET password = :password, updated_at = CURRENT_TIMESTAMP WHERE id = :id';
+        $sql = 'UPDATE users SET password_hash = :password, updated_at = CURRENT_TIMESTAMP WHERE id = :id';
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([

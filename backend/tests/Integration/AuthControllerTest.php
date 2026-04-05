@@ -84,9 +84,9 @@ class AuthControllerTest extends ApiTestCase
         $request = $this->json('POST', '/api/auth/register', [
             'username' => 'testuser',
             'email' => 'test@example.com',
-            'password' => 'Password123!',
-            'password_confirmation' => 'Password123!',
-            'confirm_password' => 'Password123!',
+            'password' => 'P@ssw0rd99!',
+            'password_confirmation' => 'P@ssw0rd99!',
+            'confirm_password' => 'P@ssw0rd99!',
             'user_ip' => '127.0.0.1',
         ]);
 

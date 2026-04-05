@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Shared\Validation\Factory;
 
+use App\Domains\Shared\ValueObjects\Email;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Validation\Validator;
+use InvalidArgumentException;
 
 class ValidatorFactory
 {
@@ -145,13 +147,14 @@ class ValidatorFactory
             if (!is_string($value)) {
                 return false;
             }
+
             try {
-                $emailValueObject = new \App\Domains\Shared\ValueObjects\Email($value);
-            } catch (\InvalidArgumentException) {
+                $emailValueObject = new Email($value);
+            } catch (InvalidArgumentException) {
                 return false;
             }
             $email = $emailValueObject->getValue();
-            
+
             // 檢查是否包含危險字元
             if (preg_match('/[<>"\'&]/', $email)) {
                 return false;

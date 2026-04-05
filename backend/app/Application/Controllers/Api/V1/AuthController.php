@@ -9,11 +9,11 @@ use App\Application\Controllers\BaseController;
 use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
+use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\DTOs\LoginRequestDTO;
 use App\Domains\Auth\DTOs\LogoutRequestDTO;
 use App\Domains\Auth\DTOs\RefreshRequestDTO;
 use App\Domains\Auth\DTOs\RegisterUserDTO;
-use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\ValueObjects\DeviceInfo;
 use App\Domains\Auth\ValueObjects\TokenPair;
@@ -54,7 +54,7 @@ class AuthController extends BaseController implements AuthApiInterface
                 username: $dto->username,
                 email: $dto->email,
                 password: $dto->password,
-                roleIds: []
+                roleIds: [],
             );
             $user = $this->userManagementService->createUser($createUserDto);
             // 記錄成功註冊活動

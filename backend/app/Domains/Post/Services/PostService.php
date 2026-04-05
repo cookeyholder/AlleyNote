@@ -11,9 +11,10 @@ use App\Domains\Post\DTOs\UpdatePostDTO;
 use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Exceptions\PostNotFoundException;
 use App\Domains\Post\Models\Post;
+use App\Domains\Shared\ValueObjects\IPAddress;
 use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\ValidationException;
-use App\Domains\Shared\ValueObjects\IPAddress;
+use InvalidArgumentException;
 use Throwable;
 
 class PostService implements PostServiceInterface
@@ -102,10 +103,11 @@ class PostService implements PostServiceInterface
     public function recordView(int $id, string $userIp, ?int $userId = null): bool
     {
         $post = $this->findById($id);
+
         try {
             $ip = new IPAddress($userIp);
             $userIp = $ip->getValue();
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             throw ValidationException::fromSingleError('user_ip', '無效的 IP 位址');
         }
         // 只有已發布的文章才能計算瀏覽次數
