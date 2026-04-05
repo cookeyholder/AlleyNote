@@ -140,21 +140,15 @@ class RegisterUserDTO extends BaseDTO
             if (!is_string($value)) {
                 return false;
             }
-            $email = trim(strtolower($value));
-            // 基本格式檢查
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                $emailValueObject = new \App\Domains\Shared\ValueObjects\Email($value);
+            } catch (\InvalidArgumentException) {
                 return false;
             }
-            // 檢查長度限制
-            if (strlen($email) > 320) { // RFC 5321 限制
-                return false;
-            }
-            // 檢查 @ 符號數量
-            $parts = explode('@', $email);
-            if (count($parts) !== 2) {
-                return false;
-            }
-            [$localPart, $domain] = $parts;
+            $email = $emailValueObject->getValue();
+            $localPart = $emailValueObject->getLocalPart();
+            $domain = $emailValueObject->getDomain();
+
             // 檢查本地部分是否包含不當字元
             if (preg_match('/[<>()[\]\\;:\s"]/', $localPart)) {
                 return false;
@@ -168,7 +162,6 @@ class RegisterUserDTO extends BaseDTO
                 'yopmail.com',
                 'throwaway.email',
             ];
-            $domain = substr(strrchr($email, '@'), 1);
             if (in_array($domain, $disposableEmailDomains, true)) {
                 return false;
             }

@@ -18,23 +18,23 @@
 
 ## 3. Post Domain IP 驗證重構
 
-- [ ] 3.1 檢查 `app/Domains/Shared/ValueObjects/IPAddress.php`，確保了解其用法與例外處理
-- [ ] 3.2 修改 `PostService::recordView($id, $userIp)`，以 `new IPAddress($userIp)` 替換 `filter_var` 呼叫（使用 `try-catch` 捕捉 `InvalidArgumentException` 並轉換成 `ValidationException` 或拋出對應的錯誤）
-- [ ] 3.3 修改 `PostRepository::incrementViews($id, $userIp)`，**完全移除** `filter_var` 驗證（因為該職責上移至 Service 處理了）
-- [ ] 3.4 修改 `PostValidator.php` 裡面的 `ip_address` 封閉函數，內部改用 `is_valid_ip()` 或是維持原樣（因為這不屬於 Service/Repository 耦合的問題，可視情況一併清）
-- [ ] 3.5 更新或新增 `PostServiceTest.php` 中的 `recordView` 測試，確認無效 IP 會被正確擋下
-- [ ] 3.6 執行相關測試確認無回歸
+- [x] 3.1 檢查 `app/Domains/Shared/ValueObjects/IPAddress.php`，確保了解其用法與例外處理
+- [x] 3.2 修改 `PostService::recordView($id, $userIp)`，以 `new IPAddress($userIp)` 替換 `filter_var` 呼叫（使用 `try-catch` 捕捉 `InvalidArgumentException` 並轉換成 `ValidationException` 或拋出對應的錯誤）
+- [x] 3.3 修改 `PostRepository::incrementViews($id, $userIp)`，**完全移除** `filter_var` 驗證（因為該職責上移至 Service 處理了）
+- [x] 3.4 修改 `PostValidator.php` 裡面的 `ip_address` 封閉函數，內部改用 `is_valid_ip()` 或是維持原樣（因為這不屬於 Service/Repository 耦合的問題，可視情況一併清）
+- [x] 3.5 更新或新增 `PostServiceTest.php` 中的 `recordView` 測試，確認無效 IP 會被正確擋下
+- [x] 3.6 執行相關測試確認無回歸
 
 **驗收標準**：`PostService` 正確使用 `IPAddress`；`PostRepository` 移除 IP 驗證；所有相關測試通過。
 
 ## 4. AuthenticationService.login() 步驟分離
 
-- [ ] 4.1 提取 `private function validateUserStatus(array $user): void`：對 `deleted_at` 非空時拋出 `AuthenticationException`
-- [ ] 4.2 提取 `private function enforceTokenLimit(int $userId): void`：清理過期 token、超限時撤銷最舊的活躍 token
-- [ ] 4.3 提取 `private function resolveUserRole(int $userId): ?string`：取得使用者第一個角色名稱，無角色時回傳 `null`
-- [ ] 4.4 更新 `login()` 主體以呼叫上述三個方法，確認方法主體 ≤ 25 行
-- [ ] 4.5 新增或更新 `AuthenticationServiceTest.php`，涵蓋三個情境的測試：帳號停用（`validateUserStatus`）、token 超限（`enforceTokenLimit`）、無角色使用者（`resolveUserRole`）
-- [ ] 4.6 執行 `composer test tests/Unit/Domains/Auth/` 確認通過
+- [x] 4.1 提取 `private function validateUserStatus(array $user): void`：對 `deleted_at` 非空時拋出 `AuthenticationException`
+- [x] 4.2 提取 `private function enforceTokenLimit(int $userId): void`：清理過期 token、超限時撤銷最舊的活躍 token
+- [x] 4.3 提取 `private function resolveUserRole(int $userId): ?string`：取得使用者第一個角色名稱，無角色時回傳 `null`
+- [x] 4.4 更新 `login()` 主體以呼叫上述三個方法，確認方法主體 ≤ 25 行
+- [x] 4.5 新增或更新 `AuthenticationServiceTest.php`，涵蓋三個情境的測試：帳號停用（`validateUserStatus`）、token 超限（`enforceTokenLimit`）、無角色使用者（`resolveUserRole`）
+- [x] 4.6 執行 `composer test tests/Unit/Domains/Auth/` 確認通過
 
 **驗收標準**：`login()` 方法主體 ≤ 25 行；三個私有方法各有對應測試情境；測試全數通過。
 

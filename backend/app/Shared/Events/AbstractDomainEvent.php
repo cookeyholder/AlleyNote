@@ -16,7 +16,7 @@ abstract class AbstractDomainEvent implements DomainEventInterface
 
     public function __construct()
     {
-        $this->eventId = Uuid::uuid4()->toString();
+        $this->eventId = generate_uuid();
         $this->occurredOn = new DateTimeImmutable();
     }
 

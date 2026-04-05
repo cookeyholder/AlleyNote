@@ -66,7 +66,7 @@ class ActivityLog
         ?string $requestPath = null,
         ?DateTimeImmutable $occurredAt = null,
     ) {
-        $this->uuid = Uuid::uuid4()->toString();
+        $this->uuid = generate_uuid();
         $this->actionType = $actionType;
         $this->actionCategory = $actionType->getCategory();
         $this->severity = $actionType->getSeverity();

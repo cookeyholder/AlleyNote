@@ -53,7 +53,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
      */
     public function startMonitoring(string $operation, array $context = []): string
     {
-        $monitoringId = Uuid::uuid4()->toString();
+        $monitoringId = generate_uuid();
         $this->activeMonitoringSessions[$monitoringId] = [
             'operation' => $operation,
             'start_time' => microtime(true),

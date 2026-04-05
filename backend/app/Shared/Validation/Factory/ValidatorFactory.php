@@ -145,25 +145,13 @@ class ValidatorFactory
             if (!is_string($value)) {
                 return false;
             }
-            $email = trim($value);
-            // 基本格式檢查
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                $emailValueObject = new \App\Domains\Shared\ValueObjects\Email($value);
+            } catch (\InvalidArgumentException) {
                 return false;
             }
-            // 檢查長度限制
-            if (strlen($email) > 254) {
-                return false;
-            }
-            // 檢查域名部分
-            $parts = explode('@', $email);
-            if (count($parts) !== 2) {
-                return false;
-            }
-            $domain = $parts[1];
-            // 檢查域名長度
-            if (strlen($domain) > 253) {
-                return false;
-            }
+            $email = $emailValueObject->getValue();
+            
             // 檢查是否包含危險字元
             if (preg_match('/[<>"\'&]/', $email)) {
                 return false;

@@ -18,7 +18,7 @@ class AttachmentRepository
 
     public function create(array $data): Attachment
     {
-        $uuid = Uuid::uuid4()->toString();
+        $uuid = generate_uuid();
         $sql = '
             INSERT INTO attachments (
                 uuid, post_id, filename, original_name,

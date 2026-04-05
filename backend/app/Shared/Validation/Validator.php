@@ -224,7 +224,12 @@ class Validator implements ValidatorInterface
             return false;
         }
 
-        return filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
+        try {
+            new \App\Domains\Shared\ValueObjects\Email($value);
+            return true;
+        } catch (\InvalidArgumentException) {
+            return false;
+        }
     }
 
     private function validateUrl(mixed $value): bool

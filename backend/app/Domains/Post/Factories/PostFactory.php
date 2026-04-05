@@ -135,7 +135,7 @@ final class PostFactory
      */
     private function generatePostId(): PostId
     {
-        return PostId::fromString(Uuid::uuid4()->toString());
+        return PostId::fromString(generate_uuid());
     }
 
     /**
