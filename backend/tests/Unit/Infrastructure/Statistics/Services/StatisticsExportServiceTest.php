@@ -384,13 +384,15 @@ final class StatisticsExportServiceTest extends UnitTestCase
                     $output .= implode(',', $headers) . "\n";
 
                     foreach ($data[$firstKey] as $row) {
-                        $values = array_map(
-                            static fn(mixed $value): string => is_scalar($value)
+                        if (!is_array($row)) {
+                            continue;
+                        }
+                        $output .= implode(',', array_map(
+                            static fn(mixed $value): string => is_scalar($value) || $value === null
                                 ? (string) $value
-                                : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: gettype($value)),
+                                : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: get_debug_type($value)),
                             array_values($row),
-                        );
-                        $output .= implode(',', $values) . "\n";
+                        )) . "\n";
                     }
                 }
 

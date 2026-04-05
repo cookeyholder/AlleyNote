@@ -314,15 +314,17 @@ final class StatisticsCalculationCommand
 
     /**
      * 獲取執行鎖定文件.
+     *
+     * @param array<int|string, string> $periods
      */
     private function acquireExecutionLock(array $periods): string
     {
         $normalizedPeriods = array_map(static function (mixed $period): string {
-            if (is_string($period) || is_int($period) || is_float($period) || is_bool($period)) {
+            if (is_scalar($period) || $period === null) {
                 return (string) $period;
             }
 
-            return json_encode($period, JSON_UNESCAPED_UNICODE) ?: gettype($period);
+            return json_encode($period, JSON_UNESCAPED_UNICODE) ?: get_debug_type($period);
         }, $periods);
         $lockFileName = self::LOCK_FILE_PREFIX . md5(implode('_', $normalizedPeriods));
         $lockFilePath = $this->lockFileDir . '/' . $lockFileName . '.lock';

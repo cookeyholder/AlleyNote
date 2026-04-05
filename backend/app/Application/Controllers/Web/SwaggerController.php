@@ -23,6 +23,7 @@ class SwaggerController
             $basePath = dirname(__DIR__, 3); // 調整到正確的 app 目錄
             $openapi = new Generator()->generate([
                 $basePath . '/Application/Controllers',
+                $basePath . '/Application/Contracts',
                 $basePath . '/Domains',
                 $basePath . '/Infrastructure',
             ]);

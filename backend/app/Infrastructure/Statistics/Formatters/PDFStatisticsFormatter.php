@@ -83,7 +83,12 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
             if (is_array($sectionData)) {
                 if ($this->isTableData($sectionData)) {
                     // 表格資料
-                    $html .= $this->generateTable($sectionData);
+                    /** @var array<array<string, mixed>> $tableData */
+                    $tableData = array_values(array_filter(
+                        $sectionData,
+                        static fn(mixed $row): bool => is_array($row),
+                    ));
+                    $html .= $this->generateTable($tableData);
                 } else {
                     // 摘要資料
                     $summaryData = [];

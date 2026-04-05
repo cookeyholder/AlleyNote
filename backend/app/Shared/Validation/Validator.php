@@ -485,11 +485,10 @@ class Validator implements ValidatorInterface
             ':value' => is_scalar($value) ? (string) $value : gettype($value),
         ];
         // 添加參數替換
-        if (!empty($parameters)) {
             $parameterStrings = array_map(
-                static fn(mixed $parameter): string => is_scalar($parameter)
+                static fn(mixed $parameter): string => is_scalar($parameter) || $parameter === null
                     ? (string) $parameter
-                    : (json_encode($parameter, JSON_UNESCAPED_UNICODE) ?: gettype($parameter)),
+                    : (json_encode($parameter, JSON_UNESCAPED_UNICODE) ?: get_debug_type($parameter)),
                 $parameters,
             );
             $replacements[':min'] = $parameters[0] ?? '';
@@ -499,7 +498,6 @@ class Validator implements ValidatorInterface
             $replacements[':types'] = implode(', ', $parameterStrings);
             $replacements[':size'] = $parameters[0] ?? '';
             $replacements[':other'] = $parameters[0] ?? '';
-        }
 
         return str_replace(array_keys($replacements), array_values($replacements), $message);
     }

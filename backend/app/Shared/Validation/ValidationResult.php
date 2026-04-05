@@ -305,9 +305,9 @@ class ValidationResult implements JsonSerializable
         }
         $errorCount = count($this->getAllErrors());
         $errorMessages = array_map(
-            static fn(mixed $error): string => is_scalar($error)
+            static fn(mixed $error): string => is_scalar($error) || $error === null
                 ? (string) $error
-                : (json_encode($error, JSON_UNESCAPED_UNICODE) ?: gettype($error)),
+                : (json_encode($error, JSON_UNESCAPED_UNICODE) ?: get_debug_type($error)),
             $this->getAllErrors(),
         );
 
