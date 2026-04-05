@@ -252,8 +252,8 @@ final class AuthenticationServiceTest extends UnitTestCase
         // Assert generateTokenPair is called with empty role
         $this->jwtTokenService->expects($this->once())
             ->method('generateTokenPair')
-            ->with($this->anything(), $this->anything(), $this->callback(function ($claims) {
-                return $claims['role'] === null;
+            ->with($this->anything(), $this->anything(), $this->callback(function (mixed $claims) {
+                return is_array($claims) && ($claims['role'] ?? null) === null;
             }))
             ->willReturn($tokenPair);
 

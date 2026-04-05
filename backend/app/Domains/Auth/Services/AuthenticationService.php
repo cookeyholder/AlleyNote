@@ -50,7 +50,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $this->enforceTokenLimit($userId);
 
             $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
-            $roles = $userWithRoles['roles'] ?? [];
+            /** @var array<string, mixed> $userWithRoles */
+            $roles = is_array($userWithRoles['roles'] ?? null) ? $userWithRoles['roles'] : [];
             $userRole = $this->resolveUserRole($roles);
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
@@ -280,7 +281,9 @@ final class AuthenticationService implements AuthenticationServiceInterface
     private function resolveUserRole(array $roles): ?string
     {
         if (!empty($roles) && isset($roles[0]) && is_array($roles[0])) {
-            return $roles[0]['name'] ?? null;
+            $roleName = $roles[0]['name'] ?? null;
+
+            return is_string($roleName) ? $roleName : null;
         }
 
         return null;
