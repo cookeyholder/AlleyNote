@@ -58,6 +58,13 @@
 - API 測試一律優先使用 `ApiTestCase` 提供的 DSL。
 - `actingAs()` 使用真實 JWT 簽章流程，避免測試與正式行為偏離。
 - `assertDatabaseHas` / `assertDatabaseMissing` 依賴單一 PDO 來源原則，確保可觀測一致性。
+- 驗證機制的測試（如 `AuthenticationService` 等）必須獨立拆解過於龐大的副程式，並逐一覆蓋。
+
+### 4. Value Object 作為防腐層 (Anti-Corruption Layer)
+- 所有 `Email`, `Password`, `IPAddress`, `UUID` 等敏感或具固定格式之資料，皆須直接呼叫對應的 Value Object 確保正確性，禁止散落原生的 `filter_var` 或 `password_hash` 於 Controller / Service 中。
+
+### 5. 權責收斂與服務移除
+- 已將多餘的 `AuthService` 完全移除。系統驗證機制一律統一交由 `AuthenticationService` (JWT邏輯與認證) 以及 `UserManagementService` (註冊與使用者管理) 處理。
 - 禁止做法：
   - 直接手工組假的 Bearer token。
   - 混用不同 PDO 實例導致 `:memory:` 判斷失真。
