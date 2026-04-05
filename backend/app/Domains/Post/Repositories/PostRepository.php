@@ -591,10 +591,6 @@ class PostRepository implements PostRepositoryInterface
 
     public function incrementViews(int $id, string $userIp, ?int $userId = null): bool
     {
-        // 驗證 IP 位址格式
-        if (!filter_var($userIp, FILTER_VALIDATE_IP)) {
-            throw new InvalidArgumentException('無效的 IP 位址格式');
-        }
         // 驗證使用者 ID（如果提供）
         if ($userId !== null && $userId <= 0) {
             throw new InvalidArgumentException('使用者 ID 必須是正整數');

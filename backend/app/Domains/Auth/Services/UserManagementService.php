@@ -7,8 +7,10 @@ namespace App\Domains\Auth\Services;
 use App\Domains\Auth\DTOs\CreateUserDTO;
 use App\Domains\Auth\DTOs\UpdateUserDTO;
 use App\Domains\Auth\Repositories\UserRepository;
+use App\Domains\Auth\ValueObjects\Password;
 use App\Shared\Exceptions\NotFoundException;
 use App\Shared\Exceptions\ValidationException;
+use InvalidArgumentException;
 
 class UserManagementService
 {
@@ -52,8 +54,13 @@ class UserManagementService
         if ($this->userRepository->findByEmail($dto->email)) {
             throw ValidationException::fromSingleError('email', 'Email 已被使用');
         }
-        // 雜湊密碼
-        $hashedPassword = password_hash($dto->password, PASSWORD_ARGON2ID);
+
+        // 驗證並雜湊密碼
+        try {
+            $hashedPassword = Password::fromPlainText($dto->password)->getHash();
+        } catch (InvalidArgumentException $e) {
+            throw ValidationException::fromSingleError('password', $e->getMessage());
+        }
         // 建立使用者
         $user = $this->userRepository->create([
             'username' => $dto->username,
@@ -97,7 +104,11 @@ class UserManagementService
         }
         // 更新密碼
         if ($dto->password !== null) {
-            $updateData['password'] = $dto->password;
+            try {
+                $updateData['password'] = Password::fromPlainText($dto->password)->getHash();
+            } catch (InvalidArgumentException $e) {
+                throw ValidationException::fromSingleError('password', $e->getMessage());
+            }
         }
         // 更新基本資料
         if (!empty($updateData)) {
@@ -187,12 +198,13 @@ class UserManagementService
         if (!$user) {
             throw new NotFoundException('使用者不存在');
         }
-        // 驗證密碼長度
-        if (strlen($newPassword) < 6) {
-            throw ValidationException::fromSingleError('password', '密碼長度至少需要 6 個字元');
+
+        // 驗證並雜湊密碼
+        try {
+            $hashedPassword = Password::fromPlainText($newPassword)->getHash();
+        } catch (InvalidArgumentException $e) {
+            throw ValidationException::fromSingleError('password', $e->getMessage());
         }
-        // 雜湊密碼
-        $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
 
         return true;
@@ -212,16 +224,13 @@ class UserManagementService
         if (!password_verify($currentPassword, $passwordHash)) {
             throw ValidationException::fromSingleError('current_password', '當前密碼不正確');
         }
-        // 驗證新密碼長度
-        if (strlen($newPassword) < 6) {
-            throw ValidationException::fromSingleError('new_password', '新密碼長度至少需要 6 個字元');
+
+        // 驗證並雜湊新密碼
+        try {
+            $hashedPassword = Password::fromPlainText($newPassword)->getHash();
+        } catch (InvalidArgumentException $e) {
+            throw ValidationException::fromSingleError('new_password', $e->getMessage());
         }
-        // 驗證新密碼不能與舊密碼相同
-        if ($currentPassword === $newPassword) {
-            throw ValidationException::fromSingleError('new_password', '新密碼不能與當前密碼相同');
-        }
-        // 雜湊新密碼
-        $hashedPassword = password_hash($newPassword, PASSWORD_ARGON2ID);
         $this->userRepository->update((string) $id, ['password' => $hashedPassword]);
 
         return true;

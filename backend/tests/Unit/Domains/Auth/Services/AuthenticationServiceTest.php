@@ -168,4 +168,98 @@ final class AuthenticationServiceTest extends UnitTestCase
 
         $this->authenticationService->login($request, $this->deviceInfo);
     }
+
+    public function testLogin_帳號已停用_應該拋出例外(): void
+    {
+        $request = new LoginRequestDTO(
+            email: 'disabled@example.com',
+            password: 'password123',
+        );
+
+        $userData = [
+            'id' => 1,
+            'email' => 'disabled@example.com',
+            'username' => 'disableduser',
+            'deleted_at' => '2023-01-01 00:00:00',
+        ];
+
+        $this->userRepository
+            ->expects($this->once())
+            ->method('validateCredentials')
+            ->willReturn($userData);
+
+        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage('User account has been deactivated');
+
+        $this->authenticationService->login($request, $this->deviceInfo);
+    }
+
+    public function testLogin_Token超過限制_應該撤銷最舊的Token(): void
+    {
+        $request = new LoginRequestDTO(
+            email: 'test@example.com',
+            password: 'password123',
+        );
+
+        $userData = ['id' => 1, 'email' => 'test@example.com', 'deleted_at' => null];
+        $userWithRoles = ['roles' => []];
+
+        $tokens = array_fill(0, 50, ['jti' => 'old-jti']);
+        $tokens[0] = ['jti' => 'oldest-jti']; // The first is the oldest
+
+        $this->userRepository->method('validateCredentials')->willReturn($userData);
+        $this->userRepository->method('findByIdWithRoles')->willReturn($userWithRoles);
+
+        $this->refreshTokenRepository->expects($this->once())->method('cleanup')->willReturn(0);
+        $this->refreshTokenRepository->expects($this->once())->method('findByUserId')->willReturn($tokens);
+
+        // Expect revoke to be called for the oldest token
+        $this->refreshTokenRepository->expects($this->once())->method('revoke')->with('oldest-jti', 'max_tokens_exceeded');
+
+        // Mock token generation
+        $now = new DateTimeImmutable();
+        $accessTokenExpiresAt = $now->modify('+1 hour');
+        $refreshTokenExpiresAt = $now->modify('+7 days');
+        $tokenPair = new TokenPair('header.payload.signature', 'a-long-enough-refresh-token-string', $accessTokenExpiresAt, $refreshTokenExpiresAt);
+        $payload = new JwtPayload('new-jti', '1', 'iss', ['aud'], $now, $accessTokenExpiresAt, $now);
+        $this->jwtTokenService->method('generateTokenPair')->willReturn($tokenPair);
+        $this->jwtTokenService->method('extractPayload')->willReturn($payload);
+
+        $response = $this->authenticationService->login($request, $this->deviceInfo);
+        $this->assertSame('new-jti', $response->sessionId);
+    }
+
+    public function testLogin_無角色使用者_成功登入(): void
+    {
+        $request = new LoginRequestDTO(
+            email: 'test@example.com',
+            password: 'password123',
+        );
+
+        $userData = ['id' => 1, 'email' => 'test@example.com', 'deleted_at' => null];
+        $userWithRoles = ['roles' => []];
+
+        $this->userRepository->method('validateCredentials')->willReturn($userData);
+        $this->userRepository->method('findByIdWithRoles')->willReturn($userWithRoles);
+        $this->refreshTokenRepository->method('findByUserId')->willReturn([]);
+
+        $now = new DateTimeImmutable();
+        $accessTokenExpiresAt = $now->modify('+1 hour');
+        $refreshTokenExpiresAt = $now->modify('+7 days');
+        $tokenPair = new TokenPair('header.payload.signature', 'a-long-enough-refresh-token-string', $accessTokenExpiresAt, $refreshTokenExpiresAt);
+        $payload = new JwtPayload('new-jti', '1', 'iss', ['aud'], $now, $accessTokenExpiresAt, $now);
+
+        // Assert generateTokenPair is called with empty role
+        $this->jwtTokenService->expects($this->once())
+            ->method('generateTokenPair')
+            ->with($this->anything(), $this->anything(), $this->callback(function (mixed $claims) {
+                return is_array($claims) && ($claims['role'] ?? null) === null;
+            }))
+            ->willReturn($tokenPair);
+
+        $this->jwtTokenService->method('extractPayload')->willReturn($payload);
+
+        $response = $this->authenticationService->login($request, $this->deviceInfo);
+        $this->assertEmpty($response->roles);
+    }
 }

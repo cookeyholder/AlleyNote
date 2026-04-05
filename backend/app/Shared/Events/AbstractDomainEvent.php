@@ -6,7 +6,6 @@ namespace App\Shared\Events;
 
 use App\Shared\Events\Contracts\DomainEventInterface;
 use DateTimeImmutable;
-use Ramsey\Uuid\Uuid;
 
 abstract class AbstractDomainEvent implements DomainEventInterface
 {
@@ -16,7 +15,7 @@ abstract class AbstractDomainEvent implements DomainEventInterface
 
     public function __construct()
     {
-        $this->eventId = Uuid::uuid4()->toString();
+        $this->eventId = generate_uuid();
         $this->occurredOn = new DateTimeImmutable();
     }
 

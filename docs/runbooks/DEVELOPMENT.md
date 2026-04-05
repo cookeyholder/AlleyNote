@@ -69,6 +69,16 @@ cd tests/e2e && CI=true npm test
 - 控制器中不要再維護私有靜態例外對照表，統一走 `handleException()`。
 - 優先順序固定為：`ApiExceptionInterface` → `ExceptionRegistry` 類別映射 → 介面映射；不得在個別控制器覆寫此判定流程。
 
+## Value Object 驗證規範
+
+- System 核心資料格式（如 `Email`、`Password`、`IPAddress` 等）**強行規定**統一使用 `Value Object` 進行實例化與封裝驗證。
+- **絕對避免**在 Controller、Service 或 Repository 內散落原生的 `filter_var` 或 `preg_match` 驗證。單一真理來源應收斂在各別 Value Object 中。
+
+## AuthService 移除與驗證統管
+
+- 舊版的 `AuthService` 已完全移除。
+- 現在驗證、登入、登出、Token 更新等相關服務由 `AuthenticationService` 與 `UserManagementService` 統管。請勿再呼叫 `AuthService`。
+
 ## 測試規範（ApiTestCase）
 
 - API 整合測試請優先繼承 `Tests\Support\ApiTestCase`。
@@ -87,6 +97,7 @@ cd tests/e2e && CI=true npm test
 - 在控制器直接手刻資料轉換欄位，應改以 `ApiResource`（例如 `PostResource`）統一輸出。
 - 在控制器維護私有例外映射表，應統一走 `BaseController::handleException()`。
 - 在 API 測試中手動拼接假 JWT，應使用 `$this->actingAs(...)` 產生真實簽章 token。
+- 直接使用 `filter_var()` 或字串操作來處理 Email/IP 驗證，應改用對應的 Value Object（例如 `Email` 或 `IPAddress`）。
 
 ## 常用操作
 

@@ -7,7 +7,6 @@ namespace App\Domains\Attachment\Repositories;
 use App\Domains\Attachment\Models\Attachment;
 use App\Shared\Contracts\CacheServiceInterface;
 use PDO;
-use Ramsey\Uuid\Uuid;
 
 class AttachmentRepository
 {
@@ -18,7 +17,7 @@ class AttachmentRepository
 
     public function create(array $data): Attachment
     {
-        $uuid = Uuid::uuid4()->toString();
+        $uuid = generate_uuid();
         $sql = '
             INSERT INTO attachments (
                 uuid, post_id, filename, original_name,

@@ -9,7 +9,6 @@ use App\Domains\Post\ValueObjects\PostContent;
 use App\Domains\Post\ValueObjects\PostId;
 use App\Domains\Post\ValueObjects\PostTitle;
 use InvalidArgumentException;
-use Ramsey\Uuid\Uuid;
 
 final class PostFactory
 {
@@ -135,7 +134,7 @@ final class PostFactory
      */
     private function generatePostId(): PostId
     {
-        return PostId::fromString(Uuid::uuid4()->toString());
+        return PostId::fromString(generate_uuid());
     }
 
     /**

@@ -11,6 +11,7 @@ use App\Domains\Post\Enums\PostStatus;
 use App\Domains\Post\Models\Post;
 use App\Domains\Post\Services\PostService;
 use App\Shared\Contracts\ValidatorInterface;
+use App\Shared\Exceptions\ValidationException;
 use Mockery;
 use Mockery\MockInterface;
 use Tests\Support\UnitTestCase;
@@ -117,5 +118,30 @@ class PostServiceTest extends UnitTestCase
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('items', $result);
+    }
+
+    public function testRecordViewWithValidIP(): void
+    {
+        $id = 1;
+        $ip = '127.0.0.1';
+        $post = new Post(['id' => $id, 'status' => PostStatus::PUBLISHED->value]);
+
+        $this->repository->shouldReceive('find')->once()->with($id)->andReturn($post);
+        $this->repository->shouldReceive('incrementViews')->once()->with($id, $ip, null)->andReturn(true);
+
+        $result = $this->service->recordView($id, $ip);
+        $this->assertTrue($result);
+    }
+
+    public function testRecordViewWithInvalidIP(): void
+    {
+        $id = 1;
+        $ip = 'invalid-ip';
+        $post = new Post(['id' => $id, 'status' => PostStatus::PUBLISHED->value]);
+
+        $this->repository->shouldReceive('find')->once()->with($id)->andReturn($post);
+
+        $this->expectException(ValidationException::class);
+        $this->service->recordView($id, $ip);
     }
 }

@@ -21,7 +21,6 @@ use App\Domains\Auth\Contracts\SessionSecurityServiceInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthorizationService;
-use App\Domains\Auth\Services\AuthService;
 use App\Domains\Auth\Services\PasswordSecurityService;
 // Security Services
 use App\Domains\Auth\Services\SessionSecurityService;
@@ -95,10 +94,6 @@ return [
     // Services
     PostServiceInterface::class => DI\autowire(PostService::class)
         ->constructorParameter('repository', DI\get(PostRepositoryInterface::class)),
-
-    AuthService::class => DI\autowire(AuthService::class)
-        ->constructorParameter('userRepository', DI\get(UserRepositoryInterface::class))
-        ->constructorParameter('passwordService', DI\get(PasswordSecurityServiceInterface::class)),
 
     AttachmentService::class => DI\autowire(AttachmentService::class)
         ->constructorParameter('attachmentRepo', DI\get(AttachmentRepositoryInterface::class))

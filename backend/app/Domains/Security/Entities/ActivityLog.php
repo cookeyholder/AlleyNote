@@ -10,7 +10,6 @@ use App\Domains\Security\Enums\ActivityStatus;
 use App\Domains\Security\Enums\ActivityType;
 use DateTime;
 use DateTimeImmutable;
-use Ramsey\Uuid\Uuid;
 use ReflectionObject;
 
 class ActivityLog
@@ -66,7 +65,7 @@ class ActivityLog
         ?string $requestPath = null,
         ?DateTimeImmutable $occurredAt = null,
     ) {
-        $this->uuid = Uuid::uuid4()->toString();
+        $this->uuid = generate_uuid();
         $this->actionType = $actionType;
         $this->actionCategory = $actionType->getCategory();
         $this->severity = $actionType->getSeverity();
