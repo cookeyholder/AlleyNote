@@ -23,7 +23,6 @@ use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Helpers\NetworkHelper;
-use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;

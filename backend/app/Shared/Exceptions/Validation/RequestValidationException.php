@@ -67,9 +67,10 @@ class RequestValidationException extends ValidationException
         return new self('URL 格式錯誤', $errors);
     }
 
-    public static function invalidDate(string $field, string $date): self
+    public static function invalidDate(string $field, mixed $date): self
     {
-        $errors = [$field => "'{$date}' 不是有效的日期格式"];
+        $normalizedDate = is_scalar($date) ? (string) $date : gettype($date);
+        $errors = [$field => "'{$normalizedDate}' 不是有效的日期格式"];
 
         return new self('日期格式錯誤', $errors);
     }
@@ -82,14 +83,20 @@ class RequestValidationException extends ValidationException
                 : (json_encode($allowedValue, JSON_UNESCAPED_UNICODE) ?: get_debug_type($allowedValue)),
             $allowedValues,
         ));
-        $errors = [$field => "'{$value}' 不在允許的值清單中：{$allowedList}"];
+        $normalizedValue = is_scalar($value)
+            ? (string) $value
+            : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: get_debug_type($value));
+        $errors = [$field => "'{$normalizedValue}' 不在允許的值清單中：{$allowedList}"];
 
         return new self('欄位值不在允許範圍內', $errors);
     }
 
-    public static function numericRangeError(string $field, $value, $min = null, mixed $max = null): self
+    public static function numericRangeError(string $field, mixed $value, mixed $min = null, mixed $max = null): self
     {
-        $message = "欄位 '{$field}' 的值 '{$value}' 超出允許範圍";
+        $normalizedValue = is_scalar($value)
+            ? (string) $value
+            : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: get_debug_type($value));
+        $message = "欄位 '{$field}' 的值 '{$normalizedValue}' 超出允許範圍";
         if ($min !== null && $max !== null) {
             $message .= "（範圍：{$min} - {$max}）";
         } elseif ($min !== null) {

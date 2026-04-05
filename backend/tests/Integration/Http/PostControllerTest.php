@@ -95,6 +95,27 @@ class PostControllerTest extends ApiTestCase
     }
 
     #[Test]
+    public function showShouldReturn404WhenNotFound(): void
+    {
+        $request = $this
+            ->actingAs(['id' => 1, 'email' => 'post-show-not-found@example.com'])
+            ->json('GET', '/api/posts/999')
+            ->withAttribute('user_id', 1);
+
+        $this->postService
+            ->shouldReceive('findById')
+            ->once()
+            ->with(999)
+            ->andThrow(new \App\Domains\Post\Exceptions\PostNotFoundException(999, 'Post not found'));
+
+        $this->postService->shouldReceive('recordView')->never();
+        $this->postViewStatsService->shouldReceive('getPostViewStats')->never();
+
+        $response = $this->controller()->show($request, $this->createApiResponse(), ['id' => '999']);
+        $this->assertSame(404, $response->getStatusCode());
+    }
+
+    #[Test]
     public function showShouldReturnPostDetails(): void
     {
         $request = $this

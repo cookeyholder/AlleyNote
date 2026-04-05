@@ -102,6 +102,8 @@ abstract class ApiTestCase extends IntegrationTestCase
         $allHeaders = array_merge($defaultHeaders, $headers);
         if ($normalizedMethod !== 'GET') {
             $allHeaders['Content-Type'] ??= 'application/json';
+        } else {
+            unset($allHeaders['Content-Type']);
         }
 
         if ($data !== [] && $normalizedMethod !== 'GET') {
