@@ -45,7 +45,7 @@
 - [x] 6.2 在 CI 中加入 `composer install` + `composer cs-check` + `composer analyse` + `composer test`
 - [x] 6.3 在 CI 中加入 `npm ci` + `npx prettier --check`
 - [x] 6.4 修正 ci.yml 重複步驟（code style/analysis/tests 各執行兩次）
-- [ ] 6.5 確認 CI 通過後再合併
+- [x] 6.5 確認 CI 通過後再合併
 
 ## 7. 最終驗證
 

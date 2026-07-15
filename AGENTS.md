@@ -206,7 +206,7 @@ docker compose up -d   # 啟動所有服務
 7. **Git commit 訊息、程式碼註解、PR message 都要使用繁體中文**
 8. **程式碼中避免 emoji**
 9. **雙 php-cs-fixer 設定檔**（`.php-cs-fixer.php` 與 `.php-cs-fixer.dist.php`），目標是合併為一份
-10. **無 CI/CD** — `.github/` 目錄存在但為空，需視需求建立
+10. **CI/CD** — GitHub Actions 工作流程位於 `.github/workflows/ci.yml`，在 PR 與 push 至 main/develop 時觸發
 
 ## 安全注意事項
 
