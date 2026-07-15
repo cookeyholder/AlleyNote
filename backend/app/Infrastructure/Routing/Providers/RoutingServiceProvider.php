@@ -97,6 +97,8 @@ class RoutingServiceProvider
             'admin' => __DIR__ . '/../../../../config/routes/admin.php',
             'statistics' => __DIR__ . '/../../../../config/routes/statistics.php',
             'activity-logs' => __DIR__ . '/../../../../config/routes/activity-logs.php',
+            'tag-management' => __DIR__ . '/../../../../config/routes/tag-management.php',
+            'cache-monitor' => __DIR__ . '/../../../../config/routes/cache-monitor.php',
         ];
     }
 

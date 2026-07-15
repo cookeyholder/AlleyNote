@@ -890,7 +890,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             }
         }
         // 只處理需要授權的路徑
-        $authPaths = $this->config['auth_paths'] ?? ['/api/'];
+        $authPaths = $this->config['auth_paths'] ?? ['/api/', '/admin/'];
         foreach ($authPaths as $authPath) {
             if (str_starts_with($path, $authPath)) {
                 return true;
@@ -911,7 +911,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             'default_policy' => self::DEFAULT_POLICY,
             'admin_roles' => self::ADMIN_ROLES,
             'skip_paths' => [],
-            'auth_paths' => ['/api/'],
+            'auth_paths' => ['/api/', '/admin/'],
             'role_permissions' => [
                 'admin' => ['*'],
                 'moderator' => ['posts.*', 'comments.*'],

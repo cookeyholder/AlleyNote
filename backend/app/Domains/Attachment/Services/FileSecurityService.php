@@ -243,6 +243,10 @@ class FileSecurityService implements FileSecurityServiceInterface
             'application/pdf' => ['%PDF-'],
             'text/plain' => [], // 純文字檔案無固定簽名
             'text/csv' => [],
+            'application/msword' => ["\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => ["\x50\x4B\x03\x04"],
+            'application/vnd.ms-excel' => ["\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => ["\x50\x4B\x03\x04"],
         ];
         if (!isset($signatures[$mimeType])) {
             return false;

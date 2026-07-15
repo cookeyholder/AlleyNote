@@ -33,13 +33,31 @@ class RouteDispatcher
         // 1. 路由匹配
         $matchResult = $this->router->dispatch($request);
         if (!$matchResult->isMatched()) {
-            return $this->handleNotFound($request);
+            $response = $this->handleNotFound($request);
+            try {
+                if ($this->container->has(\App\Domains\Security\Services\Headers\SecurityHeaderService::class)) {
+                    $headerService = $this->container->get(\App\Domains\Security\Services\Headers\SecurityHeaderService::class);
+                    $headerService->setSecurityHeaders();
+                    $headerService->removeServerSignature();
+                }
+            } catch (Throwable $e) {
+                // 忽略以防服務未註冊
+            }
+            return $response;
         }
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
-        // 2. 準備中間件鏈（解析字串別名）
-        $middlewares = $route->getMiddlewares();
+        // 2. 準備中間件鏈（將全域安全性標頭中間件放在最前面）
         $resolvedMiddlewares = [];
+        try {
+            if ($this->container->has(\App\Application\Middleware\SecurityHeadersMiddleware::class)) {
+                $resolvedMiddlewares[] = $this->container->get(\App\Application\Middleware\SecurityHeadersMiddleware::class);
+            }
+        } catch (Throwable $e) {
+            // 忽略
+        }
+
+        $middlewares = $route->getMiddlewares();
         foreach ($middlewares as $middleware) {
             try {
                 if (is_string($middleware)) {

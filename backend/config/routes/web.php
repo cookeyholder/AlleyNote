@@ -79,10 +79,11 @@ return [
         'methods' => ['GET'],
         'path' => '/assets/{path}',
         'handler' => function ($path) {
-            // 簡單的靜態檔案處理
-            $filePath = __DIR__ . '/../../public/assets/' . $path;
+            // 簡單的靜態檔案處理，加入防範路徑遍歷驗證
+            $basePath = realpath(__DIR__ . '/../../public/assets') . DIRECTORY_SEPARATOR;
+            $filePath = realpath($basePath . $path);
 
-            if (!file_exists($filePath) || !is_file($filePath)) {
+            if ($filePath === false || !str_starts_with($filePath, $basePath) || !is_file($filePath)) {
                 return [
                     'error' => 'File not found',
                     'path' => $path

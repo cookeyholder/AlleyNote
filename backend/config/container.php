@@ -121,6 +121,10 @@ return array_merge(
         }),
         'csrf' => \DI\get(\App\Application\Middleware\CsrfMiddleware::class),
 
+        // 安全性標頭全域中間件
+        \App\Application\Middleware\SecurityHeadersMiddleware::class => \DI\autowire(\App\Application\Middleware\SecurityHeadersMiddleware::class),
+        'security_headers' => \DI\get(\App\Application\Middleware\SecurityHeadersMiddleware::class),
+
         // 其他控制器
         \App\Application\Controllers\Api\V1\PostViewController::class => \DI\autowire(\App\Application\Controllers\Api\V1\PostViewController::class),
     ],
@@ -221,13 +225,6 @@ return array_merge(
         \App\Application\Controllers\Admin\TagManagementController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
             $cacheManager = $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class);
 
-            $tagRepository = null;
-            try {
-                $tagRepository = $container->get(\App\Shared\Cache\Contracts\TagRepositoryInterface::class);
-            } catch (\Exception) {
-                // 標籤倉庫不可用
-            }
-
             $groupManager = null;
             try {
                 $groupManager = $container->get(\App\Shared\Cache\Services\CacheGroupManager::class);
@@ -242,11 +239,18 @@ return array_merge(
                 // 記錄器不可用
             }
 
+            $headerService = null;
+            try {
+                $headerService = $container->get(\App\Domains\Security\Services\Headers\SecurityHeaderService::class);
+            } catch (\Exception) {
+                // 安全性標頭服務不可用
+            }
+
             return new \App\Application\Controllers\Admin\TagManagementController(
                 $cacheManager,
-                $tagRepository,
                 $groupManager,
-                $logger
+                $logger,
+                $headerService
             );
         }),
     ],
