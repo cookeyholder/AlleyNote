@@ -469,10 +469,8 @@ class ValidationResultTest extends UnitTestCase
         $result = new ValidationResult(false, $largeErrors, $largeValidatedData, $largeFailedRules);
 
         // 執行各種操作
-        $result->getErrors();
-        $result->getAllErrors();
-        count($result->getAllErrors()); // 計算錯誤數
-        count($result->getErrors()); // 計算欄位數
+        $this->assertCount(2000, $result->getAllErrors());
+        $this->assertCount(1000, $result->getErrors());
         $result->toArray();
         json_encode($result);
 

@@ -117,6 +117,15 @@ jobs:
         working-directory: tests/e2e
         run: npm test
 
+      - name: Cancel other workflows on failure (E2E)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Canceling other running workflows for commit $SHA..."
+          gh run list --commit "$SHA" --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
+
       - name: Show logs on failure
         if: failure()
         run: |
@@ -180,5 +189,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Canceling other running workflows for commit ${{ github.sha }}..."
-          gh run list --commit ${{ github.sha }} --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Canceling other running workflows for commit $SHA..."
+          gh run list --commit "$SHA" --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
