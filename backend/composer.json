@@ -19,7 +19,7 @@
         "psr/http-server-middleware": "^1.0",
         "firebase/php-jwt": "^6.11 || ^7.0",
         "league/mime-type-detection": "^1.16",
-        "zircote/swagger-php": "^5.0 || ^6.0",
+        "zircote/swagger-php": "6.1.2",
         "ramsey/uuid": "^4.0",
         "ezyang/htmlpurifier": "^4.16",
         "guzzlehttp/guzzle": "^7.0",
