@@ -21,43 +21,29 @@ export default class StatisticsPage extends BaseAdminPage {
     this.timeRange = "week";
   }
 
-  async init() {
-    await this.loadStatistics();
+  async loadData() {
+    const [overview, popularPosts, loginFailures, trafficData] =
+      await Promise.all([
+        this.loadOverviewFromAPI(),
+        this.loadPopularPosts(),
+        this.loadLoginFailures(),
+        this.loadTrafficData(),
+      ]);
+
+    this.stats = {
+      overview,
+      popularPosts,
+      loginFailures,
+      trafficData,
+    };
+  }
+
+  afterRender() {
+    this.initCharts();
   }
 
   async loadStatistics() {
-    try {
-      this.loading = true;
-      this.render();
-      this.attachEventListeners();
-
-      // 使用實際 API 取得統計資料
-      const [overview, popularPosts, loginFailures, trafficData] =
-        await Promise.all([
-          this.loadOverviewFromAPI(),
-          this.loadPopularPosts(),
-          this.loadLoginFailures(),
-          this.loadTrafficData(),
-        ]);
-
-      this.stats = {
-        overview,
-        popularPosts,
-        loginFailures,
-        trafficData,
-      };
-
-      this.loading = false;
-      this.render();
-      this.attachEventListeners();
-      this.initCharts();
-    } catch (error) {
-      console.error("載入統計資料失敗:", error);
-      notification.error("載入統計資料失敗");
-      this.loading = false;
-      this.render();
-      this.attachEventListeners();
-    }
+    await this.init();
   }
 
   async loadOverviewFromAPI() {

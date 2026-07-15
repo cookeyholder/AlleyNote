@@ -22,35 +22,21 @@ export default class RolesPage extends BaseAdminPage {
     this.selectedRole = null;
   }
 
-  async init() {
-    await this.loadRolesAndPermissions();
+  async loadData() {
+    const [rolesResponse, permissionsResponse] = await Promise.all([
+      rolesAPI.getAll(),
+      rolesAPI.getGroupedPermissions(),
+    ]);
+
+    this.roles = rolesResponse.data || [];
+    this.groupedPermissions = permissionsResponse.data || {};
   }
 
   /**
    * 載入角色和權限資料
    */
   async loadRolesAndPermissions() {
-    try {
-      this.loading = true;
-      this.render();
-
-      // 載入角色列表和權限列表
-      const [rolesResponse, permissionsResponse] = await Promise.all([
-        rolesAPI.getAll(),
-        rolesAPI.getGroupedPermissions(),
-      ]);
-
-      this.roles = rolesResponse.data || [];
-      this.groupedPermissions = permissionsResponse.data || {};
-
-      this.loading = false;
-      this.render();
-    } catch (error) {
-      console.error("載入資料失敗:", error);
-      notification.error("載入資料失敗");
-      this.loading = false;
-      this.render();
-    }
+    await this.init();
   }
 
   render() {
@@ -80,7 +66,6 @@ export default class RolesPage extends BaseAdminPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "角色管理" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderLoading() {

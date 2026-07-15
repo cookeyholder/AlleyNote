@@ -17,31 +17,18 @@ export default class TagsPage extends BaseAdminPage {
     this.modal = null;
   }
 
-  async init() {
-    await this.loadTags();
+  async loadData() {
+    const result = await tagsAPI.getAll();
+
+    if (result.success && result.data) {
+      this.tags = result.data;
+    } else {
+      this.tags = [];
+    }
   }
 
   async loadTags() {
-    try {
-      this.loading = true;
-      this.render();
-
-      const result = await tagsAPI.getAll();
-
-      if (result.success && result.data) {
-        this.tags = result.data;
-      } else {
-        this.tags = [];
-      }
-
-      this.loading = false;
-      this.render();
-    } catch (error) {
-      console.error("載入標籤列表失敗:", error);
-      notification.error("載入標籤列表失敗");
-      this.loading = false;
-      this.render();
-    }
+    await this.init();
   }
 
   render() {
@@ -71,7 +58,6 @@ export default class TagsPage extends BaseAdminPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "標籤管理" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderTagsList() {

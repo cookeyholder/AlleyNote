@@ -18,20 +18,13 @@ export default class ProfilePage extends BaseAdminPage {
     this.isEditingPassword = false;
   }
 
-  async init() {
-    // 載入使用者資訊
-    await this.loadUserInfo();
+  async loadData() {
+    const response = await authAPI.me();
+    this.user = response;
   }
 
   async loadUserInfo() {
-    try {
-      const response = await authAPI.me();
-      this.user = response;
-      this.render();
-    } catch (error) {
-      console.error("載入使用者資訊失敗:", error);
-      notification.error("載入使用者資訊失敗");
-    }
+    await this.init();
   }
 
   render() {
@@ -93,7 +86,6 @@ export default class ProfilePage extends BaseAdminPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "個人資料" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderInfoDisplay() {

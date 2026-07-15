@@ -24,17 +24,16 @@ export default class UsersPage extends BaseAdminPage {
     this.passwordIndicator = null;
   }
 
-  async init() {
-    await Promise.all([this.loadUsers(), this.loadRoles()]);
+  async loadData() {
+    await Promise.all([this.fetchUsers(), this.fetchRoles()]);
   }
 
-  async loadRoles() {
+  async fetchRoles() {
     try {
       const response = await usersAPI.getRoles();
       if (response.success && response.data) {
         this.roles = response.data;
       } else {
-        // 使用預設角色
         this.roles = [
           { id: 1, name: "admin", display_name: "管理員" },
           { id: 2, name: "editor", display_name: "編輯者" },
@@ -43,7 +42,6 @@ export default class UsersPage extends BaseAdminPage {
       }
     } catch (error) {
       console.error("載入角色列表失敗:", error);
-      // 使用預設角色
       this.roles = [
         { id: 1, name: "admin", display_name: "管理員" },
         { id: 2, name: "editor", display_name: "編輯者" },
@@ -52,14 +50,10 @@ export default class UsersPage extends BaseAdminPage {
     }
   }
 
-  async loadUsers(page = 1) {
+  async fetchUsers() {
     try {
-      this.loading = true;
-      this.currentPage = page;
-      this.render();
-
       const response = await usersAPI.getAll({
-        page,
+        page: this.currentPage,
         per_page: 20,
       });
 
@@ -73,18 +67,21 @@ export default class UsersPage extends BaseAdminPage {
         this.users = [];
         this.totalPages = 1;
       }
-
-      this.loading = false;
-      this.render();
     } catch (error) {
       console.error("載入使用者列表失敗:", error);
       notification.error(
         "載入使用者列表失敗：" + (error.message || "未知錯誤"),
       );
       this.users = [];
-      this.loading = false;
-      this.render();
+      this.totalPages = 1;
     }
+  }
+
+  async loadUsers(page) {
+    if (page !== undefined) {
+      this.currentPage = page;
+    }
+    await this.init();
   }
 
   render() {
@@ -114,7 +111,6 @@ export default class UsersPage extends BaseAdminPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "使用者管理" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderUsersList() {

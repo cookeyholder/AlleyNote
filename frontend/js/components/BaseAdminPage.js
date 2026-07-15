@@ -11,12 +11,29 @@ export default class BaseAdminPage {
   }
 
   /**
-   * 初始化頁面生命週期
-   * 子類別可覆寫此方法，並在必要時呼叫 super.init()
+   * 初始化頁面生命週期（模板方法模式）
+   * 子類別不應覆寫此方法，應改為覆寫 loadData()
    */
   async init() {
+    this.showLoading();
+    try {
+      await this.loadData();
+    } catch (error) {
+      console.error("載入頁面資料失敗:", error);
+    } finally {
+      this.hideLoading();
+    }
     await this.render();
     this.attachEventListeners();
+    this.afterRender();
+  }
+
+  /**
+   * 載入頁面所需的資料
+   * 子類別應覆寫此方法，不應覆寫 init()
+   */
+  async loadData() {
+    // 由子類別實作
   }
 
   /**
@@ -33,6 +50,14 @@ export default class BaseAdminPage {
    */
   attachEventListeners() {
     // 由子類別實作
+  }
+
+  /**
+   * 渲染完成後處理（例如初始化圖表）
+   * 子類別可選擇性覆寫
+   */
+  afterRender() {
+    // 由子類別選擇性實作
   }
 
   /**
