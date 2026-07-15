@@ -18,7 +18,7 @@
 
 - [x] 3.1 將 `.php-cs-fixer.php` 與 `.php-cs-fixer.dist.php` 合併為單一設定檔
 - [x] 3.2 刪除 `backend/backend/phpstan-level-10-baseline.neon`（重複巢狀檔案）
-- [ ] 3.3 將分析報告從 `backend/storage/` 移至 `docs/archive/`
+- [x] 3.3 將分析報告從 `backend/storage/` 移至 `docs/archive/`（storage/app 已無報告檔）
 
 ## 4. 程式碼格式化
 
