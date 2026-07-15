@@ -6,7 +6,7 @@
     <title>快取標籤管理 - AlleyNote</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
+    <style nonce="<?= $nonce ?>">
         .tag-badge {
             font-size: 0.875rem;
             margin: 2px;

@@ -105,7 +105,7 @@ export default class CacheTagsPage {
         <td>
           <code>${this.escapeHtml(tag.name)}</code>
           ${tag.sample_keys.length > 0
-            ? `<small class="text-muted d-block">範例: ${tag.sample_keys.slice(0, 2).map((k) => k).join(", ")}</small>`
+            ? `<small class="text-muted d-block">範例: ${tag.sample_keys.slice(0, 2).map((k) => this.escapeHtml(k)).join(", ")}</small>`
             : ""
           }
         </td>
@@ -238,11 +238,11 @@ export default class CacheTagsPage {
     const listEl = document.getElementById("bulkDeleteTagsList");
     listEl.innerHTML = "";
 
-    this.allTags.forEach((tag) => {
+    this.allTags.forEach((tag, index) => {
       listEl.innerHTML += `
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="${this.escapeHtml(tag.name)}" id="tag_${tag.name}">
-          <label class="form-check-label" for="tag_${tag.name}">
+          <input class="form-check-input" type="checkbox" value="${this.escapeHtml(tag.name)}" id="bulkTag_${index}">
+          <label class="form-check-label" for="bulkTag_${index}">
             <code>${this.escapeHtml(tag.name)}</code>
             <span class="badge bg-info">${tag.key_count} 鍵</span>
           </label>
