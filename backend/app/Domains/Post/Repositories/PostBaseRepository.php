@@ -50,7 +50,7 @@ abstract class PostBaseRepository
         return $sql;
     }
 
-    protected function preparePostData(array $result): mixed
+    protected function preparePostData(array $result): array
     {
         $publishDate = $result['publish_date'] ?? null;
         if (is_string($publishDate) && strpos($publishDate, 'T') === false) {

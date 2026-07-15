@@ -471,7 +471,7 @@ class PostCrudRepository extends PostBaseRepository
         }
     }
 
-    private function prepareNewPostData(array $data): mixed
+    private function prepareNewPostData(array $data): array
     {
         $now = format_datetime();
 
