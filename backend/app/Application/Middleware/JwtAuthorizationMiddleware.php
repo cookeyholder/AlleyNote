@@ -895,6 +895,9 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             if (str_starts_with($path, $authPath)) {
                 return true;
             }
+            if ($authPath === '/admin/' && $path === '/admin') {
+                return true;
+            }
         }
 
         return false;

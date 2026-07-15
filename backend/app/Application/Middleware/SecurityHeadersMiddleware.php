@@ -29,15 +29,29 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
+        $response = $handler->handle($request);
+
         if (!$this->enabled) {
-            return $handler->handle($request);
+            return $response;
         }
 
-        // 調用 SecurityHeaderService 設定全域安全性 HTTP 標頭
-        $this->headerService->setSecurityHeaders();
-        $this->headerService->removeServerSignature();
+        // 獲取安全標頭清單並套用到 PSR-7 Response 物件中 (符合 PSR-7 架構規範)
+        $headers = $this->headerService->generateHeaders();
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
 
-        return $handler->handle($request);
+        // 處理伺服器簽章與敏感資訊移除
+        $response = $response->withoutHeader('X-Powered-By');
+        if ($this->headerService->isServerSignatureEnabled()) {
+            if (isset($headers['Server'])) {
+                $response = $response->withHeader('Server', $headers['Server']);
+            }
+        } else {
+            $response = $response->withoutHeader('Server');
+        }
+
+        return $response;
     }
 
     public function getPriority(): int

@@ -37,8 +37,18 @@ class RouteDispatcher
             try {
                 if ($this->container->has(\App\Domains\Security\Services\Headers\SecurityHeaderService::class)) {
                     $headerService = $this->container->get(\App\Domains\Security\Services\Headers\SecurityHeaderService::class);
-                    $headerService->setSecurityHeaders();
-                    $headerService->removeServerSignature();
+                    $headers = $headerService->generateHeaders();
+                    foreach ($headers as $name => $value) {
+                        $response = $response->withHeader($name, $value);
+                    }
+                    $response = $response->withoutHeader('X-Powered-By');
+                    if ($headerService->isServerSignatureEnabled()) {
+                        if (isset($headers['Server'])) {
+                            $response = $response->withHeader('Server', $headers['Server']);
+                        }
+                    } else {
+                        $response = $response->withoutHeader('Server');
+                    }
                 }
             } catch (Throwable $e) {
                 // 忽略以防服務未註冊

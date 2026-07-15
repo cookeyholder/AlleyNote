@@ -770,10 +770,10 @@ class TagManagementController extends BaseController
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h1><i class="bi bi-tags"></i> 快取標籤管理</h1>
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary" onclick="refreshData()">
+                        <button class="btn btn-outline-primary" id="btnRefresh">
                             <i class="bi bi-arrow-clockwise"></i> 重新整理
                         </button>
-                        <button class="btn btn-danger" onclick="showBulkDeleteModal()">
+                        <button class="btn btn-danger" id="btnBulkDelete">
                             <i class="bi bi-trash"></i> 批量清空
                         </button>
                     </div>
@@ -819,7 +819,7 @@ class TagManagementController extends BaseController
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <input type="text" class="form-control search-input" id="searchInput"
-                               placeholder="搜尋標籤..." onkeyup="handleSearch()">
+                               placeholder="搜尋標籤...">
                     </div>
                     <div class="col-md-6 text-end">
                         <nav aria-label="分頁">
@@ -897,7 +897,7 @@ class TagManagementController extends BaseController
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-danger" onclick="executeBulkDelete()">確認清空</button>
+                    <button type="button" class="btn btn-danger" id="btnExecuteBulkDelete">確認清空</button>
                 </div>
             </div>
         </div>
@@ -914,6 +914,38 @@ class TagManagementController extends BaseController
         document.addEventListener('DOMContentLoaded', function() {
             loadStatistics();
             loadTags();
+
+            // 綁定事件監聽器 (符合 CSP 規範)
+            document.getElementById('btnRefresh').addEventListener('click', refreshData);
+            document.getElementById('btnBulkDelete').addEventListener('click', showBulkDeleteModal);
+            document.getElementById('btnExecuteBulkDelete').addEventListener('click', executeBulkDelete);
+            document.getElementById('searchInput').addEventListener('keyup', handleSearch);
+
+            // 列表事件委派
+            document.getElementById('tagsTableBody').addEventListener('click', function(e) {
+                const btnDetails = e.target.closest('.btn-tag-details');
+                if (btnDetails) {
+                    const tagName = btnDetails.getAttribute('data-tag');
+                    showTagDetails(tagName);
+                    return;
+                }
+                const btnFlush = e.target.closest('.btn-flush-tag');
+                if (btnFlush) {
+                    const tagName = btnFlush.getAttribute('data-tag');
+                    flushTag(tagName);
+                    return;
+                }
+            });
+
+            // 分頁事件委派
+            document.getElementById('pagination').addEventListener('click', function(e) {
+                const link = e.target.closest('.page-nav-link');
+                if (link) {
+                    e.preventDefault();
+                    const page = parseInt(link.getAttribute('data-page'), 10);
+                    loadTags(page, currentSearch);
+                }
+            });
         });
 
         // 載入統計資訊
@@ -1000,10 +1032,10 @@ class TagManagementController extends BaseController
                     </td>
                     <td class="table-actions">
                         <div class="btn-group btn-group-sm">
-                            <button class="btn btn-outline-primary" onclick="showTagDetails('${escapeHtml(tag.name)}')">
+                            <button class="btn btn-outline-primary btn-tag-details" data-tag="${escapeHtml(tag.name)}">
                                 <i class="bi bi-info-circle"></i>
                             </button>
-                            <button class="btn btn-outline-danger" onclick="flushTag('${escapeHtml(tag.name)}')">
+                            <button class="btn btn-outline-danger btn-flush-tag" data-tag="${escapeHtml(tag.name)}">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -1022,7 +1054,7 @@ class TagManagementController extends BaseController
 
             // 上一頁
             if (pagination.page > 1) {
-                paginationEl.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadTags(${pagination.page - 1}, '${currentSearch}')">上一頁</a></li>`;
+                paginationEl.innerHTML += `<li class="page-item"><a class="page-link page-nav-link" href="#" data-page="${pagination.page - 1}">上一頁</a></li>`;
             }
 
             // 頁碼
@@ -1031,12 +1063,12 @@ class TagManagementController extends BaseController
 
             for (let i = start; i <= end; i++) {
                 const active = i === pagination.page ? 'active' : '';
-                paginationEl.innerHTML += `<li class="page-item ${active}"><a class="page-link" href="#" onclick="loadTags(${i}, '${currentSearch}')">${i}</a></li>`;
+                paginationEl.innerHTML += `<li class="page-item ${active}"><a class="page-link page-nav-link" href="#" data-page="${i}">${i}</a></li>`;
             }
 
             // 下一頁
             if (pagination.page < pagination.pages) {
-                paginationEl.innerHTML += `<li class="page-item"><a class="page-link" href="#" onclick="loadTags(${pagination.page + 1}, '${currentSearch}')">下一頁</a></li>`;
+                paginationEl.innerHTML += `<li class="page-item"><a class="page-link page-nav-link" href="#" data-page="${pagination.page + 1}">下一頁</a></li>`;
             }
         }
 
