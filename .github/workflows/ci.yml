@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -32,7 +32,7 @@ jobs:
           coverage: xdebug
 
       - name: Cache Composer packages
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: backend/vendor
           key: ${{ runner.os }}-php-${{ matrix.php-versions }}-${{ hashFiles('backend/composer.lock') }}
@@ -141,10 +141,59 @@ jobs:
             echo "⚠️  PHPUnit 未安裝，跳過測試"
           fi
 
-      - name: Cancel other workflows on failure
+      - name: Cancel other workflows on failure (audit)
         if: failure()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Canceling other running workflows for commit ${{ github.sha }}..."
-          gh run list --commit ${{ github.sha }} --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Canceling other running workflows for commit $SHA..."
+          gh run list --commit "$SHA" --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
+
+      - name: Run code style check
+        working-directory: backend
+        run: |
+          if [ -f "vendor/bin/php-cs-fixer" ]; then
+            echo "🎨 執行程式碼風格檢查..."
+            composer cs-check
+          else
+            echo "⚠️  PHP-CS-Fixer 未安裝，跳過程式碼風格檢查"
+          fi
+
+      - name: Run static analysis
+        working-directory: backend
+        run: |
+          if [ -f "vendor/bin/phpstan" ]; then
+            echo "🔬 執行靜態分析..."
+            composer analyse
+          else
+            echo "⚠️  PHPStan 未安裝，跳過靜態分析"
+          fi
+
+      - name: Cancel other workflows on failure (analysis)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Canceling other running workflows for commit $SHA..."
+          gh run list --commit "$SHA" --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
+
+      - name: Run tests
+        working-directory: backend
+        run: |
+          if [ -f "vendor/bin/phpunit" ]; then
+            echo "🧪 執行單元測試..."
+            vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+          else
+            echo "⚠️  PHPUnit 未安裝，跳過測試"
+          fi
+
+      - name: Cancel other workflows on failure (tests)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          echo "Canceling other running workflows for commit $SHA..."
+          gh run list --commit "$SHA" --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
