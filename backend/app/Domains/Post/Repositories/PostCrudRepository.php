@@ -168,7 +168,7 @@ class PostCrudRepository extends PostBaseRepository
                 $errorInfo = $stmt->errorInfo();
 
                 $errorMsg = $errorInfo[2] ?? 'unknown';
-throw new PDOException('Failed to insert post: ' . (is_scalar($errorMsg) ? (string) $errorMsg : 'unknown'));
+                throw new PDOException('Failed to insert post: ' . (is_scalar($errorMsg) ? (string) $errorMsg : 'unknown'));
             }
             $postId = (int) $this->db->lastInsertId();
 
