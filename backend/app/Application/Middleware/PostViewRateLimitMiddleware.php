@@ -7,6 +7,7 @@ namespace App\Application\Middleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface as RoutingMiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Services\RateLimitService;
+use App\Shared\Helpers\NetworkHelper;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -174,26 +175,25 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
     private function getRealClientIP(ServerRequestInterface $request): string
     {
         $serverParams = $request->getServerParams();
-        // 檢查代理伺服器的標頭
-        $headers = [
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_REAL_IP',
-            'HTTP_CF_CONNECTING_IP', // Cloudflare
-            'HTTP_X_FORWARDED',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-        ];
-        foreach ($headers as $header) {
-            if (!empty($serverParams[$header]) && is_string($serverParams[$header])) {
-                $ips = array_map('trim', explode(',', $serverParams[$header]));
-                foreach ($ips as $ip) {
-                    // 驗證 IP 並排除私有和保留地址
-                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                        return $ip;
-                    }
-                }
-            }
+        $ip = NetworkHelper::getClientIpFromServerParams(
+            $request,
+            [
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_REAL_IP',
+                'HTTP_CF_CONNECTING_IP', // Cloudflare
+                'HTTP_X_FORWARDED',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+            ],
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+            true, // 迭代所有 IP
+            '',
+        );
+
+        if ($ip !== '') {
+            return $ip;
         }
+
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
 
         return is_string($remoteAddr) ? $remoteAddr : '127.0.0.1';

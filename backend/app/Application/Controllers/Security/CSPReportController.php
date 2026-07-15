@@ -6,6 +6,7 @@ namespace App\Application\Controllers\Security;
 
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Enums\ActivitySeverity;
+use App\Shared\Helpers\NetworkHelper;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
@@ -111,28 +112,24 @@ class CSPReportController
     private function getClientIP(Request $request): string
     {
         $serverParams = $request->getServerParams();
-        // 檢查是否通過代理
-        $headers = [
-            'HTTP_CF_CONNECTING_IP',     // Cloudflare
-            'HTTP_CLIENT_IP',
-            'HTTP_X_FORWARDED_FOR',
-            'HTTP_X_FORWARDED',
-            'HTTP_X_CLUSTER_CLIENT_IP',
-            'HTTP_FORWARDED_FOR',
-            'HTTP_FORWARDED',
-            'REMOTE_ADDR',
-        ];
-        foreach ($headers as $header) {
-            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
-                $ip = $serverParams[$header];
-                // X-Forwarded-For 可能包含多個 IP
-                if (strpos($ip, ',') !== false) {
-                    $ip = trim(explode(',', $ip)[0]);
-                }
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
-                }
-            }
+        $ip = NetworkHelper::getClientIpFromServerParams(
+            $request,
+            [
+                'HTTP_CF_CONNECTING_IP',     // Cloudflare
+                'HTTP_CLIENT_IP',
+                'HTTP_X_FORWARDED_FOR',
+                'HTTP_X_FORWARDED',
+                'HTTP_X_CLUSTER_CLIENT_IP',
+                'HTTP_FORWARDED_FOR',
+                'HTTP_FORWARDED',
+            ],
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+            false,
+            '',
+        );
+
+        if ($ip !== '') {
+            return $ip;
         }
 
         return $serverParams['REMOTE_ADDR'] ?? 'unknown';

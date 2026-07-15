@@ -68,9 +68,9 @@ final class NetworkHelper
     }
 
     /**
-     * 檢查 IP 是否在指定的範圍內 (支援單一 IP 或 CIDR).
+     * 檢查 IP 是否在指定的範圍內 (支援單一 IP、CIDR 或萬用字元 *).
      */
-    private static function isIpInRanges(string $ip, array $ranges): bool
+    public static function isIpInRanges(string $ip, array $ranges): bool
     {
         foreach ($ranges as $range) {
             if (!is_string($range)) {
@@ -78,6 +78,11 @@ final class NetworkHelper
             }
             if (str_contains($range, '/')) {
                 if (self::ipInNetwork($ip, $range)) {
+                    return true;
+                }
+            } elseif (str_contains($range, '*')) {
+                $regex = '/^' . str_replace('\*', '.*', preg_quote($range, '/')) . '$/';
+                if (preg_match($regex, $ip) === 1) {
                     return true;
                 }
             } elseif ($ip === $range) {
@@ -91,7 +96,7 @@ final class NetworkHelper
     /**
      * 檢查 IP 是否屬於 CIDR 網路.
      */
-    private static function ipInNetwork(string $ip, string $range): bool
+    public static function ipInNetwork(string $ip, string $range): bool
     {
         $parts = explode('/', $range, 2);
         if (count($parts) !== 2) {
@@ -119,5 +124,122 @@ final class NetworkHelper
 
         // 目前僅實作 IPv4 範圍檢查，IPv6 可未來擴充
         return false;
+    }
+
+    /**
+     * 從伺服器參數中取得客戶端 IP 位址.
+     *
+     * @param Request $request PSR-7 請求對象
+     * @param array<int, string> $headerPriority 標頭優先順序（Server Param Key 陣列）
+     * @param int $filterFlags filter_var 驗證旗標（如 FILTER_FLAG_NO_PRIV_RANGE）
+     * @param bool $iterateAllIps 是否迭代標頭中的所有 IP（預設僅取第一個）
+     * @param string $fallback 無有效 IP 時的回退值
+     *
+     * @return string 客戶端 IP 位址
+     */
+    public static function getClientIpFromServerParams(
+        Request $request,
+        array $headerPriority,
+        int $filterFlags,
+        bool $iterateAllIps = false,
+        string $fallback = '127.0.0.1',
+    ): string {
+        $serverParams = $request->getServerParams();
+
+        foreach ($headerPriority as $header) {
+            if (empty($serverParams[$header]) || !is_string($serverParams[$header])) {
+                continue;
+            }
+
+            $value = $serverParams[$header];
+
+            if ($iterateAllIps) {
+                $ips = array_map('trim', explode(',', $value));
+                foreach ($ips as $ip) {
+                    if (filter_var($ip, FILTER_VALIDATE_IP, $filterFlags)) {
+                        return $ip;
+                    }
+                }
+            } else {
+                $ip = trim(explode(',', $value)[0]);
+                if (filter_var($ip, FILTER_VALIDATE_IP, $filterFlags)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return $fallback;
+    }
+
+    /**
+     * 根據 REMOTE_ADDR 是否為私有範圍決定是否信任轉發標頭.
+     *
+     * @param Request $request PSR-7 請求對象
+     * @param array<int, string> $headerPriority 標頭優先順序（Server Param Key 陣列）
+     * @param bool $iterateAllIps 是否迭代標頭中的所有 IP（預設僅取第一個）
+     * @param string $fallback 無有效 IP 時的回退值（預設 127.0.0.1）
+     *
+     * @return string 客戶端 IP 位址
+     */
+    public static function getClientIpWithPrivateCheck(
+        Request $request,
+        array $headerPriority,
+        bool $iterateAllIps = false,
+        string $fallback = '127.0.0.1',
+    ): string {
+        $serverParams = $request->getServerParams();
+        $remoteAddr = $serverParams['REMOTE_ADDR'] ?? $fallback;
+        if (!is_string($remoteAddr)) {
+            $remoteAddr = $fallback;
+        }
+
+        $isTrustedProxy = filter_var(
+            $remoteAddr,
+            FILTER_VALIDATE_IP,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+        ) === false;
+
+        if ($isTrustedProxy) {
+            return self::getClientIpFromServerParams(
+                $request,
+                $headerPriority,
+                FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+                $iterateAllIps,
+                $remoteAddr,
+            );
+        }
+
+        return $remoteAddr;
+    }
+
+    /**
+     * 遮罩 IP 位址以保護隱私.
+     *
+     * IPv4 隱藏最後一段（如 192.168.1.xxx），
+     * IPv6 保留前四段（如 2001:db8::xxxx），
+     * 無效 IP 以 xxxx 取代末四字元.
+     */
+    public static function maskIpAddress(string $ip): string
+    {
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $parts = explode('.', $ip);
+            $parts[3] = 'xxx';
+
+            return implode('.', $parts);
+        }
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            if (str_contains($ip, '::')) {
+                $parts = explode('::', $ip);
+
+                return $parts[0] . '::xxxx';
+            }
+
+            $parts = explode(':', $ip);
+            if (count($parts) >= 4) {
+                return implode(':', array_slice($parts, 0, 4)) . '::xxxx';
+            }
+        }
+
+        return substr($ip, 0, -4) . 'xxxx';
     }
 }

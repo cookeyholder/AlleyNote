@@ -7,6 +7,7 @@ namespace App\Application\Middleware;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use App\Infrastructure\Services\RateLimitService;
+use App\Shared\Helpers\NetworkHelper;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -31,7 +32,7 @@ class RateLimitMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         }
         // 取得真實客戶端 IP
-        $ip = $this->getRealClientIP($request->getServerParams());
+        $ip = $this->getRealClientIP($request);
         // 判斷操作類型
         $action = $this->determineAction($request);
         // 取得使用者 ID（如果已登入）
@@ -215,17 +216,14 @@ class RateLimitMiddleware implements MiddlewareInterface
     /**
      * 取得真實的客戶端 IP 位址.
      */
-    private function getRealClientIP(array $serverParams): string
+    private function getRealClientIP(Request $request): string
     {
+        $serverParams = $request->getServerParams();
         $remoteAddr = $serverParams['REMOTE_ADDR'] ?? '127.0.0.1';
-        // 僅在請求來自可信代理（本地回環或私有網路）時才信任轉發標頭
-        $isTrustedProxy = filter_var(
-            $remoteAddr,
-            FILTER_VALIDATE_IP,
-            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
-        ) === false;
-        if ($isTrustedProxy) {
-            $headers = [
+
+        return NetworkHelper::getClientIpWithPrivateCheck(
+            $request,
+            [
                 'HTTP_X_FORWARDED_FOR',
                 'HTTP_X_REAL_IP',
                 'HTTP_CLIENT_IP',
@@ -233,19 +231,10 @@ class RateLimitMiddleware implements MiddlewareInterface
                 'HTTP_X_FORWARDED',
                 'HTTP_FORWARDED_FOR',
                 'HTTP_FORWARDED',
-            ];
-            foreach ($headers as $header) {
-                if (!empty($serverParams[$header])) {
-                    $ips = explode(',', $serverParams[$header]);
-                    $ip = trim($ips[0]);
-                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                        return $ip;
-                    }
-                }
-            }
-        }
-
-        return $remoteAddr;
+            ],
+            false,
+            is_string($remoteAddr) ? $remoteAddr : '127.0.0.1',
+        );
     }
 
     public function getPriority(): int

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\ValueObjects;
 
+use App\Shared\Helpers\NetworkHelper;
 use InvalidArgumentException;
 use JsonSerializable;
 
@@ -371,31 +372,7 @@ final readonly class DeviceInfo implements JsonSerializable
      */
     private function maskIpAddress(): string
     {
-        if (filter_var($this->ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-            // IPv4: 隱藏最後一段
-            $parts = explode('.', $this->ipAddress);
-            $parts[3] = 'xxx';
-
-            return implode('.', $parts);
-        }
-        if (filter_var($this->ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-            // IPv6: 簡單處理，保留前面部分，後面用 xxxx 替換
-            // 對於 2001:db8::1，我們要得到 2001:db8::xxxx
-            if (strpos($this->ipAddress, '::') !== false) {
-                // 處理簡寫格式
-                $parts = explode('::', $this->ipAddress);
-
-                return $parts[0] . '::xxxx';
-            } else {
-                // 處理完整格式
-                $parts = explode(':', $this->ipAddress);
-                if (count($parts) >= 4) {
-                    return implode(':', array_slice($parts, 0, 4)) . '::xxxx';
-                }
-            }
-        }
-
-        return substr($this->ipAddress, 0, -4) . 'xxxx';
+        return NetworkHelper::maskIpAddress($this->ipAddress);
     }
 
     /**
