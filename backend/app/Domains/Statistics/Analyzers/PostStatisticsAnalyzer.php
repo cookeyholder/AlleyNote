@@ -55,12 +55,6 @@ class PostStatisticsAnalyzer
     {
         $totalViews = $dto->getTotalViews();
         $totalPosts = $dto->getTotalPosts();
-        $avgProductivity = 0.0;
-        $topAuthors = $dto->getTopAuthors();
-        if (!empty($topAuthors)) {
-            $totalPostCount = array_sum(array_column($topAuthors, 'posts_count'));
-            $avgProductivity = $totalPostCount / count($topAuthors);
-        }
 
         return [
             'views_per_post_ratio'   => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
@@ -104,10 +98,7 @@ class PostStatisticsAnalyzer
         return round($lengthScore + $publishScore + $viewsScore, 2);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function calculateAuthorProductivity(PostStatisticsDTO $dto): array
+    private function calculateAuthorProductivity(PostStatisticsDTO $dto): float
     {
         $topAuthors = $dto->getTopAuthors();
         if (!empty($topAuthors)) {
@@ -118,10 +109,10 @@ class PostStatisticsAnalyzer
                 }
             }
 
-            return ['average_posts_per_author' => $totalPostCount / count($topAuthors)];
+            return $totalPostCount / count($topAuthors);
         }
 
-        return ['average_posts_per_author' => 0.0];
+        return 0.0;
     }
 
     /**
