@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Analyzers;
 
 use App\Domains\Statistics\Analyzers\StatisticsOverviewAnalyzer;
+use App\Domains\Statistics\Analyzers\StatisticsOverviewResult;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
-use DateTimeImmutable;
 use Tests\Support\UnitTestCase;
 
 /**
@@ -80,7 +80,7 @@ class StatisticsOverviewAnalyzerTest extends UnitTestCase
 
         $result = $this->analyzer->analyze($dto);
 
-        $this->assertInstanceOf(\App\Domains\Statistics\Analyzers\StatisticsOverviewResult::class, $result);
+        $this->assertInstanceOf(StatisticsOverviewResult::class, $result);
         $this->assertIsString($result->getActivityLevel());
         $this->assertIsFloat($result->getActivityScore());
     }

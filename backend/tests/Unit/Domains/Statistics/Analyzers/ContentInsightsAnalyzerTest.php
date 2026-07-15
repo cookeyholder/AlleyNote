@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Analyzers;
 
 use App\Domains\Statistics\Analyzers\ContentInsightsAnalyzer;
+use App\Domains\Statistics\Analyzers\ContentInsightsResult;
 use App\Domains\Statistics\DTOs\ContentInsightsDTO;
 use App\Domains\Statistics\Enums\PerformanceGrade;
 use Tests\Support\UnitTestCase;
@@ -29,21 +30,21 @@ class ContentInsightsAnalyzerTest extends UnitTestCase
             ],
             'content_performance_metrics' => [
                 'avg_views_per_content' => 850.5, 'avg_engagement_rate' => 6.5,
-                'avg_read_time' => 320, 'bounce_rate' => 35.2,
-                'completion_rate' => 68.7, 'share_rate' => 3.8,
+                'avg_read_time'         => 320, 'bounce_rate' => 35.2,
+                'completion_rate'       => 68.7, 'share_rate' => 3.8,
             ],
-            'popular_topics' => ['programming' => 450, 'web_development' => 380],
-            'content_formats' => ['article' => 650, 'tutorial' => 420],
+            'popular_topics'           => ['programming' => 450, 'web_development' => 380],
+            'content_formats'          => ['article' => 650, 'tutorial' => 420],
             'user_engagement_patterns' => [
-                'peak_hour' => '14:00', 'peak_day' => 'Tuesday',
+                'peak_hour'          => '14:00', 'peak_day' => 'Tuesday',
                 'discovery_patterns' => ['search' => 45.2],
             ],
             'content_lifecycle_analysis' => ['avg_lifespan_days' => 45, 'peak_views_period' => 'first_week'],
-            'reading_patterns' => ['optimal_length_words' => 1200, 'avg_scroll_depth' => 72.5, 'return_reader_rate' => 28.3],
-            'shareability' => ['avg_shares_per_content' => 4.2, 'most_sharable_type' => 'infographic'],
-            'seasonal_trends' => ['spring' => ['trending_topics' => ['新年目標'], 'popular_formats' => ['article']]],
-            'content_optimization' => [],
-            'generated_at' => '2024-01-15T10:30:00Z',
+            'reading_patterns'           => ['optimal_length_words' => 1200, 'avg_scroll_depth' => 72.5, 'return_reader_rate' => 28.3],
+            'shareability'               => ['avg_shares_per_content' => 4.2, 'most_sharable_type' => 'infographic'],
+            'seasonal_trends'            => ['spring' => ['trending_topics' => ['新年目標'], 'popular_formats' => ['article']]],
+            'content_optimization'       => [],
+            'generated_at'               => '2024-01-15T10:30:00Z',
         ];
     }
 
@@ -65,8 +66,8 @@ class ContentInsightsAnalyzerTest extends UnitTestCase
     {
         $this->validData['content_performance_metrics'] = [
             'avg_views_per_content' => 1000.0, 'avg_engagement_rate' => 90.0,
-            'avg_read_time' => 400, 'bounce_rate' => 10.0,
-            'completion_rate' => 95.0, 'share_rate' => 15.0,
+            'avg_read_time'         => 400, 'bounce_rate' => 10.0,
+            'completion_rate'       => 95.0, 'share_rate' => 15.0,
         ];
         $dto = $this->createDTO();
         $grade = $this->analyzer->getPerformanceGrade($dto);
@@ -78,8 +79,8 @@ class ContentInsightsAnalyzerTest extends UnitTestCase
     {
         $this->validData['content_performance_metrics'] = [
             'avg_views_per_content' => 100.0, 'avg_engagement_rate' => 2.0,
-            'avg_read_time' => 120, 'bounce_rate' => 70.0,
-            'completion_rate' => 40.0, 'share_rate' => 1.0,
+            'avg_read_time'         => 120, 'bounce_rate' => 70.0,
+            'completion_rate'       => 40.0, 'share_rate' => 1.0,
         ];
         $dto = $this->createDTO();
         $recommendations = $this->analyzer->getContentStrategyRecommendations($dto);
@@ -155,7 +156,7 @@ class ContentInsightsAnalyzerTest extends UnitTestCase
         $dto = $this->createDTO();
         $result = $this->analyzer->analyze($dto);
 
-        $this->assertInstanceOf(\App\Domains\Statistics\Analyzers\ContentInsightsResult::class, $result);
+        $this->assertInstanceOf(ContentInsightsResult::class, $result);
         $this->assertInstanceOf(PerformanceGrade::class, $result->getPerformanceGrade());
     }
 }

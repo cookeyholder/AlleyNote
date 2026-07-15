@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Analyzers;
 
 use App\Domains\Statistics\Analyzers\SourceDistributionAnalyzer;
+use App\Domains\Statistics\Analyzers\SourceDistributionResult;
 use App\Domains\Statistics\DTOs\SourceDistributionDTO;
 use Tests\Support\UnitTestCase;
 
@@ -28,32 +29,32 @@ class SourceDistributionAnalyzerTest extends UnitTestCase
                 ['name' => 'Facebook', 'traffic' => 500, 'percentage' => 20.0],
             ],
             'by_traffic_type' => [
-                'organic' => 1200, 'paid' => 300, 'direct' => 750,
+                'organic'  => 1200, 'paid' => 300, 'direct' => 750,
                 'referral' => 400, 'social' => 350, 'email' => 100,
             ],
             'by_channel' => [
-                'search' => 1500, 'social_media' => 600, 'email_marketing' => 200,
+                'search'         => 1500, 'social_media' => 600, 'email_marketing' => 200,
                 'referral_sites' => 400, 'direct' => 750,
             ],
-            'by_device' => ['desktop' => 1800, 'mobile' => 1200, 'tablet' => 450],
-            'by_geographic' => ['Taiwan' => 2000, 'Japan' => 800, 'Korea' => 600, 'USA' => 450],
+            'by_device'      => ['desktop' => 1800, 'mobile' => 1200, 'tablet' => 450],
+            'by_geographic'  => ['Taiwan' => 2000, 'Japan' => 800, 'Korea' => 600, 'USA' => 450],
             'search_engines' => [
                 'total_traffic' => 1200,
-                'engines' => ['Google' => 1000, 'Bing' => 150, 'Yahoo' => 50],
+                'engines'       => ['Google' => 1000, 'Bing' => 150, 'Yahoo' => 50],
             ],
             'social_media' => [
                 'total_traffic' => 600,
-                'platforms' => ['Facebook' => 300, 'Instagram' => 200, 'Twitter' => 100],
+                'platforms'     => ['Facebook' => 300, 'Instagram' => 200, 'Twitter' => 100],
             ],
             'referral_sites' => [
                 'total_traffic' => 400,
-                'sites' => ['example.com' => 200, 'partner.com' => 150, 'news.com' => 50],
+                'sites'         => ['example.com' => 200, 'partner.com' => 150, 'news.com' => 50],
             ],
             'content_types' => ['article' => 1500, 'video' => 800, 'infographic' => 400, 'podcast' => 200],
-            'trends' => [
-                'growth_rate' => 12.5, 'direction' => 'growing',
-                'key_drivers' => ['SEO improvement', 'Social media campaign'],
-                'emerging_sources' => ['TikTok', 'LinkedIn'],
+            'trends'        => [
+                'growth_rate'       => 12.5, 'direction' => 'growing',
+                'key_drivers'       => ['SEO improvement', 'Social media campaign'],
+                'emerging_sources'  => ['TikTok', 'LinkedIn'],
                 'declining_sources' => ['Twitter'],
                 'seasonal_patterns' => ['Higher traffic in Q4'],
             ],
@@ -171,7 +172,7 @@ class SourceDistributionAnalyzerTest extends UnitTestCase
         $dto = $this->createDTO();
         $result = $this->analyzer->analyze($dto);
 
-        $this->assertInstanceOf(\App\Domains\Statistics\Analyzers\SourceDistributionResult::class, $result);
+        $this->assertInstanceOf(SourceDistributionResult::class, $result);
         $this->assertArrayHasKey('traffic_quality_analysis', $result->toArray());
         $this->assertArrayHasKey('channel_performance_analysis', $result->toArray());
         $this->assertArrayHasKey('device_usage_pattern', $result->toArray());

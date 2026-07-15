@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Analyzers;
 
 use App\Domains\Statistics\Analyzers\UserStatisticsAnalyzer;
+use App\Domains\Statistics\Analyzers\UserStatisticsResult;
 use App\Domains\Statistics\DTOs\UserStatisticsDTO;
 use Tests\Support\UnitTestCase;
 
@@ -22,25 +23,25 @@ class UserStatisticsAnalyzerTest extends UnitTestCase
     {
         $this->analyzer = new UserStatisticsAnalyzer();
         $this->validData = [
-            'active_users' => 150,
+            'active_users'     => 150,
             'by_activity_type' => ['posts' => 50, 'comments' => 80, 'likes' => 200, 'shares' => 30],
-            'login_activity' => ['total_logins' => 500, 'unique_users' => 120, 'avg_logins_per_user' => 4.17, 'peak_hour' => 14],
-            'most_active' => [
+            'login_activity'   => ['total_logins' => 500, 'unique_users' => 120, 'avg_logins_per_user' => 4.17, 'peak_hour' => 14],
+            'most_active'      => [
                 ['user_id' => 123, 'username' => 'john_doe', 'metric_value' => 25],
                 ['user_id' => 456, 'username' => 'jane_smith', 'metric_value' => 22],
             ],
             'engagement_stats' => [
                 'high_engagement' => 30, 'medium_engagement' => 60,
-                'low_engagement' => 40, 'inactive' => 20, 'avg_engagement_score' => 7.5,
+                'low_engagement'  => 40, 'inactive' => 20, 'avg_engagement_score' => 7.5,
             ],
-            'registration_sources' => ['website' => 80, 'social_media' => 50, 'referral' => 20],
+            'registration_sources'      => ['website' => 80, 'social_media' => 50, 'referral' => 20],
             'geographical_distribution' => [
                 ['location' => 'Taiwan', 'users_count' => 100],
                 ['location' => 'Japan', 'users_count' => 30],
             ],
-            'by_role' => ['user' => 120, 'admin' => 20, 'moderator' => 10],
+            'by_role'                    => ['user' => 120, 'admin' => 20, 'moderator' => 10],
             'activity_time_distribution' => ['09:00' => 20, '14:00' => 45, '19:00' => 35, '22:00' => 25],
-            'generated_at' => '2024-01-15T10:30:00Z',
+            'generated_at'               => '2024-01-15T10:30:00Z',
         ];
     }
 
@@ -87,7 +88,7 @@ class UserStatisticsAnalyzerTest extends UnitTestCase
         $dto = $this->createDTO();
         $result = $this->analyzer->analyze($dto);
 
-        $this->assertInstanceOf(\App\Domains\Statistics\Analyzers\UserStatisticsResult::class, $result);
+        $this->assertInstanceOf(UserStatisticsResult::class, $result);
         $this->assertArrayHasKey('engagement_analysis', $result->toArray());
         $this->assertArrayHasKey('activity_insights', $result->toArray());
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Domains\Statistics\Analyzers;
 
 use App\Domains\Statistics\Analyzers\PostStatisticsAnalyzer;
+use App\Domains\Statistics\Analyzers\PostStatisticsResult;
 use App\Domains\Statistics\DTOs\PostStatisticsDTO;
 use Tests\Support\UnitTestCase;
 
@@ -22,17 +23,17 @@ class PostStatisticsAnalyzerTest extends UnitTestCase
     {
         $this->analyzer = new PostStatisticsAnalyzer();
         $this->validData = [
-            'total_posts' => 250,
-            'by_status' => ['published' => 200, 'draft' => 30, 'pending' => 15, 'archived' => 5],
-            'by_source' => ['web' => 180, 'mobile' => 50, 'api' => 20],
+            'total_posts'      => 250,
+            'by_status'        => ['published' => 200, 'draft' => 30, 'pending' => 15, 'archived' => 5],
+            'by_source'        => ['web' => 180, 'mobile' => 50, 'api' => 20],
             'views_statistics' => ['total_views' => 25000, 'avg_views_per_post' => 125.5, 'most_viewed_post' => 1500],
-            'top_posts' => [
+            'top_posts'        => [
                 ['id' => 101, 'title' => 'Laravel 最佳實踐', 'views' => 1500],
                 ['id' => 102, 'title' => 'PHP 8.4 新功能', 'views' => 1200],
             ],
             'length_statistics' => ['avg_length' => 1200, 'min_length' => 300, 'max_length' => 3500],
             'time_distribution' => ['09:00' => 30, '14:00' => 60, '19:00' => 45, '22:00' => 25],
-            'top_authors' => [
+            'top_authors'       => [
                 ['author_id' => 1, 'name' => 'John Doe', 'posts_count' => 45],
                 ['author_id' => 2, 'name' => 'Jane Smith', 'posts_count' => 38],
             ],
@@ -93,7 +94,7 @@ class PostStatisticsAnalyzerTest extends UnitTestCase
         $dto = $this->createDTO();
         $result = $this->analyzer->analyze($dto);
 
-        $this->assertInstanceOf(\App\Domains\Statistics\Analyzers\PostStatisticsResult::class, $result);
+        $this->assertInstanceOf(PostStatisticsResult::class, $result);
         $this->assertArrayHasKey('engagement_metrics', $result->toArray());
         $this->assertArrayHasKey('content_analysis', $result->toArray());
         $this->assertArrayHasKey('content_quality', $result->toArray());
