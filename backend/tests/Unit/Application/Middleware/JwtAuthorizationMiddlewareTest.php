@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\JwtAuthorizationMiddleware;
+use App\Domains\Auth\Services\Authorization\AuthorizationContext;
+use App\Domains\Auth\Services\Authorization\AuthorizationOrchestratorService;
+use App\Domains\Auth\ValueObjects\AuthorizationResult;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\Uri;
@@ -22,11 +25,19 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
 
     private RequestHandlerInterface|MockInterface $handler;
 
+    /** @var AuthorizationOrchestratorService&MockInterface */
+    private $orchestrator;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->middleware = new JwtAuthorizationMiddleware();
+        /** @var AuthorizationOrchestratorService&MockInterface $orchestrator */
+        $orchestrator = Mockery::mock(AuthorizationOrchestratorService::class);
+        $this->orchestrator = $orchestrator;
+        $this->middleware = new JwtAuthorizationMiddleware(
+            authorizationOrchestrator: $orchestrator,
+        );
         $this->handler = Mockery::mock(RequestHandlerInterface::class);
     }
 
@@ -38,7 +49,12 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
 
     public function testMiddlewareIsDisabledWhenNotEnabled(): void
     {
-        $middleware = new JwtAuthorizationMiddleware(enabled: false);
+        /** @var AuthorizationOrchestratorService&MockInterface $orch */
+        $orch = Mockery::mock(AuthorizationOrchestratorService::class);
+        $middleware = new JwtAuthorizationMiddleware(
+            authorizationOrchestrator: $orch,
+            enabled: false,
+        );
         $request = $this->createLocalRequest('/api/v1/posts');
 
         $expectedResponse = new Response(200);
@@ -89,6 +105,12 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
             ->withAttribute('role', 'admin')
             ->withAttribute('user_id', 1);
 
+        $this->orchestrator
+            ->shouldReceive('authorize')
+            ->once()
+            ->with(Mockery::type(AuthorizationContext::class))
+            ->andReturn(new AuthorizationResult(true, '超級管理員擁有所有權限', 'SUPER_ADMIN_ACCESS'));
+
         $expectedResponse = new Response(200);
         $this->handler
             ->shouldReceive('handle')
@@ -105,6 +127,12 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
         $request = $this->createAuthenticatedRequest('/api/v1/posts/123', 'GET')
             ->withAttribute('role', 'user')
             ->withAttribute('user_id', 1);
+
+        $this->orchestrator
+            ->shouldReceive('authorize')
+            ->once()
+            ->with(Mockery::type(AuthorizationContext::class))
+            ->andReturn(new AuthorizationResult(true, '角色 user 擁有權限 posts.show', 'ROLE_SPECIFIC_ACCESS'));
 
         $expectedResponse = new Response(200);
         $this->handler
@@ -123,6 +151,12 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
             ->withAttribute('role', 'user')
             ->withAttribute('user_id', 1);
 
+        $this->orchestrator
+            ->shouldReceive('authorize')
+            ->once()
+            ->with(Mockery::type(AuthorizationContext::class))
+            ->andReturn(new AuthorizationResult(false, '角色 user 沒有權限 posts.delete', 'ROLE_INSUFFICIENT'));
+
         $this->handler->shouldNotReceive('handle');
 
         $response = $this->middleware->process($request, $this->handler);
@@ -138,6 +172,12 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
             ->withAttribute('role', 'guest')
             ->withAttribute('permissions', ['posts.create'])
             ->withAttribute('user_id', 1);
+
+        $this->orchestrator
+            ->shouldReceive('authorize')
+            ->once()
+            ->with(Mockery::type(AuthorizationContext::class))
+            ->andReturn(new AuthorizationResult(true, '使用者擁有權限 posts.create', 'PERMISSION_SPECIFIC_ACCESS'));
 
         $expectedResponse = new Response(200);
         $this->handler
@@ -163,17 +203,11 @@ final class JwtAuthorizationMiddlewareTest extends UnitTestCase
         $this->assertFalse($this->middleware->isEnabled());
     }
 
-    /**
-     * 建立基本請求.
-     */
     private function createLocalRequest(string $path, string $method = 'GET'): ServerRequest
     {
         return new ServerRequest($method, new Uri($path));
     }
 
-    /**
-     * 建立已認證的請求.
-     */
     private function createAuthenticatedRequest(string $path, string $method = 'GET'): ServerRequest
     {
         return $this->createLocalRequest($path, $method)

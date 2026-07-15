@@ -11,6 +11,12 @@ use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\Services\AuthenticationService;
+use App\Domains\Auth\Services\Authorization\AttributeAuthorizationStrategy;
+use App\Domains\Auth\Services\Authorization\AuthorizationOrchestratorService;
+use App\Domains\Auth\Services\Authorization\CustomRuleAuthorizationStrategy;
+use App\Domains\Auth\Services\Authorization\PermissionAuthorizationStrategy;
+use App\Domains\Auth\Services\Authorization\RoleAuthorizationStrategy;
+use App\Domains\Auth\Services\Authorization\SuperAdminAuthorizationStrategy;
 use App\Domains\Auth\Services\JwtTokenService;
 use App\Domains\Auth\Services\RefreshTokenService;
 use App\Domains\Auth\Services\TokenBlacklistService;
@@ -22,48 +28,41 @@ use Psr\Container\ContainerInterface;
 
 class AuthServiceProvider
 {
-    /**
-     * 取得所有認證服務定義.
-     */
     public static function getDefinitions(): array
     {
         return [
-            // JWT 配置
-            JwtConfig::class => \DI\factory([self::class, 'createJwtConfig']),
-            // JWT Provider
-            FirebaseJwtProvider::class => \DI\factory([self::class, 'createFirebaseJwtProvider']),
-            // Repository 層
+            JwtConfig::class                         => \DI\factory([self::class, 'createJwtConfig']),
+            FirebaseJwtProvider::class               => \DI\factory([self::class, 'createFirebaseJwtProvider']),
             RefreshTokenRepositoryInterface::class   => \DI\create(RefreshTokenRepository::class),
             RefreshTokenRepository::class            => \DI\create(RefreshTokenRepository::class),
             TokenBlacklistRepositoryInterface::class => \DI\create(TokenBlacklistRepository::class),
             TokenBlacklistRepository::class          => \DI\create(TokenBlacklistRepository::class),
-            // Service 層
-            JwtTokenServiceInterface::class       => \DI\factory([self::class, 'createJwtTokenService']),
-            JwtTokenService::class                => \DI\factory([self::class, 'createJwtTokenService']),
-            AuthenticationServiceInterface::class => \DI\factory([self::class, 'createAuthenticationService']),
-            AuthenticationService::class          => \DI\factory([self::class, 'createAuthenticationService']),
-            RefreshTokenService::class            => \DI\factory([self::class, 'createRefreshTokenService']),
-            TokenBlacklistService::class          => \DI\factory([self::class, 'createTokenBlacklistService']),
-            // Middleware
-            JwtAuthenticationMiddleware::class => \DI\factory([self::class, 'createJwtAuthenticationMiddleware']),
-            JwtAuthorizationMiddleware::class  => \DI\factory([self::class, 'createJwtAuthorizationMiddleware']),
-            // Middleware 別名（為路由配置使用）
+            JwtTokenServiceInterface::class          => \DI\factory([self::class, 'createJwtTokenService']),
+            JwtTokenService::class                   => \DI\factory([self::class, 'createJwtTokenService']),
+            AuthenticationServiceInterface::class    => \DI\factory([self::class, 'createAuthenticationService']),
+            AuthenticationService::class             => \DI\factory([self::class, 'createAuthenticationService']),
+            RefreshTokenService::class               => \DI\factory([self::class, 'createRefreshTokenService']),
+            TokenBlacklistService::class             => \DI\factory([self::class, 'createTokenBlacklistService']),
+            JwtAuthenticationMiddleware::class       => \DI\factory([self::class, 'createJwtAuthenticationMiddleware']),
+
+            SuperAdminAuthorizationStrategy::class  => \DI\factory([self::class, 'createSuperAdminAuthorizationStrategy']),
+            RoleAuthorizationStrategy::class        => \DI\factory([self::class, 'createRoleAuthorizationStrategy']),
+            PermissionAuthorizationStrategy::class  => \DI\autowire(PermissionAuthorizationStrategy::class),
+            AttributeAuthorizationStrategy::class   => \DI\factory([self::class, 'createAttributeAuthorizationStrategy']),
+            CustomRuleAuthorizationStrategy::class  => \DI\factory([self::class, 'createCustomRuleAuthorizationStrategy']),
+            AuthorizationOrchestratorService::class => \DI\factory([self::class, 'createAuthorizationOrchestrator']),
+            JwtAuthorizationMiddleware::class       => \DI\factory([self::class, 'createJwtAuthorizationMiddleware']),
+
             'jwt.auth'      => \DI\get(JwtAuthenticationMiddleware::class),
             'jwt.authorize' => \DI\get(JwtAuthorizationMiddleware::class),
         ];
     }
 
-    /**
-     * 建立 JWT 配置實例.
-     */
     public static function createJwtConfig(ContainerInterface $container): JwtConfig
     {
         return new JwtConfig();
     }
 
-    /**
-     * 建立 Firebase JWT Provider 實例.
-     */
     public static function createFirebaseJwtProvider(ContainerInterface $container): FirebaseJwtProvider
     {
         $config = $container->get(JwtConfig::class);
@@ -71,9 +70,6 @@ class AuthServiceProvider
         return new FirebaseJwtProvider($config);
     }
 
-    /**
-     * 建立 JWT Token Service 實例.
-     */
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
         $jwtProvider = $container->get(FirebaseJwtProvider::class);
@@ -84,22 +80,14 @@ class AuthServiceProvider
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
 
-    /**
-     * 建立認證服務實例.
-     */
     public static function createAuthenticationService(ContainerInterface $container): AuthenticationService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
         $refreshTokenService = $container->get(RefreshTokenService::class);
 
-        // 注意：這裡需要 UserRepository，但由於還沒有實作，暫時傳 null
-        // 實際實作時需要從容器中取得 UserRepository
         return new AuthenticationService($jwtTokenService, $refreshTokenService, null);
     }
 
-    /**
-     * 建立 Refresh Token Service 實例.
-     */
     public static function createRefreshTokenService(ContainerInterface $container): RefreshTokenService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
@@ -109,9 +97,6 @@ class AuthServiceProvider
         return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistService);
     }
 
-    /**
-     * 建立 Token Blacklist Service 實例.
-     */
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService
     {
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
@@ -119,9 +104,6 @@ class AuthServiceProvider
         return new TokenBlacklistService($blacklistRepository);
     }
 
-    /**
-     * 建立 JWT 認證中介軟體實例.
-     */
     public static function createJwtAuthenticationMiddleware(ContainerInterface $container): JwtAuthenticationMiddleware
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
@@ -129,17 +111,62 @@ class AuthServiceProvider
         return new JwtAuthenticationMiddleware($jwtTokenService);
     }
 
-    /**
-     * 建立 JWT 授權中介軟體實例.
-     */
-    public static function createJwtAuthorizationMiddleware(ContainerInterface $container): JwtAuthorizationMiddleware
+    public static function createSuperAdminAuthorizationStrategy(ContainerInterface $container): SuperAdminAuthorizationStrategy
     {
-        return new JwtAuthorizationMiddleware();
+        return new SuperAdminAuthorizationStrategy();
     }
 
-    /**
-     * 取得中介軟體別名映射.
-     */
+    public static function createRoleAuthorizationStrategy(ContainerInterface $container): RoleAuthorizationStrategy
+    {
+        $rolePermissions = [
+            'admin'     => ['*'],
+            'moderator' => ['posts.*', 'comments.*'],
+            'user'      => ['posts.show', 'posts.create', 'comments.show', 'comments.create'],
+            'guest'     => ['posts.show', 'comments.show'],
+        ];
+
+        return new RoleAuthorizationStrategy($rolePermissions);
+    }
+
+    public static function createAttributeAuthorizationStrategy(ContainerInterface $container): AttributeAuthorizationStrategy
+    {
+        return new AttributeAuthorizationStrategy();
+    }
+
+    public static function createCustomRuleAuthorizationStrategy(ContainerInterface $container): CustomRuleAuthorizationStrategy
+    {
+        return new CustomRuleAuthorizationStrategy();
+    }
+
+    public static function createAuthorizationOrchestrator(ContainerInterface $container): AuthorizationOrchestratorService
+    {
+        /** @var SuperAdminAuthorizationStrategy $s1 */
+        $s1 = $container->get(SuperAdminAuthorizationStrategy::class);
+        /** @var RoleAuthorizationStrategy $s2 */
+        $s2 = $container->get(RoleAuthorizationStrategy::class);
+        /** @var PermissionAuthorizationStrategy $s3 */
+        $s3 = $container->get(PermissionAuthorizationStrategy::class);
+        /** @var AttributeAuthorizationStrategy $s4 */
+        $s4 = $container->get(AttributeAuthorizationStrategy::class);
+        /** @var CustomRuleAuthorizationStrategy $s5 */
+        $s5 = $container->get(CustomRuleAuthorizationStrategy::class);
+
+        return new AuthorizationOrchestratorService(
+            strategies: [$s1, $s2, $s3, $s4, $s5],
+            defaultPolicy: 'deny',
+        );
+    }
+
+    public static function createJwtAuthorizationMiddleware(ContainerInterface $container): JwtAuthorizationMiddleware
+    {
+        /** @var AuthorizationOrchestratorService $orchestrator */
+        $orchestrator = $container->get(AuthorizationOrchestratorService::class);
+
+        return new JwtAuthorizationMiddleware(
+            authorizationOrchestrator: $orchestrator,
+        );
+    }
+
     public static function getMiddlewareAliases(): array
     {
         return [
