@@ -7,6 +7,7 @@ namespace App\Application\Middleware;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
+use App\Shared\Helpers\NetworkHelper;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -397,10 +398,12 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             if (!$this->matchesIpRestriction($restriction, $userRole, $resource, $action)) {
                 continue;
             }
+            /** @var array<string> $allowedIps */
             $allowedIps = $restriction['allowed_ips'] ?? [];
+            /** @var array<string> $blockedIps */
             $blockedIps = $restriction['blocked_ips'] ?? [];
             // 檢查黑名單
-            if (!empty($blockedIps) && $this->isIpInList($clientIp, $blockedIps)) {
+            if (!empty($blockedIps) && NetworkHelper::isIpInRanges($clientIp, $blockedIps)) {
                 return new AuthorizationResult(
                     allowed: false,
                     reason: "IP 位址 {$clientIp} 被封鎖",
@@ -409,7 +412,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 );
             }
             // 檢查白名單
-            if (!empty($allowedIps) && !$this->isIpInList($clientIp, $allowedIps)) {
+            if (!empty($allowedIps) && !NetworkHelper::isIpInRanges($clientIp, $allowedIps)) {
                 return new AuthorizationResult(
                     allowed: false,
                     reason: "IP 位址 {$clientIp} 不在允許清單中",
@@ -603,7 +606,6 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      */
     private function getClientIpAddress(ServerRequestInterface $request): string
     {
-        // 檢查各種可能包含真實 IP 的標頭
         $headers = [
             'HTTP_CF_CONNECTING_IP',     // Cloudflare
             'HTTP_CLIENT_IP',            // Proxy
@@ -614,13 +616,25 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             'HTTP_FORWARDED',            // Proxy
             'REMOTE_ADDR',               // Standard
         ];
+
+        // Server params 提取（含 NO_PRIV_RANGE | NO_RES_RANGE）
+        $serverIp = NetworkHelper::getClientIpFromServerParams(
+            $request,
+            $headers,
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+            false,
+            '',
+        );
+
+        if ($serverIp !== '') {
+            return $serverIp;
+        }
+
+        // hasHeader 雙重來源回退（不帶範圍旗標，接受私有 IP）
         $serverParams = $request->getServerParams();
         foreach ($headers as $header) {
-            if (isset($serverParams[$header]) && !empty($serverParams[$header])) {
-                $ip = trim(explode(',', $serverParams[$header])[0]);
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
-                }
+            if ($header === 'REMOTE_ADDR') {
+                continue;
             }
             if ($request->hasHeader($header)) {
                 $ip = trim(explode(',', $request->getHeaderLine($header))[0]);
@@ -630,56 +644,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
             }
         }
 
-        // 預設回傳 localhost（適用於開發環境）
         return '127.0.0.1';
-    }
-
-    /**
-     * 檢查 IP 是否在指定清單中.
-     *
-     * @param string $ip 要檢查的 IP 位址
-     * @param array<string> $ipList IP 清單（支援 CIDR 格式）
-     */
-    private function isIpInList(string $ip, array $ipList): bool
-    {
-        foreach ($ipList as $ipPattern) {
-            if ($this->ipMatches($ip, $ipPattern)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * 檢查 IP 是否匹配指定的模式.
-     *
-     * @param string $ip 要檢查的 IP 位址
-     * @param string $pattern IP 模式（支援通配符和 CIDR）
-     */
-    private function ipMatches(string $ip, string $pattern): bool
-    {
-        // 完全匹配
-        if ($ip === $pattern) {
-            return true;
-        }
-        // 通配符匹配
-        if (str_contains($pattern, '*')) {
-            $regex = '/^' . str_replace('*', '.*', preg_quote($pattern, '/')) . '$/';
-
-            return preg_match($regex, $ip) === 1;
-        }
-        // CIDR 匹配
-        if (str_contains($pattern, '/')) {
-            [$subnet, $mask] = explode('/', $pattern);
-            $ipLong = ip2long($ip);
-            $subnetLong = ip2long($subnet);
-            $maskLong = -1 << (32 - (int) $mask);
-
-            return ($ipLong & $maskLong) === ($subnetLong & $maskLong);
-        }
-
-        return false;
     }
 
     /**

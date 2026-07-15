@@ -12,6 +12,7 @@ use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\ValueObjects\PeriodType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Helpers\NetworkHelper;
 use DateTimeImmutable;
 use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface;
@@ -572,33 +573,24 @@ class StatisticsAdminController extends BaseController
     private function getClientIpAddress(ServerRequestInterface $request): string
     {
         $serverParams = $request->getServerParams();
-        // 檢查常見的 IP 標頭
-        $ipHeaders = [
-            'HTTP_CF_CONNECTING_IP',     // Cloudflare
-            'HTTP_CLIENT_IP',            // Proxy
-            'HTTP_X_FORWARDED_FOR',      // Load Balancer/Proxy
-            'HTTP_X_FORWARDED',          // Proxy
-            'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
-            'HTTP_FORWARDED_FOR',        // Proxy
-            'HTTP_FORWARDED',            // Proxy
-            'REMOTE_ADDR',                // Standard
-        ];
-        foreach ($ipHeaders as $header) {
-            if (!empty($serverParams[$header])) {
-                $ip = $serverParams[$header];
-                // 確保 IP 是字串類型
-                if (!is_string($ip)) {
-                    continue;
-                }
-                // 如果有多個 IP（以逗號分隔），取第一個
-                if (str_contains($ip, ',')) {
-                    $ipParts = explode(',', $ip);
-                    $ip = trim($ipParts[0]);
-                }
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
-                    return $ip;
-                }
-            }
+        $ip = NetworkHelper::getClientIpFromServerParams(
+            $request,
+            [
+                'HTTP_CF_CONNECTING_IP',     // Cloudflare
+                'HTTP_CLIENT_IP',            // Proxy
+                'HTTP_X_FORWARDED_FOR',      // Load Balancer/Proxy
+                'HTTP_X_FORWARDED',          // Proxy
+                'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
+                'HTTP_FORWARDED_FOR',        // Proxy
+                'HTTP_FORWARDED',            // Proxy
+            ],
+            FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE,
+            false,
+            '',
+        );
+
+        if ($ip !== '') {
+            return $ip;
         }
 
         return isset($serverParams['REMOTE_ADDR']) && is_string($serverParams['REMOTE_ADDR'])
