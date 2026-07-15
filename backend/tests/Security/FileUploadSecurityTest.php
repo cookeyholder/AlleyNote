@@ -8,7 +8,7 @@ use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Models\Post;
-use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
@@ -29,7 +29,7 @@ class FileUploadSecurityTest extends SecureDDDTestCase
 
     protected AttachmentRepository|MockInterface $attachmentRepo;
 
-    protected PostRepository|MockInterface $postRepo;
+    protected PostRepositoryInterface|MockInterface $postRepo;
 
     protected CacheService|MockInterface $cacheService;
 
@@ -43,7 +43,7 @@ class FileUploadSecurityTest extends SecureDDDTestCase
         $this->authService = Mockery::mock(AuthorizationService::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
-        $this->postRepo = Mockery::mock(PostRepository::class);
+        $this->postRepo = Mockery::mock(PostRepositoryInterface::class);
         $this->cacheService = Mockery::mock(CacheService::class);
 
         // 設定 activityLogger 預設行為

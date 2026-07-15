@@ -9,7 +9,7 @@ use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Models\Post;
-use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use App\Shared\Exceptions\ValidationException;
@@ -29,7 +29,7 @@ class AttachmentServiceTest extends UnitTestCase
 
     protected AttachmentRepository|MockInterface $attachmentRepo;
 
-    protected PostRepository|MockInterface $postRepo;
+    protected PostRepositoryInterface|MockInterface $postRepo;
 
     protected CacheService|MockInterface $attachmentCache;
 
@@ -46,7 +46,7 @@ class AttachmentServiceTest extends UnitTestCase
         mkdir($this->uploadDir . '/attachments', 0o755, true);
 
         $this->attachmentRepo = Mockery::mock(AttachmentRepository::class);
-        $this->postRepo = Mockery::mock(PostRepository::class);
+        $this->postRepo = Mockery::mock(PostRepositoryInterface::class);
         $this->attachmentCache = Mockery::mock(CacheService::class);
         $this->authService = Mockery::mock(AuthorizationService::class);
         $this->activityLogger = Mockery::mock(ActivityLoggingServiceInterface::class);
