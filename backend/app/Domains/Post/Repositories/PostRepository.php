@@ -478,63 +478,70 @@ class PostRepository implements PostRepositoryInterface
         return $stmt->execute([$id]);
     }
 
+    /**
+     * @return array{
+     *     items: Post[],
+     *     total: int,
+     *     page: int,
+     *     perPage: int,
+     *     lastPage: float
+     * }
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
-        return (function () use ($page, $perPage, $conditions) {
-            $offset = ($page - 1) * $perPage;
-            // 建立查詢條件 - 只允許安全的欄位
-            $where = [];
-            $params = [];
-            if (!empty($conditions)) {
-                foreach ($conditions as $key => $value) {
-                    // 檢查欄位是否在允許的白名單中
-                    if (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
-                        $where[] = "p.{$key} = :{$key}";
-                        $params[$key] = $value;
-                    } else {
-                        // 記錄嘗試查詢不允許欄位的行為
-                        $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
-                            'field'      => $key,
-                            'action'     => 'get_paginated',
-                            'conditions' => array_keys($conditions),
-                        ]);
-                    }
+        $offset = ($page - 1) * $perPage;
+        // 建立查詢條件 - 只允許安全的欄位
+        $where = [];
+        $params = [];
+        if (!empty($conditions)) {
+            foreach ($conditions as $key => $value) {
+                // 檢查欄位是否在允許的白名單中
+                if (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
+                    $where[] = "p.{$key} = :{$key}";
+                    $params[$key] = $value;
+                } else {
+                    // 記錄嘗試查詢不允許欄位的行為
+                    $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
+                        'field'      => $key,
+                        'action'     => 'get_paginated',
+                        'conditions' => array_keys($conditions),
+                    ]);
                 }
             }
-            // 計算總筆數
-            $baseWhere = empty($where) ? 'p.deleted_at IS NULL' : implode(' AND ', $where) . ' AND p.deleted_at IS NULL';
-            // 對於已發布的文章，只顯示發布時間已到的
-            $publishTimeCheck = "AND (p.status != 'published' OR p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
-            $countSql = 'SELECT COUNT(*) FROM posts p WHERE ' . $baseWhere . ' ' . $publishTimeCheck;
-            $stmt = $this->db->prepare($countSql);
-            $stmt->execute($params);
-            $total = (int) $stmt->fetchColumn();
-            // 取得分頁資料
-            $sql = 'SELECT p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at, p.creation_source, p.creation_source_detail, u.username as author'
-                . ' FROM posts p'
-                . ' LEFT JOIN users u ON p.user_id = u.id'
-                . ' WHERE ' . $baseWhere . ' ' . $publishTimeCheck
-                . ' ORDER BY p.is_pinned DESC, p.publish_date DESC, p.created_at DESC, p.id DESC LIMIT :offset, :limit';
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-            foreach ($params as $key => $value) {
-                $stmt->bindValue(":{$key}", $value);
-            }
-            $stmt->execute();
-            $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
-            );
+        }
+        // 計算總筆數
+        $baseWhere = empty($where) ? 'p.deleted_at IS NULL' : implode(' AND ', $where) . ' AND p.deleted_at IS NULL';
+        // 對於已發布的文章，只顯示發布時間已到的
+        $publishTimeCheck = "AND (p.status != 'published' OR p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
+        $countSql = 'SELECT COUNT(*) FROM posts p WHERE ' . $baseWhere . ' ' . $publishTimeCheck;
+        $stmt = $this->db->prepare($countSql);
+        $stmt->execute($params);
+        $total = (int) $stmt->fetchColumn();
+        // 取得分頁資料
+        $sql = 'SELECT p.id, p.uuid, p.seq_number, p.title, p.content, p.user_id, p.user_ip, p.is_pinned, p.status, p.publish_date, p.views, p.created_at, p.updated_at, p.creation_source, p.creation_source_detail, u.username as author'
+            . ' FROM posts p'
+            . ' LEFT JOIN users u ON p.user_id = u.id'
+            . ' WHERE ' . $baseWhere . ' ' . $publishTimeCheck
+            . ' ORDER BY p.is_pinned DESC, p.publish_date DESC, p.created_at DESC, p.id DESC LIMIT :offset, :limit';
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":{$key}", $value);
+        }
+        $stmt->execute();
+        $items = array_map(
+            fn($row) => Post::fromArray($this->preparePostData($row)),
+            $stmt->fetchAll(PDO::FETCH_ASSOC),
+        );
 
-            return [
-                'items'    => $items,
-                'total'    => $total,
-                'page'     => $page,
-                'perPage'  => $perPage,
-                'lastPage' => ceil($total / $perPage),
-            ];
-        })();
+        return [
+            'items'    => $items,
+            'total'    => $total,
+            'page'     => $page,
+            'perPage'  => $perPage,
+            'lastPage' => ceil($total / $perPage),
+        ];
     }
 
     public function getPinnedPosts(int $limit = 5): array

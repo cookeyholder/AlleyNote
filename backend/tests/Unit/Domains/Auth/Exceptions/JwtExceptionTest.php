@@ -19,6 +19,8 @@ class JwtExceptionTest extends UnitTestCase
 {
     /**
      * 建立測試用的具體實作類別.
+     *
+     * @param array<string, mixed> $context
      */
     private function createConcreteJwtException(
         string $message = 'Test exception',
