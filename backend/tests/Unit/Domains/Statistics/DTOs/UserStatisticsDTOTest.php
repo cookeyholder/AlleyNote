@@ -227,50 +227,6 @@ class UserStatisticsDTOTest extends UnitTestCase
         $this->assertNull($dto->getTopLocation());
     }
 
-    public function testEngagementAnalysis(): void
-    {
-        $dto = UserStatisticsDTO::fromArray($this->validData);
-
-        $analysis = $dto->getEngagementAnalysis();
-
-        $this->assertArrayHasKey('total_users', $analysis);
-        $this->assertArrayHasKey('engagement_rate', $analysis);
-        $this->assertArrayHasKey('average_engagement_score', $analysis);
-        $this->assertArrayHasKey('engagement_distribution', $analysis);
-
-        $this->assertSame(150, $analysis['total_users']);
-        $this->assertSame(60.0, $analysis['engagement_rate']);
-        $this->assertSame(7.5, $analysis['average_engagement_score']);
-
-        $distribution = $analysis['engagement_distribution'];
-        $this->assertIsArray($distribution);
-
-        $highEngagement = $distribution['high'];
-        $this->assertIsArray($highEngagement);
-        $this->assertSame(30, $highEngagement['count']);
-        $this->assertSame(20.0, $highEngagement['percentage']);
-
-        $mediumEngagement = $distribution['medium'];
-        $this->assertIsArray($mediumEngagement);
-        $this->assertSame(60, $mediumEngagement['count']);
-        $this->assertSame(40.0, $mediumEngagement['percentage']);
-    }
-
-    public function testActivityInsights(): void
-    {
-        $dto = UserStatisticsDTO::fromArray($this->validData);
-
-        $insights = $dto->getActivityInsights();
-
-        $this->assertArrayHasKey('peak_login_hour', $insights);
-        $this->assertArrayHasKey('peak_activity_hour', $insights);
-        $this->assertArrayHasKey('activity_pattern', $insights);
-        $this->assertArrayHasKey('weekend_vs_weekday', $insights);
-
-        $this->assertSame(14, $insights['peak_login_hour']);
-        $this->assertSame('14:00', $insights['peak_activity_hour']);
-    }
-
     public function testToArray(): void
     {
         $dto = UserStatisticsDTO::fromArray($this->validData);
@@ -281,8 +237,8 @@ class UserStatisticsDTOTest extends UnitTestCase
         $this->assertArrayHasKey('by_activity_type', $array);
         $this->assertArrayHasKey('login_activity', $array);
         $this->assertArrayHasKey('calculated_metrics', $array);
-        $this->assertArrayHasKey('engagement_analysis', $array);
-        $this->assertArrayHasKey('activity_insights', $array);
+        $this->assertArrayNotHasKey('engagement_analysis', $array);
+        $this->assertArrayNotHasKey('activity_insights', $array);
         $this->assertArrayHasKey('generated_at', $array);
         $this->assertArrayHasKey('metadata', $array);
 
@@ -358,7 +314,7 @@ class UserStatisticsDTOTest extends UnitTestCase
 
         new UserStatisticsDTO(
             activeUsers: 100,
-            byActivityType: ['posts' => -1], // 負數
+            byActivityType: ['posts' => -1],
             loginActivity: [],
             mostActive: [],
             engagementStats: [],
@@ -377,7 +333,7 @@ class UserStatisticsDTOTest extends UnitTestCase
         new UserStatisticsDTO(
             activeUsers: 100,
             byActivityType: [],
-            loginActivity: ['total_logins' => 100], // 缺少其他必要的鍵
+            loginActivity: ['total_logins' => 100],
             mostActive: [],
             engagementStats: [],
             registrationSources: [],
@@ -396,7 +352,7 @@ class UserStatisticsDTOTest extends UnitTestCase
             activeUsers: 100,
             byActivityType: [],
             loginActivity: [],
-            mostActive: [['invalid' => 'structure']], // 缺少必要的鍵
+            mostActive: [['invalid' => 'structure']],
             engagementStats: [],
             registrationSources: [],
             geographicalDistribution: [],
@@ -415,7 +371,7 @@ class UserStatisticsDTOTest extends UnitTestCase
             byActivityType: [],
             loginActivity: [],
             mostActive: [],
-            engagementStats: ['high_engagement' => 10], // 缺少其他必要的鍵
+            engagementStats: ['high_engagement' => 10],
             registrationSources: [],
             geographicalDistribution: [],
             byRole: [],
@@ -434,7 +390,7 @@ class UserStatisticsDTOTest extends UnitTestCase
             loginActivity: [],
             mostActive: [],
             engagementStats: [],
-            registrationSources: ['website' => -1], // 負數
+            registrationSources: ['website' => -1],
             geographicalDistribution: [],
             byRole: [],
             activityTimeDistribution: [],
@@ -453,7 +409,7 @@ class UserStatisticsDTOTest extends UnitTestCase
             mostActive: [],
             engagementStats: [],
             registrationSources: [],
-            geographicalDistribution: [['invalid' => 'structure']], // 缺少必要的鍵
+            geographicalDistribution: [['invalid' => 'structure']],
             byRole: [],
             activityTimeDistribution: [],
         );
@@ -472,7 +428,7 @@ class UserStatisticsDTOTest extends UnitTestCase
             engagementStats: [],
             registrationSources: [],
             geographicalDistribution: [],
-            byRole: ['admin' => -1], // 負數
+            byRole: ['admin' => -1],
             activityTimeDistribution: [],
         );
     }

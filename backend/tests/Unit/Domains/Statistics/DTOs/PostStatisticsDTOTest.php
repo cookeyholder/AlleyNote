@@ -250,38 +250,6 @@ class PostStatisticsDTOTest extends UnitTestCase
         $this->assertNull($dto->getMostActiveHour());
     }
 
-    public function testEngagementMetrics(): void
-    {
-        $dto = PostStatisticsDTO::fromArray($this->validData);
-
-        $metrics = $dto->getEngagementMetrics();
-
-        $this->assertArrayHasKey('views_per_post_ratio', $metrics);
-        $this->assertArrayHasKey('pinned_engagement_rate', $metrics);
-        $this->assertArrayHasKey('author_productivity', $metrics);
-
-        $this->assertSame(100.0, $metrics['views_per_post_ratio']); // 25000 / 250
-        $this->assertSame(22.0, $metrics['pinned_engagement_rate']); // 5500 / 25000 * 100
-        $this->assertEqualsWithDelta(41.5, $metrics['author_productivity'], 0.1); // (45 + 38) / 2
-    }
-
-    public function testContentAnalysis(): void
-    {
-        $dto = PostStatisticsDTO::fromArray($this->validData);
-
-        $analysis = $dto->getContentAnalysis();
-
-        $this->assertArrayHasKey('length_distribution', $analysis);
-        $this->assertArrayHasKey('optimal_length_score', $analysis);
-        $this->assertArrayHasKey('content_diversity', $analysis);
-
-        $lengthDistribution = $analysis['length_distribution'];
-        $this->assertIsArray($lengthDistribution);
-        $this->assertSame(1200, $lengthDistribution['average']);
-        $this->assertSame(300, $lengthDistribution['minimum']);
-        $this->assertSame(3500, $lengthDistribution['maximum']);
-    }
-
     public function testToArray(): void
     {
         $dto = PostStatisticsDTO::fromArray($this->validData);
@@ -292,8 +260,9 @@ class PostStatisticsDTOTest extends UnitTestCase
         $this->assertArrayHasKey('by_status', $array);
         $this->assertArrayHasKey('views_statistics', $array);
         $this->assertArrayHasKey('calculated_metrics', $array);
-        $this->assertArrayHasKey('engagement_metrics', $array);
-        $this->assertArrayHasKey('content_analysis', $array);
+        $this->assertArrayNotHasKey('engagement_metrics', $array);
+        $this->assertArrayNotHasKey('content_analysis', $array);
+        $this->assertArrayNotHasKey('content_quality', $array);
         $this->assertArrayHasKey('generated_at', $array);
         $this->assertArrayHasKey('metadata', $array);
 
@@ -372,7 +341,7 @@ class PostStatisticsDTOTest extends UnitTestCase
 
         new PostStatisticsDTO(
             totalPosts: 100,
-            byStatus: ['published' => -1], // 負數
+            byStatus: ['published' => -1],
             bySource: [],
             viewsStatistics: [],
             topPosts: [],
@@ -391,7 +360,7 @@ class PostStatisticsDTOTest extends UnitTestCase
         new PostStatisticsDTO(
             totalPosts: 100,
             byStatus: [],
-            bySource: ['web' => -1], // 負數
+            bySource: ['web' => -1],
             viewsStatistics: [],
             topPosts: [],
             lengthStatistics: [],
@@ -411,7 +380,7 @@ class PostStatisticsDTOTest extends UnitTestCase
             byStatus: [],
             bySource: [],
             viewsStatistics: [],
-            topPosts: [['invalid' => 'structure']], // 缺少必要的鍵
+            topPosts: [['invalid' => 'structure']],
             lengthStatistics: [],
             timeDistribution: [],
             topAuthors: [],
@@ -431,7 +400,7 @@ class PostStatisticsDTOTest extends UnitTestCase
             viewsStatistics: [],
             topPosts: [],
             lengthStatistics: [],
-            timeDistribution: ['14:00' => -1], // 負數
+            timeDistribution: ['14:00' => -1],
             topAuthors: [],
             pinnedStats: [],
         );
@@ -450,7 +419,7 @@ class PostStatisticsDTOTest extends UnitTestCase
             topPosts: [],
             lengthStatistics: [],
             timeDistribution: [],
-            topAuthors: [['invalid' => 'structure']], // 缺少必要的鍵
+            topAuthors: [['invalid' => 'structure']],
             pinnedStats: [],
         );
     }
@@ -460,22 +429,21 @@ class PostStatisticsDTOTest extends UnitTestCase
         // 測試 fromArray 方法對無效型別的處理
         $data = [
             'by_status' => [
-                'published' => 'invalid', // 非整數
-                123         => 50, // 非字符串鍵
+                'published' => 'invalid',
+                123         => 50,
             ],
             'by_source' => [
-                'web' => 'invalid', // 非整數
-                456   => 30, // 非字符串鍵
+                'web' => 'invalid',
+                456   => 30,
             ],
             'time_distribution' => [
-                '14:00' => 'invalid', // 非整數
-                789     => 25, // 非字符串鍵
+                '14:00' => 'invalid',
+                789     => 25,
             ],
         ];
 
         $dto = PostStatisticsDTO::fromArray($data);
 
-        // 應該過濾掉無效的項目
         $this->assertSame([], $dto->getByStatus());
         $this->assertSame([], $dto->getBySource());
         $this->assertSame([], $dto->getTimeDistribution());

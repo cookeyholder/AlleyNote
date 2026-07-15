@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
 
+use App\Domains\Statistics\Helpers\ArraySanitizer;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
@@ -49,96 +50,20 @@ class PostStatisticsDTO implements JsonSerializable
         if (isset($data['generated_at']) && is_string($data['generated_at'])) {
             $generatedAt = new DateTimeImmutable($data['generated_at']);
         }
-        // 過濾並清理資料
-        $byStatus = self::filterIntegerMap($data['by_status'] ?? []);
-        $bySource = self::filterIntegerMap($data['by_source'] ?? []);
-        $timeDistribution = self::filterIntegerMap($data['time_distribution'] ?? []);
 
         return new self(
             totalPosts: isset($data['total_posts']) && is_numeric($data['total_posts']) ? (int) $data['total_posts'] : 0,
-            byStatus: $byStatus,
-            bySource: $bySource,
-            viewsStatistics: self::ensureStringMixedArray($data['views_statistics'] ?? []),
-            topPosts: self::ensureIntArrayStringMixedArray($data['top_posts'] ?? []),
-            lengthStatistics: self::ensureStringMixedArray($data['length_statistics'] ?? []),
-            timeDistribution: $timeDistribution,
-            topAuthors: self::ensureIntArrayStringMixedArray($data['top_authors'] ?? []),
-            pinnedStats: self::ensureStringMixedArray($data['pinned_stats'] ?? []),
+            byStatus: ArraySanitizer::ensureStringNonNegativeIntArray($data['by_status'] ?? []),
+            bySource: ArraySanitizer::ensureStringNonNegativeIntArray($data['by_source'] ?? []),
+            viewsStatistics: ArraySanitizer::ensureStringMixedArray($data['views_statistics'] ?? []),
+            topPosts: ArraySanitizer::ensureIntArrayStringMixedArray($data['top_posts'] ?? []),
+            lengthStatistics: ArraySanitizer::ensureStringMixedArray($data['length_statistics'] ?? []),
+            timeDistribution: ArraySanitizer::ensureStringNonNegativeIntArray($data['time_distribution'] ?? []),
+            topAuthors: ArraySanitizer::ensureIntArrayStringMixedArray($data['top_authors'] ?? []),
+            pinnedStats: ArraySanitizer::ensureStringMixedArray($data['pinned_stats'] ?? []),
             generatedAt: $generatedAt,
-            metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
+            metadata: ArraySanitizer::ensureStringMixedArray($data['metadata'] ?? []),
         );
-    }
-
-    /**
-     * 過濾字串鍵和整數值的映射.
-     *
-     * @param mixed $data
-     *
-     * @return array<string, int>
-     */
-    private static function filterIntegerMap($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $filtered = [];
-        foreach ($data as $key => $value) {
-            if (is_string($key) && is_numeric($value) && $value >= 0) {
-                $filtered[$key] = (int) $value;
-            }
-        }
-
-        return $filtered;
-    }
-
-    /**
-     * 確保回傳 array<string, mixed> 型別.
-     *
-     * @param mixed $data
-     *
-     * @return array<string, mixed>
-     */
-    private static function ensureStringMixedArray($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $result = [];
-        foreach ($data as $key => $value) {
-            if (is_string($key)) {
-                $result[$key] = $value;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * 確保回傳 array<int, array<string, mixed>> 型別.
-     *
-     * @param mixed $data
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private static function ensureIntArrayStringMixedArray($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $result = [];
-        foreach ($data as $item) {
-            if (is_array($item)) {
-                $filteredItem = [];
-                foreach ($item as $key => $value) {
-                    if (is_string($key)) {
-                        $filteredItem[$key] = $value;
-                    }
-                }
-                $result[] = $filteredItem;
-            }
-        }
-
-        return $result;
     }
 
     // Getters
@@ -350,37 +275,6 @@ class PostStatisticsDTO implements JsonSerializable
         return round(($this->getPublishedPosts() / $this->totalPosts) * 100, 2);
     }
 
-    public function getEngagementMetrics(): array
-    {
-        $totalViews = $this->getTotalViews();
-        $totalPosts = $this->getTotalPosts();
-        $authorProductivity = $this->calculateAuthorProductivity();
-        $avgProductivity = 0.0;
-        if (!empty($this->topAuthors)) {
-            $totalPostCount = array_sum(array_column($this->topAuthors, 'posts_count'));
-            $avgProductivity = $totalPostCount / count($this->topAuthors);
-        }
-
-        return [
-            'views_per_post_ratio'   => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
-            'pinned_engagement_rate' => $totalViews > 0 ? round(($this->getPinnedPostsViews() / $totalViews) * 100, 2) : 0.0,
-            'author_productivity'    => $avgProductivity,
-        ];
-    }
-
-    public function getContentAnalysis(): array
-    {
-        return [
-            'length_distribution' => [
-                'average' => $this->getAverageLength(),
-                'minimum' => $this->getMinLength(),
-                'maximum' => $this->getMaxLength(),
-            ],
-            'optimal_length_score' => $this->calculateOptimalLengthScore(),
-            'content_diversity'    => $this->calculateContentDiversity(),
-        ];
-    }
-
     public function getPublishRate(): float
     {
         $total = $this->getTotalPosts();
@@ -419,26 +313,6 @@ class PostStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 取得內容品質指標.
-     *
-     * @return array<string, mixed>
-     */
-    public function getContentQualityMetrics(): array
-    {
-        $avgLength = $this->lengthStatistics['avg_length'] ?? 0;
-        $avgLengthFloat = is_numeric($avgLength) ? (float) $avgLength : 0.0;
-        $totalViews = $this->getTotalViews();
-        $totalPosts = $this->getTotalPosts();
-
-        return [
-            'average_length'   => $avgLengthFloat,
-            'quality_score'    => $this->calculateQualityScore(),
-            'engagement_ratio' => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
-            'publish_rate'     => $this->getPublishRate(),
-        ];
-    }
-
-    /**
      * 轉換為陣列.
      *
      * @return array<string, mixed>
@@ -464,9 +338,6 @@ class PostStatisticsDTO implements JsonSerializable
                 'most_popular_source' => $this->getMostPopularSource(),
                 'peak_hour'           => $this->getPeakHour(),
             ],
-            'engagement_metrics' => $this->getEngagementMetrics(),
-            'content_analysis'   => $this->getContentAnalysis(),
-            'content_quality'    => $this->getContentQualityMetrics(),
         ];
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
@@ -548,14 +419,12 @@ class PostStatisticsDTO implements JsonSerializable
         }
         // 驗證瀏覽統計 (只檢查必要鍵)
         if (!empty($this->viewsStatistics) && isset($this->viewsStatistics['total_views']) && !isset($this->viewsStatistics['avg_views_per_post'])) {
-            // avg_views_per_post 不是必要的，可以計算得出
         }
         // 驗證熱門文章 (檢查基本結構，支援 id 或 post_id)
         foreach ($this->topPosts as $post) {
             if (!is_array($post)) {
                 throw new InvalidArgumentException('熱門文章資料結構不正確');
             }
-            // 支援 id 或 post_id, title 或 name, views 或 metric_value
             $hasId = isset($post['id']) || isset($post['post_id']);
             $hasTitle = isset($post['title']) || isset($post['name']);
             $hasMetric = isset($post['views']) || isset($post['metric_value']);
@@ -576,7 +445,6 @@ class PostStatisticsDTO implements JsonSerializable
             if (!is_array($author)) {
                 throw new InvalidArgumentException('熱門作者資料結構不正確');
             }
-            // 支援 user_id 或 author_id, posts_count 必須存在
             $hasId = isset($author['user_id']) || isset($author['author_id']);
             $hasCount = isset($author['posts_count']);
             if (!$hasId || !$hasCount) {
@@ -591,83 +459,5 @@ class PostStatisticsDTO implements JsonSerializable
                 }
             }
         }
-    }
-
-    /**
-     * 計算內容品質分數.
-     */
-    private function calculateQualityScore(): float
-    {
-        $avgLength = $this->lengthStatistics['avg_length'] ?? 0;
-        $avgLengthFloat = is_numeric($avgLength) ? (float) $avgLength : 0.0;
-        $publishRate = $this->getPublishRate();
-        $avgViews = $this->getAverageViews();
-        // 長度分數 (0-40分)
-        $lengthScore = min(($avgLengthFloat / 500) * 40, 40);
-        // 發布率分數 (0-30分)
-        $publishScore = ($publishRate / 100) * 30;
-        // 瀏覽量分數 (0-30分)
-        $viewsScore = min(($avgViews / 100) * 30, 30);
-
-        return round($lengthScore + $publishScore + $viewsScore, 2);
-    }
-
-    /**
-     * 計算作者生產力.
-     *
-     * @return array<string, mixed>
-     */
-    private function calculateAuthorProductivity(): array
-    {
-        if (!empty($this->topAuthors)) {
-            $totalPostCount = 0;
-            foreach ($this->topAuthors as $author) {
-                if (is_array($author) && isset($author['posts_count']) && is_numeric($author['posts_count'])) {
-                    $totalPostCount += (int) $author['posts_count'];
-                }
-            }
-
-            return ['average_posts_per_author' => $totalPostCount / count($this->topAuthors)];
-        }
-
-        return ['average_posts_per_author' => 0.0];
-    }
-
-    /**
-     * 計算最佳長度分數.
-     */
-    private function calculateOptimalLengthScore(): float
-    {
-        $avgLength = $this->getAverageLength();
-        $optimalRange = [500, 2000]; // 假設最佳文章長度範圍
-        if ($avgLength >= $optimalRange[0] && $avgLength <= $optimalRange[1]) {
-            return 1.0; // 完美分數
-        }
-        if ($avgLength < $optimalRange[0]) {
-            return $avgLength / $optimalRange[0]; // 低於最佳範圍
-        }
-        // 高於最佳範圍時，分數遞減
-        $excess = $avgLength - $optimalRange[1];
-        $penalty = min($excess / $optimalRange[1], 0.5); // 最多扣除50%
-
-        return max(0.5, 1.0 - $penalty);
-    }
-
-    /**
-     * 計算內容多樣性.
-     */
-    private function calculateContentDiversity(): float
-    {
-        // 基於文章長度變化計算內容多樣性
-        $maxLength = $this->getMaxLength();
-        $minLength = $this->getMinLength();
-        $avgLength = $this->getAverageLength();
-        if ($maxLength === $minLength || $avgLength === 0) {
-            return 0.0; // 沒有變化或數據不足
-        }
-        $lengthRange = $maxLength - $minLength;
-        $diversityScore = min($lengthRange / $avgLength, 2.0); // 限制最大值為2.0
-
-        return round($diversityScore, 2);
     }
 }

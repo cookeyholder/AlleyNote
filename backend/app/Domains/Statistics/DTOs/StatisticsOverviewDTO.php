@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
 
+use App\Domains\Statistics\Helpers\ArraySanitizer;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
@@ -52,35 +53,13 @@ class StatisticsOverviewDTO implements JsonSerializable
             totalPosts: isset($data['total_posts']) && is_numeric($data['total_posts']) ? (int) $data['total_posts'] : 0,
             activeUsers: isset($data['active_users']) && is_numeric($data['active_users']) ? (int) $data['active_users'] : 0,
             newUsers: isset($data['new_users']) && is_numeric($data['new_users']) ? (int) $data['new_users'] : 0,
-            postActivity: self::ensureStringMixedArray($data['post_activity'] ?? []),
-            userActivity: self::ensureStringMixedArray($data['user_activity'] ?? []),
-            engagementMetrics: self::ensureStringMixedArray($data['engagement_metrics'] ?? []),
-            periodSummary: self::ensureStringMixedArray($data['period_summary'] ?? []),
+            postActivity: ArraySanitizer::ensureStringMixedArray($data['post_activity'] ?? []),
+            userActivity: ArraySanitizer::ensureStringMixedArray($data['user_activity'] ?? []),
+            engagementMetrics: ArraySanitizer::ensureStringMixedArray($data['engagement_metrics'] ?? []),
+            periodSummary: ArraySanitizer::ensureStringMixedArray($data['period_summary'] ?? []),
             generatedAt: $generatedAt,
-            metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
+            metadata: ArraySanitizer::ensureStringMixedArray($data['metadata'] ?? []),
         );
-    }
-
-    /**
-     * 確保回傳 array<string, mixed> 型別.
-     *
-     * @param mixed $data
-     *
-     * @return array<string, mixed>
-     */
-    private static function ensureStringMixedArray($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $result = [];
-        foreach ($data as $key => $value) {
-            if (is_string($key)) {
-                $result[$key] = $value;
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -189,18 +168,6 @@ class StatisticsOverviewDTO implements JsonSerializable
         return round($this->totalPosts / $this->activeUsers, 2);
     }
 
-    public function getActivityLevel(): string
-    {
-        $activityScore = $this->calculateActivityScore();
-
-        return match (true) {
-            $activityScore >= 80 => 'high',
-            $activityScore >= 50 => 'medium',
-            $activityScore >= 20 => 'low',
-            default              => 'inactive',
-        };
-    }
-
     /**
      * 轉換為陣列.
      *
@@ -219,7 +186,6 @@ class StatisticsOverviewDTO implements JsonSerializable
             'calculated_metrics' => [
                 'growth_rate'    => $this->getGrowthRate(),
                 'posts_per_user' => $this->getPostsPerUser(),
-                'activity_level' => $this->getActivityLevel(),
             ],
         ];
         if ($this->generatedAt !== null) {
@@ -258,11 +224,10 @@ class StatisticsOverviewDTO implements JsonSerializable
     public function getSummary(): array
     {
         return [
-            'total_posts'    => $this->totalPosts,
-            'active_users'   => $this->activeUsers,
-            'new_users'      => $this->newUsers,
-            'growth_rate'    => $this->getGrowthRate(),
-            'activity_level' => $this->getActivityLevel(),
+            'total_posts'  => $this->totalPosts,
+            'active_users' => $this->activeUsers,
+            'new_users'    => $this->newUsers,
+            'growth_rate'  => $this->getGrowthRate(),
         ];
     }
 
@@ -313,17 +278,5 @@ class StatisticsOverviewDTO implements JsonSerializable
                 throw new InvalidArgumentException("{$name} 缺少必要的鍵: {$key}");
             }
         }
-    }
-
-    /**
-     * 計算活動分數.
-     */
-    private function calculateActivityScore(): float
-    {
-        $postScore = min(($this->totalPosts / 100) * 40, 40); // 最多40分
-        $userScore = min(($this->activeUsers / 50) * 30, 30); // 最多30分
-        $growthScore = min($this->getGrowthRate() / 10 * 30, 30); // 最多30分
-
-        return round($postScore + $userScore + $growthScore, 2);
     }
 }

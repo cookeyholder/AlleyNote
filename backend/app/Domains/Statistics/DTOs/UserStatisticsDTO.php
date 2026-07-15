@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\DTOs;
 
+use App\Domains\Statistics\Helpers\ArraySanitizer;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
@@ -54,16 +55,16 @@ class UserStatisticsDTO implements JsonSerializable
 
         return new self(
             activeUsers: isset($data['active_users']) && is_numeric($data['active_users']) ? (int) $data['active_users'] : 0,
-            byActivityType: self::ensureStringIntArray($data['by_activity_type'] ?? []),
-            loginActivity: self::ensureStringMixedArray($data['login_activity'] ?? []),
-            mostActive: self::ensureIntArrayStringMixedArray($data['most_active'] ?? []),
-            engagementStats: self::ensureStringMixedArray($data['engagement_stats'] ?? []),
-            registrationSources: self::ensureStringIntArray($data['registration_sources'] ?? []),
-            geographicalDistribution: self::ensureIntArrayStringMixedArray($data['geographical_distribution'] ?? []),
-            byRole: self::ensureStringIntArray($data['by_role'] ?? []),
-            activityTimeDistribution: self::ensureStringIntArray($data['activity_time_distribution'] ?? []),
+            byActivityType: ArraySanitizer::ensureStringIntArray($data['by_activity_type'] ?? []),
+            loginActivity: ArraySanitizer::ensureStringMixedArray($data['login_activity'] ?? []),
+            mostActive: ArraySanitizer::ensureIntArrayStringMixedArray($data['most_active'] ?? []),
+            engagementStats: ArraySanitizer::ensureStringMixedArray($data['engagement_stats'] ?? []),
+            registrationSources: ArraySanitizer::ensureStringIntArray($data['registration_sources'] ?? []),
+            geographicalDistribution: ArraySanitizer::ensureIntArrayStringMixedArray($data['geographical_distribution'] ?? []),
+            byRole: ArraySanitizer::ensureStringIntArray($data['by_role'] ?? []),
+            activityTimeDistribution: ArraySanitizer::ensureStringIntArray($data['activity_time_distribution'] ?? []),
             generatedAt: $generatedAt,
-            metadata: self::ensureStringMixedArray($data['metadata'] ?? []),
+            metadata: ArraySanitizer::ensureStringMixedArray($data['metadata'] ?? []),
         );
     }
 
@@ -254,48 +255,6 @@ class UserStatisticsDTO implements JsonSerializable
     }
 
     /**
-     * 取得使用者參與度分析.
-     *
-     * @return array<string, mixed>
-     */
-    public function getEngagementAnalysis(): array
-    {
-        $totalUsers = $this->getHighEngagementUsers()
-                     + $this->getMediumEngagementUsers()
-                     + $this->getLowEngagementUsers()
-                     + $this->getInactiveUsers();
-
-        return [
-            'total_users'              => $totalUsers,
-            'engagement_rate'          => $this->getEngagementRate(),
-            'average_engagement_score' => $this->getAverageEngagementScore(),
-            'engagement_distribution'  => [
-                'high'     => ['count' => $this->getHighEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getHighEngagementUsers() / $totalUsers) * 100, 1) : 0],
-                'medium'   => ['count' => $this->getMediumEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getMediumEngagementUsers() / $totalUsers) * 100, 1) : 0],
-                'low'      => ['count' => $this->getLowEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getLowEngagementUsers() / $totalUsers) * 100, 1) : 0],
-                'inactive' => ['count' => $this->getInactiveUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getInactiveUsers() / $totalUsers) * 100, 1) : 0],
-            ],
-        ];
-    }
-
-    /**
-     * 取得活動時間洞察.
-     *
-     * @return array<string, mixed>
-     */
-    public function getActivityInsights(): array
-    {
-        $peakHour = $this->getPeakActiveHour();
-
-        return [
-            'peak_login_hour'    => $this->getPeakHour(),
-            'peak_activity_hour' => $peakHour,
-            'activity_pattern'   => $this->getActivityPattern(),
-            'weekend_vs_weekday' => $this->getWeekendVsWeekdayActivity(),
-        ];
-    }
-
-    /**
      * 轉換為陣列.
      *
      * @return array<string, mixed>
@@ -321,8 +280,6 @@ class UserStatisticsDTO implements JsonSerializable
                 'top_registration_source' => $this->getTopRegistrationSource(),
                 'top_location'            => $this->getTopLocation(),
             ],
-            'engagement_analysis' => $this->getEngagementAnalysis(),
-            'activity_insights'   => $this->getActivityInsights(),
         ];
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
@@ -426,128 +383,5 @@ class UserStatisticsDTO implements JsonSerializable
                 throw new InvalidArgumentException('角色統計資料格式不正確');
             }
         }
-    }
-
-    /**
-     * 取得最活躍的時間.
-     */
-    private function getPeakActiveHour(): ?string
-    {
-        if (empty($this->activityTimeDistribution)) {
-            return null;
-        }
-        /** @var int $maxCount */
-        $maxCount = max($this->activityTimeDistribution);
-        $peakHours = array_keys($this->activityTimeDistribution, $maxCount);
-
-        return $peakHours[0] ?? null;
-    }
-
-    /**
-     * 取得活動模式.
-     */
-    private function getActivityPattern(): string
-    {
-        $totalActivity = array_sum($this->activityTimeDistribution);
-        if ($totalActivity === 0 || empty($this->activityTimeDistribution)) {
-            return 'inactive';
-        }
-        $peakCount = max($this->activityTimeDistribution);
-        $concentration = ($peakCount / $totalActivity) * 100;
-
-        return match (true) {
-            $concentration >= 50 => 'concentrated',
-            $concentration >= 30 => 'moderate',
-            default              => 'distributed',
-        };
-    }
-
-    /**
-     * 取得週末與工作日活動比較.
-     *
-     * @return array<string, mixed>
-     */
-    private function getWeekendVsWeekdayActivity(): array
-    {
-        // 這是一個簡化的實現，實際上需要根據具體的時間分布資料來計算
-        // 這裡假設有週末和工作日的資料
-        return [
-            'weekend_percentage'     => 30,
-            'weekday_percentage'     => 70,
-            'weekend_activity_score' => 0.3,
-            'weekday_activity_score' => 0.7,
-        ];
-    }
-
-    /**
-     * 確保回傳 array<string, mixed> 型別.
-     *
-     * @param mixed $data
-     *
-     * @return array<string, mixed>
-     */
-    private static function ensureStringMixedArray($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $result = [];
-        foreach ($data as $key => $value) {
-            if (is_string($key)) {
-                $result[$key] = $value;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * 確保回傳 array<string, int> 型別.
-     *
-     * @param mixed $data
-     *
-     * @return array<string, int>
-     */
-    private static function ensureStringIntArray($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $result = [];
-        foreach ($data as $key => $value) {
-            if (is_string($key) && is_numeric($value)) {
-                $result[$key] = (int) $value;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * 確保回傳 array<int, array<string, mixed>> 型別.
-     *
-     * @param mixed $data
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    private static function ensureIntArrayStringMixedArray($data): array
-    {
-        if (!is_array($data)) {
-            return [];
-        }
-        $result = [];
-        foreach ($data as $item) {
-            if (is_array($item)) {
-                $filteredItem = [];
-                foreach ($item as $key => $value) {
-                    if (is_string($key)) {
-                        $filteredItem[$key] = $value;
-                    }
-                }
-                $result[] = $filteredItem;
-            }
-        }
-
-        return $result;
     }
 }

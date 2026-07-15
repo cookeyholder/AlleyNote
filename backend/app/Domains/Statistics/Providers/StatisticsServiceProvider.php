@@ -5,6 +5,11 @@ declare(strict_types=1);
 namespace App\Domains\Statistics\Providers;
 
 use App\Application\Services\Statistics\StatisticsQueryService;
+use App\Domains\Statistics\Analyzers\ContentInsightsAnalyzer;
+use App\Domains\Statistics\Analyzers\PostStatisticsAnalyzer;
+use App\Domains\Statistics\Analyzers\SourceDistributionAnalyzer;
+use App\Domains\Statistics\Analyzers\StatisticsOverviewAnalyzer;
+use App\Domains\Statistics\Analyzers\UserStatisticsAnalyzer;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
@@ -179,6 +184,12 @@ class StatisticsServiceProvider
 
                 return new StatisticsExportService($pdo, $analyticsService);
             }),
+            // 分析器（無狀態，無依賴）
+            SourceDistributionAnalyzer::class => \DI\autowire(SourceDistributionAnalyzer::class),
+            ContentInsightsAnalyzer::class    => \DI\autowire(ContentInsightsAnalyzer::class),
+            PostStatisticsAnalyzer::class     => \DI\autowire(PostStatisticsAnalyzer::class),
+            UserStatisticsAnalyzer::class     => \DI\autowire(UserStatisticsAnalyzer::class),
+            StatisticsOverviewAnalyzer::class => \DI\autowire(StatisticsOverviewAnalyzer::class),
         ];
     }
 }

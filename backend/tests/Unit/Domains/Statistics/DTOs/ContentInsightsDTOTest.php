@@ -34,7 +34,7 @@ class ContentInsightsDTOTest extends UnitTestCase
             'content_performance_metrics' => [
                 'avg_views_per_content' => 850.5,
                 'avg_engagement_rate'   => 6.5,
-                'avg_read_time'         => 320, // seconds
+                'avg_read_time'         => 320,
                 'bounce_rate'           => 35.2,
                 'completion_rate'       => 68.7,
                 'share_rate'            => 3.8,
@@ -54,7 +54,7 @@ class ContentInsightsDTOTest extends UnitTestCase
             'user_engagement_patterns' => [
                 'peak_hour'            => '14:00',
                 'peak_day'             => 'Tuesday',
-                'avg_session_duration' => 480, // seconds
+                'avg_session_duration' => 480,
                 'discovery_patterns'   => [
                     'search'   => 45.2,
                     'direct'   => 28.7,
@@ -65,7 +65,7 @@ class ContentInsightsDTOTest extends UnitTestCase
             'content_lifecycle_analysis' => [
                 'avg_lifespan_days' => 45,
                 'peak_views_period' => 'first_week',
-                'decay_rate'        => 15.5, // percent per week
+                'decay_rate'        => 15.5,
             ],
             'reading_patterns' => [
                 'optimal_length_words' => 1200,
@@ -249,153 +249,6 @@ class ContentInsightsDTOTest extends UnitTestCase
         $this->assertSame(28.3, $dto->getReturnReaderRate());
     }
 
-    public function testPerformanceGrade(): void
-    {
-        $dto = ContentInsightsDTO::fromArray($this->validData);
-
-        // 評分計算: (6.5 * 0.4) + (68.7 * 0.4) + (3.8 * 0.2) = 2.6 + 27.48 + 0.76 = 30.84
-        $this->assertSame('C', $dto->getPerformanceGrade());
-    }
-
-    public function testPerformanceGradeExcellent(): void
-    {
-        $data = $this->validData;
-        $data['content_performance_metrics'] = [
-            'avg_views_per_content' => 1000.0,
-            'avg_engagement_rate'   => 90.0, // 高參與率
-            'avg_read_time'         => 400,
-            'bounce_rate'           => 10.0,
-            'completion_rate'       => 95.0, // 高完成率
-            'share_rate'            => 15.0, // 高分享率
-        ];
-
-        $dto = ContentInsightsDTO::fromArray($data);
-
-        // 評分: (90 * 0.4) + (95 * 0.4) + (15 * 0.2) = 36 + 38 + 3 = 77
-        $this->assertSame('A', $dto->getPerformanceGrade());
-    }
-
-    public function testContentStrategyRecommendations(): void
-    {
-        // 創建低效能的內容資料
-        $data = $this->validData;
-        $data['content_performance_metrics'] = [
-            'avg_views_per_content' => 100.0,
-            'avg_engagement_rate'   => 2.0, // 低參與率
-            'avg_read_time'         => 120,
-            'bounce_rate'           => 70.0,
-            'completion_rate'       => 40.0, // 低完成率
-            'share_rate'            => 1.0, // 低分享率
-        ];
-
-        $dto = ContentInsightsDTO::fromArray($data);
-        $recommendations = $dto->getContentStrategyRecommendations();
-
-        $this->assertArrayHasKey('engagement', $recommendations);
-        $this->assertArrayHasKey('completion', $recommendations);
-        $this->assertArrayHasKey('sharing', $recommendations);
-        $this->assertArrayHasKey('topics', $recommendations);
-
-        $engagementRec = $recommendations['engagement'];
-        $this->assertIsArray($engagementRec);
-        $this->assertSame('high', $engagementRec['priority']);
-        $this->assertSame('提升內容互動性', $engagementRec['action']);
-
-        $completionRec = $recommendations['completion'];
-        $this->assertIsArray($completionRec);
-        $this->assertSame('high', $completionRec['priority']);
-        $this->assertSame('優化內容結構', $completionRec['action']);
-
-        $sharingRec = $recommendations['sharing'];
-        $this->assertIsArray($sharingRec);
-        $this->assertSame('medium', $sharingRec['priority']);
-        $this->assertSame('提升內容分享價值', $sharingRec['action']);
-    }
-
-    public function testOptimizationInsights(): void
-    {
-        $dto = ContentInsightsDTO::fromArray($this->validData);
-
-        $insights = $dto->getOptimizationInsights();
-
-        $this->assertArrayHasKey('optimal_publish_time', $insights);
-        $this->assertArrayHasKey('content_specifications', $insights);
-        $this->assertArrayHasKey('engagement_optimization', $insights);
-        $this->assertArrayHasKey('lifecycle_management', $insights);
-
-        $publishTime = $insights['optimal_publish_time'];
-        $this->assertIsArray($publishTime);
-        $this->assertSame('14:00', $publishTime['hour']);
-        $this->assertSame('Tuesday', $publishTime['day']);
-
-        $specs = $insights['content_specifications'];
-        $this->assertIsArray($specs);
-        $this->assertSame(1200, $specs['optimal_length']);
-        $this->assertSame(320, $specs['target_read_time']);
-        $this->assertSame('article', $specs['recommended_format']);
-
-        $engagement = $insights['engagement_optimization'];
-        $this->assertIsArray($engagement);
-        $this->assertSame(8.0, $engagement['target_engagement_rate']); // max(8.0, 6.5 * 1.2)
-        $this->assertEqualsWithDelta(75.57, $engagement['target_completion_rate'], 0.01); // 68.7 * 1.1
-        $this->assertEqualsWithDelta(4.94, $engagement['target_share_rate'], 0.01); // 3.8 * 1.3
-    }
-
-    public function testSeasonalContentStrategy(): void
-    {
-        $dto = ContentInsightsDTO::fromArray($this->validData);
-
-        $strategy = $dto->getSeasonalContentStrategy();
-
-        $this->assertArrayHasKey('current_season', $strategy);
-        $this->assertArrayHasKey('seasonal_performance', $strategy);
-        $this->assertArrayHasKey('recommended_topics', $strategy);
-        $this->assertArrayHasKey('optimal_formats', $strategy);
-        $this->assertArrayHasKey('engagement_patterns', $strategy);
-        $this->assertArrayHasKey('content_calendar_suggestions', $strategy);
-
-        $currentSeason = $strategy['current_season'];
-        $this->assertContains($currentSeason, ['spring', 'summer', 'autumn', 'winter']);
-
-        $suggestions = $strategy['content_calendar_suggestions'];
-        $this->assertIsArray($suggestions);
-        $this->assertNotEmpty($suggestions);
-    }
-
-    public function testReaderBehaviorAnalysis(): void
-    {
-        $dto = ContentInsightsDTO::fromArray($this->validData);
-
-        $analysis = $dto->getReaderBehaviorAnalysis();
-
-        $this->assertArrayHasKey('reading_habits', $analysis);
-        $this->assertArrayHasKey('engagement_preferences', $analysis);
-        $this->assertArrayHasKey('interaction_patterns', $analysis);
-        $this->assertArrayHasKey('content_discovery', $analysis);
-
-        $habits = $analysis['reading_habits'];
-        $this->assertIsArray($habits);
-        $this->assertSame(72.5, $habits['avg_scroll_depth']);
-        $this->assertSame(68.7, $habits['completion_rate']);
-        $this->assertSame(28.3, $habits['return_rate']);
-        $this->assertSame(35.2, $habits['bounce_rate']);
-
-        $preferences = $analysis['engagement_preferences'];
-        $this->assertIsArray($preferences);
-        $this->assertSame(1200, $preferences['preferred_content_length']);
-        $this->assertSame(320, $preferences['optimal_read_time']);
-        $this->assertSame('article', $preferences['most_engaging_format']);
-
-        $patterns = $analysis['interaction_patterns'];
-        $this->assertIsArray($patterns);
-        $this->assertSame('14:00', $patterns['peak_activity_time']);
-        $this->assertSame('Tuesday', $patterns['preferred_day']);
-        $this->assertArrayHasKey('sharing_behavior', $patterns);
-        $sharingBehavior = $patterns['sharing_behavior'];
-        $this->assertIsArray($sharingBehavior);
-        $this->assertSame(4.2, $sharingBehavior['avg_shares']);
-    }
-
     public function testToArray(): void
     {
         $dto = ContentInsightsDTO::fromArray($this->validData);
@@ -406,10 +259,10 @@ class ContentInsightsDTOTest extends UnitTestCase
         $this->assertArrayHasKey('content_performance_metrics', $array);
         $this->assertArrayHasKey('popular_topics', $array);
         $this->assertArrayHasKey('calculated_metrics', $array);
-        $this->assertArrayHasKey('strategy_recommendations', $array);
-        $this->assertArrayHasKey('optimization_insights', $array);
-        $this->assertArrayHasKey('seasonal_content_strategy', $array);
-        $this->assertArrayHasKey('reader_behavior_analysis', $array);
+        $this->assertArrayNotHasKey('strategy_recommendations', $array);
+        $this->assertArrayNotHasKey('optimization_insights', $array);
+        $this->assertArrayNotHasKey('seasonal_content_strategy', $array);
+        $this->assertArrayNotHasKey('reader_behavior_analysis', $array);
         $this->assertArrayHasKey('generated_at', $array);
         $this->assertArrayHasKey('metadata', $array);
 
@@ -418,7 +271,7 @@ class ContentInsightsDTOTest extends UnitTestCase
         $metrics = $array['calculated_metrics'];
         $this->assertIsArray($metrics);
         $this->assertSame(850.5, $metrics['avg_views_per_content']);
-        $this->assertSame('C', $metrics['performance_grade']);
+        $this->assertArrayNotHasKey('performance_grade', $metrics);
     }
 
     public function testJsonSerialize(): void
@@ -466,14 +319,13 @@ class ContentInsightsDTOTest extends UnitTestCase
 
         $summary = $dto->getSummary();
 
-        $this->assertArrayHasKey('performance_grade', $summary);
         $this->assertArrayHasKey('avg_engagement_rate', $summary);
         $this->assertArrayHasKey('completion_rate', $summary);
         $this->assertArrayHasKey('top_topic', $summary);
         $this->assertArrayHasKey('most_popular_format', $summary);
         $this->assertArrayHasKey('optimal_content_length', $summary);
+        $this->assertArrayNotHasKey('performance_grade', $summary);
 
-        $this->assertSame('C', $summary['performance_grade']);
         $this->assertSame(6.5, $summary['avg_engagement_rate']);
         $this->assertSame(68.7, $summary['completion_rate']);
         $this->assertSame('programming', $summary['top_topic']);
@@ -487,7 +339,7 @@ class ContentInsightsDTOTest extends UnitTestCase
         $this->expectExceptionMessage('表現最佳內容資料結構不正確');
 
         new ContentInsightsDTO(
-            topPerformingContent: [['invalid' => 'structure']], // 缺少必要的鍵
+            topPerformingContent: [['invalid' => 'structure']],
             contentPerformanceMetrics: [],
             popularTopics: [],
             contentFormats: [],
@@ -507,7 +359,7 @@ class ContentInsightsDTOTest extends UnitTestCase
 
         new ContentInsightsDTO(
             topPerformingContent: [],
-            contentPerformanceMetrics: ['avg_views_per_content' => 100.0], // 缺少其他必要的鍵
+            contentPerformanceMetrics: ['avg_views_per_content' => 100.0],
             popularTopics: [],
             contentFormats: [],
             userEngagementPatterns: [],
@@ -527,7 +379,7 @@ class ContentInsightsDTOTest extends UnitTestCase
         new ContentInsightsDTO(
             topPerformingContent: [],
             contentPerformanceMetrics: [],
-            popularTopics: ['tech' => -1], // 負數
+            popularTopics: ['tech' => -1],
             contentFormats: [],
             userEngagementPatterns: [],
             contentLifecycleAnalysis: [],
@@ -547,7 +399,7 @@ class ContentInsightsDTOTest extends UnitTestCase
             topPerformingContent: [],
             contentPerformanceMetrics: [],
             popularTopics: [],
-            contentFormats: ['article' => -1], // 負數
+            contentFormats: ['article' => -1],
             userEngagementPatterns: [],
             contentLifecycleAnalysis: [],
             readingPatterns: [],
@@ -563,7 +415,7 @@ class ContentInsightsDTOTest extends UnitTestCase
         $this->expectExceptionMessage('閱讀模式統計鍵必須是字符串');
 
         /** @var array<string, int|float> $invalidReadingPatterns */
-        $invalidReadingPatterns = [123 => 100, 'valid_key' => 72.5]; // 數字鍵會被過濾掉導致鍵不是字符串
+        $invalidReadingPatterns = [123 => 100, 'valid_key' => 72.5];
 
         /** @phpstan-ignore-next-line argument.type */
         new ContentInsightsDTO(
@@ -578,61 +430,5 @@ class ContentInsightsDTOTest extends UnitTestCase
             seasonalTrends: [],
             contentOptimization: [],
         );
-    }
-
-    public function testSeasonSpecificStrategy(): void
-    {
-        // 測試不同季節的內容策略建議
-        $seasons = ['spring', 'summer', 'autumn', 'winter'];
-
-        foreach ($seasons as $season) {
-            // 模擬當前季節（這裡僅做概念驗證，實際實現可能需要 mock）
-            $dto = ContentInsightsDTO::fromArray($this->validData);
-            $strategy = $dto->getSeasonalContentStrategy();
-
-            $this->assertContains($strategy['current_season'], $seasons);
-            $this->assertIsArray($strategy['content_calendar_suggestions']);
-        }
-    }
-
-    public function testLifespanBasedRefreshRecommendations(): void
-    {
-        // 測試短生命週期內容
-        /** @var array<string, mixed> $data */
-        $data = $this->validData;
-        if (!isset($data['content_lifecycle_analysis'])) {
-            $data['content_lifecycle_analysis'] = [];
-        }
-        /** @var array<string, mixed> $lifecycleAnalysis */
-        $lifecycleAnalysis = $data['content_lifecycle_analysis'];
-        $lifecycleAnalysis['avg_lifespan_days'] = 20; // 短生命週期
-        $data['content_lifecycle_analysis'] = $lifecycleAnalysis;
-
-        $dto = ContentInsightsDTO::fromArray($data);
-        $insights = $dto->getOptimizationInsights();
-        $lifecycleManagement = $insights['lifecycle_management'];
-        $this->assertIsArray($lifecycleManagement);
-
-        $recommendations = $lifecycleManagement['refresh_recommendations'];
-        $this->assertIsArray($recommendations);
-        $this->assertContains('每週檢查內容效能', $recommendations);
-
-        // 測試長生命週期內容
-        if (!isset($data['content_lifecycle_analysis'])) {
-            $data['content_lifecycle_analysis'] = [];
-        }
-        /** @var array<string, mixed> $lifecycleAnalysis2 */
-        $lifecycleAnalysis2 = $data['content_lifecycle_analysis'];
-        $lifecycleAnalysis2['avg_lifespan_days'] = 120; // 長生命週期
-        $data['content_lifecycle_analysis'] = $lifecycleAnalysis2;
-
-        $dto2 = ContentInsightsDTO::fromArray($data);
-        $insights2 = $dto2->getOptimizationInsights();
-        $lifecycleManagement2 = $insights2['lifecycle_management'];
-        $this->assertIsArray($lifecycleManagement2);
-
-        $recommendations2 = $lifecycleManagement2['refresh_recommendations'];
-        $this->assertIsArray($recommendations2);
-        $this->assertContains('每季度全面檢視', $recommendations2);
     }
 }
