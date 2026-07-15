@@ -6,6 +6,7 @@ namespace App\Infrastructure\Routing;
 
 use App\Application\Middleware\SecurityHeadersMiddleware;
 use App\Domains\Security\Services\Headers\SecurityHeaderService;
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
@@ -67,12 +68,12 @@ class RouteDispatcher
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
         // 2. 準備中間件鏈（將全域安全性標頭中間件放在最前面）
-        /** @var array<\App\Infrastructure\Routing\Contracts\MiddlewareInterface> $resolvedMiddlewares */
+        /** @var array<MiddlewareInterface> $resolvedMiddlewares */
         $resolvedMiddlewares = [];
 
         try {
             if ($this->container->has(SecurityHeadersMiddleware::class)) {
-                /** @var \App\Infrastructure\Routing\Contracts\MiddlewareInterface $securityMiddleware */
+                /** @var MiddlewareInterface $securityMiddleware */
                 $securityMiddleware = $this->container->get(SecurityHeadersMiddleware::class);
                 $resolvedMiddlewares[] = $securityMiddleware;
             }
@@ -86,7 +87,7 @@ class RouteDispatcher
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
-                } elseif ($middleware instanceof \App\Infrastructure\Routing\Contracts\MiddlewareInterface) {
+                } elseif ($middleware instanceof MiddlewareInterface) {
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }
