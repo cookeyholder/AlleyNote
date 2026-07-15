@@ -9,6 +9,7 @@ use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
+use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Shared\Exceptions\ValidationException;
@@ -65,7 +66,7 @@ class AttachmentUploadTest extends IntegrationTestCase
 
         // 初始化測試依賴
         $this->attachmentRepo = new AttachmentRepository($this->db, $this->cache);
-        $this->postRepo = new \App\Domains\Post\Repositories\PostRepository($this->db, $this->cache, $this->logger);
+        $this->postRepo = new PostRepository($this->db, $this->cache, $this->logger);
 
         // 初始化測試對象
         $this->attachmentService = new AttachmentService(
