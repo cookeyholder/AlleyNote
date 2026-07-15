@@ -6,50 +6,37 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { notification } from "../../utils/notification.js";
 import { rolesAPI } from "../../api/modules/roles.js";
 
 /**
  * 角色管理頁面類別
  */
-export default class RolesPage {
+export default class RolesPage extends BaseAdminPage {
   constructor() {
+    super();
     this.roles = [];
     this.permissions = [];
     this.groupedPermissions = {};
     this.selectedRole = null;
-    this.loading = false;
   }
 
-  async init() {
-    await this.loadRolesAndPermissions();
+  async loadData() {
+    const [rolesResponse, permissionsResponse] = await Promise.all([
+      rolesAPI.getAll(),
+      rolesAPI.getGroupedPermissions(),
+    ]);
+
+    this.roles = rolesResponse.data || [];
+    this.groupedPermissions = permissionsResponse.data || {};
   }
 
   /**
    * 載入角色和權限資料
    */
   async loadRolesAndPermissions() {
-    try {
-      this.loading = true;
-      this.render();
-
-      // 載入角色列表和權限列表
-      const [rolesResponse, permissionsResponse] = await Promise.all([
-        rolesAPI.getAll(),
-        rolesAPI.getGroupedPermissions(),
-      ]);
-
-      this.roles = rolesResponse.data || [];
-      this.groupedPermissions = permissionsResponse.data || {};
-
-      this.loading = false;
-      this.render();
-    } catch (error) {
-      console.error("載入資料失敗:", error);
-      notification.error("載入資料失敗");
-      this.loading = false;
-      this.render();
-    }
+    await this.init();
   }
 
   render() {
@@ -79,7 +66,6 @@ export default class RolesPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "角色管理" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderLoading() {
@@ -539,20 +525,6 @@ export default class RolesPage {
       console.error("刪除角色失敗:", error);
       notification.error(error.response?.data?.message || "刪除角色失敗");
     }
-  }
-
-  /**
-   * HTML 轉義
-   */
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 }
 

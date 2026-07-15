@@ -2,6 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { usersAPI } from "../../api/modules/users.js";
 import { notification } from "../../utils/notification.js";
 import { Modal, modal } from "../../components/Modal.js";
@@ -11,11 +12,11 @@ import { PasswordGenerator } from "../../utils/passwordGenerator.js";
 /**
  * 使用者管理頁面
  */
-export default class UsersPage {
+export default class UsersPage extends BaseAdminPage {
   constructor() {
+    super();
     this.users = [];
     this.roles = [];
-    this.loading = false;
     this.currentPage = 1;
     this.totalPages = 1;
     this.editingUser = null;
@@ -23,17 +24,16 @@ export default class UsersPage {
     this.passwordIndicator = null;
   }
 
-  async init() {
-    await Promise.all([this.loadUsers(), this.loadRoles()]);
+  async loadData() {
+    await Promise.all([this.fetchUsers(), this.fetchRoles()]);
   }
 
-  async loadRoles() {
+  async fetchRoles() {
     try {
       const response = await usersAPI.getRoles();
       if (response.success && response.data) {
         this.roles = response.data;
       } else {
-        // 使用預設角色
         this.roles = [
           { id: 1, name: "admin", display_name: "管理員" },
           { id: 2, name: "editor", display_name: "編輯者" },
@@ -42,7 +42,6 @@ export default class UsersPage {
       }
     } catch (error) {
       console.error("載入角色列表失敗:", error);
-      // 使用預設角色
       this.roles = [
         { id: 1, name: "admin", display_name: "管理員" },
         { id: 2, name: "editor", display_name: "編輯者" },
@@ -51,14 +50,10 @@ export default class UsersPage {
     }
   }
 
-  async loadUsers(page = 1) {
+  async fetchUsers() {
     try {
-      this.loading = true;
-      this.currentPage = page;
-      this.render();
-
       const response = await usersAPI.getAll({
-        page,
+        page: this.currentPage,
         per_page: 20,
       });
 
@@ -72,18 +67,21 @@ export default class UsersPage {
         this.users = [];
         this.totalPages = 1;
       }
-
-      this.loading = false;
-      this.render();
     } catch (error) {
       console.error("載入使用者列表失敗:", error);
       notification.error(
         "載入使用者列表失敗：" + (error.message || "未知錯誤"),
       );
       this.users = [];
-      this.loading = false;
-      this.render();
+      this.totalPages = 1;
     }
+  }
+
+  async loadUsers(page) {
+    if (page !== undefined) {
+      this.currentPage = page;
+    }
+    await this.init();
   }
 
   render() {
@@ -113,7 +111,6 @@ export default class UsersPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "使用者管理" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderUsersList() {
@@ -654,18 +651,6 @@ export default class UsersPage {
       console.error("刪除使用者失敗:", error);
       notification.error(error.message || "刪除使用者失敗");
     }
-  }
-
-  // 工具函式
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 
   formatDate(dateString) {

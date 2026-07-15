@@ -2,45 +2,33 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { notification } from "../../utils/notification.js";
 import { Modal } from "../../components/Modal.js";
-import { apiClient } from "../../api/client.js";
+import { tagsAPI } from "../../api/modules/tags.js";
 
 /**
  * 標籤管理頁面
  */
-export default class TagsPage {
+export default class TagsPage extends BaseAdminPage {
   constructor() {
+    super();
     this.tags = [];
-    this.loading = false;
     this.modal = null;
   }
 
-  async init() {
-    await this.loadTags();
+  async loadData() {
+    const result = await tagsAPI.getAll();
+
+    if (result.success && result.data) {
+      this.tags = result.data;
+    } else {
+      this.tags = [];
+    }
   }
 
   async loadTags() {
-    try {
-      this.loading = true;
-      this.render();
-
-      const result = await apiClient.get("/tags");
-
-      if (result.success && result.data) {
-        this.tags = result.data;
-      } else {
-        this.tags = [];
-      }
-
-      this.loading = false;
-      this.render();
-    } catch (error) {
-      console.error("載入標籤列表失敗:", error);
-      notification.error("載入標籤列表失敗");
-      this.loading = false;
-      this.render();
-    }
+    await this.init();
   }
 
   render() {
@@ -70,7 +58,6 @@ export default class TagsPage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "標籤管理" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderTagsList() {
@@ -334,7 +321,7 @@ export default class TagsPage {
         return;
       }
 
-      await apiClient.post("/tags", data);
+      await tagsAPI.create(data);
       notification.success("標籤建立成功");
       this.modal.hide();
       await this.loadTags();
@@ -358,7 +345,7 @@ export default class TagsPage {
         return;
       }
 
-      await apiClient.put(`/tags/${tagId}`, data);
+      await tagsAPI.update(tagId, data);
       notification.success("標籤更新成功");
       this.modal.hide();
       await this.loadTags();
@@ -392,25 +379,13 @@ export default class TagsPage {
     }
 
     try {
-      await apiClient.delete(`/tags/${tagId}`);
+      await tagsAPI.delete(tagId);
       notification.success("標籤刪除成功");
       await this.loadTags();
     } catch (error) {
       console.error("刪除標籤失敗:", error);
       notification.error(error.message || "刪除標籤失敗");
     }
-  }
-
-  // 工具函式
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 }
 

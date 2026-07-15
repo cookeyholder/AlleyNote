@@ -2,6 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { statisticsAPI } from "../../api/modules/statistics.js";
 import { apiClient } from "../../api/client.js";
 import { notification } from "../../utils/notification.js";
@@ -9,54 +10,40 @@ import { notification } from "../../utils/notification.js";
 /**
  * 系統統計頁面（使用 Chart.js）
  */
-export default class StatisticsPage {
+export default class StatisticsPage extends BaseAdminPage {
   constructor() {
+    super();
     this.stats = null;
-    this.loading = false;
     this.charts = {
       traffic: null,
       loginFailures: null,
     };
-    this.timeRange = "week"; // day, week, month
+    this.timeRange = "week";
   }
 
-  async init() {
-    await this.loadStatistics();
+  async loadData() {
+    const [overview, popularPosts, loginFailures, trafficData] =
+      await Promise.all([
+        this.loadOverviewFromAPI(),
+        this.loadPopularPosts(),
+        this.loadLoginFailures(),
+        this.loadTrafficData(),
+      ]);
+
+    this.stats = {
+      overview,
+      popularPosts,
+      loginFailures,
+      trafficData,
+    };
+  }
+
+  afterRender() {
+    this.initCharts();
   }
 
   async loadStatistics() {
-    try {
-      this.loading = true;
-      this.render();
-      this.bindEvents();
-
-      // 使用實際 API 取得統計資料
-      const [overview, popularPosts, loginFailures, trafficData] =
-        await Promise.all([
-          this.loadOverviewFromAPI(),
-          this.loadPopularPosts(),
-          this.loadLoginFailures(),
-          this.loadTrafficData(),
-        ]);
-
-      this.stats = {
-        overview,
-        popularPosts,
-        loginFailures,
-        trafficData,
-      };
-
-      this.loading = false;
-      this.render();
-      this.bindEvents();
-      this.initCharts();
-    } catch (error) {
-      console.error("載入統計資料失敗:", error);
-      notification.error("載入統計資料失敗");
-      this.loading = false;
-      this.render();
-      this.bindEvents();
-    }
+    await this.init();
   }
 
   async loadOverviewFromAPI() {
@@ -193,7 +180,7 @@ export default class StatisticsPage {
     return [];
   }
 
-  bindEvents() {
+  attachEventListeners() {
     // 時間範圍切換
     document.querySelectorAll(".time-range-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {
@@ -660,17 +647,6 @@ export default class StatisticsPage {
     }
 
     return data;
-  }
-
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 }
 

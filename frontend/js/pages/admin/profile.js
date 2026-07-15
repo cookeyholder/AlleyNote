@@ -2,6 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { authAPI } from "../../api/modules/auth.js";
 import { usersAPI } from "../../api/modules/users.js";
 import { notification } from "../../utils/notification.js";
@@ -9,27 +10,21 @@ import { notification } from "../../utils/notification.js";
 /**
  * 個人資料頁面
  */
-export default class ProfilePage {
+export default class ProfilePage extends BaseAdminPage {
   constructor() {
+    super();
     this.user = null;
     this.isEditingInfo = false;
     this.isEditingPassword = false;
   }
 
-  async init() {
-    // 載入使用者資訊
-    await this.loadUserInfo();
+  async loadData() {
+    const response = await authAPI.me();
+    this.user = response;
   }
 
   async loadUserInfo() {
-    try {
-      const response = await authAPI.me();
-      this.user = response;
-      this.render();
-    } catch (error) {
-      console.error("載入使用者資訊失敗:", error);
-      notification.error("載入使用者資訊失敗");
-    }
+    await this.init();
   }
 
   render() {
@@ -55,14 +50,14 @@ export default class ProfilePage {
             </div>
             <button
               id="editInfoBtn"
-              class="px-5 py-2 text-sm font-bold \${this.isEditingInfo ? 'text-modern-500 hover:text-modern-800' : 'bg-modern-50 text-modern-700 hover:bg-modern-100 rounded-xl transition-all'}"
+              class="px-5 py-2 text-sm font-bold ${this.isEditingInfo ? "text-modern-500 hover:text-modern-800" : "bg-modern-50 text-modern-700 hover:bg-modern-100 rounded-xl transition-all"}"
             >
-              \${this.isEditingInfo ? '取消編輯' : '編輯資料'}
+              ${this.isEditingInfo ? "取消編輯" : "編輯資料"}
             </button>
           </div>
 
           <div class="relative z-10">
-            \${this.isEditingInfo ? this.renderEditInfoForm() : this.renderInfoDisplay()}
+            ${this.isEditingInfo ? this.renderEditInfoForm() : this.renderInfoDisplay()}
           </div>
         </div>
 
@@ -77,13 +72,13 @@ export default class ProfilePage {
             </div>
             <button
               id="editPasswordBtn"
-              class="px-5 py-2 text-sm font-bold \${this.isEditingPassword ? 'text-modern-500 hover:text-modern-800' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-xl transition-all'}"
+              class="px-5 py-2 text-sm font-bold ${this.isEditingPassword ? "text-modern-500 hover:text-modern-800" : "bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-xl transition-all"}"
             >
-              \${this.isEditingPassword ? '取消修改' : '變更密碼'}
+              ${this.isEditingPassword ? "取消修改" : "變更密碼"}
             </button>
           </div>
 
-          \${this.isEditingPassword ? this.renderPasswordForm() : this.renderPasswordPlaceholder()}
+          ${this.isEditingPassword ? this.renderPasswordForm() : this.renderPasswordPlaceholder()}
         </div>
       </div>
     `;
@@ -91,7 +86,6 @@ export default class ProfilePage {
     const app = document.getElementById("app");
     renderDashboardLayout(content, { title: "個人資料" });
     bindDashboardLayoutEvents();
-    this.attachEventListeners();
   }
 
   renderInfoDisplay() {
@@ -384,18 +378,6 @@ export default class ProfilePage {
       console.error("修改密碼失敗:", error);
       notification.error(error.message || "修改密碼失敗");
     }
-  }
-
-  // 工具函式
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 
   formatDate(dateString) {
