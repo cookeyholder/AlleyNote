@@ -7,7 +7,6 @@ import { escapeHtml } from "../utils/security.js";
 
 export default class BaseAdminPage {
   constructor() {
-    this.items = [];
     this.loading = false;
   }
 

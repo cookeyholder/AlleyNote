@@ -29,7 +29,7 @@ export default class StatisticsPage extends BaseAdminPage {
     try {
       this.loading = true;
       this.render();
-      this.bindEvents();
+      this.attachEventListeners();
 
       // 使用實際 API 取得統計資料
       const [overview, popularPosts, loginFailures, trafficData] =
@@ -49,14 +49,14 @@ export default class StatisticsPage extends BaseAdminPage {
 
       this.loading = false;
       this.render();
-      this.bindEvents();
+      this.attachEventListeners();
       this.initCharts();
     } catch (error) {
       console.error("載入統計資料失敗:", error);
       notification.error("載入統計資料失敗");
       this.loading = false;
       this.render();
-      this.bindEvents();
+      this.attachEventListeners();
     }
   }
 
@@ -194,7 +194,7 @@ export default class StatisticsPage extends BaseAdminPage {
     return [];
   }
 
-  bindEvents() {
+  attachEventListeners() {
     // 時間範圍切換
     document.querySelectorAll(".time-range-btn").forEach((btn) => {
       btn.addEventListener("click", async (e) => {

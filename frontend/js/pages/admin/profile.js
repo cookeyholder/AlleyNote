@@ -57,14 +57,14 @@ export default class ProfilePage extends BaseAdminPage {
             </div>
             <button
               id="editInfoBtn"
-              class="px-5 py-2 text-sm font-bold \${this.isEditingInfo ? 'text-modern-500 hover:text-modern-800' : 'bg-modern-50 text-modern-700 hover:bg-modern-100 rounded-xl transition-all'}"
+              class="px-5 py-2 text-sm font-bold ${this.isEditingInfo ? 'text-modern-500 hover:text-modern-800' : 'bg-modern-50 text-modern-700 hover:bg-modern-100 rounded-xl transition-all'}"
             >
-              \${this.isEditingInfo ? '取消編輯' : '編輯資料'}
+              ${this.isEditingInfo ? '取消編輯' : '編輯資料'}
             </button>
           </div>
 
           <div class="relative z-10">
-            \${this.isEditingInfo ? this.renderEditInfoForm() : this.renderInfoDisplay()}
+            ${this.isEditingInfo ? this.renderEditInfoForm() : this.renderInfoDisplay()}
           </div>
         </div>
 
@@ -79,13 +79,13 @@ export default class ProfilePage extends BaseAdminPage {
             </div>
             <button
               id="editPasswordBtn"
-              class="px-5 py-2 text-sm font-bold \${this.isEditingPassword ? 'text-modern-500 hover:text-modern-800' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-xl transition-all'}"
+              class="px-5 py-2 text-sm font-bold ${this.isEditingPassword ? 'text-modern-500 hover:text-modern-800' : 'bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-xl transition-all'}"
             >
-              \${this.isEditingPassword ? '取消修改' : '變更密碼'}
+              ${this.isEditingPassword ? '取消修改' : '變更密碼'}
             </button>
           </div>
 
-          \${this.isEditingPassword ? this.renderPasswordForm() : this.renderPasswordPlaceholder()}
+          ${this.isEditingPassword ? this.renderPasswordForm() : this.renderPasswordPlaceholder()}
         </div>
       </div>
     `;
