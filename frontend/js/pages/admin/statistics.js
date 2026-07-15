@@ -2,6 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { statisticsAPI } from "../../api/modules/statistics.js";
 import { apiClient } from "../../api/client.js";
 import { notification } from "../../utils/notification.js";
@@ -9,15 +10,15 @@ import { notification } from "../../utils/notification.js";
 /**
  * 系統統計頁面（使用 Chart.js）
  */
-export default class StatisticsPage {
+export default class StatisticsPage extends BaseAdminPage {
   constructor() {
+    super();
     this.stats = null;
-    this.loading = false;
     this.charts = {
       traffic: null,
       loginFailures: null,
     };
-    this.timeRange = "week"; // day, week, month
+    this.timeRange = "week";
   }
 
   async init() {
@@ -660,17 +661,6 @@ export default class StatisticsPage {
     }
 
     return data;
-  }
-
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 }
 

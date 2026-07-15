@@ -2,6 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { usersAPI } from "../../api/modules/users.js";
 import { notification } from "../../utils/notification.js";
 import { Modal, modal } from "../../components/Modal.js";
@@ -11,11 +12,11 @@ import { PasswordGenerator } from "../../utils/passwordGenerator.js";
 /**
  * 使用者管理頁面
  */
-export default class UsersPage {
+export default class UsersPage extends BaseAdminPage {
   constructor() {
+    super();
     this.users = [];
     this.roles = [];
-    this.loading = false;
     this.currentPage = 1;
     this.totalPages = 1;
     this.editingUser = null;
@@ -654,18 +655,6 @@ export default class UsersPage {
       console.error("刪除使用者失敗:", error);
       notification.error(error.message || "刪除使用者失敗");
     }
-  }
-
-  // 工具函式
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 
   formatDate(dateString) {

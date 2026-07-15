@@ -2,6 +2,7 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { authAPI } from "../../api/modules/auth.js";
 import { usersAPI } from "../../api/modules/users.js";
 import { notification } from "../../utils/notification.js";
@@ -9,8 +10,9 @@ import { notification } from "../../utils/notification.js";
 /**
  * 個人資料頁面
  */
-export default class ProfilePage {
+export default class ProfilePage extends BaseAdminPage {
   constructor() {
+    super();
     this.user = null;
     this.isEditingInfo = false;
     this.isEditingPassword = false;
@@ -384,18 +386,6 @@ export default class ProfilePage {
       console.error("修改密碼失敗:", error);
       notification.error(error.message || "修改密碼失敗");
     }
-  }
-
-  // 工具函式
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 
   formatDate(dateString) {

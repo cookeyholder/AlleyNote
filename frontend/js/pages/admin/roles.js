@@ -6,19 +6,20 @@ import {
   renderDashboardLayout,
   bindDashboardLayoutEvents,
 } from "../../layouts/DashboardLayout.js";
+import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { notification } from "../../utils/notification.js";
 import { rolesAPI } from "../../api/modules/roles.js";
 
 /**
  * 角色管理頁面類別
  */
-export default class RolesPage {
+export default class RolesPage extends BaseAdminPage {
   constructor() {
+    super();
     this.roles = [];
     this.permissions = [];
     this.groupedPermissions = {};
     this.selectedRole = null;
-    this.loading = false;
   }
 
   async init() {
@@ -539,20 +540,6 @@ export default class RolesPage {
       console.error("刪除角色失敗:", error);
       notification.error(error.response?.data?.message || "刪除角色失敗");
     }
-  }
-
-  /**
-   * HTML 轉義
-   */
-  escapeHtml(text) {
-    const map = {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#039;",
-    };
-    return text ? String(text).replace(/[&<>"']/g, (m) => map[m]) : "";
   }
 }
 
