@@ -171,7 +171,7 @@
    - ✅ 閱讀後端 API 文件：`docs/guides/developer/API_DOCUMENTATION.md`
    - ✅ 確認 Docker 已安裝並運行
      - ✅ Clone 專案並執行 `docker compose up -d`
-   - ✅ 閱讀前端遷移記錄：`frontend/MIGRATION_NOTES.md`
+   - ✅ 閱讀前端架構文件：`docs/frontend/README.md`
 
 ---
 
@@ -472,6 +472,6 @@ AlleyNote 前端專案採用**原生技術、簡單直接**的開發方式，確
 
 **📌 重要提醒**:
 
-前端已從 Vite 改為純原生技術，請參考 [frontend/MIGRATION_NOTES.md](../../frontend/MIGRATION_NOTES.md) 了解遷移詳情。3. ✅ **安全性**: XSS/CSRF 防護、安全標頭 4. ✅ **效能**: Code Splitting、懶加載、快取策略5. ✅ **可維護性**: 清晰的架構、完整的文件
+前端已從 Vite 改為純原生技術，詳情請參考 `docs/frontend/` 目錄下的文件。3. ✅ **安全性**: XSS/CSRF 防護、安全標頭 4. ✅ **效能**: Code Splitting、懶加載、快取策略5. ✅ **可維護性**: 清晰的架構、完整的文件
 
 **開始開發前，請務必閱讀本目錄下的所有文件。祝開發順利！** 🚀

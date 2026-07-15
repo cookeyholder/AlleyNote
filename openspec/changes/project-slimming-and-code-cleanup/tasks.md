@@ -22,8 +22,8 @@
 
 ## 4. 程式碼格式化
 
-- [ ] 4.1 對整個後端執行 PHP-CS-Fixer（排除 `vendor/`），並用 `--dry-run` 驗證
-- [ ] 4.2 對整個前端與 E2E 測試執行 Prettier，並用 `--check` 驗證
+- [x] 4.1 對整個後端執行 PHP-CS-Fixer（排除 `vendor/`），並用 `--dry-run` 驗證
+- [x] 4.2 對整個前端與 E2E 測試執行 Prettier，並用 `--check` 驗證
 
 ## 5. 文件更新
 
