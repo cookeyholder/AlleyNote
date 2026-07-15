@@ -12,10 +12,18 @@ export default class CacheTagsPage {
     this.loadStatistics();
     this.loadTags();
 
-    document.getElementById("btnRefresh").addEventListener("click", () => this.refreshData());
-    document.getElementById("btnBulkDelete").addEventListener("click", () => this.showBulkDeleteModal());
-    document.getElementById("btnExecuteBulkDelete").addEventListener("click", () => this.executeBulkDelete());
-    document.getElementById("searchInput").addEventListener("keyup", (e) => this.handleSearch(e));
+    document
+      .getElementById("btnRefresh")
+      .addEventListener("click", () => this.refreshData());
+    document
+      .getElementById("btnBulkDelete")
+      .addEventListener("click", () => this.showBulkDeleteModal());
+    document
+      .getElementById("btnExecuteBulkDelete")
+      .addEventListener("click", () => this.executeBulkDelete());
+    document
+      .getElementById("searchInput")
+      .addEventListener("keyup", (e) => this.handleSearch(e));
 
     document.getElementById("tagsTableBody").addEventListener("click", (e) => {
       const btnDetails = e.target.closest(".btn-tag-details");
@@ -49,10 +57,15 @@ export default class CacheTagsPage {
 
       if (data.success) {
         const stats = data.data;
-        document.getElementById("totalTags").textContent = stats.summary.total_tags || 0;
-        document.getElementById("totalKeys").textContent = stats.summary.total_keys || 0;
-        document.getElementById("totalGroups").textContent = stats.groups?.total_groups || 0;
-        document.getElementById("memoryUsage").textContent = this.formatBytes(stats.summary.total_memory_usage || 0);
+        document.getElementById("totalTags").textContent =
+          stats.summary.total_tags || 0;
+        document.getElementById("totalKeys").textContent =
+          stats.summary.total_keys || 0;
+        document.getElementById("totalGroups").textContent =
+          stats.groups?.total_groups || 0;
+        document.getElementById("memoryUsage").textContent = this.formatBytes(
+          stats.summary.total_memory_usage || 0,
+        );
       }
     } catch (error) {
       console.error("載入統計失敗:", error);
@@ -95,7 +108,8 @@ export default class CacheTagsPage {
     tbody.innerHTML = "";
 
     if (tags.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">沒有找到標籤</td></tr>';
+      tbody.innerHTML =
+        '<tr><td colspan="6" class="text-center text-muted">沒有找到標籤</td></tr>';
       return;
     }
 
@@ -104,9 +118,13 @@ export default class CacheTagsPage {
       row.innerHTML = `
         <td>
           <code>${this.escapeHtml(tag.name)}</code>
-          ${tag.sample_keys.length > 0
-            ? `<small class="text-muted d-block">範例: ${tag.sample_keys.slice(0, 2).map((k) => this.escapeHtml(k)).join(", ")}</small>`
-            : ""
+          ${
+            tag.sample_keys.length > 0
+              ? `<small class="text-muted d-block">範例: ${tag.sample_keys
+                  .slice(0, 2)
+                  .map((k) => this.escapeHtml(k))
+                  .join(", ")}</small>`
+              : ""
           }
         </td>
         <td>
@@ -168,7 +186,9 @@ export default class CacheTagsPage {
 
   async showTagDetails(tagName) {
     try {
-      const response = await fetch("/api/admin/cache/tags/" + encodeURIComponent(tagName));
+      const response = await fetch(
+        "/api/admin/cache/tags/" + encodeURIComponent(tagName),
+      );
       const data = await response.json();
 
       if (data.success) {
@@ -189,16 +209,24 @@ export default class CacheTagsPage {
             <div class="col-md-6">
               <h6>快取鍵列表</h6>
               <div style="max-height: 300px; overflow-y: auto;">
-                ${tag.keys.length > 0
-                  ? tag.keys.map((k) => `<div class="mb-1"><code class="small">${this.escapeHtml(k.key)}</code> <span class="badge bg-light text-dark">${this.formatBytes(k.value_size)}</span></div>`).join("")
-                  : '<p class="text-muted">沒有快取鍵</p>'
+                ${
+                  tag.keys.length > 0
+                    ? tag.keys
+                        .map(
+                          (k) =>
+                            `<div class="mb-1"><code class="small">${this.escapeHtml(k.key)}</code> <span class="badge bg-light text-dark">${this.formatBytes(k.value_size)}</span></div>`,
+                        )
+                        .join("")
+                    : '<p class="text-muted">沒有快取鍵</p>'
                 }
               </div>
             </div>
           </div>
         `;
 
-        const modal = new window.bootstrap.Modal(document.getElementById("tagDetailsModal"));
+        const modal = new window.bootstrap.Modal(
+          document.getElementById("tagDetailsModal"),
+        );
         modal.show();
       } else {
         this.showAlert("載入標籤詳細資訊失敗: " + data.error.message, "danger");
@@ -210,20 +238,30 @@ export default class CacheTagsPage {
   }
 
   async flushTag(tagName) {
-    const confirmed = await this.confirmAction("確認清空標籤", `確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`, "確認清空");
+    const confirmed = await this.confirmAction(
+      "確認清空標籤",
+      `確定要清空標籤 "${tagName}" 的所有快取嗎？此操作無法撤銷。`,
+      "確認清空",
+    );
 
     if (!confirmed) {
       return;
     }
 
     try {
-      const response = await fetch("/api/admin/cache/tags/" + encodeURIComponent(tagName), {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        "/api/admin/cache/tags/" + encodeURIComponent(tagName),
+        {
+          method: "DELETE",
+        },
+      );
       const data = await response.json();
 
       if (data.success) {
-        this.showAlert(`標籤 "${tagName}" 已清空 ${data.data.cleared_count} 個項目`, "success");
+        this.showAlert(
+          `標籤 "${tagName}" 已清空 ${data.data.cleared_count} 個項目`,
+          "success",
+        );
         this.refreshData();
       } else {
         this.showAlert("清空標籤失敗: " + data.error.message, "danger");
@@ -250,12 +288,16 @@ export default class CacheTagsPage {
       `;
     });
 
-    const modal = new window.bootstrap.Modal(document.getElementById("bulkDeleteModal"));
+    const modal = new window.bootstrap.Modal(
+      document.getElementById("bulkDeleteModal"),
+    );
     modal.show();
   }
 
   async executeBulkDelete() {
-    const checkboxes = document.querySelectorAll('#bulkDeleteTagsList input[type="checkbox"]:checked');
+    const checkboxes = document.querySelectorAll(
+      '#bulkDeleteTagsList input[type="checkbox"]:checked',
+    );
     const tags = Array.from(checkboxes).map((cb) => cb.value);
 
     if (tags.length === 0) {
@@ -263,7 +305,11 @@ export default class CacheTagsPage {
       return;
     }
 
-    const confirmed = await this.confirmAction("確認批量清空", `確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`, "確認批量清空");
+    const confirmed = await this.confirmAction(
+      "確認批量清空",
+      `確定要清空 ${tags.length} 個標籤的所有快取嗎？此操作無法撤銷。`,
+      "確認批量清空",
+    );
 
     if (!confirmed) {
       return;
@@ -280,8 +326,13 @@ export default class CacheTagsPage {
       const data = await response.json();
 
       if (data.success) {
-        this.showAlert(`批量清空完成，共清空 ${data.data.total_cleared} 個項目`, "success");
-        const modal = window.bootstrap.Modal.getInstance(document.getElementById("bulkDeleteModal"));
+        this.showAlert(
+          `批量清空完成，共清空 ${data.data.total_cleared} 個項目`,
+          "success",
+        );
+        const modal = window.bootstrap.Modal.getInstance(
+          document.getElementById("bulkDeleteModal"),
+        );
         modal.hide();
         this.refreshData();
       } else {
@@ -299,8 +350,12 @@ export default class CacheTagsPage {
   }
 
   showLoading(show) {
-    document.getElementById("loadingIndicator").style.display = show ? "block" : "none";
-    document.getElementById("tagsTable").style.display = show ? "none" : "table";
+    document.getElementById("loadingIndicator").style.display = show
+      ? "block"
+      : "none";
+    document.getElementById("tagsTable").style.display = show
+      ? "none"
+      : "table";
   }
 
   confirmAction(title, message, confirmText = "確認") {
@@ -381,8 +436,12 @@ export default class CacheTagsPage {
         runtimeModal.hide();
       };
 
-      element.querySelector('[data-action="cancel"]').addEventListener("click", () => finish(false));
-      element.querySelector('[data-action="confirm"]').addEventListener("click", () => finish(true));
+      element
+        .querySelector('[data-action="cancel"]')
+        .addEventListener("click", () => finish(false));
+      element
+        .querySelector('[data-action="confirm"]')
+        .addEventListener("click", () => finish(true));
       element.addEventListener("hidden.bs.modal", () => {
         if (!settled) {
           settled = true;
