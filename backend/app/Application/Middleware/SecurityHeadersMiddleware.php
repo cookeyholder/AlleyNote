@@ -38,6 +38,8 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         // 獲取安全標頭清單並套用到 PSR-7 Response 物件中 (符合 PSR-7 架構規範)
         $headers = $this->headerService->generateHeaders();
         foreach ($headers as $name => $value) {
+            /** @var string $name */
+            /** @var string|array<string> $value */
             $response = $response->withHeader($name, $value);
         }
 
@@ -45,7 +47,9 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         $response = $response->withoutHeader('X-Powered-By');
         if ($this->headerService->isServerSignatureEnabled()) {
             if (isset($headers['Server'])) {
-                $response = $response->withHeader('Server', $headers['Server']);
+                /** @var string|array<string> $serverHeaderVal */
+                $serverHeaderVal = $headers['Server'];
+                $response = $response->withHeader('Server', $serverHeaderVal);
             }
         } else {
             $response = $response->withoutHeader('Server');

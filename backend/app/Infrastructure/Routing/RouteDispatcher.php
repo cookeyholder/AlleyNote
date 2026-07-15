@@ -39,15 +39,20 @@ class RouteDispatcher
 
             try {
                 if ($this->container->has(SecurityHeaderService::class)) {
+                    /** @var SecurityHeaderService $headerService */
                     $headerService = $this->container->get(SecurityHeaderService::class);
                     $headers = $headerService->generateHeaders();
                     foreach ($headers as $name => $value) {
+                        /** @var string $name */
+                        /** @var string|array<string> $value */
                         $response = $response->withHeader($name, $value);
                     }
                     $response = $response->withoutHeader('X-Powered-By');
                     if ($headerService->isServerSignatureEnabled()) {
                         if (isset($headers['Server'])) {
-                            $response = $response->withHeader('Server', $headers['Server']);
+                            /** @var string|array<string> $serverHeaderVal */
+                            $serverHeaderVal = $headers['Server'];
+                            $response = $response->withHeader('Server', $serverHeaderVal);
                         }
                     } else {
                         $response = $response->withoutHeader('Server');
@@ -62,11 +67,14 @@ class RouteDispatcher
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
         // 2. 準備中間件鏈（將全域安全性標頭中間件放在最前面）
+        /** @var array<\App\Infrastructure\Routing\Contracts\MiddlewareInterface> $resolvedMiddlewares */
         $resolvedMiddlewares = [];
 
         try {
             if ($this->container->has(SecurityHeadersMiddleware::class)) {
-                $resolvedMiddlewares[] = $this->container->get(SecurityHeadersMiddleware::class);
+                /** @var \App\Infrastructure\Routing\Contracts\MiddlewareInterface $securityMiddleware */
+                $securityMiddleware = $this->container->get(SecurityHeadersMiddleware::class);
+                $resolvedMiddlewares[] = $securityMiddleware;
             }
         } catch (Throwable $e) {
             // 忽略
@@ -78,7 +86,7 @@ class RouteDispatcher
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
-                } else {
+                } elseif ($middleware instanceof \App\Infrastructure\Routing\Contracts\MiddlewareInterface) {
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }

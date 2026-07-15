@@ -18,6 +18,8 @@ interface SecurityHeaderServiceInterface
 
     /**
      * 產生安全性 HTTP 標頭陣列 (PSR-7 相容).
+     *
+     * @return array<string, string>
      */
     public function generateHeaders(): array;
 

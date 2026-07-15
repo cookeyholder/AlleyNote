@@ -9,13 +9,18 @@ use Throwable;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
+    /**
+     * @var array<string, array<string, mixed>>
+     */
     private array $config;
 
     private ?string $currentNonce = null;
 
     public function __construct(array $config = [])
     {
-        $this->config = array_merge($this->getDefaultConfig(), $config);
+        /** @var array<string, array<string, mixed>> $mergedConfig */
+        $mergedConfig = array_merge($this->getDefaultConfig(), $config);
+        $this->config = $mergedConfig;
     }
 
     public function setSecurityHeaders(): void
@@ -74,14 +79,16 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
 
     public function generateHeaders(): array
     {
+        /** @var array<string, string> $headers */
         $headers = [];
         if ($this->config['csp']['enabled']) {
             $headers['Content-Security-Policy'] = $this->buildCSP();
         }
         if ($this->config['hsts']['enabled'] && $this->isHTTPS()) {
+            $maxAge = $this->config['hsts']['max_age'];
             $headers['Strict-Transport-Security'] = sprintf(
                 'max-age=%d%s%s',
-                $this->config['hsts']['max_age'],
+                is_int($maxAge) ? $maxAge : 31536000,
                 $this->config['hsts']['include_subdomains'] ? '; includeSubDomains' : '',
                 $this->config['hsts']['preload'] ? '; preload' : '',
             );
