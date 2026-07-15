@@ -104,8 +104,7 @@ final class AttributeAuthorizationStrategy implements AuthorizationStrategyInter
 
     /**
      * 檢查時間限制是否匹配.
-     */
-    /**
+     *
      * @param array<string, mixed> $restriction
      */
     private function matchesTimeRestriction(
