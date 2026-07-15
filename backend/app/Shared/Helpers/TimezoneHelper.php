@@ -200,28 +200,4 @@ class TimezoneHelper
 
         return $result;
     }
-
-    /**
-     * 獲取常用時區列表（向後相容）.
-     *
-     * @deprecated 使用 getAllTimezones() 取得完整時區列表
-     */
-    public static function getCommonTimezones(): array
-    {
-        return [
-            'UTC' => 'UTC (協調世界時)',
-            'Asia/Taipei' => 'Asia/Taipei (台北時間 UTC+8)',
-            'Asia/Tokyo' => 'Asia/Tokyo (東京時間 UTC+9)',
-            'Asia/Shanghai' => 'Asia/Shanghai (上海時間 UTC+8)',
-            'Asia/Hong_Kong' => 'Asia/Hong_Kong (香港時間 UTC+8)',
-            'Asia/Singapore' => 'Asia/Singapore (新加坡時間 UTC+8)',
-            'America/New_York' => 'America/New_York (紐約時間 UTC-5/-4)',
-            'America/Los_Angeles' => 'America/Los_Angeles (洛杉磯時間 UTC-8/-7)',
-            'America/Chicago' => 'America/Chicago (芝加哥時間 UTC-6/-5)',
-            'Europe/London' => 'Europe/London (倫敦時間 UTC+0/+1)',
-            'Europe/Paris' => 'Europe/Paris (巴黎時間 UTC+1/+2)',
-            'Europe/Berlin' => 'Europe/Berlin (柏林時間 UTC+1/+2)',
-            'Australia/Sydney' => 'Australia/Sydney (雪梨時間 UTC+10/+11)',
-        ];
-    }
 }

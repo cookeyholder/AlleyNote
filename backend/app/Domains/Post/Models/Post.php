@@ -144,15 +144,6 @@ class Post implements JsonSerializable
         return $this->views;
     }
 
-    /**
-     * 相容性方法：提供 getViewCount 作為 getViews 的別名.
-     * @deprecated 使用 getViews() 替代
-     */
-    public function getViewCount(): int
-    {
-        return $this->getViews();
-    }
-
     public function getCreatedAt(): string
     {
         return $this->createdAt;

@@ -1,23 +1,23 @@
 ## 1. 廢棄程式碼移除
 
-- [ ] 1.1 移除 `Post::getViewCount()` 方法，並將 `PostTest.php` 改為使用 `getViews()`
-- [ ] 1.2 移除 `PostRepository::findByUserId()` 方法
-- [ ] 1.3 移除 `TimezoneHelper::getCommonTimezones()` 方法
-- [ ] 1.4 從 `functions.php` 移除 `sanitize_post_array()` 函式
+- [x] 1.1 移除 `Post::getViewCount()` 方法，並將 `PostTest.php` 改為使用 `getViews()`
+- [x] 1.2 移除 `PostRepository::findByUserId()` 方法
+- [x] 1.3 移除 `TimezoneHelper::getCommonTimezones()` 方法
+- [x] 1.4 從 `functions.php` 移除 `sanitize_post_array()` 函式
 
 ## 2. 孤立檔案清理
 
-- [ ] 2.1 刪除根目錄一次性腳本（`refactor_exception.php`、`refactor_script.php`、`sort_imports.php`）
-- [ ] 2.2 刪除巢狀重複檔案 `backend/backend/phpstan-level-10-baseline.neon`
-- [ ] 2.3 刪除 `backend/scripts/Archive/` 目錄內容
-- [ ] 2.4 刪除 `backend/examples/` 目錄內容
-- [ ] 2.5 刪除前端孤立檔案（`test-ckeditor.html`、`FRONTEND_API_UPDATE.md`、`MIGRATION_NOTES.md`）
-- [ ] 2.6 刪除已停用的測試 `JwtTokenBlacklistIntegrationTest.php.disabled`
+- [x] 2.1 刪除根目錄一次性腳本（`refactor_exception.php`、`refactor_script.php`、`sort_imports.php`）
+- [x] 2.2 刪除巢狀重複檔案 `backend/backend/phpstan-level-10-baseline.neon`
+- [x] 2.3 刪除 `backend/scripts/Archive/` 目錄內容
+- [x] 2.4 刪除 `backend/examples/` 目錄內容
+- [x] 2.5 刪除前端孤立檔案（`test-ckeditor.html`、`FRONTEND_API_UPDATE.md`、`MIGRATION_NOTES.md`）
+- [x] 2.6 刪除已停用的測試 `JwtTokenBlacklistIntegrationTest.php.disabled`
 
 ## 3. 設定合併
 
-- [ ] 3.1 將 `.php-cs-fixer.php` 與 `.php-cs-fixer.dist.php` 合併為單一設定檔
-- [ ] 3.2 刪除 `backend/backend/phpstan-level-10-baseline.neon`（重複巢狀檔案）
+- [x] 3.1 將 `.php-cs-fixer.php` 與 `.php-cs-fixer.dist.php` 合併為單一設定檔
+- [x] 3.2 刪除 `backend/backend/phpstan-level-10-baseline.neon`（重複巢狀檔案）
 - [ ] 3.3 將分析報告從 `backend/storage/` 移至 `docs/archive/`
 
 ## 4. 程式碼格式化

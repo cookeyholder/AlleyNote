@@ -785,13 +785,6 @@ class PostRepository implements PostRepositoryInterface
         return Post::fromArray($this->preparePostData($result));
     }
 
-    /**
-     * @deprecated 使用 findLatestByUserId() 取代
-     */
-    public function findByUserId(int $userId): ?Post
-    {
-        return $this->findLatestByUserId($userId);
-    }
 
     public function search(string $keyword): mixed
     {

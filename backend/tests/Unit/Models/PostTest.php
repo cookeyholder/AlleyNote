@@ -67,7 +67,7 @@ class PostTest extends UnitTestCase
         $post = new Post($data);
 
         $this->assertEquals(0, $post->getId());
-        $this->assertEquals(0, $post->getViewCount());
+        $this->assertEquals(0, $post->getViews());
         $this->assertEquals(PostStatus::DRAFT, $post->getStatus());
         $this->assertFalse($post->isPinned());
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getCreatedAt());
