@@ -237,87 +237,6 @@ class SourceDistributionDTOTest extends UnitTestCase
         $this->assertSame(400, $dto->getReferralTrafficCount());
     }
 
-    public function testTrafficQualityAnalysis(): void
-    {
-        $dto = SourceDistributionDTO::fromArray($this->validData);
-
-        $analysis = $dto->getTrafficQualityAnalysis();
-
-        $this->assertArrayHasKey('quality_score', $analysis);
-        $this->assertArrayHasKey('organic_percentage', $analysis);
-        $this->assertArrayHasKey('direct_percentage', $analysis);
-        $this->assertArrayHasKey('social_percentage', $analysis);
-        $this->assertArrayHasKey('quality_level', $analysis);
-        $this->assertArrayHasKey('recommendations', $analysis);
-
-        $this->assertSame(38.71, $analysis['organic_percentage']);
-        $this->assertSame(24.19, $analysis['direct_percentage']); // 750 / 3100 * 100
-        $this->assertSame(11.29, $analysis['social_percentage']); // 350 / 3100 * 100
-
-        // 品質評分 = (38.71 * 0.5) + (24.19 * 0.3) + (11.29 * 0.2) = 28.87
-        $this->assertSame(28.87, $analysis['quality_score']);
-        $this->assertSame('poor', $analysis['quality_level']); // < 30
-    }
-
-    public function testChannelPerformanceAnalysis(): void
-    {
-        $dto = SourceDistributionDTO::fromArray($this->validData);
-
-        $analysis = $dto->getChannelPerformanceAnalysis();
-
-        $this->assertArrayHasKey('channels', $analysis);
-        $this->assertArrayHasKey('top_performer', $analysis);
-        $this->assertArrayHasKey('diversity_score', $analysis);
-
-        $channels = $analysis['channels'];
-        $this->assertIsArray($channels);
-        $this->assertArrayHasKey('search', $channels);
-        $searchChannel = $channels['search'];
-        $this->assertIsArray($searchChannel);
-        $this->assertSame(1500, $searchChannel['traffic']);
-        $this->assertSame(1, $searchChannel['rank']); // 最高流量
-
-        $this->assertSame('search', $analysis['top_performer']);
-    }
-
-    public function testDeviceUsagePattern(): void
-    {
-        $dto = SourceDistributionDTO::fromArray($this->validData);
-
-        $pattern = $dto->getDeviceUsagePattern();
-
-        $this->assertArrayHasKey('pattern', $pattern);
-        $this->assertArrayHasKey('mobile_percentage', $pattern);
-        $this->assertArrayHasKey('desktop_percentage', $pattern);
-        $this->assertArrayHasKey('tablet_percentage', $pattern);
-        $this->assertArrayHasKey('is_mobile_first', $pattern);
-
-        $this->assertSame('desktop_dominant', $pattern['pattern']); // 桌面流量 > 50% 且大於手機流量
-        $this->assertSame(34.78, $pattern['mobile_percentage']);
-        $this->assertSame(52.17, $pattern['desktop_percentage']);
-        $this->assertEqualsWithDelta(13.05, $pattern['tablet_percentage'], 0.01); // 100 - 34.78 - 52.17
-        $this->assertFalse($pattern['is_mobile_first']); // 手機流量 < 50%
-    }
-
-    public function testTrendInsights(): void
-    {
-        $dto = SourceDistributionDTO::fromArray($this->validData);
-
-        $insights = $dto->getTrendInsights();
-
-        $this->assertArrayHasKey('growth_rate', $insights);
-        $this->assertArrayHasKey('trend_direction', $insights);
-        $this->assertArrayHasKey('key_drivers', $insights);
-        $this->assertArrayHasKey('emerging_sources', $insights);
-        $this->assertArrayHasKey('declining_sources', $insights);
-        $this->assertArrayHasKey('seasonal_patterns', $insights);
-
-        $this->assertSame(12.5, $insights['growth_rate']);
-        $this->assertSame('growing', $insights['trend_direction']);
-        $this->assertSame(['SEO improvement', 'Social media campaign'], $insights['key_drivers']);
-        $this->assertSame(['TikTok', 'LinkedIn'], $insights['emerging_sources']);
-    }
-
     public function testToArray(): void
     {
         $dto = SourceDistributionDTO::fromArray($this->validData);
@@ -327,10 +246,10 @@ class SourceDistributionDTOTest extends UnitTestCase
         $this->assertArrayHasKey('top_sources', $array);
         $this->assertArrayHasKey('by_traffic_type', $array);
         $this->assertArrayHasKey('calculated_metrics', $array);
-        $this->assertArrayHasKey('traffic_quality_analysis', $array);
-        $this->assertArrayHasKey('channel_performance_analysis', $array);
-        $this->assertArrayHasKey('device_usage_pattern', $array);
-        $this->assertArrayHasKey('trend_insights', $array);
+        $this->assertArrayNotHasKey('traffic_quality_analysis', $array);
+        $this->assertArrayNotHasKey('channel_performance_analysis', $array);
+        $this->assertArrayNotHasKey('device_usage_pattern', $array);
+        $this->assertArrayNotHasKey('trend_insights', $array);
         $this->assertArrayHasKey('generated_at', $array);
         $this->assertArrayHasKey('metadata', $array);
 
@@ -380,14 +299,13 @@ class SourceDistributionDTOTest extends UnitTestCase
         $this->assertArrayHasKey('mobile_percentage', $summary);
         $this->assertArrayHasKey('top_source', $summary);
         $this->assertArrayHasKey('top_search_engine', $summary);
-        $this->assertArrayHasKey('device_pattern', $summary);
+        $this->assertArrayNotHasKey('device_pattern', $summary);
 
         $this->assertSame(3100, $summary['total_traffic']);
         $this->assertSame(38.71, $summary['organic_percentage']);
         $this->assertSame(34.78, $summary['mobile_percentage']);
         $this->assertSame('Google Search', $summary['top_source']);
         $this->assertSame('Google', $summary['top_search_engine']);
-        $this->assertSame('desktop_dominant', $summary['device_pattern']);
     }
 
     public function testValidationFailsWithInvalidTopSources(): void
@@ -396,7 +314,7 @@ class SourceDistributionDTOTest extends UnitTestCase
         $this->expectExceptionMessage('主要來源資料結構不正確');
 
         new SourceDistributionDTO(
-            topSources: [['invalid' => 'structure']], // 缺少 name 和 traffic
+            topSources: [['invalid' => 'structure']],
             byTrafficType: [],
             byChannel: [],
             byDevice: [],
@@ -416,7 +334,7 @@ class SourceDistributionDTOTest extends UnitTestCase
 
         new SourceDistributionDTO(
             topSources: [],
-            byTrafficType: ['organic' => -1], // 負數
+            byTrafficType: ['organic' => -1],
             byChannel: [],
             byDevice: [],
             byGeographic: [],
@@ -436,7 +354,7 @@ class SourceDistributionDTOTest extends UnitTestCase
         new SourceDistributionDTO(
             topSources: [],
             byTrafficType: [],
-            byChannel: ['search' => -1], // 負數
+            byChannel: ['search' => -1],
             byDevice: [],
             byGeographic: [],
             searchEngines: [],
@@ -456,7 +374,7 @@ class SourceDistributionDTOTest extends UnitTestCase
             topSources: [],
             byTrafficType: [],
             byChannel: [],
-            byDevice: ['mobile' => -1], // 負數
+            byDevice: ['mobile' => -1],
             byGeographic: [],
             searchEngines: [],
             socialMedia: [],
@@ -476,7 +394,7 @@ class SourceDistributionDTOTest extends UnitTestCase
             byTrafficType: [],
             byChannel: [],
             byDevice: [],
-            byGeographic: ['Taiwan' => -1], // 負數
+            byGeographic: ['Taiwan' => -1],
             searchEngines: [],
             socialMedia: [],
             referralSites: [],
@@ -499,61 +417,8 @@ class SourceDistributionDTOTest extends UnitTestCase
             searchEngines: [],
             socialMedia: [],
             referralSites: [],
-            contentTypes: ['article' => -1], // 負數
+            contentTypes: ['article' => -1],
             trends: [],
         );
-    }
-
-    public function testMobileFirstPattern(): void
-    {
-        $data = $this->validData;
-        $data['by_device'] = [
-            'mobile'  => 2000,
-            'desktop' => 500,
-            'tablet'  => 200,
-        ];
-
-        $dto = SourceDistributionDTO::fromArray($data);
-        $pattern = $dto->getDeviceUsagePattern();
-
-        $this->assertSame('mobile_first', $pattern['pattern']);
-        $this->assertTrue($pattern['is_mobile_first']);
-    }
-
-    public function testBalancedDevicePattern(): void
-    {
-        $data = $this->validData;
-        $data['by_device'] = [
-            'mobile'  => 1000,
-            'desktop' => 1100,
-            'tablet'  => 300,
-        ];
-
-        $dto = SourceDistributionDTO::fromArray($data);
-        $pattern = $dto->getDeviceUsagePattern();
-
-        $this->assertSame('balanced', $pattern['pattern']);
-        $this->assertFalse($pattern['is_mobile_first']);
-    }
-
-    public function testQualityRecommendations(): void
-    {
-        // 創建低品質流量的資料
-        $data = $this->validData;
-        $data['by_traffic_type'] = [
-            'organic' => 200, // 低有機流量
-            'direct'  => 100,  // 低直接流量
-            'social'  => 2000, // 高社群流量
-            'paid'    => 100,
-        ];
-
-        $dto = SourceDistributionDTO::fromArray($data);
-        $analysis = $dto->getTrafficQualityAnalysis();
-
-        $recommendations = $analysis['recommendations'];
-        $this->assertIsArray($recommendations);
-        $this->assertContains('建議加強 SEO 優化以提升有機流量', $recommendations);
-        $this->assertContains('建議提升品牌知名度以增加直接流量', $recommendations);
-        $this->assertContains('建議平衡流量來源，減少對社群媒體的過度依賴', $recommendations);
     }
 }
