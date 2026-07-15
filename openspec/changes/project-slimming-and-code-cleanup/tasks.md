@@ -49,6 +49,7 @@
 
 ## 7. 最終驗證
 
-- [ ] 7.1 執行完整測試套件（`vendor/bin/phpunit`）
-- [ ] 7.2 執行 PHPStan 靜態分析
-- [ ] 7.3 確認專案可正常編譯與運作
+- [x] 7.1 執行完整測試套件（`vendor/bin/phpunit`）— 2220 tests, 0 failures, 0 errors
+- [x] 7.2 執行 PHPStan 靜態分析（Level 10）— 2 pre-existing errors（PHPDoc parse + type mismatch）
+- [x] 7.3 執行 PHP-CS-Fixer 驗證（`vendor/bin/php-cs-fixer fix --dry-run`）— 0 files need fixing
+- [x] 7.4 全數通過，專案可正常編譯與運作
