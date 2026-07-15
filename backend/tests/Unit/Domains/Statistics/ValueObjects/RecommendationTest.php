@@ -63,6 +63,7 @@ final class RecommendationTest extends TestCase
         );
 
         $json = json_encode($rec, JSON_THROW_ON_ERROR);
+        /** @var array{title: string, description: string, priority: string, category: string} $decoded */
         $decoded = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
 
         $this->assertSame('JSON 測試', $decoded['title']);

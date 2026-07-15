@@ -27,7 +27,7 @@ class UserStatisticsAnalyzer
     /**
      * 取得使用者參與度分析.
      *
-     * @return array<string, mixed>
+     * @return array{total_users: int, engagement_rate: float, average_engagement_score: float, engagement_distribution: array{high: array{count: int, percentage: float}, medium: array{count: int, percentage: float}, low: array{count: int, percentage: float}, inactive: array{count: int, percentage: float}}}
      */
     public function getEngagementAnalysis(UserStatisticsDTO $dto): array
     {
@@ -52,7 +52,7 @@ class UserStatisticsAnalyzer
     /**
      * 取得活動時間洞察.
      *
-     * @return array<string, mixed>
+     * @return array{peak_login_hour: int, peak_activity_hour: ?string, activity_pattern: string, weekend_vs_weekday: array<string, mixed>}
      */
     public function getActivityInsights(UserStatisticsDTO $dto): array
     {

@@ -138,13 +138,19 @@ class ContentInsightsAnalyzerTest extends UnitTestCase
 
     public function testLifespanBasedRefreshRecommendations(): void
     {
-        $this->validData['content_lifecycle_analysis']['avg_lifespan_days'] = 20;
+        /** @var array{avg_lifespan_days: int, peak_views_period: string} $lifecycle */
+        $lifecycle = $this->validData['content_lifecycle_analysis'];
+        $lifecycle['avg_lifespan_days'] = 20;
+        $this->validData['content_lifecycle_analysis'] = $lifecycle;
         $dto = $this->createDTO();
         $insights = $this->analyzer->getOptimizationInsights($dto);
         $recommendations = $insights['lifecycle_management']['refresh_recommendations'];
         $this->assertContains('每週檢查內容效能', $recommendations);
 
-        $this->validData['content_lifecycle_analysis']['avg_lifespan_days'] = 120;
+        /** @var array{avg_lifespan_days: int, peak_views_period: string} $lifecycle2 */
+        $lifecycle2 = $this->validData['content_lifecycle_analysis'];
+        $lifecycle2['avg_lifespan_days'] = 120;
+        $this->validData['content_lifecycle_analysis'] = $lifecycle2;
         $dto2 = $this->createDTO();
         $insights2 = $this->analyzer->getOptimizationInsights($dto2);
         $recommendations2 = $insights2['lifecycle_management']['refresh_recommendations'];

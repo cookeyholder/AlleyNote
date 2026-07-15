@@ -29,7 +29,7 @@ class SourceDistributionAnalyzer
     /**
      * 取得流量品質分析.
      *
-     * @return array<string, mixed>
+     * @return array{quality_score: float, organic_percentage: float, direct_percentage: float, social_percentage: float, quality_level: string, recommendations: string[]}
      */
     public function getTrafficQualityAnalysis(SourceDistributionDTO $dto): array
     {
@@ -51,7 +51,7 @@ class SourceDistributionAnalyzer
     /**
      * 取得管道效能分析.
      *
-     * @return array<string, mixed>
+     * @return array{channels: array<string, array{traffic: int, percentage: float, rank: int}>, top_performer: ?string, diversity_score: float}
      */
     public function getChannelPerformanceAnalysis(SourceDistributionDTO $dto): array
     {
@@ -81,7 +81,7 @@ class SourceDistributionAnalyzer
     /**
      * 取得裝置使用模式.
      *
-     * @return array<string, mixed>
+     * @return array{pattern: string, mobile_percentage: float, desktop_percentage: float, tablet_percentage: float, is_mobile_first: bool}
      */
     public function getDeviceUsagePattern(SourceDistributionDTO $dto): array
     {
@@ -108,7 +108,7 @@ class SourceDistributionAnalyzer
     /**
      * 取得趨勢洞察.
      *
-     * @return array<string, mixed>
+     * @return array{growth_rate: float, trend_direction: string, key_drivers: mixed, emerging_sources: mixed, declining_sources: mixed, seasonal_patterns: mixed}
      */
     public function getTrendInsights(SourceDistributionDTO $dto): array
     {

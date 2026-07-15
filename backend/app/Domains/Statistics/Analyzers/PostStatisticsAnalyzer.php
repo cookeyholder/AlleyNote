@@ -28,7 +28,7 @@ class PostStatisticsAnalyzer
     /**
      * 取得內容品質指標.
      *
-     * @return array<string, mixed>
+     * @return array{average_length: float, quality_score: float, engagement_ratio: float, publish_rate: float}
      */
     public function getContentQualityMetrics(PostStatisticsDTO $dto): array
     {
@@ -49,7 +49,7 @@ class PostStatisticsAnalyzer
     /**
      * 取得互動指標.
      *
-     * @return array<string, mixed>
+     * @return array{views_per_post_ratio: float, pinned_engagement_rate: float, author_productivity: float}
      */
     public function getEngagementMetrics(PostStatisticsDTO $dto): array
     {
@@ -66,7 +66,7 @@ class PostStatisticsAnalyzer
     /**
      * 取得內容分析.
      *
-     * @return array<string, mixed>
+     * @return array{length_distribution: array{average: int, minimum: int, maximum: int}, optimal_length_score: float, content_diversity: float}
      */
     public function getContentAnalysis(PostStatisticsDTO $dto): array
     {

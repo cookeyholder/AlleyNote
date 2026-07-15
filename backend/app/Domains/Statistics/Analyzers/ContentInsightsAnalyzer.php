@@ -50,7 +50,7 @@ class ContentInsightsAnalyzer
     /**
      * 取得內容策略建議.
      *
-     * @return array<string, mixed>
+     * @return array<string, array{priority: string, action: string, suggestions: string[]}>
      */
     public function getContentStrategyRecommendations(ContentInsightsDTO $dto): array
     {
@@ -91,7 +91,7 @@ class ContentInsightsAnalyzer
     /**
      * 取得內容優化洞察.
      *
-     * @return array<string, mixed>
+     * @return array{optimal_publish_time: array{hour: ?string, day: ?string}, content_specifications: array{optimal_length: int, target_read_time: int, recommended_format: ?string}, engagement_optimization: array{target_engagement_rate: float, target_completion_rate: float, target_share_rate: float}, lifecycle_management: array{content_lifespan: int, peak_period: ?string, refresh_recommendations: string[]}}
      */
     public function getOptimizationInsights(ContentInsightsDTO $dto): array
     {
@@ -121,7 +121,7 @@ class ContentInsightsAnalyzer
     /**
      * 取得季節性內容策略.
      *
-     * @return array<string, mixed>
+     * @return array{current_season: string, seasonal_performance: mixed, recommended_topics: mixed, optimal_formats: mixed, engagement_patterns: mixed, content_calendar_suggestions: string[]}
      */
     public function getSeasonalContentStrategy(ContentInsightsDTO $dto): array
     {
@@ -141,7 +141,7 @@ class ContentInsightsAnalyzer
     /**
      * 取得讀者行為分析.
      *
-     * @return array<string, mixed>
+     * @return array{reading_habits: array{avg_scroll_depth: float, completion_rate: float, return_rate: float, bounce_rate: float}, engagement_preferences: array{preferred_content_length: int, optimal_read_time: int, most_engaging_format: ?string}, interaction_patterns: array{peak_activity_time: ?string, preferred_day: ?string, sharing_behavior: array{avg_shares: float, most_shared_type: ?string}}, content_discovery: mixed}
      */
     public function getReaderBehaviorAnalysis(ContentInsightsDTO $dto): array
     {

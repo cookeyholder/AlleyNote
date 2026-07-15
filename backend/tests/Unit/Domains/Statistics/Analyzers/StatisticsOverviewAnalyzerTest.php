@@ -81,7 +81,7 @@ class StatisticsOverviewAnalyzerTest extends UnitTestCase
         $result = $this->analyzer->analyze($dto);
 
         $this->assertInstanceOf(StatisticsOverviewResult::class, $result);
-        $this->assertIsString($result->getActivityLevel());
-        $this->assertIsFloat($result->getActivityScore());
+        $this->assertSame('high', $result->getActivityLevel());
+        $this->assertSame(100.0, $result->getActivityScore());
     }
 }
