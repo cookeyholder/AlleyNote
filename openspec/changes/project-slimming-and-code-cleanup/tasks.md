@@ -41,13 +41,14 @@
 
 ## 6. CI 流程建立
 
-- [ ] 6.1 建立 GitHub Actions workflow `.github/workflows/ci.yml`，在 PR 與 push 時觸發
-- [ ] 6.2 在 CI 中加入 `composer install` + `composer cs-check` + `composer analyse` + `composer test`
-- [ ] 6.3 在 CI 中加入 `npm ci` + `npx prettier --check`
-- [ ] 6.4 確認 CI 通過後再合併
+- [x] 6.1 建立 GitHub Actions workflow `.github/workflows/ci.yml`，在 PR 與 push 時觸發
+- [x] 6.2 在 CI 中加入 `composer install` + `composer cs-check` + `composer analyse` + `composer test`
+- [x] 6.3 在 CI 中加入 `npm ci` + `npx prettier --check`
+- [x] 6.4 修正 ci.yml 重複步驟（code style/analysis/tests 各執行兩次）
+- [ ] 6.5 確認 CI 通過後再合併
 
 ## 7. 最終驗證
 
-- [ ] 6.1 執行完整測試套件（`vendor/bin/phpunit`）
-- [ ] 6.2 執行 PHPStan 靜態分析
-- [ ] 6.3 確認專案可正常編譯與運作
+- [ ] 7.1 執行完整測試套件（`vendor/bin/phpunit`）
+- [ ] 7.2 執行 PHPStan 靜態分析
+- [ ] 7.3 確認專案可正常編譯與運作
