@@ -6,6 +6,7 @@
 
 - `completed/`、`development/`、`implementation/`、`reports/`：歷史專案紀錄
 - `legacy-2026-04/`：本次文件整併中被取代的舊文件
+- `reports/`：歷史掃描與分析報告（架構分析、回傳型別等）
 - `reports/code-review/`：保留稽核用途的版本化 code review 報告
 
 ## 使用指引

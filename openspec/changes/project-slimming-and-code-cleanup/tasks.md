@@ -27,14 +27,17 @@
 
 ## 5. 文件更新
 
-- [ ] 5.1 更新 `README.md`：移除已刪除檔案的路徑引用，反映更新後的專案結構
-- [ ] 5.2 檢視並更新 `docs/INDEX.md`：確認文件索引反映目前真實結構
-- [ ] 5.3 檢視並更新 `docs/runbooks/DEVELOPMENT.md`：確認開發手冊沒有引用已刪除的測試或腳本
-- [ ] 5.4 檢視 `docs/architecture/BACKEND_REFACTOR_2026-04.md`：更新任何引用已刪除檔案的路徑
-- [ ] 5.5 檢視 `docs/DOCUMENTATION_GOVERNANCE.md`：確認涵蓋 `docs/archive/` 的歸檔規範
-- [ ] 5.6 檢視 `docs/testing/`：更新任何引用已刪除測試檔案的路徑
-- [ ] 5.7 更新 `AGENTS.md`：反映專案清理後的實際目錄結構與狀態
-- [ ] 5.8 更新 `openspec/specs/documentation-maintenance-governance/spec.md`：同步新增的歸檔規範
+- [x] 5.1 檢視 `README.md`：無需更新（無已刪除檔案路徑引用）
+- [x] 5.2 檢視 `docs/INDEX.md`：無需更新（已涵蓋 `docs/archive/` 入口）
+- [x] 5.3 檢視 `docs/runbooks/DEVELOPMENT.md`：無需更新（無已刪除檔案引用）
+- [x] 5.4 檢視 `docs/architecture/BACKEND_REFACTOR_2026-04.md`：無需更新（無已刪除檔案路徑引用）
+- [x] 5.5 更新 `docs/DOCUMENTATION_GOVERNANCE.md`：新增 `docs/archive/reports/` 歸檔路徑
+- [x] 5.6 檢視 `docs/testing/`：無需更新（引用非本次刪除的方法/檔案）
+- [x] 5.7 更新 `AGENTS.md`：反映專案清理後的實際目錄結構與狀態
+- [x] 5.8 檢視 `openspec/specs/documentation-maintenance-governance/spec.md`：無需更新
+- [x] 5.9 更新 `docs/domains/shared/DDD_ARCHITECTURE_DESIGN.md`：`getViewCount()` → `getViews()`
+- [x] 5.10 更新 `docs/archive/README.md`：新增 `reports/` 歸檔分類說明
+- [x] 5.11 歸檔 `backend/storage/` 報告至 `docs/archive/reports/`
 
 ## 6. CI 流程建立
 
