@@ -14,6 +14,7 @@ interface SuspiciousActivityDetectorInterface
      *
      * @param int $userId 使用者ID
      * @param int $timeWindowMinutes 檢測時間窗口（分鐘）
+     *
      * @return SuspiciousActivityAnalysisDTO 分析結果
      */
     public function detectSuspiciousActivity(int $userId, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO;
@@ -23,6 +24,7 @@ interface SuspiciousActivityDetectorInterface
      *
      * @param string $ipAddress IP位址
      * @param int $timeWindowMinutes 檢測時間窗口（分鐘）
+     *
      * @return SuspiciousActivityAnalysisDTO 分析結果
      */
     public function detectSuspiciousIpActivity(string $ipAddress, int $timeWindowMinutes = 60): SuspiciousActivityAnalysisDTO;
@@ -31,6 +33,7 @@ interface SuspiciousActivityDetectorInterface
      * 檢測全域可疑活動模式.
      *
      * @param int $timeWindowMinutes 檢測時間窗口（分鐘）
+     *
      * @return array<SuspiciousActivityAnalysisDTO> 分析結果列表
      */
     public function detectGlobalSuspiciousPatterns(int $timeWindowMinutes = 60): array;
@@ -57,6 +60,7 @@ interface SuspiciousActivityDetectorInterface
      * 檢查是否需要觸發警報.
      *
      * @param SuspiciousActivityAnalysisDTO $analysis 分析結果
+     *
      * @return bool 是否需要觸發警報
      */
     public function shouldTriggerAlert(SuspiciousActivityAnalysisDTO $analysis): bool;
@@ -98,6 +102,7 @@ interface SuspiciousActivityDetectorInterface
      * 檢查特定檢測類型是否啟用.
      *
      * @param string $detectionType 檢測類型
+     *
      * @return bool 是否啟用
      */
     public function isDetectionEnabled(string $detectionType): bool;

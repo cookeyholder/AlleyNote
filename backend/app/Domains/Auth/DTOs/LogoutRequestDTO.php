@@ -32,10 +32,10 @@ final readonly class LogoutRequestDTO
     public function toArray(): array
     {
         return [
-            'access_token' => '[REDACTED]', // 不記錄 token
-            'refresh_token' => $this->refreshToken ? '[REDACTED]' : null,
+            'access_token'      => '[REDACTED]', // 不記錄 token
+            'refresh_token'     => $this->refreshToken ? '[REDACTED]' : null,
             'revoke_all_tokens' => $this->revokeAllTokens,
-            'session_id' => $this->sessionId,
+            'session_id'        => $this->sessionId,
         ];
     }
 }

@@ -12,6 +12,7 @@ interface TagRepositoryInterface
      * 取得標籤列表.
      *
      * @param array<string, mixed> $filters
+     *
      * @return array{items: array<int, Tag>, total: int}
      */
     public function list(int $page = 1, int $perPage = 20, array $filters = []): array;

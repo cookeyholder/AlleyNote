@@ -65,17 +65,17 @@ final class AuthenticationServiceTest extends UnitTestCase
         );
 
         $userData = [
-            'id' => 1,
-            'email' => 'test@example.com',
-            'username' => 'testuser',
+            'id'         => 1,
+            'email'      => 'test@example.com',
+            'username'   => 'testuser',
             'deleted_at' => null,
         ];
 
         $userWithRoles = [
-            'id' => 1,
-            'email' => 'test@example.com',
+            'id'       => 1,
+            'email'    => 'test@example.com',
             'username' => 'testuser',
-            'roles' => [
+            'roles'    => [
                 ['name' => 'user'],
             ],
         ];
@@ -177,9 +177,9 @@ final class AuthenticationServiceTest extends UnitTestCase
         );
 
         $userData = [
-            'id' => 1,
-            'email' => 'disabled@example.com',
-            'username' => 'disableduser',
+            'id'         => 1,
+            'email'      => 'disabled@example.com',
+            'username'   => 'disableduser',
             'deleted_at' => '2023-01-01 00:00:00',
         ];
 

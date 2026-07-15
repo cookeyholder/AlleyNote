@@ -101,17 +101,17 @@ class Attachment
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'post_id' => $this->postId,
-            'filename' => $this->filename,
+            'id'            => $this->id,
+            'uuid'          => $this->uuid,
+            'post_id'       => $this->postId,
+            'filename'      => $this->filename,
             'original_name' => $this->originalName,
-            'mime_type' => $this->mimeType,
-            'file_size' => $this->fileSize,
-            'storage_path' => $this->storagePath,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
-            'deleted_at' => $this->deletedAt,
+            'mime_type'     => $this->mimeType,
+            'file_size'     => $this->fileSize,
+            'storage_path'  => $this->storagePath,
+            'created_at'    => $this->createdAt,
+            'updated_at'    => $this->updatedAt,
+            'deleted_at'    => $this->deletedAt,
         ];
     }
 }

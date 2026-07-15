@@ -58,9 +58,9 @@ class MonitoringServiceProvider
                 return new ErrorTrackerService($logger);
             }),
             // 註冊具體實現類別的別名
-            SystemMonitorService::class => \DI\get(SystemMonitorInterface::class),
+            SystemMonitorService::class      => \DI\get(SystemMonitorInterface::class),
             PerformanceMonitorService::class => \DI\get(PerformanceMonitorInterface::class),
-            ErrorTrackerService::class => \DI\get(ErrorTrackerInterface::class),
+            ErrorTrackerService::class       => \DI\get(ErrorTrackerInterface::class),
         ];
     }
 
@@ -173,8 +173,8 @@ class MonitoringServiceProvider
         $performanceMonitor->setSlowOperationThreshold(2.0); // 2 秒
         // 記錄應用程式啟動指標
         $performanceMonitor->recordMetric('app_startup', microtime(true), 'seconds', [
-            'php_version' => PHP_VERSION,
-            'memory_limit' => ini_get('memory_limit'),
+            'php_version'        => PHP_VERSION,
+            'memory_limit'       => ini_get('memory_limit'),
             'max_execution_time' => ini_get('max_execution_time'),
         ]);
     }
@@ -195,7 +195,7 @@ class MonitoringServiceProvider
             $errorTracker = $container->get(ErrorTrackerInterface::class);
             $errorTracker->recordWarning('System health check failed', [
                 'health_status' => $healthStatus,
-                'check_time' => date('Y-m-d H:i:s'),
+                'check_time'    => date('Y-m-d H:i:s'),
             ]);
         }
     }

@@ -13,15 +13,15 @@ class CrossBrowserTest extends UITestCase
      */
     private array $browsers = [
         'chrome' => [
-            'name' => 'Chrome',
+            'name'      => 'Chrome',
             'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         ],
         'firefox' => [
-            'name' => 'Firefox',
+            'name'      => 'Firefox',
             'userAgent' => 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0',
         ],
         'safari' => [
-            'name' => 'Safari',
+            'name'      => 'Safari',
             'userAgent' => 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_3_1) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15',
         ],
     ];

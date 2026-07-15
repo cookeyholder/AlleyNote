@@ -25,7 +25,7 @@ class PostViewedListener implements EventListenerInterface
         if (!$event instanceof PostViewed) {
             $this->logger?->warning('PostViewedListener received non-PostViewed event', [
                 'event_type' => $event->getEventName(),
-                'event_id' => $event->getEventId(),
+                'event_id'   => $event->getEventId(),
             ]);
 
             return;
@@ -36,10 +36,10 @@ class PostViewedListener implements EventListenerInterface
         } catch (Throwable $e) {
             $this->logger?->error('Failed to handle PostViewed event', [
                 'event_id' => $event->getEventId(),
-                'post_id' => $event->getPostId(),
-                'user_id' => $event->getUserId(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'post_id'  => $event->getPostId(),
+                'user_id'  => $event->getUserId(),
+                'error'    => $e->getMessage(),
+                'trace'    => $e->getTraceAsString(),
             ]);
 
             // 重新拋出異常，讓事件分派器處理
@@ -63,11 +63,11 @@ class PostViewedListener implements EventListenerInterface
         $userId = $event->getUserId();
         $userIp = $event->getUserIp();
         $this->logger?->info('Processing PostViewed event', [
-            'event_id' => $event->getEventId(),
-            'post_id' => $postId,
-            'user_id' => $userId,
+            'event_id'         => $event->getEventId(),
+            'post_id'          => $postId,
+            'user_id'          => $userId,
             'is_authenticated' => $event->isAuthenticatedUser(),
-            'user_agent' => $event->getUserAgent(),
+            'user_agent'       => $event->getUserAgent(),
         ]);
 
         // 記錄瀏覽到資料庫
@@ -82,8 +82,8 @@ class PostViewedListener implements EventListenerInterface
         } catch (Throwable $e) {
             $this->logger?->error('Failed to record view in database', [
                 'event_id' => $event->getEventId(),
-                'post_id' => $postId,
-                'error' => $e->getMessage(),
+                'post_id'  => $postId,
+                'error'    => $e->getMessage(),
             ]);
         }
         // 記錄統計事件到監控服務
@@ -95,21 +95,21 @@ class PostViewedListener implements EventListenerInterface
         // - 發送到消息佇列進行批量處理
         $this->logger?->info('PostViewed event processed successfully', [
             'event_id' => $event->getEventId(),
-            'post_id' => $postId,
+            'post_id'  => $postId,
         ]);
     }
 
     private function recordViewEvent(PostViewed $event): void
     {
         $context = [
-            'post_id' => $event->getPostId(),
-            'user_id' => $event->getUserId(),
-            'user_ip' => $event->getUserIp(),
-            'user_agent' => $event->getUserAgent(),
-            'referrer' => $event->getReferrer(),
-            'viewed_at' => $event->getViewedAt()->format('c'),
+            'post_id'          => $event->getPostId(),
+            'user_id'          => $event->getUserId(),
+            'user_ip'          => $event->getUserIp(),
+            'user_agent'       => $event->getUserAgent(),
+            'referrer'         => $event->getReferrer(),
+            'viewed_at'        => $event->getViewedAt()->format('c'),
             'is_authenticated' => $event->isAuthenticatedUser(),
-            'event_id' => $event->getEventId(),
+            'event_id'         => $event->getEventId(),
         ];
 
         try {
@@ -117,8 +117,8 @@ class PostViewedListener implements EventListenerInterface
         } catch (Throwable $e) {
             $this->logger?->warning('Failed to record view event in monitoring service', [
                 'event_id' => $event->getEventId(),
-                'post_id' => $event->getPostId(),
-                'error' => $e->getMessage(),
+                'post_id'  => $event->getPostId(),
+                'error'    => $e->getMessage(),
             ]);
             // 不重新拋出異常，因為監控記錄失敗不應該影響主流程
         }

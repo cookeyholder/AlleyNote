@@ -50,8 +50,8 @@ class ActivityLogControllerTest extends UnitTestCase
     {
         $requestData = [
             'action_type' => 'login_success',
-            'user_id' => 123,
-            'metadata' => ['ip' => '127.0.0.1'],
+            'user_id'     => 123,
+            'metadata'    => ['ip' => '127.0.0.1'],
         ];
 
         $request = $this->createMockRequest($requestData);

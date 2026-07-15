@@ -36,9 +36,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     {
         // 測試有效資料
         $validData = [
-            'title' => '測試文章標題',
+            'title'   => '測試文章標題',
             'content' => '這是測試文章內容，應該要足夠長才能通過驗證。',
-            'status' => 'draft',
+            'status'  => 'draft',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];
@@ -60,9 +60,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
         $this->expectException(ValidationException::class);
 
         new CreatePostDTO($this->validator, [
-            'title' => '', // 空標題
+            'title'   => '', // 空標題
             'content' => '這是測試文章內容，應該要足夠長才能通過驗證。',
-            'status' => 'draft',
+            'status'  => 'draft',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ]);
@@ -76,9 +76,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
         $this->expectException(ValidationException::class);
 
         new CreatePostDTO($this->validator, [
-            'title' => '測試標題',
+            'title'   => '測試標題',
             'content' => '', // 空內容
-            'status' => 'draft',
+            'status'  => 'draft',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ]);
@@ -100,9 +100,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
 
         // 測試完整更新
         $fullData = [
-            'title' => '完整更新的標題',
+            'title'   => '完整更新的標題',
             'content' => '這是完整更新的內容，應該要足夠長才能通過驗證。',
-            'status' => 'published',
+            'status'  => 'published',
         ];
 
         $dto = new UpdatePostDTO($this->validator, $fullData);
@@ -118,13 +118,13 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     public function testCreateAttachmentDTOValidationIntegration(): void
     {
         $validData = [
-            'post_id' => 1,
-            'filename' => 'test-image.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test-image.jpg',
             'original_name' => 'my-photo.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024000,
-            'storage_path' => 'uploads/test.jpg',
-            'uploaded_by' => 1,
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024000,
+            'storage_path'  => 'uploads/test.jpg',
+            'uploaded_by'   => 1,
         ];
 
         $dto = new CreateAttachmentDTO($this->validator, $validData);
@@ -134,13 +134,13 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
         // 測試檔案大小過大
         $this->expectException(ValidationException::class);
         new CreateAttachmentDTO($this->validator, [
-            'post_id' => 1,
-            'filename' => 'large-file.jpg',
+            'post_id'       => 1,
+            'filename'      => 'large-file.jpg',
             'original_name' => 'large.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 10 * 1024 * 1024 + 1, // 超過 10MB
-            'storage_path' => 'uploads/large.jpg',
-            'uploaded_by' => 1,
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 10 * 1024 * 1024 + 1, // 超過 10MB
+            'storage_path'  => 'uploads/large.jpg',
+            'uploaded_by'   => 1,
         ]);
     }
 
@@ -150,11 +150,11 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     public function testRegisterUserDTOValidationIntegration(): void
     {
         $validData = [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => 'SecurePassword123!',
+            'username'         => 'testuser',
+            'email'            => 'test@example.com',
+            'password'         => 'SecurePassword123!',
             'confirm_password' => 'SecurePassword123!',
-            'user_ip' => '192.168.1.1',
+            'user_ip'          => '192.168.1.1',
         ];
 
         $dto = new RegisterUserDTO($this->validator, $validData);
@@ -164,11 +164,11 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
         // 測試密碼過短
         $this->expectException(ValidationException::class);
         new RegisterUserDTO($this->validator, [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => '123', // 太短
+            'username'         => 'testuser',
+            'email'            => 'test@example.com',
+            'password'         => '123', // 太短
             'confirm_password' => '123',
-            'user_ip' => '192.168.1.1',
+            'user_ip'          => '192.168.1.1',
         ]);
     }
 
@@ -179,8 +179,8 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     {
         $validData = [
             'ip_address' => '192.168.1.1',
-            'action' => 'allow',
-            'reason' => '測試 IP 規則',
+            'action'     => 'allow',
+            'reason'     => '測試 IP 規則',
             'created_by' => 1,
         ];
 
@@ -192,8 +192,8 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
         $this->expectException(ValidationException::class);
         new CreateIpRuleDTO($this->validator, [
             'ip_address' => 'invalid-ip',
-            'action' => 'allow',
-            'reason' => '無效的 IP 規則',
+            'action'     => 'allow',
+            'reason'     => '無效的 IP 規則',
             'created_by' => 1,
         ]);
     }
@@ -205,9 +205,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     {
         try {
             new CreatePostDTO($this->validator, [
-                'title' => '', // 空標題
+                'title'   => '', // 空標題
                 'content' => '內容',
-                'status' => 'draft',
+                'status'  => 'draft',
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
             ]);
@@ -228,9 +228,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     {
         try {
             new CreatePostDTO($this->validator, [
-                'title' => '', // 空標題
+                'title'   => '', // 空標題
                 'content' => '', // 空內容
-                'status' => 'invalid-status', // 無效狀態
+                'status'  => 'invalid-status', // 無效狀態
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
             ]);
@@ -247,9 +247,9 @@ class DTOValidationIntegrationTest extends IntegrationTestCase
     public function testDTOJsonSerialization(): void
     {
         $data = [
-            'title' => '測試文章',
+            'title'   => '測試文章',
             'content' => '這是測試文章內容，應該要足夠長才能通過驗證。',
-            'status' => 'draft',
+            'status'  => 'draft',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];

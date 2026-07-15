@@ -55,12 +55,12 @@ class TagController
         }
         $result = $this->tagManagementService->listTags($page, $perPage, $filters);
         $responseData = json_encode([
-            'success' => true,
-            'data' => $result['items'],
+            'success'    => true,
+            'data'       => $result['items'],
             'pagination' => [
-                'total' => $result['total'],
-                'page' => $result['page'],
-                'per_page' => $result['per_page'],
+                'total'     => $result['total'],
+                'page'      => $result['page'],
+                'per_page'  => $result['per_page'],
                 'last_page' => $result['last_page'],
             ],
         ]);
@@ -98,7 +98,7 @@ class TagController
             $tag = $this->tagManagementService->getTag($id);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $tag,
+                'data'    => $tag,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -161,7 +161,7 @@ class TagController
             $tag = $this->tagManagementService->createTag($dto);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $tag,
+                'data'    => $tag,
                 'message' => '標籤建立成功',
             ]);
             $response->getBody()->write($responseData ?: '');
@@ -171,7 +171,7 @@ class TagController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -235,7 +235,7 @@ class TagController
             $tag = $this->tagManagementService->updateTag($dto);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $tag,
+                'data'    => $tag,
                 'message' => '標籤更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
@@ -253,7 +253,7 @@ class TagController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 

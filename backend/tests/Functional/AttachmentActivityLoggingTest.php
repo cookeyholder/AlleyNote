@@ -56,8 +56,8 @@ class AttachmentActivityLoggingTest extends SecureDDDTestCase
             targetType: 'post',
             targetId: (string) $postId,
             metadata: [
-                'post_id' => $postId,
-                'filename' => $filename,
+                'post_id'   => $postId,
+                'filename'  => $filename,
                 'file_size' => 2048,
                 'mime_type' => 'image/jpeg',
             ],
@@ -100,8 +100,8 @@ class AttachmentActivityLoggingTest extends SecureDDDTestCase
             targetId: $attachmentUuid,
             metadata: [
                 'attachment_uuid' => $attachmentUuid,
-                'filename' => $filename,
-                'file_size' => 1024000,
+                'filename'        => $filename,
+                'file_size'       => 1024000,
             ],
         );
 
@@ -141,8 +141,8 @@ class AttachmentActivityLoggingTest extends SecureDDDTestCase
             targetId: $attachmentUuid,
             metadata: [
                 'attachment_uuid' => $attachmentUuid,
-                'filename' => $filename,
-                'post_id' => 456,
+                'filename'        => $filename,
+                'post_id'         => 456,
             ],
         );
 
@@ -181,11 +181,11 @@ class AttachmentActivityLoggingTest extends SecureDDDTestCase
             targetType: 'post',
             targetId: (string) $postId,
             metadata: [
-                'post_id' => $postId,
-                'filename' => $filename,
+                'post_id'   => $postId,
+                'filename'  => $filename,
                 'file_size' => 512000,
                 'mime_type' => 'image/jpeg',
-                'reason' => 'no_permission_to_post',
+                'reason'    => 'no_permission_to_post',
             ],
         );
 
@@ -225,11 +225,11 @@ class AttachmentActivityLoggingTest extends SecureDDDTestCase
             targetType: 'file',
             targetId: $filename,
             metadata: [
-                'filename' => $filename,
+                'filename'  => $filename,
                 'file_size' => $fileSize,
                 'mime_type' => 'application/zip',
-                'error' => 'file_size_exceeded',
-                'max_size' => 10 * 1024 * 1024, // 10MB limit
+                'error'     => 'file_size_exceeded',
+                'max_size'  => 10 * 1024 * 1024, // 10MB limit
             ],
         );
 
@@ -268,11 +268,11 @@ class AttachmentActivityLoggingTest extends SecureDDDTestCase
             targetType: 'file',
             targetId: $filename,
             metadata: [
-                'filename' => $filename,
-                'file_size' => 1024,
-                'mime_type' => 'application/octet-stream',
+                'filename'   => $filename,
+                'file_size'  => 1024,
+                'mime_type'  => 'application/octet-stream',
                 'virus_name' => 'Test.Virus',
-                'scanner' => 'ClamAV',
+                'scanner'    => 'ClamAV',
             ],
         );
 

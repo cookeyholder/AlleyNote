@@ -83,7 +83,7 @@ class IpService implements IpServiceInterface
                 metadata: [
                     'ip_rule_id' => $ipRule->getId(),
                     'ip_address' => $ipRule->getIpAddress(),
-                    'rule_type' => $isBlocked ? 'blacklist' : 'whitelist',
+                    'rule_type'  => $isBlocked ? 'blacklist' : 'whitelist',
                     'created_at' => $ipRule->getCreatedAt(),
                 ],
             );

@@ -28,12 +28,12 @@ class PostViewed extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'post_id' => $this->postId,
-            'user_id' => $this->userId,
-            'user_ip' => $this->userIp,
-            'user_agent' => $this->userAgent,
-            'referrer' => $this->referrer,
-            'viewed_at' => ($this->viewedAt ?? $this->getOccurredOn())->format('c'),
+            'post_id'          => $this->postId,
+            'user_id'          => $this->userId,
+            'user_ip'          => $this->userIp,
+            'user_agent'       => $this->userAgent,
+            'referrer'         => $this->referrer,
+            'viewed_at'        => ($this->viewedAt ?? $this->getOccurredOn())->format('c'),
             'is_authenticated' => $this->userId !== null,
         ];
     }

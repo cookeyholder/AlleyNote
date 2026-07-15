@@ -93,11 +93,11 @@ class FileUploadSecurityTest extends SecureDDDTestCase
 
         // 模擬文章存在
         $post = new Post([
-            'id' => $postId,
-            'uuid' => 'test-uuid',
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
+            'id'         => $postId,
+            'uuid'       => 'test-uuid',
+            'title'      => '測試文章',
+            'content'    => '測試內容',
+            'user_id'    => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -135,11 +135,11 @@ class FileUploadSecurityTest extends SecureDDDTestCase
 
         // 模擬文章存在
         $post = new Post([
-            'id' => $postId,
-            'uuid' => 'test-uuid',
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
+            'id'         => $postId,
+            'uuid'       => 'test-uuid',
+            'title'      => '測試文章',
+            'content'    => '測試內容',
+            'user_id'    => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -177,11 +177,11 @@ class FileUploadSecurityTest extends SecureDDDTestCase
 
         // 模擬文章存在
         $post = new Post([
-            'id' => $postId,
-            'uuid' => 'test-uuid',
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
+            'id'         => $postId,
+            'uuid'       => 'test-uuid',
+            'title'      => '測試文章',
+            'content'    => '測試內容',
+            'user_id'    => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -219,11 +219,11 @@ class FileUploadSecurityTest extends SecureDDDTestCase
 
         // 模擬文章存在
         $post = new Post([
-            'id' => $postId,
-            'uuid' => 'test-uuid',
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
+            'id'         => $postId,
+            'uuid'       => 'test-uuid',
+            'title'      => '測試文章',
+            'content'    => '測試內容',
+            'user_id'    => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -261,11 +261,11 @@ class FileUploadSecurityTest extends SecureDDDTestCase
 
         // 模擬文章存在
         $post = new Post([
-            'id' => $postId,
-            'uuid' => 'test-uuid',
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
+            'id'         => $postId,
+            'uuid'       => 'test-uuid',
+            'title'      => '測試文章',
+            'content'    => '測試內容',
+            'user_id'    => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
@@ -301,11 +301,11 @@ class FileUploadSecurityTest extends SecureDDDTestCase
             'fake-image-content',
         );        // 模擬文章存在
         $post = new Post([
-            'id' => $postId,
-            'uuid' => 'test-uuid',
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
+            'id'         => $postId,
+            'uuid'       => 'test-uuid',
+            'title'      => '測試文章',
+            'content'    => '測試內容',
+            'user_id'    => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);

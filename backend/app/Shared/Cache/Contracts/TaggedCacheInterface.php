@@ -72,6 +72,7 @@ interface TaggedCacheInterface
      * @param mixed $value 快取值
      * @param array<string> $tags 標籤陣列
      * @param int $ttl 存活時間（秒）
+     *
      * @return bool 是否成功
      */
     public function putWithTags(string $key, mixed $value, array $tags, int $ttl = 3600): bool;
@@ -80,6 +81,7 @@ interface TaggedCacheInterface
      * 取得指定標籤的所有快取鍵.
      *
      * @param string $tag 標籤
+     *
      * @return array<string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array;
@@ -88,6 +90,7 @@ interface TaggedCacheInterface
      * 取得快取項目的所有標籤.
      *
      * @param string $key 快取鍵
+     *
      * @return array<string> 標籤陣列
      */
     public function getTagsByKey(string $key): array;
@@ -97,6 +100,7 @@ interface TaggedCacheInterface
      *
      * @param string $key 快取鍵
      * @param string|array<string> $tags 標籤或標籤陣列
+     *
      * @return bool 是否成功
      */
     public function addTagsToKey(string $key, string|array $tags): bool;
@@ -106,6 +110,7 @@ interface TaggedCacheInterface
      *
      * @param string $key 快取鍵
      * @param string|array<string> $tags 標籤或標籤陣列
+     *
      * @return bool 是否成功
      */
     public function removeTagsFromKey(string $key, string|array $tags): bool;
@@ -115,6 +120,7 @@ interface TaggedCacheInterface
      *
      * @param string $key 快取鍵
      * @param string $tag 標籤
+     *
      * @return bool 是否包含
      */
     public function hasTag(string $key, string $tag): bool;
@@ -144,6 +150,7 @@ interface TaggedCacheInterface
      * 檢查標籤是否存在.
      *
      * @param string $tag 標籤名稱
+     *
      * @return bool 是否存在
      */
     public function tagExists(string $tag): bool;
@@ -152,6 +159,7 @@ interface TaggedCacheInterface
      * 建立新的標籤化快取實例.
      *
      * @param string|array<string> $tags 標籤或標籤陣列
+     *
      * @return TaggedCacheInterface 新的標籤化快取實例
      */
     public function tags(string|array $tags): TaggedCacheInterface;

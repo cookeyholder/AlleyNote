@@ -82,10 +82,10 @@ class ContentModerationService
         $hasXss = $this->xssProtection->detectXss($content);
         if ($hasXss) {
             $issues[] = [
-                'type' => 'security_xss',
+                'type'     => 'security_xss',
                 'severity' => ActivitySeverity::CRITICAL,
-                'message' => '偵測到潛在 XSS 攻擊模式',
-                'details' => 'Content contains potentially dangerous XSS patterns',
+                'message'  => '偵測到潛在 XSS 攻擊模式',
+                'details'  => 'Content contains potentially dangerous XSS patterns',
             ];
         }
         // 富文本安全檢查
@@ -115,36 +115,36 @@ class ContentModerationService
         // 長度檢查
         if (strlen($textContent) < $this->config['min_content_length']) {
             $issues[] = [
-                'type' => 'quality_too_short',
-                'severity' => ActivitySeverity::MEDIUM,
-                'message' => '內容過短',
+                'type'           => 'quality_too_short',
+                'severity'       => ActivitySeverity::MEDIUM,
+                'message'        => '內容過短',
                 'current_length' => strlen($textContent),
-                'min_required' => $this->config['min_content_length'],
+                'min_required'   => $this->config['min_content_length'],
             ];
         }
         if (strlen($textContent) > $this->config['max_content_length']) {
             $issues[] = [
-                'type' => 'quality_too_long',
-                'severity' => ActivitySeverity::MEDIUM,
-                'message' => '內容過長',
+                'type'           => 'quality_too_long',
+                'severity'       => ActivitySeverity::MEDIUM,
+                'message'        => '內容過長',
                 'current_length' => strlen($textContent),
-                'max_allowed' => $this->config['max_content_length'],
+                'max_allowed'    => $this->config['max_content_length'],
             ];
         }
         // 重複內容檢查
         if ($this->isRepetitiveContent($textContent)) {
             $issues[] = [
-                'type' => 'quality_repetitive',
+                'type'     => 'quality_repetitive',
                 'severity' => ActivitySeverity::MEDIUM,
-                'message' => '內容過度重複',
+                'message'  => '內容過度重複',
             ];
         }
         // 全大寫檢查
         if ($this->isAllCaps($textContent)) {
             $issues[] = [
-                'type' => 'quality_all_caps',
+                'type'     => 'quality_all_caps',
                 'severity' => ActivitySeverity::LOW,
-                'message' => '內容全為大寫字母',
+                'message'  => '內容全為大寫字母',
             ];
         }
 
@@ -162,10 +162,10 @@ class ContentModerationService
             foreach ($words as $word) {
                 if (str_contains($textContent, strtolower($word))) {
                     $issues[] = [
-                        'type' => 'sensitive_word',
+                        'type'     => 'sensitive_word',
                         'severity' => $this->getSensitiveWordSeverity($category),
-                        'message' => "包含敏感詞：{$category}",
-                        'word' => $word,
+                        'message'  => "包含敏感詞：{$category}",
+                        'word'     => $word,
                         'category' => $category,
                     ];
                 }
@@ -328,13 +328,13 @@ class ContentModerationService
     private function getSensitiveWordSeverity(string $category): ActivitySeverity
     {
         $severityMap = [
-            'profanity' => ActivitySeverity::HIGH,
-            'violence' => ActivitySeverity::HIGH,
-            'hate_speech' => ActivitySeverity::CRITICAL,
+            'profanity'     => ActivitySeverity::HIGH,
+            'violence'      => ActivitySeverity::HIGH,
+            'hate_speech'   => ActivitySeverity::CRITICAL,
             'adult_content' => ActivitySeverity::HIGH,
-            'illegal' => ActivitySeverity::CRITICAL,
-            'spam' => ActivitySeverity::MEDIUM,
-            'political' => ActivitySeverity::MEDIUM,
+            'illegal'       => ActivitySeverity::CRITICAL,
+            'spam'          => ActivitySeverity::MEDIUM,
+            'political'     => ActivitySeverity::MEDIUM,
         ];
 
         return $severityMap[$category] ?? ActivitySeverity::MEDIUM;
@@ -348,15 +348,15 @@ class ContentModerationService
         return [
             'min_content_length' => 10,
             'max_content_length' => 50000,
-            'spam_threshold' => 70,
-            'sensitive_words' => [
-                'profanity' => ['髒話1', '髒話2'], // 實際使用時應從設定檔載入
-                'violence' => ['暴力詞1', '暴力詞2'],
-                'hate_speech' => ['仇恨言論1', '仇恨言論2'],
+            'spam_threshold'     => 70,
+            'sensitive_words'    => [
+                'profanity'     => ['髒話1', '髒話2'], // 實際使用時應從設定檔載入
+                'violence'      => ['暴力詞1', '暴力詞2'],
+                'hate_speech'   => ['仇恨言論1', '仇恨言論2'],
                 'adult_content' => ['成人內容1', '成人內容2'],
-                'illegal' => ['非法內容1', '非法內容2'],
-                'spam' => ['垃圾詞1', '垃圾詞2'],
-                'political' => ['政治敏感詞1', '政治敏感詞2'],
+                'illegal'       => ['非法內容1', '非法內容2'],
+                'spam'          => ['垃圾詞1', '垃圾詞2'],
+                'political'     => ['政治敏感詞1', '政治敏感詞2'],
             ],
         ];
     }

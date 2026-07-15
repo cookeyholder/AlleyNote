@@ -220,8 +220,8 @@ final class StatisticsVisualizationServiceTest extends UnitTestCase
         // Arrange
         $metricName = 'custom_metric';
         $parameters = [
-            'start_date' => $this->startDate,
-            'end_date' => $this->endDate,
+            'start_date'  => $this->startDate,
+            'end_date'    => $this->endDate,
             'granularity' => 'day',
         ];
         $chartOptions = ['filter' => 'active'];

@@ -127,17 +127,17 @@ class StatisticsSnapshot implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'snapshot_type' => $this->snapshotType,
-            'period_type' => $this->periodType,
-            'period_start' => $this->periodStart,
-            'period_end' => $this->periodEnd,
-            'statistics_data' => $this->statisticsData,
-            'total_views' => $this->totalViews,
+            'id'                   => $this->id,
+            'uuid'                 => $this->uuid,
+            'snapshot_type'        => $this->snapshotType,
+            'period_type'          => $this->periodType,
+            'period_start'         => $this->periodStart,
+            'period_end'           => $this->periodEnd,
+            'statistics_data'      => $this->statisticsData,
+            'total_views'          => $this->totalViews,
             'total_unique_viewers' => $this->totalUniqueViewers,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
+            'created_at'           => $this->createdAt,
+            'updated_at'           => $this->updatedAt,
         ];
     }
 

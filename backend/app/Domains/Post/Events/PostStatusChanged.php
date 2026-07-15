@@ -29,7 +29,7 @@ final class PostStatusChanged extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'post_id' => $this->postId,
+            'post_id'    => $this->postId,
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
             'changed_at' => $this->changedAt->format('Y-m-d H:i:s'),

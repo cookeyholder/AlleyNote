@@ -21,9 +21,9 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $validatedData = [
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
-            'age' => 25,
+            'age'   => 25,
         ];
 
         // Act
@@ -45,11 +45,11 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['欄位 name 為必填項目'],
+            'name'  => ['欄位 name 為必填項目'],
             'email' => ['欄位 email 必須是有效的電子郵件地址'],
         ];
         $failedRules = [
-            'name' => ['required'],
+            'name'  => ['required'],
             'email' => ['email'],
         ];
 
@@ -93,9 +93,9 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目', '名稱長度至少需要2個字元'],
+            'name'  => ['名稱為必填項目', '名稱長度至少需要2個字元'],
             'email' => ['電子郵件格式不正確'],
-            'age' => [],
+            'age'   => [],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -113,8 +113,8 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目'],
-            'email' => ['電子郵件格式不正確'],
+            'name'        => ['名稱為必填項目'],
+            'email'       => ['電子郵件格式不正確'],
             'valid_field' => [],
         ];
         $result = ValidationResult::failure($errors);
@@ -133,7 +133,7 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange - 測試有錯誤的情況
         $errors = [
-            'name' => ['名稱為必填項目', '名稱長度不足'],
+            'name'  => ['名稱為必填項目', '名稱長度不足'],
             'email' => ['電子郵件格式不正確'],
         ];
         $result = ValidationResult::failure($errors);
@@ -157,8 +157,8 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目', '名稱長度不足'],
-            'email' => ['電子郵件格式不正確'],
+            'name'        => ['名稱為必填項目', '名稱長度不足'],
+            'email'       => ['電子郵件格式不正確'],
             'empty_field' => [],
         ];
         $result = ValidationResult::failure($errors);
@@ -177,9 +177,9 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目', '名稱長度不足'],
+            'name'  => ['名稱為必填項目', '名稱長度不足'],
             'email' => ['電子郵件格式不正確'],
-            'age' => ['年齡必須是數字'],
+            'age'   => ['年齡必須是數字'],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -206,9 +206,9 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['錯誤1', '錯誤2'],
+            'name'  => ['錯誤1', '錯誤2'],
             'email' => ['錯誤3'],
-            'age' => ['錯誤4', '錯誤5', '錯誤6'],
+            'age'   => ['錯誤4', '錯誤5', '錯誤6'],
         ];
         $result = ValidationResult::failure($errors);
 
@@ -230,11 +230,11 @@ class ValidationResultTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目'],
+            'name'  => ['名稱為必填項目'],
             'email' => ['電子郵件格式不正確'],
         ];
         $failedRules = [
-            'name' => ['required'],
+            'name'  => ['required'],
             'email' => ['email'],
         ];
         $result = ValidationResult::failure($errors, $failedRules);
@@ -312,14 +312,14 @@ class ValidationResultTest extends UnitTestCase
         $result1 = new ValidationResult(
             false,
             ['name' => ['名稱錯誤']],
-            ['age' => 25],
+            ['age'  => 25],
             ['name' => ['required']],
         );
 
         $result2 = new ValidationResult(
             false,
             ['email' => ['電子郵件錯誤'], 'name' => ['名稱長度錯誤']],
-            ['city' => 'Taipei'],
+            ['city'  => 'Taipei'],
             ['email' => ['email'], 'name' => ['min_length']],
         );
 
@@ -332,14 +332,14 @@ class ValidationResultTest extends UnitTestCase
 
         // 檢查錯誤合併
         $expectedErrors = [
-            'name' => ['名稱錯誤', '名稱長度錯誤'],
+            'name'  => ['名稱錯誤', '名稱長度錯誤'],
             'email' => ['電子郵件錯誤'],
         ];
         $this->assertEquals($expectedErrors, $mergedResult->getErrors());
 
         // 檢查失敗規則合併
         $expectedFailedRules = [
-            'name' => ['required', 'min_length'],
+            'name'  => ['required', 'min_length'],
             'email' => ['email'],
         ];
         $this->assertEquals($expectedFailedRules, $mergedResult->getFailedRules());
@@ -367,10 +367,10 @@ class ValidationResultTest extends UnitTestCase
 
         // Assert
         $expected = [
-            'is_valid' => false,
-            'errors' => $errors,
+            'is_valid'       => false,
+            'errors'         => $errors,
             'validated_data' => $validatedData,
-            'failed_rules' => $failedRules,
+            'failed_rules'   => $failedRules,
         ];
         $this->assertEquals($expected, $array);
     }
@@ -413,7 +413,7 @@ class ValidationResultTest extends UnitTestCase
 
         // Arrange & Act - 失敗結果
         $errors = [
-            'name' => ['名稱為必填項目'],
+            'name'  => ['名稱為必填項目'],
             'email' => ['電子郵件格式不正確', '電子郵件為必填項目'],
         ];
         $failureResult = ValidationResult::failure($errors);

@@ -55,16 +55,16 @@ class IpControllerTest extends UnitTestCase
     {
         $request = [
             'ip_address' => '192.168.1.1',
-            'action' => 'allow',
-            'reason' => '測試白名單',
+            'action'     => 'allow',
+            'reason'     => '測試白名單',
             'created_by' => 1,
         ];
 
         $expectedIpList = new IpList([
-            'id' => 1,
-            'uuid' => 'test-uuid',
-            'ip_address' => '192.168.1.1',
-            'type' => 1,
+            'id'          => 1,
+            'uuid'        => 'test-uuid',
+            'ip_address'  => '192.168.1.1',
+            'type'        => 1,
             'description' => '測試白名單',
         ]);
 
@@ -95,7 +95,7 @@ class IpControllerTest extends UnitTestCase
     {
         $request = [
             'ip_address' => 'invalid-ip',
-            'action' => 'invalid_action',
+            'action'     => 'invalid_action',
             'created_by' => 1,
         ];
 
@@ -117,16 +117,16 @@ class IpControllerTest extends UnitTestCase
         $type = 1;
         $mockRules = [
             new IpList([
-                'id' => 1,
-                'uuid' => 'test-uuid-1',
+                'id'         => 1,
+                'uuid'       => 'test-uuid-1',
                 'ip_address' => '192.168.1.1',
-                'type' => 1,
+                'type'       => 1,
             ]),
             new IpList([
-                'id' => 2,
-                'uuid' => 'test-uuid-2',
+                'id'         => 2,
+                'uuid'       => 'test-uuid-2',
                 'ip_address' => '192.168.1.2',
-                'type' => 1,
+                'type'       => 1,
             ]),
         ];
 

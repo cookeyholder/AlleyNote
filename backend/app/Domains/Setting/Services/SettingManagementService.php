@@ -46,8 +46,8 @@ class SettingManagementService
                 continue;
             }
             $result[$key] = [
-                'value' => $setting['value'],
-                'type' => $setting['type'],
+                'value'       => $setting['value'],
+                'type'        => $setting['type'],
                 'description' => $setting['description'],
             ];
         }
@@ -59,6 +59,7 @@ class SettingManagementService
      * 取得單一設定.
      *
      * @return array<string, mixed>
+     *
      * @throws NotFoundException
      */
     public function getSetting(string $key, ?bool $authenticated = false): array
@@ -73,9 +74,9 @@ class SettingManagementService
         }
 
         return [
-            'key' => $setting['key'],
-            'value' => $setting['value'],
-            'type' => $setting['type'],
+            'key'         => $setting['key'],
+            'value'       => $setting['value'],
+            'type'        => $setting['type'],
             'description' => $setting['description'],
         ];
     }
@@ -84,7 +85,9 @@ class SettingManagementService
      * 批量更新設定.
      *
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function updateSettings(array $data): array
@@ -117,6 +120,7 @@ class SettingManagementService
      * 更新單一設定.
      *
      * @return array<string, mixed>
+     *
      * @throws NotFoundException
      */
     public function updateSetting(string $key, mixed $value): array
@@ -132,9 +136,9 @@ class SettingManagementService
         }
 
         return [
-            'key' => $updatedSetting['key'],
-            'value' => $updatedSetting['value'],
-            'type' => $updatedSetting['type'],
+            'key'         => $updatedSetting['key'],
+            'value'       => $updatedSetting['value'],
+            'type'        => $updatedSetting['type'],
             'description' => $updatedSetting['description'],
         ];
     }
@@ -159,18 +163,18 @@ class SettingManagementService
             }
 
             return [
-                'key' => $updatedSetting['key'],
-                'value' => $updatedSetting['value'],
-                'type' => $updatedSetting['type'],
+                'key'         => $updatedSetting['key'],
+                'value'       => $updatedSetting['value'],
+                'type'        => $updatedSetting['type'],
                 'description' => $updatedSetting['description'],
             ];
         }
         $newSetting = $this->settingRepository->create($key, $value, $type ?? 'string', $description);
 
         return [
-            'key' => $newSetting['key'],
-            'value' => $newSetting['value'],
-            'type' => $newSetting['type'],
+            'key'         => $newSetting['key'],
+            'value'       => $newSetting['value'],
+            'type'        => $newSetting['type'],
             'description' => $newSetting['description'],
         ];
     }

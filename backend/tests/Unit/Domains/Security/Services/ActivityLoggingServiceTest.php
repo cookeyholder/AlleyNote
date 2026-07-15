@@ -56,10 +56,10 @@ class ActivityLoggingServiceTest extends UnitTestCase
             ->method('create')
             ->with($this->equalTo($dto))
             ->willReturn([
-                'id' => 1,
-                'uuid' => '550e8400-e29b-41d4-a716-446655440000',
+                'id'          => 1,
+                'uuid'        => '550e8400-e29b-41d4-a716-446655440000',
                 'action_type' => ActivityType::LOGIN_SUCCESS->value,
-                'user_id' => 1,
+                'user_id'     => 1,
             ]);
 
         // Act
@@ -90,7 +90,7 @@ class ActivityLoggingServiceTest extends UnitTestCase
                     && $dto->getStatus() === ActivityStatus::SUCCESS;
             }))
             ->willReturn([
-                'id' => 1,
+                'id'          => 1,
                 'action_type' => $actionType->value,
             ]);
 
@@ -120,7 +120,7 @@ class ActivityLoggingServiceTest extends UnitTestCase
                     && $dto->getStatus() === ActivityStatus::FAILED;
             }))
             ->willReturn([
-                'id' => 1,
+                'id'          => 1,
                 'action_type' => $actionType->value,
             ]);
 
@@ -148,7 +148,7 @@ class ActivityLoggingServiceTest extends UnitTestCase
                     && $dto->getStatus() === ActivityStatus::BLOCKED;
             }))
             ->willReturn([
-                'id' => 1,
+                'id'          => 1,
                 'action_type' => $actionType->value,
             ]);
 

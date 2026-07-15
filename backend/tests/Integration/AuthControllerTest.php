@@ -82,19 +82,19 @@ class AuthControllerTest extends ApiTestCase
     public function registerUserSuccessfully(): void
     {
         $request = $this->json('POST', '/api/auth/register', [
-            'username' => 'testuser',
-            'email' => 'test@example.com',
-            'password' => 'P@ssw0rd99!',
+            'username'              => 'testuser',
+            'email'                 => 'test@example.com',
+            'password'              => 'P@ssw0rd99!',
             'password_confirmation' => 'P@ssw0rd99!',
-            'confirm_password' => 'P@ssw0rd99!',
-            'user_ip' => '127.0.0.1',
+            'confirm_password'      => 'P@ssw0rd99!',
+            'user_ip'               => '127.0.0.1',
         ]);
 
         $this->userManagementService->shouldReceive('createUser')->once()->andReturn([
-            'id' => 1,
+            'id'       => 1,
             'username' => 'testuser',
-            'email' => 'test@example.com',
-            'status' => 1,
+            'email'    => 'test@example.com',
+            'status'   => 1,
         ]);
 
         $response = $this->controller()->register($request, $this->createApiResponse());
@@ -105,7 +105,7 @@ class AuthControllerTest extends ApiTestCase
     public function loginUserSuccessfully(): void
     {
         $request = $this->json('POST', '/api/auth/login', [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'Password123!',
         ]);
 
@@ -134,7 +134,7 @@ class AuthControllerTest extends ApiTestCase
     public function loginShouldReturnUnauthorizedForInvalidCredentials(): void
     {
         $request = $this->json('POST', '/api/auth/login', [
-            'email' => 'wrong@example.com',
+            'email'    => 'wrong@example.com',
             'password' => 'wrong',
         ]);
 
@@ -153,7 +153,7 @@ class AuthControllerTest extends ApiTestCase
         $request = $this
             ->actingAs(['id' => 1, 'email' => 'test@example.com'])
             ->json('POST', '/api/auth/logout', [
-                'refresh_token' => 'dummy',
+                'refresh_token'      => 'dummy',
                 'logout_all_devices' => false,
             ])
             ->withAttribute('user_id', 1)

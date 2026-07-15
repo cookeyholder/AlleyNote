@@ -21,6 +21,7 @@ class TagRepository implements TagRepositoryInterface
 
     /**
      * @param array<string, mixed> $filters
+     *
      * @return array{items: array<int, Tag>, total: int}
      */
     public function list(int $page = 1, int $perPage = 20, array $filters = []): array
@@ -118,13 +119,13 @@ class TagRepository implements TagRepositoryInterface
                 VALUES (:name, :slug, :description, :color, :usage_count, :created_at, :updated_at)
             ');
             $stmt->execute([
-                ':name' => $data['name'],
-                ':slug' => $data['slug'] ?? null,
+                ':name'        => $data['name'],
+                ':slug'        => $data['slug'] ?? null,
                 ':description' => $data['description'] ?? null,
-                ':color' => $data['color'] ?? null,
+                ':color'       => $data['color'] ?? null,
                 ':usage_count' => $data['usage_count'] ?? 0,
-                ':created_at' => $now,
-                ':updated_at' => $now,
+                ':created_at'  => $now,
+                ':updated_at'  => $now,
             ]);
         } else {
             $stmt = $this->db->prepare('
@@ -132,12 +133,12 @@ class TagRepository implements TagRepositoryInterface
                 VALUES (:name, :slug, :description, :color, :created_at, :updated_at)
             ');
             $stmt->execute([
-                ':name' => $data['name'],
-                ':slug' => $data['slug'] ?? null,
+                ':name'        => $data['name'],
+                ':slug'        => $data['slug'] ?? null,
                 ':description' => $data['description'] ?? null,
-                ':color' => $data['color'] ?? null,
-                ':created_at' => $now,
-                ':updated_at' => $now,
+                ':color'       => $data['color'] ?? null,
+                ':created_at'  => $now,
+                ':updated_at'  => $now,
             ]);
         }
         $id = (int) $this->db->lastInsertId();

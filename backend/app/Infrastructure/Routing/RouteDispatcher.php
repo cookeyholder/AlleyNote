@@ -95,7 +95,7 @@ class RouteDispatcher
                 // 中介軟體解析失敗時應阻止請求（fail-closed），避免安全防護被繞過
                 app_log('critical', 'Failed to resolve middleware — request blocked', [
                     'middleware' => (string) $middleware,
-                    'exception' => $e->getMessage(),
+                    'exception'  => $e->getMessage(),
                 ]);
 
                 throw $e;
@@ -126,10 +126,10 @@ class RouteDispatcher
         // 預設 404 回應
         $response = $this->container->get(ResponseInterface::class);
         $response->getBody()->write(json_encode([
-            'error' => 'Not Found',
-            'message' => '請求的路由不存在',
-            'path' => $request->getUri()->getPath(),
-            'method' => $request->getMethod(),
+            'error'     => 'Not Found',
+            'message'   => '請求的路由不存在',
+            'path'      => $request->getUri()->getPath(),
+            'method'    => $request->getMethod(),
             'timestamp' => date('c'),
         ], JSON_UNESCAPED_UNICODE));
 

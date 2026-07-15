@@ -77,7 +77,7 @@ class SimpleUserActivityLogPerformanceTest extends SecureDDDTestCase
                     "批次測試記錄 #{$i}",
                     json_encode([
                         'batch_test' => true,
-                        'sequence' => $i,
+                        'sequence'   => $i,
                         'batch_size' => $batchSize,
                     ]),
                     '127.0.0.1',
@@ -94,8 +94,8 @@ class SimpleUserActivityLogPerformanceTest extends SecureDDDTestCase
             $throughput = $batchSize / $duration;
 
             $results[$batchSize] = [
-                'duration' => $duration,
-                'throughput' => $throughput,
+                'duration'       => $duration,
+                'throughput'     => $throughput,
                 'avg_per_record' => $duration / $batchSize,
             ];
 
@@ -131,9 +131,9 @@ class SimpleUserActivityLogPerformanceTest extends SecureDDDTestCase
         $this->setupTestData(1000);
 
         $queries = [
-            '根據用戶ID查詢' => 'SELECT * FROM user_activity_logs WHERE user_id = 1 LIMIT 10',
+            '根據用戶ID查詢'   => 'SELECT * FROM user_activity_logs WHERE user_id = 1 LIMIT 10',
             '根據動作類型查詢' => 'SELECT * FROM user_activity_logs WHERE action_type = "auth.login.success" LIMIT 10',
-            '根據狀態查詢' => 'SELECT * FROM user_activity_logs WHERE status = "success" LIMIT 10',
+            '根據狀態查詢'     => 'SELECT * FROM user_activity_logs WHERE status = "success" LIMIT 10',
             '根據時間範圍查詢' => 'SELECT * FROM user_activity_logs WHERE created_at >= datetime("now", "-1 day") LIMIT 10',
         ];
 
@@ -194,7 +194,7 @@ class SimpleUserActivityLogPerformanceTest extends SecureDDDTestCase
 
             $results[$page] = [
                 'duration' => $duration,
-                'count' => count($logs),
+                'count'    => count($logs),
             ];
 
             // 每頁查詢時間不應超過 200ms
@@ -244,8 +244,8 @@ class SimpleUserActivityLogPerformanceTest extends SecureDDDTestCase
                 "效能測試資料 #{$i}",
                 json_encode([
                     'performance_test' => true,
-                    'sequence' => $i,
-                    'timestamp' => time(),
+                    'sequence'         => $i,
+                    'timestamp'        => time(),
                 ]),
                 '127.0.0.1',
                 'PHPUnit Performance Setup',

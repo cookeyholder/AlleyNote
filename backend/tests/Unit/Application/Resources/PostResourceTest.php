@@ -17,11 +17,11 @@ class PostResourceTest extends UnitTestCase
     public function itShouldTransformPostWithStatsAndSanitizer(): void
     {
         $post = new Post([
-            'id' => 1,
-            'title' => '<b>Title</b>',
-            'content' => '<script>alert(1)</script><p>Body</p>',
-            'user_id' => 1,
-            'status' => 'published',
+            'id'           => 1,
+            'title'        => '<b>Title</b>',
+            'content'      => '<script>alert(1)</script><p>Body</p>',
+            'user_id'      => 1,
+            'status'       => 'published',
             'publish_date' => '2026-04-04 12:00:00',
         ]);
 
@@ -31,7 +31,7 @@ class PostResourceTest extends UnitTestCase
 
         $resource = new PostResource($post, [
             'sanitizer' => $sanitizer,
-            'stats' => ['views' => 12, 'unique_visitors' => 5],
+            'stats'     => ['views' => 12, 'unique_visitors' => 5],
         ]);
 
         $result = $resource->resolve();

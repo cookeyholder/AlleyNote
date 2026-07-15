@@ -62,9 +62,9 @@ class InvalidTokenException extends JwtException
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
         $context = array_merge([
-            'reason' => $reason,
+            'reason'     => $reason,
             'token_type' => $tokenType,
-            'timestamp' => time(),
+            'timestamp'  => time(),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
     }
@@ -80,16 +80,16 @@ class InvalidTokenException extends JwtException
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
 
         return match ($reason) {
-            self::REASON_MALFORMED => sprintf('%s format is malformed', $tokenName),
-            self::REASON_SIGNATURE_INVALID => sprintf('%s signature verification failed', $tokenName),
+            self::REASON_MALFORMED          => sprintf('%s format is malformed', $tokenName),
+            self::REASON_SIGNATURE_INVALID  => sprintf('%s signature verification failed', $tokenName),
             self::REASON_ALGORITHM_MISMATCH => sprintf('%s algorithm does not match expected algorithm', $tokenName),
-            self::REASON_ISSUER_INVALID => sprintf('%s issuer is invalid', $tokenName),
-            self::REASON_AUDIENCE_INVALID => sprintf('%s audience is invalid', $tokenName),
-            self::REASON_SUBJECT_MISSING => sprintf('%s subject is missing', $tokenName),
-            self::REASON_CLAIMS_INVALID => sprintf('%s contains invalid claims', $tokenName),
-            self::REASON_BLACKLISTED => sprintf('%s has been blacklisted', $tokenName),
-            self::REASON_NOT_BEFORE => sprintf('%s is not valid yet', $tokenName),
-            default => sprintf('%s is invalid', $tokenName),
+            self::REASON_ISSUER_INVALID     => sprintf('%s issuer is invalid', $tokenName),
+            self::REASON_AUDIENCE_INVALID   => sprintf('%s audience is invalid', $tokenName),
+            self::REASON_SUBJECT_MISSING    => sprintf('%s subject is missing', $tokenName),
+            self::REASON_CLAIMS_INVALID     => sprintf('%s contains invalid claims', $tokenName),
+            self::REASON_BLACKLISTED        => sprintf('%s has been blacklisted', $tokenName),
+            self::REASON_NOT_BEFORE         => sprintf('%s is not valid yet', $tokenName),
+            default                         => sprintf('%s is invalid', $tokenName),
         };
     }
 
@@ -107,11 +107,11 @@ class InvalidTokenException extends JwtException
             self::REASON_DECODE_FAILED => '提供的 Token 格式錯誤或已損壞，請重新登入。',
             self::REASON_ISSUER_INVALID,
             self::REASON_AUDIENCE_INVALID => '此 Token 不適用於當前應用程式，請重新登入。',
-            self::REASON_SUBJECT_MISSING => 'Token 缺少必要的用戶資訊，請重新登入。',
-            self::REASON_CLAIMS_INVALID => 'Token 包含無效的聲明資訊，請重新登入。',
-            self::REASON_BLACKLISTED => '此 Token 已被撤銷，請重新登入。',
-            self::REASON_NOT_BEFORE => '此 Token 尚未生效，請稍後再試或重新登入。',
-            default => '提供的 Token 無效，請重新登入。',
+            self::REASON_SUBJECT_MISSING  => 'Token 缺少必要的用戶資訊，請重新登入。',
+            self::REASON_CLAIMS_INVALID   => 'Token 包含無效的聲明資訊，請重新登入。',
+            self::REASON_BLACKLISTED      => '此 Token 已被撤銷，請重新登入。',
+            self::REASON_NOT_BEFORE       => '此 Token 尚未生效，請稍後再試或重新登入。',
+            default                       => '提供的 Token 無效，請重新登入。',
         };
     }
 
@@ -228,7 +228,7 @@ class InvalidTokenException extends JwtException
     ): self {
         return new self(self::REASON_ALGORITHM_MISMATCH, $tokenType, '', [
             'expected_algorithm' => $expectedAlgorithm,
-            'actual_algorithm' => $actualAlgorithm,
+            'actual_algorithm'   => $actualAlgorithm,
         ]);
     }
 
@@ -246,7 +246,7 @@ class InvalidTokenException extends JwtException
     ): self {
         return new self(self::REASON_ISSUER_INVALID, $tokenType, '', [
             'expected_issuer' => $expectedIssuer,
-            'actual_issuer' => $actualIssuer,
+            'actual_issuer'   => $actualIssuer,
         ]);
     }
 
@@ -264,7 +264,7 @@ class InvalidTokenException extends JwtException
     ): self {
         return new self(self::REASON_AUDIENCE_INVALID, $tokenType, '', [
             'expected_audience' => $expectedAudience,
-            'actual_audience' => $actualAudience,
+            'actual_audience'   => $actualAudience,
         ]);
     }
 
@@ -313,7 +313,7 @@ class InvalidTokenException extends JwtException
     public static function notBefore(int $notBefore, string $tokenType = self::ACCESS_TOKEN): self
     {
         return new self(self::REASON_NOT_BEFORE, $tokenType, '', [
-            'not_before' => $notBefore,
+            'not_before'       => $notBefore,
             'not_before_human' => date('Y-m-d H:i:s', $notBefore),
         ]);
     }

@@ -100,6 +100,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
 
     /**
      * @param array<string, mixed> $data
+     *
      * @return array<string, mixed>
      */
     public function create(array $data): array
@@ -154,6 +155,7 @@ class UserRepositoryAdapter implements UserRepositoryInterface
 
     /**
      * @param array<string, mixed> $fields
+     *
      * @return array<string, mixed>
      */
     public function search(string $keyword, array $fields = [], int $limit = 10): array

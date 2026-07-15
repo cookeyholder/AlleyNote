@@ -16,6 +16,7 @@ class TaggedCacheManager implements TaggedCacheInterface
 {
     /**
      * 當前標籤集合.
+     *
      * @var array<string>
      */
     private array $tags = [];
@@ -54,7 +55,7 @@ class TaggedCacheManager implements TaggedCacheInterface
             $tagSuccess = $this->tagRepository->setTags($key, $this->tags, $ttl);
             if (!$tagSuccess) {
                 $this->logger->warning('設定快取標籤失敗', [
-                    'key' => $key,
+                    'key'  => $key,
                     'tags' => $this->tags,
                 ]);
             }
@@ -123,8 +124,8 @@ class TaggedCacheManager implements TaggedCacheInterface
             return $value;
         } catch (Throwable $e) {
             $this->logger->error('標籤化快取記憶化失敗', [
-                'key' => $key,
-                'tags' => $this->tags,
+                'key'   => $key,
+                'tags'  => $this->tags,
                 'error' => $e->getMessage(),
             ]);
 
@@ -175,7 +176,7 @@ class TaggedCacheManager implements TaggedCacheInterface
         $this->tagRepository->deleteByTags($tagsArray);
         $deletedCount = count(array_unique($deletedKeys));
         $this->logger->info('按標籤清空快取', [
-            'tags' => $tagsArray,
+            'tags'               => $tagsArray,
             'deleted_keys_count' => $deletedCount,
         ]);
 
@@ -213,7 +214,7 @@ class TaggedCacheManager implements TaggedCacheInterface
             $tagSuccess = $this->tagRepository->setTags($key, $tags, $ttl);
             if (!$tagSuccess) {
                 $this->logger->warning('設定快取標籤失敗', [
-                    'key' => $key,
+                    'key'  => $key,
                     'tags' => $tags,
                 ]);
             }
@@ -331,6 +332,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      * @param array<string, mixed> $items 快取項目 key => value
      * @param array<string> $tags 標籤陣列
      * @param int $ttl 存活時間
+     *
      * @return array<string, bool> 設定結果 key => success
      */
     public function putMany(array $items, array $tags, int $ttl = 3600): array
@@ -340,8 +342,8 @@ class TaggedCacheManager implements TaggedCacheInterface
             $results[$key] = $this->putWithTags($key, $value, $tags, $ttl);
         }
         $this->logger->info('批量設定標籤化快取', [
-            'items_count' => count($items),
-            'tags' => $tags,
+            'items_count'   => count($items),
+            'tags'          => $tags,
             'success_count' => count(array_filter($results)),
         ]);
 
@@ -352,6 +354,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      * 按標籤批量獲取快取.
      *
      * @param string $tag 標籤
+     *
      * @return array<string, mixed> 快取項目 key => value
      */
     public function getManyByTag(string $tag): array
@@ -372,6 +375,7 @@ class TaggedCacheManager implements TaggedCacheInterface
      * 檢查標籤是否存在.
      *
      * @param string $tag 標籤名稱
+     *
      * @return bool 是否存在
      */
     public function tagExists(string $tag): bool
@@ -390,8 +394,8 @@ class TaggedCacheManager implements TaggedCacheInterface
     {
         if ($this->monitor) {
             $this->monitor->recordOperation($operation, 'tagged', true, 0, [
-                'key' => $key,
-                'tags' => $tags,
+                'key'        => $key,
+                'tags'       => $tags,
                 'tags_count' => count($tags),
             ]);
         }

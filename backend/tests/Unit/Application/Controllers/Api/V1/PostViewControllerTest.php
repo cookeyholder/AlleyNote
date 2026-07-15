@@ -331,7 +331,7 @@ class PostViewControllerTest extends UnitTestCase
             ->andReturn($stream);
 
         $serverParams = [
-            'REMOTE_ADDR' => '127.0.0.1',
+            'REMOTE_ADDR'          => '127.0.0.1',
             'HTTP_X_FORWARDED_FOR' => $realIp,
         ];
         $this->request->shouldReceive('getServerParams')

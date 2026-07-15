@@ -193,10 +193,10 @@ class SessionSecurityService implements SessionSecurityServiceInterface
     public function performSecurityCheck(string $currentIp, string $currentUserAgent): array
     {
         $result = [
-            'valid' => true,
+            'valid'           => true,
             'requires_action' => false,
-            'action_type' => null,
-            'message' => null,
+            'action_type'     => null,
+            'message'         => null,
         ];
         // 基本 Session 有效性檢查
         if (!$this->isSessionValid()) {

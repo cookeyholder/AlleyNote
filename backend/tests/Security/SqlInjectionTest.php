@@ -128,12 +128,12 @@ class SqlInjectionTest extends SecureDDDTestCase
         // 準備含有特殊字元的測試資料
         $content = "Test's content with \"quotes\" and -- comments";
         $data = [
-            'uuid' => 'test-uuid-special',
-            'title' => 'Test Post with Special Chars',
+            'uuid'    => 'test-uuid-special',
+            'title'   => 'Test Post with Special Chars',
             'content' => $content,
             'user_id' => 1,
             'user_ip' => '8.8.8.8',
-            'status' => 'published',
+            'status'  => 'published',
         ];
 
         // 執行測試

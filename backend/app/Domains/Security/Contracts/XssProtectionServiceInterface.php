@@ -21,6 +21,7 @@ interface XssProtectionServiceInterface
      *
      * @param array<string, mixed> $input 要清理的陣列
      * @param array<string, mixed> $fields 要清理的欄位名稱列表
+     *
      * @return array 清理後的陣列
      */
     public function cleanArray(array $input, array $fields): array;

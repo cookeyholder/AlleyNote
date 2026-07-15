@@ -38,7 +38,7 @@ final readonly class RefreshRequestDTO
     {
         return [
             'refresh_token' => '[REDACTED]', // 不記錄 token
-            'scopes' => $this->scopes,
+            'scopes'        => $this->scopes,
         ];
     }
 

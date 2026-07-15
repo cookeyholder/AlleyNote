@@ -208,6 +208,7 @@ class Router implements RouterInterface
      *
      * @param array<string, mixed> $previous
      * @param array<string, mixed> $new
+     *
      * @return array<string, mixed>
      */
     private function mergeGroupAttributes(array $previous, array $new): array

@@ -44,7 +44,7 @@ class AdvancedAnalyticsController extends BaseController
 
         return $this->json($response, [
             'success' => true,
-            'data' => $stats,
+            'data'    => $stats,
         ]);
     }
 
@@ -76,7 +76,7 @@ class AdvancedAnalyticsController extends BaseController
 
         return $this->json($response, [
             'success' => true,
-            'data' => $stats,
+            'data'    => $stats,
         ]);
     }
 
@@ -108,7 +108,7 @@ class AdvancedAnalyticsController extends BaseController
 
         return $this->json($response, [
             'success' => true,
-            'data' => $stats,
+            'data'    => $stats,
         ]);
     }
 
@@ -142,7 +142,7 @@ class AdvancedAnalyticsController extends BaseController
 
         return $this->json($response, [
             'success' => true,
-            'data' => $stats,
+            'data'    => $stats,
         ]);
     }
 
@@ -174,7 +174,7 @@ class AdvancedAnalyticsController extends BaseController
 
         return $this->json($response, [
             'success' => true,
-            'data' => $stats,
+            'data'    => $stats,
         ]);
     }
 
@@ -206,7 +206,7 @@ class AdvancedAnalyticsController extends BaseController
 
         return $this->json($response, [
             'success' => true,
-            'data' => $report,
+            'data'    => $report,
         ]);
     }
 }

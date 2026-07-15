@@ -43,12 +43,12 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
         // Arrange - 先建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'forum_user',
-            'email' => 'forum@example.com',
+            'email'    => 'forum@example.com',
         ]);
 
         $topicId = 456;
         $topicData = [
-            'title' => '討論主題',
+            'title'    => '討論主題',
             'category' => 'general',
         ];
 
@@ -59,8 +59,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             'user',
             (string) $userId,
             [
-                'email' => 'forum@example.com',
-                'username' => 'forum_user',
+                'email'      => 'forum@example.com',
+                'username'   => 'forum_user',
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'PHPUnit/Test',
             ],
@@ -99,14 +99,14 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
         // Arrange - 先建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'post_author',
-            'email' => 'author@example.com',
+            'email'    => 'author@example.com',
         ]);
 
         $postId = 123;
         $postData = [
-            'title' => '整合測試文章',
+            'title'   => '整合測試文章',
             'content' => '這是一個端到端整合測試建立的文章內容',
-            'status' => 'draft',
+            'status'  => 'draft',
         ];
 
         // Act 1: 記錄文章建立事件
@@ -116,11 +116,11 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             'post',
             (string) $postId,
             [
-                'title' => $postData['title'],
-                'status' => $postData['status'],
+                'title'          => $postData['title'],
+                'status'         => $postData['status'],
                 'content_length' => strlen($postData['content']),
-                'ip_address' => '127.0.0.1',
-                'user_agent' => 'PHPUnit/Test',
+                'ip_address'     => '127.0.0.1',
+                'user_agent'     => 'PHPUnit/Test',
             ],
         );
 
@@ -131,11 +131,11 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             'post',
             (string) $postId,
             [
-                'title' => $postData['title'],
+                'title'           => $postData['title'],
                 'previous_status' => 'draft',
-                'new_status' => 'published',
-                'ip_address' => '127.0.0.1',
-                'user_agent' => 'PHPUnit/Test',
+                'new_status'      => 'published',
+                'ip_address'      => '127.0.0.1',
+                'user_agent'      => 'PHPUnit/Test',
             ],
         );
 
@@ -146,8 +146,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             'post',
             (string) $postId,
             [
-                'title' => $postData['title'],
-                'pinned' => true,
+                'title'      => $postData['title'],
+                'pinned'     => true,
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'PHPUnit/Test',
             ],
@@ -160,8 +160,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             'post',
             (string) $postId,
             [
-                'title' => $postData['title'],
-                'viewer_id' => $userId,
+                'title'      => $postData['title'],
+                'viewer_id'  => $userId,
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'PHPUnit/Test',
             ],
@@ -174,8 +174,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             'post',
             (string) $postId,
             [
-                'title' => $postData['title'],
-                'reason' => 'user_requested',
+                'title'      => $postData['title'],
+                'reason'     => 'user_requested',
                 'ip_address' => '127.0.0.1',
                 'user_agent' => 'PHPUnit/Test',
             ],
@@ -195,7 +195,7 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
         // Arrange - 先建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'security_user',
-            'email' => 'security@example.com',
+            'email'    => 'security@example.com',
         ]);
 
         $suspiciousIp = '192.168.1.100';
@@ -208,10 +208,10 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 $userId,
                 'Invalid password attempt ' . $i,
                 [
-                    'ip_address' => $suspiciousIp,
-                    'user_agent' => 'SuspiciousBot/1.0',
+                    'ip_address'     => $suspiciousIp,
+                    'user_agent'     => 'SuspiciousBot/1.0',
                     'attempt_number' => $i,
-                    'email' => 'test@example.com',
+                    'email'          => 'test@example.com',
                 ],
             );
         }
@@ -221,10 +221,10 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             ActivityType::IP_BLOCKED,
             'IP blocked due to too many failed login attempts',
             [
-                'ip_address' => $suspiciousIp,
-                'reason' => 'too_many_failed_login_attempts',
-                'failed_attempts' => 5,
-                'block_duration' => '1 hour',
+                'ip_address'           => $suspiciousIp,
+                'reason'               => 'too_many_failed_login_attempts',
+                'failed_attempts'      => 5,
+                'block_duration'       => '1 hour',
                 'triggered_by_user_id' => $userId,
             ],
         );
@@ -234,11 +234,11 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             ActivityType::CSRF_ATTACK_BLOCKED,
             'CSRF attack blocked - invalid token',
             [
-                'ip_address' => $suspiciousIp,
-                'user_agent' => 'SuspiciousBot/1.0',
+                'ip_address'     => $suspiciousIp,
+                'user_agent'     => 'SuspiciousBot/1.0',
                 'requested_path' => '/api/v1/posts',
-                'method' => 'POST',
-                'reason' => 'invalid_csrf_token',
+                'method'         => 'POST',
+                'reason'         => 'invalid_csrf_token',
             ],
         );
 
@@ -247,11 +247,11 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
             ActivityType::XSS_ATTACK_BLOCKED,
             'XSS attack blocked - malicious content detected',
             [
-                'ip_address' => $suspiciousIp,
-                'user_agent' => 'SuspiciousBot/1.0',
+                'ip_address'        => $suspiciousIp,
+                'user_agent'        => 'SuspiciousBot/1.0',
                 'malicious_content' => '<script>alert("xss")</script>',
                 'sanitized_content' => 'alert("xss")',
-                'field_name' => 'post_content',
+                'field_name'        => 'post_content',
             ],
         );
 
@@ -270,7 +270,7 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
         // Arrange - 先建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'batch_user',
-            'email' => 'batch@example.com',
+            'email'    => 'batch@example.com',
         ]);
 
         // 建立 DTO 物件陣列
@@ -282,8 +282,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 '1',
                 '建立文章 1',
                 [
-                    'title' => '批次操作文章 1',
-                    'batch_id' => 'batch_001',
+                    'title'              => '批次操作文章 1',
+                    'batch_id'           => 'batch_001',
                     'operation_sequence' => 1,
                 ],
             ),
@@ -294,8 +294,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 '2',
                 '建立文章 2',
                 [
-                    'title' => '批次操作文章 2',
-                    'batch_id' => 'batch_001',
+                    'title'              => '批次操作文章 2',
+                    'batch_id'           => 'batch_001',
                     'operation_sequence' => 2,
                 ],
             ),
@@ -306,8 +306,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 '1',
                 '發布文章 1',
                 [
-                    'title' => '批次操作文章 1',
-                    'batch_id' => 'batch_001',
+                    'title'              => '批次操作文章 1',
+                    'batch_id'           => 'batch_001',
                     'operation_sequence' => 3,
                 ],
             ),
@@ -318,8 +318,8 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 '2',
                 '發布文章 2',
                 [
-                    'title' => '批次操作文章 2',
-                    'batch_id' => 'batch_001',
+                    'title'              => '批次操作文章 2',
+                    'batch_id'           => 'batch_001',
                     'operation_sequence' => 4,
                 ],
             ),
@@ -339,7 +339,7 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
         // Arrange - 先建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'concurrent_user',
-            'email' => 'concurrent@example.com',
+            'email'    => 'concurrent@example.com',
         ]);
 
         $concurrentOperations = [];
@@ -352,10 +352,10 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
                 'post',
                 (string) $i,
                 [
-                    'title' => "併發測試文章 {$i}",
+                    'title'                => "併發測試文章 {$i}",
                     'concurrent_operation' => true,
-                    'operation_id' => $i,
-                    'timestamp' => time(),
+                    'operation_id'         => $i,
+                    'timestamp'            => time(),
                 ],
             );
         }
@@ -372,12 +372,12 @@ class UserActivityLogEndToEndTest extends IntegrationTestCase
         // Arrange - 建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'consistency_user',
-            'email' => 'consistency@example.com',
+            'email'    => 'consistency@example.com',
         ]);
 
         $viewerUserId = $this->insertTestUser([
             'username' => 'viewer_user',
-            'email' => 'viewer@example.com',
+            'email'    => 'viewer@example.com',
         ]);
 
         $postId = 999;

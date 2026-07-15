@@ -21,32 +21,32 @@ class StatisticsSnapshotTest extends UnitTestCase
         return [
             'basic_data' => [
                 [
-                    'id' => 1,
-                    'uuid' => 'test-uuid-123',
-                    'snapshot_type' => 'posts',
-                    'period_type' => 'daily',
-                    'period_start' => '2025-09-21 00:00:00',
-                    'period_end' => '2025-09-21 23:59:59',
-                    'statistics_data' => ['total_posts' => 100, 'active_users' => 25],
-                    'total_views' => 500,
+                    'id'                   => 1,
+                    'uuid'                 => 'test-uuid-123',
+                    'snapshot_type'        => 'posts',
+                    'period_type'          => 'daily',
+                    'period_start'         => '2025-09-21 00:00:00',
+                    'period_end'           => '2025-09-21 23:59:59',
+                    'statistics_data'      => ['total_posts' => 100, 'active_users' => 25],
+                    'total_views'          => 500,
                     'total_unique_viewers' => 150,
-                    'created_at' => '2025-09-21 10:00:00',
-                    'updated_at' => '2025-09-21 11:00:00',
+                    'created_at'           => '2025-09-21 10:00:00',
+                    'updated_at'           => '2025-09-21 11:00:00',
                 ],
             ],
             'json_string_data' => [
                 [
-                    'id' => 2,
-                    'uuid' => 'test-uuid-456',
-                    'snapshot_type' => 'users',
-                    'period_type' => 'weekly',
-                    'period_start' => '2025-09-15 00:00:00',
-                    'period_end' => '2025-09-21 23:59:59',
-                    'statistics_data' => '{"total_users": 200, "new_users": 30}',
-                    'total_views' => 1000,
+                    'id'                   => 2,
+                    'uuid'                 => 'test-uuid-456',
+                    'snapshot_type'        => 'users',
+                    'period_type'          => 'weekly',
+                    'period_start'         => '2025-09-15 00:00:00',
+                    'period_end'           => '2025-09-21 23:59:59',
+                    'statistics_data'      => '{"total_users": 200, "new_users": 30}',
+                    'total_views'          => 1000,
                     'total_unique_viewers' => 300,
-                    'created_at' => '2025-09-21 10:00:00',
-                    'updated_at' => null,
+                    'created_at'           => '2025-09-21 10:00:00',
+                    'updated_at'           => null,
                 ],
             ],
         ];
@@ -112,17 +112,17 @@ class StatisticsSnapshotTest extends UnitTestCase
     public function testToArray(): void
     {
         $data = [
-            'id' => 1,
-            'uuid' => 'test-uuid-123',
-            'snapshot_type' => 'posts',
-            'period_type' => 'daily',
-            'period_start' => '2025-09-21 00:00:00',
-            'period_end' => '2025-09-21 23:59:59',
-            'statistics_data' => ['total_posts' => 100],
-            'total_views' => 500,
+            'id'                   => 1,
+            'uuid'                 => 'test-uuid-123',
+            'snapshot_type'        => 'posts',
+            'period_type'          => 'daily',
+            'period_start'         => '2025-09-21 00:00:00',
+            'period_end'           => '2025-09-21 23:59:59',
+            'statistics_data'      => ['total_posts' => 100],
+            'total_views'          => 500,
             'total_unique_viewers' => 150,
-            'created_at' => '2025-09-21 10:00:00',
-            'updated_at' => '2025-09-21 11:00:00',
+            'created_at'           => '2025-09-21 10:00:00',
+            'updated_at'           => '2025-09-21 11:00:00',
         ];
 
         $snapshot = new StatisticsSnapshot($data);
@@ -134,17 +134,17 @@ class StatisticsSnapshotTest extends UnitTestCase
     public function testJsonSerialize(): void
     {
         $data = [
-            'id' => 1,
-            'uuid' => 'test-uuid-123',
-            'snapshot_type' => 'posts',
-            'period_type' => 'daily',
-            'period_start' => '2025-09-21 00:00:00',
-            'period_end' => '2025-09-21 23:59:59',
-            'statistics_data' => ['total_posts' => 100],
-            'total_views' => 500,
+            'id'                   => 1,
+            'uuid'                 => 'test-uuid-123',
+            'snapshot_type'        => 'posts',
+            'period_type'          => 'daily',
+            'period_start'         => '2025-09-21 00:00:00',
+            'period_end'           => '2025-09-21 23:59:59',
+            'statistics_data'      => ['total_posts' => 100],
+            'total_views'          => 500,
             'total_unique_viewers' => 150,
-            'created_at' => '2025-09-21 10:00:00',
-            'updated_at' => '2025-09-21 11:00:00',
+            'created_at'           => '2025-09-21 10:00:00',
+            'updated_at'           => '2025-09-21 11:00:00',
         ];
 
         $snapshot = new StatisticsSnapshot($data);
@@ -159,17 +159,17 @@ class StatisticsSnapshotTest extends UnitTestCase
     public function testFromArray(): void
     {
         $data = [
-            'id' => 1,
-            'uuid' => 'test-uuid-123',
-            'snapshot_type' => 'posts',
-            'period_type' => 'daily',
-            'period_start' => '2025-09-21 00:00:00',
-            'period_end' => '2025-09-21 23:59:59',
-            'statistics_data' => ['total_posts' => 100],
-            'total_views' => 500,
+            'id'                   => 1,
+            'uuid'                 => 'test-uuid-123',
+            'snapshot_type'        => 'posts',
+            'period_type'          => 'daily',
+            'period_start'         => '2025-09-21 00:00:00',
+            'period_end'           => '2025-09-21 23:59:59',
+            'statistics_data'      => ['total_posts' => 100],
+            'total_views'          => 500,
             'total_unique_viewers' => 150,
-            'created_at' => '2025-09-21 10:00:00',
-            'updated_at' => '2025-09-21 11:00:00',
+            'created_at'           => '2025-09-21 10:00:00',
+            'updated_at'           => '2025-09-21 11:00:00',
         ];
 
         $snapshot = StatisticsSnapshot::fromArray($data);
@@ -182,8 +182,8 @@ class StatisticsSnapshotTest extends UnitTestCase
     public function testConstructWithMixedTypes(): void
     {
         $data = [
-            'id' => '123',  // string instead of int
-            'total_views' => '456',  // string instead of int
+            'id'                   => '123',  // string instead of int
+            'total_views'          => '456',  // string instead of int
             'total_unique_viewers' => '789',  // string instead of int
         ];
 

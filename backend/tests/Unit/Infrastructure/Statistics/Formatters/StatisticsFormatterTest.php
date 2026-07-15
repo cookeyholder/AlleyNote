@@ -202,7 +202,7 @@ final class StatisticsFormatterTest extends UnitTestCase
         $data = [
             'complex' => [
                 'nested' => ['key' => 'value'],
-                'array' => [1, 2, 3],
+                'array'  => [1, 2, 3],
             ],
         ];
 

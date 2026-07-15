@@ -73,9 +73,9 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
 
         $logData = [
             'action_type' => 'post_created',
-            'user_id' => $userId,
-            'metadata' => [
-                'title' => 'Test Post',
+            'user_id'     => $userId,
+            'metadata'    => [
+                'title'      => 'Test Post',
                 'ip_address' => '127.0.0.1',
             ],
         ];
@@ -170,7 +170,7 @@ class ActivityLogApiIntegrationTest extends IntegrationTestCase
         $mockRequest = $this->request;
         $mockRequest->shouldReceive('getQueryParams')
             ->andReturn([
-                'limit' => '10',
+                'limit'  => '10',
                 'offset' => '0',
             ]);
 

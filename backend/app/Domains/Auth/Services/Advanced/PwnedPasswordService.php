@@ -26,7 +26,7 @@ class PwnedPasswordService
             'timeout' => self::REQUEST_TIMEOUT,
             'headers' => [
                 'User-Agent' => 'AlleyNote/1.0 Security Service',
-                'Accept' => 'text/plain',
+                'Accept'     => 'text/plain',
             ],
         ]);
     }
@@ -35,6 +35,7 @@ class PwnedPasswordService
      * 檢查密碼是否在已知的洩露資料庫中.
      *
      * @param string $password 要檢查的密碼
+     *
      * @return array 包含是_leaked, count, error 等資訊的陣列
      */
     public function isPasswordPwned(string $password): array
@@ -57,9 +58,9 @@ class PwnedPasswordService
             }
             if ($hashList === null) {
                 return [
-                    'is_leaked' => false,
-                    'count' => 0,
-                    'error' => 'API 呼叫失敗，無法驗證密碼安全性',
+                    'is_leaked'     => false,
+                    'count'         => 0,
+                    'error'         => 'API 呼叫失敗，無法驗證密碼安全性',
                     'api_available' => false,
                 ];
             }
@@ -67,9 +68,9 @@ class PwnedPasswordService
             $count = $this->findHashInList($suffix, $hashList);
 
             return [
-                'is_leaked' => $count > 0,
-                'count' => $count,
-                'error' => null,
+                'is_leaked'     => $count > 0,
+                'count'         => $count,
+                'error'         => null,
                 'api_available' => true,
             ];
         } catch (Throwable $e) {
@@ -77,9 +78,9 @@ class PwnedPasswordService
             app_log('error', 'PwnedPasswordService error', ['exception' => $e->getMessage()]);
 
             return [
-                'is_leaked' => false,
-                'count' => 0,
-                'error' => 'Unable to check password against breach database',
+                'is_leaked'     => false,
+                'count'         => 0,
+                'error'         => 'Unable to check password against breach database',
                 'api_available' => false,
             ];
         }
@@ -138,7 +139,7 @@ class PwnedPasswordService
     private function setCache(string $key, string $data): void
     {
         $this->cache[$key] = [
-            'data' => $data,
+            'data'      => $data,
             'timestamp' => time(),
         ];
     }
@@ -160,13 +161,13 @@ class PwnedPasswordService
             $response = $this->httpClient->get(self::HIBP_API_URL . '00000');
 
             return [
-                'available' => $response->getStatusCode() === 200,
+                'available'     => $response->getStatusCode() === 200,
                 'response_time' => null, // 可以實作回應時間測量
             ];
         } catch (Throwable $e) {
             return [
                 'available' => false,
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
             ];
         }
     }

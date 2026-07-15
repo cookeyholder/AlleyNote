@@ -228,18 +228,18 @@ final class PostAggregateTest extends UnitTestCase
     public function test_可以從資料重建聚合(): void
     {
         $data = [
-            'uuid' => 123,
-            'title' => '測試標題',
-            'content' => '測試內容',
-            'user_id' => 1,
-            'status' => 'published',
-            'views' => 100,
-            'is_pinned' => true,
-            'seq_number' => 'test-post',
+            'uuid'            => 123,
+            'title'           => '測試標題',
+            'content'         => '測試內容',
+            'user_id'         => 1,
+            'status'          => 'published',
+            'views'           => 100,
+            'is_pinned'       => true,
+            'seq_number'      => 'test-post',
             'creation_source' => 'web',
-            'created_at' => '2025-01-01 00:00:00',
-            'updated_at' => '2025-01-02 00:00:00',
-            'publish_date' => '2025-01-01 12:00:00',
+            'created_at'      => '2025-01-01 00:00:00',
+            'updated_at'      => '2025-01-02 00:00:00',
+            'publish_date'    => '2025-01-01 12:00:00',
         ];
 
         $aggregate = PostAggregate::reconstitute($data);
@@ -261,7 +261,7 @@ final class PostAggregateTest extends UnitTestCase
         $this->expectException(InvalidArgumentException::class);
 
         PostAggregate::reconstitute([
-            'title' => '測試標題',
+            'title'   => '測試標題',
             'content' => '測試內容',
             'user_id' => 1,
         ]);

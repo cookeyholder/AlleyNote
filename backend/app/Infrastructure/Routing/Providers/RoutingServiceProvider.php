@@ -25,7 +25,7 @@ class RoutingServiceProvider
         return [
             // 路由器核心服務
             RouterInterface::class => \DI\create(Router::class),
-            Router::class => \DI\create(Router::class),
+            Router::class          => \DI\create(Router::class),
             // 路由驗證器
             RouteValidator::class => \DI\create(RouteValidator::class),
             // 路由載入器
@@ -91,14 +91,14 @@ class RoutingServiceProvider
     public static function getRouteFiles(): array
     {
         return [
-            'api' => __DIR__ . '/../../../../config/routes/api.php',
-            'web' => __DIR__ . '/../../../../config/routes/web.php',
-            'auth' => __DIR__ . '/../../../../config/routes/auth.php',
-            'admin' => __DIR__ . '/../../../../config/routes/admin.php',
-            'statistics' => __DIR__ . '/../../../../config/routes/statistics.php',
-            'activity-logs' => __DIR__ . '/../../../../config/routes/activity-logs.php',
+            'api'            => __DIR__ . '/../../../../config/routes/api.php',
+            'web'            => __DIR__ . '/../../../../config/routes/web.php',
+            'auth'           => __DIR__ . '/../../../../config/routes/auth.php',
+            'admin'          => __DIR__ . '/../../../../config/routes/admin.php',
+            'statistics'     => __DIR__ . '/../../../../config/routes/statistics.php',
+            'activity-logs'  => __DIR__ . '/../../../../config/routes/activity-logs.php',
             'tag-management' => __DIR__ . '/../../../../config/routes/tag-management.php',
-            'cache-monitor' => __DIR__ . '/../../../../config/routes/cache-monitor.php',
+            'cache-monitor'  => __DIR__ . '/../../../../config/routes/cache-monitor.php',
         ];
     }
 
@@ -144,10 +144,10 @@ class RoutingServiceProvider
             return $routeLoader->getRouteStats();
         } catch (Throwable $e) {
             return [
-                'error' => $e->getMessage(),
+                'error'        => $e->getMessage(),
                 'total_routes' => 0,
                 'files_loaded' => 0,
-                'groups' => [],
+                'groups'       => [],
             ];
         }
     }

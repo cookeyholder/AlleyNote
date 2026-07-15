@@ -73,8 +73,8 @@ class IpRepositoryTest extends UnitTestCase
     public function testCanCreateIpRule(): void
     {
         $data = [
-            'ip_address' => '192.168.1.1',
-            'type' => 1,
+            'ip_address'  => '192.168.1.1',
+            'type'        => 1,
             'description' => '測試白名單',
         ];
 
@@ -90,7 +90,7 @@ class IpRepositoryTest extends UnitTestCase
     {
         $data = [
             'ip_address' => 'invalid-ip',
-            'type' => 1,
+            'type'       => 1,
         ];
 
         $this->expectException(InvalidArgumentException::class);
@@ -102,8 +102,8 @@ class IpRepositoryTest extends UnitTestCase
     public function testCanCreateCidrRange(): void
     {
         $data = [
-            'ip_address' => '192.168.1.0/24',
-            'type' => 0,
+            'ip_address'  => '192.168.1.0/24',
+            'type'        => 0,
             'description' => '測試子網路遮罩',
         ];
 
@@ -117,7 +117,7 @@ class IpRepositoryTest extends UnitTestCase
         // 先建立一筆資料
         $this->repository->create([
             'ip_address' => '192.168.1.1',
-            'type' => 1,
+            'type'       => 1,
         ]);
 
         $result = $this->repository->findByIpAddress('192.168.1.1');
@@ -131,13 +131,13 @@ class IpRepositoryTest extends UnitTestCase
         // 建立白名單
         $this->repository->create([
             'ip_address' => '192.168.1.1',
-            'type' => 1,
+            'type'       => 1,
         ]);
 
         // 建立黑名單
         $this->repository->create([
             'ip_address' => '192.168.1.2',
-            'type' => 0,
+            'type'       => 0,
         ]);
 
         $whitelist = $this->repository->getByType(1);

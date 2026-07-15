@@ -60,9 +60,9 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testDryRunModeShowsTasksWithoutExecution(): void
     {
         $this->commandTester->execute([
-            '--dry-run' => true,
+            '--dry-run'  => true,
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-03',
+            'end_date'   => '2023-01-03',
         ]);
 
         $output = $this->commandTester->getDisplay();
@@ -79,10 +79,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'overview',
+            'type'       => 'overview',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
@@ -116,7 +116,7 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     {
         $this->commandTester->execute([
             'start_date' => '2023-01-10',
-            'end_date' => '2023-01-01',
+            'end_date'   => '2023-01-01',
         ]);
 
         $output = $this->commandTester->getDisplay();
@@ -131,7 +131,7 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
 
         $this->commandTester->execute([
             'start_date' => '2023-01-01',
-            'end_date' => $futureDate,
+            'end_date'   => $futureDate,
         ]);
 
         $output = $this->commandTester->getDisplay();
@@ -171,10 +171,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'overview',
+            'type'       => 'overview',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
@@ -187,10 +187,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createPostsSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'posts',
+            'type'       => 'posts',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
@@ -203,10 +203,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createUsersSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'users',
+            'type'       => 'users',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
@@ -219,10 +219,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createPopularSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'popular',
+            'type'       => 'popular',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
@@ -248,8 +248,8 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
 
         $this->commandTester->execute([
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
@@ -267,10 +267,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('error');
 
         $this->commandTester->execute([
-            'type' => 'overview',
+            'type'       => 'overview',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $output = $this->commandTester->getDisplay();
@@ -285,10 +285,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'overview',
-            'start_date' => '2023-01-01',
-            'end_date' => '2023-01-02',
-            '--force' => true,
+            'type'         => 'overview',
+            'start_date'   => '2023-01-01',
+            'end_date'     => '2023-01-02',
+            '--force'      => true,
             '--batch-size' => '1',
         ], ['interactive' => false]);
 
@@ -304,10 +304,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             ->method('createOverviewSnapshot');
 
         $this->commandTester->execute([
-            'type' => 'overview',
-            'start_date' => '2023-01-01',
-            'end_date' => '2023-01-05',
-            '--force' => true,
+            'type'         => 'overview',
+            'start_date'   => '2023-01-01',
+            'end_date'     => '2023-01-05',
+            '--force'      => true,
             '--batch-size' => '2',
         ], ['interactive' => false]);
 
@@ -321,11 +321,11 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
     public function testCommandDisplaysConfiguration(): void
     {
         $this->commandTester->execute([
-            'type' => 'overview',
-            'start_date' => '2023-01-01',
-            'end_date' => '2023-01-03',
+            'type'         => 'overview',
+            'start_date'   => '2023-01-01',
+            'end_date'     => '2023-01-03',
             '--batch-size' => '5',
-            '--dry-run' => true,
+            '--dry-run'    => true,
         ]);
 
         $output = $this->commandTester->getDisplay();
@@ -366,10 +366,10 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
             }));
 
         $this->commandTester->execute([
-            'type' => 'overview',
+            'type'       => 'overview',
             'start_date' => '2023-01-01',
-            'end_date' => '2023-01-01',
-            '--force' => true,
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
         ], ['interactive' => false]);
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());

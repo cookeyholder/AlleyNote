@@ -242,7 +242,7 @@ class JwtConfigTest extends UnitTestCase
     {
         // 生成測試用的金鑰對
         $keyResource = openssl_pkey_new([
-            'digest_alg' => 'sha256',
+            'digest_alg'       => 'sha256',
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ]);

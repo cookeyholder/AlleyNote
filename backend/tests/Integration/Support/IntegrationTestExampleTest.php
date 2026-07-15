@@ -19,7 +19,7 @@ class IntegrationTestExampleTest extends IntegrationTestCase
 
         // 插入測試資料
         $postId = $this->insertTestPost([
-            'title' => '測試貼文標題',
+            'title'   => '測試貼文標題',
             'content' => '測試貼文內容',
         ]);
 
@@ -78,19 +78,19 @@ class IntegrationTestExampleTest extends IntegrationTestCase
         // 1. 建立測試使用者
         $userId = $this->insertTestUser([
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
         ]);
 
         // 2. 快取使用者資訊
         $this->setCacheValue("user:{$userId}", [
-            'id' => $userId,
+            'id'       => $userId,
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
         ]);
 
         // 3. 建立該使用者的貼文
         $postId = $this->insertTestPost([
-            'title' => '使用者的測試貼文',
+            'title'   => '使用者的測試貼文',
             'content' => '這是一篇測試貼文',
             'user_id' => $userId,
         ]);
@@ -115,7 +115,7 @@ class IntegrationTestExampleTest extends IntegrationTestCase
         // 6. 建立成功回應
         $response = $this->createJsonResponseMock([
             'post_id' => $postId,
-            'user' => $cachedUser,
+            'user'    => $cachedUser,
             'message' => 'Post created successfully',
         ]);
 

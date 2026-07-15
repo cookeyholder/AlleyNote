@@ -45,6 +45,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * 使用事務確保資料一致性，並自動產生 UUID。
      *
      * @param CreateActivityLogDTO $dto 活動記錄資料傳輸物件
+     *
      * @return array|null 建立成功時返回記錄資料，失敗時返回 null
      *
      * @throws RuntimeException 當資料庫操作失敗時
@@ -91,22 +92,22 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
             )';
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                ':uuid' => $entity->getUuid(),
-                ':user_id' => $entity->getUserId(),
-                ':session_id' => $entity->getSessionId(),
-                ':action_type' => $entity->getActionType()->value,
+                ':uuid'            => $entity->getUuid(),
+                ':user_id'         => $entity->getUserId(),
+                ':session_id'      => $entity->getSessionId(),
+                ':action_type'     => $entity->getActionType()->value,
                 ':action_category' => $entity->getActionCategory()->value,
-                ':target_type' => $entity->getTargetType(),
-                ':target_id' => $entity->getTargetId(),
-                ':status' => $entity->getStatus()->value,
-                ':description' => $entity->getDescription(),
-                ':metadata' => $entity->getMetadataAsJson(),
-                ':ip_address' => $entity->getIpAddress(),
-                ':user_agent' => $entity->getUserAgent(),
-                ':request_method' => $entity->getRequestMethod(),
-                ':request_path' => $entity->getRequestPath(),
-                ':created_at' => $entity->getCreatedAt()->format('Y-m-d H:i:s'),
-                ':occurred_at' => $entity->getOccurredAt()->format('Y-m-d H:i:s'),
+                ':target_type'     => $entity->getTargetType(),
+                ':target_id'       => $entity->getTargetId(),
+                ':status'          => $entity->getStatus()->value,
+                ':description'     => $entity->getDescription(),
+                ':metadata'        => $entity->getMetadataAsJson(),
+                ':ip_address'      => $entity->getIpAddress(),
+                ':user_agent'      => $entity->getUserAgent(),
+                ':request_method'  => $entity->getRequestMethod(),
+                ':request_path'    => $entity->getRequestPath(),
+                ':created_at'      => $entity->getCreatedAt()->format('Y-m-d H:i:s'),
+                ':occurred_at'     => $entity->getOccurredAt()->format('Y-m-d H:i:s'),
             ]);
             // 取得剛插入的記錄 ID
             $insertId = (int) $this->db->lastInsertId();
@@ -163,22 +164,22 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                     occurredAt: $dto->getOccurredAt(),
                 );
                 $stmt->execute([
-                    ':uuid' => $entity->getUuid(),
-                    ':user_id' => $entity->getUserId(),
-                    ':session_id' => $entity->getSessionId(),
-                    ':action_type' => $entity->getActionType()->value,
+                    ':uuid'            => $entity->getUuid(),
+                    ':user_id'         => $entity->getUserId(),
+                    ':session_id'      => $entity->getSessionId(),
+                    ':action_type'     => $entity->getActionType()->value,
                     ':action_category' => $entity->getActionCategory()->value,
-                    ':target_type' => $entity->getTargetType(),
-                    ':target_id' => $entity->getTargetId(),
-                    ':status' => $entity->getStatus()->value,
-                    ':description' => $entity->getDescription(),
-                    ':metadata' => $entity->getMetadataAsJson(),
-                    ':ip_address' => $entity->getIpAddress(),
-                    ':user_agent' => $entity->getUserAgent(),
-                    ':request_method' => $entity->getRequestMethod(),
-                    ':request_path' => $entity->getRequestPath(),
-                    ':created_at' => $entity->getCreatedAt()->format('Y-m-d H:i:s'),
-                    ':occurred_at' => $entity->getOccurredAt()->format('Y-m-d H:i:s'),
+                    ':target_type'     => $entity->getTargetType(),
+                    ':target_id'       => $entity->getTargetId(),
+                    ':status'          => $entity->getStatus()->value,
+                    ':description'     => $entity->getDescription(),
+                    ':metadata'        => $entity->getMetadataAsJson(),
+                    ':ip_address'      => $entity->getIpAddress(),
+                    ':user_agent'      => $entity->getUserAgent(),
+                    ':request_method'  => $entity->getRequestMethod(),
+                    ':request_path'    => $entity->getRequestPath(),
+                    ':created_at'      => $entity->getCreatedAt()->format('Y-m-d H:i:s'),
+                    ':occurred_at'     => $entity->getOccurredAt()->format('Y-m-d H:i:s'),
                 ]);
                 $count++;
             }
@@ -309,7 +310,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $conditions = ['occurred_at BETWEEN :start_time AND :end_time'];
         $params = [
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
-            ':end_time' => $endTime->format('Y-m-d H:i:s'),
+            ':end_time'   => $endTime->format('Y-m-d H:i:s'),
         ];
         if ($category !== null) {
             $conditions[] = 'action_category = :category';
@@ -433,9 +434,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 AND occurred_at BETWEEN :start_time AND :end_time';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            ':user_id' => $userId,
+            ':user_id'    => $userId,
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
-            ':end_time' => $endTime->format('Y-m-d H:i:s'),
+            ':end_time'   => $endTime->format('Y-m-d H:i:s'),
         ]);
 
         return (int) $stmt->fetchColumn();
@@ -456,7 +457,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             ':start_time' => $startTime->format('Y-m-d H:i:s'),
-            ':end_time' => $endTime->format('Y-m-d H:i:s'),
+            ':end_time'   => $endTime->format('Y-m-d H:i:s'),
         ]);
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -775,6 +776,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
      * @param DateTimeInterface $startTime 開始時間
      * @param DateTimeInterface $endTime 結束時間
      * @param int $limit 限制筆數
+     *
      * @return array{total: int, accounts: array<array{username: string, email: string|null, count: int, latest_attempt: string|null}>, trend: array<array{date: string, count: int}>}
      */
     public function getLoginFailureStatistics(
@@ -839,7 +841,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $trend = $trendStmt->fetchAll(PDO::FETCH_ASSOC);
 
         return [
-            'total' => $total,
+            'total'    => $total,
             'accounts' => array_map(function (array $account): array {
                 $email = $account['email'] ?? null;
                 $username = $account['username'] ?? null;
@@ -847,9 +849,9 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 $latestAttempt = $account['latest_attempt'] ?? null;
 
                 return [
-                    'username' => is_string($email) ? $email : (is_string($username) ? $username : 'unknown'),
-                    'email' => is_string($email) ? $email : null,
-                    'count' => is_numeric($count) ? (int) $count : 0,
+                    'username'       => is_string($email) ? $email : (is_string($username) ? $username : 'unknown'),
+                    'email'          => is_string($email) ? $email : null,
+                    'count'          => is_numeric($count) ? (int) $count : 0,
                     'latest_attempt' => is_string($latestAttempt) ? $latestAttempt : null,
                 ];
             }, $accounts),
@@ -858,7 +860,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
                 $count = $item['count'] ?? 0;
 
                 return [
-                    'date' => is_string($date) ? $date : '',
+                    'date'  => is_string($date) ? $date : '',
                     'count' => is_numeric($count) ? (int) $count : 0,
                 ];
             }, $trend),

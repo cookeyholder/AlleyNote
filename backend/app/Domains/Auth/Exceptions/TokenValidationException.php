@@ -48,7 +48,7 @@ class TokenValidationException extends JwtException
         array $additionalContext = [],
     ) {
         $context = array_merge([
-            'reason' => $reason,
+            'reason'    => $reason,
             'timestamp' => time(),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
@@ -70,12 +70,12 @@ class TokenValidationException extends JwtException
         $reason = $this->getReason();
 
         return match ($reason) {
-            self::INVALID_SIGNATURE => 'Token 簽名驗證失敗，請重新登入。',
-            self::INVALID_ISSUER => 'Token 發行者無效，請重新登入。',
-            self::INVALID_AUDIENCE => 'Token 受眾無效，請重新登入。',
+            self::INVALID_SIGNATURE     => 'Token 簽名驗證失敗，請重新登入。',
+            self::INVALID_ISSUER        => 'Token 發行者無效，請重新登入。',
+            self::INVALID_AUDIENCE      => 'Token 受眾無效，請重新登入。',
             self::ALGORITHM_NOT_ALLOWED => 'Token 演算法不被允許，請重新登入。',
-            self::KEY_NOT_FOUND => 'Token 驗證金鑰不存在，請重新登入。',
-            default => 'Token 驗證失敗，請重新登入。',
+            self::KEY_NOT_FOUND         => 'Token 驗證金鑰不存在，請重新登入。',
+            default                     => 'Token 驗證失敗，請重新登入。',
         };
     }
 
@@ -96,7 +96,7 @@ class TokenValidationException extends JwtException
 
         return new self($message, self::INVALID_ISSUER, $previous, [
             'expected_issuer' => $expected,
-            'actual_issuer' => $actual,
+            'actual_issuer'   => $actual,
         ]);
     }
 
@@ -109,7 +109,7 @@ class TokenValidationException extends JwtException
 
         return new self($message, self::INVALID_AUDIENCE, $previous, [
             'expected_audience' => $expected,
-            'actual_audience' => $actual,
+            'actual_audience'   => $actual,
         ]);
     }
 }

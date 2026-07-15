@@ -29,6 +29,7 @@ class CreatePostDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
+     *
      *                    * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -158,12 +159,12 @@ class CreatePostDTO extends BaseDTO
     protected function getValidationRules(): array
     {
         return [
-            'title' => 'required|string|post_title:1,255',
-            'content' => 'required|string|post_content:1',
-            'user_id' => 'required|user_id',
-            'user_ip' => 'required|ip_address',
-            'is_pinned' => 'nullable|boolean',
-            'status' => 'required|string|post_status',
+            'title'        => 'required|string|post_title:1,255',
+            'content'      => 'required|string|post_content:1',
+            'user_id'      => 'required|user_id',
+            'user_ip'      => 'required|ip_address',
+            'is_pinned'    => 'nullable|boolean',
+            'status'       => 'required|string|post_status',
             'publish_date' => 'rfc3339_datetime',
         ];
     }
@@ -174,12 +175,12 @@ class CreatePostDTO extends BaseDTO
     public function toArray(): array
     {
         return [
-            'title' => $this->title,
-            'content' => $this->content,
-            'user_id' => $this->userId,
-            'user_ip' => $this->userIp,
-            'is_pinned' => $this->isPinned,
-            'status' => $this->status->value,
+            'title'        => $this->title,
+            'content'      => $this->content,
+            'user_id'      => $this->userId,
+            'user_ip'      => $this->userIp,
+            'is_pinned'    => $this->isPinned,
+            'status'       => $this->status->value,
             'publish_date' => $this->publishDate,
         ];
     }

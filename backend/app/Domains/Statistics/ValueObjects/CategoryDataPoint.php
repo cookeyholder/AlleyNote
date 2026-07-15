@@ -59,8 +59,8 @@ readonly class CategoryDataPoint implements JsonSerializable
     {
         $result = [
             'category' => $this->category,
-            'value' => $this->value,
-            'color' => $this->color,
+            'value'    => $this->value,
+            'color'    => $this->color,
         ];
         if ($this->label !== null) {
             $result['label'] = $this->label;

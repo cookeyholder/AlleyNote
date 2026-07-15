@@ -23,9 +23,9 @@ final class StatisticsRecalculationCommand extends Command
 
     private const SUPPORTED_TYPES = [
         'overview' => '總覽統計',
-        'posts' => '文章統計',
-        'users' => '使用者統計',
-        'popular' => '熱門內容統計',
+        'posts'    => '文章統計',
+        'users'    => '使用者統計',
+        'popular'  => '熱門內容統計',
     ];
 
     private const DEFAULT_BATCH_SIZE = 30; // 預設每30天為一批
@@ -181,12 +181,12 @@ final class StatisticsRecalculationCommand extends Command
         }
 
         return [
-            'types' => $types,
+            'types'      => $types,
             'start_date' => $startDate,
-            'end_date' => $endDate,
-            'force' => $force,
+            'end_date'   => $endDate,
+            'force'      => $force,
             'batch_size' => $batchSize,
-            'dry_run' => $dryRun,
+            'dry_run'    => $dryRun,
         ];
     }
 
@@ -212,9 +212,9 @@ final class StatisticsRecalculationCommand extends Command
                 $config['end_date']->format('Y-m-d'),
                 $totalDays,
             )],
-            ['強制覆蓋' => $config['force'] ? '是' : '否'],
-            ['批次大小' => $config['batch_size'] . ' 天'],
-            ['預估批次' => $estimatedBatches . ' 個批次'],
+            ['強制覆蓋'   => $config['force'] ? '是' : '否'],
+            ['批次大小'   => $config['batch_size'] . ' 天'],
+            ['預估批次'   => $estimatedBatches . ' 個批次'],
             ['試執行模式' => $config['dry_run'] ? '是' : '否'],
         );
     }
@@ -299,9 +299,9 @@ final class StatisticsRecalculationCommand extends Command
         $progressBar->start();
         $results = [
             'success' => 0,
-            'failed' => 0,
+            'failed'  => 0,
             'skipped' => 0,
-            'errors' => [],
+            'errors'  => [],
         ];
         foreach ($willProcess as $task) {
             try {
@@ -317,10 +317,10 @@ final class StatisticsRecalculationCommand extends Command
                     $e->getMessage(),
                 );
                 $this->logger->error('統計回填任務失敗', [
-                    'type' => $task['type'],
+                    'type'       => $task['type'],
                     'start_date' => $task['start_date']->format('Y-m-d'),
-                    'end_date' => $task['end_date']->format('Y-m-d'),
-                    'error' => $e->getMessage(),
+                    'end_date'   => $task['end_date']->format('Y-m-d'),
+                    'error'      => $e->getMessage(),
                 ]);
             }
             $progressBar->advance();
@@ -339,6 +339,7 @@ final class StatisticsRecalculationCommand extends Command
      * 產生處理任務清單.
      *
      * @param array{types: string[], start_date: DateTimeImmutable, end_date: DateTimeImmutable, force: bool, batch_size: int, dry_run: bool} $config
+     *
      * @return array<int, array{type: string, start_date: DateTimeImmutable, end_date: DateTimeImmutable, exists: bool}>
      */
     private function generateProcessingTasks(array $config): array
@@ -359,10 +360,10 @@ final class StatisticsRecalculationCommand extends Command
                 // 檢查快照是否已存在
                 $exists = $this->snapshotExists($type, $currentDate, $batchEndDate);
                 $tasks[] = [
-                    'type' => $type,
+                    'type'       => $type,
                     'start_date' => $currentDate,
-                    'end_date' => $batchEndDate,
-                    'exists' => $exists,
+                    'end_date'   => $batchEndDate,
+                    'exists'     => $exists,
                 ];
             }
             $currentDate = $batchEndDate->modify('+1 day');
@@ -396,10 +397,10 @@ final class StatisticsRecalculationCommand extends Command
             $period = DomainStatisticsPeriod::createDaily($currentDate);
             match ($task['type']) {
                 'overview' => $this->aggregationService->createOverviewSnapshot($period),
-                'posts' => $this->aggregationService->createPostsSnapshot($period),
-                'users' => $this->aggregationService->createUsersSnapshot($period),
-                'popular' => $this->aggregationService->createPopularSnapshot($period),
-                default => throw new RuntimeException('不支援的統計類型: ' . $task['type']),
+                'posts'    => $this->aggregationService->createPostsSnapshot($period),
+                'users'    => $this->aggregationService->createUsersSnapshot($period),
+                'popular'  => $this->aggregationService->createPopularSnapshot($period),
+                default    => throw new RuntimeException('不支援的統計類型: ' . $task['type']),
             };
             $currentDate = $currentDate->modify('+1 day');
         }
@@ -429,7 +430,7 @@ final class StatisticsRecalculationCommand extends Command
         }
         $this->logger->info('統計回填指令完成', [
             'success' => $results['success'],
-            'failed' => $results['failed'],
+            'failed'  => $results['failed'],
             'skipped' => $results['skipped'],
         ]);
     }

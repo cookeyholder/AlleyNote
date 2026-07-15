@@ -72,12 +72,12 @@ class AttachmentRepositoryTest extends UnitTestCase
     {
         // 準備測試資料
         $data = [
-            'post_id' => 1,
-            'filename' => 'test.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test.jpg',
             'original_name' => '測試圖片.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg',
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => '/storage/attachments/2025/04/test.jpg',
         ];
 
         // 執行測試
@@ -99,12 +99,12 @@ class AttachmentRepositoryTest extends UnitTestCase
     {
         // 建立測試資料
         $data = [
-            'post_id' => 1,
-            'filename' => 'test.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test.jpg',
             'original_name' => '測試圖片.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg',
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => '/storage/attachments/2025/04/test.jpg',
         ];
         $created = $this->repository->create($data);
 
@@ -121,12 +121,12 @@ class AttachmentRepositoryTest extends UnitTestCase
     {
         // 建立測試資料
         $data = [
-            'post_id' => 1,
-            'filename' => 'test.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test.jpg',
             'original_name' => '測試圖片.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg',
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => '/storage/attachments/2025/04/test.jpg',
         ];
         $created = $this->repository->create($data);
 
@@ -157,12 +157,12 @@ class AttachmentRepositoryTest extends UnitTestCase
         $postId = 1;
         for ($i = 0; $i < 3; $i++) {
             $this->repository->create([
-                'post_id' => $postId,
-                'filename' => "test{$i}.jpg",
+                'post_id'       => $postId,
+                'filename'      => "test{$i}.jpg",
                 'original_name' => "測試圖片{$i}.jpg",
-                'mime_type' => 'image/jpeg',
-                'file_size' => 1024,
-                'storage_path' => "/storage/attachments/2025/04/test{$i}.jpg",
+                'mime_type'     => 'image/jpeg',
+                'file_size'     => 1024,
+                'storage_path'  => "/storage/attachments/2025/04/test{$i}.jpg",
             ]);
         }
 
@@ -181,12 +181,12 @@ class AttachmentRepositoryTest extends UnitTestCase
     {
         // 建立測試資料
         $data = [
-            'post_id' => 1,
-            'filename' => 'test.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test.jpg',
             'original_name' => '測試圖片.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => '/storage/attachments/2025/04/test.jpg',
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => '/storage/attachments/2025/04/test.jpg',
         ];
         $attachment = $this->repository->create($data);
 

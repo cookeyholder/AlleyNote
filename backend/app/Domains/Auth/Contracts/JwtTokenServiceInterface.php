@@ -24,6 +24,7 @@ interface JwtTokenServiceInterface
      * @param int $userId 使用者ID
      * @param DeviceInfo $deviceInfo 裝置資訊
      * @param array<string, mixed> $customClaims 額外的自訂聲明
+     *
      * @return TokenPair JWT token對
      *
      * @throws TokenGenerationException 當token產生失敗時
@@ -35,6 +36,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $token JWT access token
      * @param bool $checkBlacklist 是否檢查黑名單，預設為true
+     *
      * @return JwtPayload 驗證成功時回傳payload資訊
      *
      * @throws InvalidTokenException 當token格式無效或簽名驗證失敗時
@@ -47,6 +49,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $token JWT refresh token
      * @param bool $checkBlacklist 是否檢查黑名單，預設為true
+     *
      * @return JwtPayload 驗證成功時回傳payload資訊
      *
      * @throws InvalidTokenException 當token格式無效或簽名驗證失敗時
@@ -60,6 +63,7 @@ interface JwtTokenServiceInterface
      * 注意：此方法不驗證token簽名，僅用於提取資訊，不應用於驗證token有效性
      *
      * @param string $token JWT token
+     *
      * @return JwtPayload payload資訊
      *
      * @throws InvalidTokenException 當token格式無效時
@@ -71,6 +75,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $refreshToken 有效的refresh token
      * @param DeviceInfo $deviceInfo 目前裝置資訊
+     *
      * @return TokenPair 新的token對（包含新的access token和可能輪轉的refresh token）
      *
      * @throws InvalidTokenException 當refresh token無效時
@@ -84,6 +89,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $token 要撤銷的token（access token或refresh token）
      * @param string $reason 撤銷原因
+     *
      * @return bool 撤銷成功時回傳true
      */
     public function revokeToken(string $token, string $reason = 'manual_revocation'): bool;
@@ -93,6 +99,7 @@ interface JwtTokenServiceInterface
      *
      * @param int $userId 使用者ID
      * @param string $reason 撤銷原因
+     *
      * @return int 撤銷的token數量
      */
     public function revokeAllUserTokens(int $userId, string $reason = 'revoke_all_sessions'): int;
@@ -101,6 +108,7 @@ interface JwtTokenServiceInterface
      * 檢查token是否已被撤銷（是否在黑名單中）.
      *
      * @param string $token 要檢查的token
+     *
      * @return bool 在黑名單中時回傳true
      */
     public function isTokenRevoked(string $token): bool;
@@ -109,6 +117,7 @@ interface JwtTokenServiceInterface
      * 取得token的剩餘有效時間（秒）.
      *
      * @param string $token JWT token
+     *
      * @return int 剩餘秒數，已過期時回傳0
      *
      * @throws InvalidTokenException 當token格式無效時
@@ -120,6 +129,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $token JWT token
      * @param int $thresholdSeconds 臨界值（秒），預設為300秒（5分鐘）
+     *
      * @return bool 即將過期時回傳true
      *
      * @throws InvalidTokenException 當token格式無效時
@@ -131,6 +141,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $token JWT token
      * @param int $userId 使用者ID
+     *
      * @return bool 屬於該使用者時回傳true
      *
      * @throws InvalidTokenException 當token格式無效時
@@ -142,6 +153,7 @@ interface JwtTokenServiceInterface
      *
      * @param string $token JWT token
      * @param DeviceInfo $deviceInfo 裝置資訊
+     *
      * @return bool 來自該裝置時回傳true
      *
      * @throws InvalidTokenException 當token格式無效時

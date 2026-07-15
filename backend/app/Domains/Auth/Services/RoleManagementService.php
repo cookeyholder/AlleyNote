@@ -36,8 +36,8 @@ class RoleManagementService
         $permissions = $this->permissionRepository->findByIds($permissionIds);
 
         return [
-            'role' => $role->toArray(),
-            'permissions' => array_map(fn($p) => $p->toArray(), $permissions),
+            'role'           => $role->toArray(),
+            'permissions'    => array_map(fn($p) => $p->toArray(), $permissions),
             'permission_ids' => $permissionIds,
         ];
     }

@@ -22,6 +22,7 @@ use Tests\Support\UnitTestCase;
  * 使用 Mock PDO 來模擬資料庫操作，避免依賴實際資料庫。
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class TokenBlacklistRepositoryTest extends UnitTestCase
@@ -271,14 +272,14 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
     {
         $jti = 'test-jti';
         $row = [
-            'jti' => $jti,
-            'token_type' => 'access',
-            'user_id' => 1,
-            'expires_at' => '2024-12-31 23:59:59',
+            'jti'            => $jti,
+            'token_type'     => 'access',
+            'user_id'        => 1,
+            'expires_at'     => '2024-12-31 23:59:59',
             'blacklisted_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
-            'reason' => TokenBlacklistEntry::REASON_LOGOUT,
-            'device_id' => 'device-123',
-            'metadata' => '{"test": "value"}',
+            'reason'         => TokenBlacklistEntry::REASON_LOGOUT,
+            'device_id'      => 'device-123',
+            'metadata'       => '{"test": "value"}',
         ];
 
         $this->mockPdo
@@ -357,14 +358,14 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
             ->with(PDO::FETCH_ASSOC)
             ->willReturnOnConsecutiveCalls(
                 [
-                    'jti' => 'jti1',
-                    'token_type' => 'access',
-                    'user_id' => $userId,
-                    'expires_at' => '2024-12-31 23:59:59',
+                    'jti'            => 'jti1',
+                    'token_type'     => 'access',
+                    'user_id'        => $userId,
+                    'expires_at'     => '2024-12-31 23:59:59',
                     'blacklisted_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
-                    'reason' => TokenBlacklistEntry::REASON_LOGOUT,
-                    'device_id' => null,
-                    'metadata' => null,
+                    'reason'         => TokenBlacklistEntry::REASON_LOGOUT,
+                    'device_id'      => null,
+                    'metadata'       => null,
                 ],
                 false,
             );
@@ -881,11 +882,11 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
         $result = $this->repository->getBlacklistStats();
 
         $expected = [
-            'total' => 100,
-            'by_token_type' => ['access' => 60, 'refresh' => 40],
-            'by_reason' => ['logout' => 50, 'security_breach' => 25, 'expired' => 25],
+            'total'            => 100,
+            'by_token_type'    => ['access' => 60, 'refresh' => 40],
+            'by_reason'        => ['logout' => 50, 'security_breach' => 25, 'expired' => 25],
             'security_related' => 30,
-            'user_initiated' => 70,
+            'user_initiated'   => 70,
             'system_initiated' => 30,
         ];
 
@@ -911,9 +912,9 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
             ->method('fetch')
             ->with(PDO::FETCH_ASSOC)
             ->willReturn([
-                'total' => 10,
-                'access_tokens' => 6,
-                'refresh_tokens' => 4,
+                'total'            => 10,
+                'access_tokens'    => 6,
+                'refresh_tokens'   => 4,
                 'security_related' => 2,
                 'last_blacklisted' => '2024-01-01 12:00:00',
             ]);
@@ -921,9 +922,9 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
         $result = $this->repository->getUserBlacklistStats($userId);
 
         $expected = [
-            'total' => 10,
-            'access_tokens' => 6,
-            'refresh_tokens' => 4,
+            'total'            => 10,
+            'access_tokens'    => 6,
+            'refresh_tokens'   => 4,
             'security_related' => 2,
             'last_blacklisted' => '2024-01-01 12:00:00',
         ];
@@ -996,10 +997,10 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
     public function testSearchSuccess(): void
     {
         $criteria = [
-            'user_id' => 123,
-            'device_id' => 'device-123',
+            'user_id'    => 123,
+            'device_id'  => 'device-123',
             'token_type' => 'access',
-            'reason' => 'logout',
+            'reason'     => 'logout',
         ];
         $limit = 10;
         $offset = 5;
@@ -1126,17 +1127,17 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
             ->method('fetch')
             ->with(PDO::FETCH_ASSOC)
             ->willReturn([
-                'total_entries' => '1000',
-                'active_entries' => '800',
+                'total_entries'   => '1000',
+                'active_entries'  => '800',
                 'expired_entries' => '200',
             ]);
 
         $result = $this->repository->getSizeInfo();
 
         $expected = [
-            'total_entries' => 1000,
-            'active_entries' => 800,
-            'expired_entries' => 200,
+            'total_entries'     => 1000,
+            'active_entries'    => 800,
+            'expired_entries'   => 200,
             'cleanable_entries' => 200,
             'estimated_size_mb' => 0.19, // (1000 * 200) / (1024 * 1024)
         ];
@@ -1243,6 +1244,7 @@ class TokenBlacklistRepositoryTest extends UnitTestCase
      * 建立範例黑名單項目.
      *
      * @param string $jti JTI，預設為 'test-jti'
+     *
      * @return TokenBlacklistEntry 範例項目
      */
     private function createSampleEntry(string $jti = 'test-jti'): TokenBlacklistEntry

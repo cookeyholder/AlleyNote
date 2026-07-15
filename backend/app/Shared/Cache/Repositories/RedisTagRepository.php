@@ -364,6 +364,7 @@ class RedisTagRepository implements TagRepositoryInterface
      * 正規化標籤陣列.
      *
      * @param array<string> $tags
+     *
      * @return array<string>
      */
     private function normalizeTags(array $tags): array

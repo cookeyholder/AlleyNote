@@ -352,6 +352,7 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
      * 將資料庫記錄映射為實體物件.
      *
      * @param array<string, mixed> $row
+     *
      * @phpstan-ignore-next-line cast.int, cast.string
      */
     private function mapRowToEntity(array $row): StatisticsSnapshot
@@ -381,17 +382,17 @@ final class StatisticsRepository implements StatisticsRepositoryInterface
             $updatedAt = isset($row['updated_at']) ? (string) $row['updated_at'] : '';
             // 準備實體建構所需的資料陣列
             $data = [
-                'id' => $id,
-                'uuid' => $uuid,
-                'snapshot_type' => $snapshotType,
-                'period_type' => $periodType,
-                'period_start' => $periodStart,
-                'period_end' => $periodEnd,
+                'id'              => $id,
+                'uuid'            => $uuid,
+                'snapshot_type'   => $snapshotType,
+                'period_type'     => $periodType,
+                'period_start'    => $periodStart,
+                'period_end'      => $periodEnd,
                 'statistics_data' => $statisticsData,
-                'metadata' => $metadata,
-                'expires_at' => $expiresAt,
-                'created_at' => $createdAt,
-                'updated_at' => $updatedAt,
+                'metadata'        => $metadata,
+                'expires_at'      => $expiresAt,
+                'created_at'      => $createdAt,
+                'updated_at'      => $updatedAt,
             ];
 
             return StatisticsSnapshot::fromArray($data);

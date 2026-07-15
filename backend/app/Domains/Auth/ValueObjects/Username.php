@@ -107,7 +107,7 @@ final readonly class Username implements JsonSerializable, Stringable
     {
         return [
             'username' => $this->value,
-            'length' => $this->getLength(),
+            'length'   => $this->getLength(),
         ];
     }
 }

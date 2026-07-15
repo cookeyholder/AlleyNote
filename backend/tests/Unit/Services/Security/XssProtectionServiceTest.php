@@ -52,7 +52,7 @@ class XssProtectionServiceTest extends UnitTestCase
     public function cleansArrayOfStrings(): void
     {
         $input = [
-            'title' => '<script>alert("XSS");</script>',
+            'title'   => '<script>alert("XSS");</script>',
             'content' => '<img src="x" onerror="alert(\'XSS\')" />',
         ];
 

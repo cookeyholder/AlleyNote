@@ -40,8 +40,8 @@ class TokenExpiredException extends JwtException
         $currentTime ??= time();
         $message = $customMessage ?: $this->buildDefaultMessage($tokenType, $expiredAt, $currentTime);
         $context = [
-            'token_type' => $tokenType,
-            'expired_at' => $expiredAt,
+            'token_type'   => $tokenType,
+            'expired_at'   => $expiredAt,
             'current_time' => $currentTime,
         ];
         if ($expiredAt !== null) {

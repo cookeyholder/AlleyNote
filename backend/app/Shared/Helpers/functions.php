@@ -19,7 +19,9 @@ if (!function_exists('generate_uuid')) {
 if (!function_exists('format_datetime')) {
     /**
      * 格式化日期時間.
+     *
      * @param string|null $datetime 要格式化的日期時間，若為空則使用當前時間
+     *
      * @return string 格式化後的日期時間字串
      */
     function format_datetime(?string $datetime = null): string
@@ -33,7 +35,9 @@ if (!function_exists('format_datetime')) {
 if (!function_exists('normalize_path')) {
     /**
      * 正規化檔案路徑.
+     *
      * @param string $path 檔案路徑
+     *
      * @return string 正規化後的路徑
      */
     function normalize_path(string $path): string
@@ -138,7 +142,7 @@ if (!function_exists('app_log')) {
         try {
             $normalizedLevel = match ($level) {
                 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' => $level,
-                default => 'error',
+                default                                                                         => 'error',
             };
 
             $logger->log($normalizedLevel, $message, $context);

@@ -143,8 +143,8 @@ class PostViewController extends BaseController
             $this->eventDispatcher->dispatch($event);
             // 5. 建立回應資料
             $responseData = [
-                'post_id' => $postId,
-                'viewed_at' => $event->getViewedAt()->format('c'),
+                'post_id'          => $postId,
+                'viewed_at'        => $event->getViewedAt()->format('c'),
                 'is_authenticated' => $event->isAuthenticatedUser(),
             ];
             $duration = round((microtime(true) - $startTime) * 1000, 2);
@@ -152,47 +152,47 @@ class PostViewController extends BaseController
             return $this->json($response, [
                 'success' => true,
                 'message' => '已記錄瀏覽',
-                'data' => $responseData,
-                'meta' => [
+                'data'    => $responseData,
+                'meta'    => [
                     'processing_time_ms' => $duration,
                 ],
             ], 200);
         } catch (PostNotFoundException $e) {
             return $this->json($response, [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '文章不存在',
-                    'code' => 'POST_NOT_FOUND',
+                    'code'    => 'POST_NOT_FOUND',
                 ],
             ], 404);
         } catch (Throwable $e) {
             // 記錄詳細錯誤但不暴露給客戶端
             app_log('error', 'PostViewController::recordView error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
             ]);
 
             return $this->json($response, [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '記錄瀏覽時發生錯誤',
-                    'code' => 'RECORD_VIEW_ERROR',
+                    'code'    => 'RECORD_VIEW_ERROR',
                 ],
             ], 500);
         } catch (Throwable $e) {
             // 捕捉所有其他例外
             app_log('critical', 'PostViewController::recordView critical error', [
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
             ]);
 
             return $this->json($response, [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '系統錯誤，請稍後再試',
-                    'code' => 'SYSTEM_ERROR',
+                    'code'    => 'SYSTEM_ERROR',
                 ],
             ], 500);
         }
@@ -255,10 +255,10 @@ class PostViewController extends BaseController
         }
 
         return [
-            'user_id' => $userId,
-            'user_ip' => $userIp,
+            'user_id'    => $userId,
+            'user_ip'    => $userIp,
             'user_agent' => $userAgent,
-            'referrer' => $referrer,
+            'referrer'   => $referrer,
         ];
     }
 

@@ -59,6 +59,7 @@ class StatisticsSnapshot implements JsonSerializable
 
     /**
      * @param array<string, mixed> $data 建構資料陣列
+     *
      * @throws InvalidArgumentException 當資料格式不正確時
      */
     public function __construct(array $data)
@@ -216,11 +217,11 @@ class StatisticsSnapshot implements JsonSerializable
         // 根據類型進行特定檢查
         return match ($this->snapshotType) {
             self::TYPE_OVERVIEW => $this->validateOverviewData(),
-            self::TYPE_POSTS => $this->validatePostsData(),
-            self::TYPE_SOURCES => $this->validateSourcesData(),
-            self::TYPE_USERS => $this->validateUsersData(),
-            self::TYPE_POPULAR => $this->validatePopularData(),
-            default => true,
+            self::TYPE_POSTS    => $this->validatePostsData(),
+            self::TYPE_SOURCES  => $this->validateSourcesData(),
+            self::TYPE_USERS    => $this->validateUsersData(),
+            self::TYPE_POPULAR  => $this->validatePopularData(),
+            default             => true,
         };
     }
 
@@ -275,14 +276,14 @@ class StatisticsSnapshot implements JsonSerializable
         ?DateTimeInterface $expiresAt = null,
     ): self {
         return new self([
-            'uuid' => self::generateUuid(),
-            'snapshot_type' => $snapshotType,
-            'period_type' => $period->type->value,
-            'period_start' => $period->startTime->format('Y-m-d H:i:s'),
-            'period_end' => $period->endTime->format('Y-m-d H:i:s'),
+            'uuid'            => self::generateUuid(),
+            'snapshot_type'   => $snapshotType,
+            'period_type'     => $period->type->value,
+            'period_start'    => $period->startTime->format('Y-m-d H:i:s'),
+            'period_end'      => $period->endTime->format('Y-m-d H:i:s'),
             'statistics_data' => json_encode($statisticsData, JSON_THROW_ON_ERROR),
-            'metadata' => json_encode($metadata, JSON_THROW_ON_ERROR),
-            'expires_at' => $expiresAt?->format('Y-m-d H:i:s'),
+            'metadata'        => json_encode($metadata, JSON_THROW_ON_ERROR),
+            'expires_at'      => $expiresAt?->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -292,17 +293,17 @@ class StatisticsSnapshot implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'snapshot_type' => $this->snapshotType,
-            'period_type' => $this->period->type->value,
-            'period_start' => $this->period->startTime->format('Y-m-d H:i:s'),
-            'period_end' => $this->period->endTime->format('Y-m-d H:i:s'),
+            'id'              => $this->id,
+            'uuid'            => $this->uuid,
+            'snapshot_type'   => $this->snapshotType,
+            'period_type'     => $this->period->type->value,
+            'period_start'    => $this->period->startTime->format('Y-m-d H:i:s'),
+            'period_end'      => $this->period->endTime->format('Y-m-d H:i:s'),
             'statistics_data' => json_encode($this->statisticsData, JSON_THROW_ON_ERROR),
-            'metadata' => json_encode($this->metadata, JSON_THROW_ON_ERROR),
-            'expires_at' => $this->expiresAt?->format('Y-m-d H:i:s'),
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
+            'metadata'        => json_encode($this->metadata, JSON_THROW_ON_ERROR),
+            'expires_at'      => $this->expiresAt?->format('Y-m-d H:i:s'),
+            'created_at'      => $this->createdAt->format('Y-m-d H:i:s'),
+            'updated_at'      => $this->updatedAt->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -310,6 +311,7 @@ class StatisticsSnapshot implements JsonSerializable
      * 取得清理過的資料陣列，適用於前端顯示.
      *
      * @param OutputSanitizerInterface $sanitizer 清理服務
+     *
      * @return array<string, mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): array
@@ -339,6 +341,7 @@ class StatisticsSnapshot implements JsonSerializable
     // 私有方法
     /**
      * @param array<string, mixed> $data
+     *
      * @throws InvalidArgumentException
      */
     private function validateConstructorData(array $data): void
@@ -367,9 +370,9 @@ class StatisticsSnapshot implements JsonSerializable
         }
 
         return StatisticsPeriod::fromArray([
-            'type' => $periodType,
+            'type'       => $periodType,
             'start_time' => $periodStart,
-            'end_time' => $periodEnd,
+            'end_time'   => $periodEnd,
         ]);
     }
 

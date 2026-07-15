@@ -25,6 +25,7 @@ class RegisterUserDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
+     *
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -185,11 +186,11 @@ class RegisterUserDTO extends BaseDTO
     protected function getValidationRules(): array
     {
         return [
-            'username' => 'required|string|username:3,50',
-            'email' => 'required|string|email_enhanced',
-            'password' => 'required|string|password_strength:8',
+            'username'         => 'required|string|username:3,50',
+            'email'            => 'required|string|email_enhanced',
+            'password'         => 'required|string|password_strength:8',
             'confirm_password' => 'required|string|password_confirmed',
-            'user_ip' => 'required|user_ip',
+            'user_ip'          => 'required|user_ip',
         ];
     }
 
@@ -197,7 +198,9 @@ class RegisterUserDTO extends BaseDTO
      * 覆寫驗證方法以支援跨欄位驗證.
      *
      * @param array<string, mixed> $data 輸入資料
+     *
      * @return array 驗證通過的資料
+     *
      * @throws ValidationException 當驗證失敗時
      */
     protected function validate(array $data): array
@@ -224,9 +227,9 @@ class RegisterUserDTO extends BaseDTO
     {
         return [
             'username' => $this->username,
-            'email' => $this->email,
+            'email'    => $this->email,
             'password' => $this->password,
-            'user_ip' => $this->userIp,
+            'user_ip'  => $this->userIp,
         ];
     }
 
@@ -238,7 +241,7 @@ class RegisterUserDTO extends BaseDTO
     public function getPasswordData(): array
     {
         return [
-            'password' => $this->password,
+            'password'         => $this->password,
             'confirm_password' => $this->confirmPassword,
         ];
     }

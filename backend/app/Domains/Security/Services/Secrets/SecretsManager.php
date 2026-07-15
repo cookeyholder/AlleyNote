@@ -143,10 +143,10 @@ class SecretsManager implements SecretsManagerInterface
                 ? (string) $value
                 : (json_encode($value, JSON_UNESCAPED_UNICODE) ?: get_debug_type($value));
             $summary[$key] = [
-                'set' => $this->has($key),
-                'length' => strlen($valueString),
+                'set'       => $this->has($key),
+                'length'    => strlen($valueString),
                 'sensitive' => $isSensitive,
-                'value' => $isSensitive ? '[REDACTED]' : $value,
+                'value'     => $isSensitive ? '[REDACTED]' : $value,
             ];
         }
 

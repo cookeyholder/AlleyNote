@@ -62,16 +62,16 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if (defined('PASSWORD_ARGON2ID')) {
             return password_hash($password, PASSWORD_ARGON2ID, [
                 'memory_cost' => 65536, // 64 MB
-                'time_cost' => 4,       // 4 iterations
-                'threads' => 3,         // 3 threads
+                'time_cost'   => 4,       // 4 iterations
+                'threads'     => 3,         // 3 threads
             ]);
         }
         // 降級到 Argon2i
         if (defined('PASSWORD_ARGON2I')) {
             return password_hash($password, PASSWORD_ARGON2I, [
                 'memory_cost' => 65536,
-                'time_cost' => 4,
-                'threads' => 3,
+                'time_cost'   => 4,
+                'threads'     => 3,
             ]);
         }
 
@@ -92,15 +92,15 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
         if (defined('PASSWORD_ARGON2ID')) {
             return password_needs_rehash($hash, PASSWORD_ARGON2ID, [
                 'memory_cost' => 65536,
-                'time_cost' => 4,
-                'threads' => 3,
+                'time_cost'   => 4,
+                'threads'     => 3,
             ]);
         }
         if (defined('PASSWORD_ARGON2I')) {
             return password_needs_rehash($hash, PASSWORD_ARGON2I, [
                 'memory_cost' => 65536,
-                'time_cost' => 4,
-                'threads' => 3,
+                'time_cost'   => 4,
+                'threads'     => 3,
             ]);
         }
 
@@ -253,11 +253,11 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $score >= 60 => 'strong',
             $score >= 40 => 'medium',
             $score >= 20 => 'weak',
-            default => 'very_weak'
+            default      => 'very_weak'
         };
 
         return [
-            'score' => $score,
+            'score'    => $score,
             'strength' => $strength,
             'feedback' => $feedback,
         ];
@@ -300,11 +300,11 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             if ($pwnedResult['is_leaked']) {
                 return [
                     'is_common' => true,
-                    'message' => sprintf(
+                    'message'   => sprintf(
                         '此密碼已在 %d 次資料外洩中被發現，請選擇一個更安全的密碼',
                         $pwnedResult['count'],
                     ),
-                    'source' => 'hibp_api',
+                    'source'       => 'hibp_api',
                     'breach_count' => $pwnedResult['count'],
                 ];
             }
@@ -313,18 +313,18 @@ class PasswordSecurityService implements PasswordSecurityServiceInterface
             $lowerPassword = strtolower($password);
             if (in_array($lowerPassword, self::FALLBACK_COMMON_PASSWORDS, true)) {
                 return [
-                    'is_common' => true,
-                    'message' => '密碼過於常見，請選擇更安全的密碼',
-                    'source' => 'fallback_list',
+                    'is_common'    => true,
+                    'message'      => '密碼過於常見，請選擇更安全的密碼',
+                    'source'       => 'fallback_list',
                     'breach_count' => 0,
                 ];
             }
         }
 
         return [
-            'is_common' => false,
-            'message' => null,
-            'source' => $pwnedResult['api_available'] ? 'hibp_api' : 'fallback_list',
+            'is_common'    => false,
+            'message'      => null,
+            'source'       => $pwnedResult['api_available'] ? 'hibp_api' : 'fallback_list',
             'breach_count' => 0,
         ];
     }

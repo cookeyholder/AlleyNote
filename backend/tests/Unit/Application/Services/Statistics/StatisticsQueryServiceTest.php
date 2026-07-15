@@ -69,21 +69,21 @@ final class StatisticsQueryServiceTest extends UnitTestCase
             activeUsers: 200,
             newUsers: 50,
             postActivity: [
-                'total_posts' => 1000,
+                'total_posts'     => 1000,
                 'published_posts' => 800,
-                'draft_posts' => 200,
+                'draft_posts'     => 200,
             ],
             userActivity: [
-                'total_users' => 200,
+                'total_users'  => 200,
                 'active_users' => 150,
-                'new_users' => 50,
+                'new_users'    => 50,
             ],
             engagementMetrics: [
                 'posts_per_active_user' => 5.0,
-                'user_growth_rate' => 25.0,
+                'user_growth_rate'      => 25.0,
             ],
             periodSummary: [
-                'type' => 'monthly',
+                'type'          => 'monthly',
                 'duration_days' => 31,
             ],
         );
@@ -128,21 +128,21 @@ final class StatisticsQueryServiceTest extends UnitTestCase
             activeUsers: 100,
             newUsers: 25,
             postActivity: [
-                'total_posts' => 500,
+                'total_posts'     => 500,
                 'published_posts' => 400,
-                'draft_posts' => 100,
+                'draft_posts'     => 100,
             ],
             userActivity: [
-                'total_users' => 100,
+                'total_users'  => 100,
                 'active_users' => 75,
-                'new_users' => 25,
+                'new_users'    => 25,
             ],
             engagementMetrics: [
                 'posts_per_active_user' => 4.0,
-                'user_growth_rate' => 33.0,
+                'user_growth_rate'      => 33.0,
             ],
             periodSummary: [
-                'type' => 'monthly',
+                'type'          => 'monthly',
                 'duration_days' => 31,
             ],
         );

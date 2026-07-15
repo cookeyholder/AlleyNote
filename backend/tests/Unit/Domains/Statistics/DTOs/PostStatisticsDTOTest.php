@@ -18,30 +18,30 @@ class PostStatisticsDTOTest extends UnitTestCase
     {
         $this->validData = [
             'total_posts' => 250,
-            'by_status' => [
+            'by_status'   => [
                 'published' => 200,
-                'draft' => 30,
-                'pending' => 15,
-                'archived' => 5,
+                'draft'     => 30,
+                'pending'   => 15,
+                'archived'  => 5,
             ],
             'by_source' => [
-                'web' => 180,
+                'web'    => 180,
                 'mobile' => 50,
-                'api' => 20,
+                'api'    => 20,
             ],
             'views_statistics' => [
-                'total_views' => 25000,
+                'total_views'        => 25000,
                 'avg_views_per_post' => 125.5,
-                'most_viewed_post' => 1500,
+                'most_viewed_post'   => 1500,
             ],
             'top_posts' => [
                 [
-                    'id' => 101,
+                    'id'    => 101,
                     'title' => 'Laravel 最佳實踐',
                     'views' => 1500,
                 ],
                 [
-                    'id' => 102,
+                    'id'    => 102,
                     'title' => 'PHP 8.4 新功能',
                     'views' => 1200,
                 ],
@@ -59,25 +59,25 @@ class PostStatisticsDTOTest extends UnitTestCase
             ],
             'top_authors' => [
                 [
-                    'author_id' => 1,
-                    'name' => 'John Doe',
+                    'author_id'   => 1,
+                    'name'        => 'John Doe',
                     'posts_count' => 45,
                 ],
                 [
-                    'author_id' => 2,
-                    'name' => 'Jane Smith',
+                    'author_id'   => 2,
+                    'name'        => 'Jane Smith',
                     'posts_count' => 38,
                 ],
             ],
             'pinned_stats' => [
-                'total_pinned' => 12,
-                'pinned_views' => 5500,
+                'total_pinned'          => 12,
+                'pinned_views'          => 5500,
                 'avg_pinned_engagement' => 8.5,
             ],
             'generated_at' => '2024-01-15T10:30:00Z',
-            'metadata' => [
+            'metadata'     => [
                 'report_id' => 'post_stats_001',
-                'version' => '1.0',
+                'version'   => '1.0',
             ],
         ];
     }
@@ -461,15 +461,15 @@ class PostStatisticsDTOTest extends UnitTestCase
         $data = [
             'by_status' => [
                 'published' => 'invalid', // 非整數
-                123 => 50, // 非字符串鍵
+                123         => 50, // 非字符串鍵
             ],
             'by_source' => [
                 'web' => 'invalid', // 非整數
-                456 => 30, // 非字符串鍵
+                456   => 30, // 非字符串鍵
             ],
             'time_distribution' => [
                 '14:00' => 'invalid', // 非整數
-                789 => 25, // 非字符串鍵
+                789     => 25, // 非字符串鍵
             ],
         ];
 

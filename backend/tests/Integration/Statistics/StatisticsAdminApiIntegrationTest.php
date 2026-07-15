@@ -65,11 +65,11 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
         array $headers = [],
     ): array {
         $_SERVER = array_merge($_SERVER, [
-            'REQUEST_METHOD' => $method,
-            'REQUEST_URI' => $path,
-            'HTTP_HOST' => 'localhost',
+            'REQUEST_METHOD'    => $method,
+            'REQUEST_URI'       => $path,
+            'HTTP_HOST'         => 'localhost',
             'HTTP_CONTENT_TYPE' => 'application/json',
-            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_ACCEPT'       => 'application/json',
         ]);
 
         foreach ($headers as $name => $value) {
@@ -92,16 +92,16 @@ final class StatisticsAdminApiIntegrationTest extends IntegrationTestCase
             $data = json_decode($responseBody, true) ?? [];
 
             return [
-                'status' => $response->getStatusCode(),
-                'headers' => $response->getHeaders(),
-                'body' => $data,
+                'status'   => $response->getStatusCode(),
+                'headers'  => $response->getHeaders(),
+                'body'     => $data,
                 'raw_body' => $responseBody,
             ];
         } catch (Throwable $e) {
             return [
-                'status' => 500,
-                'headers' => [],
-                'body' => ['error' => $e->getMessage()],
+                'status'   => 500,
+                'headers'  => [],
+                'body'     => ['error' => $e->getMessage()],
                 'raw_body' => json_encode(['error' => $e->getMessage()]),
             ];
         }

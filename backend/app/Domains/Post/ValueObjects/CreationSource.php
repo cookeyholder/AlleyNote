@@ -175,8 +175,8 @@ final readonly class CreationSource implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'source' => $this->source,
-            'detail' => $this->detail,
+            'source'     => $this->source,
+            'detail'     => $this->detail,
             'has_detail' => $this->hasDetail(),
         ];
     }

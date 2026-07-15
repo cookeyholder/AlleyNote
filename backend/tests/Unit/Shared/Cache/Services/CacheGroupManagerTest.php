@@ -278,7 +278,7 @@ class CacheGroupManagerTest extends UnitTestCase
         $groupName = 'test_group';
         $tags = ['tag1'];
         $rules = [
-            'max_age' => 3600,
+            'max_age'       => 3600,
             'invalidate_on' => ['user_update'],
         ];
 

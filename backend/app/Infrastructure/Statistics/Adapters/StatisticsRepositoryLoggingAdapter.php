@@ -26,8 +26,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $snapshot = $this->repository->findById($id);
             $this->logOperation('findById', [
-                'id' => $id,
-                'found' => $snapshot !== null,
+                'id'                => $id,
+                'found'             => $snapshot !== null,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -46,8 +46,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $snapshot = $this->repository->findByUuid($uuid);
             $this->logOperation('findByUuid', [
-                'uuid' => $uuid,
-                'found' => $snapshot !== null,
+                'uuid'              => $uuid,
+                'found'             => $snapshot !== null,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -66,9 +66,9 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $snapshot = $this->repository->findByTypeAndPeriod($snapshotType, $period);
             $this->logOperation('findByTypeAndPeriod', [
-                'snapshot_type' => $snapshotType,
-                'period_type' => $period->type->value,
-                'found' => $snapshot !== null,
+                'snapshot_type'     => $snapshotType,
+                'period_type'       => $period->type->value,
+                'found'             => $snapshot !== null,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -76,7 +76,7 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         } catch (Throwable $e) {
             $this->logError('findByTypeAndPeriod', $e, [
                 'snapshot_type' => $snapshotType,
-                'period_type' => $period->type->value,
+                'period_type'   => $period->type->value,
             ]);
 
             throw $e;
@@ -90,8 +90,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $snapshot = $this->repository->findLatestByType($snapshotType);
             $this->logOperation('findLatestByType', [
-                'snapshot_type' => $snapshotType,
-                'found' => $snapshot !== null,
+                'snapshot_type'     => $snapshotType,
+                'found'             => $snapshot !== null,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -113,10 +113,10 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $snapshots = $this->repository->findByTypeAndDateRange($snapshotType, $startDate, $endDate);
             $this->logOperation('findByTypeAndDateRange', [
-                'snapshot_type' => $snapshotType,
-                'start_date' => $startDate->format('Y-m-d H:i:s'),
-                'end_date' => $endDate->format('Y-m-d H:i:s'),
-                'count' => count($snapshots),
+                'snapshot_type'     => $snapshotType,
+                'start_date'        => $startDate->format('Y-m-d H:i:s'),
+                'end_date'          => $endDate->format('Y-m-d H:i:s'),
+                'count'             => count($snapshots),
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -124,8 +124,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         } catch (Throwable $e) {
             $this->logError('findByTypeAndDateRange', $e, [
                 'snapshot_type' => $snapshotType,
-                'start_date' => $startDate->format('Y-m-d H:i:s'),
-                'end_date' => $endDate->format('Y-m-d H:i:s'),
+                'start_date'    => $startDate->format('Y-m-d H:i:s'),
+                'end_date'      => $endDate->format('Y-m-d H:i:s'),
             ]);
 
             throw $e;
@@ -139,8 +139,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $snapshots = $this->repository->findExpiredSnapshots($beforeDate);
             $this->logOperation('findExpiredSnapshots', [
-                'before_date' => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
-                'count' => count($snapshots),
+                'before_date'       => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
+                'count'             => count($snapshots),
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -161,9 +161,9 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $savedSnapshot = $this->repository->save($snapshot);
             $this->logOperation('save', [
-                'snapshot_type' => $snapshot->getSnapshotType(),
-                'period_type' => $snapshot->getPeriod()->type->value,
-                'data_size' => strlen(json_encode($snapshot->getStatisticsData(), JSON_THROW_ON_ERROR)),
+                'snapshot_type'     => $snapshot->getSnapshotType(),
+                'period_type'       => $snapshot->getPeriod()->type->value,
+                'data_size'         => strlen(json_encode($snapshot->getStatisticsData(), JSON_THROW_ON_ERROR)),
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ], LogLevel::INFO);
 
@@ -171,7 +171,7 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         } catch (Throwable $e) {
             $this->logError('save', $e, [
                 'snapshot_type' => $snapshot->getSnapshotType(),
-                'period_type' => $snapshot->getPeriod()->type->value,
+                'period_type'   => $snapshot->getPeriod()->type->value,
             ]);
 
             throw $e;
@@ -185,15 +185,15 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $updatedSnapshot = $this->repository->update($snapshot);
             $this->logOperation('update', [
-                'snapshot_type' => $snapshot->getSnapshotType(),
-                'period_type' => $snapshot->getPeriod()->type->value,
+                'snapshot_type'     => $snapshot->getSnapshotType(),
+                'period_type'       => $snapshot->getPeriod()->type->value,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
             return $updatedSnapshot;
         } catch (Throwable $e) {
             $this->logError('update', $e, [
-                'snapshot_id' => $snapshot->getId(),
+                'snapshot_id'   => $snapshot->getId(),
                 'snapshot_type' => $snapshot->getSnapshotType(),
             ]);
 
@@ -208,15 +208,15 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $result = $this->repository->delete($snapshot);
             $this->logOperation('delete', [
-                'snapshot_type' => $snapshot->getSnapshotType(),
-                'result' => $result,
+                'snapshot_type'     => $snapshot->getSnapshotType(),
+                'result'            => $result,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
             return $result;
         } catch (Throwable $e) {
             $this->logError('delete', $e, [
-                'snapshot_id' => $snapshot->getId(),
+                'snapshot_id'   => $snapshot->getId(),
                 'snapshot_type' => $snapshot->getSnapshotType(),
             ]);
 
@@ -231,8 +231,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $result = $this->repository->deleteById($id);
             $this->logOperation('deleteById', [
-                'id' => $id,
-                'result' => $result,
+                'id'                => $id,
+                'result'            => $result,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -251,8 +251,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $deletedCount = $this->repository->deleteExpiredSnapshots($beforeDate);
             $this->logOperation('deleteExpiredSnapshots', [
-                'before_date' => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
-                'deleted_count' => $deletedCount,
+                'before_date'       => $beforeDate ? $beforeDate->format('Y-m-d H:i:s') : 'current_time',
+                'deleted_count'     => $deletedCount,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ], LogLevel::INFO);
 
@@ -273,9 +273,9 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $exists = $this->repository->exists($snapshotType, $period);
             $this->logOperation('exists', [
-                'snapshot_type' => $snapshotType,
-                'period_type' => $period->type->value,
-                'result' => $exists,
+                'snapshot_type'     => $snapshotType,
+                'period_type'       => $period->type->value,
+                'result'            => $exists,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -283,7 +283,7 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         } catch (Throwable $e) {
             $this->logError('exists', $e, [
                 'snapshot_type' => $snapshotType,
-                'period_type' => $period->type->value,
+                'period_type'   => $period->type->value,
             ]);
 
             throw $e;
@@ -297,8 +297,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         try {
             $count = $this->repository->count($snapshotType);
             $this->logOperation('count', [
-                'snapshot_type' => $snapshotType,
-                'result' => $count,
+                'snapshot_type'     => $snapshotType,
+                'result'            => $count,
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -328,12 +328,12 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
                 $direction,
             );
             $this->logOperation('findByTypeWithPagination', [
-                'snapshot_type' => $snapshotType,
-                'page' => $page,
-                'limit' => $limit,
-                'order_by' => $orderBy,
-                'direction' => $direction,
-                'count' => count($snapshots),
+                'snapshot_type'     => $snapshotType,
+                'page'              => $page,
+                'limit'             => $limit,
+                'order_by'          => $orderBy,
+                'direction'         => $direction,
+                'count'             => count($snapshots),
                 'execution_time_ms' => round((microtime(true) - $startTime) * 1000, 2),
             ]);
 
@@ -341,8 +341,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
         } catch (Throwable $e) {
             $this->logError('findByTypeWithPagination', $e, [
                 'snapshot_type' => $snapshotType,
-                'page' => $page,
-                'limit' => $limit,
+                'page'          => $page,
+                'limit'         => $limit,
             ]);
 
             throw $e;
@@ -356,10 +356,10 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
     {
         $message = sprintf('Statistics Repository Operation: %s', $operation);
         match ($level) {
-            LogLevel::INFO => $this->logger->info($message, $context),
+            LogLevel::INFO    => $this->logger->info($message, $context),
             LogLevel::WARNING => $this->logger->warning($message, $context),
-            LogLevel::ERROR => $this->logger->error($message, $context),
-            default => $this->logger->debug($message, $context),
+            LogLevel::ERROR   => $this->logger->error($message, $context),
+            default           => $this->logger->debug($message, $context),
         };
     }
 
@@ -372,8 +372,8 @@ final class StatisticsRepositoryLoggingAdapter implements StatisticsRepositoryIn
             sprintf('Statistics Repository Error: %s failed', $operation),
             array_merge($context, [
                 'exception' => $exception::class,
-                'message' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString(),
+                'message'   => $exception->getMessage(),
+                'trace'     => $exception->getTraceAsString(),
             ]),
         );
     }

@@ -94,17 +94,17 @@ final readonly class BatchExportResult
     public function toArray(): array
     {
         return [
-            'batch_id' => $this->batchId,
-            'success_count' => $this->successCount,
-            'failure_count' => $this->failureCount,
-            'success_rate' => $this->getSuccessRate(),
-            'total_execution_time' => $this->totalExecutionTime,
-            'total_record_count' => $this->getTotalRecordCount(),
-            'total_file_size' => $this->getTotalFileSize(),
+            'batch_id'                  => $this->batchId,
+            'success_count'             => $this->successCount,
+            'failure_count'             => $this->failureCount,
+            'success_rate'              => $this->getSuccessRate(),
+            'total_execution_time'      => $this->totalExecutionTime,
+            'total_record_count'        => $this->getTotalRecordCount(),
+            'total_file_size'           => $this->getTotalFileSize(),
             'formatted_total_file_size' => $this->getFormattedTotalFileSize(),
-            'results' => array_map(fn($result) => $result->toArray(), $this->results),
-            'errors' => $this->errors,
-            'metadata' => $this->metadata,
+            'results'                   => array_map(fn($result) => $result->toArray(), $this->results),
+            'errors'                    => $this->errors,
+            'metadata'                  => $this->metadata,
         ];
     }
 }

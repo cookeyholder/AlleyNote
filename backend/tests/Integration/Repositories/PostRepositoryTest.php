@@ -59,17 +59,17 @@ class PostRepositoryTest extends IntegrationTestCase
     private function createTestPostData(array $data = []): array
     {
         $defaultData = [
-            'uuid' => 'test-uuid-' . uniqid(),
-            'seq_number' => rand(1000, 9999),
-            'title' => '測試文章標題',
-            'content' => '測試文章內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
-            'is_pinned' => 0,
-            'status' => PostStatus::DRAFT->value,
+            'uuid'         => 'test-uuid-' . uniqid(),
+            'seq_number'   => rand(1000, 9999),
+            'title'        => '測試文章標題',
+            'content'      => '測試文章內容',
+            'user_id'      => 1,
+            'user_ip'      => '127.0.0.1',
+            'is_pinned'    => 0,
+            'status'       => PostStatus::DRAFT->value,
             'publish_date' => date('Y-m-d H:i:s'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
+            'created_at'   => date('Y-m-d H:i:s'),
+            'updated_at'   => date('Y-m-d H:i:s'),
         ];
 
         return array_merge($defaultData, $data);
@@ -78,7 +78,7 @@ class PostRepositoryTest extends IntegrationTestCase
     public function testCreatePost(): void
     {
         $data = $this->createTestPostData([
-            'title' => '新建文章',
+            'title'   => '新建文章',
             'content' => '新建文章內容',
         ]);
 

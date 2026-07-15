@@ -38,26 +38,26 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     /** 預設失敗閾值 */
     private const DEFAULT_FAILURE_THRESHOLDS = [
         // 新版 enum value
-        'login_failed' => ['threshold' => 5, 'timeWindow' => 60],
-        'access_denied' => ['threshold' => 3, 'timeWindow' => 60],
+        'login_failed'                 => ['threshold' => 5, 'timeWindow' => 60],
+        'access_denied'                => ['threshold' => 3, 'timeWindow' => 60],
         'attachment_permission_denied' => ['threshold' => 10, 'timeWindow' => 60],
-        'attachment_virus_detected' => ['threshold' => 1, 'timeWindow' => 60],
+        'attachment_virus_detected'    => ['threshold' => 1, 'timeWindow' => 60],
         // 舊版 action_type 相容（測試與歷史資料仍可能使用）
-        'auth.login.failed' => ['threshold' => 5, 'timeWindow' => 60],
-        'auth.password.failed' => ['threshold' => 3, 'timeWindow' => 60],
-        'post.permission_denied' => ['threshold' => 10, 'timeWindow' => 60],
+        'auth.login.failed'         => ['threshold' => 5, 'timeWindow' => 60],
+        'auth.password.failed'      => ['threshold' => 3, 'timeWindow' => 60],
+        'post.permission_denied'    => ['threshold' => 10, 'timeWindow' => 60],
         'attachment.virus_detected' => ['threshold' => 1, 'timeWindow' => 60],
     ];
 
     /** 預設頻率閾值 */
     private const DEFAULT_FREQUENCY_THRESHOLDS = [
         // 新版 enum value
-        'login_success' => ['threshold' => 100, 'timeWindow' => 60],
-        'post_viewed' => ['threshold' => 500, 'timeWindow' => 60],
+        'login_success'         => ['threshold' => 100, 'timeWindow' => 60],
+        'post_viewed'           => ['threshold' => 500, 'timeWindow' => 60],
         'attachment_downloaded' => ['threshold' => 200, 'timeWindow' => 60],
         // 舊版 action_type 相容（測試與歷史資料仍可能使用）
-        'auth.login.success' => ['threshold' => 100, 'timeWindow' => 60],
-        'post.viewed' => ['threshold' => 500, 'timeWindow' => 60],
+        'auth.login.success'    => ['threshold' => 100, 'timeWindow' => 60],
+        'post.viewed'           => ['threshold' => 500, 'timeWindow' => 60],
         'attachment.downloaded' => ['threshold' => 200, 'timeWindow' => 60],
     ];
 
@@ -90,7 +90,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     {
         try {
             $this->logger->info('Starting suspicious activity detection for user', [
-                'user_id' => $userId,
+                'user_id'             => $userId,
                 'time_window_minutes' => $timeWindowMinutes,
             ]);
             // 取得時間範圍
@@ -111,8 +111,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         } catch (Throwable $e) {
             $this->logger->error('Failed to detect suspicious activity for user', [
                 'user_id' => $userId,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error'   => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
             ]);
 
             // 回傳預設分析結果
@@ -138,7 +138,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     {
         try {
             $this->logger->info('Starting suspicious IP activity detection', [
-                'ip_address' => $ipAddress,
+                'ip_address'          => $ipAddress,
                 'time_window_minutes' => $timeWindowMinutes,
             ]);
             // 取得時間範圍
@@ -159,8 +159,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         } catch (Throwable $e) {
             $this->logger->error('Failed to detect suspicious IP activity', [
                 'ip_address' => $ipAddress,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'error'      => $e->getMessage(),
+                'trace'      => $e->getTraceAsString(),
             ]);
 
             // 回傳預設分析結果
@@ -287,7 +287,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             detectionRules: $detectionRules,
             metadata: [
                 'total_activities_analyzed' => count($activities),
-                'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+                'detection_timestamp'       => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ],
             recommendedAction: $recommendedAction,
             confidenceScore: $confidence,
@@ -352,10 +352,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             $isSuspicious = true;
             $severityLevel = $this->escalateSeverity($severityLevel, ActivitySeverity::MEDIUM);
             $detectionRules[] = [
-                'type' => 'multiple_users_same_ip',
-                'message' => "單一IP位址有 {$userCount} 個不同使用者活動",
+                'type'      => 'multiple_users_same_ip',
+                'message'   => "單一IP位址有 {$userCount} 個不同使用者活動",
                 'threshold' => 10,
-                'actual' => $userCount,
+                'actual'    => $userCount,
             ];
             $anomalyScores['multi_user'] = min(1.0, $userCount / 50.0); // 正規化分數
             $confidence = max($confidence, 0.8);
@@ -373,9 +373,9 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             anomalyScores: $anomalyScores,
             detectionRules: $detectionRules,
             metadata: [
-                'unique_users_count' => $userCount,
+                'unique_users_count'        => $userCount,
                 'total_activities_analyzed' => count($activities),
-                'detection_timestamp' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+                'detection_timestamp'       => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ],
             recommendedAction: $recommendedAction,
             confidenceScore: $confidence,
@@ -402,15 +402,15 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                     failureCounts: ['total' => $totalFailures],
                     anomalyScores: ['global_failure_rate' => $globalFailureRate],
                     detectionRules: [[
-                        'type' => 'global_high_failure_rate',
-                        'message' => '全域失敗率異常高',
+                        'type'      => 'global_high_failure_rate',
+                        'message'   => '全域失敗率異常高',
                         'threshold' => 0.2,
-                        'actual' => $globalFailureRate,
+                        'actual'    => $globalFailureRate,
                     ]],
                     metadata: [
-                        'detection_type' => 'global_failure_rate',
+                        'detection_type'   => 'global_failure_rate',
                         'total_activities' => $totalActivities,
-                        'total_failures' => $totalFailures,
+                        'total_failures'   => $totalFailures,
                     ],
                     recommendedAction: 'investigate_system_issues',
                     confidenceScore: min(1.0, $globalFailureRate / 0.5),
@@ -435,15 +435,15 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             if ($failures >= $threshold) {
                 return [
                     'suspicious' => true,
-                    'severity' => $this->calculateSeverityByFailures($failures, $threshold),
-                    'rules' => [[
-                        'type' => 'failure_rate_threshold',
+                    'severity'   => $this->calculateSeverityByFailures($failures, $threshold),
+                    'rules'      => [[
+                        'type'        => 'failure_rate_threshold',
                         'action_type' => $actionType,
-                        'message' => "動作類型 {$actionType} 失敗次數超過閾值",
-                        'threshold' => $threshold,
-                        'actual' => $failures,
+                        'message'     => "動作類型 {$actionType} 失敗次數超過閾值",
+                        'threshold'   => $threshold,
+                        'actual'      => $failures,
                     ]],
-                    'scores' => [$actionType => min(1.0, $failures / $threshold)],
+                    'scores'     => [$actionType => min(1.0, $failures / $threshold)],
                     'confidence' => min(1.0, $failures / ($threshold * 2)),
                 ];
             }
@@ -451,8 +451,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
 
         return [
             'suspicious' => false,
-            'rules' => [],
-            'scores' => [],
+            'rules'      => [],
+            'scores'     => [],
             'confidence' => 0.0,
         ];
     }
@@ -471,15 +471,15 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
             if ($count >= $threshold) {
                 return [
                     'suspicious' => true,
-                    'severity' => $this->calculateSeverityByFrequency($count, $threshold),
-                    'rule' => [
-                        'type' => 'frequency_threshold',
+                    'severity'   => $this->calculateSeverityByFrequency($count, $threshold),
+                    'rule'       => [
+                        'type'        => 'frequency_threshold',
                         'action_type' => $actionType,
-                        'message' => "動作類型 {$actionType} 頻率異常高",
-                        'threshold' => $threshold,
-                        'actual' => $count,
+                        'message'     => "動作類型 {$actionType} 頻率異常高",
+                        'threshold'   => $threshold,
+                        'actual'      => $count,
                     ],
-                    'score' => min(1.0, $count / $threshold),
+                    'score'      => min(1.0, $count / $threshold),
                     'confidence' => min(1.0, $count / ($threshold * 1.5)),
                 ];
             }
@@ -504,14 +504,14 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         if ($maxDensity > 50) { // 單分鐘內超過50個活動
             return [
                 'suspicious' => true,
-                'severity' => ActivitySeverity::MEDIUM,
-                'rule' => [
-                    'type' => 'high_density_pattern',
-                    'message' => '短時間內活動密度異常高',
+                'severity'   => ActivitySeverity::MEDIUM,
+                'rule'       => [
+                    'type'      => 'high_density_pattern',
+                    'message'   => '短時間內活動密度異常高',
                     'threshold' => 50,
-                    'actual' => $maxDensity,
+                    'actual'    => $maxDensity,
                 ],
-                'score' => min(1.0, $maxDensity / 100),
+                'score'      => min(1.0, $maxDensity / 100),
                 'confidence' => 0.7,
             ];
         }
@@ -528,13 +528,13 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         if ($this->isSuspiciousIpRange($ipAddress)) {
             return [
                 'suspicious' => true,
-                'severity' => ActivitySeverity::HIGH,
-                'rule' => [
-                    'type' => 'suspicious_ip_range',
-                    'message' => 'IP位址屬於可疑範圍',
+                'severity'   => ActivitySeverity::HIGH,
+                'rule'       => [
+                    'type'       => 'suspicious_ip_range',
+                    'message'    => 'IP位址屬於可疑範圍',
                     'ip_address' => $ipAddress,
                 ],
-                'score' => 0.9,
+                'score'      => 0.9,
                 'confidence' => 0.9,
             ];
         }
@@ -612,10 +612,10 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         }
         $actions = match ($severity) {
             ActivitySeverity::CRITICAL => 'block_user_immediately',
-            ActivitySeverity::HIGH => 'require_additional_verification',
-            ActivitySeverity::MEDIUM => 'increase_monitoring',
-            ActivitySeverity::NORMAL => 'log_for_review',
-            ActivitySeverity::LOW => 'log_for_review',
+            ActivitySeverity::HIGH     => 'require_additional_verification',
+            ActivitySeverity::MEDIUM   => 'increase_monitoring',
+            ActivitySeverity::NORMAL   => 'log_for_review',
+            ActivitySeverity::LOW      => 'log_for_review',
         };
         // 根據檢測規則細化動作
         foreach ($rules as $rule) {
@@ -644,11 +644,11 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
                 actionType: $activityType,
                 description: $analysis->getSummary(),
                 metadata: [
-                    'target_type' => $targetType,
-                    'target_id' => $targetId,
-                    'analysis_id' => $analysis->getAnalysisId(),
-                    'is_suspicious' => $analysis->isSuspicious(),
-                    'severity_level' => $analysis->getSeverityLevel()->value,
+                    'target_type'      => $targetType,
+                    'target_id'        => $targetId,
+                    'analysis_id'      => $analysis->getAnalysisId(),
+                    'is_suspicious'    => $analysis->isSuspicious(),
+                    'severity_level'   => $analysis->getSeverityLevel()->value,
                     'confidence_score' => $analysis->getConfidenceScore(),
                 ],
             );
@@ -656,8 +656,8 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         } catch (Throwable $e) {
             $this->logger->error('Failed to log detection activity', [
                 'target_type' => $targetType,
-                'target_id' => $targetId,
-                'error' => $e->getMessage(),
+                'target_id'   => $targetId,
+                'error'       => $e->getMessage(),
             ]);
         }
     }
@@ -666,7 +666,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     public function setFailureThreshold(ActivityType $activityType, int $threshold, int $timeWindowMinutes = 60): void
     {
         $this->failureThresholds[$activityType->value] = [
-            'threshold' => $threshold,
+            'threshold'  => $threshold,
             'timeWindow' => $timeWindowMinutes,
         ];
     }
@@ -674,7 +674,7 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
     public function setFrequencyThreshold(ActivityType $activityType, int $threshold, int $timeWindowMinutes = 60): void
     {
         $this->frequencyThresholds[$activityType->value] = [
-            'threshold' => $threshold,
+            'threshold'  => $threshold,
             'timeWindow' => $timeWindowMinutes,
         ];
     }
@@ -690,16 +690,16 @@ class SuspiciousActivityDetector implements SuspiciousActivityDetectorInterface
         $this->logger->critical('Suspicious activity alert triggered', [
             'analysis_id' => $analysis->getAnalysisId(),
             'target_type' => $analysis->getTargetType(),
-            'target_id' => $analysis->getTargetId(),
-            'severity' => $analysis->getSeverityLevel()->value,
-            'summary' => $analysis->getSummary(),
+            'target_id'   => $analysis->getTargetId(),
+            'severity'    => $analysis->getSeverityLevel()->value,
+            'summary'     => $analysis->getSummary(),
         ]);
     }
 
     public function getThresholdConfiguration(): array
     {
         return [
-            'failure_thresholds' => $this->failureThresholds,
+            'failure_thresholds'   => $this->failureThresholds,
             'frequency_thresholds' => $this->frequencyThresholds,
         ];
     }

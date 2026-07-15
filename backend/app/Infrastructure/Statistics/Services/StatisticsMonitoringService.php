@@ -64,8 +64,8 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             return [
                 'avg_calculation_time' => (float) ($result['avg_calculation_time'] ?? 0.0),
                 'max_calculation_time' => (float) ($result['max_calculation_time'] ?? 0.0),
-                'total_calculations' => (int) ($result['total_calculations'] ?? 0),
-                'failed_calculations' => (int) ($result['failed_calculations'] ?? 0),
+                'total_calculations'   => (int) ($result['total_calculations'] ?? 0),
+                'failed_calculations'  => (int) ($result['failed_calculations'] ?? 0),
             ];
         } catch (Throwable $e) {
             $this->logger?->error('Failed to get calculation time metrics', [
@@ -95,10 +95,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $misses = $totalRequests - $hits;
 
         return [
-            'hit_rate' => $hitRate,
-            'miss_rate' => 100.0 - $hitRate,
+            'hit_rate'       => $hitRate,
+            'miss_rate'      => 100.0 - $hitRate,
             'total_requests' => $totalRequests,
-            'cache_size' => mt_rand(100, 1000), // KB
+            'cache_size'     => mt_rand(100, 1000), // KB
         ];
     }
 
@@ -124,8 +124,8 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'avg_response_time' => $avgResponseTime,
             'p95_response_time' => $avgResponseTime * 1.5,
             'p99_response_time' => $avgResponseTime * 2.2,
-            'total_requests' => $totalRequests,
-            'error_rate' => $errorRate,
+            'total_requests'    => $totalRequests,
+            'error_rate'        => $errorRate,
         ];
     }
 
@@ -149,10 +149,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $criticalErrors = mt_rand(0, 5);
 
             return [
-                'total_errors' => $totalErrors,
-                'error_rate' => ($totalErrors / 1000) * 100, // 假設 1000 次請求
+                'total_errors'     => $totalErrors,
+                'error_rate'       => ($totalErrors / 1000) * 100, // 假設 1000 次請求
                 'slow_query_count' => $slowQueryCount,
-                'critical_errors' => $criticalErrors,
+                'critical_errors'  => $criticalErrors,
             ];
         } catch (Throwable $e) {
             $this->logger?->error('Failed to get error metrics', [
@@ -160,10 +160,10 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             ]);
 
             return [
-                'total_errors' => 0,
-                'error_rate' => 0.0,
+                'total_errors'     => 0,
+                'error_rate'       => 0.0,
                 'slow_query_count' => 0,
-                'critical_errors' => 0,
+                'critical_errors'  => 0,
             ];
         }
     }
@@ -181,12 +181,12 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     public function performHealthCheck(): array
     {
         $checks = [
-            'database' => $this->checkDatabaseHealth(),
-            'cache' => $this->checkCacheHealth(),
+            'database'               => $this->checkDatabaseHealth(),
+            'cache'                  => $this->checkCacheHealth(),
             'statistics_calculation' => $this->checkStatisticsCalculationHealth(),
-            'slow_queries' => $this->checkSlowQueryHealth(),
-            'disk_space' => $this->checkDiskSpaceHealth(),
-            'memory_usage' => $this->checkMemoryUsageHealth(),
+            'slow_queries'           => $this->checkSlowQueryHealth(),
+            'disk_space'             => $this->checkDiskSpaceHealth(),
+            'memory_usage'           => $this->checkMemoryUsageHealth(),
         ];
         $healthyCount = count(array_filter($checks, fn($check) => $check['status'] === 'healthy'));
         $totalChecks = count($checks);
@@ -194,13 +194,13 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $overallStatus = match (true) {
             $healthScore >= 90 => 'healthy',
             $healthScore >= 70 => 'degraded',
-            default => 'unhealthy'
+            default            => 'unhealthy'
         };
 
         return [
-            'status' => $overallStatus,
-            'timestamp' => new DateTime()->format('Y-m-d H:i:s'),
-            'checks' => $checks,
+            'status'         => $overallStatus,
+            'timestamp'      => new DateTime()->format('Y-m-d H:i:s'),
+            'checks'         => $checks,
             'overall_health' => $healthScore,
         ];
     }
@@ -212,11 +212,11 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
     {
         try {
             $logData = [
-                'event_type' => $eventType,
-                'context' => $context,
-                'timestamp' => new DateTime()->format('Y-m-d H:i:s'),
+                'event_type'   => $eventType,
+                'context'      => $context,
+                'timestamp'    => new DateTime()->format('Y-m-d H:i:s'),
                 'memory_usage' => memory_get_usage(true),
-                'peak_memory' => memory_get_peak_usage(true),
+                'peak_memory'  => memory_get_peak_usage(true),
             ];
             $this->logger?->info("Statistics event: {$eventType}", $logData);
             // 如果有資料庫連線，也可以儲存到監控表
@@ -233,7 +233,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         } catch (Throwable $e) {
             $this->logger?->error('Failed to log statistics event', [
                 'event_type' => $eventType,
-                'error' => $e->getMessage(),
+                'error'      => $e->getMessage(),
             ]);
 
             return false;
@@ -272,13 +272,13 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             'summary' => $summary,
             'metrics' => [
                 'calculation' => $calculationMetrics,
-                'cache' => $cacheMetrics,
-                'api' => $apiMetrics,
-                'errors' => $errorMetrics,
+                'cache'       => $cacheMetrics,
+                'api'         => $apiMetrics,
+                'errors'      => $errorMetrics,
             ],
             'health_status' => $healthCheck,
-            'alerts' => $alerts,
-            'generated_at' => new DateTime()->format('Y-m-d H:i:s'),
+            'alerts'        => $alerts,
+            'generated_at'  => new DateTime()->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -299,7 +299,7 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
             $stmt->execute([self::MONITORING_DATA_RETENTION_DAYS]);
             $deletedRows = $stmt->rowCount();
             $this->logger?->info('Cleaned up old monitoring data', [
-                'deleted_rows' => $deletedRows,
+                'deleted_rows'   => $deletedRows,
                 'retention_days' => self::MONITORING_DATA_RETENTION_DAYS,
             ]);
 
@@ -326,18 +326,18 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $errorMetrics = $this->getErrorMetrics();
         if ($errorMetrics['slow_query_count'] > self::SLOW_QUERY_THRESHOLD) {
             $alerts[] = [
-                'type' => 'slow_query',
-                'severity' => 'warning',
-                'message' => "檢測到 {$errorMetrics['slow_query_count']} 個慢查詢，超過閾值 " . self::SLOW_QUERY_THRESHOLD,
+                'type'      => 'slow_query',
+                'severity'  => 'warning',
+                'message'   => "檢測到 {$errorMetrics['slow_query_count']} 個慢查詢，超過閾值 " . self::SLOW_QUERY_THRESHOLD,
                 'timestamp' => $timestamp,
             ];
         }
         // 檢查錯誤率
         if ($errorMetrics['error_rate'] > self::HIGH_ERROR_RATE_THRESHOLD) {
             $alerts[] = [
-                'type' => 'high_error_rate',
-                'severity' => 'critical',
-                'message' => "錯誤率 {$errorMetrics['error_rate']}% 超過閾值 " . self::HIGH_ERROR_RATE_THRESHOLD . '%',
+                'type'      => 'high_error_rate',
+                'severity'  => 'critical',
+                'message'   => "錯誤率 {$errorMetrics['error_rate']}% 超過閾值 " . self::HIGH_ERROR_RATE_THRESHOLD . '%',
                 'timestamp' => $timestamp,
             ];
         }
@@ -345,9 +345,9 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $cacheMetrics = $this->getCacheMetrics();
         if ($cacheMetrics['hit_rate'] < self::LOW_CACHE_HIT_RATE_THRESHOLD) {
             $alerts[] = [
-                'type' => 'low_cache_hit_rate',
-                'severity' => 'warning',
-                'message' => "快取命中率 {$cacheMetrics['hit_rate']}% 低於閾值 " . self::LOW_CACHE_HIT_RATE_THRESHOLD . '%',
+                'type'      => 'low_cache_hit_rate',
+                'severity'  => 'warning',
+                'message'   => "快取命中率 {$cacheMetrics['hit_rate']}% 低於閾值 " . self::LOW_CACHE_HIT_RATE_THRESHOLD . '%',
                 'timestamp' => $timestamp,
             ];
         }
@@ -355,9 +355,9 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $apiMetrics = $this->getApiResponseTimeMetrics();
         if ($apiMetrics['avg_response_time'] > self::HIGH_RESPONSE_TIME_THRESHOLD) {
             $alerts[] = [
-                'type' => 'high_response_time',
-                'severity' => 'warning',
-                'message' => "平均回應時間 {$apiMetrics['avg_response_time']}ms 超過閾值 " . self::HIGH_RESPONSE_TIME_THRESHOLD . 'ms',
+                'type'      => 'high_response_time',
+                'severity'  => 'warning',
+                'message'   => "平均回應時間 {$apiMetrics['avg_response_time']}ms 超過閾值 " . self::HIGH_RESPONSE_TIME_THRESHOLD . 'ms',
                 'timestamp' => $timestamp,
             ];
         }
@@ -385,12 +385,12 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $errorCount = mt_rand(5, 50);
 
         return [
-            'period' => $period,
+            'period'             => $period,
             'total_calculations' => $totalCalculations,
-            'avg_response_time' => $avgResponseTime,
-            'error_count' => $errorCount,
-            'cache_performance' => [
-                'hit_rate' => mt_rand(800, 950) / 10.0,
+            'avg_response_time'  => $avgResponseTime,
+            'error_count'        => $errorCount,
+            'cache_performance'  => [
+                'hit_rate'       => mt_rand(800, 950) / 10.0,
                 'total_requests' => mt_rand(1000, 5000),
             ],
         ];
@@ -404,8 +404,8 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         return [
             'avg_calculation_time' => mt_rand(100, 500) / 100.0, // 1-5 秒
             'max_calculation_time' => mt_rand(500, 1000) / 100.0, // 5-10 秒
-            'total_calculations' => mt_rand(50, 200),
-            'failed_calculations' => mt_rand(0, 5),
+            'total_calculations'   => mt_rand(50, 200),
+            'failed_calculations'  => mt_rand(0, 5),
         ];
     }
 
@@ -521,9 +521,9 @@ final class StatisticsMonitoringService implements StatisticsMonitoringServiceIn
         $suffix = strtoupper(substr($memoryLimit, -1));
 
         return match ($suffix) {
-            'G' => $value * 1024 * 1024 * 1024,
-            'M' => $value * 1024 * 1024,
-            'K' => $value * 1024,
+            'G'     => $value * 1024 * 1024 * 1024,
+            'M'     => $value * 1024 * 1024,
+            'K'     => $value * 1024,
             default => $value
         };
     }

@@ -71,8 +71,8 @@ abstract class BaseController
         // 記錄錯誤日誌
         app_log('error', 'API Error', [
             'message' => $e->getMessage(),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
         ]);
         $httpCode = $this->getHttpCodeFromException($e);
 

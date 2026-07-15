@@ -170,22 +170,22 @@ class Post implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'seq_number' => $this->seqNumber,
-            'title' => $this->title,
-            'content' => $this->content,
-            'user_id' => $this->userId,
-            'user_ip' => $this->userIp,
-            'is_pinned' => $this->isPinned,
-            'status' => $this->getStatusValue(),
-            'publish_date' => $this->formatPublishDateForApi(),
-            'views' => $this->views,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
-            'creation_source' => $this->creationSource,
+            'id'                     => $this->id,
+            'uuid'                   => $this->uuid,
+            'seq_number'             => $this->seqNumber,
+            'title'                  => $this->title,
+            'content'                => $this->content,
+            'user_id'                => $this->userId,
+            'user_ip'                => $this->userIp,
+            'is_pinned'              => $this->isPinned,
+            'status'                 => $this->getStatusValue(),
+            'publish_date'           => $this->formatPublishDateForApi(),
+            'views'                  => $this->views,
+            'created_at'             => $this->createdAt,
+            'updated_at'             => $this->updatedAt,
+            'creation_source'        => $this->creationSource,
             'creation_source_detail' => $this->creationSourceDetail,
-            'author' => $this->author,
+            'author'                 => $this->author,
         ];
     }
 
@@ -219,6 +219,7 @@ class Post implements JsonSerializable
      * 取得清理過的資料陣列，適用於前端顯示.
      *
      * @param OutputSanitizerInterface $sanitizer 清理服務
+     *
      * @return array<mixed>
      */
     public function toSafeArray(OutputSanitizerInterface $sanitizer): mixed

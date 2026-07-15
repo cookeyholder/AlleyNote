@@ -57,6 +57,7 @@ class PermissionRepository
      * 根據 IDs 取得多個權限.
      *
      * @param int[] $ids
+     *
      * @return Permission[]
      */
     public function findByIds(array $ids): array

@@ -34,7 +34,7 @@ class RouteLoader
             throw RouteConfigurationException::unreadableFile($filePath);
         }
         $this->routeFiles[] = [
-            'path' => $filePath,
+            'path'  => $filePath,
             'group' => $group,
         ];
 
@@ -163,7 +163,7 @@ class RouteLoader
         $stats = [
             'total_routes' => count($this->loadedRoutes),
             'files_loaded' => count($this->routeFiles),
-            'groups' => [],
+            'groups'       => [],
         ];
         // 統計各群組的路由數量
         foreach ($this->loadedRoutes as $route) {

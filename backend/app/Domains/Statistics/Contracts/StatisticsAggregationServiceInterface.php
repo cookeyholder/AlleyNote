@@ -16,6 +16,7 @@ interface StatisticsAggregationServiceInterface
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的統計快照
      */
     public function createOverviewSnapshot(
@@ -30,6 +31,7 @@ interface StatisticsAggregationServiceInterface
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的文章統計快照
      */
     public function createPostsSnapshot(
@@ -44,6 +46,7 @@ interface StatisticsAggregationServiceInterface
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的使用者統計快照
      */
     public function createUsersSnapshot(
@@ -58,6 +61,7 @@ interface StatisticsAggregationServiceInterface
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的熱門內容統計快照
      */
     public function createPopularSnapshot(
@@ -73,6 +77,7 @@ interface StatisticsAggregationServiceInterface
      * @param array<string> $types 要建立的快照類型
      * @param array<string, mixed> $metadata 共用的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return array<string, StatisticsSnapshot> 建立的快照陣列
      */
     public function createBatchSnapshots(
@@ -86,6 +91,7 @@ interface StatisticsAggregationServiceInterface
      * 更新現有的統計快照.
      *
      * @param StatisticsSnapshot $snapshot 要更新的快照
+     *
      * @return StatisticsSnapshot 更新後的快照
      */
     public function updateSnapshot(StatisticsSnapshot $snapshot): StatisticsSnapshot;
@@ -96,6 +102,7 @@ interface StatisticsAggregationServiceInterface
      * @param StatisticsPeriod $currentPeriod 當前週期
      * @param StatisticsPeriod $previousPeriod 上一週期
      * @param string $snapshotType 快照類型
+     *
      * @return array<string, mixed> 趨勢分析資料
      */
     public function calculateTrends(
@@ -108,6 +115,7 @@ interface StatisticsAggregationServiceInterface
      * 清理過期的統計快照.
      *
      * @param DateTimeInterface|null $beforeDate 指定日期前的快照，null 表示當前時間
+     *
      * @return int 清理的快照數量
      */
     public function cleanExpiredSnapshots(?DateTimeInterface $beforeDate = null): int;

@@ -58,7 +58,7 @@ class RoleController
         $roles = $this->roleManagementService->listRoles();
         $responseData = json_encode([
             'success' => true,
-            'data' => array_map(fn($role) => $role->toArray(), $roles),
+            'data'    => array_map(fn($role) => $role->toArray(), $roles),
         ]);
         $response->getBody()->write($responseData ?: '');
 
@@ -134,7 +134,7 @@ class RoleController
             $roleData = $this->roleManagementService->getRole($id);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $roleData,
+                'data'    => $roleData,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -217,7 +217,7 @@ class RoleController
             $responseData = json_encode([
                 'success' => true,
                 'message' => '角色建立成功',
-                'data' => $role->toArray(),
+                'data'    => $role->toArray(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -226,7 +226,7 @@ class RoleController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -299,7 +299,7 @@ class RoleController
             $responseData = json_encode([
                 'success' => true,
                 'message' => '角色更新成功',
-                'data' => $role->toArray(),
+                'data'    => $role->toArray(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -393,7 +393,7 @@ class RoleController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -526,7 +526,7 @@ class RoleController
         $permissions = $this->roleManagementService->listPermissions();
         $responseData = json_encode([
             'success' => true,
-            'data' => array_map(fn($p) => $p->toArray(), $permissions),
+            'data'    => array_map(fn($p) => $p->toArray(), $permissions),
         ]);
         $response->getBody()->write($responseData ?: '');
 
@@ -590,7 +590,7 @@ class RoleController
         }
         $responseData = json_encode([
             'success' => true,
-            'data' => $data,
+            'data'    => $data,
         ]);
         $response->getBody()->write($responseData ?: '');
 

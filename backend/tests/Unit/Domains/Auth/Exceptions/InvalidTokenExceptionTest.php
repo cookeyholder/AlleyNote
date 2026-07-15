@@ -11,6 +11,7 @@ use Tests\Support\UnitTestCase;
  * 無效 Token 例外單元測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class InvalidTokenExceptionTest extends UnitTestCase
@@ -66,7 +67,7 @@ class InvalidTokenExceptionTest extends UnitTestCase
     public function testAdditionalContext(): void
     {
         $additionalContext = [
-            'token_id' => 'test-token-123',
+            'token_id'   => 'test-token-123',
             'request_id' => 'req-456',
         ];
 
@@ -91,15 +92,15 @@ class InvalidTokenExceptionTest extends UnitTestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            InvalidTokenException::REASON_MALFORMED => 'Access token format is malformed',
-            InvalidTokenException::REASON_SIGNATURE_INVALID => 'Access token signature verification failed',
+            InvalidTokenException::REASON_MALFORMED          => 'Access token format is malformed',
+            InvalidTokenException::REASON_SIGNATURE_INVALID  => 'Access token signature verification failed',
             InvalidTokenException::REASON_ALGORITHM_MISMATCH => 'Access token algorithm does not match expected algorithm',
-            InvalidTokenException::REASON_ISSUER_INVALID => 'Access token issuer is invalid',
-            InvalidTokenException::REASON_AUDIENCE_INVALID => 'Access token audience is invalid',
-            InvalidTokenException::REASON_SUBJECT_MISSING => 'Access token subject is missing',
-            InvalidTokenException::REASON_CLAIMS_INVALID => 'Access token contains invalid claims',
-            InvalidTokenException::REASON_BLACKLISTED => 'Access token has been blacklisted',
-            InvalidTokenException::REASON_NOT_BEFORE => 'Access token is not valid yet',
+            InvalidTokenException::REASON_ISSUER_INVALID     => 'Access token issuer is invalid',
+            InvalidTokenException::REASON_AUDIENCE_INVALID   => 'Access token audience is invalid',
+            InvalidTokenException::REASON_SUBJECT_MISSING    => 'Access token subject is missing',
+            InvalidTokenException::REASON_CLAIMS_INVALID     => 'Access token contains invalid claims',
+            InvalidTokenException::REASON_BLACKLISTED        => 'Access token has been blacklisted',
+            InvalidTokenException::REASON_NOT_BEFORE         => 'Access token is not valid yet',
         ];
 
         foreach ($reasons as $reason => $expectedMessage) {
@@ -351,9 +352,9 @@ class InvalidTokenExceptionTest extends UnitTestCase
     {
         // 模擬一個複雜的無效 Token 場景
         $additionalContext = [
-            'request_id' => 'req-12345',
-            'user_agent' => 'TestAgent/1.0',
-            'ip_address' => '192.168.1.100',
+            'request_id'         => 'req-12345',
+            'user_agent'         => 'TestAgent/1.0',
+            'ip_address'         => '192.168.1.100',
             'attempted_resource' => '/api/user/profile',
         ];
 

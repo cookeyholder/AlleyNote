@@ -28,6 +28,7 @@ final readonly class StatisticsMetric implements JsonSerializable
      * 從陣列建立統計指標物件.
      *
      * @param array{name: string, value: int|float, unit?: string, calculation_method?: string} $data
+     *
      * @throws InvalidArgumentException
      */
     public static function fromArray(array $data): self
@@ -112,11 +113,11 @@ final readonly class StatisticsMetric implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
-            'value' => $this->value,
-            'unit' => $this->unit,
+            'name'               => $this->name,
+            'value'              => $this->value,
+            'unit'               => $this->unit,
             'calculation_method' => $this->calculationMethod,
-            'formatted_value' => $this->formatValue(),
+            'formatted_value'    => $this->formatValue(),
         ];
     }
 

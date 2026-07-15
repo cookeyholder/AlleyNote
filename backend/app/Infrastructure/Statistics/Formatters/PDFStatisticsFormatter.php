@@ -171,10 +171,10 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
         $pdfHeader .= "3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 612 792]\n>>\nendobj\n";
         // 添加文件資訊
         $info = [
-            'Title' => $title,
-            'Author' => $author,
+            'Title'        => $title,
+            'Author'       => $author,
             'CreationDate' => 'D:' . new DateTime()->format('YmdHis'),
-            'Producer' => 'Statistics Export Service',
+            'Producer'     => 'Statistics Export Service',
         ];
         $mockContent = $pdfHeader;
         $mockContent .= "% Mock PDF Content - Title: {$title}\n";
@@ -195,6 +195,7 @@ final class PDFStatisticsFormatter implements StatisticsFormatterInterface
 
     /**
      * @param array<mixed> $sectionData
+     *
      * @phpstan-assert-if-true array<array<string, mixed>> $sectionData
      */
     private function isTableData(array $sectionData): bool

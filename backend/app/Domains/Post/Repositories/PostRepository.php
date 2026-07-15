@@ -73,9 +73,13 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 在交易中執行操作.
+     *
      * @template T
+     *
      * @param callable(): T $callback 要在交易中執行的操作
+     *
      * @return T 操作的結果
+     *
      * @throws Exception 當操作失敗時拋出異常
      */
     private function executeInTransaction(callable $callback): mixed
@@ -167,22 +171,22 @@ class PostRepository implements PostRepositoryInterface
         }
 
         return [
-            'id' => (int) ($result['id'] ?? 0),
-            'uuid' => $result['uuid'] ?? '',
-            'seq_number' => (string) ($result['seq_number'] ?? ''),
-            'title' => $result['title'] ?? '',
-            'content' => $result['content'] ?? '',
-            'user_id' => (int) ($result['user_id'] ?? 0),
-            'user_ip' => $result['user_ip'] ?? null,
-            'views' => (int) ($result['views'] ?? 0),
-            'is_pinned' => (bool) ($result['is_pinned'] ?? false),
-            'status' => $result['status'] ?? 'draft',
-            'publish_date' => $publishDate,
-            'creation_source' => $result['creation_source'] ?? null,
+            'id'                     => (int) ($result['id'] ?? 0),
+            'uuid'                   => $result['uuid'] ?? '',
+            'seq_number'             => (string) ($result['seq_number'] ?? ''),
+            'title'                  => $result['title'] ?? '',
+            'content'                => $result['content'] ?? '',
+            'user_id'                => (int) ($result['user_id'] ?? 0),
+            'user_ip'                => $result['user_ip'] ?? null,
+            'views'                  => (int) ($result['views'] ?? 0),
+            'is_pinned'              => (bool) ($result['is_pinned'] ?? false),
+            'status'                 => $result['status'] ?? 'draft',
+            'publish_date'           => $publishDate,
+            'creation_source'        => $result['creation_source'] ?? null,
             'creation_source_detail' => $result['creation_source_detail'] ?? null,
-            'created_at' => $result['created_at'] ?? null,
-            'updated_at' => $result['updated_at'] ?? null,
-            'author' => $result['author'] ?? 'Unknown', // 添加 author 字段
+            'created_at'             => $result['created_at'] ?? null,
+            'updated_at'             => $result['updated_at'] ?? null,
+            'author'                 => $result['author'] ?? 'Unknown', // 添加 author 字段
         ];
     }
 
@@ -194,17 +198,17 @@ class PostRepository implements PostRepositoryInterface
         $now = format_datetime();
 
         return [
-            'uuid' => $data['uuid'] ?? generate_uuid(),
-            'seq_number' => $this->getNextSeqNumber(),
-            'title' => $data['title'] ?? '',
-            'content' => $data['content'] ?? '',
-            'user_id' => $data['user_id'] ?? 0,
-            'user_ip' => $data['user_ip'] ?? null,
-            'is_pinned' => $data['is_pinned'] ?? false,
-            'status' => $data['status'] ?? PostStatus::DRAFT->value,
+            'uuid'         => $data['uuid'] ?? generate_uuid(),
+            'seq_number'   => $this->getNextSeqNumber(),
+            'title'        => $data['title'] ?? '',
+            'content'      => $data['content'] ?? '',
+            'user_id'      => $data['user_id'] ?? 0,
+            'user_ip'      => $data['user_ip'] ?? null,
+            'is_pinned'    => $data['is_pinned'] ?? false,
+            'status'       => $data['status'] ?? PostStatus::DRAFT->value,
             'publish_date' => $data['publish_date'] ?? null,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'created_at'   => $now,
+            'updated_at'   => $now,
         ];
     }
 
@@ -365,6 +369,7 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
+     *
      * @throws PDOException 當標籤不存在時拋出異常
      */
     public function create(array $data, array $tagIds = []): Post
@@ -400,6 +405,7 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 指派標籤到文章.
+     *
      * @throws PDOException 當標籤不存在時拋出異常
      */
     private function assignTags(int $postId, array $tagIds): void
@@ -445,9 +451,9 @@ class PostRepository implements PostRepositoryInterface
             } else {
                 // 記錄嘗試更新不允許欄位的行為
                 $this->logger->logSecurityEvent('Attempt to update disallowed field', [
-                    'field' => $key,
+                    'field'   => $key,
                     'post_id' => $id,
-                    'action' => 'update_post',
+                    'action'  => 'update_post',
                 ]);
             }
         }
@@ -488,8 +494,8 @@ class PostRepository implements PostRepositoryInterface
                     } else {
                         // 記錄嘗試查詢不允許欄位的行為
                         $this->logger->logSecurityEvent('Attempt to query with disallowed field', [
-                            'field' => $key,
-                            'action' => 'get_paginated',
+                            'field'      => $key,
+                            'action'     => 'get_paginated',
                             'conditions' => array_keys($conditions),
                         ]);
                     }
@@ -522,10 +528,10 @@ class PostRepository implements PostRepositoryInterface
             );
 
             return [
-                'items' => $items,
-                'total' => $total,
-                'page' => $page,
-                'perPage' => $perPage,
+                'items'    => $items,
+                'total'    => $total,
+                'page'     => $page,
+                'perPage'  => $perPage,
                 'lastPage' => ceil($total / $perPage),
             ];
         })();
@@ -580,10 +586,10 @@ class PostRepository implements PostRepositoryInterface
             );
 
             return [
-                'items' => $items,
-                'total' => $total,
-                'page' => $page,
-                'perPage' => $perPage,
+                'items'    => $items,
+                'total'    => $total,
+                'page'     => $page,
+                'perPage'  => $perPage,
                 'lastPage' => ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
@@ -615,10 +621,10 @@ class PostRepository implements PostRepositoryInterface
                 VALUES (:uuid, :post_id, :user_id, :user_ip, :view_date)
             ');
             $stmt->execute([
-                'uuid' => generate_uuid(),
-                'post_id' => $id,
-                'user_id' => $userId,
-                'user_ip' => $userIp,
+                'uuid'      => generate_uuid(),
+                'post_id'   => $id,
+                'user_id'   => $userId,
+                'user_ip'   => $userIp,
                 'view_date' => format_datetime(),
             ]);
             $this->db->commit();
@@ -634,6 +640,7 @@ class PostRepository implements PostRepositoryInterface
 
     /**
      * 取得文章標籤.
+     *
      * @return array<int, array<string, mixed>>
      */
     public function getPostTags(int $id): array
@@ -655,7 +662,7 @@ class PostRepository implements PostRepositoryInterface
     {
         $stmt = $this->db->prepare('UPDATE posts SET is_pinned = :is_pinned WHERE id = :id');
         $result = $stmt->execute([
-            'id' => $id,
+            'id'        => $id,
             'is_pinned' => $isPinned,
         ]);
         if ($result) {
@@ -715,7 +722,7 @@ class PostRepository implements PostRepositoryInterface
             $this->db->rollBack();
             // 記錄錯誤並重新拋出，以便調用方能處理
             app_log('error', 'Failed to set tags for post', [
-                'post_id' => $id,
+                'post_id'   => $id,
                 'exception' => $e->getMessage(),
             ]);
 
@@ -784,7 +791,6 @@ class PostRepository implements PostRepositoryInterface
 
         return Post::fromArray($this->preparePostData($result));
     }
-
 
     public function search(string $keyword): mixed
     {
@@ -882,7 +888,7 @@ class PostRepository implements PostRepositoryInterface
                 $sql = $this->buildSelectQuery('p.creation_source = :creation_source AND p.creation_source_detail = :creation_source_detail')
                     . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
                 $params = [
-                    'creation_source' => $creationSource,
+                    'creation_source'        => $creationSource,
                     'creation_source_detail' => $creationSourceDetail,
                 ];
             }
@@ -948,10 +954,10 @@ class PostRepository implements PostRepositoryInterface
             );
 
             return [
-                'items' => $items,
-                'total' => $total,
-                'page' => $page,
-                'perPage' => $perPage,
+                'items'    => $items,
+                'total'    => $total,
+                'page'     => $page,
+                'perPage'  => $perPage,
                 'lastPage' => ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);

@@ -161,7 +161,7 @@ class DIValidationIntegrationTest extends IntegrationTestCase
 
         // Act & Assert - 測試密碼確認規則驗證成功
         $validData = [
-            'password' => 'MyPassword123',
+            'password'              => 'MyPassword123',
             'password_confirmation' => 'MyPassword123',
         ];
 
@@ -176,7 +176,7 @@ class DIValidationIntegrationTest extends IntegrationTestCase
         $this->expectException(ValidationException::class);
 
         $invalidData = [
-            'password' => 'MyPassword123',
+            'password'              => 'MyPassword123',
             'password_confirmation' => 'DifferentPassword456',
         ];
 
@@ -253,15 +253,15 @@ class DIValidationIntegrationTest extends IntegrationTestCase
         // Act - 進行多次驗證操作
         for ($i = 0; $i < 100; $i++) {
             $data = [
-                'name' => "測試用戶_{$i}",
+                'name'  => "測試用戶_{$i}",
                 'email' => "user{$i}@example.com",
-                'age' => $i + 18,
+                'age'   => $i + 18,
             ];
 
             $rules = [
-                'name' => 'required|string|min_length:2|max_length:50',
+                'name'  => 'required|string|min_length:2|max_length:50',
                 'email' => 'required|email_enhanced',
-                'age' => 'required|integer|min:18|max:120',
+                'age'   => 'required|integer|min:18|max:120',
             ];
 
             $result = $validator->validate($data, $rules);
@@ -290,24 +290,24 @@ class DIValidationIntegrationTest extends IntegrationTestCase
 
         $userData = [
             'username' => 'valid_user123',
-            'email' => 'user@example.com',
+            'email'    => 'user@example.com',
             'password' => 'SecurePass123',
         ];
 
         $userRules = [
             'username' => 'required|username:3,50',
-            'email' => 'required|email_enhanced',
+            'email'    => 'required|email_enhanced',
             'password' => 'required|password_strength:8',
         ];
 
         $profileData = [
             'display_name' => '顯示名稱',
-            'bio' => '這是一個簡短的個人簡介',
+            'bio'          => '這是一個簡短的個人簡介',
         ];
 
         $profileRules = [
             'display_name' => 'required|string|min_length:1|max_length:100',
-            'bio' => 'string|max_length:500',
+            'bio'          => 'string|max_length:500',
         ];
 
         $settingsData = [

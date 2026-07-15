@@ -202,8 +202,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         if (!isset($_SESSION[self::TOKEN_POOL_KEY])) {
             return [
                 'enabled' => false,
-                'size' => 0,
-                'tokens' => [],
+                'size'    => 0,
+                'tokens'  => [],
             ];
         }
         $pool = $_SESSION[self::TOKEN_POOL_KEY];
@@ -211,18 +211,18 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
         $tokens = [];
         foreach ($pool as $token => $timestamp) {
             $tokens[] = [
-                'token' => substr($token, 0, 8) . '...', // 只顯示前8位
-                'age' => $currentTime - $timestamp,
+                'token'      => substr($token, 0, 8) . '...', // 只顯示前8位
+                'age'        => $currentTime - $timestamp,
                 'expires_in' => self::TOKEN_EXPIRY - ($currentTime - $timestamp),
-                'expired' => ($currentTime - $timestamp) > self::TOKEN_EXPIRY,
+                'expired'    => ($currentTime - $timestamp) > self::TOKEN_EXPIRY,
             ];
         }
 
         return [
-            'enabled' => true,
-            'size' => count($pool),
+            'enabled'  => true,
+            'size'     => count($pool),
             'max_size' => self::TOKEN_POOL_SIZE,
-            'tokens' => $tokens,
+            'tokens'   => $tokens,
         ];
     }
 
@@ -258,8 +258,8 @@ class CsrfProtectionService implements CsrfProtectionServiceInterface
                 description: 'CSRF token validation failed',
                 metadata: [
                     'attempted_token' => $attemptedToken ? substr($attemptedToken, 0, 8) . '...' : null,
-                    'referer' => $_SERVER['HTTP_REFERER'] ?? null,
-                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                    'referer'         => $_SERVER['HTTP_REFERER'] ?? null,
+                    'method'          => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 ],
             );
             $this->activityLogger->log($dto);

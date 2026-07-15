@@ -31,12 +31,12 @@ final class UserLoggedIn extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'user_id' => $this->userId,
-            'username' => $this->username,
+            'user_id'      => $this->userId,
+            'username'     => $this->username,
             'logged_in_at' => $this->loggedInAt->format('Y-m-d H:i:s'),
-            'ip_address' => $this->ipAddress,
-            'user_agent' => $this->userAgent,
-            'device_type' => $this->deviceType,
+            'ip_address'   => $this->ipAddress,
+            'user_agent'   => $this->userAgent,
+            'device_type'  => $this->deviceType,
         ];
     }
 }

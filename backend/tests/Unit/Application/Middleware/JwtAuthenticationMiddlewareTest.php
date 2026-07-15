@@ -63,7 +63,7 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
         $this->assertResponseStatus($response, 401);
         $this->assertJsonResponseMatches($response, [
             'success' => false,
-            'error' => '缺少有效的認證 Token',
+            'error'   => '缺少有效的認證 Token',
         ]);
     }
 
@@ -97,7 +97,7 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
         $this->assertResponseStatus($response, 401);
         $this->assertJsonResponseMatches($response, [
             'success' => false,
-            'error' => 'Token 已過期',
+            'error'   => 'Token 已過期',
         ]);
     }
 }

@@ -53,7 +53,7 @@ class CacheMonitorTest extends UnitTestCase
     public function test_record_operation_updates_metrics(): void
     {
         $this->cacheMonitor->recordOperation('set', 'redis', true, 2.5, [
-            'key' => 'test_key',
+            'key'        => 'test_key',
             'value_size' => 100,
         ]);
 

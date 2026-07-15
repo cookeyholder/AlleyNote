@@ -418,10 +418,10 @@ class JwtAuthenticationIntegrationTest extends IntegrationTestCase
             ->andReturnUsing(function ($email, $password) {
                 if ($email === 'test@example.com' && $password === 'password123') {
                     return [
-                        'id' => 1,
-                        'email' => 'test@example.com',
+                        'id'       => 1,
+                        'email'    => 'test@example.com',
                         'username' => 'testuser',
-                        'status' => 1,
+                        'status'   => 1,
                     ];
                 }
 
@@ -438,10 +438,10 @@ class JwtAuthenticationIntegrationTest extends IntegrationTestCase
             ->andReturnUsing(function ($id) {
                 if ($id === 1) {
                     return [
-                        'id' => 1,
-                        'email' => 'test@example.com',
+                        'id'       => 1,
+                        'email'    => 'test@example.com',
                         'username' => 'testuser',
-                        'status' => 1,
+                        'status'   => 1,
                     ];
                 }
 
@@ -453,10 +453,10 @@ class JwtAuthenticationIntegrationTest extends IntegrationTestCase
             ->andReturnUsing(function ($uuid) {
                 // 模擬根據 UUID 找到使用者
                 return [
-                    'id' => 1,
-                    'email' => 'test@example.com',
+                    'id'       => 1,
+                    'email'    => 'test@example.com',
                     'username' => 'testuser',
-                    'status' => 1,
+                    'status'   => 1,
                 ];
             });
     }

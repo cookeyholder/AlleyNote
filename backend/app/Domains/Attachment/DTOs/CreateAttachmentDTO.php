@@ -27,6 +27,7 @@ class CreateAttachmentDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
+     *
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -179,13 +180,13 @@ class CreateAttachmentDTO extends BaseDTO
     protected function getValidationRules(): array
     {
         return [
-            'post_id' => 'required|post_id',
-            'filename' => 'required|string|filename:255',
+            'post_id'       => 'required|post_id',
+            'filename'      => 'required|string|filename:255',
             'original_name' => 'required|string|original_name:255',
-            'mime_type' => 'required|string|mime_type',
-            'file_size' => 'required|file_size:1,10485760', // 1 byte 到 10MB
-            'storage_path' => 'required|string|storage_path:500',
-            'uploaded_by' => 'required|uploaded_by',
+            'mime_type'     => 'required|string|mime_type',
+            'file_size'     => 'required|file_size:1,10485760', // 1 byte 到 10MB
+            'storage_path'  => 'required|string|storage_path:500',
+            'uploaded_by'   => 'required|uploaded_by',
         ];
     }
 
@@ -195,13 +196,13 @@ class CreateAttachmentDTO extends BaseDTO
     public function toArray(): array
     {
         return [
-            'post_id' => $this->postId,
-            'filename' => $this->filename,
+            'post_id'       => $this->postId,
+            'filename'      => $this->filename,
             'original_name' => $this->originalName,
-            'mime_type' => $this->mimeType,
-            'file_size' => $this->fileSize,
-            'storage_path' => $this->storagePath,
-            'uploaded_by' => $this->uploadedBy,
+            'mime_type'     => $this->mimeType,
+            'file_size'     => $this->fileSize,
+            'storage_path'  => $this->storagePath,
+            'uploaded_by'   => $this->uploadedBy,
         ];
     }
 

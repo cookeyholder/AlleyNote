@@ -189,10 +189,10 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function logCSPViolation(array $report): void
     {
         $logData = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'timestamp'  => date('Y-m-d H:i:s'),
+            'ip'         => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
-            'report' => $report,
+            'report'     => $report,
         ];
         // 記錄到日誌檔案
         app_log('warning', 'CSP Violation', $logData);
@@ -212,8 +212,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         try {
             $context = stream_context_create([
                 'http' => [
-                    'method' => 'POST',
-                    'header' => 'Content-Type: application/json',
+                    'method'  => 'POST',
+                    'header'  => 'Content-Type: application/json',
                     'content' => (json_encode($data) ?? ''),
                     'timeout' => 5,
                 ],
@@ -312,7 +312,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function isHTTPS(): bool
     {
         return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || $_SERVER['SERVER_PORT'] == 443
+            || $_SERVER['SERVER_PORT'] === 443
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
 
@@ -320,34 +320,34 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     {
         return [
             'csp' => [
-                'enabled' => true,
-                'report_uri' => '/api/csp-report', // CSP 違規報告端點
+                'enabled'             => true,
+                'report_uri'          => '/api/csp-report', // CSP 違規報告端點
                 'monitoring_endpoint' => null, // 可設定外部監控服務端點
-                'directives' => [
-                    'default-src' => ["'self'"],
-                    'script-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
-                    'style-src' => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
-                    'img-src' => ["'self'", 'data:', 'https:'],
-                    'font-src' => ["'self'"],
-                    'connect-src' => ["'self'"],
-                    'media-src' => ["'self'"],
-                    'object-src' => ["'none'"],
-                    'child-src' => ["'self'"],
-                    'frame-ancestors' => ["'none'"],
-                    'form-action' => ["'self'"],
-                    'base-uri' => ["'self'"],
+                'directives'          => [
+                    'default-src'               => ["'self'"],
+                    'script-src'                => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
+                    'style-src'                 => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
+                    'img-src'                   => ["'self'", 'data:', 'https:'],
+                    'font-src'                  => ["'self'"],
+                    'connect-src'               => ["'self'"],
+                    'media-src'                 => ["'self'"],
+                    'object-src'                => ["'none'"],
+                    'child-src'                 => ["'self'"],
+                    'frame-ancestors'           => ["'none'"],
+                    'form-action'               => ["'self'"],
+                    'base-uri'                  => ["'self'"],
                     'upgrade-insecure-requests' => [],
                 ],
             ],
             'hsts' => [
-                'enabled' => true,
-                'max_age' => 31536000, // 1 year
+                'enabled'            => true,
+                'max_age'            => 31536000, // 1 year
                 'include_subdomains' => true,
-                'preload' => false,
+                'preload'            => false,
             ],
             'frame_options' => [
                 'enabled' => true,
-                'value' => 'DENY',
+                'value'   => 'DENY',
             ],
             'content_type_options' => [
                 'enabled' => true,
@@ -357,39 +357,39 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
             ],
             'referrer_policy' => [
                 'enabled' => true,
-                'value' => 'strict-origin-when-cross-origin',
+                'value'   => 'strict-origin-when-cross-origin',
             ],
             'permissions_policy' => [
-                'enabled' => true,
+                'enabled'    => true,
                 'directives' => [
-                    'geolocation' => '()',
-                    'microphone' => '()',
-                    'camera' => '()',
+                    'geolocation'  => '()',
+                    'microphone'   => '()',
+                    'camera'       => '()',
                     'magnetometer' => '()',
-                    'gyroscope' => '()',
-                    'fullscreen' => '(self)',
-                    'payment' => '()',
+                    'gyroscope'    => '()',
+                    'fullscreen'   => '(self)',
+                    'payment'      => '()',
                 ],
             ],
             'coep' => [
                 'enabled' => false,
-                'value' => 'require-corp',
+                'value'   => 'require-corp',
             ],
             'coop' => [
                 'enabled' => true,
-                'value' => 'same-origin',
+                'value'   => 'same-origin',
             ],
             'corp' => [
                 'enabled' => true,
-                'value' => 'same-origin',
+                'value'   => 'same-origin',
             ],
             'cache_control' => [
                 'enabled' => true,
-                'value' => 'no-cache, no-store, must-revalidate',
+                'value'   => 'no-cache, no-store, must-revalidate',
             ],
             'server_signature' => [
                 'enabled' => false,
-                'value' => 'AlleyNote/1.0',
+                'value'   => 'AlleyNote/1.0',
             ],
         ];
     }

@@ -28,8 +28,8 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     {
         return $this->recordErrorWithLevel(LogLevel::ERROR->value, $error->getMessage(), array_merge($context, [
             'exception_class' => get_class($error),
-            'file' => $error->getFile(),
-            'line' => $error->getLine(),
+            'file'            => $error->getFile(),
+            'line'            => $error->getLine(),
         ]), $error);
     }
 
@@ -47,8 +47,8 @@ final class ErrorTrackerService implements ErrorTrackerInterface
     {
         $merged = array_merge($context, [
             'exception_class' => get_class($error),
-            'file' => $error->getFile(),
-            'line' => $error->getLine(),
+            'file'            => $error->getFile(),
+            'line'            => $error->getLine(),
         ]);
         // Trigger notification handlers with the original context (tests expect this)
         foreach ($this->notificationHandlers as $h) {
@@ -77,10 +77,10 @@ final class ErrorTrackerService implements ErrorTrackerInterface
         }
 
         return [
-            'total_errors' => count($recent),
-            'levels' => $levels,
-            'error_types' => $types,
-            'error_trend' => $trend,
+            'total_errors'      => count($recent),
+            'levels'            => $levels,
+            'error_types'       => $types,
+            'error_trend'       => $trend,
             'time_period_hours' => $hours,
         ];
     }
@@ -100,9 +100,9 @@ final class ErrorTrackerService implements ErrorTrackerInterface
         return [
             'daily_counts' => [],
             'level_trends' => [],
-            'type_trends' => [],
+            'type_trends'  => [],
             'total_errors' => $total,
-            'period_days' => $days,
+            'period_days'  => $days,
         ];
     }
 
@@ -128,11 +128,11 @@ final class ErrorTrackerService implements ErrorTrackerInterface
         return [
             'summary' => array_merge($stats, [
                 'critical_errors' => $critical,
-                'warnings' => $warnings,
+                'warnings'        => $warnings,
             ]),
-            'top_issues' => [],
+            'top_issues'      => [],
             'recent_critical' => [],
-            'health_status' => 'ok',
+            'health_status'   => 'ok',
         ];
     }
 
@@ -179,11 +179,11 @@ final class ErrorTrackerService implements ErrorTrackerInterface
             }
         }
         match ($level) {
-            LogLevel::ERROR->value => $this->logger->error($message, $context),
-            LogLevel::WARNING->value => $this->logger->warning($message, $context),
-            LogLevel::INFO->value => $this->logger->info($message, $context),
+            LogLevel::ERROR->value    => $this->logger->error($message, $context),
+            LogLevel::WARNING->value  => $this->logger->warning($message, $context),
+            LogLevel::INFO->value     => $this->logger->info($message, $context),
             LogLevel::CRITICAL->value => $this->logger->critical($message, $context),
-            default => $this->logger->debug($message, $context),
+            default                   => $this->logger->debug($message, $context),
         };
         if (count($this->errorRecords) > $this->maxRecords) {
             array_shift($this->errorRecords);

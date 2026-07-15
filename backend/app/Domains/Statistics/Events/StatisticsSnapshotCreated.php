@@ -24,16 +24,16 @@ class StatisticsSnapshotCreated extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'snapshot_id' => $this->snapshot->getId(),
+            'snapshot_id'   => $this->snapshot->getId(),
             'snapshot_uuid' => $this->snapshot->getUuid(),
             'snapshot_type' => $this->snapshot->getSnapshotType(),
-            'period_type' => $this->snapshot->getPeriod()->type->value,
-            'period_start' => $this->snapshot->getPeriod()->startTime->format('Y-m-d H:i:s'),
-            'period_end' => $this->snapshot->getPeriod()->endTime->format('Y-m-d H:i:s'),
-            'data_count' => count($this->snapshot->getStatisticsData()),
-            'is_update' => $this->isUpdate,
-            'created_at' => $this->snapshot->getCreatedAt()->format('Y-m-d H:i:s'),
-            'updated_at' => $this->snapshot->getUpdatedAt()->format('Y-m-d H:i:s'),
+            'period_type'   => $this->snapshot->getPeriod()->type->value,
+            'period_start'  => $this->snapshot->getPeriod()->startTime->format('Y-m-d H:i:s'),
+            'period_end'    => $this->snapshot->getPeriod()->endTime->format('Y-m-d H:i:s'),
+            'data_count'    => count($this->snapshot->getStatisticsData()),
+            'is_update'     => $this->isUpdate,
+            'created_at'    => $this->snapshot->getCreatedAt()->format('Y-m-d H:i:s'),
+            'updated_at'    => $this->snapshot->getUpdatedAt()->format('Y-m-d H:i:s'),
         ];
     }
 

@@ -23,9 +23,11 @@ abstract class ApiResource
 
     /**
      * @template TResource
+     *
      * @param iterable<TResource> $items
      * @param class-string<self> $resourceClass
      * @param array<string, mixed> $context
+     *
      * @return array<int, array<string, mixed>>
      */
     public static function collection(iterable $items, string $resourceClass, array $context = []): array

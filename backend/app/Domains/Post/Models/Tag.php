@@ -93,15 +93,15 @@ class Tag implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'slug' => $this->slug,
+            'id'          => $this->id,
+            'name'        => $this->name,
+            'slug'        => $this->slug,
             'description' => $this->description,
-            'color' => $this->color,
+            'color'       => $this->color,
             'usage_count' => $this->usageCount,
-            'post_count' => $this->usageCount, // 前端使用的別名
-            'created_at' => $this->createdAt->format('c'),
-            'updated_at' => $this->updatedAt?->format('c'),
+            'post_count'  => $this->usageCount, // 前端使用的別名
+            'created_at'  => $this->createdAt->format('c'),
+            'updated_at'  => $this->updatedAt?->format('c'),
         ];
     }
 

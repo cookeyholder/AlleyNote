@@ -29,20 +29,20 @@ final class StatisticsCalculationCommand
 
     /** 支援的統計週期類型 */
     private const SUPPORTED_PERIODS = [
-        'daily' => PeriodType::DAILY,
-        'weekly' => PeriodType::WEEKLY,
+        'daily'   => PeriodType::DAILY,
+        'weekly'  => PeriodType::WEEKLY,
         'monthly' => PeriodType::MONTHLY,
     ];
 
     /** @var array<string, mixed> 執行統計 */
     private array $executionStats = [
-        'start_time' => null,
-        'end_time' => null,
-        'total_snapshots' => 0,
+        'start_time'           => null,
+        'end_time'             => null,
+        'total_snapshots'      => 0,
         'successful_snapshots' => 0,
-        'failed_snapshots' => 0,
-        'retries' => 0,
-        'errors' => [],
+        'failed_snapshots'     => 0,
+        'retries'              => 0,
+        'errors'               => [],
     ];
 
     public function __construct(
@@ -59,6 +59,7 @@ final class StatisticsCalculationCommand
      * @param array<string> $periods 要計算的週期類型 ['daily', 'weekly', 'monthly']
      * @param int $maxRetries 最大重試次數
      * @param bool $force 是否強制重新計算現有快照
+     *
      * @return array<string, mixed> 執行結果統計
      */
     public function execute(
@@ -75,9 +76,9 @@ final class StatisticsCalculationCommand
             // 獲取執行鎖定，確保並行安全
             $lockFile = $this->acquireExecutionLock($periods);
             $this->logger->info('開始統計計算任務', [
-                'periods' => $periods,
+                'periods'     => $periods,
                 'max_retries' => $maxRetries,
-                'force' => $force,
+                'force'       => $force,
             ]);
             // 計算每個週期的統計快照
             foreach ($periods as $periodType) {
@@ -118,6 +119,7 @@ final class StatisticsCalculationCommand
      * 驗證週期類型參數.
      *
      * @param array<string> $periods
+     *
      * @throws RuntimeException 當週期類型無效時
      */
     private function validatePeriods(array $periods): void
@@ -139,9 +141,9 @@ final class StatisticsCalculationCommand
         $period = $this->createStatisticsPeriod($periodType);
         $snapshotTypes = $this->getAvailableSnapshotTypes();
         $this->logger->info('開始計算週期統計', [
-            'period_type' => $periodType,
-            'period_start' => $period->startTime->format('Y-m-d H:i:s'),
-            'period_end' => $period->endTime->format('Y-m-d H:i:s'),
+            'period_type'    => $periodType,
+            'period_start'   => $period->startTime->format('Y-m-d H:i:s'),
+            'period_end'     => $period->endTime->format('Y-m-d H:i:s'),
             'snapshot_types' => count($snapshotTypes),
         ]);
         foreach ($snapshotTypes as $snapshotType) {
@@ -191,7 +193,7 @@ final class StatisticsCalculationCommand
                 if (!$force && $this->snapshotExists($snapshotType, $period)) {
                     $this->logger->debug('統計快照已存在，跳過', [
                         'snapshot_type' => $snapshotType,
-                        'period_type' => $period->type->value,
+                        'period_type'   => $period->type->value,
                     ]);
                     $this->incrementStat('successful_snapshots');
 
@@ -205,8 +207,8 @@ final class StatisticsCalculationCommand
                 $this->clearRelatedCache($snapshotType);
                 $this->logger->info('統計快照計算成功', [
                     'snapshot_type' => $snapshotType,
-                    'period_type' => $period->type->value,
-                    'retry_count' => $retryCount,
+                    'period_type'   => $period->type->value,
+                    'retry_count'   => $retryCount,
                 ]);
                 $this->incrementStat('successful_snapshots');
 
@@ -216,24 +218,24 @@ final class StatisticsCalculationCommand
                 $this->incrementStat('retries');
                 $this->logger->warning('統計快照計算失敗', [
                     'snapshot_type' => $snapshotType,
-                    'period_type' => $period->type->value,
-                    'retry_count' => $retryCount,
-                    'max_retries' => $maxRetries,
-                    'error' => $e->getMessage(),
+                    'period_type'   => $period->type->value,
+                    'retry_count'   => $retryCount,
+                    'max_retries'   => $maxRetries,
+                    'error'         => $e->getMessage(),
                 ]);
                 if ($retryCount > $maxRetries) {
                     $this->incrementStat('failed_snapshots');
                     $this->addError([
                         'snapshot_type' => $snapshotType,
-                        'period_type' => $period->type->value,
-                        'error' => $e->getMessage(),
-                        'retries' => $retryCount - 1,
+                        'period_type'   => $period->type->value,
+                        'error'         => $e->getMessage(),
+                        'retries'       => $retryCount - 1,
                     ]);
                     $this->logger->error('統計快照計算最終失敗', [
                         'snapshot_type' => $snapshotType,
-                        'period_type' => $period->type->value,
+                        'period_type'   => $period->type->value,
                         'total_retries' => $retryCount - 1,
-                        'error' => $e->getMessage(),
+                        'error'         => $e->getMessage(),
                     ]);
                     break;
                 }
@@ -256,24 +258,24 @@ final class StatisticsCalculationCommand
             // 根據快照類型呼叫對應的聚合方法
             $snapshot = match ($snapshotType) {
                 StatisticsSnapshot::TYPE_OVERVIEW => $this->aggregationService->createOverviewSnapshot($period),
-                StatisticsSnapshot::TYPE_POSTS => $this->aggregationService->createPostsSnapshot($period),
-                StatisticsSnapshot::TYPE_USERS => $this->aggregationService->createUsersSnapshot($period),
-                StatisticsSnapshot::TYPE_POPULAR => $this->aggregationService->createPopularSnapshot($period),
-                default => throw new RuntimeException("不支援的快照類型: {$snapshotType}"),
+                StatisticsSnapshot::TYPE_POSTS    => $this->aggregationService->createPostsSnapshot($period),
+                StatisticsSnapshot::TYPE_USERS    => $this->aggregationService->createUsersSnapshot($period),
+                StatisticsSnapshot::TYPE_POPULAR  => $this->aggregationService->createPopularSnapshot($period),
+                default                           => throw new RuntimeException("不支援的快照類型: {$snapshotType}"),
             };
             $duration = round((microtime(true) - $startTime) * 1000, 2);
             $this->logger->debug('統計資料聚合完成', [
                 'snapshot_type' => $snapshotType,
-                'period_type' => $period->type->value,
-                'duration_ms' => $duration,
+                'period_type'   => $period->type->value,
+                'duration_ms'   => $duration,
             ]);
 
             return $snapshot;
         } catch (Throwable $e) {
             $this->logger->error('統計資料聚合失敗', [
                 'snapshot_type' => $snapshotType,
-                'period_type' => $period->type->value,
-                'error' => $e->getMessage(),
+                'period_type'   => $period->type->value,
+                'error'         => $e->getMessage(),
             ]);
 
             throw new RuntimeException(
@@ -302,12 +304,12 @@ final class StatisticsCalculationCommand
             $this->cacheService->flushByTags($tags);
             $this->logger->debug('統計快取清除完成', [
                 'snapshot_type' => $snapshotType,
-                'cache_tags' => $tags,
+                'cache_tags'    => $tags,
             ]);
         } catch (Throwable $e) {
             $this->logger->warning('統計快取清除失敗', [
                 'snapshot_type' => $snapshotType,
-                'error' => $e->getMessage(),
+                'error'         => $e->getMessage(),
             ]);
         }
     }
@@ -341,9 +343,9 @@ final class StatisticsCalculationCommand
         }
         // 建立新的鎖定文件
         $lockData = [
-            'pid' => getmypid(),
+            'pid'        => getmypid(),
             'start_time' => time(),
-            'periods' => $periods,
+            'periods'    => $periods,
         ];
         if (!file_put_contents($lockFilePath, json_encode($lockData))) {
             throw new RuntimeException('無法建立執行鎖定文件');
@@ -368,13 +370,13 @@ final class StatisticsCalculationCommand
     private function initializeExecution(): void
     {
         $this->executionStats = [
-            'start_time' => microtime(true),
-            'end_time' => null,
-            'total_snapshots' => 0,
+            'start_time'           => microtime(true),
+            'end_time'             => null,
+            'total_snapshots'      => 0,
             'successful_snapshots' => 0,
-            'failed_snapshots' => 0,
-            'retries' => 0,
-            'errors' => [],
+            'failed_snapshots'     => 0,
+            'retries'              => 0,
+            'errors'               => [],
         ];
     }
 
@@ -417,8 +419,8 @@ final class StatisticsCalculationCommand
     {
         $this->finalizeExecution();
         $this->logger->error('統計計算任務執行失敗', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
+            'error'           => $e->getMessage(),
+            'trace'           => $e->getTraceAsString(),
             'execution_stats' => $this->executionStats,
         ]);
     }

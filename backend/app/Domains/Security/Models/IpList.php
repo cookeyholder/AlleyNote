@@ -95,14 +95,14 @@ class IpList implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'ip_address' => $this->ipAddress,
-            'type' => $this->type,
-            'unit_id' => $this->unitId,
+            'id'          => $this->id,
+            'uuid'        => $this->uuid,
+            'ip_address'  => $this->ipAddress,
+            'type'        => $this->type,
+            'unit_id'     => $this->unitId,
             'description' => $this->description,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
+            'created_at'  => $this->createdAt,
+            'updated_at'  => $this->updatedAt,
         ];
     }
 

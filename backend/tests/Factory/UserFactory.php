@@ -22,10 +22,10 @@ class UserFactory
         $random = bin2hex(random_bytes(4));
 
         return array_merge([
-            'username' => 'user_' . $random,
-            'email' => 'user_' . $random . '@example.com',
-            'password' => password_hash('password123', PASSWORD_BCRYPT),
-            'status' => 1,
+            'username'   => 'user_' . $random,
+            'email'      => 'user_' . $random . '@example.com',
+            'password'   => password_hash('password123', PASSWORD_BCRYPT),
+            'status'     => 1,
             'created_at' => $now,
             'updated_at' => $now,
         ], $attributes);

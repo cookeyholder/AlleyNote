@@ -30,7 +30,7 @@ class PostViewStatisticsService
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return [
-            'views' => (int) ($result['views'] ?? 0),
+            'views'           => (int) ($result['views'] ?? 0),
             'unique_visitors' => (int) ($result['unique_visitors'] ?? 0),
         ];
     }
@@ -39,6 +39,7 @@ class PostViewStatisticsService
      * 取得多篇文章的瀏覽統計（批量查詢）.
      *
      * @param array<int> $postIds
+     *
      * @return array<int, array{views: int, unique_visitors: int}>
      */
     public function getBatchPostViewStats(array $postIds): array
@@ -61,7 +62,7 @@ class PostViewStatisticsService
         $stats = [];
         foreach ($results as $row) {
             $stats[(int) $row['post_id']] = [
-                'views' => (int) $row['views'],
+                'views'           => (int) $row['views'],
                 'unique_visitors' => (int) $row['unique_visitors'],
             ];
         }
@@ -69,7 +70,7 @@ class PostViewStatisticsService
         foreach ($postIds as $postId) {
             if (!isset($stats[$postId])) {
                 $stats[$postId] = [
-                    'views' => 0,
+                    'views'           => 0,
                     'unique_visitors' => 0,
                 ];
             }
@@ -90,13 +91,13 @@ class PostViewStatisticsService
         ');
 
         return $stmt->execute([
-            'uuid' => $uuid,
-            'post_id' => $postId,
-            'user_id' => $userId,
-            'user_ip' => $userIp,
+            'uuid'       => $uuid,
+            'post_id'    => $postId,
+            'user_id'    => $userId,
+            'user_ip'    => $userIp,
             'user_agent' => $userAgent,
-            'referrer' => $referrer,
-            'view_date' => date('Y-m-d H:i:s'),
+            'referrer'   => $referrer,
+            'view_date'  => date('Y-m-d H:i:s'),
         ]);
     }
 

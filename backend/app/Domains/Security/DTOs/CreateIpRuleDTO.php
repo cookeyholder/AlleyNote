@@ -21,6 +21,7 @@ class CreateIpRuleDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array<string, mixed> $data 輸入資料
+     *
      *                                   * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -129,8 +130,8 @@ class CreateIpRuleDTO extends BaseDTO
     {
         return [
             'ip_address' => 'required|string|ip_or_cidr',
-            'action' => 'required|string|ip_action',
-            'reason' => 'ip_reason:500',
+            'action'     => 'required|string|ip_action',
+            'reason'     => 'ip_reason:500',
             'created_by' => 'required|created_by',
         ];
     }
@@ -142,8 +143,8 @@ class CreateIpRuleDTO extends BaseDTO
     {
         return [
             'ip_address' => $this->ipAddress,
-            'action' => $this->action,
-            'reason' => $this->reason,
+            'action'     => $this->action,
+            'reason'     => $this->reason,
             'created_by' => $this->createdBy,
         ];
     }
@@ -243,18 +244,18 @@ class CreateIpRuleDTO extends BaseDTO
     public function getDetailedInfo(): array
     {
         return [
-            'ip_address' => $this->ipAddress,
-            'ip_part' => $this->getIpPart(),
-            'cidr_suffix' => $this->getCidrSuffix(),
-            'action' => $this->action,
-            'reason' => $this->reason,
-            'is_cidr' => $this->isCidrFormat(),
-            'is_ipv4' => $this->isIpv4(),
-            'is_ipv6' => $this->isIpv6(),
-            'is_private' => $this->isPrivateIp(),
-            'is_loopback' => $this->isLoopback(),
+            'ip_address'   => $this->ipAddress,
+            'ip_part'      => $this->getIpPart(),
+            'cidr_suffix'  => $this->getCidrSuffix(),
+            'action'       => $this->action,
+            'reason'       => $this->reason,
+            'is_cidr'      => $this->isCidrFormat(),
+            'is_ipv4'      => $this->isIpv4(),
+            'is_ipv6'      => $this->isIpv6(),
+            'is_private'   => $this->isPrivateIp(),
+            'is_loopback'  => $this->isLoopback(),
             'display_name' => $this->getDisplayName(),
-            'created_by' => $this->createdBy,
+            'created_by'   => $this->createdBy,
         ];
     }
 }

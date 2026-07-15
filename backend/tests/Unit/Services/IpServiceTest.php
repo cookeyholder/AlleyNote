@@ -50,16 +50,16 @@ class IpServiceTest extends UnitTestCase
     {
         $data = [
             'ip_address' => '192.168.1.1',
-            'action' => 'allow',
-            'reason' => '測試白名單',
+            'action'     => 'allow',
+            'reason'     => '測試白名單',
             'created_by' => 1,
         ];
 
         $expectedIpList = new IpList([
-            'id' => 1,
-            'uuid' => 'test-uuid',
-            'ip_address' => '192.168.1.1',
-            'type' => 1,
+            'id'          => 1,
+            'uuid'        => 'test-uuid',
+            'ip_address'  => '192.168.1.1',
+            'type'        => 1,
             'description' => '測試白名單',
         ]);
 
@@ -84,7 +84,7 @@ class IpServiceTest extends UnitTestCase
     {
         $data = [
             'ip_address' => 'invalid-ip',
-            'action' => 'allow',
+            'action'     => 'allow',
             'created_by' => 1,
         ];
 
@@ -105,7 +105,7 @@ class IpServiceTest extends UnitTestCase
     {
         $data = [
             'ip_address' => '192.168.1.1',
-            'action' => 'invalid_action',
+            'action'     => 'invalid_action',
             'created_by' => 1,
         ];
 
@@ -175,13 +175,13 @@ class IpServiceTest extends UnitTestCase
         foreach ($validRanges as $range) {
             $data = [
                 'ip_address' => $range,
-                'action' => 'block',
+                'action'     => 'block',
                 'created_by' => 1,
             ];
 
             $mockIpList = new IpList([
                 'ip_address' => $range,
-                'type' => 0,
+                'type'       => 0,
             ]);
 
             $this->validator->shouldReceive('validateOrFail')
@@ -207,11 +207,11 @@ class IpServiceTest extends UnitTestCase
         $mockRules = [
             new IpList([
                 'ip_address' => '192.168.1.1',
-                'type' => 1,
+                'type'       => 1,
             ]),
             new IpList([
                 'ip_address' => '192.168.1.2',
-                'type' => 1,
+                'type'       => 1,
             ]),
         ];
 

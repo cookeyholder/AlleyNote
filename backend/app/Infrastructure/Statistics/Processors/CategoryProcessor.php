@@ -160,7 +160,7 @@ class CategoryProcessor
             $percentage = ($item['value'] / $total) * 100;
             $percentageData[] = [
                 'category' => $item['category'],
-                'value' => $percentage,
+                'value'    => $percentage,
             ];
         }
         $processedData = $this->sortAndProcessData($percentageData, 'desc');
@@ -215,7 +215,7 @@ class CategoryProcessor
             if ($othersValue > 0) {
                 $topData[] = [
                     'category' => '其他',
-                    'value' => $othersValue,
+                    'value'    => $othersValue,
                 ];
             }
         }
@@ -326,6 +326,7 @@ class CategoryProcessor
      * 排序並處理資料.
      *
      * @param array<array{category: string, value: float}> $data
+     *
      * @return array<array{category: string, value: float}>
      */
     private function sortAndProcessData(array $data, string $order = 'desc'): array
@@ -350,6 +351,7 @@ class CategoryProcessor
      * 取得顏色配色方案.
      *
      * @param string $scheme 配色方案名稱
+     *
      * @return array<string>
      */
     public function getColorScheme(string $scheme = 'default'): array
@@ -414,11 +416,11 @@ class CategoryProcessor
             $labels,
             [$dataset],
             [
-                'indexAxis' => 'y', // 水平長條圖
+                'indexAxis'  => 'y', // 水平長條圖
                 'responsive' => true,
-                'plugins' => [
+                'plugins'    => [
                     'legend' => [
-                        'display' => true,
+                        'display'  => true,
                         'position' => 'top',
                     ],
                 ],
@@ -446,9 +448,9 @@ class CategoryProcessor
 
         return match ($chartType) {
             'pie', 'doughnut' => $this->processPieChartData($rawData, $metricName),
-            'bar' => $this->processBarChartData($rawData, $metricName),
-            'horizontal-bar' => $this->processHorizontalBarChartData($rawData, $metricName),
-            default => $this->processBarChartData($rawData, $metricName),
+            'bar'             => $this->processBarChartData($rawData, $metricName),
+            'horizontal-bar'  => $this->processHorizontalBarChartData($rawData, $metricName),
+            default           => $this->processBarChartData($rawData, $metricName),
         };
     }
 
@@ -467,7 +469,7 @@ class CategoryProcessor
 
                 return [
                     'category' => is_string($categoryValue) ? $categoryValue : 'Unknown',
-                    'value' => is_numeric($value) ? (float) $value : 0.0,
+                    'value'    => is_numeric($value) ? (float) $value : 0.0,
                 ];
             }
 
@@ -492,7 +494,7 @@ class CategoryProcessor
 
                 return [
                     'category' => is_string($titleValue) ? $titleValue : 'Unknown',
-                    'value' => is_numeric($value) ? (float) $value : 0.0,
+                    'value'    => is_numeric($value) ? (float) $value : 0.0,
                 ];
             }
 

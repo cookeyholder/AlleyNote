@@ -35,7 +35,9 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的統計快照
+     *
      * @throws RuntimeException 當統計資料不完整或計算失敗時
      */
     public function createOverviewSnapshot(
@@ -74,7 +76,9 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的文章統計快照
+     *
      * @throws RuntimeException 當文章統計資料計算失敗時
      */
     public function createPostsSnapshot(
@@ -111,7 +115,9 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的使用者統計快照
+     *
      * @throws RuntimeException 當使用者統計資料計算失敗時
      */
     public function createUsersSnapshot(
@@ -148,6 +154,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的熱門內容統計快照
      */
     public function createPopularSnapshot(
@@ -181,7 +188,9 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * @param array<string> $types 要建立的快照類型
      * @param array<string, mixed> $metadata 共用的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return array<string, StatisticsSnapshot> 建立的快照陣列，以類型為鍵
+     *
      * @throws RuntimeException 當批量建立過程中發生錯誤時
      */
     public function createBatchSnapshots(
@@ -198,10 +207,10 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
             try {
                 $snapshots[$type] = match ($type) {
                     StatisticsSnapshot::TYPE_OVERVIEW => $this->createOverviewSnapshot($period, $metadata, $expiresAt),
-                    StatisticsSnapshot::TYPE_POSTS => $this->createPostsSnapshot($period, $metadata, $expiresAt),
-                    StatisticsSnapshot::TYPE_USERS => $this->createUsersSnapshot($period, $metadata, $expiresAt),
-                    StatisticsSnapshot::TYPE_POPULAR => $this->createPopularSnapshot($period, $metadata, $expiresAt),
-                    default => throw new InvalidArgumentException("Unsupported snapshot type: {$type}"),
+                    StatisticsSnapshot::TYPE_POSTS    => $this->createPostsSnapshot($period, $metadata, $expiresAt),
+                    StatisticsSnapshot::TYPE_USERS    => $this->createUsersSnapshot($period, $metadata, $expiresAt),
+                    StatisticsSnapshot::TYPE_POPULAR  => $this->createPopularSnapshot($period, $metadata, $expiresAt),
+                    default                           => throw new InvalidArgumentException("Unsupported snapshot type: {$type}"),
                 };
             } catch (RuntimeException|InvalidArgumentException $e) {
                 $errors[$type] = $e->getMessage();
@@ -220,7 +229,9 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 重新計算指定快照的統計資料並更新。
      *
      * @param StatisticsSnapshot $snapshot 要更新的快照
+     *
      * @return StatisticsSnapshot 更新後的快照
+     *
      * @throws RuntimeException 當更新過程中發生錯誤時
      */
     public function updateSnapshot(StatisticsSnapshot $snapshot): StatisticsSnapshot
@@ -229,17 +240,17 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         // 根據快照類型重新計算統計資料
         $newData = match ($snapshot->getSnapshotType()) {
             StatisticsSnapshot::TYPE_OVERVIEW => $this->aggregateOverviewData($snapshot->getPeriod()),
-            StatisticsSnapshot::TYPE_POSTS => $this->aggregatePostsData($snapshot->getPeriod()),
-            StatisticsSnapshot::TYPE_USERS => $this->aggregateUsersData($snapshot->getPeriod()),
-            StatisticsSnapshot::TYPE_POPULAR => $this->aggregatePopularData($snapshot->getPeriod()),
-            default => throw new InvalidArgumentException("Unsupported snapshot type: {$snapshot->getSnapshotType()}"),
+            StatisticsSnapshot::TYPE_POSTS    => $this->aggregatePostsData($snapshot->getPeriod()),
+            StatisticsSnapshot::TYPE_USERS    => $this->aggregateUsersData($snapshot->getPeriod()),
+            StatisticsSnapshot::TYPE_POPULAR  => $this->aggregatePopularData($snapshot->getPeriod()),
+            default                           => throw new InvalidArgumentException("Unsupported snapshot type: {$snapshot->getSnapshotType()}"),
         };
         // 更新統計資料
         $snapshot->updateStatistics($newData);
         // 更新元資料
         $snapshot->updateMetadata([
-            'last_updated_by' => 'StatisticsAggregationService',
-            'data_points' => count($newData),
+            'last_updated_by'    => 'StatisticsAggregationService',
+            'data_points'        => count($newData),
             'calculation_method' => 'aggregated',
         ]);
 
@@ -254,7 +265,9 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * @param StatisticsPeriod $currentPeriod 當前週期
      * @param StatisticsPeriod $previousPeriod 上一週期
      * @param string $snapshotType 快照類型
+     *
      * @return array<string, mixed> 趨勢分析資料
+     *
      * @throws RuntimeException 當趨勢計算失敗時
      */
     public function calculateTrends(
@@ -283,6 +296,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 刪除已過期的統計快照，維護資料庫效能。
      *
      * @param DateTimeInterface|null $beforeDate 指定日期前的快照，null 表示當前時間
+     *
      * @return int 清理的快照數量
      */
     public function cleanExpiredSnapshots(?DateTimeInterface $beforeDate = null): int
@@ -321,6 +335,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 驗證快照類型陣列的有效性.
      *
      * @param array<string> $types 快照類型陣列
+     *
      * @throws InvalidArgumentException 當包含無效類型時
      */
     private function validateSnapshotTypes(array $types): void
@@ -341,6 +356,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 聚合綜合統計資料.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, mixed> 聚合的統計資料
      */
     private function aggregateOverviewData(StatisticsPeriod $period): array
@@ -355,21 +371,21 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $userActivity = $this->userStatisticsRepository->getUserActivitySummary($period);
 
         return [
-            'total_posts' => $postsCount,
-            'active_users' => $activeUsersCount,
-            'new_users' => $newUsersCount,
-            'post_activity' => $postActivity,
-            'user_activity' => $userActivity,
+            'total_posts'        => $postsCount,
+            'active_users'       => $activeUsersCount,
+            'new_users'          => $newUsersCount,
+            'post_activity'      => $postActivity,
+            'user_activity'      => $userActivity,
             'engagement_metrics' => [
                 'posts_per_active_user' => $activeUsersCount > 0 ? round($postsCount / $activeUsersCount, 2) : 0,
-                'user_growth_rate' => $this->calculateGrowthRate($newUsersCount, $activeUsersCount),
-                'content_velocity' => $this->calculateContentVelocity($period, $postsCount),
+                'user_growth_rate'      => $this->calculateGrowthRate($newUsersCount, $activeUsersCount),
+                'content_velocity'      => $this->calculateContentVelocity($period, $postsCount),
             ],
             'period_summary' => [
-                'type' => $period->type->value,
+                'type'          => $period->type->value,
                 'duration_days' => $period->getDurationInDays(),
-                'start' => $period->startTime->format('Y-m-d H:i:s'),
-                'end' => $period->endTime->format('Y-m-d H:i:s'),
+                'start'         => $period->startTime->format('Y-m-d H:i:s'),
+                'end'           => $period->endTime->format('Y-m-d H:i:s'),
             ],
         ];
     }
@@ -378,19 +394,20 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 聚合文章統計資料.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, mixed> 聚合的文章統計資料
      */
     private function aggregatePostsData(StatisticsPeriod $period): array
     {
         return [
-            'by_status' => $this->postStatisticsRepository->getPostsCountByStatus($period),
-            'by_source' => $this->postStatisticsRepository->getPostsCountBySource($period),
-            'views_statistics' => $this->postStatisticsRepository->getPostViewsStatistics($period),
-            'top_posts' => $this->postStatisticsRepository->getPopularPosts($period, 10),
+            'by_status'         => $this->postStatisticsRepository->getPostsCountByStatus($period),
+            'by_source'         => $this->postStatisticsRepository->getPostsCountBySource($period),
+            'views_statistics'  => $this->postStatisticsRepository->getPostViewsStatistics($period),
+            'top_posts'         => $this->postStatisticsRepository->getPopularPosts($period, 10),
             'length_statistics' => $this->postStatisticsRepository->getPostsLengthStatistics($period),
             'time_distribution' => $this->postStatisticsRepository->getPostsPublishTimeDistribution($period),
-            'top_authors' => $this->postStatisticsRepository->getPostsCountByUser($period, 5),
-            'pinned_stats' => $this->postStatisticsRepository->getPinnedPostsStatistics($period),
+            'top_authors'       => $this->postStatisticsRepository->getPostsCountByUser($period, 5),
+            'pinned_stats'      => $this->postStatisticsRepository->getPinnedPostsStatistics($period),
         ];
     }
 
@@ -398,19 +415,20 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 聚合使用者統計資料.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, mixed> 聚合的使用者統計資料
      */
     private function aggregateUsersData(StatisticsPeriod $period): array
     {
         return [
-            'active_users' => $this->userStatisticsRepository->getActiveUsersCount($period),
-            'by_activity_type' => $this->userStatisticsRepository->getActiveUsersByActivityType($period),
-            'login_activity' => $this->userStatisticsRepository->getUserLoginActivity($period),
-            'most_active' => $this->userStatisticsRepository->getMostActiveUsers($period, 10),
-            'engagement_stats' => $this->userStatisticsRepository->getUserEngagementStatistics($period),
-            'registration_sources' => $this->userStatisticsRepository->getUserRegistrationSources($period),
+            'active_users'              => $this->userStatisticsRepository->getActiveUsersCount($period),
+            'by_activity_type'          => $this->userStatisticsRepository->getActiveUsersByActivityType($period),
+            'login_activity'            => $this->userStatisticsRepository->getUserLoginActivity($period),
+            'most_active'               => $this->userStatisticsRepository->getMostActiveUsers($period, 10),
+            'engagement_stats'          => $this->userStatisticsRepository->getUserEngagementStatistics($period),
+            'registration_sources'      => $this->userStatisticsRepository->getUserRegistrationSources($period),
             'geographical_distribution' => $this->userStatisticsRepository->getUserGeographicalDistribution($period),
-            'by_role' => $this->userStatisticsRepository->getUsersCountByRole($period),
+            'by_role'                   => $this->userStatisticsRepository->getUsersCountByRole($period),
         ];
     }
 
@@ -418,22 +436,23 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      * 聚合熱門內容資料.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, mixed> 聚合的熱門內容資料
      */
     private function aggregatePopularData(StatisticsPeriod $period): array
     {
         return [
             'top_posts' => [
-                'by_views' => $this->postStatisticsRepository->getPopularPosts($period, 10, 'views'),
+                'by_views'    => $this->postStatisticsRepository->getPopularPosts($period, 10, 'views'),
                 'by_comments' => $this->postStatisticsRepository->getPopularPosts($period, 10, 'comments'),
-                'by_likes' => $this->postStatisticsRepository->getPopularPosts($period, 10, 'likes'),
+                'by_likes'    => $this->postStatisticsRepository->getPopularPosts($period, 10, 'likes'),
             ],
             'top_users' => [
-                'by_posts' => $this->userStatisticsRepository->getMostActiveUsers($period, 10, 'posts'),
+                'by_posts'    => $this->userStatisticsRepository->getMostActiveUsers($period, 10, 'posts'),
                 'by_activity' => $this->userStatisticsRepository->getMostActiveUsers($period, 10, 'activity_score'),
-                'by_logins' => $this->userStatisticsRepository->getMostActiveUsers($period, 10, 'logins'),
+                'by_logins'   => $this->userStatisticsRepository->getMostActiveUsers($period, 10, 'logins'),
             ],
-            'trending_sources' => $this->postStatisticsRepository->getPostsCountBySource($period),
+            'trending_sources'    => $this->postStatisticsRepository->getPostsCountBySource($period),
             'peak_activity_times' => $this->userStatisticsRepository->getUserActivityTimeDistribution($period),
         ];
     }
@@ -447,7 +466,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
     {
         return [
             'generated_by' => 'StatisticsAggregationService',
-            'version' => '1.0.0',
+            'version'      => '1.0.0',
             'generated_at' => date('Y-m-d H:i:s'),
             'data_sources' => [
                 'posts' => 'PostStatisticsRepository',
@@ -461,6 +480,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      *
      * @param int $current 當前數值
      * @param int $previous 上期數值
+     *
      * @return float 成長率百分比
      */
     private function calculateGrowthRate(int $current, int $previous): float
@@ -477,6 +497,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $totalPosts 總文章數
+     *
      * @return float 每日平均發布量
      */
     private function calculateContentVelocity(StatisticsPeriod $period, int $totalPosts): float
@@ -491,6 +512,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      *
      * @param StatisticsSnapshot $current 當前快照
      * @param StatisticsSnapshot $previous 上期快照
+     *
      * @return array<string, mixed> 趨勢指標
      */
     private function computeTrendMetrics(StatisticsSnapshot $current, StatisticsSnapshot $previous): array
@@ -499,13 +521,13 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
         $previousTotal = $previous->getTotalCount();
 
         return [
-            'current_value' => $currentTotal,
-            'previous_value' => $previousTotal,
-            'absolute_change' => $currentTotal - $previousTotal,
+            'current_value'     => $currentTotal,
+            'previous_value'    => $previousTotal,
+            'absolute_change'   => $currentTotal - $previousTotal,
             'percentage_change' => $this->calculateGrowthRate($currentTotal, $previousTotal),
-            'trend_direction' => $this->determineTrendDirection($currentTotal, $previousTotal),
+            'trend_direction'   => $this->determineTrendDirection($currentTotal, $previousTotal),
             'comparison_period' => [
-                'current' => $current->getPeriod()->format(),
+                'current'  => $current->getPeriod()->format(),
                 'previous' => $previous->getPeriod()->format(),
             ],
         ];
@@ -516,6 +538,7 @@ class StatisticsAggregationService implements StatisticsAggregationServiceInterf
      *
      * @param int $current 當前數值
      * @param int $previous 上期數值
+     *
      * @return string 趨勢方向 ('up', 'down', 'stable')
      */
     private function determineTrendDirection(int $current, int $previous): string

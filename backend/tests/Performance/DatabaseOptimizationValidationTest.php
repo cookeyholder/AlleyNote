@@ -40,15 +40,15 @@ class DatabaseOptimizationValidationTest extends SecureDDDTestCase
     {
         $queries = [
             'user_category_query' => [
-                'sql' => 'SELECT COUNT(*) FROM user_activity_logs WHERE user_id = ? AND action_category = ?',
+                'sql'    => 'SELECT COUNT(*) FROM user_activity_logs WHERE user_id = ? AND action_category = ?',
                 'params' => ['550e8400-e29b-41d4-a716-446655440000', 'authentication'],
             ],
             'user_status_query' => [
-                'sql' => 'SELECT COUNT(*) FROM user_activity_logs WHERE user_id = ? AND status = ?',
+                'sql'    => 'SELECT COUNT(*) FROM user_activity_logs WHERE user_id = ? AND status = ?',
                 'params' => ['550e8400-e29b-41d4-a716-446655440000', 'success'],
             ],
             'category_time_query' => [
-                'sql' => 'SELECT COUNT(*) FROM user_activity_logs WHERE action_category = ? AND occurred_at >= ?',
+                'sql'    => 'SELECT COUNT(*) FROM user_activity_logs WHERE action_category = ? AND occurred_at >= ?',
                 'params' => ['content', '2024-01-01 00:00:00'],
             ],
         ];

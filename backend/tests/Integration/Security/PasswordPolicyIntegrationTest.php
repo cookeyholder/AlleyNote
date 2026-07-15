@@ -24,11 +24,11 @@ final class PasswordPolicyIntegrationTest extends IntegrationTestCase
     public static function invalidPasswordCases(): array
     {
         return [
-            'too_short' => ['Ab1!', '密碼長度至少需要 8 個字元'],
+            'too_short'         => ['Ab1!', '密碼長度至少需要 8 個字元'],
             'missing_uppercase' => ['abcd1234!', '大寫字母'],
-            'missing_number' => ['Abcdefg!', '數字'],
-            'sequential' => ['Abc12345!', '連續'],
-            'repeating' => ['Aaaa1234!', '重複'],
+            'missing_number'    => ['Abcdefg!', '數字'],
+            'sequential'        => ['Abc12345!', '連續'],
+            'repeating'         => ['Aaaa1234!', '重複'],
         ];
     }
 

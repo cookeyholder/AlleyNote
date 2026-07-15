@@ -37,7 +37,9 @@ final class StatisticsApplicationService
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的統計快照
+     *
      * @throws InvalidArgumentException 當參數無效時
      * @throws RuntimeException 當建立過程中發生錯誤時
      */
@@ -68,7 +70,9 @@ final class StatisticsApplicationService
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的文章統計快照
+     *
      * @throws InvalidArgumentException 當參數無效時
      * @throws RuntimeException 當建立過程中發生錯誤時
      */
@@ -97,7 +101,9 @@ final class StatisticsApplicationService
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的使用者統計快照
+     *
      * @throws InvalidArgumentException 當參數無效時
      * @throws RuntimeException 當建立過程中發生錯誤時
      */
@@ -126,7 +132,9 @@ final class StatisticsApplicationService
      * @param StatisticsPeriod $period 統計週期
      * @param array<string, mixed> $metadata 額外的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return StatisticsSnapshot 建立的熱門內容統計快照
+     *
      * @throws InvalidArgumentException 當參數無效時
      * @throws RuntimeException 當建立過程中發生錯誤時
      */
@@ -156,7 +164,9 @@ final class StatisticsApplicationService
      * @param array<string> $types 要建立的快照類型
      * @param array<string, mixed> $metadata 共用的元資料
      * @param DateTimeInterface|null $expiresAt 過期時間
+     *
      * @return array<string, StatisticsSnapshot> 建立的快照陣列
+     *
      * @throws InvalidArgumentException 當參數無效時
      * @throws RuntimeException 當批量建立過程中發生錯誤時
      */
@@ -186,7 +196,9 @@ final class StatisticsApplicationService
      * 重新計算並更新指定的統計快照，並清除相關快取。
      *
      * @param StatisticsSnapshot $snapshot 要更新的快照
+     *
      * @return StatisticsSnapshot 更新後的快照
+     *
      * @throws RuntimeException 當更新過程中發生錯誤時
      */
     public function updateSnapshot(StatisticsSnapshot $snapshot): StatisticsSnapshot
@@ -210,7 +222,9 @@ final class StatisticsApplicationService
      * @param StatisticsPeriod $previousPeriod 上一週期
      * @param string $snapshotType 快照類型
      * @param int $cacheTtl 快取存活時間（秒），預設1小時
+     *
      * @return array<string, mixed> 趨勢分析資料
+     *
      * @throws RuntimeException 當趨勢計算失敗時
      */
     public function calculateTrends(
@@ -238,7 +252,9 @@ final class StatisticsApplicationService
      * 刪除過期的統計快照並清除相關快取。
      *
      * @param DateTimeInterface|null $beforeDate 指定日期前的快照，null 表示當前時間
+     *
      * @return int 清理的快照數量
+     *
      * @throws RuntimeException 當清理過程中發生錯誤時
      */
     public function cleanExpiredSnapshots(?DateTimeInterface $beforeDate = null): int
@@ -262,6 +278,7 @@ final class StatisticsApplicationService
      * @param string $snapshotType 快照類型
      * @param StatisticsPeriod $period 統計週期
      * @param int $cacheTtl 快取存活時間（秒），預設30分鐘
+     *
      * @return array<string, mixed> 統計資料
      */
     public function getCachedStatistics(
@@ -292,6 +309,7 @@ final class StatisticsApplicationService
      *
      * @param array<string> $snapshotTypes 要預熱的快照類型
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, bool> 預熱結果，true 表示成功
      */
     public function warmCache(array $snapshotTypes, StatisticsPeriod $period): array
@@ -346,6 +364,7 @@ final class StatisticsApplicationService
      * 驗證快照類型陣列.
      *
      * @param array<string> $types 快照類型陣列
+     *
      * @throws InvalidArgumentException 當類型陣列無效時
      */
     private function validateSnapshotTypes(array $types): void

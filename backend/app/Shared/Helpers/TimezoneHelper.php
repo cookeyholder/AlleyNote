@@ -53,6 +53,7 @@ class TimezoneHelper
      * 將 UTC 時間轉換為網站時區
      *
      * @param string $utcTime RFC3339 格式的 UTC 時間（例如：2025-10-11T04:30:00Z）
+     *
      * @return string RFC3339 格式的網站時區時間（例如：2025-10-11T12:30:00+08:00）
      */
     public static function utcToSiteTimezone(string $utcTime): string
@@ -73,6 +74,7 @@ class TimezoneHelper
      * 將網站時區時間轉換為 UTC.
      *
      * @param string $siteTime 網站時區時間（可以是多種格式）
+     *
      * @return string RFC3339 格式的 UTC 時間（例如：2025-10-11T04:30:00Z）
      */
     public static function siteTimezoneToUtc(string $siteTime): string
@@ -138,6 +140,7 @@ class TimezoneHelper
      *
      * @param string $utcTime UTC 時間
      * @param string $format 格式（預設：Y-m-d H:i:s）
+     *
      * @return string 格式化後的網站時區時間
      */
     public static function formatForDisplay(string $utcTime, string $format = 'Y-m-d H:i:s'): string

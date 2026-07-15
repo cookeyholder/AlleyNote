@@ -76,14 +76,14 @@ final class TokenBlacklistEntryTest extends UnitTestCase
     public function testFromArray(): void
     {
         $data = [
-            'jti' => $this->validJti,
-            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
-            'expires_at' => $this->futureExpiry,
+            'jti'            => $this->validJti,
+            'token_type'     => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
+            'expires_at'     => $this->futureExpiry,
             'blacklisted_at' => $this->blacklistedTime,
-            'reason' => TokenBlacklistEntry::REASON_LOGOUT,
-            'user_id' => 123,
-            'device_id' => 'test-device',
-            'metadata' => ['session_id' => 'sess-456'],
+            'reason'         => TokenBlacklistEntry::REASON_LOGOUT,
+            'user_id'        => 123,
+            'device_id'      => 'test-device',
+            'metadata'       => ['session_id' => 'sess-456'],
         ];
 
         $entry = TokenBlacklistEntry::fromArray($data);
@@ -105,11 +105,11 @@ final class TokenBlacklistEntryTest extends UnitTestCase
         $pastTime = $now->sub(new DateInterval('PT30M'));
 
         $data = [
-            'jti' => $this->validJti,
-            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
-            'expires_at' => $futureTime->format('Y-m-d H:i:s'),
+            'jti'            => $this->validJti,
+            'token_type'     => TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
+            'expires_at'     => $futureTime->format('Y-m-d H:i:s'),
             'blacklisted_at' => $pastTime->format('Y-m-d H:i:s'),
-            'reason' => TokenBlacklistEntry::REASON_REVOKED,
+            'reason'         => TokenBlacklistEntry::REASON_REVOKED,
         ];
 
         $entry = TokenBlacklistEntry::fromArray($data);
@@ -733,9 +733,9 @@ final class TokenBlacklistEntryTest extends UnitTestCase
         $this->expectExceptionMessage('Missing required field: reason');
 
         TokenBlacklistEntry::fromArray([
-            'jti' => $this->validJti,
-            'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
-            'expires_at' => $this->futureExpiry,
+            'jti'            => $this->validJti,
+            'token_type'     => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
+            'expires_at'     => $this->futureExpiry,
             'blacklisted_at' => $this->blacklistedTime,
         ]);
     }

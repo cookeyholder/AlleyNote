@@ -54,8 +54,8 @@ class CSPReportController
         } catch (Throwable $e) {
             $this->logger->error('CSP Report handling error', [
                 'error_message' => $e->getMessage(),
-                'error_file' => $e->getFile(),
-                'error_line' => $e->getLine(),
+                'error_file'    => $e->getFile(),
+                'error_line'    => $e->getLine(),
             ]);
 
             return $response->withStatus(500);
@@ -89,11 +89,11 @@ class CSPReportController
     private function logViolation(array $report, Request $request): void
     {
         $logData = [
-            'client_ip' => $this->getClientIP($request),
+            'client_ip'       => $this->getClientIP($request),
             'user_agent_hash' => hash('sha256', $request->getHeaderLine('User-Agent')),
-            'referer' => $request->getHeaderLine('Referer'),
-            'csp_report' => $report['csp-report'],
-            'severity' => $this->calculateSeverity($report['csp-report']),
+            'referer'         => $request->getHeaderLine('Referer'),
+            'csp_report'      => $report['csp-report'],
+            'severity'        => $this->calculateSeverity($report['csp-report']),
         ];
         // 使用安全日誌服務記錄 CSP 違規
         if ($logData['severity'] === ActivitySeverity::HIGH) {
@@ -177,10 +177,10 @@ class CSPReportController
         $recentViolations = $this->getRecentViolations($logData['ip'], 300); // 5分鐘內
         if (count($recentViolations) > 10) {
             $this->sendAlert([
-                'type' => 'multiple_csp_violations',
-                'ip' => $logData['ip'],
-                'count' => count($recentViolations),
-                'timeframe' => '5 minutes',
+                'type'             => 'multiple_csp_violations',
+                'ip'               => $logData['ip'],
+                'count'            => count($recentViolations),
+                'timeframe'        => '5 minutes',
                 'latest_violation' => $logData,
             ]);
         }

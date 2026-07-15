@@ -117,9 +117,9 @@ final readonly class Email implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'email' => $this->value,
+            'email'      => $this->value,
             'local_part' => $this->getLocalPart(),
-            'domain' => $this->getDomain(),
+            'domain'     => $this->getDomain(),
         ];
     }
 }

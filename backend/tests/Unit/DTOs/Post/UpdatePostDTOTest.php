@@ -23,10 +23,10 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testCanCreateDTOWithFullUpdate(): void
     {
         $data = [
-            'title' => '更新的標題',
-            'content' => '更新的內容',
-            'is_pinned' => true,
-            'status' => 'published',
+            'title'        => '更新的標題',
+            'content'      => '更新的內容',
+            'is_pinned'    => true,
+            'status'       => 'published',
             'publish_date' => '2024-12-01T10:30:00+00:00',
         ];
 
@@ -138,10 +138,10 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testCanCreateEmptyDTOWithOnlyNullValues(): void
     {
         $data = [
-            'title' => null,
-            'content' => null,
-            'is_pinned' => null,
-            'status' => null,
+            'title'        => null,
+            'content'      => null,
+            'is_pinned'    => null,
+            'status'       => null,
             'publish_date' => null,
         ];
 
@@ -158,9 +158,9 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testCanCreateEmptyDTOWithOnlyEmptyStrings(): void
     {
         $data = [
-            'title' => '',
-            'content' => '',
-            'status' => '',
+            'title'        => '',
+            'content'      => '',
+            'status'       => '',
             'publish_date' => '',
         ];
 
@@ -282,7 +282,7 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testToArrayReturnsOnlyChangedFields(): void
     {
         $data = [
-            'title' => '新標題',
+            'title'     => '新標題',
             'is_pinned' => true,
         ];
 
@@ -290,7 +290,7 @@ class UpdatePostDTOTest extends UnitTestCase
         $array = $dto->toArray();
 
         $expected = [
-            'title' => '新標題',
+            'title'     => '新標題',
             'is_pinned' => true,
         ];
 
@@ -313,10 +313,10 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testToArrayWithAllFields(): void
     {
         $data = [
-            'title' => '完整更新',
-            'content' => '新內容',
-            'is_pinned' => false,
-            'status' => 'published',
+            'title'        => '完整更新',
+            'content'      => '新內容',
+            'is_pinned'    => false,
+            'status'       => 'published',
             'publish_date' => '2024-12-01T10:30:00Z',
         ];
 
@@ -324,10 +324,10 @@ class UpdatePostDTOTest extends UnitTestCase
         $array = $dto->toArray();
 
         $expected = [
-            'title' => '完整更新',
-            'content' => '新內容',
-            'is_pinned' => false,
-            'status' => 'published',
+            'title'        => '完整更新',
+            'content'      => '新內容',
+            'is_pinned'    => false,
+            'status'       => 'published',
             'publish_date' => '2024-12-01T10:30:00Z',
         ];
 
@@ -357,8 +357,8 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testJsonSerializationWorks(): void
     {
         $data = [
-            'title' => '測試序列化',
-            'content' => '測試內容',
+            'title'     => '測試序列化',
+            'content'   => '測試內容',
             'is_pinned' => true,
         ];
 
@@ -404,7 +404,7 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testHandlesWhitespaceInStringFields(): void
     {
         $data = [
-            'title' => '  標題有空白  ',
+            'title'   => '  標題有空白  ',
             'content' => '  內容有空白  ',
         ];
 
@@ -418,7 +418,7 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testGetUpdatedFields(): void
     {
         $data = [
-            'title' => '新標題',
+            'title'  => '新標題',
             'status' => 'published',
         ];
 
@@ -431,7 +431,7 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testHasUpdatedField(): void
     {
         $data = [
-            'title' => '新標題',
+            'title'     => '新標題',
             'is_pinned' => true,
         ];
 
@@ -446,7 +446,7 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testHandlesEmptyPublishDate(): void
     {
         $data = [
-            'title' => '測試文章',
+            'title'        => '測試文章',
             'publish_date' => '',
         ];
 
@@ -458,7 +458,7 @@ class UpdatePostDTOTest extends UnitTestCase
     public function testValidatesUnicodeContent(): void
     {
         $data = [
-            'title' => '測試標題 🚀 with emoji',
+            'title'   => '測試標題 🚀 with emoji',
             'content' => '這是包含 emoji 的內容 🎉 和各種字符',
         ];
 

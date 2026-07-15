@@ -18,17 +18,17 @@ enum ChartType: string
     {
         return match ($this) {
             self::Line => [
-                'responsive' => true,
+                'responsive'          => true,
                 'maintainAspectRatio' => false,
-                'plugins' => [
+                'plugins'             => [
                     'legend' => ['display' => true, 'position' => 'top'],
                 ],
                 'interaction' => ['mode' => 'index', 'intersect' => false],
             ],
             self::Bar => [
-                'responsive' => true,
+                'responsive'          => true,
                 'maintainAspectRatio' => false,
-                'plugins' => [
+                'plugins'             => [
                     'legend' => ['display' => true, 'position' => 'top'],
                 ],
                 'scales' => [
@@ -37,9 +37,9 @@ enum ChartType: string
             ],
             self::Pie,
             self::Doughnut => [
-                'responsive' => true,
+                'responsive'          => true,
                 'maintainAspectRatio' => false,
-                'plugins' => [
+                'plugins'             => [
                     'legend' => ['display' => true, 'position' => 'right'],
                 ],
             ],

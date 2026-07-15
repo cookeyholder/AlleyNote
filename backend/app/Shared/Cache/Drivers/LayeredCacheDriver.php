@@ -15,11 +15,11 @@ class LayeredCacheDriver implements CacheDriverInterface
 
     /** @var array<string, int> 統計資料 */
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'sets' => 0,
-        'deletes' => 0,
-        'clears' => 0,
+        'hits'             => 0,
+        'misses'           => 0,
+        'sets'             => 0,
+        'deletes'          => 0,
+        'clears'           => 0,
         'layer_promotions' => 0,
     ];
 
@@ -258,16 +258,16 @@ class LayeredCacheDriver implements CacheDriverInterface
         $layerStats = [];
         foreach ($this->layers as $index => $layer) {
             $layerStats["layer_{$index}"] = [
-                'driver' => get_class($layer),
+                'driver'    => get_class($layer),
                 'available' => $layer->isAvailable(),
-                'stats' => $layer->getStats(),
+                'stats'     => $layer->getStats(),
             ];
         }
 
         return array_merge($this->stats, [
             'total_layers' => count($this->layers),
-            'hit_rate' => round($hitRate, 2),
-            'layers' => $layerStats,
+            'hit_rate'     => round($hitRate, 2),
+            'layers'       => $layerStats,
         ]);
     }
 
@@ -364,11 +364,11 @@ class LayeredCacheDriver implements CacheDriverInterface
     public function resetStats(): void
     {
         $this->stats = [
-            'hits' => 0,
-            'misses' => 0,
-            'sets' => 0,
-            'deletes' => 0,
-            'clears' => 0,
+            'hits'             => 0,
+            'misses'           => 0,
+            'sets'             => 0,
+            'deletes'          => 0,
+            'clears'           => 0,
             'layer_promotions' => 0,
         ];
         foreach ($this->layers as $layer) {

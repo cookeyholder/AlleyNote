@@ -29,7 +29,7 @@ class AuthorizationMiddleware
                 headers: ['Content-Type' => 'application/json'],
                 body: (string) json_encode([
                     'error' => '您沒有權限執行此操作',
-                    'code' => 'FORBIDDEN',
+                    'code'  => 'FORBIDDEN',
                 ], JSON_UNESCAPED_UNICODE),
             );
         }
@@ -45,7 +45,7 @@ class AuthorizationMiddleware
                 headers: ['Content-Type' => 'application/json'],
                 body: (string) json_encode([
                     'error' => '需要特定角色才能執行此操作',
-                    'code' => 'FORBIDDEN',
+                    'code'  => 'FORBIDDEN',
                 ], JSON_UNESCAPED_UNICODE),
             );
         }
@@ -73,11 +73,11 @@ class AuthorizationMiddleware
     public function extractActionFromMethod(string $method): string
     {
         return match (strtoupper($method)) {
-            'GET' => 'read',
-            'POST' => 'create',
+            'GET'          => 'read',
+            'POST'         => 'create',
             'PUT', 'PATCH' => 'update',
-            'DELETE' => 'delete',
-            default => 'unknown'
+            'DELETE'       => 'delete',
+            default        => 'unknown'
         };
     }
 }

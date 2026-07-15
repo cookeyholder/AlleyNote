@@ -12,11 +12,11 @@ class FileRouteCache implements RouteCacheInterface
     private int $ttl = 3600; // 預設 1 小時
 
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'size' => 0,
+        'hits'       => 0,
+        'misses'     => 0,
+        'size'       => 0,
         'created_at' => 0,
-        'last_used' => 0,
+        'last_used'  => 0,
     ];
 
     public function __construct(
@@ -100,11 +100,11 @@ class FileRouteCache implements RouteCacheInterface
         }
         // 重置統計
         $this->stats = [
-            'hits' => 0,
-            'misses' => 0,
-            'size' => 0,
+            'hits'       => 0,
+            'misses'     => 0,
+            'size'       => 0,
             'created_at' => 0,
-            'last_used' => 0,
+            'last_used'  => 0,
         ];
 
         return $result;

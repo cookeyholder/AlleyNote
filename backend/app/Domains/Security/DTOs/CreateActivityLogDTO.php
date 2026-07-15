@@ -264,21 +264,21 @@ final class CreateActivityLogDTO implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'action_type' => $this->actionType->value,
+            'action_type'     => $this->actionType->value,
             'action_category' => $this->actionType->getCategory()->value,
-            'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
-            'status' => $this->status->value,
-            'target_type' => $this->targetType,
-            'target_id' => $this->targetId,
-            'description' => $this->description ?? $this->actionType->getDescription(),
-            'metadata' => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '') : null,
-            'ip_address' => $this->ipAddress,
-            'user_agent' => $this->userAgent,
-            'request_method' => $this->requestMethod,
-            'request_path' => $this->requestPath,
-            'occurred_at' => $this->getOccurredAt()->format('Y-m-d H:i:s'),
-            'created_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+            'user_id'         => $this->userId,
+            'session_id'      => $this->sessionId,
+            'status'          => $this->status->value,
+            'target_type'     => $this->targetType,
+            'target_id'       => $this->targetId,
+            'description'     => $this->description ?? $this->actionType->getDescription(),
+            'metadata'        => $this->metadata ? (json_encode($this->metadata, JSON_UNESCAPED_UNICODE) ?? '') : null,
+            'ip_address'      => $this->ipAddress,
+            'user_agent'      => $this->userAgent,
+            'request_method'  => $this->requestMethod,
+            'request_path'    => $this->requestPath,
+            'occurred_at'     => $this->getOccurredAt()->format('Y-m-d H:i:s'),
+            'created_at'      => new DateTimeImmutable()->format('Y-m-d H:i:s'),
         ];
     }
 

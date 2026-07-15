@@ -44,11 +44,11 @@ class SwaggerController
                 ob_end_clean();
             }
             $error = [
-                'error' => 'OpenAPI 掃描失敗',
+                'error'   => 'OpenAPI 掃描失敗',
                 'message' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTraceAsString(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+                'trace'   => $e->getTraceAsString(),
             ];
             $response->getBody()->write(((json_encode($error, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));
 
@@ -119,18 +119,18 @@ class SwaggerController
     public function info(Request $request, Response $response): Response
     {
         $info = [
-            'name' => 'AlleyNote API',
-            'version' => '1.0.0',
-            'description' => 'AlleyNote 公布欄系統 REST API',
+            'name'              => 'AlleyNote API',
+            'version'           => '1.0.0',
+            'description'       => 'AlleyNote 公布欄系統 REST API',
             'documentation_url' => '/api/docs/ui',
-            'openapi_spec_url' => '/api/docs',
-            'contact' => [
-                'name' => 'AlleyNote Team',
+            'openapi_spec_url'  => '/api/docs',
+            'contact'           => [
+                'name'  => 'AlleyNote Team',
                 'email' => 'contact@alleynote.example.com',
             ],
             'license' => [
                 'name' => 'MIT',
-                'url' => 'https://opensource.org/licenses/MIT',
+                'url'  => 'https://opensource.org/licenses/MIT',
             ],
         ];
         $response->getBody()->write(((json_encode($info, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?? '') ?: ''));

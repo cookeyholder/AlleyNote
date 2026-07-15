@@ -165,17 +165,17 @@ final class DeviceInfoTest extends UnitTestCase
     public function testFromArray(): void
     {
         $data = [
-            'device_id' => $this->validDeviceId,
-            'device_name' => $this->validDeviceName,
-            'user_agent' => $this->validUserAgent,
-            'ip_address' => $this->validIpAddress,
-            'platform' => 'Windows',
-            'browser' => 'Chrome',
+            'device_id'       => $this->validDeviceId,
+            'device_name'     => $this->validDeviceName,
+            'user_agent'      => $this->validUserAgent,
+            'ip_address'      => $this->validIpAddress,
+            'platform'        => 'Windows',
+            'browser'         => 'Chrome',
             'browser_version' => '120.0.0.0',
-            'os_version' => '10.0',
-            'is_mobile' => false,
-            'is_tablet' => false,
-            'is_desktop' => true,
+            'os_version'      => '10.0',
+            'is_mobile'       => false,
+            'is_tablet'       => false,
+            'is_desktop'      => true,
         ];
 
         $deviceInfo = DeviceInfo::fromArray($data);
@@ -666,7 +666,7 @@ final class DeviceInfoTest extends UnitTestCase
         $this->expectExceptionMessage('Missing required field: device_name');
 
         DeviceInfo::fromArray([
-            'device_id' => $this->validDeviceId,
+            'device_id'  => $this->validDeviceId,
             'user_agent' => $this->validUserAgent,
             'ip_address' => $this->validIpAddress,
         ]);

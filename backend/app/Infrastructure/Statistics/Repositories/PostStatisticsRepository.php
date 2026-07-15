@@ -27,7 +27,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $sql = 'SELECT COUNT(*) FROM posts WHERE created_at >= :start_date AND created_at <= :end_date';
             $params = [
                 'start_date' => $period->startTime->format('Y-m-d H:i:s'),
-                'end_date' => $period->endTime->format('Y-m-d H:i:s'),
+                'end_date'   => $period->endTime->format('Y-m-d H:i:s'),
             ];
             if ($status !== null) {
                 $sql .= ' AND status = :status';
@@ -124,8 +124,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                     AND creation_source = :source';
             $params = [
                 'start_date' => $period->startTime->format('Y-m-d H:i:s'),
-                'end_date' => $period->endTime->format('Y-m-d H:i:s'),
-                'source' => $sourceType->code,
+                'end_date'   => $period->endTime->format('Y-m-d H:i:s'),
+                'source'     => $sourceType->code,
             ];
             if ($status !== null) {
                 $sql .= ' AND status = :status';
@@ -162,8 +162,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
 
             /** @phpstan-ignore cast.int, cast.double */
             return [
-                'total_views' => (int) $row['total_views'],
-                'unique_views' => (int) $row['posts_with_views'], // 使用有瀏覽量的文章數作為 unique_views 的近似值
+                'total_views'        => (int) $row['total_views'],
+                'unique_views'       => (int) $row['posts_with_views'], // 使用有瀏覽量的文章數作為 unique_views 的近似值
                 'avg_views_per_post' => (float) $row['avg_views_per_post'],
             ];
         } catch (PDOException $e) {
@@ -184,9 +184,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         try {
             // 根據指標選擇排序欄位
             $orderField = match ($metric) {
-                'views' => 'views',
+                'views'    => 'views',
                 'comments' => 'COALESCE(comments_count, 0)',
-                'likes' => 'COALESCE(likes_count, 0)',
+                'likes'    => 'COALESCE(likes_count, 0)',
             };
             $sql = "SELECT id as post_id, title, {$orderField} as metric_value
                     FROM posts
@@ -203,8 +203,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 /** @phpstan-ignore offsetAccess.nonOffsetAccessible, cast.int, cast.string */
                 $result[] = [
-                    'post_id' => (int) $row['post_id'],
-                    'title' => (string) $row['title'],
+                    'post_id'      => (int) $row['post_id'],
+                    'title'        => (string) $row['title'],
                     'metric_value' => (int) $row['metric_value'],
                 ];
             }
@@ -240,7 +240,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 /** @phpstan-ignore offsetAccess.nonOffsetAccessible, cast.int */
                 $result[] = [
-                    'user_id' => (int) $row['user_id'],
+                    'user_id'     => (int) $row['user_id'],
                     'posts_count' => (int) $row['posts_count'],
                     'total_views' => (int) $row['total_views'],
                 ];
@@ -261,9 +261,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
 
         try {
             $groupByClause = match ($groupBy) {
-                'hour' => "strftime('%H:00', created_at)",
-                'day' => 'date(created_at)',
-                'week' => "strftime('%Y-%W', created_at)",
+                'hour'  => "strftime('%H:00', created_at)",
+                'day'   => 'date(created_at)',
+                'week'  => "strftime('%Y-%W', created_at)",
                 'month' => "strftime('%Y-%m', created_at)",
             };
             $sql = "SELECT {$groupByClause} as time_period, COUNT(*) as count
@@ -295,9 +295,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $growthRate = $previousCount > 0 ? ($growthCount / $previousCount) * 100 : 0.0;
 
             return [
-                'current' => $currentCount,
-                'previous' => $previousCount,
-                'growth_rate' => round($growthRate, 2),
+                'current'      => $currentCount,
+                'previous'     => $previousCount,
+                'growth_rate'  => round($growthRate, 2),
                 'growth_count' => $growthCount,
             ];
         } catch (Throwable $e) {
@@ -331,9 +331,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $totalChars = isset($row['total_chars']) ? (int) $row['total_chars'] : 0;
 
             return [
-                'avg_length' => $avgLength,
-                'min_length' => $minLength,
-                'max_length' => $maxLength,
+                'avg_length'  => $avgLength,
+                'min_length'  => $minLength,
+                'max_length'  => $maxLength,
                 'total_chars' => $totalChars,
             ];
         } catch (PDOException $e) {
@@ -343,6 +343,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
 
     /**
      * @param array<string, array{min: int, max: int}> $lengthRanges
+     *
      * @return array<string, array{range: string, count: int, percentage: float}>
      */
     public function getPostsCountByLengthRange(StatisticsPeriod $period, array $lengthRanges): array
@@ -379,8 +380,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
                 $count = $counts[$rangeName] ?? 0;
                 $percentage = $total > 0 ? round(($count / $total) * 100, 2) : 0.0;
                 $result[$rangeName] = [
-                    'range' => (string) $rangeName,
-                    'count' => $count,
+                    'range'      => (string) $rangeName,
+                    'count'      => $count,
                     'percentage' => $percentage,
                 ];
             }
@@ -414,9 +415,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $pinnedViews = isset($row['pinned_views']) ? (int) $row['pinned_views'] : 0;
 
             return [
-                'pinned_count' => $pinnedCount,
+                'pinned_count'   => $pinnedCount,
                 'unpinned_count' => $unpinnedCount,
-                'pinned_views' => $pinnedViews,
+                'pinned_views'   => $pinnedViews,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('取得置頂文章統計失敗: ' . $e->getMessage(), 0, $e);
@@ -456,20 +457,20 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($row)) {
                 $basicStats = [
-                    'total_posts' => 0,
+                    'total_posts'     => 0,
                     'published_posts' => 0,
-                    'draft_posts' => 0,
-                    'total_views' => 0,
-                    'active_authors' => 0,
+                    'draft_posts'     => 0,
+                    'total_views'     => 0,
+                    'active_authors'  => 0,
                 ];
             } else {
                 /** @var array<string, mixed> $row */
                 $basicStats = [
-                    'total_posts' => isset($row['total_posts']) ? (int) $row['total_posts'] : 0,
+                    'total_posts'     => isset($row['total_posts']) ? (int) $row['total_posts'] : 0,
                     'published_posts' => isset($row['published_posts']) ? (int) $row['published_posts'] : 0,
-                    'draft_posts' => isset($row['draft_posts']) ? (int) $row['draft_posts'] : 0,
-                    'total_views' => isset($row['total_views']) ? (int) $row['total_views'] : 0,
-                    'active_authors' => isset($row['active_authors']) ? (int) $row['active_authors'] : 0,
+                    'draft_posts'     => isset($row['draft_posts']) ? (int) $row['draft_posts'] : 0,
+                    'total_views'     => isset($row['total_views']) ? (int) $row['total_views'] : 0,
+                    'active_authors'  => isset($row['active_authors']) ? (int) $row['active_authors'] : 0,
                 ];
             }
             // 取得熱門來源
@@ -491,9 +492,9 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
         try {
             // 根據粒度決定 SQLite 的 strftime 格式
             $dateFormat = match ($granularity) {
-                'hour' => '%Y-%m-%d %H:00:00',
-                'day' => '%Y-%m-%d',
-                'week' => '%Y-%W',
+                'hour'  => '%Y-%m-%d %H:00:00',
+                'day'   => '%Y-%m-%d',
+                'week'  => '%Y-%W',
                 'month' => '%Y-%m',
                 default => '%Y-%m-%d',
             };
@@ -510,7 +511,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 'start_date' => $startDate->format('Y-m-d H:i:s'),
-                'end_date' => $endDate->format('Y-m-d 23:59:59'),
+                'end_date'   => $endDate->format('Y-m-d 23:59:59'),
             ]);
             /** @var array<int, array{date: string, views: int, visitors: int}> */
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -532,8 +533,8 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $type = match (gettype($value)) {
                 'integer' => PDO::PARAM_INT,
                 'boolean' => PDO::PARAM_BOOL,
-                'NULL' => PDO::PARAM_NULL,
-                default => PDO::PARAM_STR,
+                'NULL'    => PDO::PARAM_NULL,
+                default   => PDO::PARAM_STR,
             };
             $stmt->bindValue(':' . $key, $value, $type);
         }

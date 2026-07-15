@@ -16,8 +16,8 @@ enum ActivityStatus: string
     {
         return match ($this) {
             self::SUCCESS => '成功',
-            self::FAILED => '失敗',
-            self::ERROR => '錯誤',
+            self::FAILED  => '失敗',
+            self::ERROR   => '錯誤',
             self::BLOCKED => '被封鎖',
             self::PENDING => '待處理',
         };

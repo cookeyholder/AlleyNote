@@ -20,7 +20,7 @@ class PostFactoryTest extends UnitTestCase
     public function testItCanCreatePostInDatabase(): void
     {
         $data = PostFactory::make([
-            'title' => '客製化標題',
+            'title'   => '客製化標題',
             'content' => '客製化內容',
         ]);
 
@@ -31,7 +31,7 @@ class PostFactoryTest extends UnitTestCase
     public function testItCanOverrideDefaultAttributes(): void
     {
         $data = PostFactory::make([
-            'id' => 999,
+            'id'    => 999,
             'title' => '自訂標題',
         ]);
 

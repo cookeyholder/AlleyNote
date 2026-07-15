@@ -22,7 +22,9 @@ interface AuthenticationServiceInterface
      *
      * @param LoginRequestDTO $request 登入請求資料
      * @param DeviceInfo $deviceInfo 裝置資訊
+     *
      * @return LoginResponseDTO 登入回應（包含權杖對）
+     *
      * @throws Exception 認證失敗時拋出
      */
     public function login(LoginRequestDTO $request, DeviceInfo $deviceInfo): LoginResponseDTO;
@@ -35,7 +37,9 @@ interface AuthenticationServiceInterface
      *
      * @param RefreshRequestDTO $request 重新整理請求
      * @param DeviceInfo $deviceInfo 裝置資訊
+     *
      * @return RefreshResponseDTO 重新整理回應（新權杖對）
+     *
      * @throws Exception 權杖無效或重新整理失敗時拋出
      */
     public function refresh(RefreshRequestDTO $request, DeviceInfo $deviceInfo): RefreshResponseDTO;
@@ -46,7 +50,9 @@ interface AuthenticationServiceInterface
      * 撤銷指定的更新權杖，並可選擇是否登出所有裝置。
      *
      * @param LogoutRequestDTO $request 登出請求
+     *
      * @return bool 登出是否成功
+     *
      * @throws Exception 登出失敗時拋出
      */
     public function logout(LogoutRequestDTO $request): bool;
@@ -57,6 +63,7 @@ interface AuthenticationServiceInterface
      * 驗證存取權杖的有效性，包括簽章、到期時間、黑名單檢查。
      *
      * @param string $accessToken 存取權杖
+     *
      * @return bool 權杖是否有效
      */
     public function validateAccessToken(string $accessToken): bool;
@@ -67,6 +74,7 @@ interface AuthenticationServiceInterface
      * 驗證更新權杖的有效性，包括存在性、到期時間、撤銷狀態。
      *
      * @param string $refreshToken 更新權杖
+     *
      * @return bool 權杖是否有效
      */
     public function validateRefreshToken(string $refreshToken): bool;
@@ -78,6 +86,7 @@ interface AuthenticationServiceInterface
      *
      * @param string $refreshToken 要撤銷的更新權杖
      * @param string $reason 撤銷原因
+     *
      * @return bool 撤銷是否成功
      */
     public function revokeRefreshToken(string $refreshToken, string $reason = 'manual_revocation'): bool;
@@ -90,6 +99,7 @@ interface AuthenticationServiceInterface
      * @param int $userId 使用者 ID
      * @param string $excludeJti 排除的權杖 JTI（可選）
      * @param string $reason 撤銷原因
+     *
      * @return int 撤銷的權杖數量
      */
     public function revokeAllUserTokens(int $userId, ?string $excludeJti = null, string $reason = 'logout_all'): int;
@@ -102,6 +112,7 @@ interface AuthenticationServiceInterface
      * @param int $userId 使用者 ID
      * @param string $deviceId 裝置 ID
      * @param string $reason 撤銷原因
+     *
      * @return int 撤銷的權杖數量
      */
     public function revokeDeviceTokens(int $userId, string $deviceId, string $reason = 'device_logout'): int;
@@ -112,6 +123,7 @@ interface AuthenticationServiceInterface
      * 取得指定使用者的權杖使用統計資訊。
      *
      * @param int $userId 使用者 ID
+     *
      * @return array<string, int> 權杖統計資訊
      */
     public function getUserTokenStats(int $userId): array;
@@ -122,6 +134,7 @@ interface AuthenticationServiceInterface
      * 清理系統中過期的更新權杖，釋放儲存空間。
      *
      * @param DateTime|null $beforeDate 清理此日期前的權杖（預設為目前時間）
+     *
      * @return int 清理的權杖數量
      */
     public function cleanupExpiredTokens(?DateTime $beforeDate = null): int;
@@ -132,6 +145,7 @@ interface AuthenticationServiceInterface
      * 清理系統中已撤銷的更新權杖記錄。
      *
      * @param int $days 保留天數（預設 30 天）
+     *
      * @return int 清理的權杖數量
      */
     public function cleanupRevokedTokens(int $days = 30): int;

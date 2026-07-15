@@ -73,10 +73,10 @@ final class StatisticsPeriodTest extends UnitTestCase
     {
         // Arrange
         $data = [
-            'type' => 'daily',
+            'type'       => 'daily',
             'start_time' => '2025-09-21T00:00:00+00:00',
-            'end_time' => '2025-09-21T23:59:59+00:00',
-            'timezone' => 'UTC',
+            'end_time'   => '2025-09-21T23:59:59+00:00',
+            'timezone'   => 'UTC',
         ];
 
         // Act

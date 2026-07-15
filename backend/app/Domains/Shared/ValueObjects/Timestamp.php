@@ -221,10 +221,10 @@ final readonly class Timestamp implements JsonSerializable, Stringable
     {
         return [
             'timestamp' => $this->toUnixTimestamp(),
-            'iso8601' => $this->toIso8601(),
+            'iso8601'   => $this->toIso8601(),
             'formatted' => $this->format(),
-            'date' => $this->toDateString(),
-            'time' => $this->toTimeString(),
+            'date'      => $this->toDateString(),
+            'time'      => $this->toTimeString(),
         ];
     }
 }

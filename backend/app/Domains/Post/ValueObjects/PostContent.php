@@ -119,10 +119,10 @@ final readonly class PostContent implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'content' => $this->value,
-            'length' => $this->getLength(),
+            'content'    => $this->value,
+            'length'     => $this->getLength(),
             'word_count' => $this->getWordCount(),
-            'excerpt' => $this->getExcerpt(),
+            'excerpt'    => $this->getExcerpt(),
         ];
     }
 }

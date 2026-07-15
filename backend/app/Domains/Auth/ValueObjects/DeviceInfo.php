@@ -84,6 +84,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 從陣列建立裝置資訊.
      *
      * @param array<string, mixed> $data 裝置資料
+     *
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -278,19 +279,19 @@ final readonly class DeviceInfo implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'device_id' => $this->deviceId,
-            'device_name' => $this->deviceName,
-            'user_agent' => $this->userAgent,
-            'ip_address' => $this->ipAddress,
-            'platform' => $this->platform,
-            'browser' => $this->browser,
+            'device_id'       => $this->deviceId,
+            'device_name'     => $this->deviceName,
+            'user_agent'      => $this->userAgent,
+            'ip_address'      => $this->ipAddress,
+            'platform'        => $this->platform,
+            'browser'         => $this->browser,
             'browser_version' => $this->browserVersion,
-            'os_version' => $this->osVersion,
-            'is_mobile' => $this->isMobile,
-            'is_tablet' => $this->isTablet,
-            'is_desktop' => $this->isDesktop,
-            'device_type' => $this->getDeviceType(),
-            'fingerprint' => $this->getFingerprint(),
+            'os_version'      => $this->osVersion,
+            'is_mobile'       => $this->isMobile,
+            'is_tablet'       => $this->isTablet,
+            'is_desktop'      => $this->isDesktop,
+            'device_type'     => $this->getDeviceType(),
+            'fingerprint'     => $this->getFingerprint(),
         ];
     }
 
@@ -302,11 +303,11 @@ final readonly class DeviceInfo implements JsonSerializable
     public function toSummary(): array
     {
         return [
-            'device_id' => $this->deviceId,
-            'device_name' => $this->deviceName,
-            'platform' => $this->getFullPlatformInfo(),
-            'browser' => $this->getFullBrowserInfo(),
-            'device_type' => $this->getDeviceType(),
+            'device_id'         => $this->deviceId,
+            'device_name'       => $this->deviceName,
+            'platform'          => $this->getFullPlatformInfo(),
+            'browser'           => $this->getFullBrowserInfo(),
+            'device_type'       => $this->getDeviceType(),
             'ip_address_masked' => $this->maskIpAddress(),
         ];
     }
@@ -428,18 +429,19 @@ final readonly class DeviceInfo implements JsonSerializable
      * 解析使用者代理字串.
      *
      * @param string $userAgent 使用者代理字串
+     *
      * @return array<string, mixed>
      */
     private static function parseUserAgent(string $userAgent): array
     {
         $info = [
-            'platform' => null,
-            'browser' => null,
+            'platform'       => null,
+            'browser'        => null,
             'browserVersion' => null,
-            'osVersion' => null,
-            'isMobile' => false,
-            'isTablet' => false,
-            'isDesktop' => true,
+            'osVersion'      => null,
+            'isMobile'       => false,
+            'isTablet'       => false,
+            'isDesktop'      => true,
         ];
         // 平板檢測（先檢測平板，因為某些平板也會匹配行動裝置）
         $tabletPattern = '/iPad|Android.*Tablet|Windows.*Touch/i';
@@ -494,6 +496,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 驗證裝置 ID.
      *
      * @param string $deviceId 裝置 ID
+     *
      * @throws InvalidArgumentException 當裝置 ID 無效時
      */
     private function validateDeviceId(string $deviceId): void
@@ -513,6 +516,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 驗證裝置名稱.
      *
      * @param string $deviceName 裝置名稱
+     *
      * @throws InvalidArgumentException 當裝置名稱無效時
      */
     private function validateDeviceName(string $deviceName): void
@@ -529,6 +533,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 驗證使用者代理.
      *
      * @param string $userAgent 使用者代理
+     *
      * @throws InvalidArgumentException 當使用者代理無效時
      */
     private function validateUserAgent(string $userAgent): void
@@ -545,6 +550,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 驗證 IP 位址
      *
      * @param string $ipAddress IP 位址
+     *
      * @throws InvalidArgumentException 當 IP 位址無效時
      */
     private function validateIpAddress(string $ipAddress): void
@@ -561,6 +567,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 驗證平台.
      *
      * @param string $platform 平台
+     *
      * @throws InvalidArgumentException 當平台無效時
      */
     private function validatePlatform(string $platform): void
@@ -577,6 +584,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * 驗證瀏覽器.
      *
      * @param string $browser 瀏覽器
+     *
      * @throws InvalidArgumentException 當瀏覽器無效時
      */
     private function validateBrowser(string $browser): void
@@ -604,6 +612,7 @@ final readonly class DeviceInfo implements JsonSerializable
      * @param bool $isMobile 是否為行動裝置
      * @param bool $isTablet 是否為平板裝置
      * @param bool $isDesktop 是否為桌面裝置
+     *
      * @throws InvalidArgumentException 當裝置類型設定無效時
      */
     private function validateDeviceType(bool $isMobile, bool $isTablet, bool $isDesktop): void

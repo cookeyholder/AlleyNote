@@ -23,12 +23,12 @@ class CreatePostDTOTest extends UnitTestCase
     public function testCanCreateDTOWithValidData(): void
     {
         $data = [
-            'title' => '測試文章',
-            'content' => '這是測試內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'     => '測試文章',
+            'content'   => '這是測試內容',
+            'user_id'   => 1,
+            'user_ip'   => '127.0.0.1',
             'is_pinned' => false,
-            'status' => 'draft',
+            'status'    => 'draft',
         ];
 
         $dto = new CreatePostDTO($this->validator, $data);
@@ -45,7 +45,7 @@ class CreatePostDTOTest extends UnitTestCase
     public function testCanCreateDTOWithMinimalData(): void
     {
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -66,11 +66,11 @@ class CreatePostDTOTest extends UnitTestCase
     {
         $publishDate = '2024-12-01T10:30:00+00:00';
         $data = [
-            'title' => '測試文章',
-            'content' => '這是測試內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
-            'status' => 'published',
+            'title'        => '測試文章',
+            'content'      => '這是測試內容',
+            'user_id'      => 1,
+            'user_ip'      => '127.0.0.1',
+            'status'       => 'published',
             'publish_date' => $publishDate,
         ];
 
@@ -83,12 +83,12 @@ class CreatePostDTOTest extends UnitTestCase
     public function testCanCreateDTOWithPinnedPost(): void
     {
         $data = [
-            'title' => '置頂文章',
-            'content' => '這是置頂內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'     => '置頂文章',
+            'content'   => '這是置頂內容',
+            'user_id'   => 1,
+            'user_ip'   => '127.0.0.1',
             'is_pinned' => true,
-            'status' => 'published',
+            'status'    => 'published',
         ];
 
         $dto = new CreatePostDTO($this->validator, $data);
@@ -115,7 +115,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '',
+            'title'   => '',
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -129,7 +129,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => str_repeat('a', 256),
+            'title'   => str_repeat('a', 256),
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -143,7 +143,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '   　　　   ', // 包含中英文空白
+            'title'   => '   　　　   ', // 包含中英文空白
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -157,7 +157,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
         ];
@@ -170,7 +170,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -184,7 +184,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '   　　　   ', // 包含中英文空白
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -198,7 +198,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '內容',
             'user_id' => 0,
             'user_ip' => '127.0.0.1',
@@ -212,7 +212,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '內容',
             'user_ip' => '127.0.0.1',
         ];
@@ -225,7 +225,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => 'invalid-ip',
@@ -239,7 +239,7 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '內容',
             'user_id' => 1,
         ];
@@ -252,11 +252,11 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
+            'title'   => '標題',
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
-            'status' => 'invalid_status',
+            'status'  => 'invalid_status',
         ];
 
         new CreatePostDTO($this->validator, $data);
@@ -267,10 +267,10 @@ class CreatePostDTOTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         $data = [
-            'title' => '標題',
-            'content' => '內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'        => '標題',
+            'content'      => '內容',
+            'user_id'      => 1,
+            'user_ip'      => '127.0.0.1',
             'publish_date' => 'invalid-date',
         ];
 
@@ -280,7 +280,7 @@ class CreatePostDTOTest extends UnitTestCase
     public function testAcceptsValidIPv6Address(): void
     {
         $data = [
-            'title' => '測試文章',
+            'title'   => '測試文章',
             'content' => '這是測試內容',
             'user_id' => 1,
             'user_ip' => '2001:0db8:85a3:0000:0000:8a2e:0370:7334',
@@ -297,11 +297,11 @@ class CreatePostDTOTest extends UnitTestCase
 
         foreach ($validStatuses as $status) {
             $data = [
-                'title' => '測試文章',
+                'title'   => '測試文章',
                 'content' => '這是測試內容',
                 'user_id' => 1,
                 'user_ip' => '127.0.0.1',
-                'status' => $status,
+                'status'  => $status,
             ];
 
             $dto = new CreatePostDTO($this->validator, $data);
@@ -325,10 +325,10 @@ class CreatePostDTOTest extends UnitTestCase
 
         foreach ($testCases as [$input, $expected]) {
             $data = [
-                'title' => '測試文章',
-                'content' => '這是測試內容',
-                'user_id' => 1,
-                'user_ip' => '127.0.0.1',
+                'title'     => '測試文章',
+                'content'   => '這是測試內容',
+                'user_id'   => 1,
+                'user_ip'   => '127.0.0.1',
                 'is_pinned' => $input,
             ];
 
@@ -340,24 +340,24 @@ class CreatePostDTOTest extends UnitTestCase
     public function testToArrayReturnsCorrectFormat(): void
     {
         $data = [
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'     => '測試文章',
+            'content'   => '測試內容',
+            'user_id'   => 1,
+            'user_ip'   => '127.0.0.1',
             'is_pinned' => true,
-            'status' => 'published',
+            'status'    => 'published',
         ];
 
         $dto = new CreatePostDTO($this->validator, $data);
         $array = $dto->toArray();
 
         $expected = [
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
-            'is_pinned' => true,
-            'status' => 'published',
+            'title'        => '測試文章',
+            'content'      => '測試內容',
+            'user_id'      => 1,
+            'user_ip'      => '127.0.0.1',
+            'is_pinned'    => true,
+            'status'       => 'published',
             'publish_date' => null,
         ];
 
@@ -367,12 +367,12 @@ class CreatePostDTOTest extends UnitTestCase
     public function testJsonSerializationWorks(): void
     {
         $data = [
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'     => '測試文章',
+            'content'   => '測試內容',
+            'user_id'   => 1,
+            'user_ip'   => '127.0.0.1',
             'is_pinned' => false,
-            'status' => 'draft',
+            'status'    => 'draft',
         ];
 
         $dto = new CreatePostDTO($this->validator, $data);
@@ -395,11 +395,11 @@ class CreatePostDTOTest extends UnitTestCase
 
         foreach ($validDates as $date) {
             $data = [
-                'title' => '測試文章',
-                'content' => '測試內容',
-                'user_id' => 1,
-                'user_ip' => '127.0.0.1',
-                'status' => 'published',
+                'title'        => '測試文章',
+                'content'      => '測試內容',
+                'user_id'      => 1,
+                'user_ip'      => '127.0.0.1',
+                'status'       => 'published',
                 'publish_date' => $date,
             ];
 
@@ -411,7 +411,7 @@ class CreatePostDTOTest extends UnitTestCase
     public function testTrimsTitleAndContent(): void
     {
         $data = [
-            'title' => '  測試文章  ',
+            'title'   => '  測試文章  ',
             'content' => '  測試內容  ',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',
@@ -426,10 +426,10 @@ class CreatePostDTOTest extends UnitTestCase
     public function testHandlesEmptyPublishDate(): void
     {
         $data = [
-            'title' => '測試文章',
-            'content' => '測試內容',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'        => '測試文章',
+            'content'      => '測試內容',
+            'user_id'      => 1,
+            'user_ip'      => '127.0.0.1',
             'publish_date' => '',
         ];
 
@@ -440,7 +440,7 @@ class CreatePostDTOTest extends UnitTestCase
     public function testValidatesUnicodeContent(): void
     {
         $data = [
-            'title' => '測試標題 🚀 with emoji',
+            'title'   => '測試標題 🚀 with emoji',
             'content' => '這是包含 emoji 的內容 🎉 和各種字符',
             'user_id' => 1,
             'user_ip' => '127.0.0.1',

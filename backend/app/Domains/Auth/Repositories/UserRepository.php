@@ -24,9 +24,9 @@ class UserRepository
         $sql = 'INSERT INTO users (uuid, username, email, password_hash) VALUES (:uuid, :username, :email, :password)';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'uuid' => $uuid,
+            'uuid'     => $uuid,
             'username' => $data['username'],
-            'email' => $data['email'],
+            'email'    => $data['email'],
             'password' => $data['password'],  // 密碼已在 Service 中雜湊
         ]);
 
@@ -150,7 +150,7 @@ class UserRepository
         $stmt = $this->db->prepare($sql);
 
         return $stmt->execute([
-            'id' => $id,
+            'id'       => $id,
             'password' => $hashedPassword,
         ]);
     }
@@ -201,8 +201,8 @@ class UserRepository
             $roles = [];
             for ($i = 0; $i < count($roleIds); $i++) {
                 $roles[] = [
-                    'id' => (int) $roleIds[$i],
-                    'name' => $roleNames[$i] ?? '',
+                    'id'           => (int) $roleIds[$i],
+                    'name'         => $roleNames[$i] ?? '',
                     'display_name' => $roleDisplayNames[$i] ?? '',
                 ];
             }
@@ -214,10 +214,10 @@ class UserRepository
         }
 
         return [
-            'items' => $users,
-            'total' => $total,
-            'page' => $page,
-            'per_page' => $perPage,
+            'items'     => $users,
+            'total'     => $total,
+            'page'      => $page,
+            'per_page'  => $perPage,
             'last_page' => ceil($total / $perPage),
         ];
     }
@@ -298,8 +298,8 @@ class UserRepository
         $roles = [];
         for ($i = 0; $i < count($roleIds); $i++) {
             $roles[] = [
-                'id' => (int) $roleIds[$i],
-                'name' => $roleNames[$i] ?? '',
+                'id'           => (int) $roleIds[$i],
+                'name'         => $roleNames[$i] ?? '',
                 'display_name' => $roleDisplayNames[$i] ?? '',
             ];
         }

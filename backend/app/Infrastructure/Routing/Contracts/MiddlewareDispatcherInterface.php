@@ -15,6 +15,7 @@ interface MiddlewareDispatcherInterface
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param MiddlewareInterface[] $middlewares 中介軟體陣列
      * @param RequestHandlerInterface $finalHandler 最終處理器
+     *
      * @return ResponseInterface HTTP 回應物件
      */
     public function dispatch(
@@ -28,6 +29,7 @@ interface MiddlewareDispatcherInterface
      *
      * @param MiddlewareInterface[] $middlewares 中介軟體陣列
      * @param RequestHandlerInterface $finalHandler 最終處理器
+     *
      * @return RequestHandlerInterface 執行鏈處理器
      */
     public function buildChain(

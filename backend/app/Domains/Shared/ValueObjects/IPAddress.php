@@ -163,9 +163,9 @@ final readonly class IPAddress implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'ip_address' => $this->value,
-            'version' => $this->version,
-            'is_private' => $this->isPrivate(),
+            'ip_address'   => $this->value,
+            'version'      => $this->version,
+            'is_private'   => $this->isPrivate(),
             'is_localhost' => $this->isLocalhost(),
         ];
     }

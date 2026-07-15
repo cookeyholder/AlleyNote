@@ -11,6 +11,7 @@ use Tests\Support\UnitTestCase;
  * Token 生成失敗例外單元測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class TokenGenerationExceptionTest extends UnitTestCase
@@ -66,7 +67,7 @@ class TokenGenerationExceptionTest extends UnitTestCase
     public function testAdditionalContext(): void
     {
         $additionalContext = [
-            'user_id' => 123,
+            'user_id'    => 123,
             'request_id' => 'req-456',
             'key_length' => 2048,
         ];
@@ -93,14 +94,14 @@ class TokenGenerationExceptionTest extends UnitTestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            TokenGenerationException::REASON_KEY_INVALID => 'private key is invalid or corrupted',
-            TokenGenerationException::REASON_KEY_MISSING => 'private key is missing',
-            TokenGenerationException::REASON_PAYLOAD_INVALID => 'payload contains invalid data',
+            TokenGenerationException::REASON_KEY_INVALID           => 'private key is invalid or corrupted',
+            TokenGenerationException::REASON_KEY_MISSING           => 'private key is missing',
+            TokenGenerationException::REASON_PAYLOAD_INVALID       => 'payload contains invalid data',
             TokenGenerationException::REASON_ALGORITHM_UNSUPPORTED => 'algorithm is not supported',
-            TokenGenerationException::REASON_CLAIMS_INVALID => 'claims validation failed',
-            TokenGenerationException::REASON_SIGNATURE_FAILED => 'signature generation failed',
-            TokenGenerationException::REASON_RESOURCE_EXHAUSTED => 'system resources exhausted',
-            TokenGenerationException::REASON_ENCODING_FAILED => 'encoding process failed',
+            TokenGenerationException::REASON_CLAIMS_INVALID        => 'claims validation failed',
+            TokenGenerationException::REASON_SIGNATURE_FAILED      => 'signature generation failed',
+            TokenGenerationException::REASON_RESOURCE_EXHAUSTED    => 'system resources exhausted',
+            TokenGenerationException::REASON_ENCODING_FAILED       => 'encoding process failed',
         ];
 
         foreach ($reasons as $reason => $expectedPhrase) {
@@ -375,11 +376,11 @@ class TokenGenerationExceptionTest extends UnitTestCase
     public function testComplexScenario(): void
     {
         $additionalContext = [
-            'user_id' => 123,
-            'key_algorithm' => 'RS256',
-            'key_size' => 2048,
-            'payload_size' => 512,
-            'memory_usage' => '128MB',
+            'user_id'             => 123,
+            'key_algorithm'       => 'RS256',
+            'key_size'            => 2048,
+            'payload_size'        => 512,
+            'memory_usage'        => '128MB',
             'generation_duration' => 0.15,
         ];
 

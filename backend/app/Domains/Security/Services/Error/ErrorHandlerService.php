@@ -56,16 +56,16 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         if ($this->isDevelopment && !$isPublicError) {
             return [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
                 'trace' => $e->getTraceAsString(),
-                'type' => get_class($e),
+                'type'  => get_class($e),
             ];
         }
 
         return [
-            'error' => $this->getPublicErrorMessage($e),
-            'code' => $this->getErrorCode($e),
+            'error'     => $this->getPublicErrorMessage($e),
+            'code'      => $this->getErrorCode($e),
             'timestamp' => date('Y-m-d H:i:s'),
         ];
     }
@@ -74,11 +74,11 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     {
         $sanitizedContext = $this->sanitizeLogData($context);
         $this->logger->warning('Security Event: ' . $event, array_merge([
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'ip'         => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
-            'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown',
-            'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
-            'timestamp' => time(),
+            'uri'        => $_SERVER['REQUEST_URI'] ?? 'unknown',
+            'method'     => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+            'timestamp'  => time(),
         ], $sanitizedContext));
     }
 
@@ -87,17 +87,17 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
         $event = $success ? 'Authentication Success' : 'Authentication Failed';
         $this->logSecurityEvent($event, array_merge([
             'username' => $username,
-            'success' => $success,
+            'success'  => $success,
         ], $context));
     }
 
     public function logSuspiciousActivity(string $activity, array $context = []): void
     {
         $this->logger->error('Suspicious Activity: ' . $activity, array_merge([
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'ip'         => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown',
-            'referer' => $_SERVER['HTTP_REFERER'] ?? 'unknown',
-            'timestamp' => time(),
+            'referer'    => $_SERVER['HTTP_REFERER'] ?? 'unknown',
+            'timestamp'  => time(),
         ], $this->sanitizeLogData($context)));
     }
 
@@ -226,10 +226,10 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     {
         $context = [
             'exception' => get_class($e),
-            'file' => $e->getFile(),
-            'line' => $e->getLine(),
-            'trace' => $e->getTraceAsString(),
-            'previous' => $e->getPrevious() ? get_class($e->getPrevious()) : null,
+            'file'      => $e->getFile(),
+            'line'      => $e->getLine(),
+            'trace'     => $e->getTraceAsString(),
+            'previous'  => $e->getPrevious() ? get_class($e->getPrevious()) : null,
         ];
         $this->logger->error($e->getMessage(), $this->sanitizeLogData($context));
     }
@@ -237,22 +237,22 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private function getPublicErrorMessage(Throwable $e): string
     {
         return match (get_class($e)) {
-            'App\\Exceptions\\ValidationException' => $e->getMessage(),
-            'App\\Exceptions\\NotFoundException' => '請求的資源不存在',
-            'App\\Exceptions\\CsrfTokenException' => '安全驗證失敗，請重新載入頁面',
+            'App\\Exceptions\\ValidationException'      => $e->getMessage(),
+            'App\\Exceptions\\NotFoundException'        => '請求的資源不存在',
+            'App\\Exceptions\\CsrfTokenException'       => '安全驗證失敗，請重新載入頁面',
             'App\\Exceptions\\StateTransitionException' => '操作失敗，請稍後再試',
-            default => '系統暫時無法處理您的請求，請稍後再試'
+            default                                     => '系統暫時無法處理您的請求，請稍後再試'
         };
     }
 
     private function getErrorCode(Throwable $e): string
     {
         return match (get_class($e)) {
-            'App\\Exceptions\\ValidationException' => 'VALIDATION_ERROR',
-            'App\\Exceptions\\NotFoundException' => 'NOT_FOUND',
-            'App\\Exceptions\\CsrfTokenException' => 'CSRF_ERROR',
+            'App\\Exceptions\\ValidationException'      => 'VALIDATION_ERROR',
+            'App\\Exceptions\\NotFoundException'        => 'NOT_FOUND',
+            'App\\Exceptions\\CsrfTokenException'       => 'CSRF_ERROR',
             'App\\Exceptions\\StateTransitionException' => 'STATE_ERROR',
-            default => 'INTERNAL_ERROR'
+            default                                     => 'INTERNAL_ERROR'
         };
     }
 

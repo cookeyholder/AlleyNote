@@ -50,10 +50,10 @@ class TagControllerTest extends UnitTestCase
             ->shouldReceive('listTags')
             ->once()
             ->andReturn([
-                'items' => [],
-                'total' => 0,
-                'page' => 1,
-                'per_page' => 20,
+                'items'     => [],
+                'total'     => 0,
+                'page'      => 1,
+                'per_page'  => 20,
                 'last_page' => 1,
             ]);
 
@@ -108,10 +108,10 @@ class TagControllerTest extends UnitTestCase
     public function testStoreSuccess(): void
     {
         $requestData = [
-            'name' => 'New Tag',
-            'slug' => 'new-tag',
+            'name'        => 'New Tag',
+            'slug'        => 'new-tag',
             'description' => 'Test description',
-            'color' => '#FF0000',
+            'color'       => '#FF0000',
         ];
 
         $request = $this->createMockRequest();

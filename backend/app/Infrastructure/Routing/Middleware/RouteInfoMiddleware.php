@@ -61,7 +61,7 @@ class RouteInfoMiddleware extends AbstractMiddleware
     ): ResponseInterface {
         // 注入路由資訊到請求屬性中
         $routeInfo = [
-            'name' => $this->routeName,
+            'name'    => $this->routeName,
             'pattern' => $this->routePattern,
             'methods' => $this->methods,
             'handler' => $this->handler,

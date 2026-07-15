@@ -48,16 +48,16 @@ class AttachmentControllerTest extends IntegrationTestCase
         // 設定 AttachmentService mock 期望
         $this->attachmentService->shouldReceive('upload')
             ->andReturn(new Attachment([
-                'id' => 1,
-                'uuid' => 'test-uuid',
-                'post_id' => 1,
-                'filename' => 'test.jpg',
+                'id'            => 1,
+                'uuid'          => 'test-uuid',
+                'post_id'       => 1,
+                'filename'      => 'test.jpg',
                 'original_name' => 'test.jpg',
-                'file_size' => 1024,
-                'mime_type' => 'image/jpeg',
-                'storage_path' => '/uploads/test.jpg',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
+                'file_size'     => 1024,
+                'mime_type'     => 'image/jpeg',
+                'storage_path'  => '/uploads/test.jpg',
+                'created_at'    => date('Y-m-d H:i:s'),
+                'updated_at'    => date('Y-m-d H:i:s'),
             ]))
             ->byDefault();
 
@@ -87,13 +87,13 @@ class AttachmentControllerTest extends IntegrationTestCase
         $postId = 1;
         $file = Mockery::mock(UploadedFileInterface::class);
         $attachment = new Attachment([
-            'id' => 1,
-            'post_id' => $postId,
-            'filename' => '2025/04/test.jpg',
+            'id'            => 1,
+            'post_id'       => $postId,
+            'filename'      => '2025/04/test.jpg',
             'original_name' => '測試圖片.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => '2025/04/test.jpg',
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => '2025/04/test.jpg',
         ]);
 
         // 設定請求
@@ -195,22 +195,22 @@ class AttachmentControllerTest extends IntegrationTestCase
         $postId = 1;
         $attachments = [
             new Attachment([
-                'id' => 1,
-                'post_id' => $postId,
-                'filename' => '2025/04/test1.jpg',
+                'id'            => 1,
+                'post_id'       => $postId,
+                'filename'      => '2025/04/test1.jpg',
                 'original_name' => '測試圖片1.jpg',
-                'mime_type' => 'image/jpeg',
-                'file_size' => 1024,
-                'storage_path' => '2025/04/test1.jpg',
+                'mime_type'     => 'image/jpeg',
+                'file_size'     => 1024,
+                'storage_path'  => '2025/04/test1.jpg',
             ]),
             new Attachment([
-                'id' => 2,
-                'post_id' => $postId,
-                'filename' => '2025/04/test2.jpg',
+                'id'            => 2,
+                'post_id'       => $postId,
+                'filename'      => '2025/04/test2.jpg',
                 'original_name' => '測試圖片2.jpg',
-                'mime_type' => 'image/jpeg',
-                'file_size' => 2048,
-                'storage_path' => '2025/04/test2.jpg',
+                'mime_type'     => 'image/jpeg',
+                'file_size'     => 2048,
+                'storage_path'  => '2025/04/test2.jpg',
             ]),
         ];
 

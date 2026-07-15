@@ -22,6 +22,7 @@ class PasswordManagementService
      * @param int $userId 使用者 ID
      * @param string $currentPassword 目前密碼
      * @param string $newPassword 新密碼
+     *
      * @throws ValidationException 當密碼驗證失敗時
      * @throws InvalidArgumentException 當使用者不存在或目前密碼錯誤時
      */
@@ -48,6 +49,7 @@ class PasswordManagementService
      *
      * @param int $userId 使用者 ID
      * @param string $newPassword 新密碼
+     *
      * @throws ValidationException 當密碼驗證失敗時
      */
     public function resetPassword(int $userId, string $newPassword): bool
@@ -63,6 +65,7 @@ class PasswordManagementService
      * 檢查密碼強度並提供建議.
      *
      * @param string $password 要檢查的密碼
+     *
      * @return array 包含強度評分和建議的陣列
      */
     public function checkPasswordStrength(string $password): array
@@ -74,6 +77,7 @@ class PasswordManagementService
      * 生成安全密碼
      *
      * @param int $length 密碼長度
+     *
      * @return string 生成的安全密碼
      */
     public function generateSecurePassword(int $length = 16): string
@@ -85,6 +89,7 @@ class PasswordManagementService
      * 檢查密碼是否需要重新雜湊.
      *
      * @param string $hash 現有的密碼雜湊
+     *
      * @return bool 是否需要重新雜湊
      */
     public function needsRehash(string $hash): bool
@@ -97,6 +102,7 @@ class PasswordManagementService
      *
      * @param int $userId 使用者 ID
      * @param string $plainPassword 明文密碼（用於驗證）
+     *
      * @return bool 是否進行了升級
      */
     public function upgradePasswordHash(int $userId, string $plainPassword): bool

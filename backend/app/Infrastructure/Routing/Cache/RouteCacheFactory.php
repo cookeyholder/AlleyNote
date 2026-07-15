@@ -13,7 +13,7 @@ class RouteCacheFactory
      * 支援的快取驅動程式.
      */
     private const SUPPORTED_DRIVERS = [
-        'file' => FileRouteCache::class,
+        'file'   => FileRouteCache::class,
         'memory' => MemoryRouteCache::class,
         // 'redis' => RedisRouteCache::class, // 如果 Redis 可用時啟用
     ];
@@ -34,7 +34,7 @@ class RouteCacheFactory
         }
 
         return match ($driver) {
-            'file' => $this->createFileCache($config),
+            'file'   => $this->createFileCache($config),
             'memory' => $this->createMemoryCache($config),
             // 'redis' => $this->createRedisCache($config),
         };
@@ -109,6 +109,7 @@ class RouteCacheFactory
      * 驗證快取配置.
      *
      * @param array{driver: string, path?: string, ttl?: int} $config
+     *
      * @return string[] 驗證錯誤訊息
      */
     public function validateConfig(array $config): array

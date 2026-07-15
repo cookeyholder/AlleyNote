@@ -12,18 +12,21 @@ class CacheGroupManager
 {
     /**
      * 分組快取實例.
+     *
      * @var array<string, TaggedCacheInterface>
      */
     private array $groups = [];
 
     /**
      * 分組依賴關係
+     *
      * @var array<string, array<string>>
      */
     private array $dependencies = [];
 
     /**
      * 分組自動失效規則.
+     *
      * @var array<string, array<string>|array<string, mixed>>
      */
     private array $invalidationRules = [];
@@ -38,6 +41,7 @@ class CacheGroupManager
      *
      * @param string $groupName 分組名稱
      * @param array<string> $tags 分組標籤
+     *
      * @return TaggedCacheInterface 標籤化快取實例
      */
     public function group(string $groupName, array $tags = []): TaggedCacheInterface
@@ -50,7 +54,7 @@ class CacheGroupManager
         $this->groups[$groupName] = $groupCache;
         $this->logger->debug('建立快取分組', [
             'group_name' => $groupName,
-            'tags' => $allTags,
+            'tags'       => $allTags,
         ]);
 
         return $groupCache;
@@ -60,6 +64,7 @@ class CacheGroupManager
      * 取得快取分組.
      *
      * @param string $groupName 分組名稱
+     *
      * @return TaggedCacheInterface|null 分組快取實例
      */
     public function getGroup(string $groupName): ?TaggedCacheInterface
@@ -106,7 +111,7 @@ class CacheGroupManager
         $this->invalidationRules[$triggerPattern] = $targetGroupsArray;
         $this->logger->debug('設定自動失效規則', [
             'trigger_pattern' => $triggerPattern,
-            'target_groups' => $targetGroupsArray,
+            'target_groups'   => $targetGroupsArray,
         ]);
     }
 
@@ -115,6 +120,7 @@ class CacheGroupManager
      *
      * @param string $groupName 分組名稱
      * @param bool $cascade 是否級聯清空依賴的子分組
+     *
      * @return int 清空的快取項目數量
      */
     public function flushGroup(string $groupName, bool $cascade = true): int
@@ -125,9 +131,9 @@ class CacheGroupManager
         $groupTag = CacheTag::group($groupName);
         $clearedCount = $this->taggedCache->flushByTags([$groupTag->getName()]);
         $this->logger->info('清空快取分組', [
-            'group_name' => $groupName,
+            'group_name'    => $groupName,
             'cleared_count' => $clearedCount,
-            'cascade' => $cascade,
+            'cascade'       => $cascade,
         ]);
         // 如果啟用級聯清空，清空依賴的子分組
         if ($cascade && isset($this->dependencies[$groupName])) {
@@ -136,7 +142,7 @@ class CacheGroupManager
                     $clearedCount += $this->flushGroup($childGroup, true);
                 } else {
                     $this->logger->warning('Invalid child group type', [
-                        'group_name' => $groupName,
+                        'group_name'  => $groupName,
                         'child_group' => $childGroup,
                     ]);
                 }
@@ -163,8 +169,8 @@ class CacheGroupManager
                     }
                 }
                 $this->logger->info('觸發自動失效規則', [
-                    'key' => $key,
-                    'pattern' => $pattern,
+                    'key'           => $key,
+                    'pattern'       => $pattern,
                     'target_groups' => $targetGroups,
                 ]);
             }
@@ -179,18 +185,18 @@ class CacheGroupManager
     public function getGroupStatistics(): array
     {
         $statistics = [
-            'total_groups' => count($this->groups),
-            'groups' => [],
-            'dependencies' => $this->dependencies,
+            'total_groups'             => count($this->groups),
+            'groups'                   => [],
+            'dependencies'             => $this->dependencies,
             'invalidation_rules_count' => count($this->invalidationRules),
         ];
         foreach ($this->groups as $groupName => $groupCache) {
             $groupTag = CacheTag::group($groupName);
             $keys = $this->taggedCache->getKeysByTag($groupTag->getName());
             $statistics['groups'][$groupName] = [
-                'cache_count' => count($keys),
-                'tags' => $groupCache->getTags(),
-                'has_dependencies' => isset($this->dependencies[$groupName]),
+                'cache_count'        => count($keys),
+                'tags'               => $groupCache->getTags(),
+                'has_dependencies'   => isset($this->dependencies[$groupName]),
                 'child_groups_count' => count($this->dependencies[$groupName] ?? []),
             ];
         }
@@ -212,6 +218,7 @@ class CacheGroupManager
      * 檢查分組是否存在.
      *
      * @param string $groupName 分組名稱
+     *
      * @return bool 是否存在
      */
     public function hasGroup(string $groupName): bool
@@ -224,6 +231,7 @@ class CacheGroupManager
      *
      * @param string $groupName 分組名稱
      * @param bool $flushCache 是否清空分組快取
+     *
      * @return bool 是否成功
      */
     public function removeGroup(string $groupName, bool $flushCache = true): bool
@@ -243,7 +251,7 @@ class CacheGroupManager
         }
         unset($children);
         $this->logger->debug('移除快取分組', [
-            'group_name' => $groupName,
+            'group_name'  => $groupName,
             'flush_cache' => $flushCache,
         ]);
 
@@ -255,6 +263,7 @@ class CacheGroupManager
      *
      * @param int $userId 使用者 ID
      * @param array<string> $additionalTags 額外標籤
+     *
      * @return TaggedCacheInterface 使用者快取分組
      */
     public function userGroup(int $userId, array $additionalTags = []): TaggedCacheInterface
@@ -271,6 +280,7 @@ class CacheGroupManager
      *
      * @param string $moduleName 模組名稱
      * @param array<string> $additionalTags 額外標籤
+     *
      * @return TaggedCacheInterface 模組快取分組
      */
     public function moduleGroup(string $moduleName, array $additionalTags = []): TaggedCacheInterface
@@ -287,6 +297,7 @@ class CacheGroupManager
      *
      * @param string $period 時間週期
      * @param array<string> $additionalTags 額外標籤
+     *
      * @return TaggedCacheInterface 時間快取分組
      */
     public function temporalGroup(string $period, array $additionalTags = []): TaggedCacheInterface
@@ -303,6 +314,7 @@ class CacheGroupManager
      *
      * @param array<string> $groupNames 分組名稱陣列
      * @param bool $cascade 是否級聯清空
+     *
      * @return int 總清空的項目數量
      */
     public function flushGroups(array $groupNames, bool $cascade = true): int
@@ -320,6 +332,7 @@ class CacheGroupManager
      *
      * @param string $pattern 分組名稱模式（支援 * 萬用字元）
      * @param bool $cascade 是否級聯清空
+     *
      * @return int 清空的項目數量
      */
     public function flushByPattern(string $pattern, bool $cascade = true): int
@@ -345,7 +358,7 @@ class CacheGroupManager
         $this->invalidationRules[$groupName] = $rules;
         $this->logger->debug('設定分組失效規則', [
             'group_name' => $groupName,
-            'rules' => $rules,
+            'rules'      => $rules,
         ]);
     }
 
@@ -353,6 +366,7 @@ class CacheGroupManager
      * 取得分組失效規則.
      *
      * @param string $groupName 分組名稱
+     *
      * @return array<string, mixed> 失效規則
      */
     public function getInvalidationRules(string $groupName): array
@@ -376,6 +390,7 @@ class CacheGroupManager
      * 取得分組依賴關係
      *
      * @param string $groupName 分組名稱
+     *
      * @return array<string> 依賴的子分組
      */
     public function getDependencies(string $groupName): array
@@ -387,6 +402,7 @@ class CacheGroupManager
      * 檢查分組是否應該失效.
      *
      * @param string $groupName 分組名稱
+     *
      * @return bool 是否應該失效
      */
     public function shouldInvalidate(string $groupName): bool
@@ -411,6 +427,7 @@ class CacheGroupManager
      *
      * @param string $groupName 分組名稱
      * @param int $maxAge 最大年齡（秒）
+     *
      * @return bool 是否過期
      */
     private function isGroupExpired(string $groupName, int $maxAge): bool
@@ -433,6 +450,7 @@ class CacheGroupManager
      *
      * @param array<string> $groupNames 分組名稱陣列
      * @param bool $cascade 是否級聯清空
+     *
      * @return array<string, int> 每個分組清空的項目數量
      */
     public function flushMultipleGroups(array $groupNames, bool $cascade = true): array
@@ -450,6 +468,7 @@ class CacheGroupManager
      *
      * @param string $text 要匹配的文字
      * @param string $pattern 匹配模式（支援 * 萬用字元）
+     *
      * @return bool 是否匹配
      */
     private function matchPattern(string $text, string $pattern): bool

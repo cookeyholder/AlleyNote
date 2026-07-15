@@ -30,9 +30,9 @@ final class CacheSystemE2ETest extends SecureDDDTestCase
 
         // 建立 Redis 連線
         $this->redisClient = new Client([
-            'scheme' => 'tcp',
-            'host' => '127.0.0.1',
-            'port' => 6379,
+            'scheme'   => 'tcp',
+            'host'     => '127.0.0.1',
+            'port'     => 6379,
             'database' => 14, // E2E 測試專用資料庫
         ]);
 
@@ -54,8 +54,8 @@ final class CacheSystemE2ETest extends SecureDDDTestCase
         try {
             $testClient = new Client([
                 'scheme' => 'tcp',
-                'host' => '127.0.0.1',
-                'port' => 6379,
+                'host'   => '127.0.0.1',
+                'port'   => 6379,
             ]);
             $testClient->ping();
 

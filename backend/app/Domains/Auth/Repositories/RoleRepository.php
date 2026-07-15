@@ -68,6 +68,7 @@ class RoleRepository
      * 根據 IDs 取得多個角色.
      *
      * @param int[] $ids
+     *
      * @return Role[]
      */
     public function findByIds(array $ids): array
@@ -99,9 +100,9 @@ class RoleRepository
                 VALUES (:name, :display_name, :description, datetime(\'now\'))';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'name' => $name,
+            'name'         => $name,
             'display_name' => $displayName,
-            'description' => $description,
+            'description'  => $description,
         ]);
         $id = (int) $this->db->lastInsertId();
 
@@ -179,7 +180,7 @@ class RoleRepository
                 $insertStmt = $this->db->prepare($insertSql);
                 foreach ($permissionIds as $permissionId) {
                     $insertStmt->execute([
-                        'role_id' => $roleId,
+                        'role_id'       => $roleId,
                         'permission_id' => $permissionId,
                     ]);
                 }

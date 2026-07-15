@@ -17,56 +17,56 @@ class UserStatisticsDTOTest extends UnitTestCase
     protected function setUp(): void
     {
         $this->validData = [
-            'active_users' => 150,
+            'active_users'     => 150,
             'by_activity_type' => [
-                'posts' => 50,
+                'posts'    => 50,
                 'comments' => 80,
-                'likes' => 200,
-                'shares' => 30,
+                'likes'    => 200,
+                'shares'   => 30,
             ],
             'login_activity' => [
-                'total_logins' => 500,
-                'unique_users' => 120,
+                'total_logins'        => 500,
+                'unique_users'        => 120,
                 'avg_logins_per_user' => 4.17,
-                'peak_hour' => 14,
+                'peak_hour'           => 14,
             ],
             'most_active' => [
                 [
-                    'user_id' => 123,
-                    'username' => 'john_doe',
+                    'user_id'      => 123,
+                    'username'     => 'john_doe',
                     'metric_value' => 25,
                 ],
                 [
-                    'user_id' => 456,
-                    'username' => 'jane_smith',
+                    'user_id'      => 456,
+                    'username'     => 'jane_smith',
                     'metric_value' => 22,
                 ],
             ],
             'engagement_stats' => [
-                'high_engagement' => 30,
-                'medium_engagement' => 60,
-                'low_engagement' => 40,
-                'inactive' => 20,
+                'high_engagement'      => 30,
+                'medium_engagement'    => 60,
+                'low_engagement'       => 40,
+                'inactive'             => 20,
                 'avg_engagement_score' => 7.5,
             ],
             'registration_sources' => [
-                'website' => 80,
+                'website'      => 80,
                 'social_media' => 50,
-                'referral' => 20,
+                'referral'     => 20,
             ],
             'geographical_distribution' => [
                 [
-                    'location' => 'Taiwan',
+                    'location'    => 'Taiwan',
                     'users_count' => 100,
                 ],
                 [
-                    'location' => 'Japan',
+                    'location'    => 'Japan',
                     'users_count' => 30,
                 ],
             ],
             'by_role' => [
-                'user' => 120,
-                'admin' => 20,
+                'user'      => 120,
+                'admin'     => 20,
                 'moderator' => 10,
             ],
             'activity_time_distribution' => [
@@ -76,9 +76,9 @@ class UserStatisticsDTOTest extends UnitTestCase
                 '22:00' => 25,
             ],
             'generated_at' => '2024-01-15T10:30:00Z',
-            'metadata' => [
+            'metadata'     => [
                 'report_id' => 'user_stats_001',
-                'version' => '1.0',
+                'version'   => '1.0',
             ],
         ];
     }

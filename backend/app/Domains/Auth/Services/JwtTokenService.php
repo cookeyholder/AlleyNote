@@ -35,20 +35,20 @@ final class JwtTokenService implements JwtTokenServiceInterface
             $now = new DateTimeImmutable();
             // 準備 access token 的 payload
             $accessTokenPayload = array_merge($customClaims, [
-                'sub' => (string) $userId,
-                'device_id' => $deviceInfo->getDeviceId(),
+                'sub'         => (string) $userId,
+                'device_id'   => $deviceInfo->getDeviceId(),
                 'device_name' => $deviceInfo->getDeviceName(),
-                'ip_address' => $deviceInfo->getIpAddress(),
-                'user_agent' => $deviceInfo->getUserAgent(),
-                'platform' => $deviceInfo->getPlatform(),
-                'browser' => $deviceInfo->getBrowser(),
-                'type' => 'access',
+                'ip_address'  => $deviceInfo->getIpAddress(),
+                'user_agent'  => $deviceInfo->getUserAgent(),
+                'platform'    => $deviceInfo->getPlatform(),
+                'browser'     => $deviceInfo->getBrowser(),
+                'type'        => 'access',
             ]);
             // 準備 refresh token 的 payload（較少資訊）
             $refreshTokenPayload = [
-                'sub' => (string) $userId,
+                'sub'       => (string) $userId,
                 'device_id' => $deviceInfo->getDeviceId(),
-                'type' => 'refresh',
+                'type'      => 'refresh',
             ];
             // 產生 tokens
             $accessToken = $this->jwtProvider->generateAccessToken($accessTokenPayload);
@@ -181,7 +181,7 @@ final class JwtTokenService implements JwtTokenServiceInterface
             return true;
         } catch (Throwable $e) {
             app_log('error', 'JWT token revocation failed', [
-                'reason' => $reason,
+                'reason'    => $reason,
                 'exception' => $e->getMessage(),
             ]);
 

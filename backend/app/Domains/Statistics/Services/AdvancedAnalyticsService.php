@@ -19,6 +19,7 @@ class AdvancedAnalyticsService
      * @param int|null $postId 指定文章ID，null表示全站統計
      * @param string|null $startDate 開始日期 (Y-m-d)
      * @param string|null $endDate 結束日期 (Y-m-d)
+     *
      * @return array<string, int>
      */
     public function getDeviceTypeStats(?int $postId = null, ?string $startDate = null, ?string $endDate = null): array
@@ -42,8 +43,8 @@ class AdvancedAnalyticsService
         $userAgents = $stmt->fetchAll(PDO::FETCH_COLUMN);
         $deviceStats = [
             'Desktop' => 0,
-            'Mobile' => 0,
-            'Tablet' => 0,
+            'Mobile'  => 0,
+            'Tablet'  => 0,
             'Unknown' => 0,
         ];
         foreach ($userAgents as $ua) {
@@ -175,8 +176,8 @@ class AdvancedAnalyticsService
         $stats = [];
         foreach ($results as $row) {
             $stats[] = [
-                'referrer' => $row['referrer'],
-                'count' => (int) $row['count'],
+                'referrer'   => $row['referrer'],
+                'count'      => (int) $row['count'],
                 'percentage' => $total > 0 ? round(((int) $row['count'] / $total) * 100, 2) : 0.0,
             ];
         }
@@ -259,13 +260,13 @@ class AdvancedAnalyticsService
         $totals = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return [
-            'device_types' => $this->getDeviceTypeStats($postId, $startDate, $endDate),
-            'browsers' => $this->getBrowserStats($postId, $startDate, $endDate),
-            'operating_systems' => $this->getOSStats($postId, $startDate, $endDate),
-            'top_referrers' => $this->getReferrerStats($postId, $startDate, $endDate, 10),
+            'device_types'        => $this->getDeviceTypeStats($postId, $startDate, $endDate),
+            'browsers'            => $this->getBrowserStats($postId, $startDate, $endDate),
+            'operating_systems'   => $this->getOSStats($postId, $startDate, $endDate),
+            'top_referrers'       => $this->getReferrerStats($postId, $startDate, $endDate, 10),
             'hourly_distribution' => $this->getHourlyDistribution($postId, $startDate, $endDate),
-            'total_views' => (int) ($totals['total_views'] ?? 0),
-            'unique_visitors' => (int) ($totals['unique_visitors'] ?? 0),
+            'total_views'         => (int) ($totals['total_views'] ?? 0),
+            'unique_visitors'     => (int) ($totals['unique_visitors'] ?? 0),
         ];
     }
 }

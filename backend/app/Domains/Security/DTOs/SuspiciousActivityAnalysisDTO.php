@@ -285,10 +285,10 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     public function getSummary(): string
     {
         $target = match ($this->targetType) {
-            'user' => "使用者 {$this->targetId}",
-            'ip' => "IP {$this->targetId}",
+            'user'   => "使用者 {$this->targetId}",
+            'ip'     => "IP {$this->targetId}",
             'global' => '全域模式',
-            default => '未知目標',
+            default  => '未知目標',
         };
         $status = $this->isSuspicious ? '可疑' : '正常';
         $totalActivities = $this->getTotalActivityCount();
@@ -303,27 +303,27 @@ class SuspiciousActivityAnalysisDTO implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'analysis_id' => $this->analysisId,
-            'target_type' => $this->targetType,
-            'target_id' => $this->targetId,
-            'analysis_time' => $this->analysisTime->format('Y-m-d H:i:s'),
-            'time_window_minutes' => $this->timeWindowMinutes,
-            'is_suspicious' => $this->isSuspicious,
-            'severity_level' => $this->severityLevel->value,
-            'activity_counts' => $this->activityCounts,
-            'failure_counts' => $this->failureCounts,
-            'anomaly_scores' => $this->anomalyScores,
-            'detection_rules' => $this->detectionRules,
-            'metadata' => $this->metadata,
-            'recommended_action' => $this->recommendedAction,
-            'confidence_score' => $this->confidenceScore,
-            'total_activity_count' => $this->getTotalActivityCount(),
-            'total_failure_count' => $this->getTotalFailureCount(),
-            'failure_rate' => $this->getFailureRate(),
-            'max_anomaly_score' => $this->getMaxAnomalyScore(),
-            'average_anomaly_score' => $this->getAverageAnomalyScore(),
+            'analysis_id'               => $this->analysisId,
+            'target_type'               => $this->targetType,
+            'target_id'                 => $this->targetId,
+            'analysis_time'             => $this->analysisTime->format('Y-m-d H:i:s'),
+            'time_window_minutes'       => $this->timeWindowMinutes,
+            'is_suspicious'             => $this->isSuspicious,
+            'severity_level'            => $this->severityLevel->value,
+            'activity_counts'           => $this->activityCounts,
+            'failure_counts'            => $this->failureCounts,
+            'anomaly_scores'            => $this->anomalyScores,
+            'detection_rules'           => $this->detectionRules,
+            'metadata'                  => $this->metadata,
+            'recommended_action'        => $this->recommendedAction,
+            'confidence_score'          => $this->confidenceScore,
+            'total_activity_count'      => $this->getTotalActivityCount(),
+            'total_failure_count'       => $this->getTotalFailureCount(),
+            'failure_rate'              => $this->getFailureRate(),
+            'max_anomaly_score'         => $this->getMaxAnomalyScore(),
+            'average_anomaly_score'     => $this->getAverageAnomalyScore(),
             'requires_immediate_action' => $this->requiresImmediateAction(),
-            'summary' => $this->getSummary(),
+            'summary'                   => $this->getSummary(),
         ];
     }
 

@@ -154,7 +154,7 @@ final class StatisticsRepositoryTest extends UnitTestCase
         $period = $this->createSamplePeriod();
         $row = $this->createSampleRow([
             'snapshot_type' => $snapshotType,
-            'period_type' => $period->type->value,
+            'period_type'   => $period->type->value,
         ]);
 
         $this->mockPdo
@@ -459,15 +459,15 @@ final class StatisticsRepositoryTest extends UnitTestCase
     {
         $period = $this->createSamplePeriod();
         $data = [
-            'uuid' => 'test-uuid-123',
-            'snapshot_type' => StatisticsSnapshot::TYPE_OVERVIEW,
-            'period_type' => $period->type->value,
-            'period_start' => $period->startTime->format('Y-m-d H:i:s'),
-            'period_end' => $period->endTime->format('Y-m-d H:i:s'),
+            'uuid'            => 'test-uuid-123',
+            'snapshot_type'   => StatisticsSnapshot::TYPE_OVERVIEW,
+            'period_type'     => $period->type->value,
+            'period_start'    => $period->startTime->format('Y-m-d H:i:s'),
+            'period_end'      => $period->endTime->format('Y-m-d H:i:s'),
             'statistics_data' => '{"total_posts": 100}',
-            'metadata' => '{}',
-            'created_at' => '2023-01-01 00:00:00',
-            'updated_at' => '2023-01-01 00:00:00',
+            'metadata'        => '{}',
+            'created_at'      => '2023-01-01 00:00:00',
+            'updated_at'      => '2023-01-01 00:00:00',
         ];
 
         return StatisticsSnapshot::fromArray($data);
@@ -489,24 +489,25 @@ final class StatisticsRepositoryTest extends UnitTestCase
      * 建立測試用的資料庫記錄.
      *
      * @param array<string, mixed> $overrides
+     *
      * @return array<string, mixed>
      */
     private function createSampleRow(array $overrides = []): array
     {
         return array_merge([
-            'id' => 1,
-            'uuid' => 'test-uuid-123',
-            'snapshot_type' => StatisticsSnapshot::TYPE_OVERVIEW,
-            'period_type' => PeriodType::DAILY->value,
-            'period_start' => '2023-01-01 00:00:00',
-            'period_end' => '2023-01-01 23:59:59',
-            'statistics_data' => '{"total_posts": 100}',
-            'metadata' => '{}',
-            'expires_at' => null,
-            'total_views' => 0,
+            'id'                   => 1,
+            'uuid'                 => 'test-uuid-123',
+            'snapshot_type'        => StatisticsSnapshot::TYPE_OVERVIEW,
+            'period_type'          => PeriodType::DAILY->value,
+            'period_start'         => '2023-01-01 00:00:00',
+            'period_end'           => '2023-01-01 23:59:59',
+            'statistics_data'      => '{"total_posts": 100}',
+            'metadata'             => '{}',
+            'expires_at'           => null,
+            'total_views'          => 0,
             'total_unique_viewers' => 0,
-            'created_at' => '2023-01-01 00:00:00',
-            'updated_at' => '2023-01-01 00:00:00',
+            'created_at'           => '2023-01-01 00:00:00',
+            'updated_at'           => '2023-01-01 00:00:00',
         ], $overrides);
     }
 }

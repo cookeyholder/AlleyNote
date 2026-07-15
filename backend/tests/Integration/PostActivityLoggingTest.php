@@ -49,9 +49,9 @@ class PostActivityLoggingTest extends IntegrationTestCase
         // 1. 準備資料
         $user = UserFactory::create(['id' => 1]);
         $postData = [
-            'title' => 'New Post Title',
-            'content' => 'This is a valid content',
-            'status' => 'draft',
+            'title'     => 'New Post Title',
+            'content'   => 'This is a valid content',
+            'status'    => 'draft',
             'is_pinned' => false,
         ];
 

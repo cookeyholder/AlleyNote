@@ -48,23 +48,23 @@ class ApiTestCaseDatabaseDslTest extends ApiTestCase
                 'INSERT INTO posts (uuid, seq_number, title, content, user_id, publish_date, created_at, updated_at, status)
                  VALUES (:uuid, :seq_number, :title, :content, :user_id, :publish_date, :created_at, :updated_at, :status)',
             )->execute([
-                'uuid' => $this->generateTestUuid(),
-                'seq_number' => random_int(1000, 9999),
-                'title' => 'DSL API Write',
-                'content' => 'dsl content',
-                'user_id' => 1,
+                'uuid'         => $this->generateTestUuid(),
+                'seq_number'   => random_int(1000, 9999),
+                'title'        => 'DSL API Write',
+                'content'      => 'dsl content',
+                'user_id'      => 1,
                 'publish_date' => $now,
-                'created_at' => $now,
-                'updated_at' => $now,
-                'status' => 1,
+                'created_at'   => $now,
+                'updated_at'   => $now,
+                'status'       => 1,
             ]);
 
             return new Post([
-                'id' => 1,
-                'title' => 'DSL API Write',
+                'id'      => 1,
+                'title'   => 'DSL API Write',
                 'content' => 'dsl content',
                 'user_id' => 1,
-                'status' => 'published',
+                'status'  => 'published',
             ]);
         });
         $postService->shouldReceive('setTags')->zeroOrMoreTimes();
@@ -81,7 +81,7 @@ class ApiTestCaseDatabaseDslTest extends ApiTestCase
         $request = $this
             ->actingAs(['id' => 1, 'email' => 'dsl-write@example.com'])
             ->json('POST', '/api/posts', [
-                'title' => 'DSL API Write',
+                'title'   => 'DSL API Write',
                 'content' => 'dsl content',
             ])
             ->withAttribute('user_id', 1);

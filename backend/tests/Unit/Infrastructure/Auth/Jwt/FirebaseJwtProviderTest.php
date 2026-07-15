@@ -74,9 +74,9 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $provider = new FirebaseJwtProvider($config);
 
         $payload = [
-            'sub' => 'user-123',
+            'sub'   => 'user-123',
             'email' => 'test@example.com',
-            'role' => 'user',
+            'role'  => 'user',
         ];
 
         $token = $provider->generateAccessToken($payload);
@@ -98,7 +98,7 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $provider = new FirebaseJwtProvider($config);
 
         $payload = [
-            'sub' => 'user-123',
+            'sub'       => 'user-123',
             'device_id' => 'device-456',
         ];
 
@@ -165,9 +165,9 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $provider = new FirebaseJwtProvider($config);
 
         $originalPayload = [
-            'sub' => 'user-123',
+            'sub'   => 'user-123',
             'email' => 'test@example.com',
-            'role' => 'admin',
+            'role'  => 'admin',
         ];
 
         $token = $provider->generateAccessToken($originalPayload);
@@ -196,7 +196,7 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $provider = new FirebaseJwtProvider($config);
 
         $originalPayload = [
-            'sub' => 'user-123',
+            'sub'       => 'user-123',
             'device_id' => 'device-456',
         ];
 
@@ -301,7 +301,7 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $provider = new FirebaseJwtProvider($config);
 
         $originalPayload = [
-            'sub' => 'user-123',
+            'sub'   => 'user-123',
             'email' => 'test@example.com',
         ];
 
@@ -499,7 +499,7 @@ final class FirebaseJwtProviderTest extends UnitTestCase
     protected function generateTestKeys(): void
     {
         $config = [
-            'digest_alg' => 'sha256',
+            'digest_alg'       => 'sha256',
             'private_key_bits' => 2048,
             'private_key_type' => OPENSSL_KEYTYPE_RSA,
         ];

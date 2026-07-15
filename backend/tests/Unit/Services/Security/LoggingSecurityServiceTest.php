@@ -65,12 +65,12 @@ class LoggingSecurityServiceTest extends UnitTestCase
     public function sanitizesContextDataCorrectly(): void
     {
         $sensitiveData = [
-            'username' => 'testuser',
-            'password' => 'secret123',
+            'username'   => 'testuser',
+            'password'   => 'secret123',
             'csrf_token' => 'abc123',
-            'safe_data' => 'this is safe',
-            'nested' => [
-                'api_key' => 'secret_key',
+            'safe_data'  => 'this is safe',
+            'nested'     => [
+                'api_key'     => 'secret_key',
                 'public_info' => 'public',
             ],
         ];
@@ -94,12 +94,12 @@ class LoggingSecurityServiceTest extends UnitTestCase
     public function appliesRequestWhitelistCorrectly(): void
     {
         $requestData = [
-            'method' => 'POST',
-            'uri' => '/api/posts',
-            'password' => 'secret123', // 不在白名單中
-            'user_id' => 123,
+            'method'          => 'POST',
+            'uri'             => '/api/posts',
+            'password'        => 'secret123', // 不在白名單中
+            'user_id'         => 123,
             'sensitive_param' => 'should_be_filtered', // 不在白名單中
-            'status_code' => 200,
+            'status_code'     => 200,
         ];
 
         $reflection = new ReflectionClass($this->service);
@@ -190,10 +190,10 @@ class LoggingSecurityServiceTest extends UnitTestCase
     public function logsRequestsWithWhitelist(): void
     {
         $requestData = [
-            'method' => 'POST',
-            'uri' => '/api/posts',
-            'password' => 'secret123', // 應該被過濾
-            'user_id' => 123,
+            'method'      => 'POST',
+            'uri'         => '/api/posts',
+            'password'    => 'secret123', // 應該被過濾
+            'user_id'     => 123,
             'status_code' => 201,
         ];
 
@@ -205,8 +205,8 @@ class LoggingSecurityServiceTest extends UnitTestCase
     public function handlesSensitiveFieldVariations(): void
     {
         $data = [
-            'Password' => 'secret1',
-            'API_KEY' => 'secret2',
+            'Password'   => 'secret1',
+            'API_KEY'    => 'secret2',
             'user_token' => 'secret3',
             'csrf_TOKEN' => 'secret4',
             'safe_field' => 'public',
@@ -230,10 +230,10 @@ class LoggingSecurityServiceTest extends UnitTestCase
     {
         $data = [
             'empty_string' => '',
-            'null_value' => null,
-            'zero' => 0,
-            'false_value' => false,
-            'password' => '',  // 敏感欄位即使為空也要遮罩
+            'null_value'   => null,
+            'zero'         => 0,
+            'false_value'  => false,
+            'password'     => '',  // 敏感欄位即使為空也要遮罩
         ];
 
         $reflection = new ReflectionClass($this->service);

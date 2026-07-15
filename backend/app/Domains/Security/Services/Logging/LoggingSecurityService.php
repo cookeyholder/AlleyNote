@@ -303,9 +303,9 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
             $perms = fileperms($file) & 0o777;
             $expected = 0o640;
             $results[basename($file)] = [
-                'current_permissions' => sprintf('%o', $perms),
+                'current_permissions'  => sprintf('%o', $perms),
                 'expected_permissions' => sprintf('%o', $expected),
-                'is_correct' => $perms === $expected,
+                'is_correct'           => $perms === $expected,
             ];
             // 如果權限不正確，嘗試修正
             if ($perms !== $expected) {
@@ -327,15 +327,15 @@ class LoggingSecurityService implements LoggingSecurityServiceInterface
     {
         $logsDir = storage_path('logs');
         $stats = [
-            'directory' => $logsDir,
+            'directory'             => $logsDir,
             'directory_permissions' => sprintf('%o', fileperms($logsDir) & 0o777),
-            'files' => [],
+            'files'                 => [],
         ];
         $logFiles = glob($logsDir . '/*.log*');
         foreach ($logFiles as $file) {
             $stats['files'][basename($file)] = [
-                'size' => filesize($file),
-                'permissions' => sprintf('%o', fileperms($file) & 0o777),
+                'size'          => filesize($file),
+                'permissions'   => sprintf('%o', fileperms($file) & 0o777),
                 'last_modified' => date('Y-m-d H:i:s', (int) filemtime($file)),
             ];
         }

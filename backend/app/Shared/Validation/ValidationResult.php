@@ -280,10 +280,10 @@ class ValidationResult implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'is_valid' => $this->isValid,
-            'errors' => $this->errors,
+            'is_valid'       => $this->isValid,
+            'errors'         => $this->errors,
             'validated_data' => $this->validatedData,
-            'failed_rules' => $this->failedRules,
+            'failed_rules'   => $this->failedRules,
         ];
     }
 

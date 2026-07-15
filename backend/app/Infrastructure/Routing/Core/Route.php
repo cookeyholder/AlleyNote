@@ -215,6 +215,7 @@ class Route implements RouteInterface
      * 從路由模式中提取參數名稱.
      *
      * @param string $pattern 路由模式
+     *
      * @return string[] 參數名稱陣列
      */
     private function extractParameterNames(string $pattern): array

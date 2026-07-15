@@ -45,6 +45,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
      * @param string $query SQL 查詢語句
      * @param array<string, mixed> $params 查詢參數
      * @param string $queryType 查詢類型標識
+     *
      * @return mixed 查詢結果
      */
     public function executeAndMonitor(string $query, array $params = [], string $queryType = 'unknown'): mixed
@@ -82,6 +83,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
      * 獲取慢查詢統計.
      *
      * @param int $days 查詢最近幾天的資料
+     *
      * @return array<string, mixed>
      */
     public function getSlowQueryStats(int $days = 7): array
@@ -118,6 +120,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
      *
      * @param string $queryType 查詢類型
      * @param int $days 查詢天數
+     *
      * @return array<string, mixed>
      */
     public function getPerformanceTrend(string $queryType, int $days = 30): array
@@ -157,6 +160,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
      *
      * @param int $limit 返回數量
      * @param int $days 查詢最近幾天的資料
+     *
      * @return array<string, mixed>
      */
     public function getSlowestQueries(int $limit = 10, int $days = 7): array
@@ -194,6 +198,7 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
      * 分析查詢效能問題.
      *
      * @param string $queryHash 查詢雜湊
+     *
      * @return array<string, mixed>
      */
     public function analyzeQueryPerformance(string $queryHash): array
@@ -218,15 +223,15 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
             $resultCounts = array_column($history, 'result_count');
 
             return [
-                'query_hash' => $queryHash,
-                'total_executions' => count($history),
+                'query_hash'         => $queryHash,
+                'total_executions'   => count($history),
                 'avg_execution_time' => round(array_sum($executionTimes) / count($executionTimes), 4),
                 'min_execution_time' => count($executionTimes) > 0 ? min($executionTimes) : 0,
                 'max_execution_time' => count($executionTimes) > 0 ? max($executionTimes) : 0,
-                'avg_result_count' => round(array_sum($resultCounts) / count($resultCounts), 2),
-                'slow_query_rate' => round(count(array_filter($executionTimes, fn($time) => $time > self::SLOW_QUERY_THRESHOLD)) / count($executionTimes) * 100, 2),
-                'last_execution' => $history[0]['created_at'] ?? '',
-                'performance_trend' => $this->calculatePerformanceTrend($history),
+                'avg_result_count'   => round(array_sum($resultCounts) / count($resultCounts), 2),
+                'slow_query_rate'    => round(count(array_filter($executionTimes, fn($time) => $time > self::SLOW_QUERY_THRESHOLD)) / count($executionTimes) * 100, 2),
+                'last_execution'     => $history[0]['created_at'] ?? '',
+                'performance_trend'  => $this->calculatePerformanceTrend($history),
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('分析查詢效能失敗: ' . $e->getMessage(), 0, $e);
@@ -324,11 +329,11 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                     VALUES (:query_hash, :query_type, :execution_time, :result_count, :created_at)';
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                'query_hash' => $queryHash,
-                'query_type' => $queryType,
+                'query_hash'     => $queryHash,
+                'query_type'     => $queryType,
                 'execution_time' => $executionTime,
-                'result_count' => $resultCount,
-                'created_at' => date('Y-m-d H:i:s'),
+                'result_count'   => $resultCount,
+                'created_at'     => date('Y-m-d H:i:s'),
             ]);
         } catch (PDOException $e) {
             // 記錄失敗不應該影響主要查詢，只記錄錯誤
@@ -354,12 +359,12 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                     VALUES (:query_hash, :query_type, :query_sql, :execution_time, :query_params, :created_at)';
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                'query_hash' => $queryHash,
-                'query_type' => $queryType,
-                'query_sql' => $query,
+                'query_hash'     => $queryHash,
+                'query_type'     => $queryType,
+                'query_sql'      => $query,
                 'execution_time' => $executionTime,
-                'query_params' => json_encode($params, JSON_UNESCAPED_UNICODE),
-                'created_at' => date('Y-m-d H:i:s'),
+                'query_params'   => json_encode($params, JSON_UNESCAPED_UNICODE),
+                'created_at'     => date('Y-m-d H:i:s'),
             ]);
         } catch (PDOException $e) {
             app_log('error', '記錄慢查詢失敗', ['exception' => $e->getMessage()]);
@@ -382,12 +387,12 @@ final class SlowQueryMonitoringService implements SlowQueryMonitoringServiceInte
                     VALUES (:query_hash, :query_type, :query_sql, :execution_time, :error_message, :created_at)';
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                'query_hash' => $queryHash,
-                'query_type' => $queryType,
-                'query_sql' => $query,
+                'query_hash'     => $queryHash,
+                'query_type'     => $queryType,
+                'query_sql'      => $query,
                 'execution_time' => $executionTime,
-                'error_message' => $errorMessage,
-                'created_at' => date('Y-m-d H:i:s'),
+                'error_message'  => $errorMessage,
+                'created_at'     => date('Y-m-d H:i:s'),
             ]);
         } catch (PDOException $e) {
             app_log('error', '記錄失敗查詢失敗', ['exception' => $e->getMessage()]);

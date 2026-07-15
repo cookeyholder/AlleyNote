@@ -61,9 +61,9 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
         } catch (Throwable $e) {
             if (function_exists('app_log')) {
                 app_log('error', 'JWT authentication failed', [
-                    'exception' => $e->getMessage(),
+                    'exception'       => $e->getMessage(),
                     'exception_class' => $e::class,
-                    'path' => $request->getUri()->getPath(),
+                    'path'            => $request->getUri()->getPath(),
                 ]);
             }
 
@@ -146,16 +146,16 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
     private function createUnauthorizedResponse(string $message, string $code = 'UNAUTHORIZED'): ResponseInterface
     {
         $responseData = [
-            'success' => false,
-            'error' => $message,
-            'code' => $code,
+            'success'   => false,
+            'error'     => $message,
+            'code'      => $code,
             'timestamp' => date('c'),
         ];
 
         return new Response(
             statusCode: 401,
             headers: [
-                'Content-Type' => 'application/json',
+                'Content-Type'     => 'application/json',
                 'WWW-Authenticate' => 'Bearer realm="API"',
             ],
             body: json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '',

@@ -13,6 +13,7 @@ final class NetworkHelper
      *
      * @param Request $request PSR-7 請求對象
      * @param array<string> $trustedProxies 信任的代理伺服器 IP 清單
+     *
      * @return string 客戶端 IP 位址
      */
     public static function getClientIp(Request $request, array $trustedProxies = []): string

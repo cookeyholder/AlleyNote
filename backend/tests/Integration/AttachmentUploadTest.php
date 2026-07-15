@@ -197,8 +197,8 @@ class AttachmentUploadTest extends IntegrationTestCase
     {
         $postId = 1;
         $invalidTypes = [
-            'text/html' => 'test.html',
-            'application/x-php' => 'test.php',
+            'text/html'                => 'test.html',
+            'application/x-php'        => 'test.php',
             'application/x-javascript' => 'test.js',
             'application/x-msdownload' => 'test.exe',
         ];

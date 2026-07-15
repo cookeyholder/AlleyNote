@@ -160,7 +160,7 @@ readonly class ChartData implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'labels' => $this->labels,
+            'labels'   => $this->labels,
             'datasets' => array_map(
                 fn(ChartDataset $dataset) => $dataset->jsonSerialize(),
                 $this->datasets,

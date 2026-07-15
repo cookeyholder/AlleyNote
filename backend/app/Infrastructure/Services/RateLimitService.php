@@ -28,9 +28,9 @@ class RateLimitService
             // 如果已經超過限制，直接回傳結果
             if ($data['count'] >= $maxRequests) {
                 return [
-                    'allowed' => false,
+                    'allowed'   => false,
                     'remaining' => 0,
-                    'reset' => $data['reset'],
+                    'reset'     => $data['reset'],
                 ];
             }
             // 增加請求計數
@@ -39,18 +39,18 @@ class RateLimitService
             $this->cache->set($key, $data, $timeWindow);
 
             return [
-                'allowed' => $data['count'] <= $maxRequests,
+                'allowed'   => $data['count'] <= $maxRequests,
                 'remaining' => max(0, $maxRequests - $data['count']),
-                'reset' => $data['reset'],
+                'reset'     => $data['reset'],
             ];
         } catch (Throwable $e) {
             // 如果快取服務不可用，預設允許請求
             app_log('error', '速率限制檢查失敗', ['exception' => $e->getMessage()]);
 
             return [
-                'allowed' => true,
+                'allowed'   => true,
                 'remaining' => $maxRequests,
-                'reset' => time() + $timeWindow,
+                'reset'     => time() + $timeWindow,
             ];
         }
     }

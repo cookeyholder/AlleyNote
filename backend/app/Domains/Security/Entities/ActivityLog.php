@@ -219,16 +219,16 @@ class ActivityLog
     public function getContext(): array
     {
         return [
-            'user_id' => $this->userId,
+            'user_id'    => $this->userId,
             'session_id' => $this->sessionId,
-            'target' => $this->targetType && $this->targetId ? [
+            'target'     => $this->targetType && $this->targetId ? [
                 'type' => $this->targetType,
-                'id' => $this->targetId,
+                'id'   => $this->targetId,
             ] : null,
             'request' => [
-                'method' => $this->requestMethod,
-                'path' => $this->requestPath,
-                'ip' => $this->ipAddress,
+                'method'     => $this->requestMethod,
+                'path'       => $this->requestPath,
+                'ip'         => $this->ipAddress,
                 'user_agent' => $this->userAgent,
             ],
             'metadata' => $this->getMetadata(),
@@ -243,24 +243,24 @@ class ActivityLog
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'action_type' => $this->actionType->value,
+            'id'              => $this->id,
+            'uuid'            => $this->uuid,
+            'action_type'     => $this->actionType->value,
             'action_category' => $this->actionCategory->value,
-            'severity' => $this->severity->value,
-            'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
-            'status' => $this->status->value,
-            'target_type' => $this->targetType,
-            'target_id' => $this->targetId,
-            'description' => $this->description,
-            'metadata' => $this->getMetadata(),
-            'ip_address' => $this->ipAddress,
-            'user_agent' => $this->userAgent,
-            'request_method' => $this->requestMethod,
-            'request_path' => $this->requestPath,
-            'occurred_at' => $this->occurredAt->format('Y-m-d H:i:s'),
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
+            'severity'        => $this->severity->value,
+            'user_id'         => $this->userId,
+            'session_id'      => $this->sessionId,
+            'status'          => $this->status->value,
+            'target_type'     => $this->targetType,
+            'target_id'       => $this->targetId,
+            'description'     => $this->description,
+            'metadata'        => $this->getMetadata(),
+            'ip_address'      => $this->ipAddress,
+            'user_agent'      => $this->userAgent,
+            'request_method'  => $this->requestMethod,
+            'request_path'    => $this->requestPath,
+            'occurred_at'     => $this->occurredAt->format('Y-m-d H:i:s'),
+            'created_at'      => $this->createdAt->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -273,16 +273,16 @@ class ActivityLog
     {
         return [
             'activity_id' => $this->uuid,
-            'action' => $this->actionType->value,
-            'category' => $this->actionCategory->value,
-            'severity' => $this->severity->value,
-            'status' => $this->status->value,
-            'user' => $this->userId,
-            'target' => $this->targetType && $this->targetId
+            'action'      => $this->actionType->value,
+            'category'    => $this->actionCategory->value,
+            'severity'    => $this->severity->value,
+            'status'      => $this->status->value,
+            'user'        => $this->userId,
+            'target'      => $this->targetType && $this->targetId
                 ? "{$this->targetType}:{$this->targetId}"
                 : null,
-            'ip' => $this->ipAddress,
-            'timestamp' => $this->occurredAt->format(DateTime::ISO8601),
+            'ip'          => $this->ipAddress,
+            'timestamp'   => $this->occurredAt->format(DateTime::ISO8601),
             'description' => $this->description,
         ];
     }

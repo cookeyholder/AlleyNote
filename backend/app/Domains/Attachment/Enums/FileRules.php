@@ -31,18 +31,18 @@ class FileRules
 
     // 檔案副檔名對應表
     public const MIME_EXTENSIONS = [
-        'image/jpeg' => 'jpg',
-        'image/png' => 'png',
-        'image/gif' => 'gif',
-        'image/webp' => 'webp',
-        'application/pdf' => 'pdf',
-        'application/msword' => 'doc',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
-        'application/vnd.ms-excel' => 'xls',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
-        'application/vnd.ms-powerpoint' => 'ppt',
+        'image/jpeg'                                                                => 'jpg',
+        'image/png'                                                                 => 'png',
+        'image/gif'                                                                 => 'gif',
+        'image/webp'                                                                => 'webp',
+        'application/pdf'                                                           => 'pdf',
+        'application/msword'                                                        => 'doc',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'   => 'docx',
+        'application/vnd.ms-excel'                                                  => 'xls',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'         => 'xlsx',
+        'application/vnd.ms-powerpoint'                                             => 'ppt',
         'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'pptx',
-        'text/plain' => 'txt',
-        'text/csv' => 'csv',
+        'text/plain'                                                                => 'txt',
+        'text/csv'                                                                  => 'csv',
     ];
 }

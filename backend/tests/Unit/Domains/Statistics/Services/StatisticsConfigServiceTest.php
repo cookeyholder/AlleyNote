@@ -22,17 +22,17 @@ final class StatisticsConfigServiceTest extends UnitTestCase
         $testConfig = [
             'cache' => [
                 'ttl' => [
-                    'short' => 300,
+                    'short'  => 300,
                     'medium' => 600,
-                    'long' => 1200,
+                    'long'   => 1200,
                 ],
                 'types' => [
                     'overview' => 900,
-                    'posts' => 1800,
+                    'posts'    => 1800,
                 ],
                 'warmup' => [
-                    'enabled' => true,
-                    'ttl' => 3600,
+                    'enabled'    => true,
+                    'ttl'        => 3600,
                     'batch_size' => 50,
                 ],
                 'supported_tags' => ['test', 'statistics'],
@@ -40,34 +40,34 @@ final class StatisticsConfigServiceTest extends UnitTestCase
             'calculation' => [
                 'schedule' => [
                     'hourly' => '0 * * * *',
-                    'daily' => '0 2 * * *',
+                    'daily'  => '0 2 * * *',
                 ],
                 'tasks' => [
                     'max_execution_time' => 1800,
-                    'memory_limit' => '256M',
-                    'batch_size' => 500,
+                    'memory_limit'       => '256M',
+                    'batch_size'         => 500,
                 ],
                 'parallel' => [
-                    'enabled' => false,
-                    'max_workers' => 2,
+                    'enabled'      => false,
+                    'max_workers'  => 2,
                     'lock_timeout' => 900,
                 ],
             ],
             'performance' => [
                 'api_limits' => [
                     'max_date_range' => 30,
-                    'max_results' => 100,
-                    'default_limit' => 10,
+                    'max_results'    => 100,
+                    'default_limit'  => 10,
                 ],
                 'view_tracking' => [
                     'rate_limits' => [
                         'authenticated' => [
                             'requests' => 200,
-                            'window' => 60,
+                            'window'   => 60,
                         ],
                         'anonymous' => [
                             'requests' => 100,
-                            'window' => 60,
+                            'window'   => 60,
                         ],
                     ],
                     'response_timeout' => 50,
@@ -75,26 +75,26 @@ final class StatisticsConfigServiceTest extends UnitTestCase
             ],
             'retention' => [
                 'snapshots' => [
-                    'daily' => 30,
+                    'daily'  => 30,
                     'weekly' => 180,
                 ],
             ],
             'features' => [
-                'cache_enabled' => true,
+                'cache_enabled'          => true,
                 'background_calculation' => false,
-                'debug_mode' => true,
+                'debug_mode'             => true,
             ],
             'monitoring' => [
                 'health_check' => [
-                    'enabled' => true,
+                    'enabled'             => true,
                     'cache_check_timeout' => 3,
-                    'warning_thresholds' => [
+                    'warning_thresholds'  => [
                         'cache_hit_rate' => 75,
-                        'response_time' => 1000,
+                        'response_time'  => 1000,
                     ],
                 ],
                 'logging' => [
-                    'level' => 'debug',
+                    'level'     => 'debug',
                     'max_files' => 10,
                 ],
             ],

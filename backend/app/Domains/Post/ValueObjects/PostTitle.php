@@ -114,7 +114,7 @@ final readonly class PostTitle implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'title' => $this->value,
+            'title'  => $this->value,
             'length' => $this->getLength(),
         ];
     }

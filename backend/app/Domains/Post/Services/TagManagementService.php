@@ -20,6 +20,7 @@ class TagManagementService
      * 取得標籤列表.
      *
      * @param array<string, mixed> $filters
+     *
      * @return array{items: array<int, array<string, mixed>>, total: int, page: int, per_page: int, last_page: int}
      */
     public function listTags(int $page = 1, int $perPage = 20, array $filters = []): array
@@ -28,10 +29,10 @@ class TagManagementService
         $lastPage = (int) ceil($result['total'] / $perPage);
 
         return [
-            'items' => array_map(fn($tag) => $tag->toArray(), $result['items']),
-            'total' => $result['total'],
-            'page' => $page,
-            'per_page' => $perPage,
+            'items'     => array_map(fn($tag) => $tag->toArray(), $result['items']),
+            'total'     => $result['total'],
+            'page'      => $page,
+            'per_page'  => $perPage,
             'last_page' => $lastPage,
         ];
     }
@@ -40,6 +41,7 @@ class TagManagementService
      * 取得單一標籤.
      *
      * @return array<string, mixed>
+     *
      * @throws NotFoundException
      */
     public function getTag(int $id): array
@@ -56,6 +58,7 @@ class TagManagementService
      * 建立標籤.
      *
      * @return array<string, mixed>
+     *
      * @throws ValidationException
      */
     public function createTag(CreateTagDTO $dto): array
@@ -82,10 +85,10 @@ class TagManagementService
         }
         // 建立標籤
         $tag = $this->tagRepository->create([
-            'name' => $dto->name,
-            'slug' => $slug,
+            'name'        => $dto->name,
+            'slug'        => $slug,
             'description' => $dto->description,
-            'color' => $dto->color,
+            'color'       => $dto->color,
             'usage_count' => 0,
         ]);
 
@@ -96,6 +99,7 @@ class TagManagementService
      * 更新標籤.
      *
      * @return array<string, mixed>
+     *
      * @throws NotFoundException|ValidationException
      */
     public function updateTag(UpdateTagDTO $dto): array

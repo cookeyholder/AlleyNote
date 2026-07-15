@@ -76,13 +76,13 @@ class Permission
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'id'          => $this->id,
+            'name'        => $this->name,
             'description' => $this->description,
-            'resource' => $this->resource,
-            'action' => $this->action,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
+            'resource'    => $this->resource,
+            'action'      => $this->action,
+            'created_at'  => $this->createdAt,
+            'updated_at'  => $this->updatedAt,
         ];
     }
 

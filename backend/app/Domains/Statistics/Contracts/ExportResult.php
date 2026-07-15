@@ -51,13 +51,13 @@ final readonly class ExportResult
     public function toArray(): array
     {
         return [
-            'format' => $this->format,
-            'filename' => $this->filename,
-            'record_count' => $this->recordCount,
-            'execution_time' => $this->executionTime,
-            'file_size' => $this->fileSize,
+            'format'              => $this->format,
+            'filename'            => $this->filename,
+            'record_count'        => $this->recordCount,
+            'execution_time'      => $this->executionTime,
+            'file_size'           => $this->fileSize,
             'formatted_file_size' => $this->getFormattedFileSize(),
-            'metadata' => $this->metadata,
+            'metadata'            => $this->metadata,
         ];
     }
 }

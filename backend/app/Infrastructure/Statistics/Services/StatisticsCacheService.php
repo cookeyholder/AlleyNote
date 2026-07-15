@@ -34,11 +34,11 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
 
     /** @var array<string, int> 快取統計資訊 */
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'puts' => 0,
-        'deletes' => 0,
-        'flushes' => 0,
+        'hits'           => 0,
+        'misses'         => 0,
+        'puts'           => 0,
+        'deletes'        => 0,
+        'flushes'        => 0,
         'tag_operations' => 0,
     ];
 
@@ -67,15 +67,15 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
             $this->cache->set($cacheKey, $value, $ttl);
             $this->stats['puts']++;
             $this->logger->debug('統計快取記憶化', [
-                'key' => $key,
-                'ttl' => $ttl,
+                'key'       => $key,
+                'ttl'       => $ttl,
                 'has_value' => $value !== null,
             ]);
 
             return $value;
         } catch (Throwable $e) {
             $this->logger->error('統計快取記憶化失敗', [
-                'key' => $key,
+                'key'   => $key,
                 'error' => $e->getMessage(),
             ]);
 
@@ -96,12 +96,12 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
             $this->stats['tag_operations'] += count($validTags);
             $this->logger->info('按標籤清除統計快取', [
-                'tags' => $validTags,
+                'tags'  => $validTags,
                 'count' => count($validTags),
             ]);
         } catch (Throwable $e) {
             $this->logger->error('按標籤清除快取失敗', [
-                'tags' => $validTags,
+                'tags'  => $validTags,
                 'error' => $e->getMessage(),
             ]);
 
@@ -122,12 +122,12 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
             }
             $this->stats['deletes'] += count($keyArray);
             $this->logger->debug('刪除統計快取', [
-                'keys' => $keyArray,
+                'keys'  => $keyArray,
                 'count' => count($keyArray),
             ]);
         } catch (Throwable $e) {
             $this->logger->error('刪除快取失敗', [
-                'keys' => $keyArray,
+                'keys'  => $keyArray,
                 'error' => $e->getMessage(),
             ]);
 
@@ -161,9 +161,9 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
                 $this->updateTagIndexes($key, $tags);
                 $this->stats['puts']++;
                 $this->logger->debug('統計快取寫入', [
-                    'key' => $key,
-                    'ttl' => $ttl,
-                    'tags' => $tags,
+                    'key'       => $key,
+                    'ttl'       => $ttl,
+                    'tags'      => $tags,
                     'has_value' => $value !== null,
                 ]);
             }
@@ -171,7 +171,7 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
             return $result;
         } catch (Throwable $e) {
             $this->logger->error('統計快取寫入失敗', [
-                'key' => $key,
+                'key'   => $key,
                 'error' => $e->getMessage(),
             ]);
 
@@ -216,18 +216,18 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
 
         return [
             'statistics_cache' => [
-                'hits' => $this->stats['hits'],
-                'misses' => $this->stats['misses'],
-                'puts' => $this->stats['puts'],
-                'deletes' => $this->stats['deletes'],
-                'flushes' => $this->stats['flushes'],
+                'hits'           => $this->stats['hits'],
+                'misses'         => $this->stats['misses'],
+                'puts'           => $this->stats['puts'],
+                'deletes'        => $this->stats['deletes'],
+                'flushes'        => $this->stats['flushes'],
                 'tag_operations' => $this->stats['tag_operations'],
-                'hit_rate' => round($hitRate, 2),
+                'hit_rate'       => round($hitRate, 2),
                 'total_requests' => $totalRequests,
             ],
             'underlying_cache' => $cacheStats,
-            'supported_tags' => self::SUPPORTED_TAGS,
-            'generated_at' => date('Y-m-d H:i:s'),
+            'supported_tags'   => self::SUPPORTED_TAGS,
+            'generated_at'     => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -238,6 +238,7 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
      *
      * @param array<string, callable> $warmupCallbacks 預熱回調陣列
      * @param int $warmupTtl 預熱資料的 TTL
+     *
      * @return array<string, array{success: bool, duration?: float, error?: string}> 預熱結果
      */
     public function warmup(array $warmupCallbacks, int $warmupTtl = 7200): array
@@ -251,28 +252,28 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
                 $this->put($key, $value, $warmupTtl, ['statistics', 'prewarmed']);
                 $duration = round((microtime(true) - $startTime) * 1000, 2);
                 $results[$key] = [
-                    'success' => true,
+                    'success'  => true,
                     'duration' => $duration,
                 ];
                 $this->logger->debug('統計快取預熱成功', [
-                    'key' => $key,
+                    'key'      => $key,
                     'duration' => $duration,
                 ]);
             } catch (Throwable $e) {
                 $results[$key] = [
                     'success' => false,
-                    'error' => $e->getMessage(),
+                    'error'   => $e->getMessage(),
                 ];
                 $this->logger->error('統計快取預熱失敗', [
-                    'key' => $key,
+                    'key'   => $key,
                     'error' => $e->getMessage(),
                 ]);
             }
         }
         $this->logger->info('統計快取預熱完成', [
-            'total' => count($warmupCallbacks),
+            'total'      => count($warmupCallbacks),
             'successful' => count(array_filter($results, fn($r) => $r['success'])),
-            'failed' => count(array_filter($results, fn($r) => !$r['success'])),
+            'failed'     => count(array_filter($results, fn($r) => !$r['success'])),
         ]);
 
         return $results;
@@ -354,7 +355,7 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
         $taggedKeys = $this->cache->get($indexKey);
         if (!is_array($taggedKeys)) {
             $this->logger->debug('清除標籤快取', [
-                'tag' => $tag,
+                'tag'          => $tag,
                 'deleted_keys' => 0,
             ]);
 
@@ -369,7 +370,7 @@ final class StatisticsCacheService implements StatisticsCacheServiceInterface
         // 清除標籤索引
         $this->cache->delete($indexKey);
         $this->logger->debug('清除標籤快取', [
-            'tag' => $tag,
+            'tag'          => $tag,
             'deleted_keys' => count($taggedKeys),
         ]);
     }

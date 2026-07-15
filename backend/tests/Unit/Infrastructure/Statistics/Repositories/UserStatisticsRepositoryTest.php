@@ -160,9 +160,9 @@ class UserStatisticsRepositoryTest extends UnitTestCase
         $result = $this->repository->getActiveUsersByActivityType($this->testPeriod);
 
         $expected = [
-            'login' => 100,
-            'post' => 50,
-            'view' => 200,
+            'login'   => 100,
+            'post'    => 50,
+            'view'    => 200,
             'comment' => 30,
         ];
 
@@ -187,16 +187,16 @@ class UserStatisticsRepositoryTest extends UnitTestCase
             ->method('fetch')
             ->willReturnOnConsecutiveCalls(
                 [
-                    'user_id' => '1',
-                    'username' => 'john_doe',
+                    'user_id'      => '1',
+                    'username'     => 'john_doe',
                     'metric_value' => '15',
-                    'rank' => '1',
+                    'rank'         => '1',
                 ],
                 [
-                    'user_id' => '2',
-                    'username' => 'jane_smith',
+                    'user_id'      => '2',
+                    'username'     => 'jane_smith',
                     'metric_value' => '10',
-                    'rank' => '2',
+                    'rank'         => '2',
                 ],
                 false,
             );
@@ -205,16 +205,16 @@ class UserStatisticsRepositoryTest extends UnitTestCase
 
         $expected = [
             [
-                'user_id' => 1,
-                'username' => 'john_doe',
+                'user_id'      => 1,
+                'username'     => 'john_doe',
                 'metric_value' => 15,
-                'rank' => 1,
+                'rank'         => 1,
             ],
             [
-                'user_id' => 2,
-                'username' => 'jane_smith',
+                'user_id'      => 2,
+                'username'     => 'jane_smith',
                 'metric_value' => 10,
-                'rank' => 2,
+                'rank'         => 2,
             ],
         ];
 
@@ -254,8 +254,8 @@ class UserStatisticsRepositoryTest extends UnitTestCase
             ->method('fetch')
             ->with(PDO::FETCH_ASSOC)
             ->willReturn([
-                'total_logins' => '500',
-                'unique_users' => '150',
+                'total_logins'        => '500',
+                'unique_users'        => '150',
                 'avg_logins_per_user' => '3.33',
             ]);
 
@@ -317,9 +317,9 @@ class UserStatisticsRepositoryTest extends UnitTestCase
         $result = $this->repository->getUserRegistrationTrend($this->testPeriod, $previousPeriod);
 
         $expected = [
-            'current' => 25,
-            'previous' => 20,
-            'growth_rate' => 25.0,
+            'current'      => 25,
+            'previous'     => 20,
+            'growth_rate'  => 25.0,
             'growth_count' => 5,
         ];
 
@@ -387,10 +387,10 @@ class UserStatisticsRepositoryTest extends UnitTestCase
         $result = $this->repository->getUserRetentionAnalysis($cohortPeriod, 7);
 
         $expected = [
-            'cohort_size' => 100,
+            'cohort_size'    => 100,
             'retained_users' => 75,
             'retention_rate' => 75.0,
-            'churn_rate' => 25.0,
+            'churn_rate'     => 25.0,
         ];
 
         $this->assertSame($expected, $result);
@@ -433,8 +433,8 @@ class UserStatisticsRepositoryTest extends UnitTestCase
         $result = $this->repository->getUsersCountByRole($this->testPeriod);
 
         $expected = [
-            'admin' => 5,
-            'user' => 100,
+            'admin'   => 5,
+            'user'    => 100,
             'unknown' => 10,
         ];
 
@@ -496,9 +496,9 @@ class UserStatisticsRepositoryTest extends UnitTestCase
         $result = $this->repository->getUserRegistrationSources($this->testPeriod);
 
         $expected = [
-            'website' => 50,
+            'website'    => 50,
             'mobile_app' => 30,
-            'direct' => 20,
+            'direct'     => 20,
         ];
 
         $this->assertSame($expected, $result);
@@ -529,14 +529,14 @@ class UserStatisticsRepositoryTest extends UnitTestCase
 
         $expected = [
             [
-                'location' => 'Taiwan',
+                'location'    => 'Taiwan',
                 'users_count' => 50,
-                'percentage' => 25.0,
+                'percentage'  => 25.0,
             ],
             [
-                'location' => 'Japan',
+                'location'    => 'Japan',
                 'users_count' => 30,
-                'percentage' => 15.0,
+                'percentage'  => 15.0,
             ],
         ];
 

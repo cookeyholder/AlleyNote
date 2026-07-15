@@ -12,17 +12,17 @@ use RuntimeException;
 class FileSecurityService implements FileSecurityServiceInterface
 {
     private const ALLOWED_MIME_TYPES = [
-        'image/jpeg' => ['jpg', 'jpeg'],
-        'image/png' => ['png'],
-        'image/gif' => ['gif'],
-        'image/webp' => ['webp'],
-        'application/pdf' => ['pdf'],
-        'application/msword' => ['doc'],
+        'image/jpeg'                                                              => ['jpg', 'jpeg'],
+        'image/png'                                                               => ['png'],
+        'image/gif'                                                               => ['gif'],
+        'image/webp'                                                              => ['webp'],
+        'application/pdf'                                                         => ['pdf'],
+        'application/msword'                                                      => ['doc'],
         'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => ['docx'],
-        'application/vnd.ms-excel' => ['xls'],
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => ['xlsx'],
-        'text/plain' => ['txt'],
-        'text/csv' => ['csv'],
+        'application/vnd.ms-excel'                                                => ['xls'],
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'       => ['xlsx'],
+        'text/plain'                                                              => ['txt'],
+        'text/csv'                                                                => ['csv'],
     ];
 
     private const FORBIDDEN_EXTENSIONS = [
@@ -236,17 +236,17 @@ class FileSecurityService implements FileSecurityServiceInterface
     private function validateFileSignature(string $content, string $mimeType): bool
     {
         $signatures = [
-            'image/jpeg' => ["\xFF\xD8\xFF"],
-            'image/png' => ["\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"],
-            'image/gif' => ['GIF87a', 'GIF89a'],
-            'image/webp' => ['RIFF'],
-            'application/pdf' => ['%PDF-'],
-            'text/plain' => [], // 純文字檔案無固定簽名
-            'text/csv' => [],
-            'application/msword' => ["\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"],
+            'image/jpeg'                                                              => ["\xFF\xD8\xFF"],
+            'image/png'                                                               => ["\x89\x50\x4E\x47\x0D\x0A\x1A\x0A"],
+            'image/gif'                                                               => ['GIF87a', 'GIF89a'],
+            'image/webp'                                                              => ['RIFF'],
+            'application/pdf'                                                         => ['%PDF-'],
+            'text/plain'                                                              => [], // 純文字檔案無固定簽名
+            'text/csv'                                                                => [],
+            'application/msword'                                                      => ["\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"],
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => ["\x50\x4B\x03\x04"],
-            'application/vnd.ms-excel' => ["\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"],
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => ["\x50\x4B\x03\x04"],
+            'application/vnd.ms-excel'                                                => ["\xD0\xCF\x11\xE0\xA1\xB1\x1A\xE1"],
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'       => ["\x50\x4B\x03\x04"],
         ];
         if (!isset($signatures[$mimeType])) {
             return false;
@@ -280,14 +280,14 @@ class FileSecurityService implements FileSecurityServiceInterface
     private function getUploadErrorMessage(int $errorCode): string
     {
         return match ($errorCode) {
-            UPLOAD_ERR_INI_SIZE => '檔案大小超過 PHP 設定限制',
-            UPLOAD_ERR_FORM_SIZE => '檔案大小超過表單限制',
-            UPLOAD_ERR_PARTIAL => '檔案僅部分上傳',
-            UPLOAD_ERR_NO_FILE => '沒有檔案被上傳',
+            UPLOAD_ERR_INI_SIZE   => '檔案大小超過 PHP 設定限制',
+            UPLOAD_ERR_FORM_SIZE  => '檔案大小超過表單限制',
+            UPLOAD_ERR_PARTIAL    => '檔案僅部分上傳',
+            UPLOAD_ERR_NO_FILE    => '沒有檔案被上傳',
             UPLOAD_ERR_NO_TMP_DIR => '缺少臨時目錄',
             UPLOAD_ERR_CANT_WRITE => '檔案寫入失敗',
-            UPLOAD_ERR_EXTENSION => 'PHP 擴充功能停止檔案上傳',
-            default => '未知的上傳錯誤'
+            UPLOAD_ERR_EXTENSION  => 'PHP 擴充功能停止檔案上傳',
+            default               => '未知的上傳錯誤'
         };
     }
 }

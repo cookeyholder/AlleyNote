@@ -91,9 +91,9 @@ class ValidationException extends Exception
     public function toApiResponse(): array
     {
         return [
-            'success' => false,
-            'message' => $this->getMessage(),
-            'errors' => $this->validationResult->getErrors(),
+            'success'      => false,
+            'message'      => $this->getMessage(),
+            'errors'       => $this->validationResult->getErrors(),
             'failed_rules' => $this->validationResult->getFailedRules(),
         ];
     }
@@ -104,11 +104,11 @@ class ValidationException extends Exception
     public function toDebugArray(): array
     {
         return [
-            'message' => $this->getMessage(),
-            'code' => $this->getCode(),
-            'file' => $this->getFile(),
-            'line' => $this->getLine(),
-            'trace' => $this->getTrace(),
+            'message'           => $this->getMessage(),
+            'code'              => $this->getCode(),
+            'file'              => $this->getFile(),
+            'line'              => $this->getLine(),
+            'trace'             => $this->getTrace(),
             'validation_result' => $this->validationResult->toArray(),
         ];
     }

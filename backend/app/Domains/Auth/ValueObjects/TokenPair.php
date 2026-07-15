@@ -78,6 +78,7 @@ final readonly class TokenPair implements JsonSerializable
      * 取得 Access Token 剩餘有效秒數.
      *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
+     *
      * @return int 剩餘秒數，如已過期則返回 0
      */
     public function getAccessTokenExpiresIn(?DateTimeImmutable $now = null): int
@@ -92,6 +93,7 @@ final readonly class TokenPair implements JsonSerializable
      * 取得 Refresh Token 剩餘有效秒數.
      *
      * @param DateTimeImmutable|null $now 檢查時間，預設為現在
+     *
      * @return int 剩餘秒數，如已過期則返回 0
      */
     public function getRefreshTokenExpiresIn(?DateTimeImmutable $now = null): int
@@ -179,11 +181,11 @@ final readonly class TokenPair implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'access_token' => $this->accessToken,
-            'refresh_token' => $this->refreshToken,
-            'token_type' => $this->tokenType,
-            'expires_in' => $this->getAccessTokenExpiresIn(),
-            'access_token_expires_at' => $this->accessTokenExpiresAt->format(DateTimeImmutable::ATOM),
+            'access_token'             => $this->accessToken,
+            'refresh_token'            => $this->refreshToken,
+            'token_type'               => $this->tokenType,
+            'expires_in'               => $this->getAccessTokenExpiresIn(),
+            'access_token_expires_at'  => $this->accessTokenExpiresAt->format(DateTimeImmutable::ATOM),
             'refresh_token_expires_at' => $this->refreshTokenExpiresAt->format(DateTimeImmutable::ATOM),
         ];
     }
@@ -192,14 +194,15 @@ final readonly class TokenPair implements JsonSerializable
      * 轉換為 API 回應格式（隱藏敏感資訊）.
      *
      * @param bool $includeRefreshToken 是否包含 Refresh Token
+     *
      * @return array<string, mixed>
      */
     public function toApiResponse(bool $includeRefreshToken = true): array
     {
         $response = [
             'access_token' => $this->accessToken,
-            'token_type' => $this->tokenType,
-            'expires_in' => $this->getAccessTokenExpiresIn(),
+            'token_type'   => $this->tokenType,
+            'expires_in'   => $this->getAccessTokenExpiresIn(),
         ];
         if ($includeRefreshToken) {
             $response['refresh_token'] = $this->refreshToken;
@@ -262,6 +265,7 @@ final readonly class TokenPair implements JsonSerializable
      * 驗證 Access Token.
      *
      * @param string $accessToken Access Token
+     *
      * @throws InvalidArgumentException 當 Access Token 無效時
      */
     private function validateAccessToken(string $accessToken): void
@@ -286,6 +290,7 @@ final readonly class TokenPair implements JsonSerializable
      * 驗證 Refresh Token.
      *
      * @param string $refreshToken Refresh Token
+     *
      * @throws InvalidArgumentException 當 Refresh Token 無效時
      */
     private function validateRefreshToken(string $refreshToken): void
@@ -306,6 +311,7 @@ final readonly class TokenPair implements JsonSerializable
      * 驗證 Token 類型.
      *
      * @param string $tokenType Token 類型
+     *
      * @throws InvalidArgumentException 當 Token 類型無效時
      */
     private function validateTokenType(string $tokenType): void
@@ -326,6 +332,7 @@ final readonly class TokenPair implements JsonSerializable
      *
      * @param DateTimeImmutable $accessTokenExpiresAt Access Token 過期時間
      * @param DateTimeImmutable $refreshTokenExpiresAt Refresh Token 過期時間
+     *
      * @throws InvalidArgumentException 當過期時間設定無效時
      */
     private function validateExpirationTimes(

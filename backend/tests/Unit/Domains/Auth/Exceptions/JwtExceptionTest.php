@@ -12,6 +12,7 @@ use Tests\Support\UnitTestCase;
  * JWT 基礎例外類別單元測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class JwtExceptionTest extends UnitTestCase
@@ -26,7 +27,7 @@ class JwtExceptionTest extends UnitTestCase
         array $context = [],
         string $errorType = 'test_jwt_error',
     ): JwtException {
-        return new class ($message, $code, $previous, $context, $errorType) extends JwtException {
+        return new class($message, $code, $previous, $context, $errorType) extends JwtException {
             public function __construct(
                 string $message,
                 int $code,
@@ -102,7 +103,7 @@ class JwtExceptionTest extends UnitTestCase
 
         $this->assertSame($exception, $result); // 測試流暢介面
         $this->assertSame([
-            'user_id' => 123,
+            'user_id'    => 123,
             'token_type' => 'refresh',
         ], $exception->getContext());
 
@@ -235,17 +236,17 @@ class JwtExceptionTest extends UnitTestCase
     public function testComplexContextData(): void
     {
         $context = [
-            'user_id' => 123,
+            'user_id'    => 123,
             'token_data' => [
-                'type' => 'access',
-                'scopes' => ['read', 'write'],
+                'type'     => 'access',
+                'scopes'   => ['read', 'write'],
                 'metadata' => [
                     'created_at' => '2025-01-01T00:00:00Z',
                     'expires_at' => '2025-01-01T01:00:00Z',
                 ],
             ],
             'request_info' => [
-                'ip' => '192.168.1.1',
+                'ip'         => '192.168.1.1',
                 'user_agent' => 'Test Agent',
             ],
         ];

@@ -56,7 +56,9 @@ final class RefreshTokenService
      * @param int $userId 使用者 ID
      * @param DeviceInfo $deviceInfo 裝置資訊
      * @param string|null $parentTokenJti 父 token JTI（token 輪轉時使用）
+     *
      * @return RefreshToken 新建立的 refresh token
+     *
      * @throws RefreshTokenException 當 token 建立失敗時
      */
     public function createRefreshToken(
@@ -102,17 +104,17 @@ final class RefreshTokenService
                 null, // updated_at (由資料庫生成)
             );
             $this->logger?->info('Refresh token created successfully', [
-                'user_id' => $userId,
+                'user_id'   => $userId,
                 'device_id' => $deviceInfo->getDeviceId(),
-                'jti' => $refreshPayload->getJti(),
+                'jti'       => $refreshPayload->getJti(),
             ]);
 
             return $refreshToken;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to create refresh token', [
-                'user_id' => $userId,
+                'user_id'   => $userId,
                 'device_id' => $deviceInfo->getDeviceId(),
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
             ]);
 
             throw new RefreshTokenException(
@@ -129,7 +131,9 @@ final class RefreshTokenService
      * @param string $refreshToken 原始 refresh token
      * @param DeviceInfo $deviceInfo 當前裝置資訊
      * @param bool $rotateToken 是否進行 token 輪轉
+     *
      * @return TokenPair 新的 token pair
+     *
      * @throws InvalidTokenException|TokenExpiredException|AuthenticationException
      */
     public function refreshAccessToken(
@@ -169,10 +173,10 @@ final class RefreshTokenService
                 $this->refreshTokenRepository->updateLastUsed($tokenData['jti']);
             }
             $this->logger?->info('Access token refreshed successfully', [
-                'user_id' => $tokenData['user_id'],
+                'user_id'   => $tokenData['user_id'],
                 'device_id' => $deviceInfo->getDeviceId(),
-                'jti' => $payload->getJti(),
-                'rotated' => $rotateToken,
+                'jti'       => $payload->getJti(),
+                'rotated'   => $rotateToken,
             ]);
 
             return $newTokenPair;
@@ -180,7 +184,7 @@ final class RefreshTokenService
             throw $e;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to refresh access token', [
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
                 'device_id' => $deviceInfo->getDeviceId(),
             ]);
 
@@ -197,6 +201,7 @@ final class RefreshTokenService
      *
      * @param string $refreshToken 要撤銷的 refresh token
      * @param string $reason 撤銷原因
+     *
      * @return bool 撤銷是否成功
      */
     public function revokeToken(string $refreshToken, string $reason = RefreshToken::REVOKE_REASON_MANUAL): bool
@@ -208,7 +213,7 @@ final class RefreshTokenService
                 // 同時加入黑名單
                 $this->addToBlacklist($refreshToken, $reason);
                 $this->logger?->info('Refresh token revoked', [
-                    'jti' => $payload->getJti(),
+                    'jti'    => $payload->getJti(),
                     'reason' => $reason,
                 ]);
             }
@@ -216,7 +221,7 @@ final class RefreshTokenService
             return $result;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to revoke refresh token', [
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
                 'reason' => $reason,
             ]);
 
@@ -230,6 +235,7 @@ final class RefreshTokenService
      * @param int $userId 使用者 ID
      * @param string $reason 撤銷原因
      * @param string|null $exceptJti 例外的 JTI（不撤銷）
+     *
      * @return int 撤銷的 token 數量
      */
     public function revokeAllUserTokens(
@@ -250,16 +256,16 @@ final class RefreshTokenService
                 }
             }
             $this->logger?->info('User tokens revoked', [
-                'user_id' => $userId,
+                'user_id'       => $userId,
                 'revoked_count' => $revokedCount,
-                'reason' => $reason,
+                'reason'        => $reason,
             ]);
 
             return $revokedCount;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to revoke user tokens', [
                 'user_id' => $userId,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             return 0;
@@ -271,6 +277,7 @@ final class RefreshTokenService
      *
      * @param string $deviceId 裝置 ID
      * @param string $reason 撤銷原因
+     *
      * @return int 撤銷的 token 數量
      */
     public function revokeDeviceTokens(string $deviceId, string $reason = RefreshToken::REVOKE_REASON_SECURITY): int
@@ -278,16 +285,16 @@ final class RefreshTokenService
         try {
             $revokedCount = $this->refreshTokenRepository->revokeAllByDevice(0, $deviceId, $reason);
             $this->logger?->info('Device tokens revoked', [
-                'device_id' => $deviceId,
+                'device_id'     => $deviceId,
                 'revoked_count' => $revokedCount,
-                'reason' => $reason,
+                'reason'        => $reason,
             ]);
 
             return $revokedCount;
         } catch (Throwable $e) {
             $this->logger?->error('Failed to revoke device tokens', [
                 'device_id' => $deviceId,
-                'error' => $e->getMessage(),
+                'error'     => $e->getMessage(),
             ]);
 
             return 0;
@@ -323,6 +330,7 @@ final class RefreshTokenService
      * 取得使用者的活躍 refresh token 統計.
      *
      * @param int $userId 使用者 ID
+     *
      * @return array{total: int, by_device: array, by_status: array}
      */
     public function getUserTokenStats(int $userId): array
@@ -330,7 +338,7 @@ final class RefreshTokenService
         try {
             $tokens = $this->refreshTokenRepository->findByUserId($userId);
             $stats = [
-                'total' => count($tokens),
+                'total'     => count($tokens),
                 'by_device' => [],
                 'by_status' => [],
             ];
@@ -349,11 +357,11 @@ final class RefreshTokenService
         } catch (Throwable $e) {
             $this->logger?->error('Failed to get user token stats', [
                 'user_id' => $userId,
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ]);
 
             return [
-                'total' => 0,
+                'total'     => 0,
                 'by_device' => [],
                 'by_status' => [],
             ];
@@ -395,7 +403,7 @@ final class RefreshTokenService
             $oldestTokenData = $activeTokens[0]; // 假設已按時間排序
             $this->revokeToken($oldestTokenData['jti'], RefreshToken::REVOKE_REASON_MANUAL);
             $this->logger?->info('Token limit enforced, oldest token revoked', [
-                'user_id' => $userId,
+                'user_id'     => $userId,
                 'revoked_jti' => $oldestTokenData['jti'],
             ]);
         }
@@ -432,8 +440,8 @@ final class RefreshTokenService
         } catch (Throwable $e) {
             $this->logger?->error('Token rotation failed', [
                 'current_jti' => $tokenData['jti'],
-                'user_id' => $tokenData['user_id'],
-                'error' => $e->getMessage(),
+                'user_id'     => $tokenData['user_id'],
+                'error'       => $e->getMessage(),
             ]);
 
             throw $e;
@@ -480,14 +488,14 @@ final class RefreshTokenService
                 null,
                 [
                     'token_type' => 'refresh',
-                    'user_id' => $payload->getSubject(),
+                    'user_id'    => $payload->getSubject(),
                 ],
             );
             $this->blacklistRepository->addToBlacklist($entry);
         } catch (Throwable $e) {
             $this->logger?->error('Failed to add token to blacklist', [
                 'reason' => $reason,
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
             ]);
         }
     }

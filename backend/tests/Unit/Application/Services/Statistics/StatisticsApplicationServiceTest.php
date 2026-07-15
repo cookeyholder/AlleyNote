@@ -45,16 +45,16 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
         $this->configService = new StatisticsConfigService([
             'cache' => [
                 'ttl' => [
-                    'short' => 1800,
+                    'short'  => 1800,
                     'medium' => 3600,
-                    'long' => 7200,
+                    'long'   => 7200,
                 ],
                 'types' => [
                     'overview' => 1800,
-                    'posts' => 3600,
-                    'users' => 3600,
-                    'popular' => 1800,
-                    'trends' => 3600,
+                    'posts'    => 3600,
+                    'users'    => 3600,
+                    'popular'  => 1800,
+                    'trends'   => 3600,
                 ],
             ],
         ], 'production');
@@ -189,7 +189,7 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
 
         $expectedSnapshots = [
             StatisticsSnapshot::TYPE_OVERVIEW => $this->createMockSnapshot(StatisticsSnapshot::TYPE_OVERVIEW, $period),
-            StatisticsSnapshot::TYPE_POSTS => $this->createMockSnapshot(StatisticsSnapshot::TYPE_POSTS, $period),
+            StatisticsSnapshot::TYPE_POSTS    => $this->createMockSnapshot(StatisticsSnapshot::TYPE_POSTS, $period),
         ];
 
         $this->aggregationService
@@ -272,10 +272,10 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
         $snapshotType = StatisticsSnapshot::TYPE_OVERVIEW;
 
         $expectedTrends = [
-            'current_value' => 100,
-            'previous_value' => 80,
+            'current_value'     => 100,
+            'previous_value'    => 80,
             'percentage_change' => 25.0,
-            'trend_direction' => 'up',
+            'trend_direction'   => 'up',
         ];
 
         $cacheKey = "trends.{$snapshotType}.{$currentPeriod->type->value}.{$currentPeriod->startTime->format('Y-m-d')}-{$previousPeriod->startTime->format('Y-m-d')}";

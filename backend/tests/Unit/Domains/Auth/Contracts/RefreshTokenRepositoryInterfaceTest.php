@@ -310,7 +310,7 @@ class RefreshTokenRepositoryInterfaceTest extends UnitTestCase
     public function testTokenFamilyMethods(): void
     {
         $familyMethods = [
-            'getTokenFamily' => ['rootJti' => 'string'],
+            'getTokenFamily'    => ['rootJti' => 'string'],
             'revokeTokenFamily' => ['rootJti' => 'string', 'reason' => 'string'],
         ];
 

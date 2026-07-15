@@ -64,7 +64,7 @@ class UserManagementService
         // 建立使用者
         $user = $this->userRepository->create([
             'username' => $dto->username,
-            'email' => $dto->email,
+            'email'    => $dto->email,
             'password' => $hashedPassword,
         ]);
         // 分配角色
@@ -89,7 +89,7 @@ class UserManagementService
         // 檢查使用者名稱是否已被其他人使用
         if ($dto->username !== null) {
             $existing = $this->userRepository->findByUsername($dto->username);
-            if ($existing && $existing['id'] != $id) {
+            if ($existing && $existing['id'] !== $id) {
                 throw ValidationException::fromSingleError('username', '使用者名稱已被使用');
             }
             $updateData['username'] = $dto->username;
@@ -97,7 +97,7 @@ class UserManagementService
         // 檢查 email 是否已被其他人使用
         if ($dto->email !== null) {
             $existing = $this->userRepository->findByEmail($dto->email);
-            if ($existing && $existing['id'] != $id) {
+            if ($existing && $existing['id'] !== $id) {
                 throw ValidationException::fromSingleError('email', 'Email 已被使用');
             }
             $updateData['email'] = $dto->email;

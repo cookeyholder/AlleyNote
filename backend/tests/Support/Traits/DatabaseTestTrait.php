@@ -30,7 +30,7 @@ trait DatabaseTestTrait
         // 建立記憶體資料庫連線
         try {
             $this->db = new PDO('sqlite::memory:', null, null, [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             ]);
 
@@ -375,19 +375,19 @@ trait DatabaseTestTrait
     protected function insertTestPost(array $data = []): int
     {
         $defaultData = [
-            'uuid' => $this->generateTestUuid(),
-            'seq_number' => rand(1, 9999),
-            'title' => 'Test Post ' . $this->generateRandomString(5),
-            'content' => 'Test content for post ' . $this->generateRandomString(10),
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
-            'views' => 0,
-            'is_pinned' => 0,
-            'status' => 1,
-            'publish_date' => date('Y-m-d H:i:s'),
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s'),
-            'creation_source' => 'unknown',
+            'uuid'                   => $this->generateTestUuid(),
+            'seq_number'             => rand(1, 9999),
+            'title'                  => 'Test Post ' . $this->generateRandomString(5),
+            'content'                => 'Test content for post ' . $this->generateRandomString(10),
+            'user_id'                => 1,
+            'user_ip'                => '127.0.0.1',
+            'views'                  => 0,
+            'is_pinned'              => 0,
+            'status'                 => 1,
+            'publish_date'           => date('Y-m-d H:i:s'),
+            'created_at'             => date('Y-m-d H:i:s'),
+            'updated_at'             => date('Y-m-d H:i:s'),
+            'creation_source'        => 'unknown',
             'creation_source_detail' => null,
         ];
 
@@ -411,10 +411,10 @@ trait DatabaseTestTrait
     protected function insertTestUser(array $data = []): int
     {
         $defaultData = [
-            'username' => 'testuser_' . $this->generateRandomString(6),
-            'email' => $this->generateTestEmail(),
-            'password' => password_hash('password123', PASSWORD_BCRYPT),
-            'status' => 1,
+            'username'   => 'testuser_' . $this->generateRandomString(6),
+            'email'      => $this->generateTestEmail(),
+            'password'   => password_hash('password123', PASSWORD_BCRYPT),
+            'status'     => 1,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];

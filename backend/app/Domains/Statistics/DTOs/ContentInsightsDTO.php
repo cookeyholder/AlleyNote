@@ -45,6 +45,7 @@ class ContentInsightsDTO implements JsonSerializable
      * 從陣列建立 DTO.
      *
      * @param array<string, mixed> $data 原始資料陣列
+     *
      * @throws InvalidArgumentException 當資料格式不正確時
      */
     public static function fromArray(array $data): self
@@ -314,7 +315,7 @@ class ContentInsightsDTO implements JsonSerializable
             $score >= 50 => 'B',
             $score >= 40 => 'C+',
             $score >= 30 => 'C',
-            default => 'D',
+            default      => 'D',
         };
     }
 
@@ -329,24 +330,24 @@ class ContentInsightsDTO implements JsonSerializable
         // 基於參與率的建議
         if ($this->getAverageEngagementRate() < 5.0) {
             $recommendations['engagement'] = [
-                'priority' => 'high',
-                'action' => '提升內容互動性',
+                'priority'    => 'high',
+                'action'      => '提升內容互動性',
                 'suggestions' => ['增加問答環節', '加入互動元素', '改善內容標題'],
             ];
         }
         // 基於完成率的建議
         if ($this->getCompletionRate() < 60.0) {
             $recommendations['completion'] = [
-                'priority' => 'high',
-                'action' => '優化內容結構',
+                'priority'    => 'high',
+                'action'      => '優化內容結構',
                 'suggestions' => ['縮短內容長度', '改善排版', '增加視覺元素'],
             ];
         }
         // 基於分享率的建議
         if ($this->getShareRate() < 2.0) {
             $recommendations['sharing'] = [
-                'priority' => 'medium',
-                'action' => '提升內容分享價值',
+                'priority'    => 'medium',
+                'action'      => '提升內容分享價值',
                 'suggestions' => ['創造更多有價值的內容', '優化分享功能', '增加社群元素'],
             ];
         }
@@ -354,8 +355,8 @@ class ContentInsightsDTO implements JsonSerializable
         $topTopic = $this->getTopTopic();
         if ($topTopic !== null) {
             $recommendations['topics'] = [
-                'priority' => 'medium',
-                'action' => "專注於熱門主題：{$topTopic}",
+                'priority'    => 'medium',
+                'action'      => "專注於熱門主題：{$topTopic}",
                 'suggestions' => ['創作更多相關內容', '深入探討熱門話題', '建立主題系列'],
             ];
         }
@@ -373,21 +374,21 @@ class ContentInsightsDTO implements JsonSerializable
         return [
             'optimal_publish_time' => [
                 'hour' => $this->getPeakEngagementHour(),
-                'day' => $this->getPeakEngagementDay(),
+                'day'  => $this->getPeakEngagementDay(),
             ],
             'content_specifications' => [
-                'optimal_length' => $this->getOptimalContentLength(),
-                'target_read_time' => $this->getAverageReadTime(),
+                'optimal_length'     => $this->getOptimalContentLength(),
+                'target_read_time'   => $this->getAverageReadTime(),
                 'recommended_format' => $this->getMostPopularFormat(),
             ],
             'engagement_optimization' => [
                 'target_engagement_rate' => max(8.0, $this->getAverageEngagementRate() * 1.2),
                 'target_completion_rate' => max(70.0, $this->getCompletionRate() * 1.1),
-                'target_share_rate' => max(3.0, $this->getShareRate() * 1.3),
+                'target_share_rate'      => max(3.0, $this->getShareRate() * 1.3),
             ],
             'lifecycle_management' => [
-                'content_lifespan' => $this->getContentLifespanDays(),
-                'peak_period' => $this->getPeakViewsPeriod(),
+                'content_lifespan'        => $this->getContentLifespanDays(),
+                'peak_period'             => $this->getPeakViewsPeriod(),
                 'refresh_recommendations' => $this->getRefreshRecommendations(),
             ],
         ];
@@ -404,11 +405,11 @@ class ContentInsightsDTO implements JsonSerializable
         $seasonalData = $this->seasonalTrends[$currentSeason] ?? [];
 
         return [
-            'current_season' => $currentSeason,
-            'seasonal_performance' => $seasonalData,
-            'recommended_topics' => is_array($seasonalData) && isset($seasonalData['trending_topics']) ? $seasonalData['trending_topics'] : [],
-            'optimal_formats' => is_array($seasonalData) && isset($seasonalData['popular_formats']) ? $seasonalData['popular_formats'] : [],
-            'engagement_patterns' => is_array($seasonalData) && isset($seasonalData['engagement_patterns']) ? $seasonalData['engagement_patterns'] : [],
+            'current_season'               => $currentSeason,
+            'seasonal_performance'         => $seasonalData,
+            'recommended_topics'           => is_array($seasonalData) && isset($seasonalData['trending_topics']) ? $seasonalData['trending_topics'] : [],
+            'optimal_formats'              => is_array($seasonalData) && isset($seasonalData['popular_formats']) ? $seasonalData['popular_formats'] : [],
+            'engagement_patterns'          => is_array($seasonalData) && isset($seasonalData['engagement_patterns']) ? $seasonalData['engagement_patterns'] : [],
             'content_calendar_suggestions' => $this->generateContentCalendarSuggestions($currentSeason),
         ];
     }
@@ -423,20 +424,20 @@ class ContentInsightsDTO implements JsonSerializable
         return [
             'reading_habits' => [
                 'avg_scroll_depth' => $this->getAverageScrollDepth(),
-                'completion_rate' => $this->getCompletionRate(),
-                'return_rate' => $this->getReturnReaderRate(),
-                'bounce_rate' => $this->getBounceRate(),
+                'completion_rate'  => $this->getCompletionRate(),
+                'return_rate'      => $this->getReturnReaderRate(),
+                'bounce_rate'      => $this->getBounceRate(),
             ],
             'engagement_preferences' => [
                 'preferred_content_length' => $this->getOptimalContentLength(),
-                'optimal_read_time' => $this->getAverageReadTime(),
-                'most_engaging_format' => $this->getMostPopularFormat(),
+                'optimal_read_time'        => $this->getAverageReadTime(),
+                'most_engaging_format'     => $this->getMostPopularFormat(),
             ],
             'interaction_patterns' => [
                 'peak_activity_time' => $this->getPeakEngagementHour(),
-                'preferred_day' => $this->getPeakEngagementDay(),
-                'sharing_behavior' => [
-                    'avg_shares' => $this->getAverageSharesPerContent(),
+                'preferred_day'      => $this->getPeakEngagementDay(),
+                'sharing_behavior'   => [
+                    'avg_shares'       => $this->getAverageSharesPerContent(),
                     'most_shared_type' => $this->getMostSharableContentType(),
                 ],
             ],
@@ -452,31 +453,31 @@ class ContentInsightsDTO implements JsonSerializable
     public function toArray(): array
     {
         $data = [
-            'top_performing_content' => $this->topPerformingContent,
+            'top_performing_content'      => $this->topPerformingContent,
             'content_performance_metrics' => $this->contentPerformanceMetrics,
-            'popular_topics' => $this->popularTopics,
-            'content_formats' => $this->contentFormats,
-            'user_engagement_patterns' => $this->userEngagementPatterns,
-            'content_lifecycle_analysis' => $this->contentLifecycleAnalysis,
-            'reading_patterns' => $this->readingPatterns,
-            'shareability' => $this->shareability,
-            'seasonal_trends' => $this->seasonalTrends,
-            'content_optimization' => $this->contentOptimization,
-            'calculated_metrics' => [
+            'popular_topics'              => $this->popularTopics,
+            'content_formats'             => $this->contentFormats,
+            'user_engagement_patterns'    => $this->userEngagementPatterns,
+            'content_lifecycle_analysis'  => $this->contentLifecycleAnalysis,
+            'reading_patterns'            => $this->readingPatterns,
+            'shareability'                => $this->shareability,
+            'seasonal_trends'             => $this->seasonalTrends,
+            'content_optimization'        => $this->contentOptimization,
+            'calculated_metrics'          => [
                 'avg_views_per_content' => $this->getAverageViewsPerContent(),
-                'avg_engagement_rate' => $this->getAverageEngagementRate(),
-                'avg_read_time' => $this->getAverageReadTime(),
-                'bounce_rate' => $this->getBounceRate(),
-                'completion_rate' => $this->getCompletionRate(),
-                'share_rate' => $this->getShareRate(),
-                'performance_grade' => $this->getPerformanceGrade(),
-                'top_topic' => $this->getTopTopic(),
-                'most_popular_format' => $this->getMostPopularFormat(),
+                'avg_engagement_rate'   => $this->getAverageEngagementRate(),
+                'avg_read_time'         => $this->getAverageReadTime(),
+                'bounce_rate'           => $this->getBounceRate(),
+                'completion_rate'       => $this->getCompletionRate(),
+                'share_rate'            => $this->getShareRate(),
+                'performance_grade'     => $this->getPerformanceGrade(),
+                'top_topic'             => $this->getTopTopic(),
+                'most_popular_format'   => $this->getMostPopularFormat(),
             ],
-            'strategy_recommendations' => $this->getContentStrategyRecommendations(),
-            'optimization_insights' => $this->getOptimizationInsights(),
+            'strategy_recommendations'  => $this->getContentStrategyRecommendations(),
+            'optimization_insights'     => $this->getOptimizationInsights(),
             'seasonal_content_strategy' => $this->getSeasonalContentStrategy(),
-            'reader_behavior_analysis' => $this->getReaderBehaviorAnalysis(),
+            'reader_behavior_analysis'  => $this->getReaderBehaviorAnalysis(),
         ];
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
@@ -516,11 +517,11 @@ class ContentInsightsDTO implements JsonSerializable
     public function getSummary(): array
     {
         return [
-            'performance_grade' => $this->getPerformanceGrade(),
-            'avg_engagement_rate' => $this->getAverageEngagementRate(),
-            'completion_rate' => $this->getCompletionRate(),
-            'top_topic' => $this->getTopTopic(),
-            'most_popular_format' => $this->getMostPopularFormat(),
+            'performance_grade'      => $this->getPerformanceGrade(),
+            'avg_engagement_rate'    => $this->getAverageEngagementRate(),
+            'completion_rate'        => $this->getCompletionRate(),
+            'top_topic'              => $this->getTopTopic(),
+            'most_popular_format'    => $this->getMostPopularFormat(),
             'optimal_content_length' => $this->getOptimalContentLength(),
         ];
     }
@@ -576,9 +577,9 @@ class ContentInsightsDTO implements JsonSerializable
 
         return match (true) {
             in_array($month, [12, 1, 2], true) => 'winter',
-            in_array($month, [3, 4, 5], true) => 'spring',
-            in_array($month, [6, 7, 8], true) => 'summer',
-            default => 'autumn',
+            in_array($month, [3, 4, 5], true)  => 'spring',
+            in_array($month, [6, 7, 8], true)  => 'summer',
+            default                            => 'autumn',
         };
     }
 
@@ -607,7 +608,7 @@ class ContentInsightsDTO implements JsonSerializable
             'summer' => ['度假和旅遊內容', '戶外活動指南', '輕鬆娛樂主題'],
             'autumn' => ['回到學校內容', '準備冬季主題', '反思和規劃內容'],
             'winter' => ['年終總結', '新年計劃', '室內活動推薦'],
-            default => ['通用主題內容'],
+            default  => ['通用主題內容'],
         };
     }
 
@@ -615,6 +616,7 @@ class ContentInsightsDTO implements JsonSerializable
      * 確保回傳 array<string, mixed> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, mixed>
      */
     private static function ensureStringMixedArray($data): array
@@ -636,6 +638,7 @@ class ContentInsightsDTO implements JsonSerializable
      * 確保回傳 array<string, int> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, int>
      */
     private static function ensureStringIntArray($data): array
@@ -657,6 +660,7 @@ class ContentInsightsDTO implements JsonSerializable
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
      * @param mixed $data
+     *
      * @return array<int, array<string, mixed>>
      */
     private static function ensureIntArrayStringMixedArray($data): array
@@ -684,6 +688,7 @@ class ContentInsightsDTO implements JsonSerializable
      * 確保回傳 array<string, int|float> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, int|float>
      */
     private static function ensureStringNumberArray($data): array
