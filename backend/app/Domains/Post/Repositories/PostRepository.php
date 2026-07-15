@@ -87,7 +87,7 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float}
+     * @return array{items: Post[], total: int, page: int, perPage: int, lastPage: int}
      */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
@@ -172,7 +172,7 @@ class PostRepository implements PostRepositoryInterface
     }
 
     /**
-     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float}
+     * @return array{items: Post[], total: int, page: int, perPage: int, lastPage: int}
      */
     public function paginateByCreationSource(
         string $creationSource,

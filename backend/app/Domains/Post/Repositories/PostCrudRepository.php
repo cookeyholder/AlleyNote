@@ -59,12 +59,12 @@ class PostCrudRepository extends PostBaseRepository
     public function find(int $id): ?Post
     {
         $cacheKey = PostCacheKeyService::post($id);
-        /** @var array|null $data */
+        /** @var array<string, mixed>|null $data */
         $data = $this->cache->remember($cacheKey, function () use ($id) {
             $sql = $this->buildSelectQuery('p.id = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
-            /** @var array|false $result */
+            /** @var array<string, mixed>|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$result) {
                 return null;
@@ -81,7 +81,7 @@ class PostCrudRepository extends PostBaseRepository
         $sql = $this->buildSelectQuery('p.id = ?');
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
-        /** @var array|false $result */
+        /** @var array<string, mixed>|false $result */
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
             return null;
@@ -93,12 +93,12 @@ class PostCrudRepository extends PostBaseRepository
     public function findByUuid(string $uuid): ?Post
     {
         $cacheKey = PostCacheKeyService::postByUuid($uuid);
-        /** @var array|null $data */
+        /** @var array<string, mixed>|null $data */
         $data = $this->cache->remember($cacheKey, function () use ($uuid) {
             $sql = $this->buildSelectQuery('p.uuid = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$uuid]);
-            /** @var array|false $result */
+            /** @var array<string, mixed>|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$result) {
                 return null;
@@ -115,7 +115,7 @@ class PostCrudRepository extends PostBaseRepository
         $sql = $this->buildSelectQuery('seq_number = ?');
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
-        /** @var array|false $result */
+        /** @var array<string, mixed>|false $result */
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
             return null;
@@ -167,7 +167,7 @@ class PostCrudRepository extends PostBaseRepository
             if (!$stmt->execute($data)) {
                 $errorInfo = $stmt->errorInfo();
 
-                throw new PDOException('Failed to insert post: ' . ($errorInfo[2] ?? 'unknown'));
+                throw new PDOException('Failed to insert post: ' . ((string) ($errorInfo[2] ?? 'unknown')));
             }
             $postId = (int) $this->db->lastInsertId();
 
@@ -242,6 +242,9 @@ class PostCrudRepository extends PostBaseRepository
         return $stmt->execute([$id]);
     }
 
+    /**
+     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: int}
+     */
     public function paginate(int $page = 1, int $perPage = 10, array $conditions = []): array
     {
         $offset = ($page - 1) * $perPage;
@@ -294,10 +297,13 @@ class PostCrudRepository extends PostBaseRepository
             'total'    => $total,
             'page'     => $page,
             'perPage'  => $perPage,
-            'lastPage' => ceil($total / $perPage),
+            'lastPage' => (int) ceil($total / $perPage),
         ];
     }
 
+    /**
+     * @return Post[]
+     */
     public function getPinnedPosts(int $limit = 5): array
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
@@ -322,6 +328,9 @@ class PostCrudRepository extends PostBaseRepository
         return $result;
     }
 
+    /**
+     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: int}
+     */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
@@ -361,7 +370,7 @@ class PostCrudRepository extends PostBaseRepository
                 'total'    => $total,
                 'page'     => $page,
                 'perPage'  => $perPage,
-                'lastPage' => ceil($total / $perPage),
+                'lastPage' => (int) ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
 
@@ -412,6 +421,9 @@ class PostCrudRepository extends PostBaseRepository
         }
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getPostTags(int $id): array
     {
         $sql = 'SELECT t.id, t.name
@@ -421,10 +433,10 @@ class PostCrudRepository extends PostBaseRepository
                ORDER BY t.name';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':post_id' => $id]);
+        /** @var list<array<string, mixed>> $tags */
         $tags = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        /** @var array<int, array<string, mixed>> */
-        return is_array($tags) ? $tags : [];
+        return $tags;
     }
 
     public function setPinned(int $id, bool $isPinned): bool

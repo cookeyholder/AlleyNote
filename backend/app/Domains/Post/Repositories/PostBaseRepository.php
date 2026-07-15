@@ -50,6 +50,9 @@ abstract class PostBaseRepository
         return $sql;
     }
 
+    /**
+     * @param array<string, mixed> $result
+     */
     protected function preparePostData(array $result): array
     {
         $publishDate = $result['publish_date'] ?? null;
@@ -92,8 +95,9 @@ abstract class PostBaseRepository
             $sql = 'SELECT COALESCE(MAX(seq_number), 0) + 1 as next_seq FROM posts';
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
+            /** @var array<string, mixed>|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $nextSeq = (int) $result['next_seq'];
+            $nextSeq = $result !== false ? (int) $result['next_seq'] : 1;
             if (!$inTransaction) {
                 $this->db->exec('COMMIT');
             }

@@ -9,6 +9,9 @@ use PDO;
 
 class PostSearchRepository extends PostBaseRepository
 {
+    /**
+     * @return Post[]
+     */
     public function searchByTitle(string $title): array
     {
         $sql = 'SELECT ' . self::POST_SELECT_FIELDS . ' FROM posts WHERE title LIKE :title AND deleted_at IS NULL';
@@ -32,7 +35,7 @@ class PostSearchRepository extends PostBaseRepository
         $stmt = $this->db->prepare($sql);
         $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
         $stmt->execute();
-        /** @var array|false $result */
+        /** @var array<string, mixed>|false $result */
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
             return null;
@@ -41,6 +44,9 @@ class PostSearchRepository extends PostBaseRepository
         return Post::fromArray($this->preparePostData($result));
     }
 
+    /**
+     * @return Post[]
+     */
     public function search(string $keyword): array
     {
         $sql = $this->buildSelectQuery('title LIKE :keyword OR content LIKE :keyword');

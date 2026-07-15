@@ -9,6 +9,9 @@ use PDO;
 
 class PostAnalyticsRepository extends PostBaseRepository
 {
+    /**
+     * @return Post[]
+     */
     public function findByCreationSource(string $creationSource, int $limit = 10, int $offset = 0): array
     {
         $cacheKey = sprintf('posts:source:%s:limit:%d:offset:%d', $creationSource, $limit, $offset);
@@ -35,6 +38,9 @@ class PostAnalyticsRepository extends PostBaseRepository
         return $result;
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getSourceDistribution(): array
     {
         $cacheKey = 'posts:source_distribution';
@@ -45,8 +51,8 @@ class PostAnalyticsRepository extends PostBaseRepository
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = [];
-            /** @var array|false $row */
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                /** @var array<string, mixed> $row */
                 if (!is_array($row)) {
                     continue;
                 }
@@ -61,6 +67,9 @@ class PostAnalyticsRepository extends PostBaseRepository
         return $result;
     }
 
+    /**
+     * @return Post[]
+     */
     public function findByCreationSourceAndDetail(
         string $creationSource,
         ?string $creationSourceDetail = null,
@@ -128,6 +137,9 @@ class PostAnalyticsRepository extends PostBaseRepository
         return $result;
     }
 
+    /**
+     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: int}
+     */
     public function paginateByCreationSource(
         string $creationSource,
         int $page = 1,
@@ -135,7 +147,7 @@ class PostAnalyticsRepository extends PostBaseRepository
     ): array {
         $cacheKey = sprintf('posts:paginate:source:%s:page:%d:per:%d', $creationSource, $page, $perPage);
 
-        /** @var array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float} $result */
+        /** @var array{items: list<Post>, total: int, page: int, perPage: int, lastPage: int} $result */
         $result = $this->cache->remember($cacheKey, function () use ($creationSource, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
             $total = $this->countByCreationSource($creationSource);
@@ -159,7 +171,7 @@ class PostAnalyticsRepository extends PostBaseRepository
                 'total'    => $total,
                 'page'     => $page,
                 'perPage'  => $perPage,
-                'lastPage' => ceil($total / $perPage),
+                'lastPage' => (int) ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
 
