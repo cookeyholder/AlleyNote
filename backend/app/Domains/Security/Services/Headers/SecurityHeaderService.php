@@ -9,13 +9,18 @@ use Throwable;
 
 class SecurityHeaderService implements SecurityHeaderServiceInterface
 {
+    /**
+     * @var array<string, array<string, mixed>>
+     */
     private array $config;
 
     private ?string $currentNonce = null;
 
     public function __construct(array $config = [])
     {
-        $this->config = array_merge($this->getDefaultConfig(), $config);
+        /** @var array<string, array<string, mixed>> $mergedConfig */
+        $mergedConfig = array_merge($this->getDefaultConfig(), $config);
+        $this->config = $mergedConfig;
     }
 
     public function setSecurityHeaders(): void
@@ -70,6 +75,61 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         if ($this->config['cache_control']['enabled']) {
             header('Cache-Control: ' . $this->config['cache_control']['value']);
         }
+    }
+
+    public function generateHeaders(): array
+    {
+        /** @var array<string, string> $headers */
+        $headers = [];
+        if ($this->config['csp']['enabled']) {
+            $headers['Content-Security-Policy'] = $this->buildCSP();
+        }
+        if ($this->config['hsts']['enabled'] && $this->isHTTPS()) {
+            $maxAge = $this->config['hsts']['max_age'];
+            $headers['Strict-Transport-Security'] = sprintf(
+                'max-age=%d%s%s',
+                is_int($maxAge) ? $maxAge : 31536000,
+                $this->config['hsts']['include_subdomains'] ? '; includeSubDomains' : '',
+                $this->config['hsts']['preload'] ? '; preload' : '',
+            );
+        }
+        if ($this->config['frame_options']['enabled']) {
+            $headers['X-Frame-Options'] = $this->config['frame_options']['value'];
+        }
+        if ($this->config['content_type_options']['enabled']) {
+            $headers['X-Content-Type-Options'] = 'nosniff';
+        }
+        if ($this->config['xss_protection']['enabled']) {
+            $headers['X-XSS-Protection'] = '1; mode=block';
+        }
+        if ($this->config['referrer_policy']['enabled']) {
+            $headers['Referrer-Policy'] = $this->config['referrer_policy']['value'];
+        }
+        if ($this->config['permissions_policy']['enabled']) {
+            $headers['Permissions-Policy'] = $this->buildPermissionsPolicy();
+        }
+        if ($this->config['coep']['enabled']) {
+            $headers['Cross-Origin-Embedder-Policy'] = $this->config['coep']['value'];
+        }
+        if ($this->config['coop']['enabled']) {
+            $headers['Cross-Origin-Opener-Policy'] = $this->config['coop']['value'];
+        }
+        if ($this->config['corp']['enabled']) {
+            $headers['Cross-Origin-Resource-Policy'] = $this->config['corp']['value'];
+        }
+        if ($this->config['cache_control']['enabled']) {
+            $headers['Cache-Control'] = $this->config['cache_control']['value'];
+        }
+        if ($this->config['server_signature']['enabled']) {
+            $headers['Server'] = $this->config['server_signature']['value'];
+        }
+
+        return $headers;
+    }
+
+    public function isServerSignatureEnabled(): bool
+    {
+        return (bool) ($this->config['server_signature']['enabled'] ?? false);
     }
 
     /**

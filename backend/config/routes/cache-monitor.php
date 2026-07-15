@@ -2,30 +2,60 @@
 
 declare(strict_types=1);
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\App;
-use Slim\Routing\RouteCollectorProxy;
 use App\Application\Controllers\Admin\CacheMonitorController;
 
-return function (App $app) {
-    $app->group('/api/admin/cache', function (RouteCollectorProxy $group) {
-        // 快取統計資料
-        $group->get('/stats', [CacheMonitorController::class, 'getStats']);
+return [
+    // 快取統計資料
+    'admin.cache.stats' => [
+        'methods' => ['GET'],
+        'path' => '/api/admin/cache/stats',
+        'handler' => [CacheMonitorController::class, 'getStats'],
+        'name' => 'admin.cache.stats',
+        'middleware' => ['auth', 'admin']
+    ],
 
-        // 詳細快取指標
-        $group->get('/metrics', [CacheMonitorController::class, 'getMetrics']);
+    // 詳細快取指標
+    'admin.cache.metrics' => [
+        'methods' => ['GET'],
+        'path' => '/api/admin/cache/metrics',
+        'handler' => [CacheMonitorController::class, 'getMetrics'],
+        'name' => 'admin.cache.metrics',
+        'middleware' => ['auth', 'admin']
+    ],
 
-        // 快取健康狀況
-        $group->get('/health', [CacheMonitorController::class, 'getHealth']);
+    // 快取健康狀況
+    'admin.cache.health' => [
+        'methods' => ['GET'],
+        'path' => '/api/admin/cache/health',
+        'handler' => [CacheMonitorController::class, 'getHealth'],
+        'name' => 'admin.cache.health',
+        'middleware' => ['auth', 'admin']
+    ],
 
-        // 快取驅動資訊
-        $group->get('/drivers', [CacheMonitorController::class, 'getDriverInfo']);
+    // 快取驅動資訊
+    'admin.cache.drivers' => [
+        'methods' => ['GET'],
+        'path' => '/api/admin/cache/drivers',
+        'handler' => [CacheMonitorController::class, 'getDriverInfo'],
+        'name' => 'admin.cache.drivers',
+        'middleware' => ['auth', 'admin']
+    ],
 
-        // 重設統計資料
-        $group->post('/reset', [CacheMonitorController::class, 'resetStats']);
+    // 重設統計資料
+    'admin.cache.reset' => [
+        'methods' => ['POST'],
+        'path' => '/api/admin/cache/reset',
+        'handler' => [CacheMonitorController::class, 'resetStats'],
+        'name' => 'admin.cache.reset',
+        'middleware' => ['auth', 'admin', 'csrf']
+    ],
 
-        // 清空所有快取
-        $group->delete('/flush', [CacheMonitorController::class, 'flushCache']);
-    });
-};
+    // 清空所有快取
+    'admin.cache.flush' => [
+        'methods' => ['DELETE'],
+        'path' => '/api/admin/cache/flush',
+        'handler' => [CacheMonitorController::class, 'flushCache'],
+        'name' => 'admin.cache.flush',
+        'middleware' => ['auth', 'admin', 'csrf']
+    ],
+];
