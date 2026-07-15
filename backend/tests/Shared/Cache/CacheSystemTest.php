@@ -213,7 +213,7 @@ class CacheSystemTest extends SecureDDDTestCase
         $complexData = [
             'string' => 'test',
             'number' => 123,
-            'array' => ['nested' => 'value'],
+            'array'  => ['nested' => 'value'],
             'object' => (object) ['property' => 'value'],
         ];
 

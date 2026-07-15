@@ -20,8 +20,8 @@ class SqlInjectionTest extends DatabaseTestCase
 
         // 使用 insertTestPost 方法插入測試資料
         $this->insertTestPost([
-            'uuid' => 'test-uuid',
-            'title' => 'Safe Title',
+            'uuid'    => 'test-uuid',
+            'title'   => 'Safe Title',
             'content' => 'Safe Content',
         ]);
 

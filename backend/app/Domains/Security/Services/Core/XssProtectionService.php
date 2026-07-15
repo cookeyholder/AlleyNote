@@ -157,10 +157,10 @@ class XssProtectionService implements XssProtectionServiceInterface
                 description: 'XSS attack attempt detected and blocked',
                 metadata: [
                     'original_length' => strlen($originalInput),
-                    'cleaned_length' => strlen($cleanedInput),
+                    'cleaned_length'  => strlen($cleanedInput),
                     'original_sample' => substr($originalInput, 0, 100),
-                    'referer' => $_SERVER['HTTP_REFERER'] ?? null,
-                    'method' => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
+                    'referer'         => $_SERVER['HTTP_REFERER'] ?? null,
+                    'method'          => $_SERVER['REQUEST_METHOD'] ?? 'unknown',
                 ],
             );
             $this->activityLogger->log($dto);

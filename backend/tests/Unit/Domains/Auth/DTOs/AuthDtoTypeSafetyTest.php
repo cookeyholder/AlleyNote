@@ -16,10 +16,10 @@ final class AuthDtoTypeSafetyTest extends UnitTestCase
     public function testLoginRequestFromArrayNormalizesScopes(): void
     {
         $dto = LoginRequestDTO::fromArray([
-            'email' => 'user@example.com',
-            'password' => 'secret',
+            'email'       => 'user@example.com',
+            'password'    => 'secret',
             'remember_me' => 1,
-            'scopes' => ['read', '', 123, 'write'],
+            'scopes'      => ['read', '', 123, 'write'],
         ]);
 
         $this->assertSame('user@example.com', $dto->email);
@@ -39,7 +39,7 @@ final class AuthDtoTypeSafetyTest extends UnitTestCase
     {
         $dto = RefreshRequestDTO::fromArray([
             'refresh_token' => 'refresh-token',
-            'scopes' => ['profile', null, 'admin'],
+            'scopes'        => ['profile', null, 'admin'],
         ]);
 
         $this->assertSame('refresh-token', $dto->refreshToken);
@@ -50,7 +50,7 @@ final class AuthDtoTypeSafetyTest extends UnitTestCase
     {
         $dto = CreateUserDTO::fromArray([
             'username' => 'newuser',
-            'email' => 'newuser@example.com',
+            'email'    => 'newuser@example.com',
             'password' => 'Q7$z!9Lm#2',
             'role_ids' => [1, '2', 3, -1, 3],
         ]);

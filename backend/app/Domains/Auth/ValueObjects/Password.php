@@ -114,7 +114,7 @@ final readonly class Password implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'password' => '********',
+            'password'  => '********',
             'algorithm' => password_get_info($this->hashedValue)['algoName'] ?? 'unknown',
         ];
     }

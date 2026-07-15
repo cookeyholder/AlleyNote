@@ -46,6 +46,7 @@ interface StatisticsRepositoryInterface
      * @param string $snapshotType 快照類型
      * @param DateTimeInterface $startDate 開始日期
      * @param DateTimeInterface $endDate 結束日期
+     *
      * @return StatisticsSnapshot[] 快照陣列
      */
     public function findByTypeAndDateRange(
@@ -58,6 +59,7 @@ interface StatisticsRepositoryInterface
      * 查找已過期的統計快照.
      *
      * @param DateTimeInterface|null $beforeDate 指定日期前的過期快照，null 表示當前時間
+     *
      * @return StatisticsSnapshot[] 過期快照陣列
      */
     public function findExpiredSnapshots(?DateTimeInterface $beforeDate = null): array;
@@ -66,7 +68,9 @@ interface StatisticsRepositoryInterface
      * 儲存統計快照.
      *
      * @param StatisticsSnapshot $snapshot 要儲存的統計快照
+     *
      * @return StatisticsSnapshot 儲存後的統計快照
+     *
      * @throws RuntimeException 當儲存失敗時
      */
     public function save(StatisticsSnapshot $snapshot): StatisticsSnapshot;
@@ -75,7 +79,9 @@ interface StatisticsRepositoryInterface
      * 更新統計快照.
      *
      * @param StatisticsSnapshot $snapshot 要更新的統計快照
+     *
      * @return StatisticsSnapshot 更新後的統計快照
+     *
      * @throws RuntimeException 當更新失敗時
      */
     public function update(StatisticsSnapshot $snapshot): StatisticsSnapshot;
@@ -84,6 +90,7 @@ interface StatisticsRepositoryInterface
      * 刪除統計快照.
      *
      * @param StatisticsSnapshot $snapshot 要刪除的統計快照
+     *
      * @return bool 刪除是否成功
      */
     public function delete(StatisticsSnapshot $snapshot): bool;
@@ -92,6 +99,7 @@ interface StatisticsRepositoryInterface
      * 根據 ID 刪除統計快照.
      *
      * @param int $id 要刪除的快照 ID
+     *
      * @return bool 刪除是否成功
      */
     public function deleteById(int $id): bool;
@@ -100,6 +108,7 @@ interface StatisticsRepositoryInterface
      * 批量刪除過期的統計快照.
      *
      * @param DateTimeInterface|null $beforeDate 指定日期前的過期快照，null 表示當前時間
+     *
      * @return int 刪除的快照數量
      */
     public function deleteExpiredSnapshots(?DateTimeInterface $beforeDate = null): int;
@@ -109,6 +118,7 @@ interface StatisticsRepositoryInterface
      *
      * @param string $snapshotType 快照類型
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return bool 是否存在
      */
     public function exists(string $snapshotType, StatisticsPeriod $period): bool;
@@ -117,6 +127,7 @@ interface StatisticsRepositoryInterface
      * 計算指定類型的快照總數.
      *
      * @param string|null $snapshotType 快照類型，null 表示所有類型
+     *
      * @return int 快照總數
      */
     public function count(?string $snapshotType = null): int;
@@ -129,6 +140,7 @@ interface StatisticsRepositoryInterface
      * @param int $limit 每頁數量
      * @param string $orderBy 排序欄位
      * @param string $direction 排序方向（asc|desc）
+     *
      * @return StatisticsSnapshot[] 快照陣列
      */
     public function findByTypeWithPagination(

@@ -72,8 +72,8 @@ class BaseDTOTest extends UnitTestCase
         $dto->active = true;
 
         $expected = [
-            'name' => 'Test User',
-            'age' => 25,
+            'name'   => 'Test User',
+            'age'    => 25,
             'active' => true,
         ];
 
@@ -86,8 +86,8 @@ class BaseDTOTest extends UnitTestCase
         $dto = $this->createTestDTO();
         $data = ['name' => 'John', 'age' => 30, 'active' => true];
         $expectedRules = [
-            'name' => 'required|string|min_length:2|max_length:50',
-            'age' => 'required|integer|min:0|max:120',
+            'name'   => 'required|string|min_length:2|max_length:50',
+            'age'    => 'required|integer|min:0|max:120',
             'active' => 'boolean',
         ];
 
@@ -123,9 +123,9 @@ class BaseDTOTest extends UnitTestCase
     {
         $dto = $this->createTestDTO();
         $data = [
-            'name' => 'John Doe',
-            'empty' => '',
-            'spaces' => '  test  ',
+            'name'       => 'John Doe',
+            'empty'      => '',
+            'spaces'     => '  test  ',
             'null_value' => null,
         ];
 
@@ -141,10 +141,10 @@ class BaseDTOTest extends UnitTestCase
     {
         $dto = $this->createTestDTO();
         $data = [
-            'age' => 25,
+            'age'           => 25,
             'string_number' => '30',
-            'float_number' => 35.7,
-            'null_value' => null,
+            'float_number'  => 35.7,
+            'null_value'    => null,
         ];
 
         $this->assertEquals(25, $dto->testGetInt($data, 'age'));
@@ -159,18 +159,18 @@ class BaseDTOTest extends UnitTestCase
     {
         $dto = $this->createTestDTO();
         $data = [
-            'bool_true' => true,
-            'bool_false' => false,
-            'int_1' => 1,
-            'int_0' => 0,
-            'string_1' => '1',
-            'string_0' => '0',
-            'string_true' => 'true',
+            'bool_true'    => true,
+            'bool_false'   => false,
+            'int_1'        => 1,
+            'int_0'        => 0,
+            'string_1'     => '1',
+            'string_0'     => '0',
+            'string_true'  => 'true',
             'string_false' => 'false',
-            'string_on' => 'on',
-            'string_yes' => 'yes',
+            'string_on'    => 'on',
+            'string_yes'   => 'yes',
             'string_other' => 'other',
-            'null_value' => null,
+            'null_value'   => null,
         ];
 
         $this->assertTrue($dto->testGetBool($data, 'bool_true'));
@@ -193,9 +193,9 @@ class BaseDTOTest extends UnitTestCase
     {
         $dto = $this->createTestDTO();
         $data = [
-            'string' => 'value',
-            'number' => 42,
-            'array' => [1, 2, 3],
+            'string'     => 'value',
+            'number'     => 42,
+            'array'      => [1, 2, 3],
             'null_value' => null,
         ];
 
@@ -233,8 +233,8 @@ class TestableBaseDTO extends BaseDTO
     protected function getValidationRules(): array
     {
         return [
-            'name' => 'required|string|min_length:2|max_length:50',
-            'age' => 'required|integer|min:0|max:120',
+            'name'   => 'required|string|min_length:2|max_length:50',
+            'age'    => 'required|integer|min:0|max:120',
             'active' => 'boolean',
         ];
     }
@@ -242,8 +242,8 @@ class TestableBaseDTO extends BaseDTO
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
-            'age' => $this->age,
+            'name'   => $this->name,
+            'age'    => $this->age,
             'active' => $this->active,
         ];
     }

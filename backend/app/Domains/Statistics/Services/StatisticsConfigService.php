@@ -102,16 +102,16 @@ final class StatisticsConfigService
         $calcConfig = $this->config['calculation'] ?? [];
         if (!is_array($calcConfig)) {
             return [
-                'enabled' => false,
-                'max_workers' => 1,
+                'enabled'      => false,
+                'max_workers'  => 1,
                 'lock_timeout' => 1800,
             ];
         }
         $parallelConfig = $calcConfig['parallel'] ?? [];
 
         return is_array($parallelConfig) ? $parallelConfig : [
-            'enabled' => false,
-            'max_workers' => 1,
+            'enabled'      => false,
+            'max_workers'  => 1,
             'lock_timeout' => 1800,
         ];
     }
@@ -144,16 +144,16 @@ final class StatisticsConfigService
         if (!is_array($perfConfig)) {
             return [
                 'max_date_range' => 90,
-                'max_results' => 1000,
-                'default_limit' => 20,
+                'max_results'    => 1000,
+                'default_limit'  => 20,
             ];
         }
         $apiLimitsConfig = $perfConfig['api_limits'] ?? [];
 
         return is_array($apiLimitsConfig) ? $apiLimitsConfig : [
             'max_date_range' => 90,
-            'max_results' => 1000,
-            'default_limit' => 20,
+            'max_results'    => 1000,
+            'default_limit'  => 20,
         ];
     }
 
@@ -209,26 +209,26 @@ final class StatisticsConfigService
         $monitoringConfig = $this->config['monitoring'] ?? [];
         if (!is_array($monitoringConfig)) {
             return [
-                'enabled' => true,
-                'cache_check_timeout' => 5,
+                'enabled'                => true,
+                'cache_check_timeout'    => 5,
                 'database_check_timeout' => 10,
-                'warning_thresholds' => [
+                'warning_thresholds'     => [
                     'cache_hit_rate' => 80,
-                    'response_time' => 2000,
-                    'error_rate' => 5,
+                    'response_time'  => 2000,
+                    'error_rate'     => 5,
                 ],
             ];
         }
         $healthCheckConfig = $monitoringConfig['health_check'] ?? [];
 
         return is_array($healthCheckConfig) ? $healthCheckConfig : [
-            'enabled' => true,
-            'cache_check_timeout' => 5,
+            'enabled'                => true,
+            'cache_check_timeout'    => 5,
             'database_check_timeout' => 10,
-            'warning_thresholds' => [
+            'warning_thresholds'     => [
                 'cache_hit_rate' => 80,
-                'response_time' => 2000,
-                'error_rate' => 5,
+                'response_time'  => 2000,
+                'error_rate'     => 5,
             ],
         ];
     }
@@ -243,16 +243,16 @@ final class StatisticsConfigService
         $cacheConfig = $this->config['cache'] ?? [];
         if (!is_array($cacheConfig)) {
             return [
-                'enabled' => true,
-                'ttl' => 7200,
+                'enabled'    => true,
+                'ttl'        => 7200,
                 'batch_size' => 100,
             ];
         }
         $warmupConfig = $cacheConfig['warmup'] ?? [];
 
         return is_array($warmupConfig) ? $warmupConfig : [
-            'enabled' => true,
-            'ttl' => 7200,
+            'enabled'    => true,
+            'ttl'        => 7200,
             'batch_size' => 100,
         ];
     }
@@ -321,19 +321,19 @@ final class StatisticsConfigService
         $monitoringConfig = $this->config['monitoring'] ?? [];
         if (!is_array($monitoringConfig)) {
             return [
-                'level' => 'info',
-                'max_files' => 30,
+                'level'         => 'info',
+                'max_files'     => 30,
                 'max_file_size' => '10M',
-                'rotation' => 'daily',
+                'rotation'      => 'daily',
             ];
         }
         $loggingConfig = $monitoringConfig['logging'] ?? [];
 
         return is_array($loggingConfig) ? $loggingConfig : [
-            'level' => 'info',
-            'max_files' => 30,
+            'level'         => 'info',
+            'max_files'     => 30,
             'max_file_size' => '10M',
-            'rotation' => 'daily',
+            'rotation'      => 'daily',
         ];
     }
 
@@ -347,16 +347,16 @@ final class StatisticsConfigService
         $perfConfig = $this->config['performance'] ?? [];
         if (!is_array($perfConfig)) {
             return [
-                'connection_timeout' => 30,
-                'query_timeout' => 60,
+                'connection_timeout'   => 30,
+                'query_timeout'        => 60,
                 'slow_query_threshold' => 2.0,
             ];
         }
         $dbConfig = $perfConfig['database'] ?? [];
 
         return is_array($dbConfig) ? $dbConfig : [
-            'connection_timeout' => 30,
-            'query_timeout' => 60,
+            'connection_timeout'   => 30,
+            'query_timeout'        => 60,
             'slow_query_threshold' => 2.0,
         ];
     }
@@ -371,16 +371,16 @@ final class StatisticsConfigService
         $retentionConfig = $this->config['retention'] ?? [];
         if (!is_array($retentionConfig)) {
             return [
-                'enabled' => true,
-                'schedule' => '0 5 * * *',
+                'enabled'    => true,
+                'schedule'   => '0 5 * * *',
                 'batch_size' => 500,
             ];
         }
         $cleanupConfig = $retentionConfig['cleanup'] ?? [];
 
         return is_array($cleanupConfig) ? $cleanupConfig : [
-            'enabled' => true,
-            'schedule' => '0 5 * * *',
+            'enabled'    => true,
+            'schedule'   => '0 5 * * *',
             'batch_size' => 500,
         ];
     }

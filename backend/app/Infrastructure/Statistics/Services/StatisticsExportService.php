@@ -188,11 +188,11 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
                 $this->validateStatisticsType($type);
                 $result = match ($type) {
                     'overview' => $this->exportOverview($options),
-                    'posts' => $this->exportPostStatistics($options),
-                    'sources' => $this->exportSourceDistribution($options),
-                    'users' => $this->exportUserStatistics($options),
-                    'popular' => $this->exportPopularContent($options),
-                    default => throw new InvalidArgumentException("不支援的統計類型: {$type}"),
+                    'posts'    => $this->exportPostStatistics($options),
+                    'sources'  => $this->exportSourceDistribution($options),
+                    'users'    => $this->exportUserStatistics($options),
+                    'popular'  => $this->exportPopularContent($options),
+                    default    => throw new InvalidArgumentException("不支援的統計類型: {$type}"),
                 };
                 $results[$type] = $result;
                 $successCount++;
@@ -211,8 +211,8 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
             batchId: $batchId,
             metadata: [
                 'requested_types' => $types,
-                'options' => $options,
-                'export_time' => new DateTime()->format('Y-m-d H:i:s'),
+                'options'         => $options,
+                'export_time'     => new DateTime()->format('Y-m-d H:i:s'),
             ],
         );
     }
@@ -320,7 +320,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     private function buildMetadata(array $options, array $data): array
     {
         $metadata = [
-            'export_time' => new DateTime()->format('Y-m-d H:i:s'),
+            'export_time'    => new DateTime()->format('Y-m-d H:i:s'),
             'format_options' => array_diff_key($options, array_flip(['format'])),
         ];
         // 添加資料相關的元資料
@@ -330,7 +330,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         if (isset($options['period_start'], $options['period_end'])) {
             $metadata['period'] = [
                 'start' => $options['period_start']->format('Y-m-d'),
-                'end' => $options['period_end']->format('Y-m-d'),
+                'end'   => $options['period_end']->format('Y-m-d'),
             ];
         }
 

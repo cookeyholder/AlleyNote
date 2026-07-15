@@ -54,7 +54,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
             ['total_posts' => 150],
-            ['version' => '1.0'],
+            ['version'     => '1.0'],
             new DateTimeImmutable('+1 day'),
         );
 
@@ -85,7 +85,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             StatisticsSnapshot::TYPE_POSTS,
             $period,
             ['daily_posts' => 25],
-            ['source' => 'test'],
+            ['source'      => 'test'],
             null,
         );
 
@@ -126,7 +126,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
                 StatisticsSnapshot::TYPE_USERS,
                 $period,
                 ['active_users' => 100 + $i * 10],
-                ['day' => $i + 1],
+                ['day'          => $i + 1],
                 null,
             );
 
@@ -161,7 +161,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
                 StatisticsSnapshot::TYPE_SOURCES,
                 $period,
                 ['sources_count' => ($i + 1) * 5],
-                ['date' => $date],
+                ['date'          => $date],
                 null,
             );
 
@@ -226,7 +226,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
             ['total_posts' => 100],
-            ['source' => 'test'],
+            ['source'      => 'test'],
             null,
         );
 
@@ -367,21 +367,21 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
         // 建立包含複雜資料結構的測試資料
         $complexMetadata = [
             'calculation' => [
-                'start_time' => '2024-01-01 10:00:00',
-                'end_time' => '2024-01-01 10:05:00',
+                'start_time'  => '2024-01-01 10:00:00',
+                'end_time'    => '2024-01-01 10:05:00',
                 'duration_ms' => 1500,
             ],
             'quality' => [
                 'completeness' => 98.5,
-                'accuracy' => 99.2,
+                'accuracy'     => 99.2,
             ],
             'source_breakdown' => [
-                'api' => 150,
-                'web' => 200,
+                'api'    => 150,
+                'web'    => 200,
                 'mobile' => 75,
             ],
             'trends' => [
-                'daily_growth' => 5.2,
+                'daily_growth'  => 5.2,
                 'weekly_growth' => 12.8,
             ],
             'top_categories' => [
@@ -401,7 +401,7 @@ final class StatisticsRepositoryIntegrationTest extends IntegrationTestCase
             StatisticsSnapshot::TYPE_OVERVIEW,
             $period,
             [
-                'posts' => ['totals' => 425],
+                'posts'  => ['totals' => 425],
                 'trends' => ['daily_growth' => 5.2],
             ],
             $complexMetadata,

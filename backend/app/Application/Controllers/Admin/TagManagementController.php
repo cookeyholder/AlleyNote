@@ -51,12 +51,12 @@ class TagManagementController extends BaseController
                         foreach ($driverTags as $tag) {
                             if (empty($search) || stripos($tag, $search) !== false) {
                                 $tagData = [
-                                    'name' => $tag,
-                                    'driver' => $driverName,
-                                    'key_count' => 0,
+                                    'name'        => $tag,
+                                    'driver'      => $driverName,
+                                    'key_count'   => 0,
                                     'sample_keys' => [],
-                                    'type' => $this->getTagType($tag),
-                                    'created_at' => $this->getTagCreatedAt($tag),
+                                    'type'        => $this->getTagType($tag),
+                                    'created_at'  => $this->getTagCreatedAt($tag),
                                 ];
                                 // 安全地取得統計資料
                                 if ($tagStats && isset($tagStats['tags'][$tag]) && is_array($tagStats['tags'][$tag])) {
@@ -76,10 +76,10 @@ class TagManagementController extends BaseController
             $paginatedTags = array_slice($tags, $offset, $limit);
             $responseData = [
                 'success' => true,
-                'data' => [
-                    'tags' => $paginatedTags,
+                'data'    => [
+                    'tags'       => $paginatedTags,
                     'pagination' => [
-                        'page' => $page,
+                        'page'  => $page,
                         'limit' => $limit,
                         'total' => $totalTags,
                         'pages' => ceil($totalTags / $limit),
@@ -95,7 +95,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '取得標籤列表失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -126,10 +126,10 @@ class TagManagementController extends BaseController
                     $tagStats = $driver->getTagStatistics();
                     if ($tagStats && isset($tagStats['tags'][$tagName])) {
                         $tagInfo = [
-                            'name' => $tagName,
-                            'driver' => $driverName,
+                            'name'       => $tagName,
+                            'driver'     => $driverName,
                             'statistics' => $tagStats['tags'][$tagName],
-                            'type' => $this->getTagType($tagName),
+                            'type'       => $this->getTagType($tagName),
                             'created_at' => $this->getTagCreatedAt($tagName),
                         ];
                         break;
@@ -140,18 +140,18 @@ class TagManagementController extends BaseController
                 throw new RuntimeException('標籤不存在');
             }
             $responseData = [
-                'success' => true,
-                'data' => $tagInfo,
+                'success'   => true,
+                'data'      => $tagInfo,
                 'timestamp' => time(),
             ];
         } catch (Throwable $e) {
             $this->logger?->error('取得標籤詳細資訊失敗', [
-                'tag' => $tagName ?? 'unknown',
+                'tag'   => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '取得標籤詳細資訊失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -193,21 +193,21 @@ class TagManagementController extends BaseController
             }
             $responseData = [
                 'success' => true,
-                'data' => [
-                    'message' => '標籤已成功刪除',
-                    'tag' => $tagName,
+                'data'    => [
+                    'message'          => '標籤已成功刪除',
+                    'tag'              => $tagName,
                     'affected_drivers' => $affectedDrivers,
                 ],
                 'timestamp' => time(),
             ];
         } catch (Throwable $e) {
             $this->logger?->error('刪除標籤失敗', [
-                'tag' => $tagName ?? 'unknown',
+                'tag'   => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '刪除標籤失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -240,9 +240,9 @@ class TagManagementController extends BaseController
             }
             $responseData = [
                 'success' => true,
-                'data' => [
-                    'message' => '標籤清理完成',
-                    'total_cleaned' => $totalCleaned,
+                'data'    => [
+                    'message'           => '標籤清理完成',
+                    'total_cleaned'     => $totalCleaned,
                     'cleaned_by_driver' => $cleanedTags,
                 ],
                 'timestamp' => time(),
@@ -253,7 +253,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '清理標籤失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -279,8 +279,8 @@ class TagManagementController extends BaseController
                     foreach ($allGroups as $groupName => $groupData) {
                         if (is_string($groupName) && is_array($groupData)) {
                             $groups[] = [
-                                'name' => $groupName,
-                                'tags' => $groupData['tags'] ?? [],
+                                'name'       => $groupName,
+                                'tags'       => $groupData['tags'] ?? [],
                                 'created_at' => $groupData['created_at'] ?? null,
                             ];
                         }
@@ -289,9 +289,9 @@ class TagManagementController extends BaseController
             }
             $responseData = [
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'groups' => $groups,
-                    'total' => count($groups),
+                    'total'  => count($groups),
                 ],
                 'timestamp' => time(),
             ];
@@ -301,7 +301,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '取得標籤群組失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -330,9 +330,9 @@ class TagManagementController extends BaseController
             $this->groupManager->removeGroup($groupName);
             $responseData = [
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'message' => '標籤群組已成功刪除',
-                    'group' => $groupName,
+                    'group'   => $groupName,
                 ],
                 'timestamp' => time(),
             ];
@@ -343,7 +343,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '刪除標籤群組失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -408,21 +408,21 @@ class TagManagementController extends BaseController
             }
             $responseData = [
                 'success' => true,
-                'data' => [
-                    'message' => '標籤快取已成功清除',
-                    'tag' => $tagName,
+                'data'    => [
+                    'message'          => '標籤快取已成功清除',
+                    'tag'              => $tagName,
                     'affected_drivers' => $affectedDrivers,
                 ],
                 'timestamp' => time(),
             ];
         } catch (Throwable $e) {
             $this->logger?->error('清除標籤失敗', [
-                'tag' => $tagName ?? 'unknown',
+                'tag'   => $tagName ?? 'unknown',
                 'error' => $e->getMessage(),
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '清除標籤失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -474,8 +474,8 @@ class TagManagementController extends BaseController
                     }
                 }
                 $results[] = [
-                    'tag' => $tagName,
-                    'success' => $flushed,
+                    'tag'              => $tagName,
+                    'success'          => $flushed,
                     'affected_drivers' => $affectedDrivers,
                 ];
                 if ($flushed) {
@@ -484,11 +484,11 @@ class TagManagementController extends BaseController
             }
             $responseData = [
                 'success' => true,
-                'data' => [
-                    'message' => "成功清除 {$totalFlushed} 個標籤",
-                    'results' => $results,
+                'data'    => [
+                    'message'         => "成功清除 {$totalFlushed} 個標籤",
+                    'results'         => $results,
                     'total_requested' => count($tags),
-                    'total_flushed' => $totalFlushed,
+                    'total_flushed'   => $totalFlushed,
                 ],
                 'timestamp' => time(),
             ];
@@ -498,7 +498,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '批次清除標籤失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -518,8 +518,8 @@ class TagManagementController extends BaseController
     {
         try {
             $statistics = [
-                'drivers' => [],
-                'total_tags' => 0,
+                'drivers'             => [],
+                'total_tags'          => 0,
                 'total_cache_entries' => 0,
             ];
             // 從支援標籤的驅動收集統計資訊
@@ -548,8 +548,8 @@ class TagManagementController extends BaseController
                 }
             }
             $responseData = [
-                'success' => true,
-                'data' => $statistics,
+                'success'   => true,
+                'data'      => $statistics,
                 'timestamp' => time(),
             ];
         } catch (Throwable $e) {
@@ -558,7 +558,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '取得標籤統計失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -601,10 +601,10 @@ class TagManagementController extends BaseController
             $this->groupManager->group($groupName, $validTags);
             $responseData = [
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'message' => '標籤群組已成功建立',
-                    'group' => $groupName,
-                    'tags' => $validTags,
+                    'group'   => $groupName,
+                    'tags'    => $validTags,
                 ],
                 'timestamp' => time(),
             ];
@@ -615,7 +615,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '建立標籤群組失敗',
                     'details' => $e->getMessage(),
                 ],
@@ -645,9 +645,9 @@ class TagManagementController extends BaseController
             $this->groupManager->flushGroup($groupName);
             $responseData = [
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'message' => '標籤群組快取已成功清除',
-                    'group' => $groupName,
+                    'group'   => $groupName,
                 ],
                 'timestamp' => time(),
             ];
@@ -658,7 +658,7 @@ class TagManagementController extends BaseController
             ]);
             $responseData = [
                 'success' => false,
-                'error' => [
+                'error'   => [
                     'message' => '清除標籤群組失敗',
                     'details' => $e->getMessage(),
                 ],

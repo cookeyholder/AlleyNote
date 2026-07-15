@@ -21,6 +21,7 @@ final class StatisticsPerformanceReportGenerator
      *
      * @param int $testDataCount 測試資料數量
      * @param bool $includeIndexAnalysis 是否包含索引分析
+     *
      * @return array<string, mixed>
      */
     public function generateCompleteReport(int $testDataCount = 5000, bool $includeIndexAnalysis = true): array
@@ -29,12 +30,12 @@ final class StatisticsPerformanceReportGenerator
             throw new InvalidArgumentException('測試資料數量必須大於 0');
         }
         $report = [
-            'test_metadata' => $this->generateTestMetadata($testDataCount),
-            'query_performance' => $this->runPerformanceTests($testDataCount),
-            'index_effectiveness' => $includeIndexAnalysis ? $this->analyzeIndexEffectiveness() : null,
+            'test_metadata'        => $this->generateTestMetadata($testDataCount),
+            'query_performance'    => $this->runPerformanceTests($testDataCount),
+            'index_effectiveness'  => $includeIndexAnalysis ? $this->analyzeIndexEffectiveness() : null,
             'optimization_summary' => $this->generateOptimizationSummary(),
-            'recommendations' => $this->generateRecommendations(),
-            'generated_at' => date('Y-m-d H:i:s'),
+            'recommendations'      => $this->generateRecommendations(),
+            'generated_at'         => date('Y-m-d H:i:s'),
         ];
         // 保存報告到檔案
         $this->saveReportToFile($report);
@@ -46,6 +47,7 @@ final class StatisticsPerformanceReportGenerator
      * 執行效能測試.
      *
      * @param int $testDataCount 測試資料數量
+     *
      * @return array<string, mixed>
      */
     private function runPerformanceTests(int $testDataCount): array
@@ -54,33 +56,33 @@ final class StatisticsPerformanceReportGenerator
         // 測試查詢列表
         $testQueries = [
             'posts_count_by_source' => [
-                'sql' => 'SELECT creation_source, COUNT(*) as count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY creation_source',
-                'params' => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
+                'sql'         => 'SELECT creation_source, COUNT(*) as count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY creation_source',
+                'params'      => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
                 'description' => '按來源統計文章數量',
             ],
             'posts_count_by_status' => [
-                'sql' => 'SELECT status, COUNT(*) as count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY status',
-                'params' => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
+                'sql'         => 'SELECT status, COUNT(*) as count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY status',
+                'params'      => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
                 'description' => '按狀態統計文章數量',
             ],
             'popular_posts' => [
-                'sql' => "SELECT id, title, views FROM posts WHERE created_at >= :start_date AND created_at <= :end_date AND status = 'published' ORDER BY views DESC LIMIT 10",
-                'params' => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
+                'sql'         => "SELECT id, title, views FROM posts WHERE created_at >= :start_date AND created_at <= :end_date AND status = 'published' ORDER BY views DESC LIMIT 10",
+                'params'      => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
                 'description' => '熱門文章查詢',
             ],
             'posts_by_user' => [
-                'sql' => 'SELECT user_id, COUNT(*) as posts_count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY user_id ORDER BY posts_count DESC LIMIT 10',
-                'params' => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
+                'sql'         => 'SELECT user_id, COUNT(*) as posts_count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY user_id ORDER BY posts_count DESC LIMIT 10',
+                'params'      => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
                 'description' => '使用者文章統計',
             ],
             'time_distribution' => [
-                'sql' => 'SELECT DATE(created_at) as date, COUNT(*) as count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY DATE(created_at)',
-                'params' => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
+                'sql'         => 'SELECT DATE(created_at) as date, COUNT(*) as count FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY DATE(created_at)',
+                'params'      => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
                 'description' => '時間分佈統計',
             ],
             'pinned_statistics' => [
-                'sql' => 'SELECT is_pinned, COUNT(*) as count, SUM(views) as total_views FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY is_pinned',
-                'params' => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
+                'sql'         => 'SELECT is_pinned, COUNT(*) as count, SUM(views) as total_views FROM posts WHERE created_at >= :start_date AND created_at <= :end_date GROUP BY is_pinned',
+                'params'      => ['start_date' => '2025-01-01 00:00:00', 'end_date' => '2025-12-31 23:59:59'],
                 'description' => '置頂文章統計',
             ],
         ];
@@ -96,8 +98,8 @@ final class StatisticsPerformanceReportGenerator
         }
 
         return [
-            'test_data_count' => $testDataCount,
-            'query_tests' => $testResults,
+            'test_data_count'     => $testDataCount,
+            'query_tests'         => $testResults,
             'overall_performance' => $this->calculateOverallPerformance($testResults),
         ];
     }
@@ -110,6 +112,7 @@ final class StatisticsPerformanceReportGenerator
      * @param string $description 描述
      * @param string $queryType 查詢類型
      * @param int $iterations 執行次數
+     *
      * @return array<string, mixed>
      */
     private function runQueryPerformanceTest(
@@ -137,21 +140,21 @@ final class StatisticsPerformanceReportGenerator
             } catch (PDOException $e) {
                 return [
                     'description' => $description,
-                    'status' => 'failed',
-                    'error' => $e->getMessage(),
+                    'status'      => 'failed',
+                    'error'       => $e->getMessage(),
                 ];
             }
         }
 
         return [
-            'description' => $description,
-            'status' => 'success',
-            'iterations' => $iterations,
+            'description'        => $description,
+            'status'             => 'success',
+            'iterations'         => $iterations,
             'avg_execution_time' => round(array_sum($executionTimes) / count($executionTimes), 4),
             'min_execution_time' => count($executionTimes) > 0 ? round(min($executionTimes), 4) : 0.0,
             'max_execution_time' => count($executionTimes) > 0 ? round(max($executionTimes), 4) : 0.0,
-            'avg_result_count' => round(array_sum($resultCounts) / count($resultCounts), 2),
-            'performance_grade' => $this->calculatePerformanceGrade(array_sum($executionTimes) / count($executionTimes)),
+            'avg_result_count'   => round(array_sum($resultCounts) / count($resultCounts), 2),
+            'performance_grade'  => $this->calculatePerformanceGrade(array_sum($executionTimes) / count($executionTimes)),
         ];
     }
 
@@ -174,16 +177,16 @@ final class StatisticsPerformanceReportGenerator
                 /** @var string $indexName */
                 $indexName = $index['name'] ?? 'unknown';
                 $indexAnalysis[] = [
-                    'name' => $indexName,
-                    'table' => $index['tbl_name'] ?? 'unknown',
-                    'definition' => $index['sql'] ?? '',
+                    'name'           => $indexName,
+                    'table'          => $index['tbl_name'] ?? 'unknown',
+                    'definition'     => $index['sql'] ?? '',
                     'usage_analysis' => $this->analyzeIndexUsage($indexName),
                 ];
             }
 
             return [
-                'total_indexes' => count($indexes),
-                'index_details' => $indexAnalysis,
+                'total_indexes'       => count($indexes),
+                'index_details'       => $indexAnalysis,
                 'optimization_status' => $this->assessOptimizationStatus($indexAnalysis),
             ];
         } catch (PDOException $e) {
@@ -197,6 +200,7 @@ final class StatisticsPerformanceReportGenerator
      * 分析索引使用情況.
      *
      * @param string $indexName 索引名稱
+     *
      * @return array<string, mixed>
      */
     private function analyzeIndexUsage(string $indexName): array
@@ -205,7 +209,7 @@ final class StatisticsPerformanceReportGenerator
         // 目前返回基本評估
         return [
             'estimated_usage' => 'high', // high, medium, low
-            'recommendation' => '索引對統計查詢效能有顯著幫助',
+            'recommendation'  => '索引對統計查詢效能有顯著幫助',
         ];
     }
 
@@ -220,9 +224,9 @@ final class StatisticsPerformanceReportGenerator
         $slowQueryStats = $this->monitoringService->getSlowQueryStats(7);
 
         return [
-            'slow_queries_last_7_days' => count($slowQueryStats),
+            'slow_queries_last_7_days'     => count($slowQueryStats),
             'most_problematic_query_types' => array_slice($slowQueryStats, 0, 3),
-            'optimization_impact' => $this->calculateOptimizationImpact(),
+            'optimization_impact'          => $this->calculateOptimizationImpact(),
         ];
     }
 
@@ -234,9 +238,9 @@ final class StatisticsPerformanceReportGenerator
     private function generateRecommendations(): array
     {
         $recommendations = [
-            'immediate_actions' => [],
+            'immediate_actions'      => [],
             'monitoring_suggestions' => [],
-            'future_optimizations' => [],
+            'future_optimizations'   => [],
         ];
         // 即時行動建議
         $recommendations['immediate_actions'][] = '定期執行 ANALYZE TABLE posts 更新統計資訊';
@@ -257,17 +261,18 @@ final class StatisticsPerformanceReportGenerator
      * 生成測試元資料.
      *
      * @param int $testDataCount 測試資料數量
+     *
      * @return array<string, mixed>
      */
     private function generateTestMetadata(int $testDataCount): array
     {
         return [
             'test_environment' => 'development', // 可從環境變數獲取
-            'php_version' => PHP_VERSION,
-            'database_engine' => $this->getDatabaseEngine(),
-            'test_data_count' => $testDataCount,
-            'test_date' => date('Y-m-d H:i:s'),
-            'server_memory' => $this->getServerMemoryInfo(),
+            'php_version'      => PHP_VERSION,
+            'database_engine'  => $this->getDatabaseEngine(),
+            'test_data_count'  => $testDataCount,
+            'test_date'        => date('Y-m-d H:i:s'),
+            'server_memory'    => $this->getServerMemoryInfo(),
         ];
     }
 
@@ -275,6 +280,7 @@ final class StatisticsPerformanceReportGenerator
      * 計算整體效能.
      *
      * @param array<string, mixed> $testResults 測試結果
+     *
      * @return array<string, mixed>
      */
     private function calculateOverallPerformance(array $testResults): array
@@ -292,10 +298,10 @@ final class StatisticsPerformanceReportGenerator
         }
 
         return [
-            'total_tests' => $totalTests,
+            'total_tests'            => $totalTests,
             'average_execution_time' => $totalTests > 0 ? round($totalTime / $totalTests, 4) : 0,
-            'overall_grade' => $this->calculateOverallGrade($grades),
-            'performance_summary' => $this->generatePerformanceSummary($totalTime, $totalTests),
+            'overall_grade'          => $this->calculateOverallGrade($grades),
+            'performance_summary'    => $this->generatePerformanceSummary($totalTime, $totalTests),
         ];
     }
 
@@ -369,8 +375,8 @@ final class StatisticsPerformanceReportGenerator
     {
         // 這裡可以實作更詳細的最佳化影響計算
         return [
-            'estimated_improvement' => '70-90%',
-            'query_speed_factor' => '3-10x faster',
+            'estimated_improvement'    => '70-90%',
+            'query_speed_factor'       => '3-10x faster',
             'resource_usage_reduction' => '60-80%',
         ];
     }

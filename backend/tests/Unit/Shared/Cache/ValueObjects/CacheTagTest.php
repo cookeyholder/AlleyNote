@@ -192,12 +192,12 @@ class CacheTagTest extends UnitTestCase
     {
         // 測試各種需要正規化的輸入
         $testCases = [
-            'Simple Tag' => 'simple_tag',
-            'UPPER_CASE' => 'upper_case',
-            'mixed-Case_With.Dots' => 'mixed-case_with.dots',
-            '  leading_trailing  ' => 'leading_trailing',
+            'Simple Tag'             => 'simple_tag',
+            'UPPER_CASE'             => 'upper_case',
+            'mixed-Case_With.Dots'   => 'mixed-case_with.dots',
+            '  leading_trailing  '   => 'leading_trailing',
             'multiple___underscores' => 'multiple_underscores',
-            'special@chars#here%' => 'special_chars_here',
+            'special@chars#here%'    => 'special_chars_here',
         ];
 
         foreach ($testCases as $input => $expected) {

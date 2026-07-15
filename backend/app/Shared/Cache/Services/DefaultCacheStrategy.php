@@ -13,13 +13,13 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 {
     /** @var array<string, int> 統計資料 */
     private array $stats = [
-        'cache_decisions' => 0,
-        'cache_allowed' => 0,
-        'cache_denied' => 0,
+        'cache_decisions'   => 0,
+        'cache_allowed'     => 0,
+        'cache_denied'      => 0,
         'driver_selections' => 0,
-        'ttl_adjustments' => 0,
-        'miss_handles' => 0,
-        'failure_handles' => 0,
+        'ttl_adjustments'   => 0,
+        'miss_handles'      => 0,
+        'failure_handles'   => 0,
     ];
 
     /** @var int 最小快取 TTL */
@@ -185,12 +185,12 @@ class DefaultCacheStrategy implements CacheStrategyInterface
                 $ttl = isset($params['ttl']) && is_int($params['ttl']) ? $params['ttl'] : 3600;
 
                 return match ($operation) {
-                    'get' => $driver->get($key, $params['default'] ?? null),
-                    'put' => $driver->put($key, $params['value'] ?? null, $ttl),
-                    'has' => $driver->has($key),
+                    'get'    => $driver->get($key, $params['default'] ?? null),
+                    'put'    => $driver->put($key, $params['value'] ?? null, $ttl),
+                    'has'    => $driver->has($key),
                     'forget' => $driver->forget($key),
-                    'flush' => $driver->flush(),
-                    default => null,
+                    'flush'  => $driver->flush(),
+                    default  => null,
                 };
             } catch (Throwable) {
                 // 繼續嘗試下一個驅動
@@ -200,10 +200,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
 
         // 所有驅動都失敗，根據操作返回合適的預設值
         return match ($operation) {
-            'get' => $params['default'] ?? null,
+            'get'                    => $params['default'] ?? null,
             'put', 'forget', 'flush' => false,
-            'has' => false,
-            default => null,
+            'has'                    => false,
+            default                  => null,
         };
     }
 
@@ -213,10 +213,10 @@ class DefaultCacheStrategy implements CacheStrategyInterface
         $allowRate = $totalDecisions > 0 ? ($this->stats['cache_allowed'] / $totalDecisions) * 100 : 0;
 
         return array_merge($this->stats, [
-            'cache_allow_rate' => round($allowRate, 2),
-            'min_ttl' => $this->minTtl,
-            'max_ttl' => $this->maxTtl,
-            'max_value_size' => $this->maxValueSize,
+            'cache_allow_rate'       => round($allowRate, 2),
+            'min_ttl'                => $this->minTtl,
+            'max_ttl'                => $this->maxTtl,
+            'max_value_size'         => $this->maxValueSize,
             'exclude_patterns_count' => count($this->excludePatterns),
         ]);
     }
@@ -224,13 +224,13 @@ class DefaultCacheStrategy implements CacheStrategyInterface
     public function resetStats(): void
     {
         $this->stats = [
-            'cache_decisions' => 0,
-            'cache_allowed' => 0,
-            'cache_denied' => 0,
+            'cache_decisions'   => 0,
+            'cache_allowed'     => 0,
+            'cache_denied'      => 0,
             'driver_selections' => 0,
-            'ttl_adjustments' => 0,
-            'miss_handles' => 0,
-            'failure_handles' => 0,
+            'ttl_adjustments'   => 0,
+            'miss_handles'      => 0,
+            'failure_handles'   => 0,
         ];
     }
 

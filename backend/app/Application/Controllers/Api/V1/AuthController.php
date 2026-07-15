@@ -62,8 +62,8 @@ class AuthController extends BaseController implements AuthApiInterface
                 actionType: ActivityType::USER_REGISTERED,
                 userId: $user['id'],
                 metadata: [
-                    'email' => $user['email'],
-                    'username' => $user['username'],
+                    'email'                  => $user['email'],
+                    'username'               => $user['username'],
                     'registration_timestamp' => date('c'),
                 ],
             )->withNetworkInfo(
@@ -75,7 +75,7 @@ class AuthController extends BaseController implements AuthApiInterface
             return $this->json($response, [
                 'success' => true,
                 'message' => '註冊成功',
-                'data' => $user,
+                'data'    => $user,
             ], 201);
         } catch (Throwable $e) {
             $responseData = json_decode($this->handleException($e), true);
@@ -91,7 +91,7 @@ class AuthController extends BaseController implements AuthApiInterface
             if (!is_array($credentials) || !isset($credentials['email'], $credentials['password'])) {
                 return $this->json($response, [
                     'success' => false,
-                    'error' => '缺少必要的登入資料',
+                    'error'   => '缺少必要的登入資料',
                 ], 400);
             }
             $loginRequest = LoginRequestDTO::fromArray($credentials);
@@ -106,8 +106,8 @@ class AuthController extends BaseController implements AuthApiInterface
                 actionType: ActivityType::LOGIN_SUCCESS,
                 userId: $loginResponse->userId,
                 metadata: [
-                    'email' => $loginRequest->email,
-                    'device_info' => $deviceInfo->toArray(),
+                    'email'           => $loginRequest->email,
+                    'device_info'     => $deviceInfo->toArray(),
                     'login_timestamp' => date('c'),
                 ],
             )->withNetworkInfo($deviceInfo->getIpAddress(), $deviceInfo->getUserAgent());
@@ -140,8 +140,8 @@ class AuthController extends BaseController implements AuthApiInterface
                 $refreshToken = $requestData['refresh_token'] ?? $refreshToken;
             }
             $logoutRequest = LogoutRequestDTO::fromArray([
-                'access_token' => $accessToken,
-                'refresh_token' => $refreshToken ?? null,
+                'access_token'      => $accessToken,
+                'refresh_token'     => $refreshToken ?? null,
                 'revoke_all_tokens' => $requestData['logout_all_devices'] ?? false,
             ]);
             $this->authenticationService->logout($logoutRequest);
@@ -185,16 +185,16 @@ class AuthController extends BaseController implements AuthApiInterface
 
             return $this->json($response, [
                 'success' => true,
-                'data' => [
+                'data'    => [
                     'user' => [
-                        'id' => $userWithRoles['id'],
-                        'email' => $userWithRoles['email'],
-                        'name' => $userWithRoles['name'] ?? null,
+                        'id'       => $userWithRoles['id'],
+                        'email'    => $userWithRoles['email'],
+                        'name'     => $userWithRoles['name'] ?? null,
                         'username' => $userWithRoles['username'] ?? null,
-                        'roles' => $userWithRoles['roles'] ?? [],
+                        'roles'    => $userWithRoles['roles'] ?? [],
                     ],
                     'token_info' => [
-                        'issued_at' => $payload->getIssuedAt()->getTimestamp(),
+                        'issued_at'  => $payload->getIssuedAt()->getTimestamp(),
                         'expires_at' => $payload->getExpiresAt()->getTimestamp(),
                     ],
                 ],
@@ -247,7 +247,7 @@ class AuthController extends BaseController implements AuthApiInterface
                 actionType: ActivityType::LOGIN_FAILED,
                 description: $errorMessage,
                 metadata: [
-                    'email' => $email,
+                    'email'     => $email,
                     'timestamp' => date('c'),
                 ],
             )->withNetworkInfo(
@@ -276,12 +276,12 @@ class AuthController extends BaseController implements AuthApiInterface
             if ($unexpectedFields !== []) {
                 app_log('warning', 'Unsupported profile update fields received', [
                     'user_id' => $userId,
-                    'fields' => $unexpectedFields,
+                    'fields'  => $unexpectedFields,
                 ]);
 
                 return $this->json($response, [
-                    'success' => false,
-                    'error' => '包含未支援的欄位',
+                    'success'            => false,
+                    'error'              => '包含未支援的欄位',
                     'unsupported_fields' => $unexpectedFields,
                 ], 400);
             }
@@ -291,12 +291,12 @@ class AuthController extends BaseController implements AuthApiInterface
             return $this->json($response, [
                 'success' => true,
                 'message' => '個人資料更新成功',
-                'data' => [
-                    'id' => $user['id'],
+                'data'    => [
+                    'id'       => $user['id'],
                     'username' => $user['username'],
-                    'email' => $user['email'],
-                    'name' => $user['name'] ?? null,
-                    'roles' => $user['roles'] ?? [],
+                    'email'    => $user['email'],
+                    'name'     => $user['name'] ?? null,
+                    'roles'    => $user['roles'] ?? [],
                 ],
             ], 200);
         } catch (Throwable $e) {

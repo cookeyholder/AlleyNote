@@ -34,11 +34,11 @@ final class StatisticsCalculated extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'statistics_type' => $this->statisticsType,
-            'period' => $this->period,
-            'calculated_at' => $this->calculatedAt->format('Y-m-d H:i:s'),
-            'statistics_data' => $this->statisticsData,
-            'record_count' => $this->recordCount,
+            'statistics_type'     => $this->statisticsType,
+            'period'              => $this->period,
+            'calculated_at'       => $this->calculatedAt->format('Y-m-d H:i:s'),
+            'statistics_data'     => $this->statisticsData,
+            'record_count'        => $this->recordCount,
             'calculation_time_ms' => $this->calculationTimeMs,
         ];
     }

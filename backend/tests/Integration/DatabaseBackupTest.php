@@ -225,10 +225,10 @@ class DatabaseBackupTest extends IntegrationTestCase
         // 比較關鍵欄位而非完整記錄
         $originalPostsFiltered = array_map(function ($post) {
             return [
-                'title' => $post['title'],
+                'title'   => $post['title'],
                 'content' => $post['content'],
                 'user_id' => $post['user_id'],
-                'status' => $post['status'],
+                'status'  => $post['status'],
             ];
         }, $originalPosts);
 

@@ -29,22 +29,22 @@ class IpController
 
             return [
                 'status' => 201,
-                'data' => $ipList->toSafeArray($this->sanitizer),
+                'data'   => $ipList->toSafeArray($this->sanitizer),
             ];
         } catch (ValidationException $e) {
             return [
                 'status' => 400,
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
             ];
         } catch (InvalidArgumentException $e) {
             return [
                 'status' => 400,
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
             ];
         } catch (Throwable $e) {
             return [
                 'status' => 500,
-                'error' => '建立 IP 規則時發生錯誤',
+                'error'  => '建立 IP 規則時發生錯誤',
             ];
         }
     }
@@ -59,7 +59,7 @@ class IpController
 
             return [
                 'status' => 200,
-                'data' => array_map(
+                'data'   => array_map(
                     fn(IpList $rule) => $rule->toSafeArray($this->sanitizer),
                     $rules,
                 ),
@@ -67,12 +67,12 @@ class IpController
         } catch (InvalidArgumentException $e) {
             return [
                 'status' => 400,
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
             ];
         } catch (Throwable $e) {
             return [
                 'status' => 500,
-                'error' => '取得 IP 規則時發生錯誤',
+                'error'  => '取得 IP 規則時發生錯誤',
             ];
         }
     }
@@ -87,20 +87,20 @@ class IpController
 
             return [
                 'status' => 200,
-                'data' => [
-                    'ip' => $request['ip'],
+                'data'   => [
+                    'ip'      => $request['ip'],
                     'allowed' => $isAllowed,
                 ],
             ];
         } catch (InvalidArgumentException $e) {
             return [
                 'status' => 400,
-                'error' => $e->getMessage(),
+                'error'  => $e->getMessage(),
             ];
         } catch (Throwable $e) {
             return [
                 'status' => 500,
-                'error' => '檢查 IP 存取權限時發生錯誤',
+                'error'  => '檢查 IP 存取權限時發生錯誤',
             ];
         }
     }

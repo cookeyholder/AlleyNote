@@ -29,15 +29,15 @@ class CacheMonitorController extends BaseController
             $stats = $this->cacheManager->getStats();
             $health = $this->cacheManager->getHealthStatus();
             $data = [
-                'stats' => $stats,
-                'health' => $health,
+                'stats'     => $stats,
+                'health'    => $health,
                 'timestamp' => time(),
             ];
 
             return $this->json($response, $data);
         } catch (Throwable $e) {
             return $this->json($response, [
-                'error' => '無法取得快取統計資料',
+                'error'   => '無法取得快取統計資料',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -52,17 +52,17 @@ class CacheMonitorController extends BaseController
             $queryParams = $request->getQueryParams();
             $timeRange = is_string($queryParams['timeRange'] ?? '1h') ? $queryParams['timeRange'] ?? '1h' : '1h';
             $metrics = [
-                'hitRate' => $this->cacheMonitor->getHitRateStats($timeRange),
-                'performance' => $this->cacheMonitor->getDriverPerformanceComparison(),
-                'capacity' => $this->cacheMonitor->getCacheCapacityStats(),
-                'errors' => $this->cacheMonitor->getErrorStats($timeRange),
+                'hitRate'        => $this->cacheMonitor->getHitRateStats($timeRange),
+                'performance'    => $this->cacheMonitor->getDriverPerformanceComparison(),
+                'capacity'       => $this->cacheMonitor->getCacheCapacityStats(),
+                'errors'         => $this->cacheMonitor->getErrorStats($timeRange),
                 'slowOperations' => $this->cacheMonitor->getSlowCacheOperations(10, 100),
             ];
 
             return $this->json($response, $metrics);
         } catch (Throwable $e) {
             return $this->json($response, [
-                'error' => '無法取得快取指標',
+                'error'   => '無法取得快取指標',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -77,15 +77,15 @@ class CacheMonitorController extends BaseController
             $healthOverview = $this->cacheMonitor->getHealthOverview();
             $driverHealth = $this->cacheManager->getHealthStatus();
             $healthData = [
-                'overview' => $healthOverview,
-                'drivers' => $driverHealth,
+                'overview'  => $healthOverview,
+                'drivers'   => $driverHealth,
                 'timestamp' => time(),
             ];
 
             return $this->json($response, $healthData);
         } catch (Throwable $e) {
             return $this->json($response, [
-                'error' => '無法取得健康狀態',
+                'error'   => '無法取得健康狀態',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -101,12 +101,12 @@ class CacheMonitorController extends BaseController
             $cleaned = $this->cacheMonitor->cleanup(0);
 
             return $this->json($response, [
-                'message' => '統計資料已重置',
+                'message'        => '統計資料已重置',
                 'cleanedRecords' => $cleaned,
             ]);
         } catch (Throwable $e) {
             return $this->json($response, [
-                'error' => '無法重置統計資料',
+                'error'   => '無法重置統計資料',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -130,7 +130,7 @@ class CacheMonitorController extends BaseController
             }
         } catch (Throwable $e) {
             return $this->json($response, [
-                'error' => '無法清空快取',
+                'error'   => '無法清空快取',
                 'message' => $e->getMessage(),
             ], 500);
         }
@@ -147,8 +147,8 @@ class CacheMonitorController extends BaseController
             foreach ($drivers as $name => $driver) {
                 if (is_object($driver) && method_exists($driver, 'isAvailable')) {
                     $driverInfo[] = [
-                        'name' => $name,
-                        'class' => get_class($driver),
+                        'name'      => $name,
+                        'class'     => get_class($driver),
                         'available' => $driver->isAvailable(),
                     ];
                 }
@@ -159,7 +159,7 @@ class CacheMonitorController extends BaseController
             ]);
         } catch (Throwable $e) {
             return $this->json($response, [
-                'error' => '無法取得驅動資訊',
+                'error'   => '無法取得驅動資訊',
                 'message' => $e->getMessage(),
             ], 500);
         }

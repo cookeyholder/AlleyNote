@@ -76,16 +76,16 @@ final class PaginatedStatisticsDTO
     public function toArray(): array
     {
         return [
-            'data' => $this->data,
+            'data'       => $this->data,
             'pagination' => [
-                'current_page' => $this->currentPage,
-                'per_page' => $this->perPage,
-                'total_count' => $this->totalCount,
-                'total_pages' => $this->getTotalPages(),
-                'has_next_page' => $this->hasNextPage(),
+                'current_page'      => $this->currentPage,
+                'per_page'          => $this->perPage,
+                'total_count'       => $this->totalCount,
+                'total_pages'       => $this->getTotalPages(),
+                'has_next_page'     => $this->hasNextPage(),
                 'has_previous_page' => $this->hasPreviousPage(),
-                'from' => $this->getFrom(),
-                'to' => $this->getTo(),
+                'from'              => $this->getFrom(),
+                'to'                => $this->getTo(),
             ],
             'metadata' => $this->metadata,
         ];

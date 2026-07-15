@@ -495,22 +495,22 @@ class ActivityLogSearchDTO
     public function toArray(): array
     {
         return [
-            'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
-            'action_type' => $this->actionType?->value,
+            'user_id'         => $this->userId,
+            'session_id'      => $this->sessionId,
+            'action_type'     => $this->actionType?->value,
             'action_category' => $this->actionCategory?->value,
-            'status' => $this->status?->value,
-            'min_severity' => $this->minSeverity?->value,
-            'target_type' => $this->targetType,
-            'target_id' => $this->targetId,
-            'ip_address' => $this->ipAddress,
-            'start_date' => $this->startDate?->format('Y-m-d H:i:s'),
-            'end_date' => $this->endDate?->format('Y-m-d H:i:s'),
-            'search_keyword' => $this->searchKeyword,
-            'page' => $this->page,
-            'per_page' => $this->perPage,
-            'sort_by' => $this->sortBy,
-            'sort_order' => $this->sortOrder,
+            'status'          => $this->status?->value,
+            'min_severity'    => $this->minSeverity?->value,
+            'target_type'     => $this->targetType,
+            'target_id'       => $this->targetId,
+            'ip_address'      => $this->ipAddress,
+            'start_date'      => $this->startDate?->format('Y-m-d H:i:s'),
+            'end_date'        => $this->endDate?->format('Y-m-d H:i:s'),
+            'search_keyword'  => $this->searchKeyword,
+            'page'            => $this->page,
+            'per_page'        => $this->perPage,
+            'sort_by'         => $this->sortBy,
+            'sort_order'      => $this->sortOrder,
         ];
     }
 

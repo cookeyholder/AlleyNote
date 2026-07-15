@@ -11,6 +11,7 @@ use Tests\Support\UnitTestCase;
  * Refresh Token 操作例外單元測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class RefreshTokenExceptionTest extends UnitTestCase
@@ -59,8 +60,8 @@ class RefreshTokenExceptionTest extends UnitTestCase
     public function testAdditionalContext(): void
     {
         $additionalContext = [
-            'token_id' => 'refresh-123',
-            'user_id' => 456,
+            'token_id'           => 'refresh-123',
+            'user_id'            => 456,
             'device_fingerprint' => 'abc123',
         ];
 
@@ -85,15 +86,15 @@ class RefreshTokenExceptionTest extends UnitTestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            RefreshTokenException::REASON_NOT_FOUND => 'not found or does not exist',
-            RefreshTokenException::REASON_REVOKED => 'has been revoked',
-            RefreshTokenException::REASON_ALREADY_USED => 'has already been used',
+            RefreshTokenException::REASON_NOT_FOUND       => 'not found or does not exist',
+            RefreshTokenException::REASON_REVOKED         => 'has been revoked',
+            RefreshTokenException::REASON_ALREADY_USED    => 'has already been used',
             RefreshTokenException::REASON_DEVICE_MISMATCH => 'device fingerprint does not match',
-            RefreshTokenException::REASON_USER_MISMATCH => 'does not belong to the specified user',
-            RefreshTokenException::REASON_STORAGE_FAILED => 'Failed to store refresh token',
+            RefreshTokenException::REASON_USER_MISMATCH   => 'does not belong to the specified user',
+            RefreshTokenException::REASON_STORAGE_FAILED  => 'Failed to store refresh token',
             RefreshTokenException::REASON_DELETION_FAILED => 'Failed to delete refresh token',
             RefreshTokenException::REASON_ROTATION_FAILED => 'Failed to rotate refresh token',
-            RefreshTokenException::REASON_LIMIT_EXCEEDED => 'limit exceeded for this user',
+            RefreshTokenException::REASON_LIMIT_EXCEEDED  => 'limit exceeded for this user',
             RefreshTokenException::REASON_FAMILY_MISMATCH => 'does not belong to the expected token family',
         ];
 
@@ -147,8 +148,8 @@ class RefreshTokenExceptionTest extends UnitTestCase
     public function testContextGetters(): void
     {
         $context = [
-            'user_id' => 123,
-            'token_id' => 'token-abc',
+            'user_id'     => 123,
+            'token_id'    => 'token-abc',
             'device_info' => ['browser' => 'Chrome', 'os' => 'Windows'],
         ];
 
@@ -459,15 +460,15 @@ class RefreshTokenExceptionTest extends UnitTestCase
     public function testComplexScenario(): void
     {
         $additionalContext = [
-            'user_id' => 123,
-            'token_id' => 'refresh-token-456',
+            'user_id'     => 123,
+            'token_id'    => 'refresh-token-456',
             'device_info' => [
                 'fingerprint' => 'device-abc-123',
-                'user_agent' => 'Chrome/91.0',
-                'ip_address' => '192.168.1.100',
+                'user_agent'  => 'Chrome/91.0',
+                'ip_address'  => '192.168.1.100',
             ],
-            'family_id' => 'family-xyz',
-            'request_id' => 'req-789',
+            'family_id'     => 'family-xyz',
+            'request_id'    => 'req-789',
             'attempt_count' => 3,
         ];
 

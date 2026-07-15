@@ -33,24 +33,24 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             return;
         }
         $this->logger?->info("Dispatching event: {$eventName}", [
-            'event_id' => $event->getEventId(),
+            'event_id'        => $event->getEventId(),
             'listeners_count' => count($listeners),
         ]);
         foreach ($listeners as $listener) {
             try {
                 $listener->handle($event);
                 $this->logger?->debug('Event handled successfully', [
-                    'event_id' => $event->getEventId(),
+                    'event_id'   => $event->getEventId(),
                     'event_name' => $eventName,
-                    'listener' => $listener->getName(),
+                    'listener'   => $listener->getName(),
                 ]);
             } catch (Throwable $e) {
                 $this->logger?->error('Failed to handle event', [
-                    'event_id' => $event->getEventId(),
+                    'event_id'   => $event->getEventId(),
                     'event_name' => $eventName,
-                    'listener' => $listener->getName(),
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
+                    'listener'   => $listener->getName(),
+                    'error'      => $e->getMessage(),
+                    'trace'      => $e->getTraceAsString(),
                 ]);
                 // 在統計功能中，我們選擇不讓事件處理失敗中斷主流程
                 // 只記錄錯誤，繼續執行其他監聽器
@@ -70,7 +70,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
             if ($existingListener->getName() === $listenerName) {
                 $this->logger?->warning('Listener already registered for event', [
                     'event_name' => $eventName,
-                    'listener' => $listenerName,
+                    'listener'   => $listenerName,
                 ]);
 
                 return;
@@ -79,7 +79,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
         $this->listeners[$eventName][] = $listener;
         $this->logger?->debug('Event listener registered', [
             'event_name' => $eventName,
-            'listener' => $listenerName,
+            'listener'   => $listenerName,
         ]);
     }
 
@@ -98,7 +98,7 @@ class SimpleEventDispatcher implements EventDispatcherInterface
         }
         $this->logger?->debug('Event listener removed', [
             'event_name' => $eventName,
-            'listener' => $listenerName,
+            'listener'   => $listenerName,
         ]);
     }
 
@@ -146,9 +146,9 @@ class SimpleEventDispatcher implements EventDispatcherInterface
         }
 
         return [
-            'total_event_types' => $totalEvents,
-            'total_listeners' => $totalListeners,
-            'event_types' => array_keys($this->listeners),
+            'total_event_types'   => $totalEvents,
+            'total_listeners'     => $totalListeners,
+            'event_types'         => array_keys($this->listeners),
             'listeners_per_event' => array_map(
                 fn(array $eventListeners): int => count($eventListeners),
                 $this->listeners,

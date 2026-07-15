@@ -111,13 +111,13 @@ class RefreshTokenServiceTest extends UnitTestCase
         $result = $this->service->getUserTokenStats($userId);
 
         $expected = [
-            'total' => 3,
+            'total'     => 3,
             'by_device' => [
                 'device-1' => 2,
                 'device-2' => 1,
             ],
             'by_status' => [
-                'active' => 2,
+                'active'  => 2,
                 'expired' => 1,
             ],
         ];
@@ -143,7 +143,7 @@ class RefreshTokenServiceTest extends UnitTestCase
         $result = $this->service->getUserTokenStats($userId);
 
         $expected = [
-            'total' => 0,
+            'total'     => 0,
             'by_device' => [],
             'by_status' => [],
         ];
@@ -184,7 +184,7 @@ class RefreshTokenServiceTest extends UnitTestCase
             ->shouldReceive('info')
             ->once()
             ->with('Refresh token revoked', [
-                'jti' => 'jwt-token-id-123456789',
+                'jti'    => 'jwt-token-id-123456789',
                 'reason' => 'manual_revocation',
             ]);
 
@@ -207,7 +207,7 @@ class RefreshTokenServiceTest extends UnitTestCase
             ->shouldReceive('error')
             ->once()
             ->with('Failed to revoke refresh token', [
-                'error' => 'Invalid token',
+                'error'  => 'Invalid token',
                 'reason' => 'manual_revocation',
             ]);
 

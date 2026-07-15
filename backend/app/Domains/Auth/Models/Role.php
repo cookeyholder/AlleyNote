@@ -67,12 +67,12 @@ class Role
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'id'           => $this->id,
+            'name'         => $this->name,
             'display_name' => $this->displayName,
-            'description' => $this->description,
-            'created_at' => $this->createdAt,
-            'updated_at' => $this->updatedAt,
+            'description'  => $this->description,
+            'created_at'   => $this->createdAt,
+            'updated_at'   => $this->updatedAt,
         ];
     }
 

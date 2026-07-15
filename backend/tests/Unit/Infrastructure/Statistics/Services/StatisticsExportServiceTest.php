@@ -44,9 +44,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
     {
         // Act
         $result = $this->exportService->exportOverview([
-            'format' => 'json',
+            'format'       => 'json',
             'period_start' => new DateTime('2025-09-01'),
-            'period_end' => new DateTime('2025-09-30'),
+            'period_end'   => new DateTime('2025-09-30'),
         ]);
 
         // Assert
@@ -63,7 +63,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
         // Act
         $result = $this->exportService->exportPostStatistics([
             'format' => 'csv',
-            'limit' => 100,
+            'limit'  => 100,
             'offset' => 0,
         ]);
 
@@ -78,7 +78,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     {
         // Act
         $result = $this->exportService->exportSourceDistribution([
-            'format' => 'json',
+            'format'          => 'json',
             'group_by_detail' => true,
         ]);
 
@@ -92,7 +92,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     {
         // Act
         $result = $this->exportService->exportUserStatistics([
-            'format' => 'csv',
+            'format'           => 'csv',
             'include_inactive' => false,
         ]);
 
@@ -107,7 +107,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
         // Act
         $result = $this->exportService->exportPopularContent([
             'format' => 'json',
-            'limit' => 50,
+            'limit'  => 50,
         ]);
 
         // Assert
@@ -123,9 +123,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
         // Act
         $result = $this->exportService->exportBatch($types, [
-            'format' => 'json',
+            'format'       => 'json',
             'period_start' => new DateTime('2025-09-01'),
-            'period_end' => new DateTime('2025-09-30'),
+            'period_end'   => new DateTime('2025-09-30'),
         ]);
 
         // Assert
@@ -226,7 +226,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     {
         // Act
         $result = $this->exportService->exportOverview([
-            'format' => 'json',
+            'format'          => 'json',
             'include_details' => true,
         ]);
 
@@ -245,11 +245,11 @@ final class StatisticsExportServiceTest extends UnitTestCase
             public function getOverview(array $options = []): array
             {
                 return [
-                    'total_posts' => 100,
-                    'total_views' => 5000,
-                    'total_users' => 50,
+                    'total_posts'  => 100,
+                    'total_views'  => 5000,
+                    'total_users'  => 50,
                     'period_start' => '2025-09-01',
-                    'period_end' => '2025-09-30',
+                    'period_end'   => '2025-09-30',
                 ];
             }
 
@@ -260,9 +260,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
                 for ($i = 1; $i <= $limit; $i++) {
                     $posts[] = [
-                        'id' => $i,
-                        'title' => "測試文章 {$i}",
-                        'views' => rand(10, 1000),
+                        'id'         => $i,
+                        'title'      => "測試文章 {$i}",
+                        'views'      => rand(10, 1000),
                         'created_at' => '2025-09-' . str_pad((string) rand(1, 30), 2, '0', STR_PAD_LEFT),
                     ];
                 }
@@ -298,10 +298,10 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
                 for ($i = 1; $i <= $limit; $i++) {
                     $popular[] = [
-                        'id' => $i,
+                        'id'    => $i,
                         'title' => "熱門文章 {$i}",
                         'views' => 1000 - $i * 50,
-                        'rank' => $i,
+                        'rank'  => $i,
                     ];
                 }
 
@@ -449,8 +449,8 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
         return [
             'json' => $jsonFormatter,
-            'csv' => $csvFormatter,
-            'pdf' => $pdfFormatter,
+            'csv'  => $csvFormatter,
+            'pdf'  => $pdfFormatter,
         ];
     }
 }

@@ -16,6 +16,7 @@ class TrendAnalysisProcessor
      *
      * @param ChartData $baseChart 基礎圖表資料
      * @param string $analysisType 分析類型：'trend', 'moving_average', 'seasonal'
+     *
      * @return ChartData 包含趨勢分析的圖表資料
      */
     public function addTrendAnalysis(ChartData $baseChart, string $analysisType): ChartData
@@ -33,11 +34,11 @@ class TrendAnalysisProcessor
         /** @var array<float> $dataFloat */
         $dataFloat = array_map(fn($value): float => is_numeric($value) ? (float) $value : 0.0, $datasetData);
         $additionalDatasets = match ($analysisType) {
-            'trend' => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
+            'trend'          => [$this->calculateLinearTrend($dataFloat, $baseChart->labels)],
             'moving_average' => [$this->calculateMovingAverage($dataFloat, $baseChart->labels)],
-            'seasonal' => [$this->calculateSeasonalTrend($dataFloat, $baseChart->labels)],
-            'growth' => [$this->calculateGrowthRate($dataFloat, $baseChart->labels)],
-            'registration' => [
+            'seasonal'       => [$this->calculateSeasonalTrend($dataFloat, $baseChart->labels)],
+            'growth'         => [$this->calculateGrowthRate($dataFloat, $baseChart->labels)],
+            'registration'   => [
                 $this->calculateLinearTrend($dataFloat, $baseChart->labels),
                 $this->calculateGrowthRate($dataFloat, $baseChart->labels),
             ],
@@ -175,7 +176,7 @@ class TrendAnalysisProcessor
                 $growthRates[] = 0; // 第一個點沒有成長率
             } else {
                 $prevValue = $data[$i - 1];
-                if ($prevValue != 0) {
+                if ($prevValue !== 0) {
                     $growthRate = (($data[$i] - $prevValue) / $prevValue) * 100;
                     $growthRates[] = $growthRate;
                 } else {
@@ -199,6 +200,7 @@ class TrendAnalysisProcessor
      * 計算季節性模式.
      *
      * @param array<float> $data
+     *
      * @return array<float>
      */
     private function calculateSeasonalPattern(array $data, int $seasonLength): array
@@ -222,7 +224,7 @@ class TrendAnalysisProcessor
         $overallMean = array_sum($pattern) / $seasonLength;
         // 轉換為調整係數
         for ($i = 0; $i < $seasonLength; $i++) {
-            if ($overallMean != 0) {
+            if ($overallMean !== 0) {
                 $pattern[$i] = $pattern[$i] / $overallMean;
             } else {
                 $pattern[$i] = 1.0;
@@ -237,6 +239,7 @@ class TrendAnalysisProcessor
      *
      * @param array<float> $data 歷史資料
      * @param int $periods 要預測的週期數
+     *
      * @return array<float> 預測值
      */
     public function predictFutureValues(array $data, int $periods): array
@@ -275,6 +278,7 @@ class TrendAnalysisProcessor
      * 計算資料的統計摘要
      *
      * @param array<float> $data
+     *
      * @return array<string, float>
      */
     public function calculateStatisticalSummary(array $data): array
@@ -302,15 +306,15 @@ class TrendAnalysisProcessor
         }
 
         return [
-            'count' => $n,
-            'sum' => $sum,
-            'mean' => $mean,
-            'median' => $median,
-            'min' => min($data),
-            'max' => max($data),
+            'count'    => $n,
+            'sum'      => $sum,
+            'mean'     => $mean,
+            'median'   => $median,
+            'min'      => min($data),
+            'max'      => max($data),
             'variance' => $variance,
-            'std_dev' => $stdDev,
-            'range' => max($data) - min($data),
+            'std_dev'  => $stdDev,
+            'range'    => max($data) - min($data),
         ];
     }
 

@@ -11,6 +11,7 @@ use Tests\Support\UnitTestCase;
  * Token 過期例外單元測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class TokenExpiredExceptionTest extends UnitTestCase

@@ -158,10 +158,10 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
         // Arrange
         $jti = 'test-jti-123';
         $expectedData = [
-            'jti' => $jti,
-            'user_id' => 1,
+            'jti'        => $jti,
+            'user_id'    => 1,
             'token_hash' => 'hash123',
-            'status' => RefreshToken::STATUS_ACTIVE,
+            'status'     => RefreshToken::STATUS_ACTIVE,
         ];
 
         $this->mockPdo
@@ -231,9 +231,9 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
         // Arrange
         $tokenHash = 'hash123';
         $expectedData = [
-            'jti' => 'jti-123',
+            'jti'        => 'jti-123',
             'token_hash' => $tokenHash,
-            'user_id' => 1,
+            'user_id'    => 1,
         ];
 
         $this->mockPdo
@@ -916,8 +916,8 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
         // Arrange
         $userId = 1;
         $expectedStats = [
-            'total' => 10,
-            'active' => 5,
+            'total'   => 10,
+            'active'  => 5,
             'expired' => 3,
             'revoked' => 2,
         ];
@@ -950,11 +950,11 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
     {
         // Arrange
         $expectedStats = [
-            'total_tokens' => 100,
-            'active_tokens' => 60,
+            'total_tokens'   => 100,
+            'active_tokens'  => 60,
             'expired_tokens' => 25,
             'revoked_tokens' => 15,
-            'unique_users' => 20,
+            'unique_users'   => 20,
             'unique_devices' => 35,
         ];
 
@@ -983,17 +983,17 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
         // Arrange
         $tokens = [
             [
-                'jti' => 'jti-1',
-                'user_id' => 1,
-                'token_hash' => 'hash-1',
-                'expires_at' => '+1 hour',
+                'jti'         => 'jti-1',
+                'user_id'     => 1,
+                'token_hash'  => 'hash-1',
+                'expires_at'  => '+1 hour',
                 'device_info' => $this->deviceInfo,
             ],
             [
-                'jti' => 'jti-2',
-                'user_id' => 2,
-                'token_hash' => 'hash-2',
-                'expires_at' => '+2 hours',
+                'jti'         => 'jti-2',
+                'user_id'     => 2,
+                'token_hash'  => 'hash-2',
+                'expires_at'  => '+2 hours',
                 'device_info' => $this->deviceInfo,
             ],
         ];
@@ -1028,10 +1028,10 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
         // Arrange
         $tokens = [
             [
-                'jti' => 'jti-1',
-                'user_id' => 1,
-                'token_hash' => 'hash-1',
-                'expires_at' => '+1 hour',
+                'jti'         => 'jti-1',
+                'user_id'     => 1,
+                'token_hash'  => 'hash-1',
+                'expires_at'  => '+1 hour',
                 'device_info' => $this->deviceInfo,
             ],
         ];

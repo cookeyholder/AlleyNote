@@ -69,8 +69,8 @@ final class StatisticsMonitoringServiceTest extends UnitTestCase
         $expectedMetrics = [
             'avg_calculation_time' => 2.5,
             'max_calculation_time' => 5.2,
-            'total_calculations' => 100,
-            'failed_calculations' => 2,
+            'total_calculations'   => 100,
+            'failed_calculations'  => 2,
         ];
 
         // Act
@@ -173,7 +173,7 @@ final class StatisticsMonitoringServiceTest extends UnitTestCase
     {
         // Act
         $result = $this->monitoringService->logStatisticsEvent('calculation_started', [
-            'type' => 'daily',
+            'type'   => 'daily',
             'period' => '2025-09-23',
         ]);
 

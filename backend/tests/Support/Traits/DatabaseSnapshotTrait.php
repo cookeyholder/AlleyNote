@@ -19,6 +19,7 @@ trait DatabaseSnapshotTrait
      *
      * @param string $table 資料表名稱
      * @param mixed $id 主鍵值
+     *
      * @return array<string, mixed> 快照數據
      */
     protected function captureRow(string $table, mixed $id): array
@@ -33,8 +34,8 @@ trait DatabaseSnapshotTrait
 
         return [
             '__table' => $table,
-            '__id' => $id,
-            'data' => $row,
+            '__id'    => $id,
+            'data'    => $row,
         ];
     }
 

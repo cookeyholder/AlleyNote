@@ -42,6 +42,7 @@ class UserStatisticsDTO implements JsonSerializable
      * 從陣列建立 DTO.
      *
      * @param array<string, mixed> $data 原始資料陣列
+     *
      * @throws InvalidArgumentException 當資料格式不正確時
      */
     public static function fromArray(array $data): self
@@ -265,13 +266,13 @@ class UserStatisticsDTO implements JsonSerializable
                      + $this->getInactiveUsers();
 
         return [
-            'total_users' => $totalUsers,
-            'engagement_rate' => $this->getEngagementRate(),
+            'total_users'              => $totalUsers,
+            'engagement_rate'          => $this->getEngagementRate(),
             'average_engagement_score' => $this->getAverageEngagementScore(),
-            'engagement_distribution' => [
-                'high' => ['count' => $this->getHighEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getHighEngagementUsers() / $totalUsers) * 100, 1) : 0],
-                'medium' => ['count' => $this->getMediumEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getMediumEngagementUsers() / $totalUsers) * 100, 1) : 0],
-                'low' => ['count' => $this->getLowEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getLowEngagementUsers() / $totalUsers) * 100, 1) : 0],
+            'engagement_distribution'  => [
+                'high'     => ['count' => $this->getHighEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getHighEngagementUsers() / $totalUsers) * 100, 1) : 0],
+                'medium'   => ['count' => $this->getMediumEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getMediumEngagementUsers() / $totalUsers) * 100, 1) : 0],
+                'low'      => ['count' => $this->getLowEngagementUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getLowEngagementUsers() / $totalUsers) * 100, 1) : 0],
                 'inactive' => ['count' => $this->getInactiveUsers(), 'percentage' => $totalUsers > 0 ? round(($this->getInactiveUsers() / $totalUsers) * 100, 1) : 0],
             ],
         ];
@@ -287,9 +288,9 @@ class UserStatisticsDTO implements JsonSerializable
         $peakHour = $this->getPeakActiveHour();
 
         return [
-            'peak_login_hour' => $this->getPeakHour(),
+            'peak_login_hour'    => $this->getPeakHour(),
             'peak_activity_hour' => $peakHour,
-            'activity_pattern' => $this->getActivityPattern(),
+            'activity_pattern'   => $this->getActivityPattern(),
             'weekend_vs_weekday' => $this->getWeekendVsWeekdayActivity(),
         ];
     }
@@ -302,26 +303,26 @@ class UserStatisticsDTO implements JsonSerializable
     public function toArray(): array
     {
         $data = [
-            'active_users' => $this->activeUsers,
-            'by_activity_type' => $this->byActivityType,
-            'login_activity' => $this->loginActivity,
-            'most_active' => $this->mostActive,
-            'engagement_stats' => $this->engagementStats,
-            'registration_sources' => $this->registrationSources,
-            'geographical_distribution' => $this->geographicalDistribution,
-            'by_role' => $this->byRole,
+            'active_users'               => $this->activeUsers,
+            'by_activity_type'           => $this->byActivityType,
+            'login_activity'             => $this->loginActivity,
+            'most_active'                => $this->mostActive,
+            'engagement_stats'           => $this->engagementStats,
+            'registration_sources'       => $this->registrationSources,
+            'geographical_distribution'  => $this->geographicalDistribution,
+            'by_role'                    => $this->byRole,
             'activity_time_distribution' => $this->activityTimeDistribution,
-            'calculated_metrics' => [
-                'total_logins' => $this->getTotalLogins(),
-                'unique_logged_in_users' => $this->getUniqueLoggedInUsers(),
+            'calculated_metrics'         => [
+                'total_logins'            => $this->getTotalLogins(),
+                'unique_logged_in_users'  => $this->getUniqueLoggedInUsers(),
                 'average_logins_per_user' => $this->getAverageLoginsPerUser(),
-                'engagement_rate' => $this->getEngagementRate(),
-                'most_active_user' => $this->getMostActiveUser(),
+                'engagement_rate'         => $this->getEngagementRate(),
+                'most_active_user'        => $this->getMostActiveUser(),
                 'top_registration_source' => $this->getTopRegistrationSource(),
-                'top_location' => $this->getTopLocation(),
+                'top_location'            => $this->getTopLocation(),
             ],
             'engagement_analysis' => $this->getEngagementAnalysis(),
-            'activity_insights' => $this->getActivityInsights(),
+            'activity_insights'   => $this->getActivityInsights(),
         ];
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
@@ -359,11 +360,11 @@ class UserStatisticsDTO implements JsonSerializable
     public function getSummary(): array
     {
         return [
-            'active_users' => $this->activeUsers,
-            'total_logins' => $this->getTotalLogins(),
-            'engagement_rate' => $this->getEngagementRate(),
+            'active_users'             => $this->activeUsers,
+            'total_logins'             => $this->getTotalLogins(),
+            'engagement_rate'          => $this->getEngagementRate(),
             'average_engagement_score' => $this->getAverageEngagementScore(),
-            'top_location' => $this->getTopLocation(),
+            'top_location'             => $this->getTopLocation(),
         ];
     }
 
@@ -457,7 +458,7 @@ class UserStatisticsDTO implements JsonSerializable
         return match (true) {
             $concentration >= 50 => 'concentrated',
             $concentration >= 30 => 'moderate',
-            default => 'distributed',
+            default              => 'distributed',
         };
     }
 
@@ -471,8 +472,8 @@ class UserStatisticsDTO implements JsonSerializable
         // 這是一個簡化的實現，實際上需要根據具體的時間分布資料來計算
         // 這裡假設有週末和工作日的資料
         return [
-            'weekend_percentage' => 30,
-            'weekday_percentage' => 70,
+            'weekend_percentage'     => 30,
+            'weekday_percentage'     => 70,
             'weekend_activity_score' => 0.3,
             'weekday_activity_score' => 0.7,
         ];
@@ -482,6 +483,7 @@ class UserStatisticsDTO implements JsonSerializable
      * 確保回傳 array<string, mixed> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, mixed>
      */
     private static function ensureStringMixedArray($data): array
@@ -503,6 +505,7 @@ class UserStatisticsDTO implements JsonSerializable
      * 確保回傳 array<string, int> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, int>
      */
     private static function ensureStringIntArray($data): array
@@ -524,6 +527,7 @@ class UserStatisticsDTO implements JsonSerializable
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
      * @param mixed $data
+     *
      * @return array<int, array<string, mixed>>
      */
     private static function ensureIntArrayStringMixedArray($data): array

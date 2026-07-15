@@ -73,6 +73,7 @@ class PostStatisticsDTO implements JsonSerializable
      * 過濾字串鍵和整數值的映射.
      *
      * @param mixed $data
+     *
      * @return array<string, int>
      */
     private static function filterIntegerMap($data): array
@@ -94,6 +95,7 @@ class PostStatisticsDTO implements JsonSerializable
      * 確保回傳 array<string, mixed> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, mixed>
      */
     private static function ensureStringMixedArray($data): array
@@ -115,6 +117,7 @@ class PostStatisticsDTO implements JsonSerializable
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
      * @param mixed $data
+     *
      * @return array<int, array<string, mixed>>
      */
     private static function ensureIntArrayStringMixedArray($data): array
@@ -359,9 +362,9 @@ class PostStatisticsDTO implements JsonSerializable
         }
 
         return [
-            'views_per_post_ratio' => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
+            'views_per_post_ratio'   => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
             'pinned_engagement_rate' => $totalViews > 0 ? round(($this->getPinnedPostsViews() / $totalViews) * 100, 2) : 0.0,
-            'author_productivity' => $avgProductivity,
+            'author_productivity'    => $avgProductivity,
         ];
     }
 
@@ -374,7 +377,7 @@ class PostStatisticsDTO implements JsonSerializable
                 'maximum' => $this->getMaxLength(),
             ],
             'optimal_length_score' => $this->calculateOptimalLengthScore(),
-            'content_diversity' => $this->calculateContentDiversity(),
+            'content_diversity'    => $this->calculateContentDiversity(),
         ];
     }
 
@@ -428,10 +431,10 @@ class PostStatisticsDTO implements JsonSerializable
         $totalPosts = $this->getTotalPosts();
 
         return [
-            'average_length' => $avgLengthFloat,
-            'quality_score' => $this->calculateQualityScore(),
+            'average_length'   => $avgLengthFloat,
+            'quality_score'    => $this->calculateQualityScore(),
             'engagement_ratio' => $totalPosts > 0 ? round($totalViews / $totalPosts, 2) : 0.0,
-            'publish_rate' => $this->getPublishRate(),
+            'publish_rate'     => $this->getPublishRate(),
         ];
     }
 
@@ -443,27 +446,27 @@ class PostStatisticsDTO implements JsonSerializable
     public function toArray(): array
     {
         $data = [
-            'total_posts' => $this->totalPosts,
-            'by_status' => $this->byStatus,
-            'by_source' => $this->bySource,
-            'views_statistics' => $this->viewsStatistics,
-            'top_posts' => $this->topPosts,
-            'length_statistics' => $this->lengthStatistics,
-            'time_distribution' => $this->timeDistribution,
-            'top_authors' => $this->topAuthors,
-            'pinned_stats' => $this->pinnedStats,
+            'total_posts'        => $this->totalPosts,
+            'by_status'          => $this->byStatus,
+            'by_source'          => $this->bySource,
+            'views_statistics'   => $this->viewsStatistics,
+            'top_posts'          => $this->topPosts,
+            'length_statistics'  => $this->lengthStatistics,
+            'time_distribution'  => $this->timeDistribution,
+            'top_authors'        => $this->topAuthors,
+            'pinned_stats'       => $this->pinnedStats,
             'calculated_metrics' => [
-                'total_posts' => $this->getTotalPosts(),
-                'published_count' => $this->getPublishedCount(),
-                'draft_count' => $this->getDraftCount(),
-                'publish_rate' => $this->getPublishRate(),
-                'average_views' => $this->getAverageViews(),
+                'total_posts'         => $this->getTotalPosts(),
+                'published_count'     => $this->getPublishedCount(),
+                'draft_count'         => $this->getDraftCount(),
+                'publish_rate'        => $this->getPublishRate(),
+                'average_views'       => $this->getAverageViews(),
                 'most_popular_source' => $this->getMostPopularSource(),
-                'peak_hour' => $this->getPeakHour(),
+                'peak_hour'           => $this->getPeakHour(),
             ],
             'engagement_metrics' => $this->getEngagementMetrics(),
-            'content_analysis' => $this->getContentAnalysis(),
-            'content_quality' => $this->getContentQualityMetrics(),
+            'content_analysis'   => $this->getContentAnalysis(),
+            'content_quality'    => $this->getContentQualityMetrics(),
         ];
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
@@ -506,12 +509,12 @@ class PostStatisticsDTO implements JsonSerializable
         $topAuthor = $this->getTopAuthor();
 
         return [
-            'total_posts' => $this->getTotalPosts(),
-            'published_posts' => $this->getPublishedCount(),
-            'total_views' => $this->getTotalViews(),
+            'total_posts'        => $this->getTotalPosts(),
+            'published_posts'    => $this->getPublishedCount(),
+            'total_views'        => $this->getTotalViews(),
             'avg_views_per_post' => $this->getAverageViews(),
-            'top_author' => $topAuthor ? $topAuthor['name'] : null,
-            'most_active_hour' => $this->getMostActiveHour(),
+            'top_author'         => $topAuthor ? $topAuthor['name'] : null,
+            'most_active_hour'   => $this->getMostActiveHour(),
         ];
     }
 

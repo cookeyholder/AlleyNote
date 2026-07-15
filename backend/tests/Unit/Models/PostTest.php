@@ -16,12 +16,12 @@ class PostTest extends UnitTestCase
     public function correctlyInitializesWithValidData(): void
     {
         $data = PostFactory::make([
-            'uuid' => 'test-uuid',
+            'uuid'       => 'test-uuid',
             'seq_number' => '202504001',
-            'title' => 'Test Title',
-            'content' => 'Test Content',
-            'user_id' => 1,
-            'user_ip' => '127.0.0.1',
+            'title'      => 'Test Title',
+            'content'    => 'Test Content',
+            'user_id'    => 1,
+            'user_ip'    => '127.0.0.1',
         ]);
 
         $post = new Post($data);
@@ -38,9 +38,9 @@ class PostTest extends UnitTestCase
     public function handlesNullableFieldsCorrectly(): void
     {
         $data = PostFactory::make([
-            'uuid' => 'test-uuid',
-            'seq_number' => null,
-            'user_ip' => null,
+            'uuid'         => 'test-uuid',
+            'seq_number'   => null,
+            'user_ip'      => null,
             'publish_date' => null,
         ]);
 
@@ -55,8 +55,8 @@ class PostTest extends UnitTestCase
     public function setsDefaultValuesCorrectly(): void
     {
         $data = PostFactory::make([
-            'uuid' => 'test-uuid',
-            'title' => 'Test Title',
+            'uuid'    => 'test-uuid',
+            'title'   => 'Test Title',
             'content' => 'Test Content',
             'user_id' => 1,
         ]);
@@ -67,7 +67,7 @@ class PostTest extends UnitTestCase
         $post = new Post($data);
 
         $this->assertEquals(0, $post->getId());
-        $this->assertEquals(0, $post->getViewCount());
+        $this->assertEquals(0, $post->getViews());
         $this->assertEquals(PostStatus::DRAFT, $post->getStatus());
         $this->assertFalse($post->isPinned());
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[\+\-]\d{2}:\d{2}$/', $post->getCreatedAt());
@@ -78,8 +78,8 @@ class PostTest extends UnitTestCase
     public function storesRawHtmlInTitleAndContent(): void
     {
         $data = PostFactory::make([
-            'uuid' => 'test-uuid',
-            'title' => '<script>alert("XSS")</script>',
+            'uuid'    => 'test-uuid',
+            'title'   => '<script>alert("XSS")</script>',
             'content' => '<p onclick="alert(\'XSS\')">Test</p>',
             'user_id' => 1,
         ]);

@@ -170,11 +170,11 @@ class FileSecurityServiceTest extends UnitTestCase
     public function testSanitizeFileName(): void
     {
         $testCases = [
-            'normal-file.jpg' => 'normal-file.jpg',
-            'file with spaces.txt' => 'file_with_spaces.txt',
+            'normal-file.jpg'        => 'normal-file.jpg',
+            'file with spaces.txt'   => 'file_with_spaces.txt',
             '../../../malicious.pdf' => 'malicious.pdf',
             'file...with...dots.png' => 'file.with.dots.png',
-            '.hidden-file.txt' => 'hidden-file.txt',
+            '.hidden-file.txt'       => 'hidden-file.txt',
         ];
 
         foreach ($testCases as $input => $expected) {

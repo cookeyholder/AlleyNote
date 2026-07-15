@@ -102,11 +102,11 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         $reset = $result['reset'] ?? ($now + self::TIME_WINDOW);
 
         return [
-            'allowed' => is_bool($allowed) ? $allowed : false,
-            'limit' => $limit,
+            'allowed'   => is_bool($allowed) ? $allowed : false,
+            'limit'     => $limit,
             'remaining' => is_numeric($remaining) ? (int) $remaining : 0,
-            'reset' => is_numeric($reset) ? (int) $reset : ($now + self::TIME_WINDOW),
-            'key' => $key,
+            'reset'     => is_numeric($reset) ? (int) $reset : ($now + self::TIME_WINDOW),
+            'key'       => $key,
         ];
     }
 
@@ -119,16 +119,16 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         $retryAfter = max(1, is_numeric($resetTime) ? (int) $resetTime - time() : 60);
         $data = [
             'success' => false,
-            'error' => [
-                'message' => '請求過於頻繁，請稍後再試',
-                'code' => 'RATE_LIMIT_EXCEEDED',
+            'error'   => [
+                'message'     => '請求過於頻繁，請稍後再試',
+                'code'        => 'RATE_LIMIT_EXCEEDED',
                 'retry_after' => $retryAfter,
             ],
             'meta' => [
                 'rate_limit' => [
-                    'limit' => $rateLimitResult['limit'],
+                    'limit'     => $rateLimitResult['limit'],
                     'remaining' => 0,
-                    'reset' => $resetTime,
+                    'reset'     => $resetTime,
                 ],
             ],
         ];
@@ -140,11 +140,11 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
         $resetStr = is_numeric($resetTime) ? (string) $resetTime : (string) (time() + 60);
 
         return new Response(429, [
-            'Content-Type' => 'application/json',
-            'Retry-After' => (string) $retryAfter,
-            'X-RateLimit-Limit' => $limitStr,
+            'Content-Type'          => 'application/json',
+            'Retry-After'           => (string) $retryAfter,
+            'X-RateLimit-Limit'     => $limitStr,
             'X-RateLimit-Remaining' => '0',
-            'X-RateLimit-Reset' => $resetStr,
+            'X-RateLimit-Reset'     => $resetStr,
         ], $json);
     }
 

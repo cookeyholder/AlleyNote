@@ -229,11 +229,11 @@ readonly class ChartDataset implements JsonSerializable
     public function jsonSerialize(): array
     {
         $result = [
-            'label' => $this->label,
-            'data' => $this->data,
-            'type' => $this->type->value,
+            'label'       => $this->label,
+            'data'        => $this->data,
+            'type'        => $this->type->value,
             'borderWidth' => $this->borderWidth,
-            'fill' => $this->fill,
+            'fill'        => $this->fill,
         ];
         if ($this->backgroundColor !== null) {
             $result['backgroundColor'] = $this->backgroundColor;

@@ -369,8 +369,8 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
-                'total' => (int) $result['total'],
-                'active' => (int) $result['active'],
+                'total'   => (int) $result['total'],
+                'active'  => (int) $result['active'],
                 'expired' => (int) $result['expired'],
                 'revoked' => (int) $result['revoked'],
             ];
@@ -558,11 +558,11 @@ final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             return [
-                'total_tokens' => (int) $result['total_tokens'],
-                'active_tokens' => (int) $result['active_tokens'],
+                'total_tokens'   => (int) $result['total_tokens'],
+                'active_tokens'  => (int) $result['active_tokens'],
                 'expired_tokens' => (int) $result['expired_tokens'],
                 'revoked_tokens' => (int) $result['revoked_tokens'],
-                'unique_users' => (int) $result['unique_users'],
+                'unique_users'   => (int) $result['unique_users'],
                 'unique_devices' => (int) $result['unique_devices'],
             ];
         } catch (PDOException $e) {

@@ -93,10 +93,10 @@ final readonly class OutputSanitizerService implements OutputSanitizerInterface
         ?int $truncateLength = null,
     ): string {
         return match ($mode) {
-            SanitizerMode::HTML => $this->sanitizeHtml($content),
-            SanitizerMode::TITLE => $this->sanitizeTitle($content),
+            SanitizerMode::HTML              => $this->sanitizeHtml($content),
+            SanitizerMode::TITLE             => $this->sanitizeTitle($content),
             SanitizerMode::PRESERVE_NEWLINES => $this->sanitizePreserveNewlines($content),
-            SanitizerMode::TRUNCATE => $this->sanitizeAndTruncate($content, $truncateLength),
+            SanitizerMode::TRUNCATE          => $this->sanitizeAndTruncate($content, $truncateLength),
             // 注意：這裡如果之後有新增模式需要更新
         };
     }

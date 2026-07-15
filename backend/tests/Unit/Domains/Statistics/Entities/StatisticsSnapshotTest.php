@@ -28,41 +28,41 @@ class StatisticsSnapshotTest extends UnitTestCase
     {
         $this->validStatisticsData = [
             'total_posts' => 1250,
-            'by_status' => [
+            'by_status'   => [
                 'published' => 1100,
-                'draft' => 120,
-                'archived' => 30,
+                'draft'     => 120,
+                'archived'  => 30,
             ],
             'by_source' => [
-                'web' => 800,
-                'api' => 300,
-                'import' => 100,
+                'web'       => 800,
+                'api'       => 300,
+                'import'    => 100,
                 'migration' => 50,
             ],
             'trends' => [
                 'vs_previous_period' => '+12.5%',
-                'growth_rate' => 0.125,
+                'growth_rate'        => 0.125,
             ],
         ];
 
         $this->validMetadata = [
-            'version' => '1.0',
+            'version'            => '1.0',
             'calculation_params' => ['include_drafts' => false],
-            'calculated_at' => '2025-09-21T10:30:00Z',
+            'calculated_at'      => '2025-09-21T10:30:00Z',
         ];
 
         $this->validData = [
-            'id' => 1,
-            'uuid' => 'test-uuid-12345',
-            'snapshot_type' => StatisticsSnapshot::TYPE_OVERVIEW,
-            'period_type' => 'daily',
-            'period_start' => '2025-09-21 00:00:00',
-            'period_end' => '2025-09-21 23:59:59',
+            'id'              => 1,
+            'uuid'            => 'test-uuid-12345',
+            'snapshot_type'   => StatisticsSnapshot::TYPE_OVERVIEW,
+            'period_type'     => 'daily',
+            'period_start'    => '2025-09-21 00:00:00',
+            'period_end'      => '2025-09-21 23:59:59',
             'statistics_data' => json_encode($this->validStatisticsData),
-            'metadata' => json_encode($this->validMetadata),
-            'expires_at' => '2025-09-22 00:00:00',
-            'created_at' => '2025-09-21 10:30:00',
-            'updated_at' => '2025-09-21 10:30:00',
+            'metadata'        => json_encode($this->validMetadata),
+            'expires_at'      => '2025-09-22 00:00:00',
+            'created_at'      => '2025-09-21 10:30:00',
+            'updated_at'      => '2025-09-21 10:30:00',
         ];
     }
 
@@ -86,9 +86,9 @@ class StatisticsSnapshotTest extends UnitTestCase
     public function testCreateStaticMethod(): void
     {
         $period = StatisticsPeriod::fromArray([
-            'type' => 'daily',
+            'type'       => 'daily',
             'start_time' => '2025-09-21 00:00:00',
-            'end_time' => '2025-09-21 23:59:59',
+            'end_time'   => '2025-09-21 23:59:59',
         ]);
         $expiresAt = new DateTime('2025-09-22 00:00:00');
 
@@ -133,9 +133,9 @@ class StatisticsSnapshotTest extends UnitTestCase
     public static function invalidSnapshotTypeProvider(): array
     {
         return [
-            'empty type' => [''],
-            'invalid type' => ['invalid_type'],
-            'numeric type' => ['123'],
+            'empty type'    => [''],
+            'invalid type'  => ['invalid_type'],
+            'numeric type'  => ['123'],
             'special chars' => ['@#$%'],
         ];
     }
@@ -439,9 +439,9 @@ class StatisticsSnapshotTest extends UnitTestCase
     {
         $minimalData = [
             'snapshot_type' => StatisticsSnapshot::TYPE_OVERVIEW,
-            'period_type' => 'daily',
-            'period_start' => '2025-09-21 00:00:00',
-            'period_end' => '2025-09-21 23:59:59',
+            'period_type'   => 'daily',
+            'period_start'  => '2025-09-21 00:00:00',
+            'period_end'    => '2025-09-21 23:59:59',
         ];
 
         $snapshot = new StatisticsSnapshot($minimalData);

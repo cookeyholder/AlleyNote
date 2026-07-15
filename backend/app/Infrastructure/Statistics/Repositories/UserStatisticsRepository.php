@@ -167,10 +167,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[] = [
-                    'user_id' => (int) $row['user_id'],
-                    'username' => (string) $row['username'],
+                    'user_id'      => (int) $row['user_id'],
+                    'username'     => (string) $row['username'],
                     'metric_value' => (int) $row['metric_value'],
-                    'rank' => (int) $row['rank'],
+                    'rank'         => (int) $row['rank'],
                 ];
             }
 
@@ -198,10 +198,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $basicStats = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!is_array($basicStats)) {
                 return [
-                    'total_logins' => 0,
-                    'unique_users' => 0,
-                    'avg_logins_per_user' => 0.0,
-                    'peak_hour' => 0,
+                    'total_logins'                 => 0,
+                    'unique_users'                 => 0,
+                    'avg_logins_per_user'          => 0.0,
+                    'peak_hour'                    => 0,
                     'login_frequency_distribution' => [],
                 ];
             }
@@ -246,10 +246,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             }
 
             return [
-                'total_logins' => (int) $basicStats['total_logins'],
-                'unique_users' => (int) $basicStats['unique_users'],
-                'avg_logins_per_user' => (float) $basicStats['avg_logins_per_user'],
-                'peak_hour' => $peakHour,
+                'total_logins'                 => (int) $basicStats['total_logins'],
+                'unique_users'                 => (int) $basicStats['unique_users'],
+                'avg_logins_per_user'          => (float) $basicStats['avg_logins_per_user'],
+                'peak_hour'                    => $peakHour,
                 'login_frequency_distribution' => $frequencyDistribution,
             ];
         } catch (PDOException $e) {
@@ -266,9 +266,9 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $growthRate = $previousCount > 0 ? ($growthCount / $previousCount) * 100 : 0.0;
 
             return [
-                'current' => $currentCount,
-                'previous' => $previousCount,
-                'growth_rate' => round($growthRate, 2),
+                'current'      => $currentCount,
+                'previous'     => $previousCount,
+                'growth_rate'  => round($growthRate, 2),
                 'growth_count' => $growthCount,
             ];
         } catch (Throwable $e) {
@@ -286,7 +286,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
         try {
             $groupByClause = match ($groupBy) {
                 'hour' => 'HOUR(created_at)',
-                'day' => 'DATE(created_at)',
+                'day'  => 'DATE(created_at)',
                 'week' => 'YEARWEEK(created_at)',
             };
             $sql = "SELECT {$groupByClause} as time_period, COUNT(DISTINCT user_id) as active_users
@@ -327,10 +327,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $cohortSize = (int) $stmt->fetchColumn();
             if ($cohortSize === 0) {
                 return [
-                    'cohort_size' => 0,
+                    'cohort_size'    => 0,
                     'retained_users' => 0,
                     'retention_rate' => 0.0,
-                    'churn_rate' => 0.0,
+                    'churn_rate'     => 0.0,
                 ];
             }
             // 計算保留使用者數
@@ -352,10 +352,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $churnRate = 100 - $retentionRate;
 
             return [
-                'cohort_size' => $cohortSize,
+                'cohort_size'    => $cohortSize,
                 'retained_users' => $retainedUsers,
                 'retention_rate' => round($retentionRate, 2),
-                'churn_rate' => round($churnRate, 2),
+                'churn_rate'     => round($churnRate, 2),
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('取得使用者留存率分析失敗: ' . $e->getMessage(), 0, $e);
@@ -420,10 +420,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $totalUsers = count($scores);
             if ($totalUsers === 0) {
                 return [
-                    'high_engagement' => 0,
-                    'medium_engagement' => 0,
-                    'low_engagement' => 0,
-                    'inactive' => 0,
+                    'high_engagement'      => 0,
+                    'medium_engagement'    => 0,
+                    'low_engagement'       => 0,
+                    'inactive'             => 0,
                     'avg_engagement_score' => 0.0,
                 ];
             }
@@ -446,10 +446,10 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             }
 
             return [
-                'high_engagement' => $highEngagement,
-                'medium_engagement' => $mediumEngagement,
-                'low_engagement' => $lowEngagement,
-                'inactive' => $inactive,
+                'high_engagement'      => $highEngagement,
+                'medium_engagement'    => $mediumEngagement,
+                'low_engagement'       => $lowEngagement,
+                'inactive'             => $inactive,
                 'avg_engagement_score' => round($avgScore, 2),
             ];
         } catch (PDOException $e) {
@@ -505,9 +505,9 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $result[] = [
-                    'location' => (string) $row['location'],
+                    'location'    => (string) $row['location'],
                     'users_count' => (int) $row['users_count'],
-                    'percentage' => (float) $row['percentage'],
+                    'percentage'  => (float) $row['percentage'],
                 ];
             }
 
@@ -568,12 +568,12 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             }
 
             return [
-                'total_users' => $totalUsers,
-                'active_users' => $activeUsers,
-                'new_users' => $newUsers,
-                'returning_users' => $returningUsers,
+                'total_users'        => $totalUsers,
+                'active_users'       => $activeUsers,
+                'new_users'          => $newUsers,
+                'returning_users'    => $returningUsers,
                 'user_activity_rate' => round($activityRate, 2),
-                'top_active_hours' => $topActiveHours,
+                'top_active_hours'   => $topActiveHours,
             ];
         } catch (PDOException $e) {
             throw new RuntimeException('取得使用者活動摘要失敗: ' . $e->getMessage(), 0, $e);

@@ -100,8 +100,8 @@ class TagManagementControllerTest extends IntegrationTestCase
     public function testListTags(): void
     {
         $queryParams = [
-            'page' => '1',
-            'limit' => '20',
+            'page'   => '1',
+            'limit'  => '20',
             'search' => 'user',
         ];
 
@@ -111,9 +111,9 @@ class TagManagementControllerTest extends IntegrationTestCase
         $mockDriver->method('getAllTags')->willReturn(['user_123', 'user_456', 'module_posts']);
         $mockDriver->method('getTagStatistics')->willReturn([
             'total_tags' => 3,
-            'tags' => [
-                'user_123' => ['key_count' => 5, 'sample_keys' => ['key1', 'key2']],
-                'user_456' => ['key_count' => 3, 'sample_keys' => ['key3']],
+            'tags'       => [
+                'user_123'     => ['key_count' => 5, 'sample_keys' => ['key1', 'key2']],
+                'user_456'     => ['key_count' => 3, 'sample_keys' => ['key3']],
                 'module_posts' => ['key_count' => 8, 'sample_keys' => ['key4', 'key5']],
             ],
         ]);
@@ -273,8 +273,8 @@ class TagManagementControllerTest extends IntegrationTestCase
         $mockDriver1 = $this->createMock(MemoryCacheDriver::class);
         $mockDriver1->method('getTagStatistics')->willReturn([
             'total_tags' => 2,
-            'tags' => [
-                'user_123' => ['key_count' => 5],
+            'tags'       => [
+                'user_123'     => ['key_count' => 5],
                 'module_posts' => ['key_count' => 8],
             ],
         ]);
@@ -282,7 +282,7 @@ class TagManagementControllerTest extends IntegrationTestCase
         $mockDriver2 = $this->createMock(MemoryCacheDriver::class);
         $mockDriver2->method('getTagStatistics')->willReturn([
             'total_tags' => 1,
-            'tags' => [
+            'tags'       => [
                 'temporal_daily' => ['key_count' => 3],
             ],
         ]);
@@ -296,7 +296,7 @@ class TagManagementControllerTest extends IntegrationTestCase
 
         $this->groupManager->method('getGroupStatistics')->willReturn([
             'total_groups' => 2,
-            'groups' => ['group1', 'group2'],
+            'groups'       => ['group1', 'group2'],
         ]);
 
         $this->responseBody->expects($this->once())

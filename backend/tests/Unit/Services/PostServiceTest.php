@@ -40,11 +40,11 @@ class PostServiceTest extends UnitTestCase
     public function testCreatePostWithValidDTO(): void
     {
         $dtoData = [
-            'title' => '測試文章',
+            'title'   => '測試文章',
             'content' => '這是測試內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
-            'status' => PostStatus::DRAFT->value,
+            'status'  => PostStatus::DRAFT->value,
         ];
 
         $this->validator->shouldReceive('validateOrFail')

@@ -104,9 +104,9 @@ final class StatisticsMetricTest extends UnitTestCase
     {
         // Arrange
         $data = [
-            'name' => '用戶總數',
-            'value' => 250,
-            'unit' => '人',
+            'name'               => '用戶總數',
+            'value'              => 250,
+            'unit'               => '人',
             'calculation_method' => '去重計數',
         ];
 

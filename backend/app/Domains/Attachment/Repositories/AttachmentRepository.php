@@ -31,13 +31,13 @@ class AttachmentRepository
         ';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'uuid' => $uuid,
-            'post_id' => $data['post_id'],
-            'filename' => $data['filename'],
+            'uuid'          => $uuid,
+            'post_id'       => $data['post_id'],
+            'filename'      => $data['filename'],
             'original_name' => $data['original_name'],
-            'mime_type' => $data['mime_type'],
-            'file_size' => $data['file_size'],
-            'storage_path' => $data['storage_path'],
+            'mime_type'     => $data['mime_type'],
+            'file_size'     => $data['file_size'],
+            'storage_path'  => $data['storage_path'],
         ]);
         $data['id'] = (int) $this->db->lastInsertId();
         $data['uuid'] = $uuid;

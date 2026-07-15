@@ -46,7 +46,7 @@ class TokenParsingException extends JwtException
         array $additionalContext = [],
     ) {
         $context = array_merge([
-            'reason' => $reason,
+            'reason'    => $reason,
             'timestamp' => time(),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
@@ -68,11 +68,11 @@ class TokenParsingException extends JwtException
         $reason = $this->getReason();
 
         return match ($reason) {
-            self::EMPTY_TOKEN => 'Token 不能為空，請提供有效的 Token。',
-            self::INVALID_FORMAT => 'Token 格式無效，請提供正確格式的 JWT Token。',
-            self::JSON_DECODE_ERROR => 'Token 內容格式錯誤，無法解析 JSON 資料。',
+            self::EMPTY_TOKEN         => 'Token 不能為空，請提供有效的 Token。',
+            self::INVALID_FORMAT      => 'Token 格式無效，請提供正確格式的 JWT Token。',
+            self::JSON_DECODE_ERROR   => 'Token 內容格式錯誤，無法解析 JSON 資料。',
             self::BASE64_DECODE_ERROR => 'Token 編碼格式錯誤，無法解析 Base64 資料。',
-            default => 'Token 解析失敗，請提供有效的 Token。',
+            default                   => 'Token 解析失敗，請提供有效的 Token。',
         };
     }
 

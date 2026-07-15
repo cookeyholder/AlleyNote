@@ -19,6 +19,7 @@ interface CsrfProtectionServiceInterface
      * 驗證 CSRF token 是否有效.
      *
      * @param string|null $token 要驗證的 token
+     *
      * @throws CsrfTokenException 當 token 無效時拋出
      */
     public function validateToken(?string $token): void;

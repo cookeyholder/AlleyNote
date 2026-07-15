@@ -19,6 +19,7 @@ final class PostFactory
      * @param string $content 文章內容
      * @param int $authorId 作者 ID
      * @param string|null $creationSource 建立來源
+     *
      * @throws InvalidArgumentException 當參數無效時
      */
     public function createDraft(
@@ -40,6 +41,7 @@ final class PostFactory
      * 從請求資料建立草稿文章.
      *
      * @param array<string, mixed> $data 請求資料
+     *
      * @throws InvalidArgumentException 當資料無效時
      */
     public function createFromRequest(array $data): PostAggregate
@@ -64,6 +66,7 @@ final class PostFactory
      * 從資料庫資料重建文章聚合.
      *
      * @param array<string, mixed> $data 資料庫資料
+     *
      * @throws InvalidArgumentException 當資料無效時
      */
     public function reconstitute(array $data): PostAggregate
@@ -75,6 +78,7 @@ final class PostFactory
      * 批次從資料庫資料重建文章聚合.
      *
      * @param array<int, array<string, mixed>> $dataList 資料庫資料列表
+     *
      * @return array<int, PostAggregate>
      */
     public function reconstituteMany(array $dataList): array
@@ -141,6 +145,7 @@ final class PostFactory
      * 驗證請求資料.
      *
      * @param array<string, mixed> $data 請求資料
+     *
      * @throws InvalidArgumentException 當資料無效時
      */
     private function validateRequestData(array $data): void

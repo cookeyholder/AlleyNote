@@ -41,10 +41,10 @@ readonly class CreateTagDTO
     public function toArray(): array
     {
         return [
-            'name' => $this->name,
-            'slug' => $this->slug,
+            'name'        => $this->name,
+            'slug'        => $this->slug,
             'description' => $this->description,
-            'color' => $this->color,
+            'color'       => $this->color,
         ];
     }
 }

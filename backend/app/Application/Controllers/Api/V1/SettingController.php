@@ -42,8 +42,8 @@ class SettingController
                             type: 'object',
                             additionalProperties: new OA\AdditionalProperties(type: 'string'),
                             example: [
-                                'site_name' => 'AlleyNote',
-                                'site_timezone' => 'Asia/Taipei',
+                                'site_name'        => 'AlleyNote',
+                                'site_timezone'    => 'Asia/Taipei',
                                 'maintenance_mode' => 'false',
                             ],
                         ),
@@ -58,7 +58,7 @@ class SettingController
         $settings = $this->settingManagementService->getAllSettings($authenticated);
         $responseData = json_encode([
             'success' => true,
-            'data' => $settings,
+            'data'    => $settings,
         ]);
         $response->getBody()->write($responseData ?: '');
 
@@ -126,7 +126,7 @@ class SettingController
             $setting = $this->settingManagementService->getSetting($key, $authenticated);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $setting,
+                'data'    => $setting,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -160,8 +160,8 @@ class SettingController
                 type: 'object',
                 additionalProperties: new OA\AdditionalProperties(type: 'string'),
                 example: [
-                    'site_name' => 'My Site',
-                    'site_timezone' => 'Asia/Tokyo',
+                    'site_name'        => 'My Site',
+                    'site_timezone'    => 'Asia/Tokyo',
                     'maintenance_mode' => 'false',
                 ],
             ),
@@ -200,7 +200,7 @@ class SettingController
             $result = $this->settingManagementService->updateSettings($settings);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $result,
+                'data'    => $result,
                 'message' => '系統設定更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
@@ -210,7 +210,7 @@ class SettingController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -305,7 +305,7 @@ class SettingController
             $setting = $this->settingManagementService->updateSetting($key, $value);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $setting,
+                'data'    => $setting,
                 'message' => '設定更新成功',
             ]);
             $response->getBody()->write($responseData ?: '');
@@ -323,7 +323,7 @@ class SettingController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -376,10 +376,10 @@ class SettingController
         $allTimezones = TimezoneHelper::getAllTimezones(); // 使用全球所有時區
         $responseData = json_encode([
             'success' => true,
-            'data' => [
-                'timezone' => $timezone,
-                'offset' => $offset,
-                'current_time' => $currentTime,
+            'data'    => [
+                'timezone'         => $timezone,
+                'offset'           => $offset,
+                'current_time'     => $currentTime,
                 'common_timezones' => $allTimezones, // 返回全部 419 個時區
             ],
         ]);

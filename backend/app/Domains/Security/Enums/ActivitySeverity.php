@@ -15,10 +15,10 @@ enum ActivitySeverity: int
     public function getDisplayName(): string
     {
         return match ($this) {
-            self::LOW => '低',
-            self::NORMAL => '正常',
-            self::MEDIUM => '中等',
-            self::HIGH => '高',
+            self::LOW      => '低',
+            self::NORMAL   => '正常',
+            self::MEDIUM   => '中等',
+            self::HIGH     => '高',
             self::CRITICAL => '關鍵',
         };
     }
@@ -26,10 +26,10 @@ enum ActivitySeverity: int
     public function getDescription(): string
     {
         return match ($this) {
-            self::LOW => '一般性操作，對系統影響很小',
-            self::NORMAL => '標準操作，對系統有正常影響',
-            self::MEDIUM => '中等重要操作，需要留意',
-            self::HIGH => '高重要性操作，需要特別關注',
+            self::LOW      => '一般性操作，對系統影響很小',
+            self::NORMAL   => '標準操作，對系統有正常影響',
+            self::MEDIUM   => '中等重要操作，需要留意',
+            self::HIGH     => '高重要性操作，需要特別關注',
             self::CRITICAL => '關鍵操作，對系統安全有重大影響',
         };
     }

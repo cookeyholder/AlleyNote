@@ -64,16 +64,16 @@ class AttachmentServiceTest extends UnitTestCase
         // 設置AttachmentRepository mock期望
         $this->attachmentRepo->shouldReceive('create')
             ->andReturn(new Attachment([
-                'id' => 1,
-                'uuid' => 'test-uuid',
-                'post_id' => 1,
-                'filename' => 'test.jpg',
+                'id'            => 1,
+                'uuid'          => 'test-uuid',
+                'post_id'       => 1,
+                'filename'      => 'test.jpg',
                 'original_name' => 'test.jpg',
-                'file_size' => 1024,
-                'mime_type' => 'image/jpeg',
-                'storage_path' => '/uploads/test.jpg',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
+                'file_size'     => 1024,
+                'mime_type'     => 'image/jpeg',
+                'storage_path'  => '/uploads/test.jpg',
+                'created_at'    => date('Y-m-d H:i:s'),
+                'updated_at'    => date('Y-m-d H:i:s'),
             ]));
 
         $this->attachmentRepo->shouldReceive('findById')
@@ -131,12 +131,12 @@ class AttachmentServiceTest extends UnitTestCase
         $this->attachmentRepo->shouldReceive('create')
             ->once()
             ->with(Mockery::subset([
-                'post_id' => $postId,
+                'post_id'       => $postId,
                 'original_name' => 'test.jpg',
-                'filename' => Mockery::any(),
-                'file_size' => Mockery::any(),
-                'mime_type' => Mockery::any(),
-                'storage_path' => Mockery::any(),
+                'filename'      => Mockery::any(),
+                'file_size'     => Mockery::any(),
+                'mime_type'     => Mockery::any(),
+                'storage_path'  => Mockery::any(),
             ]))
             ->andReturn(Mockery::mock('App\Domains\Attachment\Models\Attachment'));
 

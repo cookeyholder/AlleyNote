@@ -59,8 +59,8 @@ class AuthenticationException extends JwtException
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
         $context = array_merge([
-            'reason' => $reason,
-            'timestamp' => time(),
+            'reason'     => $reason,
+            'timestamp'  => time(),
             'attempt_id' => uniqid('auth_', true),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
@@ -74,20 +74,20 @@ class AuthenticationException extends JwtException
     private function buildDefaultMessage(string $reason): string
     {
         return match ($reason) {
-            self::REASON_INVALID_CREDENTIALS => 'Invalid username or password',
-            self::REASON_ACCOUNT_LOCKED => 'Account has been locked due to security reasons',
-            self::REASON_ACCOUNT_DISABLED => 'Account has been disabled',
-            self::REASON_ACCOUNT_NOT_VERIFIED => 'Account has not been verified',
-            self::REASON_TOO_MANY_ATTEMPTS => 'Too many failed authentication attempts',
-            self::REASON_USER_NOT_FOUND => 'User not found',
-            self::REASON_PASSWORD_EXPIRED => 'Password has expired and needs to be changed',
-            self::REASON_MISSING_CREDENTIALS => 'Authentication credentials are missing',
-            self::REASON_INVALID_TOKEN => 'Invalid authentication token',
-            self::REASON_INVALID_REFRESH_TOKEN => 'Invalid refresh token',
-            self::REASON_TOKEN_REFRESH_FAILED => 'Token refresh failed',
-            self::REASON_TOKEN_REQUIRED => 'Authentication token is required',
+            self::REASON_INVALID_CREDENTIALS     => 'Invalid username or password',
+            self::REASON_ACCOUNT_LOCKED          => 'Account has been locked due to security reasons',
+            self::REASON_ACCOUNT_DISABLED        => 'Account has been disabled',
+            self::REASON_ACCOUNT_NOT_VERIFIED    => 'Account has not been verified',
+            self::REASON_TOO_MANY_ATTEMPTS       => 'Too many failed authentication attempts',
+            self::REASON_USER_NOT_FOUND          => 'User not found',
+            self::REASON_PASSWORD_EXPIRED        => 'Password has expired and needs to be changed',
+            self::REASON_MISSING_CREDENTIALS     => 'Authentication credentials are missing',
+            self::REASON_INVALID_TOKEN           => 'Invalid authentication token',
+            self::REASON_INVALID_REFRESH_TOKEN   => 'Invalid refresh token',
+            self::REASON_TOKEN_REFRESH_FAILED    => 'Token refresh failed',
+            self::REASON_TOKEN_REQUIRED          => 'Authentication token is required',
             self::REASON_INSUFFICIENT_PRIVILEGES => 'Insufficient privileges to access this resource',
-            default => 'Authentication failed',
+            default                              => 'Authentication failed',
         };
     }
 
@@ -99,20 +99,20 @@ class AuthenticationException extends JwtException
         $reason = $this->getReason();
 
         return match ($reason) {
-            self::REASON_INVALID_CREDENTIALS => '用戶名或密碼錯誤，請檢查後重新輸入。',
-            self::REASON_ACCOUNT_LOCKED => '您的帳戶已被鎖定，請聯絡系統管理員。',
-            self::REASON_ACCOUNT_DISABLED => '您的帳戶已被停用，請聯絡系統管理員。',
-            self::REASON_ACCOUNT_NOT_VERIFIED => '您的帳戶尚未驗證，請檢查電子郵件並完成驗證。',
-            self::REASON_TOO_MANY_ATTEMPTS => '登入嘗試次數過多，請稍後重試。',
-            self::REASON_USER_NOT_FOUND => '找不到此用戶，請檢查用戶名是否正確。',
-            self::REASON_PASSWORD_EXPIRED => '您的密碼已過期，請更新密碼。',
-            self::REASON_MISSING_CREDENTIALS => '請提供完整的登入資訊。',
-            self::REASON_INVALID_TOKEN => '認證 Token 無效，請重新登入。',
-            self::REASON_INVALID_REFRESH_TOKEN => '重新整理 Token 無效，請重新登入。',
-            self::REASON_TOKEN_REFRESH_FAILED => 'Token 重新整理失敗，請重新登入。',
-            self::REASON_TOKEN_REQUIRED => '需要提供認證 Token 才能存取此資源。',
+            self::REASON_INVALID_CREDENTIALS     => '用戶名或密碼錯誤，請檢查後重新輸入。',
+            self::REASON_ACCOUNT_LOCKED          => '您的帳戶已被鎖定，請聯絡系統管理員。',
+            self::REASON_ACCOUNT_DISABLED        => '您的帳戶已被停用，請聯絡系統管理員。',
+            self::REASON_ACCOUNT_NOT_VERIFIED    => '您的帳戶尚未驗證，請檢查電子郵件並完成驗證。',
+            self::REASON_TOO_MANY_ATTEMPTS       => '登入嘗試次數過多，請稍後重試。',
+            self::REASON_USER_NOT_FOUND          => '找不到此用戶，請檢查用戶名是否正確。',
+            self::REASON_PASSWORD_EXPIRED        => '您的密碼已過期，請更新密碼。',
+            self::REASON_MISSING_CREDENTIALS     => '請提供完整的登入資訊。',
+            self::REASON_INVALID_TOKEN           => '認證 Token 無效，請重新登入。',
+            self::REASON_INVALID_REFRESH_TOKEN   => '重新整理 Token 無效，請重新登入。',
+            self::REASON_TOKEN_REFRESH_FAILED    => 'Token 重新整理失敗，請重新登入。',
+            self::REASON_TOKEN_REQUIRED          => '需要提供認證 Token 才能存取此資源。',
             self::REASON_INSUFFICIENT_PRIVILEGES => '您沒有足夠的權限存取此資源。',
-            default => '身份驗證失敗，請重新嘗試。',
+            default                              => '身份驗證失敗，請重新嘗試。',
         };
     }
 
@@ -283,10 +283,10 @@ class AuthenticationException extends JwtException
     public static function accountLocked(int $userId, int $lockoutUntil, string $reason = ''): self
     {
         return new self(self::REASON_ACCOUNT_LOCKED, '', [
-            'user_id' => $userId,
-            'lockout_until' => $lockoutUntil,
+            'user_id'             => $userId,
+            'lockout_until'       => $lockoutUntil,
             'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
-            'lock_reason' => $reason,
+            'lock_reason'         => $reason,
         ]);
     }
 
@@ -299,7 +299,7 @@ class AuthenticationException extends JwtException
     public static function accountDisabled(int $userId, string $reason = ''): self
     {
         return new self(self::REASON_ACCOUNT_DISABLED, '', [
-            'user_id' => $userId,
+            'user_id'        => $userId,
             'disable_reason' => $reason,
         ]);
     }
@@ -335,9 +335,9 @@ class AuthenticationException extends JwtException
         string $ipAddress = '',
     ): self {
         $context = [
-            'username' => $username,
-            'attempt_count' => $attemptCount,
-            'lockout_until' => $lockoutUntil,
+            'username'            => $username,
+            'attempt_count'       => $attemptCount,
+            'lockout_until'       => $lockoutUntil,
             'lockout_until_human' => date('Y-m-d H:i:s', $lockoutUntil),
         ];
         if ($ipAddress) {
@@ -368,8 +368,8 @@ class AuthenticationException extends JwtException
     public static function passwordExpired(int $userId, int $expiredAt): self
     {
         return new self(self::REASON_PASSWORD_EXPIRED, '', [
-            'user_id' => $userId,
-            'expired_at' => $expiredAt,
+            'user_id'          => $userId,
+            'expired_at'       => $expiredAt,
             'expired_at_human' => date('Y-m-d H:i:s', $expiredAt),
         ]);
     }
@@ -395,7 +395,7 @@ class AuthenticationException extends JwtException
     public static function invalidToken(string $tokenType = 'access_token', string $reason = ''): self
     {
         return new self(self::REASON_INVALID_TOKEN, '', [
-            'token_type' => $tokenType,
+            'token_type'     => $tokenType,
             'invalid_reason' => $reason,
         ]);
     }
@@ -426,7 +426,7 @@ class AuthenticationException extends JwtException
     ): self {
         $context = [
             'required_privilege' => $requiredPrivilege,
-            'user_privileges' => $userPrivileges,
+            'user_privileges'    => $userPrivileges,
         ];
         if ($userId !== null) {
             $context['user_id'] = $userId;

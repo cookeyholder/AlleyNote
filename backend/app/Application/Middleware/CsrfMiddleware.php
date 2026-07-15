@@ -45,9 +45,9 @@ class CsrfMiddleware implements MiddlewareInterface
         $cookieToken = $this->getCookieToken($request);
         if ($headerToken === '' || $cookieToken === '' || !hash_equals($cookieToken, $headerToken)) {
             $this->logger?->warning('CSRF validation failed', [
-                'ip' => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
+                'ip'     => $request->getServerParams()['REMOTE_ADDR'] ?? 'unknown',
                 'method' => $method,
-                'path' => $request->getUri()->getPath(),
+                'path'   => $request->getUri()->getPath(),
                 'reason' => $headerToken === '' ? 'missing_header_token' : ($cookieToken === '' ? 'missing_cookie_token' : 'token_mismatch'),
             ]);
             // 即使驗證失敗也附加 CSRF Cookie，讓前端可以取得 token 重試
@@ -56,8 +56,8 @@ class CsrfMiddleware implements MiddlewareInterface
                 headers: ['Content-Type' => 'application/json'],
                 body: (string) json_encode([
                     'success' => false,
-                    'error' => 'CSRF Token 驗證失敗',
-                    'code' => 'CSRF_INVALID',
+                    'error'   => 'CSRF Token 驗證失敗',
+                    'code'    => 'CSRF_INVALID',
                 ], JSON_UNESCAPED_UNICODE),
             );
 

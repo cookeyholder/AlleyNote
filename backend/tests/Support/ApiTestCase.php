@@ -244,11 +244,11 @@ abstract class ApiTestCase extends IntegrationTestCase
              VALUES (:id, :username, :email, :password, :status, :created_at, :updated_at)',
         );
         $insert->execute([
-            'id' => $userId,
-            'username' => $username,
-            'email' => $email,
-            'password' => password_hash('Password123!', PASSWORD_BCRYPT),
-            'status' => 1,
+            'id'         => $userId,
+            'username'   => $username,
+            'email'      => $email,
+            'password'   => password_hash('Password123!', PASSWORD_BCRYPT),
+            'status'     => 1,
             'created_at' => $now,
             'updated_at' => $now,
         ]);
@@ -262,7 +262,7 @@ abstract class ApiTestCase extends IntegrationTestCase
 
         $this->prepareJwtTestEnvironment();
         $config = new JwtConfig();
-        $provider = new class ($config) implements JwtProviderInterface {
+        $provider = new class($config) implements JwtProviderInterface {
             public function __construct(private readonly JwtConfig $config) {}
 
             public function generateAccessToken(array $payload, ?int $ttl = null): string
@@ -355,12 +355,12 @@ abstract class ApiTestCase extends IntegrationTestCase
                 try {
                     $now = time();
                     $claims = array_merge($payload, [
-                        'iss' => $this->config->getIssuer(),
-                        'aud' => $this->config->getAudience(),
-                        'iat' => $now,
-                        'nbf' => $now,
-                        'exp' => $now + $ttl,
-                        'jti' => bin2hex(random_bytes(16)),
+                        'iss'  => $this->config->getIssuer(),
+                        'aud'  => $this->config->getAudience(),
+                        'iat'  => $now,
+                        'nbf'  => $now,
+                        'exp'  => $now + $ttl,
+                        'jti'  => bin2hex(random_bytes(16)),
                         'type' => $type,
                     ]);
 

@@ -61,6 +61,7 @@ abstract class AbstractMiddleware implements MiddlewareInterface
      *
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param RequestHandlerInterface $handler 請求處理器
+     *
      * @return ResponseInterface HTTP 回應物件
      */
     abstract protected function execute(

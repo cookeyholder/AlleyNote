@@ -14,6 +14,7 @@ interface MiddlewareInterface
      *
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param RequestHandlerInterface $handler 請求處理器
+     *
      * @return ResponseInterface HTTP 回應物件
      */
     public function process(
@@ -41,6 +42,7 @@ interface MiddlewareInterface
      * 檢查中介軟體是否應該執行.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return bool 是否應該執行
      */
     public function shouldProcess(ServerRequestInterface $request): bool;

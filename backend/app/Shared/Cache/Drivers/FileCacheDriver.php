@@ -13,11 +13,11 @@ class FileCacheDriver implements CacheDriverInterface
 
     /** @var array<string, int> 統計資料 */
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'sets' => 0,
+        'hits'    => 0,
+        'misses'  => 0,
+        'sets'    => 0,
         'deletes' => 0,
-        'clears' => 0,
+        'clears'  => 0,
     ];
 
     /** @var string 快取檔案副檔名 */
@@ -69,7 +69,7 @@ class FileCacheDriver implements CacheDriverInterface
         $filePath = $this->getCacheFilePath($key);
         $this->ensureDirectoryExists(dirname($filePath));
         $data = [
-            'value' => $value,
+            'value'      => $value,
             'expires_at' => $ttl > 0 ? time() + $ttl : 0,
             'created_at' => time(),
         ];
@@ -236,10 +236,10 @@ class FileCacheDriver implements CacheDriverInterface
         $hitRate = $totalRequests > 0 ? ($this->stats['hits'] / $totalRequests) * 100 : 0;
 
         return array_merge($this->stats, [
-            'total_files' => $this->getTotalFiles(),
-            'total_size' => $this->getTotalSize(),
-            'hit_rate' => round($hitRate, 2),
-            'cache_path' => $this->cachePath,
+            'total_files'   => $this->getTotalFiles(),
+            'total_size'    => $this->getTotalSize(),
+            'hit_rate'      => round($hitRate, 2),
+            'cache_path'    => $this->cachePath,
             'expired_files' => $this->getExpiredFilesCount(),
         ]);
     }
@@ -399,11 +399,11 @@ class FileCacheDriver implements CacheDriverInterface
     public function resetStats(): void
     {
         $this->stats = [
-            'hits' => 0,
-            'misses' => 0,
-            'sets' => 0,
+            'hits'    => 0,
+            'misses'  => 0,
+            'sets'    => 0,
             'deletes' => 0,
-            'clears' => 0,
+            'clears'  => 0,
         ];
     }
 }

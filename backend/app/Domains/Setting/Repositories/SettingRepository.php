@@ -39,13 +39,13 @@ class SettingRepository
             $valueStr = is_string($row['value'] ?? null) ? $row['value'] : null;
             $value = $this->castValue($valueStr, $type);
             $result[] = [
-                'id' => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
-                'key' => is_string($row['key'] ?? null) ? $row['key'] : '',
-                'value' => $value,
-                'type' => $type,
+                'id'          => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
+                'key'         => is_string($row['key'] ?? null) ? $row['key'] : '',
+                'value'       => $value,
+                'type'        => $type,
                 'description' => is_string($row['description'] ?? null) ? $row['description'] : null,
-                'created_at' => is_string($row['created_at'] ?? null) ? $row['created_at'] : '',
-                'updated_at' => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
+                'created_at'  => is_string($row['created_at'] ?? null) ? $row['created_at'] : '',
+                'updated_at'  => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
             ];
         }
 
@@ -75,13 +75,13 @@ class SettingRepository
         $value = $this->castValue($valueStr, $type);
 
         return [
-            'id' => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
-            'key' => is_string($row['key'] ?? null) ? $row['key'] : '',
-            'value' => $value,
-            'type' => $type,
+            'id'          => isset($row['id']) && (is_int($row['id']) || is_string($row['id'])) ? (int) $row['id'] : 0,
+            'key'         => is_string($row['key'] ?? null) ? $row['key'] : '',
+            'value'       => $value,
+            'type'        => $type,
             'description' => is_string($row['description'] ?? null) ? $row['description'] : null,
-            'created_at' => is_string($row['created_at'] ?? null) ? $row['created_at'] : '',
-            'updated_at' => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
+            'created_at'  => is_string($row['created_at'] ?? null) ? $row['created_at'] : '',
+            'updated_at'  => is_string($row['updated_at'] ?? null) ? $row['updated_at'] : '',
         ];
     }
 
@@ -115,9 +115,9 @@ class SettingRepository
                 VALUES (:key, :value, :type, :description, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)';
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
-            'key' => $key,
-            'value' => $storedValue,
-            'type' => $type,
+            'key'         => $key,
+            'value'       => $storedValue,
+            'type'        => $type,
             'description' => $description,
         ]);
         $result = $this->findByKey($key);
@@ -143,11 +143,11 @@ class SettingRepository
     private function castValue(?string $value, string $type): mixed
     {
         return match ($type) {
-            'boolean' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
-            'integer' => (int) $value,
-            'float' => (float) $value,
+            'boolean'       => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+            'integer'       => (int) $value,
+            'float'         => (float) $value,
             'array', 'json' => json_decode($value ?? '[]', true),
-            default => $value,
+            default         => $value,
         };
     }
 
@@ -157,11 +157,11 @@ class SettingRepository
     private function prepareValue(mixed $value, string $type): string
     {
         return match ($type) {
-            'boolean' => $value ? '1' : '0',
-            'integer' => is_int($value) || is_string($value) || is_float($value) ? (string) ((int) $value) : '0',
-            'float' => is_int($value) || is_string($value) || is_float($value) ? (string) ((float) $value) : '0.0',
+            'boolean'       => $value ? '1' : '0',
+            'integer'       => is_int($value) || is_string($value) || is_float($value) ? (string) ((int) $value) : '0',
+            'float'         => is_int($value) || is_string($value) || is_float($value) ? (string) ((float) $value) : '0.0',
             'array', 'json' => json_encode($value) ?: '[]',
-            default => is_string($value) ? $value : (is_int($value) || is_float($value) ? (string) $value : ''),
+            default         => is_string($value) ? $value : (is_int($value) || is_float($value) ? (string) $value : ''),
         };
     }
 }

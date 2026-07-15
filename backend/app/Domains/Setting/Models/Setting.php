@@ -31,11 +31,11 @@ class Setting extends Model
     public function getValue(): mixed
     {
         return match ($this->type) {
-            'boolean' => filter_var($this->value, FILTER_VALIDATE_BOOLEAN),
-            'integer' => (int) $this->value,
-            'float' => (float) $this->value,
+            'boolean'       => filter_var($this->value, FILTER_VALIDATE_BOOLEAN),
+            'integer'       => (int) $this->value,
+            'float'         => (float) $this->value,
             'array', 'json' => json_decode($this->value ?? '[]', true),
-            default => $this->value,
+            default         => $this->value,
         };
     }
 
@@ -47,13 +47,13 @@ class Setting extends Model
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'key' => $this->key,
-            'value' => $this->getValue(),
-            'type' => $this->type,
+            'id'          => $this->id,
+            'key'         => $this->key,
+            'value'       => $this->getValue(),
+            'type'        => $this->type,
             'description' => $this->description,
-            'created_at' => $this->created_at?->toIso8601String(),
-            'updated_at' => $this->updated_at?->toIso8601String(),
+            'created_at'  => $this->created_at?->toIso8601String(),
+            'updated_at'  => $this->updated_at?->toIso8601String(),
         ];
     }
 }

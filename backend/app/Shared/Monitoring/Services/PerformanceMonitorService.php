@@ -54,15 +54,15 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $monitoringId = generate_uuid();
         $this->activeMonitoringSessions[$monitoringId] = [
-            'operation' => $operation,
-            'start_time' => microtime(true),
+            'operation'    => $operation,
+            'start_time'   => microtime(true),
             'start_memory' => memory_get_usage(true),
-            'context' => $context,
-            'created_at' => time(),
+            'context'      => $context,
+            'created_at'   => time(),
         ];
         $this->logger->debug("Started monitoring operation: {$operation}", [
             'monitoring_id' => $monitoringId,
-            'context' => $context,
+            'context'       => $context,
         ]);
 
         return $monitoringId;
@@ -109,11 +109,11 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         }
         // 記錄詳細資訊
         $this->logger->info("Operation completed: {$operation}", [
-            'operation' => $operation,
+            'operation'   => $operation,
             'duration_ms' => (float) $duration,
-            'status' => 'success',
+            'status'      => 'success',
             'memory_peak' => memory_get_peak_usage(true),
-            'context' => $context,
+            'context'     => $context,
         ]);
     }
 
@@ -129,16 +129,16 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $metricsForKey = $this->metrics[$metricKey];
         assert(is_array($metricsForKey));
         $metricsForKey[] = [
-            'value' => $value,
-            'unit' => $unit,
-            'tags' => $tags,
+            'value'     => $value,
+            'unit'      => $unit,
+            'tags'      => $tags,
             'timestamp' => microtime(true),
         ];
         $this->metrics[$metricKey] = $metricsForKey;
         $this->logger->debug("Recorded metric: {$name}", [
             'value' => $value,
-            'unit' => $unit,
-            'tags' => $tags,
+            'unit'  => $unit,
+            'tags'  => $tags,
         ]);
     }
 
@@ -156,7 +156,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $this->counters[$counterKey] = $currentCounter + 1;
         $this->logger->debug("Incremented counter: {$name}", [
             'current_value' => $this->counters[$counterKey],
-            'tags' => $tags,
+            'tags'          => $tags,
         ]);
     }
 
@@ -178,12 +178,12 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             $this->histograms[$histogramKey] = [];
         }
         $this->histograms[$histogramKey][] = [
-            'value' => $value,
+            'value'     => $value,
             'timestamp' => microtime(true),
         ];
         $this->logger->debug("Recorded histogram value: {$name}", [
             'value' => $value,
-            'tags' => $tags,
+            'tags'  => $tags,
         ]);
     }
 
@@ -193,10 +193,10 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     public function getPerformanceStats(?string $operation = null): array
     {
         $stats = [
-            'active_sessions' => count($this->activeMonitoringSessions),
-            'total_metrics' => count($this->metrics),
-            'total_counters' => count($this->counters),
-            'total_histograms' => count($this->histograms),
+            'active_sessions'       => count($this->activeMonitoringSessions),
+            'total_metrics'         => count($this->metrics),
+            'total_counters'        => count($this->counters),
+            'total_histograms'      => count($this->histograms),
             'slow_operations_count' => count($this->slowQueries),
         ];
         // 如果指定了操作，返回該操作的詳細統計
@@ -232,9 +232,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         // 檢查活躍會話數量
         if (count($this->activeMonitoringSessions) > 100) {
             $warnings[] = [
-                'type' => 'high_active_sessions',
-                'message' => 'Too many active monitoring sessions',
-                'count' => count($this->activeMonitoringSessions),
+                'type'     => 'high_active_sessions',
+                'message'  => 'Too many active monitoring sessions',
+                'count'    => count($this->activeMonitoringSessions),
                 'severity' => 'warning',
             ];
         }
@@ -243,12 +243,12 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $memoryLimit = $this->parseMemoryLimit(ini_get('memory_limit'));
         if ($memoryLimit > 0 && $memoryUsage > $memoryLimit * 0.8) {
             $warnings[] = [
-                'type' => 'high_memory_usage',
-                'message' => 'Memory usage is approaching limit',
-                'usage_bytes' => $memoryUsage,
-                'limit_bytes' => $memoryLimit,
+                'type'          => 'high_memory_usage',
+                'message'       => 'Memory usage is approaching limit',
+                'usage_bytes'   => $memoryUsage,
+                'limit_bytes'   => $memoryLimit,
                 'usage_percent' => round(($memoryUsage / $memoryLimit) * 100, 1),
-                'severity' => 'critical',
+                'severity'      => 'critical',
             ];
         }
         // 檢查長時間運行的操作
@@ -260,12 +260,12 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 : 0;
             if ($duration > 30000) { // 30 秒
                 $warnings[] = [
-                    'type' => 'long_running_operation',
-                    'message' => 'Operation has been running for a long time',
+                    'type'          => 'long_running_operation',
+                    'message'       => 'Operation has been running for a long time',
                     'monitoring_id' => $id,
-                    'operation' => $session['operation'],
-                    'duration_ms' => round($duration, 2),
-                    'severity' => 'warning',
+                    'operation'     => $session['operation'],
+                    'duration_ms'   => round($duration, 2),
+                    'severity'      => 'warning',
                 ];
             }
         }
@@ -314,7 +314,7 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             }
         }
         $this->logger->info('Performance data cleanup completed', [
-            'days_kept' => $daysToKeep,
+            'days_kept'     => $daysToKeep,
             'items_cleaned' => $cleanedCount,
         ]);
 
@@ -347,14 +347,14 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
     {
         $this->slowQueries[] = [
             'operation' => $operation,
-            'duration' => $duration,
-            'context' => $context,
+            'duration'  => $duration,
+            'context'   => $context,
             'timestamp' => time(),
         ];
         $this->logger->warning("Slow operation detected: {$operation}", [
-            'duration_ms' => round($duration, 2),
+            'duration_ms'  => round($duration, 2),
             'threshold_ms' => (float) $this->slowQueryThreshold,
-            'context' => $context,
+            'context'      => $context,
         ]);
     }
 
@@ -370,8 +370,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             }
         }
         $stats = [
-            'operation' => $operation,
-            'metrics_count' => count($operationMetrics),
+            'operation'       => $operation,
+            'metrics_count'   => count($operationMetrics),
             'active_sessions' => 0,
         ];
         // 計算活躍會話
@@ -400,11 +400,11 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             if (!empty($values)) {
                 $summary[$key] = [
                     'count' => count($values),
-                    'min' => min($values),
-                    'max' => max($values),
-                    'avg' => array_sum($values) / count($values),
+                    'min'   => min($values),
+                    'max'   => max($values),
+                    'avg'   => array_sum($values) / count($values),
                     'total' => array_sum($values),
-                    'unit' => (is_array($metricData) && isset($metricData[0]) && is_array($metricData[0]) && isset($metricData[0]['unit']))
+                    'unit'  => (is_array($metricData) && isset($metricData[0]) && is_array($metricData[0]) && isset($metricData[0]['unit']))
                         ? $metricData[0]['unit']
                         : 'unknown',
                 ];
@@ -427,13 +427,13 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
                 $count = count($values);
                 $summary[$key] = [
                     'count' => $count,
-                    'min' => min($values),
-                    'max' => max($values),
-                    'avg' => array_sum($values) / $count,
-                    'p50' => $this->percentile($values, 50),
-                    'p90' => $this->percentile($values, 90),
-                    'p95' => $this->percentile($values, 95),
-                    'p99' => $this->percentile($values, 99),
+                    'min'   => min($values),
+                    'max'   => max($values),
+                    'avg'   => array_sum($values) / $count,
+                    'p50'   => $this->percentile($values, 50),
+                    'p90'   => $this->percentile($values, 90),
+                    'p95'   => $this->percentile($values, 95),
+                    'p99'   => $this->percentile($values, 99),
                 ];
             }
         }
@@ -481,9 +481,9 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
         $value = (int) substr($memoryLimit, 0, -1);
 
         return match ($unit) {
-            'g' => $value * 1024 * 1024 * 1024,
-            'm' => $value * 1024 * 1024,
-            'k' => $value * 1024,
+            'g'     => $value * 1024 * 1024 * 1024,
+            'm'     => $value * 1024 * 1024,
+            'k'     => $value * 1024,
             default => (int) $memoryLimit,
         };
     }

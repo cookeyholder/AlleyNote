@@ -210,8 +210,8 @@ final class StatisticsDatabaseAdapterFactoryTest extends UnitTestCase
         );
 
         $adapter = $factory->createByConfig([
-            'cache' => true,
-            'logging' => true,
+            'cache'       => true,
+            'logging'     => true,
             'transaction' => true,
         ]);
 

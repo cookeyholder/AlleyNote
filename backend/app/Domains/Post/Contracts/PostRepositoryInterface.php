@@ -32,6 +32,7 @@ interface PostRepositoryInterface extends RepositoryInterface
 
     /**
      * 取得置頂文章列表.
+     *
      * @return Post[]
      */
     public function getPinnedPosts(int $limit = 5): array;
@@ -48,6 +49,7 @@ interface PostRepositoryInterface extends RepositoryInterface
 
     /**
      * 取得文章標籤.
+     *
      * @return array<int, array<string, mixed>>
      */
     public function getPostTags(int $id): array;
@@ -59,6 +61,7 @@ interface PostRepositoryInterface extends RepositoryInterface
 
     /**
      * 設定文章標籤.
+     *
      * @throws RuntimeException
      */
     public function setTags(int $id, array $tagIds): void;

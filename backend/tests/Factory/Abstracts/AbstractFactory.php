@@ -10,12 +10,14 @@ abstract class AbstractFactory
 
     /**
      * 產生一筆資料.
+     *
      * @param array<string, mixed> $attributes 自訂屬性
      */
     abstract public static function make(array $attributes = []): array;
 
     /**
      * 產生多筆資料.
+     *
      * @param int $count 數量
      * @param array<string, mixed> $attributes 自訂屬性
      */
@@ -29,6 +31,7 @@ abstract class AbstractFactory
 
     /**
      * 取得序列值
+     *
      * @param string $key 序列鍵值
      */
     protected static function sequence(string $key): int

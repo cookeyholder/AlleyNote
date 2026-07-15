@@ -30,8 +30,8 @@ class HttpResponseTestTraitTest extends UnitTestCase
     {
         $data = [
             'success' => true,
-            'user' => [
-                'id' => 1,
+            'user'    => [
+                'id'   => 1,
                 'name' => 'John',
             ],
             'meta' => 'extra',
@@ -41,7 +41,7 @@ class HttpResponseTestTraitTest extends UnitTestCase
         // 僅驗證部分欄位與巢狀結構
         $this->assertJsonResponseMatches($response, [
             'success' => true,
-            'user' => [
+            'user'    => [
                 'id' => 1,
             ],
         ]);

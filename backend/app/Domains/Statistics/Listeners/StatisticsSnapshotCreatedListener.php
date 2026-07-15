@@ -25,7 +25,7 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         if (!$event instanceof StatisticsSnapshotCreated) {
             $this->logger?->warning('StatisticsSnapshotCreatedListener received non-StatisticsSnapshotCreated event', [
                 'event_type' => $event->getEventName(),
-                'event_id' => $event->getEventId(),
+                'event_id'   => $event->getEventId(),
             ]);
 
             return;
@@ -35,12 +35,12 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             $this->handleSnapshotCreated($event);
         } catch (Throwable $e) {
             $this->logger?->error('Failed to handle StatisticsSnapshotCreated event', [
-                'event_id' => $event->getEventId(),
-                'snapshot_id' => $event->getSnapshotId(),
+                'event_id'      => $event->getEventId(),
+                'snapshot_id'   => $event->getSnapshotId(),
                 'snapshot_type' => $event->getSnapshotType(),
-                'is_update' => $event->isUpdate(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'is_update'     => $event->isUpdate(),
+                'error'         => $e->getMessage(),
+                'trace'         => $e->getTraceAsString(),
             ]);
 
             // 重新拋出異常，讓事件分派器處理
@@ -64,11 +64,11 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         $snapshotType = $event->getSnapshotType();
         $isUpdate = $event->isUpdate();
         $this->logger?->info('Processing StatisticsSnapshotCreated event', [
-            'event_id' => $event->getEventId(),
-            'snapshot_id' => $event->getSnapshotId(),
+            'event_id'      => $event->getEventId(),
+            'snapshot_id'   => $event->getSnapshotId(),
             'snapshot_uuid' => $event->getSnapshotUuid(),
             'snapshot_type' => $snapshotType,
-            'is_update' => $isUpdate,
+            'is_update'     => $isUpdate,
         ]);
         // 1. 記錄統計事件
         $this->recordSnapshotEvent($event);
@@ -77,8 +77,8 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
         // 3. 預熱相關快取
         $this->handleCachePrewarming($event);
         $this->logger?->info('StatisticsSnapshotCreated event processed successfully', [
-            'event_id' => $event->getEventId(),
-            'snapshot_id' => $event->getSnapshotId(),
+            'event_id'      => $event->getEventId(),
+            'snapshot_id'   => $event->getSnapshotId(),
             'snapshot_type' => $snapshotType,
         ]);
     }
@@ -87,20 +87,20 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
     {
         $eventType = $event->isUpdate() ? 'snapshot_updated' : 'snapshot_created';
         $context = [
-            'snapshot_id' => $event->getSnapshotId(),
+            'snapshot_id'   => $event->getSnapshotId(),
             'snapshot_uuid' => $event->getSnapshotUuid(),
             'snapshot_type' => $event->getSnapshotType(),
-            'is_update' => $event->isUpdate(),
-            'event_id' => $event->getEventId(),
+            'is_update'     => $event->isUpdate(),
+            'event_id'      => $event->getEventId(),
         ];
 
         try {
             $this->monitoringService->logStatisticsEvent($eventType, $context);
         } catch (Throwable $e) {
             $this->logger?->warning('Failed to record snapshot event in monitoring service', [
-                'event_id' => $event->getEventId(),
+                'event_id'    => $event->getEventId(),
                 'snapshot_id' => $event->getSnapshotId(),
-                'error' => $e->getMessage(),
+                'error'       => $e->getMessage(),
             ]);
             // 不重新拋出異常，因為監控記錄失敗不應該影響主流程
         }
@@ -116,16 +116,16 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             if (!empty($tagsToInvalidate)) {
                 $this->cacheService->flushByTags($tagsToInvalidate);
                 $this->logger?->info('Cache invalidated for snapshot type', [
-                    'event_id' => $event->getEventId(),
-                    'snapshot_type' => $snapshotType,
+                    'event_id'         => $event->getEventId(),
+                    'snapshot_type'    => $snapshotType,
                     'invalidated_tags' => $tagsToInvalidate,
                 ]);
             }
         } catch (Throwable $e) {
             $this->logger?->error('Failed to invalidate cache for snapshot', [
-                'event_id' => $event->getEventId(),
+                'event_id'      => $event->getEventId(),
                 'snapshot_type' => $snapshotType,
-                'error' => $e->getMessage(),
+                'error'         => $e->getMessage(),
             ]);
             // 不重新拋出異常，快取失效失敗不應該中斷統計流程
         }
@@ -141,17 +141,17 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
             if (!empty($warmupCallbacks)) {
                 $results = $this->cacheService->warmup($warmupCallbacks);
                 $this->logger?->info('Cache prewarmed for snapshot type', [
-                    'event_id' => $event->getEventId(),
+                    'event_id'      => $event->getEventId(),
                     'snapshot_type' => $snapshotType,
-                    'results' => $results,
+                    'results'       => $results,
                 ]);
             }
         } catch (Throwable $e) {
             // 快取預熱失敗不應該影響主流程
             $this->logger?->error('Cache prewarming failed', [
-                'event_id' => $event->getEventId(),
+                'event_id'      => $event->getEventId(),
                 'snapshot_type' => $snapshotType,
-                'error' => $e->getMessage(),
+                'error'         => $e->getMessage(),
             ]);
         }
     }
@@ -165,10 +165,10 @@ class StatisticsSnapshotCreatedListener implements EventListenerInterface
     {
         $tagsMap = [
             'overview' => ['statistics', 'overview'],
-            'posts' => ['statistics', 'posts'],
-            'users' => ['statistics', 'users'],
-            'popular' => ['statistics', 'popular', 'trends'],
-            'sources' => ['statistics', 'sources'],
+            'posts'    => ['statistics', 'posts'],
+            'users'    => ['statistics', 'users'],
+            'popular'  => ['statistics', 'popular', 'trends'],
+            'sources'  => ['statistics', 'sources'],
         ];
 
         return $tagsMap[$snapshotType] ?? ['statistics'];

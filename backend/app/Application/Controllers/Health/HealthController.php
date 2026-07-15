@@ -22,10 +22,10 @@ class HealthController extends BaseController
     {
         try {
             $healthData = [
-                'status' => 'ok',
+                'status'    => 'ok',
                 'timestamp' => date('c'),
-                'service' => 'AlleyNote API',
-                'version' => '1.0.0',
+                'service'   => 'AlleyNote API',
+                'version'   => '1.0.0',
             ];
             $successResponse = $this->successResponse($healthData, '系統運行正常');
             $response->getBody()->write(($successResponse ?: ''));

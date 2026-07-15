@@ -175,12 +175,12 @@ class PostValidator extends Validator
     public static function getCreatePostRules(): mixed
     {
         return [
-            'title' => 'required|post_title:1,255',
-            'content' => 'required|post_content:1',
-            'user_id' => 'required|user_id',
-            'user_ip' => 'required|ip_address',
-            'is_pinned' => 'boolean',
-            'status' => 'post_status',
+            'title'        => 'required|post_title:1,255',
+            'content'      => 'required|post_content:1',
+            'user_id'      => 'required|user_id',
+            'user_ip'      => 'required|ip_address',
+            'is_pinned'    => 'boolean',
+            'status'       => 'post_status',
             'publish_date' => 'rfc3339_datetime',
         ];
     }
@@ -191,10 +191,10 @@ class PostValidator extends Validator
     public static function getUpdatePostRules(): mixed
     {
         return [
-            'title' => 'post_title:1,255',
-            'content' => 'post_content:1',
-            'is_pinned' => 'boolean',
-            'status' => 'post_status',
+            'title'        => 'post_title:1,255',
+            'content'      => 'post_content:1',
+            'is_pinned'    => 'boolean',
+            'status'       => 'post_status',
             'publish_date' => 'rfc3339_datetime',
         ];
     }

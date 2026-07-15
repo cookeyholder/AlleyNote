@@ -90,6 +90,7 @@ final readonly class AuthorizationResult implements JsonSerializable
      *
      * @param string $key 元資料鍵
      * @param mixed $default 預設值
+     *
      * @return mixed 元資料值
      */
     public function getMetadataValue(string $key, mixed $default = null): mixed
@@ -101,6 +102,7 @@ final readonly class AuthorizationResult implements JsonSerializable
      * 檢查是否包含特定規則.
      *
      * @param string $rule 規則名稱
+     *
      * @return bool 是否包含
      */
     public function hasRule(string $rule): bool
@@ -229,11 +231,11 @@ final readonly class AuthorizationResult implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'allowed' => $this->allowed,
-            'reason' => $this->reason,
-            'code' => $this->code,
+            'allowed'       => $this->allowed,
+            'reason'        => $this->reason,
+            'code'          => $this->code,
             'applied_rules' => $this->appliedRules,
-            'metadata' => $this->metadata,
+            'metadata'      => $this->metadata,
         ];
     }
 
@@ -251,6 +253,7 @@ final readonly class AuthorizationResult implements JsonSerializable
      * 檢查與另一個 AuthorizationResult 是否相等.
      *
      * @param AuthorizationResult $other 另一個授權結果
+     *
      * @return bool 是否相等
      */
     public function equals(AuthorizationResult $other): bool

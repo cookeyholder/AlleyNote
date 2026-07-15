@@ -43,10 +43,10 @@ class StatisticsChartController extends BaseController
 
             return $this->json($response, [
                 'success' => true,
-                'data' => $chartData,
-                'meta' => [
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                'data'    => $chartData,
+                'meta'    => [
+                    'start_date'  => $startDate->format('Y-m-d'),
+                    'end_date'    => $endDate->format('Y-m-d'),
                     'granularity' => $granularity,
                     'data_points' => $chartData->getDataPointCount(),
                 ],
@@ -82,10 +82,10 @@ class StatisticsChartController extends BaseController
 
             return $this->json($response, [
                 'success' => true,
-                'data' => $chartData,
-                'meta' => [
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                'data'    => $chartData,
+                'meta'    => [
+                    'start_date'  => $startDate->format('Y-m-d'),
+                    'end_date'    => $endDate->format('Y-m-d'),
                     'granularity' => $granularity,
                     'data_points' => $chartData->getDataPointCount(),
                 ],
@@ -117,10 +117,10 @@ class StatisticsChartController extends BaseController
 
             return $this->json($response, [
                 'success' => true,
-                'data' => $chartData,
-                'meta' => [
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                'data'    => $chartData,
+                'meta'    => [
+                    'start_date'  => $startDate->format('Y-m-d'),
+                    'end_date'    => $endDate->format('Y-m-d'),
                     'granularity' => $granularity,
                 ],
             ]);
@@ -172,12 +172,12 @@ class StatisticsChartController extends BaseController
 
             return $this->json($response, [
                 'success' => true,
-                'data' => $chartData,
-                'meta' => [
-                    'type' => $type,
-                    'start_date' => $startDate?->format('Y-m-d'),
-                    'end_date' => $endDate?->format('Y-m-d'),
-                    'limit' => $limit,
+                'data'    => $chartData,
+                'meta'    => [
+                    'type'        => $type,
+                    'start_date'  => $startDate?->format('Y-m-d'),
+                    'end_date'    => $endDate?->format('Y-m-d'),
+                    'limit'       => $limit,
                     'data_points' => $chartData->getDataPointCount(),
                 ],
             ]);
@@ -222,11 +222,11 @@ class StatisticsChartController extends BaseController
 
             return $this->json($response, [
                 'success' => true,
-                'data' => $chartData,
-                'meta' => [
-                    'type' => $type,
-                    'start_date' => $startDate->format('Y-m-d'),
-                    'end_date' => $endDate->format('Y-m-d'),
+                'data'    => $chartData,
+                'meta'    => [
+                    'type'        => $type,
+                    'start_date'  => $startDate->format('Y-m-d'),
+                    'end_date'    => $endDate->format('Y-m-d'),
                     'granularity' => $granularity,
                     'data_points' => $chartData->getDataPointCount(),
                 ],
@@ -269,12 +269,12 @@ class StatisticsChartController extends BaseController
 
             return $this->json($response, [
                 'success' => true,
-                'data' => $chartData,
-                'meta' => [
-                    'start_date' => $startDate?->format('Y-m-d'),
-                    'end_date' => $endDate?->format('Y-m-d'),
-                    'sort_by' => $sortBy,
-                    'limit' => $limit,
+                'data'    => $chartData,
+                'meta'    => [
+                    'start_date'  => $startDate?->format('Y-m-d'),
+                    'end_date'    => $endDate?->format('Y-m-d'),
+                    'sort_by'     => $sortBy,
+                    'limit'       => $limit,
                     'data_points' => $chartData->getDataPointCount(),
                 ],
             ]);
@@ -289,7 +289,9 @@ class StatisticsChartController extends BaseController
      * 解析日期範圍參數.
      *
      * @param array<string, mixed> $params
+     *
      * @return array{0: DateTimeImmutable, 1: DateTimeImmutable}
+     *
      * @throws ValidationException
      */
     private function parseDateRange(array $params): array

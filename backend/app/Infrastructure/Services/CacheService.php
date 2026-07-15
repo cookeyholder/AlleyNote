@@ -16,11 +16,11 @@ class CacheService implements CacheServiceInterface
 
     /** @var array{hits: int, misses: int, sets: int, deletes: int, size: int} */
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'sets' => 0,
+        'hits'    => 0,
+        'misses'  => 0,
+        'sets'    => 0,
         'deletes' => 0,
-        'size' => 0,
+        'size'    => 0,
     ];
 
     public function __construct()
@@ -81,9 +81,9 @@ class CacheService implements CacheServiceInterface
         $filename = $this->getCacheFilename($key);
         $this->incrementStat('sets');
         $cacheData = [
-            'key' => $key,
+            'key'    => $key,
             'expiry' => time() + ($ttl ?: self::TTL),
-            'data' => $value,
+            'data'   => $value,
         ];
         $result = file_put_contents($filename, (json_encode($cacheData) ?: '')) !== false;
         if ($result) {

@@ -27,10 +27,10 @@ class StatisticsIndexOptimizationTest extends SecureDDDTestCase
     private StatisticsTestSeeder $seeder;
 
     private const INDEX_PERFORMANCE_THRESHOLDS = [
-        'simple_count_query' => 0.1, // 100ms
+        'simple_count_query'  => 0.1, // 100ms
         'complex_aggregation' => 0.5, // 500ms
-        'multi_table_join' => 1.0, // 1s
-        'date_range_query' => 0.3, // 300ms
+        'multi_table_join'    => 1.0, // 1s
+        'date_range_query'    => 0.3, // 300ms
     ];
 
     protected function setUp(): void
@@ -413,9 +413,9 @@ class StatisticsIndexOptimizationTest extends SecureDDDTestCase
             $duration = $endTime - $startTime;
 
             $results[$queryName] = [
-                'duration' => $duration,
+                'duration'  => $duration,
                 'row_count' => count($result),
-                'context' => $context,
+                'context'   => $context,
             ];
         }
 

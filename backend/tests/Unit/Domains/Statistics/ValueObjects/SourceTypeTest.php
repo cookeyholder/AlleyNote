@@ -81,8 +81,8 @@ final class SourceTypeTest extends UnitTestCase
     {
         // Arrange
         $data = [
-            'code' => 'api',
-            'name' => 'API 介面',
+            'code'        => 'api',
+            'name'        => 'API 介面',
             'description' => '透過 REST API 建立的文章',
         ];
 

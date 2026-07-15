@@ -236,20 +236,20 @@ class AttachmentService implements AttachmentServiceInterface
         $mimeTypes = [];
         $extensionToMime = [
             // 圖片
-            'jpg' => 'image/jpeg',
+            'jpg'  => 'image/jpeg',
             'jpeg' => 'image/jpeg',
-            'png' => 'image/png',
-            'gif' => 'image/gif',
+            'png'  => 'image/png',
+            'gif'  => 'image/gif',
             'webp' => 'image/webp',
-            'svg' => 'image/svg+xml',
+            'svg'  => 'image/svg+xml',
             // PDF
             'pdf' => 'application/pdf',
             // Microsoft Office
-            'doc' => 'application/msword',
+            'doc'  => 'application/msword',
             'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'xls' => 'application/vnd.ms-excel',
+            'xls'  => 'application/vnd.ms-excel',
             'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'ppt' => 'application/vnd.ms-powerpoint',
+            'ppt'  => 'application/vnd.ms-powerpoint',
             'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
             // LibreOffice
             'odt' => 'application/vnd.oasis.opendocument.text',
@@ -264,7 +264,7 @@ class AttachmentService implements AttachmentServiceInterface
             // 壓縮檔
             'zip' => 'application/zip',
             'rar' => 'application/x-rar-compressed',
-            '7z' => 'application/x-7z-compressed',
+            '7z'  => 'application/x-7z-compressed',
             // 媒體
             'mp3' => 'audio/mpeg',
             'mp4' => 'video/mp4',
@@ -287,8 +287,8 @@ class AttachmentService implements AttachmentServiceInterface
     {
         // 某些檔案格式可能有多個合法的 MIME 類型
         $alternatives = [
-            'application/octet-stream' => ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed'],
-            'application/x-zip' => ['application/zip'],
+            'application/octet-stream'     => ['application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed'],
+            'application/x-zip'            => ['application/zip'],
             'application/x-zip-compressed' => ['application/zip'],
         ];
         if (isset($alternatives[$mimeType])) {
@@ -503,12 +503,12 @@ class AttachmentService implements AttachmentServiceInterface
             }
 
             return [
-                'temp_path' => $tempPath,
-                'temp_dir' => $tempDir,
-                'filename' => $newFilename,
+                'temp_path'     => $tempPath,
+                'temp_dir'      => $tempDir,
+                'filename'      => $newFilename,
                 'original_name' => $originalFilename,
-                'mime_type' => $actualMimeType,
-                'file_size' => filesize($tempPath),
+                'mime_type'     => $actualMimeType,
+                'file_size'     => filesize($tempPath),
             ];
         } catch (Throwable $e) {
             // 清理臨時檔案
@@ -581,8 +581,8 @@ class AttachmentService implements AttachmentServiceInterface
                 $currentUserId,
                 reason: '嘗試上傳附件到無權限的文章',
                 metadata: [
-                    'post_id' => $postId,
-                    'filename' => $file->getClientFilename(),
+                    'post_id'   => $postId,
+                    'filename'  => $file->getClientFilename(),
                     'file_size' => $file->getSize(),
                     'mime_type' => $file->getClientMediaType(),
                 ],
@@ -615,8 +615,8 @@ class AttachmentService implements AttachmentServiceInterface
                 $currentUserId,
                 reason: $error['message'],
                 metadata: [
-                    'post_id' => $postId,
-                    'filename' => $file->getClientFilename(),
+                    'post_id'   => $postId,
+                    'filename'  => $file->getClientFilename(),
                     'file_size' => $file->getSize(),
                     'mime_type' => $file->getClientMediaType(),
                 ],
@@ -639,12 +639,12 @@ class AttachmentService implements AttachmentServiceInterface
             rmdir($fileInfo['temp_dir']);
             // 儲存到資料庫
             $attachmentData = [
-                'post_id' => $postId,
-                'filename' => $fileInfo['filename'],
+                'post_id'       => $postId,
+                'filename'      => $fileInfo['filename'],
                 'original_name' => $fileInfo['original_name'],
-                'file_size' => $fileInfo['file_size'],
-                'mime_type' => $fileInfo['mime_type'],
-                'storage_path' => $finalPath,
+                'file_size'     => $fileInfo['file_size'],
+                'mime_type'     => $fileInfo['mime_type'],
+                'storage_path'  => $finalPath,
             ];
             $attachment = $this->attachmentRepo->create($attachmentData);
             // 記錄成功上傳
@@ -653,11 +653,11 @@ class AttachmentService implements AttachmentServiceInterface
                 $currentUserId,
                 metadata: [
                     'attachment_uuid' => $attachment->getUuid(),
-                    'post_id' => $postId,
-                    'filename' => $fileInfo['filename'],
-                    'original_name' => $fileInfo['original_name'],
-                    'file_size' => $fileInfo['file_size'],
-                    'mime_type' => $fileInfo['mime_type'],
+                    'post_id'         => $postId,
+                    'filename'        => $fileInfo['filename'],
+                    'original_name'   => $fileInfo['original_name'],
+                    'file_size'       => $fileInfo['file_size'],
+                    'mime_type'       => $fileInfo['mime_type'],
                 ],
             );
 
@@ -692,8 +692,8 @@ class AttachmentService implements AttachmentServiceInterface
                 reason: '嘗試下載無權限的附件',
                 metadata: [
                     'attachment_uuid' => $uuid,
-                    'post_id' => $attachment->getPostId(),
-                    'filename' => $attachment->getOriginalName(),
+                    'post_id'         => $attachment->getPostId(),
+                    'filename'        => $attachment->getOriginalName(),
                 ],
             );
 
@@ -715,18 +715,18 @@ class AttachmentService implements AttachmentServiceInterface
             $currentUserId,
             metadata: [
                 'attachment_uuid' => $uuid,
-                'post_id' => $attachment->getPostId(),
-                'filename' => $attachment->getOriginalName(),
-                'file_size' => $attachment->getFileSize(),
-                'mime_type' => $attachment->getMimeType(),
+                'post_id'         => $attachment->getPostId(),
+                'filename'        => $attachment->getOriginalName(),
+                'file_size'       => $attachment->getFileSize(),
+                'mime_type'       => $attachment->getMimeType(),
             ],
         );
 
         return [
-            'path' => $filePath,
-            'name' => $attachment->getOriginalName(),
+            'path'      => $filePath,
+            'name'      => $attachment->getOriginalName(),
             'mime_type' => $attachment->getMimeType(),
-            'size' => $attachment->getFileSize(),
+            'size'      => $attachment->getFileSize(),
         ];
     }
 
@@ -765,9 +765,9 @@ class AttachmentService implements AttachmentServiceInterface
             $currentUserId,
             metadata: [
                 'attachment_uuid' => $uuid,
-                'post_id' => $attachment->getPostId(),
-                'filename' => $attachment->getOriginalName(),
-                'file_size' => $attachment->getFileSize(),
+                'post_id'         => $attachment->getPostId(),
+                'filename'        => $attachment->getOriginalName(),
+                'file_size'       => $attachment->getFileSize(),
             ],
         );
     }

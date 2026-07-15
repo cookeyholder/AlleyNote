@@ -97,9 +97,9 @@ final class StatisticsCalculationCommandTest extends UnitTestCase
         foreach ($snapshotTypes as $type) {
             $methodName = match ($type) {
                 StatisticsSnapshot::TYPE_OVERVIEW => 'createOverviewSnapshot',
-                StatisticsSnapshot::TYPE_POSTS => 'createPostsSnapshot',
-                StatisticsSnapshot::TYPE_USERS => 'createUsersSnapshot',
-                StatisticsSnapshot::TYPE_POPULAR => 'createPopularSnapshot',
+                StatisticsSnapshot::TYPE_POSTS    => 'createPostsSnapshot',
+                StatisticsSnapshot::TYPE_USERS    => 'createUsersSnapshot',
+                StatisticsSnapshot::TYPE_POPULAR  => 'createPopularSnapshot',
             };
 
             $this->mockAggregationService
@@ -500,9 +500,9 @@ final class StatisticsCalculationCommandTest extends UnitTestCase
         // Arrange
         $lockFile = '/tmp/statistics_calculation_' . md5('daily') . '.lock';
         $lockData = [
-            'pid' => getmypid(), // Use current process PID to ensure lock check fails
+            'pid'        => getmypid(), // Use current process PID to ensure lock check fails
             'start_time' => time(),
-            'periods' => ['daily'],
+            'periods'    => ['daily'],
         ];
 
         file_put_contents($lockFile, json_encode($lockData));

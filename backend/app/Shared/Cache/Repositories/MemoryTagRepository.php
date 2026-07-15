@@ -10,12 +10,14 @@ class MemoryTagRepository implements TagRepositoryInterface
 {
     /**
      * 快取鍵到標籤的對應.
+     *
      * @var array<string, array<string, int>> key => [tag => expiry_time]
      */
     private array $keyToTags = [];
 
     /**
      * 標籤到快取鍵的對應.
+     *
      * @var array<string, array<string, int>> tag => [key => expiry_time]
      */
     private array $tagToKeys = [];
@@ -285,6 +287,7 @@ class MemoryTagRepository implements TagRepositoryInterface
      * 正規化標籤陣列.
      *
      * @param array<string> $tags
+     *
      * @return array<string>
      */
     private function normalizeTags(array $tags): array

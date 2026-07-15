@@ -93,29 +93,29 @@ class CacheMonitor implements CacheMonitorInterface
         $this->operationHistory[] = [
             'timestamp' => $timestamp,
             'operation' => $operation,
-            'driver' => $driver,
-            'success' => $success,
-            'duration' => $duration,
-            'context' => $context,
+            'driver'    => $driver,
+            'success'   => $success,
+            'duration'  => $duration,
+            'context'   => $context,
         ];
         // 記錄慢操作
         $slowThreshold = $this->config['slow_operation_threshold'] ?? 1.0;
         if ($duration > $slowThreshold) {
             $this->logger->warning('慢速快取操作', [
                 'operation' => $operation,
-                'driver' => $driver,
-                'duration' => $duration,
+                'driver'    => $driver,
+                'duration'  => $duration,
                 'threshold' => $slowThreshold,
-                'context' => $context,
+                'context'   => $context,
             ]);
         }
         // 記錄失敗操作
         if (!$success) {
             $this->logger->error('快取操作失敗', [
                 'operation' => $operation,
-                'driver' => $driver,
-                'duration' => $duration,
-                'context' => $context,
+                'driver'    => $driver,
+                'duration'  => $duration,
+                'context'   => $context,
             ]);
         }
     }
@@ -124,12 +124,12 @@ class CacheMonitor implements CacheMonitorInterface
     {
         if (!isset($this->hitStats[$driver])) {
             $this->hitStats[$driver] = [
-                'hits' => 0,
-                'misses' => 0,
-                'total_requests' => 0,
-                'hit_rate' => 0.0,
+                'hits'               => 0,
+                'misses'             => 0,
+                'total_requests'     => 0,
+                'hit_rate'           => 0.0,
                 'total_hit_duration' => 0.0,
-                'avg_hit_duration' => 0.0,
+                'avg_hit_duration'   => 0.0,
             ];
         }
         $hitStats = &$this->hitStats[$driver];
@@ -153,12 +153,12 @@ class CacheMonitor implements CacheMonitorInterface
     {
         if (!isset($this->hitStats[$driver])) {
             $this->hitStats[$driver] = [
-                'hits' => 0,
-                'misses' => 0,
-                'total_requests' => 0,
-                'hit_rate' => 0.0,
+                'hits'               => 0,
+                'misses'             => 0,
+                'total_requests'     => 0,
+                'hit_rate'           => 0.0,
                 'total_hit_duration' => 0.0,
-                'avg_hit_duration' => 0.0,
+                'avg_hit_duration'   => 0.0,
             ];
         }
         $missStats = &$this->hitStats[$driver];
@@ -177,9 +177,9 @@ class CacheMonitor implements CacheMonitorInterface
         $timestamp = microtime(true);
         if (!isset($this->errorStats[$driver])) {
             $this->errorStats[$driver] = [
-                'total_errors' => 0,
+                'total_errors'        => 0,
                 'errors_by_operation' => [],
-                'recent_errors' => [],
+                'recent_errors'       => [],
             ];
         }
         $errorStats = &$this->errorStats[$driver];
@@ -201,15 +201,15 @@ class CacheMonitor implements CacheMonitorInterface
         $recentErrors[] = [
             'timestamp' => $timestamp,
             'operation' => $operation,
-            'error' => $error,
-            'context' => $context,
+            'error'     => $error,
+            'context'   => $context,
         ];
         $errorStats['recent_errors'] = $recentErrors;
         $this->logger->error('快取錯誤', [
-            'driver' => $driver,
+            'driver'    => $driver,
             'operation' => $operation,
-            'error' => $error,
-            'context' => $context,
+            'error'     => $error,
+            'context'   => $context,
         ]);
     }
 
@@ -217,13 +217,13 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $timestamp = microtime(true);
         $this->healthRecords[$driver] = [
-            'healthy' => $healthy,
+            'healthy'   => $healthy,
             'timestamp' => $timestamp,
-            'details' => $details,
+            'details'   => $details,
         ];
         if (!$healthy) {
             $this->logger->warning('快取驅動不健康', [
-                'driver' => $driver,
+                'driver'  => $driver,
                 'details' => $details,
             ]);
         }
@@ -240,10 +240,10 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         return [
-            'summary' => $this->calculateGlobalStats(),
-            'drivers' => $allStats,
+            'summary'      => $this->calculateGlobalStats(),
+            'drivers'      => $allStats,
             'generated_at' => date('Y-m-d H:i:s'),
-            'time_range' => $timeRange,
+            'time_range'   => $timeRange,
         ];
     }
 
@@ -259,10 +259,10 @@ class CacheMonitor implements CacheMonitorInterface
             /** @var array<string, mixed> $validStats */
             $validStats = $driverStats;
             $stats[$driver] = [
-                'hit_rate' => $validStats['hit_rate'] ?? 0.0,
-                'hits' => $validStats['hits'] ?? 0,
-                'misses' => $validStats['misses'] ?? 0,
-                'total_requests' => $validStats['total_requests'] ?? 0,
+                'hit_rate'         => $validStats['hit_rate'] ?? 0.0,
+                'hits'             => $validStats['hits'] ?? 0,
+                'misses'           => $validStats['misses'] ?? 0,
+                'total_requests'   => $validStats['total_requests'] ?? 0,
                 'avg_hit_duration' => $validStats['avg_hit_duration'] ?? 0.0,
             ];
             $totalReqValue = $validStats['total_requests'] ?? 0;
@@ -274,10 +274,10 @@ class CacheMonitor implements CacheMonitorInterface
 
         return [
             'global_hit_rate' => round($globalHitRate, 2),
-            'total_requests' => $totalRequests,
-            'total_hits' => $totalHits,
-            'drivers' => $stats,
-            'time_range' => $timeRange,
+            'total_requests'  => $totalRequests,
+            'total_hits'      => $totalHits,
+            'drivers'         => $stats,
+            'time_range'      => $timeRange,
         ];
     }
 
@@ -296,11 +296,11 @@ class CacheMonitor implements CacheMonitorInterface
             $minDurationValue = $validStats['min_duration'] ?? 0;
             $maxDurationValue = $validStats['max_duration'] ?? 0;
             $comparison[$driver] = [
-                'avg_duration' => is_numeric($avgDurationValue) ? (float) $avgDurationValue : 0.0,
-                'min_duration' => is_numeric($minDurationValue) ? (float) $minDurationValue : 0.0,
-                'max_duration' => is_numeric($maxDurationValue) ? (float) $maxDurationValue : 0.0,
+                'avg_duration'     => is_numeric($avgDurationValue) ? (float) $avgDurationValue : 0.0,
+                'min_duration'     => is_numeric($minDurationValue) ? (float) $minDurationValue : 0.0,
+                'max_duration'     => is_numeric($maxDurationValue) ? (float) $maxDurationValue : 0.0,
                 'total_operations' => $totalOperations,
-                'success_rate' => $totalOperations > 0
+                'success_rate'     => $totalOperations > 0
                     ? ($successfulOperations / $totalOperations) * 100
                     : 0,
                 'operations_per_second' => $this->calculateOperationsPerSecond($driver),
@@ -327,7 +327,7 @@ class CacheMonitor implements CacheMonitorInterface
         // 目前返回模擬資料，實際實作需要整合驅動
         return [
             'drivers' => [],
-            'note' => '需要與快取驅動整合來取得實際容量資訊',
+            'note'    => '需要與快取驅動整合來取得實際容量資訊',
         ];
     }
 
@@ -345,18 +345,18 @@ class CacheMonitor implements CacheMonitorInterface
             $errorsByOperation = is_array($validErrors['errors_by_operation'] ?? []) ? $validErrors['errors_by_operation'] : [];
             $recentErrors = is_array($validErrors['recent_errors'] ?? []) ? $validErrors['recent_errors'] : [];
             $stats[$driver] = [
-                'total_errors' => $driverTotalErrors,
+                'total_errors'        => $driverTotalErrors,
                 'errors_by_operation' => $errorsByOperation,
                 'recent_errors_count' => is_array($recentErrors) ? count($recentErrors) : 0,
-                'error_rate' => $this->calculateErrorRate($driver),
+                'error_rate'          => $this->calculateErrorRate($driver),
             ];
             $totalErrors += is_numeric($driverTotalErrors) ? (int) $driverTotalErrors : 0;
         }
 
         return [
             'global_error_count' => $totalErrors,
-            'drivers' => $stats,
-            'time_range' => $timeRange,
+            'drivers'            => $stats,
+            'time_range'         => $timeRange,
         ];
     }
 
@@ -378,19 +378,19 @@ class CacheMonitor implements CacheMonitorInterface
                 $timestamp = is_int($validHealth['timestamp'] ?? 0) ? $validHealth['timestamp'] : time();
                 $details = is_array($validHealth['details'] ?? []) ? $validHealth['details'] : [];
                 $issues[] = [
-                    'driver' => $driver,
+                    'driver'  => $driver,
                     'details' => $details,
-                    'since' => date('Y-m-d H:i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
+                    'since'   => date('Y-m-d H:i:s', is_numeric($timestamp) ? (int) $timestamp : time()),
                 ];
             }
         }
 
         return [
-            'overall_health' => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100 : 0,
+            'overall_health'  => $totalSystems > 0 ? ($healthySystems / $totalSystems) * 100 : 0,
             'healthy_drivers' => $healthySystems,
-            'total_drivers' => $totalSystems,
-            'issues' => $issues,
-            'last_check' => date('Y-m-d H:i:s'),
+            'total_drivers'   => $totalSystems,
+            'issues'          => $issues,
+            'last_check'      => date('Y-m-d H:i:s'),
         ];
     }
 
@@ -416,7 +416,7 @@ class CacheMonitor implements CacheMonitorInterface
         }
         $this->logger->info('快取監控資料清理完成', [
             'cleaned_records' => $cleaned,
-            'days_kept' => $daysToKeep,
+            'days_kept'       => $daysToKeep,
         ]);
 
         return $cleaned;
@@ -427,15 +427,15 @@ class CacheMonitor implements CacheMonitorInterface
         $stats = $this->calculateGlobalStats();
 
         return [
-            'total_hits' => array_sum(array_column($this->hitStats, 'hits')),
-            'total_misses' => array_sum(array_column($this->hitStats, 'misses')),
-            'total_sets' => $this->getOperationCount('set'),
-            'total_deletes' => $this->getOperationCount('delete'),
-            'total_errors' => array_sum(array_column($this->errorStats, 'total_errors')),
+            'total_hits'       => array_sum(array_column($this->hitStats, 'hits')),
+            'total_misses'     => array_sum(array_column($this->hitStats, 'misses')),
+            'total_sets'       => $this->getOperationCount('set'),
+            'total_deletes'    => $this->getOperationCount('delete'),
+            'total_errors'     => array_sum(array_column($this->errorStats, 'total_errors')),
             'total_operations' => $stats['total_operations'],
-            'success_rate' => $stats['success_rate'],
-            'avg_duration' => $stats['avg_duration'],
-            'hit_rate' => $stats['global_hit_rate'],
+            'success_rate'     => $stats['success_rate'],
+            'avg_duration'     => $stats['avg_duration'],
+            'hit_rate'         => $stats['global_hit_rate'],
         ];
     }
 
@@ -449,21 +449,21 @@ class CacheMonitor implements CacheMonitorInterface
         ));
         foreach ($allDrivers as $driver) {
             $stats = $this->operationStats[$driver] ?? [
-                'total_operations' => 0,
-                'total_duration' => 0.0,
-                'avg_duration' => 0.0,
-                'min_duration' => 0.0,
-                'max_duration' => 0.0,
+                'total_operations'      => 0,
+                'total_duration'        => 0.0,
+                'avg_duration'          => 0.0,
+                'min_duration'          => 0.0,
+                'max_duration'          => 0.0,
                 'successful_operations' => 0,
             ];
             $performance[$driver] = [
                 'total_operations' => $stats['total_operations'],
-                'total_time' => $stats['total_duration'],
-                'avg_time' => $stats['avg_duration'],
-                'min_time' => $stats['min_duration'],
-                'max_time' => $stats['max_duration'],
-                'success_rate' => $this->calculateSuccessRate($stats),
-                'total_errors' => $this->errorStats[$driver]['total_errors'] ?? 0,
+                'total_time'       => $stats['total_duration'],
+                'avg_time'         => $stats['avg_duration'],
+                'min_time'         => $stats['min_duration'],
+                'max_time'         => $stats['max_duration'],
+                'success_rate'     => $this->calculateSuccessRate($stats),
+                'total_errors'     => $this->errorStats[$driver]['total_errors'] ?? 0,
             ];
         }
 
@@ -484,20 +484,20 @@ class CacheMonitor implements CacheMonitorInterface
     {
         $data = [
             'export_info' => [
-                'timestamp' => date('Y-m-d H:i:s'),
-                'format' => $format,
+                'timestamp'  => date('Y-m-d H:i:s'),
+                'format'     => $format,
                 'time_range' => $timeRange,
             ],
-            'cache_stats' => $this->getCacheStats(),
-            'hit_rate_stats' => $this->getHitRateStats($timeRange),
-            'error_stats' => $this->getErrorStats($timeRange),
-            'health_overview' => $this->getHealthOverview(),
+            'cache_stats'            => $this->getCacheStats(),
+            'hit_rate_stats'         => $this->getHitRateStats($timeRange),
+            'error_stats'            => $this->getErrorStats($timeRange),
+            'health_overview'        => $this->getHealthOverview(),
             'performance_comparison' => $this->getDriverPerformanceComparison(),
         ];
 
         return match ($format) {
-            'json' => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
-            'csv' => $this->convertToCsv($data),
+            'json'  => json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '',
+            'csv'   => $this->convertToCsv($data),
             default => throw new InvalidArgumentException("不支援的匯出格式: {$format}"),
         };
     }
@@ -520,14 +520,14 @@ class CacheMonitor implements CacheMonitorInterface
     private function initializeDriverStats(string $driver): void
     {
         $this->operationStats[$driver] = [
-            'operations' => [],
-            'total_operations' => 0,
+            'operations'            => [],
+            'total_operations'      => 0,
             'successful_operations' => 0,
-            'failed_operations' => 0,
-            'total_duration' => 0.0,
-            'avg_duration' => 0.0,
-            'min_duration' => 0.0,
-            'max_duration' => 0.0,
+            'failed_operations'     => 0,
+            'total_duration'        => 0.0,
+            'avg_duration'          => 0.0,
+            'min_duration'          => 0.0,
+            'max_duration'          => 0.0,
         ];
     }
 
@@ -558,9 +558,9 @@ class CacheMonitor implements CacheMonitorInterface
         $healthStatus = $this->healthRecords[$driver] ?? ['healthy' => true, 'timestamp' => time(), 'details' => []];
 
         return [
-            'operations' => $operationStats,
-            'hit_stats' => $hitStats,
-            'error_stats' => $errorStats,
+            'operations'    => $operationStats,
+            'hit_stats'     => $hitStats,
+            'error_stats'   => $errorStats,
             'health_status' => $healthStatus,
         ];
     }
@@ -596,12 +596,12 @@ class CacheMonitor implements CacheMonitorInterface
         }
 
         return [
-            'total_operations' => $totalOps,
-            'success_rate' => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100 : 0,
-            'avg_duration' => $totalOps > 0 ? $totalDuration / $totalOps : 0,
+            'total_operations'     => $totalOps,
+            'success_rate'         => $totalOps > 0 ? ($totalSuccessful / $totalOps) * 100 : 0,
+            'avg_duration'         => $totalOps > 0 ? $totalDuration / $totalOps : 0,
             'total_cache_requests' => $totalRequests,
-            'global_hit_rate' => $totalRequests > 0 ? ($totalHits / $totalRequests) * 100 : 0,
-            'total_errors' => $totalErrors,
+            'global_hit_rate'      => $totalRequests > 0 ? ($totalHits / $totalRequests) * 100 : 0,
+            'total_errors'         => $totalErrors,
         ];
     }
 
@@ -670,14 +670,14 @@ class CacheMonitor implements CacheMonitorInterface
     private function getEmptyDriverStats(): array
     {
         return [
-            'operations' => [],
-            'total_operations' => 0,
+            'operations'            => [],
+            'total_operations'      => 0,
             'successful_operations' => 0,
-            'failed_operations' => 0,
-            'total_duration' => 0.0,
-            'avg_duration' => 0.0,
-            'min_duration' => 0.0,
-            'max_duration' => 0.0,
+            'failed_operations'     => 0,
+            'total_duration'        => 0.0,
+            'avg_duration'          => 0.0,
+            'min_duration'          => 0.0,
+            'max_duration'          => 0.0,
         ];
     }
 
@@ -687,12 +687,12 @@ class CacheMonitor implements CacheMonitorInterface
     private function getEmptyHitStats(): array
     {
         return [
-            'hits' => 0,
-            'misses' => 0,
-            'total_requests' => 0,
-            'hit_rate' => 0.0,
+            'hits'               => 0,
+            'misses'             => 0,
+            'total_requests'     => 0,
+            'hit_rate'           => 0.0,
             'total_hit_duration' => 0.0,
-            'avg_hit_duration' => 0.0,
+            'avg_hit_duration'   => 0.0,
         ];
     }
 
@@ -702,9 +702,9 @@ class CacheMonitor implements CacheMonitorInterface
     private function getEmptyErrorStats(): array
     {
         return [
-            'total_errors' => 0,
+            'total_errors'        => 0,
             'errors_by_operation' => [],
-            'recent_errors' => [],
+            'recent_errors'       => [],
         ];
     }
 
@@ -733,8 +733,8 @@ class CacheMonitor implements CacheMonitorInterface
     {
         return [
             'slow_operation_threshold' => 100.0, // 毫秒
-            'max_history_size' => 1000,
-            'max_recent_errors' => 50,
+            'max_history_size'         => 1000,
+            'max_recent_errors'        => 50,
         ];
     }
 

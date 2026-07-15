@@ -28,7 +28,7 @@ final class EnvironmentConfigSimpleTest extends UnitTestCase
 
         foreach ($envKeys as $key) {
             $this->originalEnv[$key] = [
-                'env' => $_ENV[$key] ?? null,
+                'env'    => $_ENV[$key] ?? null,
                 'getenv' => getenv($key) ?: null,
             ];
 

@@ -38,6 +38,7 @@ class StatisticsOverviewDTO implements JsonSerializable
      * 從陣列建立 DTO.
      *
      * @param array<string, mixed> $data 原始資料陣列
+     *
      * @throws InvalidArgumentException 當資料格式不正確時
      */
     public static function fromArray(array $data): self
@@ -64,6 +65,7 @@ class StatisticsOverviewDTO implements JsonSerializable
      * 確保回傳 array<string, mixed> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, mixed>
      */
     private static function ensureStringMixedArray($data): array
@@ -86,20 +88,21 @@ class StatisticsOverviewDTO implements JsonSerializable
      *
      * @param ValidatorInterface $validator 驗證器
      * @param array<string, mixed> $data 要驗證的資料
+     *
      * @throws ValidationException 當驗證失敗時
      */
     public static function createWithValidation(ValidatorInterface $validator, array $data): self
     {
         $rules = [
-            'total_posts' => 'required|integer|min:0',
-            'active_users' => 'required|integer|min:0',
-            'new_users' => 'required|integer|min:0',
-            'post_activity' => 'required|array',
-            'user_activity' => 'required|array',
+            'total_posts'        => 'required|integer|min:0',
+            'active_users'       => 'required|integer|min:0',
+            'new_users'          => 'required|integer|min:0',
+            'post_activity'      => 'required|array',
+            'user_activity'      => 'required|array',
             'engagement_metrics' => 'required|array',
-            'period_summary' => 'required|array',
-            'generated_at' => 'sometimes|string|date',
-            'metadata' => 'sometimes|array',
+            'period_summary'     => 'required|array',
+            'generated_at'       => 'sometimes|string|date',
+            'metadata'           => 'sometimes|array',
         ];
         $validator->validate($data, $rules);
 
@@ -194,7 +197,7 @@ class StatisticsOverviewDTO implements JsonSerializable
             $activityScore >= 80 => 'high',
             $activityScore >= 50 => 'medium',
             $activityScore >= 20 => 'low',
-            default => 'inactive',
+            default              => 'inactive',
         };
     }
 
@@ -206,15 +209,15 @@ class StatisticsOverviewDTO implements JsonSerializable
     public function toArray(): array
     {
         $data = [
-            'total_posts' => $this->totalPosts,
-            'active_users' => $this->activeUsers,
-            'new_users' => $this->newUsers,
-            'post_activity' => $this->postActivity,
-            'user_activity' => $this->userActivity,
+            'total_posts'        => $this->totalPosts,
+            'active_users'       => $this->activeUsers,
+            'new_users'          => $this->newUsers,
+            'post_activity'      => $this->postActivity,
+            'user_activity'      => $this->userActivity,
             'engagement_metrics' => $this->engagementMetrics,
-            'period_summary' => $this->periodSummary,
+            'period_summary'     => $this->periodSummary,
             'calculated_metrics' => [
-                'growth_rate' => $this->getGrowthRate(),
+                'growth_rate'    => $this->getGrowthRate(),
                 'posts_per_user' => $this->getPostsPerUser(),
                 'activity_level' => $this->getActivityLevel(),
             ],
@@ -255,10 +258,10 @@ class StatisticsOverviewDTO implements JsonSerializable
     public function getSummary(): array
     {
         return [
-            'total_posts' => $this->totalPosts,
-            'active_users' => $this->activeUsers,
-            'new_users' => $this->newUsers,
-            'growth_rate' => $this->getGrowthRate(),
+            'total_posts'    => $this->totalPosts,
+            'active_users'   => $this->activeUsers,
+            'new_users'      => $this->newUsers,
+            'growth_rate'    => $this->getGrowthRate(),
             'activity_level' => $this->getActivityLevel(),
         ];
     }
@@ -300,6 +303,7 @@ class StatisticsOverviewDTO implements JsonSerializable
      * @param string $name 陣列名稱
      * @param array<string, mixed> $data 要驗證的陣列
      * @param array<string> $requiredKeys 必要的鍵
+     *
      * @throws InvalidArgumentException 當結構無效時
      */
     private function validateArrayStructure(string $name, array $data, array $requiredKeys): void

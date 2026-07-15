@@ -34,6 +34,7 @@ final class StatisticsQueryService
      * 取得統計概覽資料.
      *
      * @param StatisticsQueryDTO $query 查詢參數
+     *
      * @throws InvalidArgumentException
      */
     public function getOverview(StatisticsQueryDTO $query): StatisticsOverviewDTO
@@ -51,8 +52,8 @@ final class StatisticsQueryService
             $this->logger->debug('開始查詢統計概覽', [
                 'query' => [
                     'start_date' => $query->getStartDate()?->format('Y-m-d'),
-                    'end_date' => $query->getEndDate()?->format('Y-m-d'),
-                    'filters' => $query->getFilters(),
+                    'end_date'   => $query->getEndDate()?->format('Y-m-d'),
+                    'filters'    => $query->getFilters(),
                 ],
             ]);
             $overview = $this->buildOverviewFromRepository($query);
@@ -65,7 +66,7 @@ final class StatisticsQueryService
                 'error' => $e->getMessage(),
                 'query' => [
                     'start_date' => $query->getStartDate()?->format('Y-m-d'),
-                    'end_date' => $query->getEndDate()?->format('Y-m-d'),
+                    'end_date'   => $query->getEndDate()?->format('Y-m-d'),
                 ],
             ]);
 
@@ -89,9 +90,9 @@ final class StatisticsQueryService
                 return $cached;
             }
             $this->logger->debug('開始查詢文章統計', [
-                'page' => $query->getPage(),
+                'page'  => $query->getPage(),
                 'limit' => $query->getLimit(),
-                'sort' => $query->getSortBy() . ' ' . $query->getSortDirection(),
+                'sort'  => $query->getSortBy() . ' ' . $query->getSortDirection(),
             ]);
             $result = $this->buildPostStatisticsFromRepository($query);
             $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'posts']);
@@ -101,7 +102,7 @@ final class StatisticsQueryService
         } catch (Throwable $e) {
             $this->logger->error('文章統計查詢失敗', [
                 'error' => $e->getMessage(),
-                'page' => $query->getPage(),
+                'page'  => $query->getPage(),
                 'limit' => $query->getLimit(),
             ]);
 
@@ -219,7 +220,7 @@ final class StatisticsQueryService
             return $result;
         } catch (Throwable $e) {
             $this->logger->error('統計搜尋失敗', [
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
                 'keyword' => $keyword,
             ]);
 
@@ -251,11 +252,11 @@ final class StatisticsQueryService
             'stats',
             $type,
             md5(serialize([
-                'start' => $query->getStartDate()?->format('Y-m-d'),
-                'end' => $query->getEndDate()?->format('Y-m-d'),
-                'page' => $query->getPage(),
-                'limit' => $query->getLimit(),
-                'sort' => $query->getSortBy() . ':' . $query->getSortDirection(),
+                'start'   => $query->getStartDate()?->format('Y-m-d'),
+                'end'     => $query->getEndDate()?->format('Y-m-d'),
+                'page'    => $query->getPage(),
+                'limit'   => $query->getLimit(),
+                'sort'    => $query->getSortBy() . ':' . $query->getSortDirection(),
                 'filters' => $query->getFilters(),
             ])),
         ];
@@ -273,11 +274,11 @@ final class StatisticsQueryService
             'search',
             md5($keyword),
             md5(serialize([
-                'start' => $query->getStartDate()?->format('Y-m-d'),
-                'end' => $query->getEndDate()?->format('Y-m-d'),
-                'page' => $query->getPage(),
-                'limit' => $query->getLimit(),
-                'sort' => $query->getSortBy() . ':' . $query->getSortDirection(),
+                'start'   => $query->getStartDate()?->format('Y-m-d'),
+                'end'     => $query->getEndDate()?->format('Y-m-d'),
+                'page'    => $query->getPage(),
+                'limit'   => $query->getLimit(),
+                'sort'    => $query->getSortBy() . ':' . $query->getSortDirection(),
                 'filters' => $query->getFilters(),
             ])),
         ];
@@ -312,21 +313,21 @@ final class StatisticsQueryService
             activeUsers: $activeUsers,
             newUsers: $newUsers,
             postActivity: [
-                'total_posts' => $totalPosts,
+                'total_posts'     => $totalPosts,
                 'published_posts' => $this->queryPublishedPosts($startDate, $endDate),
-                'draft_posts' => $this->queryDraftPosts($startDate, $endDate),
+                'draft_posts'     => $this->queryDraftPosts($startDate, $endDate),
             ],
             userActivity: [
-                'total_users' => $this->queryTotalUsers(),
+                'total_users'  => $this->queryTotalUsers(),
                 'active_users' => $activeUsers,
-                'new_users' => $newUsers,
+                'new_users'    => $newUsers,
             ],
             engagementMetrics: [
                 'posts_per_active_user' => $activeUsers > 0 ? round($totalPosts / $activeUsers, 2) : 0.0,
-                'user_growth_rate' => $this->calculateUserGrowthRate($startDate, $endDate),
+                'user_growth_rate'      => $this->calculateUserGrowthRate($startDate, $endDate),
             ],
             periodSummary: [
-                'type' => $this->determinePeriodType($startDate, $endDate),
+                'type'          => $this->determinePeriodType($startDate, $endDate),
                 'duration_days' => $this->calculateDurationDays($startDate, $endDate),
             ],
         );
@@ -410,7 +411,7 @@ final class StatisticsQueryService
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             'start_date' => $startDate,
-            'end_date' => $endDate,
+            'end_date'   => $endDate,
         ]);
 
         return (int) $stmt->fetchColumn();
@@ -529,14 +530,14 @@ final class StatisticsQueryService
         $posts = [];
         for ($i = 1; $i <= $query->getLimit(); $i++) {
             $posts[] = [
-                'id' => 'post-' . $i,
-                'title' => 'Sample Post ' . $i,
-                'view_count' => rand(100, 1000),
-                'like_count' => rand(10, 100),
-                'comment_count' => rand(0, 50),
-                'category' => 'Technology',
+                'id'              => 'post-' . $i,
+                'title'           => 'Sample Post ' . $i,
+                'view_count'      => rand(100, 1000),
+                'like_count'      => rand(10, 100),
+                'comment_count'   => rand(0, 50),
+                'category'        => 'Technology',
                 'creation_source' => 'web',
-                'created_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+                'created_at'      => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
         }
 
@@ -556,18 +557,18 @@ final class StatisticsQueryService
         // 模擬資料 - 建立簡化版本的來源分佈
         return [
             [
-                'source' => 'web',
-                'count' => 800,
+                'source'     => 'web',
+                'count'      => 800,
                 'percentage' => 80.0,
             ],
             [
-                'source' => 'api',
-                'count' => 150,
+                'source'     => 'api',
+                'count'      => 150,
                 'percentage' => 15.0,
             ],
             [
-                'source' => 'mobile',
-                'count' => 50,
+                'source'     => 'mobile',
+                'count'      => 50,
                 'percentage' => 5.0,
             ],
         ];
@@ -582,11 +583,11 @@ final class StatisticsQueryService
         $users = [];
         for ($i = 1; $i <= $query->getLimit(); $i++) {
             $users[] = [
-                'id' => 'user-' . $i,
-                'username' => 'user' . $i,
-                'post_count' => rand(1, 20),
-                'view_count' => rand(100, 5000),
-                'like_count' => rand(10, 500),
+                'id'             => 'user-' . $i,
+                'username'       => 'user' . $i,
+                'post_count'     => rand(1, 20),
+                'view_count'     => rand(100, 5000),
+                'like_count'     => rand(10, 500),
                 'last_active_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
             ];
         }
@@ -644,11 +645,11 @@ final class StatisticsQueryService
         $results = [];
         for ($i = 1; $i <= min(10, $query->getLimit()); $i++) {
             $results[] = [
-                'type' => 'post',
-                'id' => 'post-' . $i,
-                'title' => sprintf('Post containing "%s" %d', $keyword, $i),
+                'type'            => 'post',
+                'id'              => 'post-' . $i,
+                'title'           => sprintf('Post containing "%s" %d', $keyword, $i),
                 'relevance_score' => 0.9 - ($i * 0.1),
-                'statistics' => [
+                'statistics'      => [
                     'views' => rand(100, 1000),
                     'likes' => rand(10, 100),
                 ],

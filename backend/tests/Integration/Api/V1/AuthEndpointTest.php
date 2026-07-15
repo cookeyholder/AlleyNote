@@ -46,11 +46,11 @@ class AuthEndpointTest extends IntegrationTestCase
     {
         // 準備 $_SERVER 環境變數
         $_SERVER = array_merge($_SERVER, [
-            'REQUEST_METHOD' => $method,
-            'REQUEST_URI' => $path,
-            'HTTP_HOST' => 'localhost',
+            'REQUEST_METHOD'    => $method,
+            'REQUEST_URI'       => $path,
+            'HTTP_HOST'         => 'localhost',
             'HTTP_CONTENT_TYPE' => 'application/json',
-            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_ACCEPT'       => 'application/json',
         ]);
 
         // 加入自訂標頭
@@ -83,7 +83,7 @@ class AuthEndpointTest extends IntegrationTestCase
     public function testLoginEndpointReturnsJwtTokens(): void
     {
         $loginData = [
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -187,7 +187,7 @@ class AuthEndpointTest extends IntegrationTestCase
     public function testLogoutEndpoint(): void
     {
         $logoutData = [
-            'access_token' => 'fake.access.token',
+            'access_token'  => 'fake.access.token',
             'refresh_token' => 'fake.refresh.token',
         ];
 

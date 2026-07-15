@@ -277,13 +277,13 @@ final class JwtConfig
     public function getConfigSummary(): array
     {
         return [
-            'algorithm' => $this->algorithm,
-            'issuer' => $this->issuer,
-            'audience' => $this->audience,
-            'access_token_ttl' => $this->accessTokenTtl,
-            'refresh_token_ttl' => $this->refreshTokenTtl,
+            'algorithm'              => $this->algorithm,
+            'issuer'                 => $this->issuer,
+            'audience'               => $this->audience,
+            'access_token_ttl'       => $this->accessTokenTtl,
+            'refresh_token_ttl'      => $this->refreshTokenTtl,
             'private_key_configured' => !empty($this->privateKey),
-            'public_key_configured' => !empty($this->publicKey),
+            'public_key_configured'  => !empty($this->publicKey),
         ];
     }
 

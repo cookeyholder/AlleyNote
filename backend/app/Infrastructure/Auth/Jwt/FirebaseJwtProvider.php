@@ -331,11 +331,11 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         $now = new DateTimeImmutable();
         // 準備標準 JWT 宣告
         $claims = [
-            'iss' => $this->config->getIssuer(),
-            'aud' => $this->config->getAudience(),
-            'iat' => $now->getTimestamp(),
-            'exp' => $now->getTimestamp() + $ttl,
-            'jti' => $this->generateJti(),
+            'iss'  => $this->config->getIssuer(),
+            'aud'  => $this->config->getAudience(),
+            'iat'  => $now->getTimestamp(),
+            'exp'  => $now->getTimestamp() + $ttl,
+            'jti'  => $this->generateJti(),
             'type' => $type,
         ];
         // 合併自訂載荷

@@ -11,6 +11,7 @@ use Tests\Support\UnitTestCase;
  * 授權結果測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class AuthorizationResultTest extends UnitTestCase
@@ -155,11 +156,11 @@ class AuthorizationResultTest extends UnitTestCase
         );
 
         $expected = [
-            'allowed' => true,
-            'reason' => '測試轉換',
-            'code' => 'TEST_ARRAY',
+            'allowed'       => true,
+            'reason'        => '測試轉換',
+            'code'          => 'TEST_ARRAY',
             'applied_rules' => ['test_rule'],
-            'metadata' => ['key' => 'value'],
+            'metadata'      => ['key' => 'value'],
         ];
 
         $this->assertSame($expected, $result->toArray());

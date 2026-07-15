@@ -246,7 +246,7 @@ final class Post
     public function getContent(): PostContent { return $this->content; }
     public function getSlug(): PostSlug { return $this->slug; }
     public function getStatus(): PostStatus { return $this->status; }
-    public function getViewCount(): ViewCount { return $this->viewCount; }
+    public function getViews(): ViewCount { return $this->views; }
     public function isPinned(): bool { return $this->isPinned; }
     public function isPublished(): bool { return $this->status === PostStatus::PUBLISHED; }
 }

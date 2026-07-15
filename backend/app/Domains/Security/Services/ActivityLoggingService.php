@@ -42,6 +42,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * 在記錄前會檢查活動類型是否啟用以及記錄等級是否符合要求。
      *
      * @param CreateActivityLogDTO $dto 活動記錄資料傳輸物件
+     *
      * @return bool 記錄是否成功
      *
      * @example
@@ -74,7 +75,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             if ($result === null) {
                 $this->logger->error('Repository returned null for activity log creation', [
                     'action_type' => $dto->getActionType()->value,
-                    'user_id' => $dto->getUserId(),
+                    'user_id'     => $dto->getUserId(),
                 ]);
 
                 return false;
@@ -84,9 +85,9 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
         } catch (Throwable $e) {
             $this->logger->error('Failed to log activity', [
                 'action_type' => $dto->getActionType()->value,
-                'user_id' => $dto->getUserId(),
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
+                'user_id'     => $dto->getUserId(),
+                'error'       => $e->getMessage(),
+                'trace'       => $e->getTraceAsString(),
             ]);
 
             return false;
@@ -104,6 +105,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param string|null $targetType 目標類型 (如: 'post', 'user', 'file')
      * @param string|null $targetId 目標ID
      * @param array|null $metadata 額外的元資料
+     *
      * @return bool 記錄是否成功
      *
      * @example
@@ -156,6 +158,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param int|null $userId 使用者ID
      * @param string $reason 失敗原因描述
      * @param array|null $metadata 額外的元資料，如錯誤代碼、堆疊追蹤等
+     *
      * @return bool 記錄是否成功
      *
      * @example
@@ -202,6 +205,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
      * @param ActivityType $actionType 活動類型（必須是安全相關類型）
      * @param string $description 安全事件的詳細描述
      * @param array|null $metadata 相關的安全資訊和上下文
+     *
      * @return bool 記錄是否成功
      *
      * @example
@@ -325,7 +329,7 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             $deletedCount = $this->repository->deleteOldRecords($cutoffDate);
             $this->logger->info('Activity log cleanup completed', [
                 'deleted_count' => $deletedCount,
-                'cutoff_date' => $cutoffDate->format('Y-m-d H:i:s'),
+                'cutoff_date'   => $cutoffDate->format('Y-m-d H:i:s'),
             ]);
 
             return $deletedCount;
@@ -358,8 +362,8 @@ class ActivityLoggingService implements ActivityLoggingServiceInterface
             ActivityType::CSRF_ATTACK_BLOCKED,
             ActivityType::XSS_ATTACK_BLOCKED,
             ActivityType::SQL_INJECTION_BLOCKED => ActivityStatus::BLOCKED,
-            ActivityType::LOGIN_FAILED => ActivityStatus::FAILED,
-            default => ActivityStatus::SUCCESS,
+            ActivityType::LOGIN_FAILED          => ActivityStatus::FAILED,
+            default                             => ActivityStatus::SUCCESS,
         };
     }
 }

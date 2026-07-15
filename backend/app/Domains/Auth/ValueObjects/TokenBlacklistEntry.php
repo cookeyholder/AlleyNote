@@ -78,6 +78,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 從陣列建立黑名單項目.
      *
      * @param array<string, mixed> $data 黑名單資料
+     *
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -276,6 +277,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 取得特定元資料.
      *
      * @param string $key 元資料鍵
+     *
      * @return mixed|null
      */
     public function getMetadataValue(string $key): mixed
@@ -361,15 +363,15 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function getReasonDescription(): string
     {
         $descriptions = [
-            self::REASON_LOGOUT => 'User logged out',
-            self::REASON_REVOKED => 'Token manually revoked',
-            self::REASON_SECURITY_BREACH => 'Security breach detected',
-            self::REASON_PASSWORD_CHANGED => 'Password changed',
-            self::REASON_ACCOUNT_SUSPENDED => 'Account suspended',
-            self::REASON_MANUAL_REVOCATION => 'Manual revocation',
-            self::REASON_EXPIRED => 'Token expired',
-            self::REASON_INVALID_SIGNATURE => 'Invalid signature',
-            self::REASON_DEVICE_LOST => 'Device reported lost',
+            self::REASON_LOGOUT              => 'User logged out',
+            self::REASON_REVOKED             => 'Token manually revoked',
+            self::REASON_SECURITY_BREACH     => 'Security breach detected',
+            self::REASON_PASSWORD_CHANGED    => 'Password changed',
+            self::REASON_ACCOUNT_SUSPENDED   => 'Account suspended',
+            self::REASON_MANUAL_REVOCATION   => 'Manual revocation',
+            self::REASON_EXPIRED             => 'Token expired',
+            self::REASON_INVALID_SIGNATURE   => 'Invalid signature',
+            self::REASON_DEVICE_LOST         => 'Device reported lost',
             self::REASON_SUSPICIOUS_ACTIVITY => 'Suspicious activity detected',
         ];
 
@@ -417,19 +419,19 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'jti' => $this->jti,
-            'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format(DateTimeImmutable::ATOM),
-            'blacklisted_at' => $this->blacklistedAt->format(DateTimeImmutable::ATOM),
-            'reason' => $this->reason,
-            'reason_description' => $this->getReasonDescription(),
-            'user_id' => $this->userId,
-            'device_id' => $this->deviceId,
-            'metadata' => $this->metadata,
+            'jti'                 => $this->jti,
+            'token_type'          => $this->tokenType,
+            'expires_at'          => $this->expiresAt->format(DateTimeImmutable::ATOM),
+            'blacklisted_at'      => $this->blacklistedAt->format(DateTimeImmutable::ATOM),
+            'reason'              => $this->reason,
+            'reason_description'  => $this->getReasonDescription(),
+            'user_id'             => $this->userId,
+            'device_id'           => $this->deviceId,
+            'metadata'            => $this->metadata,
             'is_security_related' => $this->isSecurityRelated(),
-            'is_user_initiated' => $this->isUserInitiated(),
-            'is_active' => $this->isActive(),
-            'priority' => $this->getPriority(),
+            'is_user_initiated'   => $this->isUserInitiated(),
+            'is_active'           => $this->isActive(),
+            'priority'            => $this->getPriority(),
         ];
     }
 
@@ -441,14 +443,14 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     public function toDatabaseArray(): array
     {
         return [
-            'jti' => $this->jti,
-            'token_type' => $this->tokenType,
-            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
+            'jti'            => $this->jti,
+            'token_type'     => $this->tokenType,
+            'expires_at'     => $this->expiresAt->format('Y-m-d H:i:s'),
             'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H:i:s'),
-            'reason' => $this->reason,
-            'user_id' => $this->userId,
-            'device_id' => $this->deviceId,
-            'metadata' => !empty($this->metadata) ? json_encode($this->metadata) : null,
+            'reason'         => $this->reason,
+            'user_id'        => $this->userId,
+            'device_id'      => $this->deviceId,
+            'metadata'       => !empty($this->metadata) ? json_encode($this->metadata) : null,
         ];
     }
 
@@ -541,6 +543,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證 JWT ID.
      *
      * @param string $jti JWT ID
+     *
      * @throws InvalidArgumentException 當 JTI 無效時
      */
     private function validateJti(string $jti): void
@@ -557,6 +560,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證 Token 類型.
      *
      * @param string $tokenType Token 類型
+     *
      * @throws InvalidArgumentException 當 Token 類型無效時
      */
     private function validateTokenType(string $tokenType): void
@@ -572,6 +576,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證黑名單原因.
      *
      * @param string $reason 黑名單原因
+     *
      * @throws InvalidArgumentException 當原因無效時
      */
     private function validateReason(string $reason): void
@@ -588,6 +593,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      *
      * @param DateTimeImmutable $expiresAt 過期時間
      * @param DateTimeImmutable $blacklistedAt 黑名單時間
+     *
      * @throws InvalidArgumentException 當時間設定無效時
      */
     private function validateTimes(DateTimeImmutable $expiresAt, DateTimeImmutable $blacklistedAt): void
@@ -609,6 +615,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證使用者 ID.
      *
      * @param int|null $userId 使用者 ID
+     *
      * @throws InvalidArgumentException 當使用者 ID 無效時
      */
     private function validateUserId(?int $userId): void
@@ -622,6 +629,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證裝置 ID.
      *
      * @param string|null $deviceId 裝置 ID
+     *
      * @throws InvalidArgumentException 當裝置 ID 無效時
      */
     private function validateDeviceId(?string $deviceId): void
@@ -640,6 +648,7 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
      * 驗證元資料.
      *
      * @param array<string, mixed> $metadata 元資料
+     *
      * @throws InvalidArgumentException 當元資料無效時
      */
     private function validateMetadata(array $metadata): void

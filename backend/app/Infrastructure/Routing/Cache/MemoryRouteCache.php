@@ -16,11 +16,11 @@ class MemoryRouteCache implements RouteCacheInterface
     private array $timestamps = [];
 
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'size' => 0,
+        'hits'       => 0,
+        'misses'     => 0,
+        'size'       => 0,
         'created_at' => 0,
-        'last_used' => 0,
+        'last_used'  => 0,
     ];
 
     public function __construct()
@@ -86,11 +86,11 @@ class MemoryRouteCache implements RouteCacheInterface
         $this->timestamps = [];
         // 重置統計
         $this->stats = [
-            'hits' => 0,
-            'misses' => 0,
-            'size' => 0,
+            'hits'       => 0,
+            'misses'     => 0,
+            'size'       => 0,
             'created_at' => time(),
-            'last_used' => 0,
+            'last_used'  => 0,
         ];
 
         return true;

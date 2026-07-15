@@ -46,3 +46,4 @@
 - 文件總索引：`docs/INDEX.md`
 - 領域與 API 詳細內容：`docs/api/README.md` 與其連結的 canonical runbook
 - 歷史文件：`docs/archive/`
+- 分析報告歸檔：`docs/archive/reports/`

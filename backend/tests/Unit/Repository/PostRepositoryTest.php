@@ -135,7 +135,7 @@ class PostRepositoryTest extends UnitTestCase
     public function testCanCreatePost(): void
     {
         $data = PostFactory::make([
-            'title' => '測試文章',
+            'title'   => '測試文章',
             'content' => '這是測試內容',
         ]);
         $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
@@ -186,7 +186,7 @@ class PostRepositoryTest extends UnitTestCase
         $post = $this->repository->create($data);
 
         $updateData = [
-            'title' => '更新後的標題',
+            'title'   => '更新後的標題',
             'content' => '更新後的內容',
             'user_id' => 1,
         ];
@@ -217,7 +217,7 @@ class PostRepositoryTest extends UnitTestCase
         // 建立 15 篇文章
         for ($i = 1; $i <= 15; $i++) {
             $this->repository->create(PostFactory::make([
-                'title' => "文章 {$i}",
+                'title'   => "文章 {$i}",
                 'content' => "內容 {$i}",
             ]));
         }
@@ -236,17 +236,17 @@ class PostRepositoryTest extends UnitTestCase
         // 建立置頂文章
         $this->repository->create(PostFactory::make([
             'is_pinned' => true,
-            'title' => '置頂文章 1',
+            'title'     => '置頂文章 1',
         ]));
         $this->repository->create(PostFactory::make([
             'is_pinned' => true,
-            'title' => '置頂文章 2',
+            'title'     => '置頂文章 2',
         ]));
 
         // 建立普通文章
         $this->repository->create(PostFactory::make([
             'is_pinned' => false,
-            'title' => '普通文章',
+            'title'     => '普通文章',
         ]));
 
         $pinnedPosts = $this->repository->getPinnedPosts();

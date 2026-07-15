@@ -182,6 +182,7 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
      * 標準化行資料，確保所有行有相同的欄位.
      *
      * @param array<array<string, mixed>> $rows
+     *
      * @return array<array<string, mixed>>
      */
     private function normalizeRows(array $rows): array

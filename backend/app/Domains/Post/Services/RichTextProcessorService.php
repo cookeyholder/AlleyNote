@@ -101,10 +101,10 @@ class RichTextProcessorService
         // 檢查內容變化
         if ($content !== $result['content']) {
             $result['warnings'][] = [
-                'type'              => 'content_modified',
-                'message'           => '內容已被安全過濾器修改',
-                'original_length'   => strlen($content),
-                'filtered_length'   => strlen($result['content']),
+                'type'            => 'content_modified',
+                'message'         => '內容已被安全過濾器修改',
+                'original_length' => strlen($content),
+                'filtered_length' => strlen($result['content']),
             ];
         }
 
@@ -146,9 +146,9 @@ class RichTextProcessorService
     public function getAllowedElements(string $userLevel = 'basic'): mixed
     {
         $purifier = match ($userLevel) {
-            'admin' => $this->adminPurifier,
+            'admin'    => $this->adminPurifier,
             'extended' => $this->extendedPurifier,
-            default => $this->basicPurifier,
+            default    => $this->basicPurifier,
         };
         $definition = $purifier->config->getHTMLDefinition();
         $allowedElements = $definition->info;
@@ -159,7 +159,7 @@ class RichTextProcessorService
         }
 
         return [
-            'tags' => array_unique($tags),
+            'tags'       => array_unique($tags),
             'attributes' => array_unique($attributes),
         ];
     }
@@ -170,14 +170,14 @@ class RichTextProcessorService
     private function generateStatistics(string $original, string $filtered): mixed
     {
         return [
-            'original_length' => strlen($original),
-            'filtered_length' => strlen($filtered),
+            'original_length'      => strlen($original),
+            'filtered_length'      => strlen($filtered),
             'reduction_percentage' => strlen($original) > 0
                 ? round((strlen($original) - strlen($filtered)) / strlen($original) * 100, 2)
                 : 0,
-            'word_count' => str_word_count(strip_tags($filtered)),
-            'tag_count' => substr_count($filtered, '<'),
-            'link_count' => substr_count(strtolower($filtered), '<a '),
+            'word_count'  => str_word_count(strip_tags($filtered)),
+            'tag_count'   => substr_count($filtered, '<'),
+            'link_count'  => substr_count(strtolower($filtered), '<a '),
             'image_count' => substr_count(strtolower($filtered), '<img '),
         ];
     }

@@ -59,7 +59,7 @@ class PermissionController
         $permissions = $this->permissionManagementService->listPermissions();
         $responseData = json_encode([
             'success' => true,
-            'data' => array_map(fn($permission) => $permission->toArray(), $permissions),
+            'data'    => array_map(fn($permission) => $permission->toArray(), $permissions),
         ]);
         $response->getBody()->write($responseData ?: '');
 
@@ -131,7 +131,7 @@ class PermissionController
             $permission = $this->permissionManagementService->getPermission($id);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $permission->toArray(),
+                'data'    => $permission->toArray(),
             ]);
             $response->getBody()->write($responseData ?: '');
 

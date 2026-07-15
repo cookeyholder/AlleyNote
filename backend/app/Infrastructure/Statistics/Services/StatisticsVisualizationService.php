@@ -309,12 +309,12 @@ class StatisticsVisualizationService implements StatisticsVisualizationServiceIn
             options: array_merge($chartOptions, [
                 'empty_state' => [
                     'implemented' => false,
-                    'message' => 'Multi-metric chart data is not implemented yet.',
+                    'message'     => 'Multi-metric chart data is not implemented yet.',
                 ],
                 'requested_metrics' => $metricNames,
-                'range' => [
-                    'start' => $startDate->format(DateTimeInterface::ATOM),
-                    'end' => $endDate->format(DateTimeInterface::ATOM),
+                'range'             => [
+                    'start'       => $startDate->format(DateTimeInterface::ATOM),
+                    'end'         => $endDate->format(DateTimeInterface::ATOM),
                     'granularity' => $granularity,
                 ],
             ]),

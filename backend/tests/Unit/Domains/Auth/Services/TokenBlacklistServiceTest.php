@@ -722,9 +722,9 @@ final class TokenBlacklistServiceTest extends UnitTestCase
     {
         // Arrange
         $criteria = [
-            'user_id' => 123,
+            'user_id'    => 123,
             'token_type' => TokenBlacklistEntry::TOKEN_TYPE_ACCESS,
-            'reason' => TokenBlacklistEntry::REASON_LOGOUT,
+            'reason'     => TokenBlacklistEntry::REASON_LOGOUT,
         ];
         $limit = 50;
         $offset = 0;
@@ -864,8 +864,8 @@ final class TokenBlacklistServiceTest extends UnitTestCase
         // Arrange
         $expected = [
             'cleaned_entries' => 50,
-            'compacted_size' => 1024000,
-            'execution_time' => 2.5,
+            'compacted_size'  => 1024000,
+            'execution_time'  => 2.5,
         ];
 
         $this->repository
@@ -910,9 +910,9 @@ final class TokenBlacklistServiceTest extends UnitTestCase
     {
         // Arrange
         $sizeInfo = [
-            'total_entries' => 1000,
-            'active_entries' => 800,
-            'expired_entries' => 100,
+            'total_entries'     => 1000,
+            'active_entries'    => 800,
+            'expired_entries'   => 100,
             'cleanable_entries' => 50,
         ];
         $stats = ['security_related' => 10];
@@ -948,9 +948,9 @@ final class TokenBlacklistServiceTest extends UnitTestCase
     {
         // Arrange
         $sizeInfo = [
-            'total_entries' => 200000,
-            'active_entries' => 150000,
-            'expired_entries' => 50000,
+            'total_entries'     => 200000,
+            'active_entries'    => 150000,
+            'expired_entries'   => 50000,
             'cleanable_entries' => 1000,
         ];
         $stats = ['security_related' => 500];

@@ -37,15 +37,15 @@ class XssProtectionExtensionService
     {
         return match ($context) {
             'rich_text_editor' => $this->protectRichTextEditor($input, $options),
-            'user_bio' => $this->protectUserBio($input, $options),
-            'post_title' => $this->protectPostTitle($input, $options),
-            'post_content' => $this->protectPostContent($input, $options),
-            'comment' => $this->protectComment($input, $options),
-            'search_query' => $this->protectSearchQuery($input, $options),
-            'url_parameter' => $this->protectUrlParameter($input, $options),
-            'json_data' => $this->protectJsonData($input, $options),
-            'file_upload' => $this->protectFileUpload($input, $options),
-            default => $this->protectGeneric($input, $options),
+            'user_bio'         => $this->protectUserBio($input, $options),
+            'post_title'       => $this->protectPostTitle($input, $options),
+            'post_content'     => $this->protectPostContent($input, $options),
+            'comment'          => $this->protectComment($input, $options),
+            'search_query'     => $this->protectSearchQuery($input, $options),
+            'url_parameter'    => $this->protectUrlParameter($input, $options),
+            'json_data'        => $this->protectJsonData($input, $options),
+            'file_upload'      => $this->protectFileUpload($input, $options),
+            default            => $this->protectGeneric($input, $options),
         };
     }
 
@@ -58,16 +58,16 @@ class XssProtectionExtensionService
         $processResult = $this->richTextProcessor->processCKEditorContent($input, $userLevel);
         $result = [
             'protected_content' => $processResult['content'],
-            'context' => 'rich_text_editor',
-            'protection_level' => 'enhanced',
-            'modifications' => [],
-            'warnings' => $processResult['warnings'],
-            'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
+            'context'           => 'rich_text_editor',
+            'protection_level'  => 'enhanced',
+            'modifications'     => [],
+            'warnings'          => $processResult['warnings'],
+            'security_score'    => $this->calculateSecurityScore($input, $processResult['content']),
         ];
         if ($input !== $processResult['content']) {
             $result['modifications'][] = [
-                'type' => 'html_sanitization',
-                'description' => 'HTML 內容已經過安全過濾',
+                'type'            => 'html_sanitization',
+                'description'     => 'HTML 內容已經過安全過濾',
                 'original_length' => strlen($input),
                 'filtered_length' => strlen($processResult['content']),
             ];
@@ -88,11 +88,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleaned,
-            'context' => 'user_bio',
-            'protection_level' => 'strict',
-            'modifications' => $input !== $cleaned ? [['type' => 'tag_filtering', 'description' => '移除不允許的 HTML 標籤']] : [],
-            'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, $cleaned),
+            'context'           => 'user_bio',
+            'protection_level'  => 'strict',
+            'modifications'     => $input !== $cleaned ? [['type' => 'tag_filtering', 'description' => '移除不允許的 HTML 標籤']] : [],
+            'warnings'          => [],
+            'security_score'    => $this->calculateSecurityScore($input, $cleaned),
         ];
     }
 
@@ -110,11 +110,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleaned,
-            'context' => 'post_title',
-            'protection_level' => 'maximum',
-            'modifications' => $input !== $cleaned ? [['type' => 'html_removal', 'description' => '移除所有 HTML 標籤']] : [],
-            'warnings' => [],
-            'security_score' => 100, // 標題經過最嚴格過濾
+            'context'           => 'post_title',
+            'protection_level'  => 'maximum',
+            'modifications'     => $input !== $cleaned ? [['type' => 'html_removal', 'description' => '移除所有 HTML 標籤']] : [],
+            'warnings'          => [],
+            'security_score'    => 100, // 標題經過最嚴格過濾
         ];
     }
 
@@ -129,11 +129,11 @@ class XssProtectionExtensionService
         if ($moderationResult['status'] === 'rejected') {
             return [
                 'protected_content' => '',
-                'context' => 'post_content',
-                'protection_level' => 'blocked',
-                'modifications' => [['type' => 'content_blocked', 'description' => '內容被安全系統阻止']],
-                'warnings' => [['type' => 'security_block', 'message' => '內容包含不安全的元素']],
-                'security_score' => 0,
+                'context'           => 'post_content',
+                'protection_level'  => 'blocked',
+                'modifications'     => [['type' => 'content_blocked', 'description' => '內容被安全系統阻止']],
+                'warnings'          => [['type' => 'security_block', 'message' => '內容包含不安全的元素']],
+                'security_score'    => 0,
             ];
         }
         // 進行富文本處理
@@ -141,11 +141,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $processResult['content'],
-            'context' => 'post_content',
-            'protection_level' => 'enhanced',
-            'modifications' => $processResult['warnings'],
-            'warnings' => array_merge($moderationResult['issues'], $processResult['warnings']),
-            'security_score' => $this->calculateSecurityScore($input, $processResult['content']),
+            'context'           => 'post_content',
+            'protection_level'  => 'enhanced',
+            'modifications'     => $processResult['warnings'],
+            'warnings'          => array_merge($moderationResult['issues'], $processResult['warnings']),
+            'security_score'    => $this->calculateSecurityScore($input, $processResult['content']),
         ];
     }
 
@@ -165,11 +165,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleaned,
-            'context' => 'comment',
-            'protection_level' => 'standard',
-            'modifications' => $input !== $cleaned ? [['type' => 'html_filtering', 'description' => '過濾不安全的 HTML 元素']] : [],
-            'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, $cleaned),
+            'context'           => 'comment',
+            'protection_level'  => 'standard',
+            'modifications'     => $input !== $cleaned ? [['type' => 'html_filtering', 'description' => '過濾不安全的 HTML 元素']] : [],
+            'warnings'          => [],
+            'security_score'    => $this->calculateSecurityScore($input, $cleaned),
         ];
     }
 
@@ -189,11 +189,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleaned,
-            'context' => 'search_query',
-            'protection_level' => 'maximum',
-            'modifications' => $input !== $cleaned ? [['type' => 'search_sanitization', 'description' => '搜尋查詢已清理']] : [],
-            'warnings' => [],
-            'security_score' => 100,
+            'context'           => 'search_query',
+            'protection_level'  => 'maximum',
+            'modifications'     => $input !== $cleaned ? [['type' => 'search_sanitization', 'description' => '搜尋查詢已清理']] : [],
+            'warnings'          => [],
+            'security_score'    => 100,
         ];
     }
 
@@ -206,11 +206,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleaned,
-            'context' => 'url_parameter',
-            'protection_level' => 'maximum',
-            'modifications' => $input !== $cleaned ? [['type' => 'url_encoding', 'description' => 'URL 參數已編碼']] : [],
-            'warnings' => [],
-            'security_score' => 100,
+            'context'           => 'url_parameter',
+            'protection_level'  => 'maximum',
+            'modifications'     => $input !== $cleaned ? [['type' => 'url_encoding', 'description' => 'URL 參數已編碼']] : [],
+            'warnings'          => [],
+            'security_score'    => 100,
         ];
     }
 
@@ -224,11 +224,11 @@ class XssProtectionExtensionService
         if (json_last_error() !== JSON_ERROR_NONE) {
             return [
                 'protected_content' => '',
-                'context' => 'json_data',
-                'protection_level' => 'blocked',
-                'modifications' => [['type' => 'invalid_json', 'description' => '無效的 JSON 格式']],
-                'warnings' => [['type' => 'json_error', 'message' => 'JSON 解析錯誤']],
-                'security_score' => 0,
+                'context'           => 'json_data',
+                'protection_level'  => 'blocked',
+                'modifications'     => [['type' => 'invalid_json', 'description' => '無效的 JSON 格式']],
+                'warnings'          => [['type' => 'json_error', 'message' => 'JSON 解析錯誤']],
+                'security_score'    => 0,
             ];
         }
         // 遞迴清理 JSON 資料
@@ -236,11 +236,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => (json_encode($cleaned, JSON_UNESCAPED_UNICODE) ?? ''),
-            'context' => 'json_data',
-            'protection_level' => 'enhanced',
-            'modifications' => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
-            'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
+            'context'           => 'json_data',
+            'protection_level'  => 'enhanced',
+            'modifications'     => $decoded !== $cleaned ? [['type' => 'json_sanitization', 'description' => 'JSON 資料已清理']] : [],
+            'warnings'          => [],
+            'security_score'    => $this->calculateSecurityScore($input, (json_encode($cleaned) ?? '')),
         ];
     }
 
@@ -255,11 +255,11 @@ class XssProtectionExtensionService
         if (!in_array($fileExtension, $this->config['allowed_file_extensions'], true)) {
             return [
                 'protected_content' => '',
-                'context' => 'file_upload',
-                'protection_level' => 'blocked',
-                'modifications' => [['type' => 'file_type_blocked', 'description' => '不允許的檔案類型']],
-                'warnings' => [['type' => 'file_security', 'message' => "檔案類型 {$fileExtension} 不被允許"]],
-                'security_score' => 0,
+                'context'           => 'file_upload',
+                'protection_level'  => 'blocked',
+                'modifications'     => [['type' => 'file_type_blocked', 'description' => '不允許的檔案類型']],
+                'warnings'          => [['type' => 'file_security', 'message' => "檔案類型 {$fileExtension} 不被允許"]],
+                'security_score'    => 0,
             ];
         }
         // 清理檔案名稱
@@ -267,11 +267,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleanFilename,
-            'context' => 'file_upload',
-            'protection_level' => 'standard',
-            'modifications' => $filename !== $cleanFilename ? [['type' => 'filename_sanitization', 'description' => '檔案名稱已清理']] : [],
-            'warnings' => [],
-            'security_score' => 90,
+            'context'           => 'file_upload',
+            'protection_level'  => 'standard',
+            'modifications'     => $filename !== $cleanFilename ? [['type' => 'filename_sanitization', 'description' => '檔案名稱已清理']] : [],
+            'warnings'          => [],
+            'security_score'    => 90,
         ];
     }
 
@@ -284,11 +284,11 @@ class XssProtectionExtensionService
 
         return [
             'protected_content' => $cleaned,
-            'context' => 'generic',
-            'protection_level' => 'standard',
-            'modifications' => $input !== $cleaned ? [['type' => 'basic_sanitization', 'description' => '基本清理']] : [],
-            'warnings' => [],
-            'security_score' => $this->calculateSecurityScore($input, $cleaned),
+            'context'           => 'generic',
+            'protection_level'  => 'standard',
+            'modifications'     => $input !== $cleaned ? [['type' => 'basic_sanitization', 'description' => '基本清理']] : [],
+            'warnings'          => [],
+            'security_score'    => $this->calculateSecurityScore($input, $cleaned),
         ];
     }
 
@@ -356,9 +356,9 @@ class XssProtectionExtensionService
     private function getDefaultConfig(): array
     {
         return [
-            'max_title_length' => 200,
-            'max_comment_length' => 1000,
-            'max_search_length' => 100,
+            'max_title_length'        => 200,
+            'max_comment_length'      => 1000,
+            'max_search_length'       => 100,
             'allowed_file_extensions' => [
                 'jpg',
                 'jpeg',

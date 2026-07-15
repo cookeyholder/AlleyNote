@@ -128,10 +128,10 @@ class TaggedCacheIntegrationTest extends IntegrationTestCase
     {
         // 準備測試資料
         $testData = [
-            'user_post_1' => ['value' => 'content1', 'tags' => ['user_123', 'module_posts']],
-            'user_post_2' => ['value' => 'content2', 'tags' => ['user_123', 'module_posts']],
+            'user_post_1'  => ['value' => 'content1', 'tags' => ['user_123', 'module_posts']],
+            'user_post_2'  => ['value' => 'content2', 'tags' => ['user_123', 'module_posts']],
             'user_profile' => ['value' => 'profile', 'tags' => ['user_123', 'module_users']],
-            'other_data' => ['value' => 'other', 'tags' => ['user_456', 'module_posts']],
+            'other_data'   => ['value' => 'other', 'tags' => ['user_456', 'module_posts']],
         ];
 
         // 儲存測試資料
@@ -205,8 +205,8 @@ class TaggedCacheIntegrationTest extends IntegrationTestCase
     {
         // 測試複雜資料結構的標籤快取
         $complexValue = [
-            'id' => 123,
-            'data' => ['nested' => 'value'],
+            'id'        => 123,
+            'data'      => ['nested' => 'value'],
             'timestamp' => time(),
         ];
 
@@ -289,9 +289,9 @@ class TaggedCacheIntegrationTest extends IntegrationTestCase
     {
         // 測試不同類型標籤的分類
         $testCases = [
-            'user:123' => 'isUserTag',
+            'user:123'     => 'isUserTag',
             'module:posts' => 'isModuleTag',
-            'time:daily' => 'isTemporalTag',
+            'time:daily'   => 'isTemporalTag',
             'group:admins' => 'isGroupTag',
         ];
 

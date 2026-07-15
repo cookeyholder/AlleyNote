@@ -24,17 +24,17 @@ class SystemMonitorService implements SystemMonitorInterface
     public function getSystemInfo(): array
     {
         return [
-            'php_version' => PHP_VERSION,
-            'system' => PHP_OS_FAMILY,
-            'server_software' => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
-            'environment' => $this->config->getEnvironment(),
-            'timezone' => date_default_timezone_get(),
-            'memory_limit' => ini_get('memory_limit'),
-            'max_execution_time' => ini_get('max_execution_time'),
+            'php_version'         => PHP_VERSION,
+            'system'              => PHP_OS_FAMILY,
+            'server_software'     => $_SERVER['SERVER_SOFTWARE'] ?? 'unknown',
+            'environment'         => $this->config->getEnvironment(),
+            'timezone'            => date_default_timezone_get(),
+            'memory_limit'        => ini_get('memory_limit'),
+            'max_execution_time'  => ini_get('max_execution_time'),
             'upload_max_filesize' => ini_get('upload_max_filesize'),
-            'post_max_size' => ini_get('post_max_size'),
-            'extensions' => $this->getLoadedExtensions(),
-            'timestamp' => time(),
+            'post_max_size'       => ini_get('post_max_size'),
+            'extensions'          => $this->getLoadedExtensions(),
+            'timestamp'           => time(),
         ];
     }
 
@@ -49,14 +49,14 @@ class SystemMonitorService implements SystemMonitorInterface
 
         return [
             'current_usage_bytes' => $memoryUsage,
-            'current_usage_mb' => round($memoryUsage / 1024 / 1024, 2),
-            'peak_usage_bytes' => $memoryPeak,
-            'peak_usage_mb' => round($memoryPeak / 1024 / 1024, 2),
-            'limit_bytes' => $memoryLimit,
-            'limit_mb' => round($memoryLimit / 1024 / 1024, 2),
-            'usage_percentage' => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2) : 0,
-            'available_bytes' => max(0, $memoryLimit - $memoryUsage),
-            'available_mb' => round(max(0, $memoryLimit - $memoryUsage) / 1024 / 1024, 2),
+            'current_usage_mb'    => round($memoryUsage / 1024 / 1024, 2),
+            'peak_usage_bytes'    => $memoryPeak,
+            'peak_usage_mb'       => round($memoryPeak / 1024 / 1024, 2),
+            'limit_bytes'         => $memoryLimit,
+            'limit_mb'            => round($memoryLimit / 1024 / 1024, 2),
+            'usage_percentage'    => $memoryLimit > 0 ? round(($memoryUsage / $memoryLimit) * 100, 2) : 0,
+            'available_bytes'     => max(0, $memoryLimit - $memoryUsage),
+            'available_mb'        => round(max(0, $memoryLimit - $memoryUsage) / 1024 / 1024, 2),
         ];
     }
 
@@ -68,13 +68,13 @@ class SystemMonitorService implements SystemMonitorInterface
         $loadAvg = function_exists('sys_getloadavg') ? sys_getloadavg() : [0, 0, 0];
 
         return [
-            'load_average_1min' => $loadAvg[0] ?? 0,
-            'load_average_5min' => $loadAvg[1] ?? 0,
+            'load_average_1min'  => $loadAvg[0] ?? 0,
+            'load_average_5min'  => $loadAvg[1] ?? 0,
             'load_average_15min' => $loadAvg[2] ?? 0,
-            'cpu_count' => $this->getCpuCount(),
-            'process_id' => getmypid(),
-            'process_uid' => function_exists('posix_getuid') ? posix_getuid() : null,
-            'process_gid' => function_exists('posix_getgid') ? posix_getgid() : null,
+            'cpu_count'          => $this->getCpuCount(),
+            'process_id'         => getmypid(),
+            'process_uid'        => function_exists('posix_getuid') ? posix_getuid() : null,
+            'process_gid'        => function_exists('posix_getgid') ? posix_getgid() : null,
         ];
     }
 
@@ -91,13 +91,13 @@ class SystemMonitorService implements SystemMonitorInterface
         $usedBytes = $totalBytes ? $totalBytes - $freeBytes : 0;
 
         return [
-            'path' => $path,
-            'total_bytes' => $totalBytes ?: 0,
-            'total_gb' => $totalBytes ? round($totalBytes / 1024 / 1024 / 1024, 2) : 0,
-            'free_bytes' => $freeBytes ?: 0,
-            'free_gb' => $freeBytes ? round($freeBytes / 1024 / 1024 / 1024, 2) : 0,
-            'used_bytes' => $usedBytes,
-            'used_gb' => round($usedBytes / 1024 / 1024 / 1024, 2),
+            'path'             => $path,
+            'total_bytes'      => $totalBytes ?: 0,
+            'total_gb'         => $totalBytes ? round($totalBytes / 1024 / 1024 / 1024, 2) : 0,
+            'free_bytes'       => $freeBytes ?: 0,
+            'free_gb'          => $freeBytes ? round($freeBytes / 1024 / 1024 / 1024, 2) : 0,
+            'used_bytes'       => $usedBytes,
+            'used_gb'          => round($usedBytes / 1024 / 1024 / 1024, 2),
             'usage_percentage' => $totalBytes ? round(($usedBytes / $totalBytes) * 100, 2) : 0,
         ];
     }
@@ -114,10 +114,10 @@ class SystemMonitorService implements SystemMonitorInterface
             $connected = $stmt !== false;
             $connectionTime = round((microtime(true) - $startTime) * 1000, 2);
             $status = [
-                'connected' => $connected,
+                'connected'          => $connected,
                 'connection_time_ms' => $connectionTime,
-                'driver' => $this->database->getAttribute(PDO::ATTR_DRIVER_NAME),
-                'server_version' => $this->database->getAttribute(PDO::ATTR_SERVER_VERSION) ?? 'unknown',
+                'driver'             => $this->database->getAttribute(PDO::ATTR_DRIVER_NAME),
+                'server_version'     => $this->database->getAttribute(PDO::ATTR_SERVER_VERSION) ?? 'unknown',
             ];
             // SQLite 特定統計
             if ($status['driver'] === 'sqlite') {
@@ -128,13 +128,13 @@ class SystemMonitorService implements SystemMonitorInterface
         } catch (Throwable $e) {
             $this->logger->error('Database status check failed', [
                 'error' => $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
+                'file'  => $e->getFile(),
+                'line'  => $e->getLine(),
             ]);
 
             return [
-                'connected' => false,
-                'error' => $e->getMessage(),
+                'connected'          => false,
+                'error'              => $e->getMessage(),
                 'connection_time_ms' => null,
             ];
         }
@@ -146,11 +146,11 @@ class SystemMonitorService implements SystemMonitorInterface
     public function getHealthCheck(): array
     {
         $checks = [
-            'database' => $this->checkDatabaseHealth(),
-            'memory' => $this->checkMemoryHealth(),
-            'disk' => $this->checkDiskHealth(),
+            'database'    => $this->checkDatabaseHealth(),
+            'memory'      => $this->checkMemoryHealth(),
+            'disk'        => $this->checkDiskHealth(),
             'environment' => $this->checkEnvironmentHealth(),
-            'logs' => $this->checkLogHealth(),
+            'logs'        => $this->checkLogHealth(),
         ];
         $overallHealth = true;
         $score = 0;
@@ -165,10 +165,10 @@ class SystemMonitorService implements SystemMonitorInterface
 
         return [
             'overall_status' => $overallHealth ? 'healthy' : 'unhealthy',
-            'health_score' => round(($score / $totalChecks) * 100, 1),
-            'checks' => $checks,
-            'timestamp' => time(),
-            'environment' => $this->config->getEnvironment(),
+            'health_score'   => round(($score / $totalChecks) * 100, 1),
+            'checks'         => $checks,
+            'timestamp'      => time(),
+            'environment'    => $this->config->getEnvironment(),
         ];
     }
 
@@ -220,11 +220,11 @@ class SystemMonitorService implements SystemMonitorInterface
             }
         }
         $this->logger->info('System metrics collected', [
-            'memory_usage_mb' => $memoryUsageMb,
+            'memory_usage_mb'      => $memoryUsageMb,
             'memory_usage_percent' => $memoryUsagePercent,
-            'disk_usage_percent' => $diskUsagePercent,
-            'database_connected' => $dbConnected,
-            'health_score' => $healthScore,
+            'disk_usage_percent'   => $diskUsagePercent,
+            'database_connected'   => $dbConnected,
+            'health_score'         => $healthScore,
         ]);
         // 記錄警告
         if ($memoryUsagePercent > 80) {
@@ -238,8 +238,8 @@ class SystemMonitorService implements SystemMonitorInterface
             }
             $this->logger->warning('High memory usage detected', [
                 'usage_percent' => $memoryUsagePercent,
-                'used_mb' => $memoryUsageMb,
-                'limit_mb' => $memoryLimitMb,
+                'used_mb'       => $memoryUsageMb,
+                'limit_mb'      => $memoryLimitMb,
             ]);
         }
         if ($diskUsagePercent > 85) {
@@ -258,8 +258,8 @@ class SystemMonitorService implements SystemMonitorInterface
             }
             $this->logger->warning('High disk usage detected', [
                 'usage_percent' => $diskUsagePercent,
-                'used_gb' => $diskUsedGb,
-                'total_gb' => $diskTotalGb,
+                'used_gb'       => $diskUsedGb,
+                'total_gb'      => $diskTotalGb,
             ]);
         }
     }
@@ -280,12 +280,12 @@ class SystemMonitorService implements SystemMonitorInterface
     public function getAllMetrics(): array
     {
         return [
-            'system' => $this->getSystemInfo(),
-            'memory' => $this->getMemoryUsage(),
-            'cpu' => $this->getCpuUsage(),
-            'disk' => $this->getDiskUsage(),
+            'system'   => $this->getSystemInfo(),
+            'memory'   => $this->getMemoryUsage(),
+            'cpu'      => $this->getCpuUsage(),
+            'disk'     => $this->getDiskUsage(),
             'database' => $this->getDatabaseStatus(),
-            'health' => $this->getHealthCheck(),
+            'health'   => $this->getHealthCheck(),
         ];
     }
 
@@ -314,9 +314,9 @@ class SystemMonitorService implements SystemMonitorInterface
         $value = (int) substr($memoryLimit, 0, -1);
 
         return match ($unit) {
-            'g' => $value * 1024 * 1024 * 1024,
-            'm' => $value * 1024 * 1024,
-            'k' => $value * 1024,
+            'g'     => $value * 1024 * 1024 * 1024,
+            'm'     => $value * 1024 * 1024,
+            'k'     => $value * 1024,
             default => (int) $memoryLimit,
         };
     }
@@ -444,7 +444,7 @@ class SystemMonitorService implements SystemMonitorInterface
     private function checkLogHealth(): array
     {
         $logPaths = [
-            'app' => '/var/www/html/storage/logs/app.log',
+            'app'   => '/var/www/html/storage/logs/app.log',
             'error' => '/var/www/html/storage/logs/error.log',
         ];
         $issues = [];

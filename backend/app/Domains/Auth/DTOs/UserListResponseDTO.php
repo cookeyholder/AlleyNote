@@ -30,10 +30,10 @@ final readonly class UserListResponseDTO
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'username' => $this->username,
-            'email' => $this->email,
-            'roles' => $this->roles,
+            'id'         => $this->id,
+            'username'   => $this->username,
+            'email'      => $this->email,
+            'roles'      => $this->roles,
             'last_login' => $this->lastLogin,
             'created_at' => $this->createdAt,
         ];

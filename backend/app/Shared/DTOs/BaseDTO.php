@@ -44,7 +44,9 @@ abstract class BaseDTO implements JsonSerializable
      * 驗證資料.
      *
      * @param array<string, mixed> $data 輸入資料
+     *
      * @throws ValidationException 當驗證失敗時
+     *
      * @return array 驗證通過的資料
      */
     protected function validate(array $data): array

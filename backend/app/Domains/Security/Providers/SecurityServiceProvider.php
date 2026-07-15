@@ -33,13 +33,13 @@ class SecurityServiceProvider
             ActivityLoggingServiceInterface::class => \DI\factory([self::class, 'createActivityLoggingService']),
             // CSRF Protection Service Interface & Implementation
             CsrfProtectionServiceInterface::class => \DI\factory([self::class, 'createCsrfProtectionService']),
-            CsrfProtectionService::class => \DI\get(CsrfProtectionServiceInterface::class),
+            CsrfProtectionService::class          => \DI\get(CsrfProtectionServiceInterface::class),
             // XSS Protection Service Interface & Implementation
             XssProtectionServiceInterface::class => \DI\factory([self::class, 'createXssProtectionService']),
-            XssProtectionService::class => \DI\get(XssProtectionServiceInterface::class),
+            XssProtectionService::class          => \DI\get(XssProtectionServiceInterface::class),
             // IP Service Interface & Implementation
             IpServiceInterface::class => \DI\factory([self::class, 'createIpService']),
-            IpService::class => \DI\get(IpServiceInterface::class),
+            IpService::class          => \DI\get(IpServiceInterface::class),
         ];
     }
 

@@ -82,11 +82,11 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $userId,
                 targetType: 'post_list',
                 metadata: [
-                    'page' => $page,
-                    'limit' => $limit,
-                    'filters' => $filters,
+                    'page'          => $page,
+                    'limit'         => $limit,
+                    'filters'       => $filters,
                     'total_results' => $result['total'],
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'    => NetworkHelper::getClientIp($request),
                 ],
             );
             $response->getBody()->write(($responseData ?: ''));
@@ -99,7 +99,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Request validation failed: ' . $e->getMessage(),
                 metadata: [
-                    'errors' => $e->getErrors(),
+                    'errors'     => $e->getErrors(),
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -167,8 +167,8 @@ class PostController extends BaseController implements PostApiInterface
                 targetType: 'post',
                 targetId: (string) $post->getId(),
                 metadata: [
-                    'title' => $post->getTitle(),
-                    'status' => $post->getStatusValue(),
+                    'title'      => $post->getTitle(),
+                    'status'     => $post->getStatusValue(),
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -183,7 +183,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Validation failed: ' . $e->getMessage(),
                 metadata: [
-                    'errors' => $e->getErrors(),
+                    'errors'     => $e->getErrors(),
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -236,8 +236,8 @@ class PostController extends BaseController implements PostApiInterface
                 targetType: 'post',
                 targetId: (string) $id,
                 metadata: [
-                    'title' => $post->getTitle(),
-                    'status' => $post->getStatusValue(),
+                    'title'      => $post->getTitle(),
+                    'status'     => $post->getStatusValue(),
                     'ip_address' => $userIp,
                 ],
             );
@@ -245,7 +245,7 @@ class PostController extends BaseController implements PostApiInterface
             $viewStats = $this->postViewStatsService->getPostViewStats($id);
             $postData = new PostResource($post, [
                 'sanitizer' => $this->sanitizer,
-                'stats' => $viewStats,
+                'stats'     => $viewStats,
             ])->resolve();
             $successResponse = $this->successResponse($postData, '成功取得貼文');
             $response->getBody()->write(($successResponse ?: ''));
@@ -259,7 +259,7 @@ class PostController extends BaseController implements PostApiInterface
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'   => NetworkHelper::getClientIp($request),
                 ],
             );
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
@@ -274,7 +274,7 @@ class PostController extends BaseController implements PostApiInterface
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'   => NetworkHelper::getClientIp($request),
                 ],
             );
             $errorResponse = $this->handleException($e);
@@ -309,7 +309,7 @@ class PostController extends BaseController implements PostApiInterface
                     userId: $request->getAttribute('user_id'),
                     reason: 'Invalid request data format',
                     metadata: [
-                        'post_id' => $id,
+                        'post_id'    => $id,
                         'ip_address' => NetworkHelper::getClientIp($request),
                     ],
                 );
@@ -358,10 +358,10 @@ class PostController extends BaseController implements PostApiInterface
                 targetType: 'post',
                 targetId: (string) $id,
                 metadata: [
-                    'title' => $post->getTitle(),
-                    'status' => $post->getStatusValue(),
+                    'title'          => $post->getTitle(),
+                    'status'         => $post->getStatusValue(),
                     'changed_fields' => array_keys($data),
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'     => NetworkHelper::getClientIp($request),
                 ],
             );
             $successResponse = $this->successResponse($post->toSafeArray($this->sanitizer), '貼文更新成功');
@@ -375,8 +375,8 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Validation failed: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'errors' => $e->getErrors(),
+                    'post_id'    => $args['id'] ?? 'unknown',
+                    'errors'     => $e->getErrors(),
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -392,7 +392,7 @@ class PostController extends BaseController implements PostApiInterface
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'   => NetworkHelper::getClientIp($request),
                 ],
             );
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
@@ -406,7 +406,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
+                    'post_id'    => $args['id'] ?? 'unknown',
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -453,8 +453,8 @@ class PostController extends BaseController implements PostApiInterface
                 targetType: 'post',
                 targetId: (string) $id,
                 metadata: [
-                    'title' => $postTitle,
-                    'status' => $postStatus,
+                    'title'      => $postTitle,
+                    'status'     => $postStatus,
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -468,8 +468,8 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Validation failed: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
-                    'errors' => $e->getErrors(),
+                    'post_id'    => $args['id'] ?? 'unknown',
+                    'errors'     => $e->getErrors(),
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -485,7 +485,7 @@ class PostController extends BaseController implements PostApiInterface
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'   => NetworkHelper::getClientIp($request),
                 ],
             );
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
@@ -499,7 +499,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Post status error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
+                    'post_id'    => $args['id'] ?? 'unknown',
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -514,7 +514,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
+                    'post_id'    => $args['id'] ?? 'unknown',
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -556,7 +556,7 @@ class PostController extends BaseController implements PostApiInterface
                     userId: $request->getAttribute('user_id'),
                     reason: 'Invalid JSON format',
                     metadata: [
-                        'post_id' => $id,
+                        'post_id'    => $id,
                         'ip_address' => NetworkHelper::getClientIp($request),
                     ],
                 );
@@ -572,9 +572,9 @@ class PostController extends BaseController implements PostApiInterface
                     userId: $request->getAttribute('user_id'),
                     reason: 'Missing or invalid pinned parameter',
                     metadata: [
-                        'post_id' => $id,
+                        'post_id'       => $id,
                         'received_data' => $data,
-                        'ip_address' => NetworkHelper::getClientIp($request),
+                        'ip_address'    => NetworkHelper::getClientIp($request),
                     ],
                 );
                 $errorResponse = $this->errorResponse('Missing or invalid pinned parameter', 400);
@@ -592,8 +592,8 @@ class PostController extends BaseController implements PostApiInterface
                 targetType: 'post',
                 targetId: (string) $id,
                 metadata: [
-                    'title' => $post->getTitle(),
-                    'pinned' => $data['pinned'],
+                    'title'      => $post->getTitle(),
+                    'pinned'     => $data['pinned'],
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -610,7 +610,7 @@ class PostController extends BaseController implements PostApiInterface
                 reason: 'Post not found: ' . $e->getMessage(),
                 metadata: [
                     'requested_id' => $args['id'] ?? 'unknown',
-                    'ip_address' => NetworkHelper::getClientIp($request),
+                    'ip_address'   => NetworkHelper::getClientIp($request),
                 ],
             );
             $errorResponse = $this->errorResponse($e->getMessage(), 404);
@@ -624,7 +624,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'State transition error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
+                    'post_id'    => $args['id'] ?? 'unknown',
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -639,7 +639,7 @@ class PostController extends BaseController implements PostApiInterface
                 userId: $request->getAttribute('user_id'),
                 reason: 'Internal server error: ' . $e->getMessage(),
                 metadata: [
-                    'post_id' => $args['id'] ?? 'unknown',
+                    'post_id'    => $args['id'] ?? 'unknown',
                     'ip_address' => NetworkHelper::getClientIp($request),
                 ],
             );
@@ -768,15 +768,15 @@ class PostController extends BaseController implements PostApiInterface
                 $deleted++;
             } catch (Throwable $e) {
                 $failed[] = [
-                    'id' => $id,
+                    'id'    => $id,
                     'error' => '刪除失敗',
                 ];
             }
         }
         $responseData = $this->successResponse([
             'deleted' => $deleted,
-            'total' => count($ids),
-            'failed' => $failed,
+            'total'   => count($ids),
+            'failed'  => $failed,
         ]);
         $response->getBody()->write($responseData);
 

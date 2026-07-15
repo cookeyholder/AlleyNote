@@ -108,7 +108,7 @@ app/Domains/Statistics/
 
 **具體動作**：
 - 刪除 `PostController_test2.php` 和 `PostController_test3.php`
-- 檢查 `PostController.php.simple` 是否為範例，移除或移至 `examples/` 目錄
+- 檢查 `PostController.php.simple` 是否為範例（已移除）
 - 檢查 `TestController.php`，改為 `HealthController.php` 或刪除
 
 ### 3.2 資料層問題修正（估計時間：2天）

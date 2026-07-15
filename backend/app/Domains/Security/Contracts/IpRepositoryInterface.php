@@ -16,7 +16,9 @@ interface IpRepositoryInterface extends RepositoryInterface
 
     /**
      * 依類型取得規則列表.
+     *
      * @param int $type 0=黑名單，1=白名單
+     *
      * @return IpList[]
      */
     public function getByType(int $type): array;

@@ -74,12 +74,12 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
         array $headers = [],
     ): array {
         $_SERVER = array_merge($_SERVER, [
-            'REQUEST_METHOD' => $method,
-            'REQUEST_URI' => $path,
-            'HTTP_HOST' => 'localhost',
+            'REQUEST_METHOD'    => $method,
+            'REQUEST_URI'       => $path,
+            'HTTP_HOST'         => 'localhost',
             'HTTP_CONTENT_TYPE' => 'application/json',
-            'HTTP_ACCEPT' => 'application/json',
-            'REMOTE_ADDR' => '127.0.0.1', // 設定 IP 用於速率限制測試
+            'HTTP_ACCEPT'       => 'application/json',
+            'REMOTE_ADDR'       => '127.0.0.1', // 設定 IP 用於速率限制測試
         ]);
 
         foreach ($headers as $name => $value) {
@@ -102,16 +102,16 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
             $data = json_decode($responseBody, true) ?? [];
 
             return [
-                'status' => $response->getStatusCode(),
-                'headers' => $response->getHeaders(),
-                'body' => $data,
+                'status'   => $response->getStatusCode(),
+                'headers'  => $response->getHeaders(),
+                'body'     => $data,
                 'raw_body' => $responseBody,
             ];
         } catch (Throwable $e) {
             return [
-                'status' => 500,
-                'headers' => [],
-                'body' => ['error' => $e->getMessage()],
+                'status'   => 500,
+                'headers'  => [],
+                'body'     => ['error' => $e->getMessage()],
                 'raw_body' => json_encode(['error' => $e->getMessage()]),
             ];
         }
@@ -319,8 +319,8 @@ final class PostViewApiIntegrationTest extends IntegrationTestCase
 
         // 測試通過代理的請求（檢查 X-Forwarded-For 等標頭）
         $headers = [
-            'X-Forwarded-For' => '203.0.113.1, 70.41.3.18, 150.172.238.178',
-            'X-Real-IP' => '203.0.113.1',
+            'X-Forwarded-For'   => '203.0.113.1, 70.41.3.18, 150.172.238.178',
+            'X-Real-IP'         => '203.0.113.1',
             'X-Forwarded-Proto' => 'https',
         ];
 

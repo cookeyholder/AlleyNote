@@ -19,89 +19,89 @@ class SourceDistributionDTOTest extends UnitTestCase
         $this->validData = [
             'top_sources' => [
                 [
-                    'name' => 'Google Search',
-                    'traffic' => 1000,
+                    'name'       => 'Google Search',
+                    'traffic'    => 1000,
                     'percentage' => 40.0,
                 ],
                 [
-                    'name' => 'Direct',
-                    'traffic' => 750,
+                    'name'       => 'Direct',
+                    'traffic'    => 750,
                     'percentage' => 30.0,
                 ],
                 [
-                    'name' => 'Facebook',
-                    'traffic' => 500,
+                    'name'       => 'Facebook',
+                    'traffic'    => 500,
                     'percentage' => 20.0,
                 ],
             ],
             'by_traffic_type' => [
-                'organic' => 1200,
-                'paid' => 300,
-                'direct' => 750,
+                'organic'  => 1200,
+                'paid'     => 300,
+                'direct'   => 750,
                 'referral' => 400,
-                'social' => 350,
-                'email' => 100,
+                'social'   => 350,
+                'email'    => 100,
             ],
             'by_channel' => [
-                'search' => 1500,
-                'social_media' => 600,
+                'search'          => 1500,
+                'social_media'    => 600,
                 'email_marketing' => 200,
-                'referral_sites' => 400,
-                'direct' => 750,
+                'referral_sites'  => 400,
+                'direct'          => 750,
             ],
             'by_device' => [
                 'desktop' => 1800,
-                'mobile' => 1200,
-                'tablet' => 450,
+                'mobile'  => 1200,
+                'tablet'  => 450,
             ],
             'by_geographic' => [
                 'Taiwan' => 2000,
-                'Japan' => 800,
-                'Korea' => 600,
-                'USA' => 450,
+                'Japan'  => 800,
+                'Korea'  => 600,
+                'USA'    => 450,
             ],
             'search_engines' => [
                 'total_traffic' => 1200,
-                'engines' => [
+                'engines'       => [
                     'Google' => 1000,
-                    'Bing' => 150,
-                    'Yahoo' => 50,
+                    'Bing'   => 150,
+                    'Yahoo'  => 50,
                 ],
             ],
             'social_media' => [
                 'total_traffic' => 600,
-                'platforms' => [
-                    'Facebook' => 300,
+                'platforms'     => [
+                    'Facebook'  => 300,
                     'Instagram' => 200,
-                    'Twitter' => 100,
+                    'Twitter'   => 100,
                 ],
             ],
             'referral_sites' => [
                 'total_traffic' => 400,
-                'sites' => [
+                'sites'         => [
                     'example.com' => 200,
                     'partner.com' => 150,
-                    'news.com' => 50,
+                    'news.com'    => 50,
                 ],
             ],
             'content_types' => [
-                'article' => 1500,
-                'video' => 800,
+                'article'     => 1500,
+                'video'       => 800,
                 'infographic' => 400,
-                'podcast' => 200,
+                'podcast'     => 200,
             ],
             'trends' => [
-                'growth_rate' => 12.5,
-                'direction' => 'growing',
-                'key_drivers' => ['SEO improvement', 'Social media campaign'],
-                'emerging_sources' => ['TikTok', 'LinkedIn'],
+                'growth_rate'       => 12.5,
+                'direction'         => 'growing',
+                'key_drivers'       => ['SEO improvement', 'Social media campaign'],
+                'emerging_sources'  => ['TikTok', 'LinkedIn'],
                 'declining_sources' => ['Twitter'],
                 'seasonal_patterns' => ['Higher traffic in Q4'],
             ],
             'generated_at' => '2024-01-15T10:30:00Z',
-            'metadata' => [
+            'metadata'     => [
                 'report_id' => 'source_dist_001',
-                'version' => '1.0',
+                'version'   => '1.0',
             ],
         ];
     }
@@ -508,9 +508,9 @@ class SourceDistributionDTOTest extends UnitTestCase
     {
         $data = $this->validData;
         $data['by_device'] = [
-            'mobile' => 2000,
+            'mobile'  => 2000,
             'desktop' => 500,
-            'tablet' => 200,
+            'tablet'  => 200,
         ];
 
         $dto = SourceDistributionDTO::fromArray($data);
@@ -524,9 +524,9 @@ class SourceDistributionDTOTest extends UnitTestCase
     {
         $data = $this->validData;
         $data['by_device'] = [
-            'mobile' => 1000,
+            'mobile'  => 1000,
             'desktop' => 1100,
-            'tablet' => 300,
+            'tablet'  => 300,
         ];
 
         $dto = SourceDistributionDTO::fromArray($data);
@@ -542,9 +542,9 @@ class SourceDistributionDTOTest extends UnitTestCase
         $data = $this->validData;
         $data['by_traffic_type'] = [
             'organic' => 200, // 低有機流量
-            'direct' => 100,  // 低直接流量
-            'social' => 2000, // 高社群流量
-            'paid' => 100,
+            'direct'  => 100,  // 低直接流量
+            'social'  => 2000, // 高社群流量
+            'paid'    => 100,
         ];
 
         $dto = SourceDistributionDTO::fromArray($data);

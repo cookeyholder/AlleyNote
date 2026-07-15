@@ -320,10 +320,10 @@ final class EnvironmentConfig
     {
         $errors = [];
         $environmentErrors = match ($this->environment) {
-            'production' => $this->validateProductionConfig(),
-            'testing' => $this->validateTestingConfig(),
+            'production'  => $this->validateProductionConfig(),
+            'testing'     => $this->validateTestingConfig(),
             'development' => $this->validateDevelopmentConfig(),
-            default => [],
+            default       => [],
         };
 
         return array_merge($errors, $environmentErrors);
@@ -347,8 +347,8 @@ final class EnvironmentConfig
         }
         // 檢查敏感資訊是否為預設值
         $sensitiveKeys = [
-            'APP_KEY' => 'base64:CHANGE-THIS-TO-REAL-PRODUCTION-KEY',
-            'ADMIN_PASSWORD' => 'CHANGE-THIS-TO-STRONG-PASSWORD',
+            'APP_KEY'         => 'base64:CHANGE-THIS-TO-REAL-PRODUCTION-KEY',
+            'ADMIN_PASSWORD'  => 'CHANGE-THIS-TO-STRONG-PASSWORD',
             'JWT_PRIVATE_KEY' => 'REPLACE-WITH-ACTUAL-PRIVATE-KEY',
         ];
         foreach ($sensitiveKeys as $key => $defaultValue) {

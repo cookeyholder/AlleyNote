@@ -74,12 +74,12 @@ final class JwtPayloadTest extends UnitTestCase
     public function testFromArrayWithValidData(): void
     {
         $data = [
-            'jti' => 'array-jti-789',
-            'sub' => '99',
-            'iss' => 'test-issuer',
-            'aud' => ['client1', 'client2'],
-            'iat' => $this->baseTime->getTimestamp(),
-            'exp' => $this->futureTime->getTimestamp(),
+            'jti'          => 'array-jti-789',
+            'sub'          => '99',
+            'iss'          => 'test-issuer',
+            'aud'          => ['client1', 'client2'],
+            'iat'          => $this->baseTime->getTimestamp(),
+            'exp'          => $this->futureTime->getTimestamp(),
             'custom_field' => 'custom_value',
         ];
 
@@ -222,12 +222,12 @@ final class JwtPayloadTest extends UnitTestCase
         );
 
         $expected = [
-            'jti' => 'to-array-test',
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => ['client1', 'client2'],
-            'iat' => $this->baseTime->getTimestamp(),
-            'exp' => $this->futureTime->getTimestamp(),
+            'jti'  => 'to-array-test',
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => ['client1', 'client2'],
+            'iat'  => $this->baseTime->getTimestamp(),
+            'exp'  => $this->futureTime->getTimestamp(),
             'role' => 'admin',
         ];
 

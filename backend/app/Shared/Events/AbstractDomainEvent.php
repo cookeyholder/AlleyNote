@@ -32,10 +32,10 @@ abstract class AbstractDomainEvent implements DomainEventInterface
     public function toArray(): array
     {
         return [
-            'event_id' => $this->getEventId(),
-            'event_name' => $this->getEventName(),
+            'event_id'    => $this->getEventId(),
+            'event_name'  => $this->getEventName(),
             'occurred_on' => $this->getOccurredOn()->format('c'),
-            'event_data' => $this->getEventData(),
+            'event_data'  => $this->getEventData(),
         ];
     }
 

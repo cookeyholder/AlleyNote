@@ -84,9 +84,9 @@ class PostControllerTest extends ApiTestCase
             ->withAttribute('user_id', 1);
 
         $this->postService->shouldReceive('listPosts')->once()->andReturn([
-            'items' => [],
-            'total' => 0,
-            'page' => 1,
+            'items'    => [],
+            'total'    => 0,
+            'page'     => 1,
             'per_page' => 10,
         ]);
         $this->postViewStatsService->shouldReceive('getBatchPostViewStats')->once()->andReturn([]);
@@ -125,17 +125,17 @@ class PostControllerTest extends ApiTestCase
             ->withAttribute('user_id', 1);
 
         $post = new Post([
-            'id' => 1,
-            'title' => '測試文章',
+            'id'      => 1,
+            'title'   => '測試文章',
             'content' => '內容',
             'user_id' => 1,
-            'status' => 'published',
+            'status'  => 'published',
         ]);
 
         $this->postService->shouldReceive('findById')->once()->with(1)->andReturn($post);
         $this->postService->shouldReceive('recordView')->once()->with(1, Mockery::any());
         $this->postViewStatsService->shouldReceive('getPostViewStats')->once()->andReturn([
-            'views' => 10,
+            'views'           => 10,
             'unique_visitors' => 5,
         ]);
 
@@ -149,18 +149,18 @@ class PostControllerTest extends ApiTestCase
         $request = $this
             ->actingAs(['id' => 1, 'email' => 'post-store@example.com'])
             ->json('POST', '/api/posts', [
-                'title' => '新文章',
+                'title'   => '新文章',
                 'content' => '內容',
-                'status' => 'published',
+                'status'  => 'published',
             ])
             ->withAttribute('user_id', 1);
 
         $createdPost = new Post([
-            'id' => 1,
-            'title' => '新文章',
+            'id'      => 1,
+            'title'   => '新文章',
             'content' => '內容',
             'user_id' => 1,
-            'status' => 'published',
+            'status'  => 'published',
         ]);
 
         $this->postService->shouldReceive('createPost')->once()->andReturn($createdPost);

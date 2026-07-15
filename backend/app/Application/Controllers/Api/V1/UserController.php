@@ -96,12 +96,12 @@ class UserController
         }
         $result = $this->userManagementService->listUsers($page, $perPage, $filters);
         $responseData = json_encode([
-            'success' => true,
-            'data' => $result['items'],
+            'success'    => true,
+            'data'       => $result['items'],
             'pagination' => [
-                'total' => $result['total'],
-                'page' => $result['page'],
-                'per_page' => $result['per_page'],
+                'total'     => $result['total'],
+                'page'      => $result['page'],
+                'per_page'  => $result['per_page'],
                 'last_page' => $result['last_page'],
             ],
         ]);
@@ -169,7 +169,7 @@ class UserController
             $user = $this->userManagementService->getUser($id);
             $responseData = json_encode([
                 'success' => true,
-                'data' => $user,
+                'data'    => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -252,7 +252,7 @@ class UserController
             $responseData = json_encode([
                 'success' => true,
                 'message' => '使用者建立成功',
-                'data' => $user,
+                'data'    => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -261,7 +261,7 @@ class UserController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -347,7 +347,7 @@ class UserController
             $responseData = json_encode([
                 'success' => true,
                 'message' => '使用者更新成功',
-                'data' => $user,
+                'data'    => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -364,7 +364,7 @@ class UserController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -574,7 +574,7 @@ class UserController
             $responseData = json_encode([
                 'success' => true,
                 'message' => '使用者已啟用',
-                'data' => $user,
+                'data'    => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -642,7 +642,7 @@ class UserController
             $responseData = json_encode([
                 'success' => true,
                 'message' => '使用者已停用',
-                'data' => $user,
+                'data'    => $user,
             ]);
             $response->getBody()->write($responseData ?: '');
 
@@ -757,7 +757,7 @@ class UserController
             $responseData = json_encode([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ]);
             $response->getBody()->write($responseData ?: '');
 

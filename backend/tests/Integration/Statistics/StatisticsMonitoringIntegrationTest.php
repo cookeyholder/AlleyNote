@@ -160,7 +160,7 @@ final class StatisticsMonitoringIntegrationTest extends IntegrationTestCase
     {
         // Act
         $result = $this->monitoringService->logStatisticsEvent('test_calculation', [
-            'type' => 'unit_test',
+            'type'     => 'unit_test',
             'duration' => 1.23,
         ]);
 

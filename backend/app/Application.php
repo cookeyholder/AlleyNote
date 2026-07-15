@@ -137,8 +137,8 @@ class Application
             $errorTracker = $this->container->get(ErrorTrackerInterface::class);
             if ($errorTracker instanceof ErrorTrackerInterface) {
                 $errorTracker->recordCriticalError($e, [
-                    'context' => 'application_exception',
-                    'request_uri' => $_SERVER['REQUEST_URI'] ?? null,
+                    'context'        => 'application_exception',
+                    'request_uri'    => $_SERVER['REQUEST_URI'] ?? null,
                     'request_method' => $_SERVER['REQUEST_METHOD'] ?? null,
                 ]);
             }
@@ -149,8 +149,8 @@ class Application
         // 建立錯誤回應內容
         $appEnv = getenv('APP_ENV') ?: 'production';
         $errorData = [
-            'status' => 'error',
-            'error' => 'Internal Server Error',
+            'status'  => 'error',
+            'error'   => 'Internal Server Error',
             'message' => $appEnv !== 'production' ? $e->getMessage() : '伺服器內部錯誤，請稍後再試',
         ];
         if ($appEnv !== 'production') {

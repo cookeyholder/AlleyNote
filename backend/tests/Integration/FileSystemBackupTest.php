@@ -39,10 +39,10 @@ class FileSystemBackupTest extends IntegrationTestCase
     private function createTestFiles(): void
     {
         $this->testFiles = [
-            '/uploads/image1.jpg' => str_repeat('x', 1024),  // 1KB
+            '/uploads/image1.jpg'   => str_repeat('x', 1024),  // 1KB
             '/uploads/document.pdf' => str_repeat('y', 2048),  // 2KB
-            '/storage/data.json' => json_encode(['test' => 'data']),
-            '/storage/config.ini' => "key=value\nfoo=bar",
+            '/storage/data.json'    => json_encode(['test' => 'data']),
+            '/storage/config.ini'   => "key=value\nfoo=bar",
         ];
 
         foreach ($this->testFiles as $path => $content) {
@@ -224,9 +224,9 @@ class FileSystemBackupTest extends IntegrationTestCase
             $file = $this->testDir . $path;
             $originalMetadata[$path] = [
                 'permissions' => fileperms($file),
-                'owner' => fileowner($file),
-                'group' => filegroup($file),
-                'mtime' => filemtime($file),
+                'owner'       => fileowner($file),
+                'group'       => filegroup($file),
+                'mtime'       => filemtime($file),
             ];
         }
 

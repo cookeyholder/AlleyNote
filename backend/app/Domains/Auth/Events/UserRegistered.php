@@ -31,12 +31,12 @@ final class UserRegistered extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'user_id' => $this->userId,
-            'username' => $this->username,
-            'email' => $this->email,
-            'registered_at' => $this->registeredAt->format('Y-m-d H:i:s'),
+            'user_id'             => $this->userId,
+            'username'            => $this->username,
+            'email'               => $this->email,
+            'registered_at'       => $this->registeredAt->format('Y-m-d H:i:s'),
             'registration_source' => $this->registrationSource,
-            'ip_address' => $this->ipAddress,
+            'ip_address'          => $this->ipAddress,
         ];
     }
 }

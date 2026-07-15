@@ -34,10 +34,10 @@ final class JSONStatisticsFormatter implements StatisticsFormatterInterface
         // 添加格式化元資料
         $formattedData = [
             'metadata' => [
-                'format' => 'json',
+                'format'      => 'json',
                 'exported_at' => new DateTime()->format('c'),
-                'version' => '1.0',
-                'options' => $options,
+                'version'     => '1.0',
+                'options'     => $options,
             ],
             'data' => $data,
         ];

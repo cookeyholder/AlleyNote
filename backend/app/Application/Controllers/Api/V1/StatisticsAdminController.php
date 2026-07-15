@@ -72,7 +72,7 @@ class StatisticsAdminController extends BaseController
                     properties: [
                         'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
                         'message' => new OA\Property(property: 'message', type: 'string', example: '統計資料刷新成功'),
-                        'data' => new OA\Property(
+                        'data'    => new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
@@ -81,10 +81,10 @@ class StatisticsAdminController extends BaseController
                                     type: 'array',
                                     items: new OA\Items(type: 'string'),
                                 ),
-                                'cache_cleared' => new OA\Property(property: 'cache_cleared', type: 'boolean'),
+                                'cache_cleared'     => new OA\Property(property: 'cache_cleared', type: 'boolean'),
                                 'snapshots_created' => new OA\Property(property: 'snapshots_created', type: 'integer'),
-                                'execution_time' => new OA\Property(property: 'execution_time', type: 'number'),
-                                'timestamp' => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+                                'execution_time'    => new OA\Property(property: 'execution_time', type: 'number'),
+                                'timestamp'         => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
                             ],
                         ),
                     ],
@@ -169,7 +169,7 @@ class StatisticsAdminController extends BaseController
                                 ),
                             ),
                             'sources' => null, // 來源統計不需要快照，直接從資料庫計算
-                            default => null,
+                            default   => null,
                         };
                         if ($snapshot !== null) {
                             $snapshotsCreated++;
@@ -178,7 +178,7 @@ class StatisticsAdminController extends BaseController
                     } catch (Throwable $e) {
                         // 記錄錯誤但繼續處理其他類型
                         app_log('error', 'Failed to refresh statistics type', [
-                            'type' => $type,
+                            'type'      => $type,
                             'exception' => $e->getMessage(),
                         ]);
                     }
@@ -190,33 +190,33 @@ class StatisticsAdminController extends BaseController
             $executionTime = round(microtime(true) - $startTime, 3);
             // 記錄管理操作
             $this->logAdminAction($request, 'statistics_refresh', [
-                'types' => $refreshedTypes,
+                'types'             => $refreshedTypes,
                 'force_recalculate' => $forceRecalculate,
-                'execution_time' => $executionTime,
+                'execution_time'    => $executionTime,
             ]);
 
             return $this->json($response, [
                 'success' => true,
                 'message' => '統計資料刷新成功',
-                'data' => [
-                    'refreshed_types' => $refreshedTypes,
-                    'cache_cleared' => true,
+                'data'    => [
+                    'refreshed_types'   => $refreshedTypes,
+                    'cache_cleared'     => true,
                     'snapshots_created' => $snapshotsCreated,
-                    'execution_time' => $executionTime,
-                    'timestamp' => new DateTimeImmutable()->format('c'),
+                    'execution_time'    => $executionTime,
+                    'timestamp'         => new DateTimeImmutable()->format('c'),
                 ],
             ]);
         } catch (ValidationException $e) {
             return $this->json($response, [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ], 400);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,
                 'message' => '統計資料刷新失敗',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -262,7 +262,7 @@ class StatisticsAdminController extends BaseController
                     properties: [
                         'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
                         'message' => new OA\Property(property: 'message', type: 'string', example: '快取清除成功'),
-                        'data' => new OA\Property(
+                        'data'    => new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
@@ -272,7 +272,7 @@ class StatisticsAdminController extends BaseController
                                     items: new OA\Items(type: 'string'),
                                 ),
                                 'all_cache_cleared' => new OA\Property(property: 'all_cache_cleared', type: 'boolean'),
-                                'timestamp' => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
+                                'timestamp'         => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
                             ],
                         ),
                     ],
@@ -326,30 +326,30 @@ class StatisticsAdminController extends BaseController
             }
             // 記錄管理操作
             $this->logAdminAction($request, 'cache_clear', [
-                'tags' => $clearedTags,
+                'tags'              => $clearedTags,
                 'all_cache_cleared' => $allCacheCleared,
             ]);
 
             return $this->json($response, [
                 'success' => true,
                 'message' => '快取清除成功',
-                'data' => [
-                    'cleared_tags' => $clearedTags,
+                'data'    => [
+                    'cleared_tags'      => $clearedTags,
                     'all_cache_cleared' => $allCacheCleared,
-                    'timestamp' => new DateTimeImmutable()->format('c'),
+                    'timestamp'         => new DateTimeImmutable()->format('c'),
                 ],
             ]);
         } catch (ValidationException $e) {
             return $this->json($response, [
                 'success' => false,
                 'message' => $e->getMessage(),
-                'errors' => $e->getErrors(),
+                'errors'  => $e->getErrors(),
             ], 400);
         } catch (Throwable $e) {
             return $this->json($response, [
                 'success' => false,
                 'message' => '快取清除失敗',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -373,7 +373,7 @@ class StatisticsAdminController extends BaseController
                     properties: [
                         'success' => new OA\Property(property: 'success', type: 'boolean', example: true),
                         'message' => new OA\Property(property: 'message', type: 'string', example: '系統狀態正常'),
-                        'data' => new OA\Property(
+                        'data'    => new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
@@ -387,9 +387,9 @@ class StatisticsAdminController extends BaseController
                                     property: 'cache',
                                     type: 'object',
                                     properties: [
-                                        'status' => new OA\Property(property: 'status', type: 'string'),
-                                        'hits' => new OA\Property(property: 'hits', type: 'integer'),
-                                        'misses' => new OA\Property(property: 'misses', type: 'integer'),
+                                        'status'   => new OA\Property(property: 'status', type: 'string'),
+                                        'hits'     => new OA\Property(property: 'hits', type: 'integer'),
+                                        'misses'   => new OA\Property(property: 'misses', type: 'integer'),
                                         'hit_rate' => new OA\Property(property: 'hit_rate', type: 'number'),
                                     ],
                                 ),
@@ -397,7 +397,7 @@ class StatisticsAdminController extends BaseController
                                     property: 'database',
                                     type: 'object',
                                     properties: [
-                                        'status' => new OA\Property(property: 'status', type: 'string'),
+                                        'status'          => new OA\Property(property: 'status', type: 'string'),
                                         'connection_time' => new OA\Property(property: 'connection_time', type: 'number'),
                                     ],
                                 ),
@@ -406,8 +406,8 @@ class StatisticsAdminController extends BaseController
                                     type: 'object',
                                     properties: [
                                         'statistics_application_service' => new OA\Property(property: 'statistics_application_service', type: 'string'),
-                                        'statistics_query_service' => new OA\Property(property: 'statistics_query_service', type: 'string'),
-                                        'cache_service' => new OA\Property(property: 'cache_service', type: 'string'),
+                                        'statistics_query_service'       => new OA\Property(property: 'statistics_query_service', type: 'string'),
+                                        'cache_service'                  => new OA\Property(property: 'cache_service', type: 'string'),
                                     ],
                                 ),
                                 'timestamp' => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
@@ -439,9 +439,9 @@ class StatisticsAdminController extends BaseController
                 $totalRequests = $hits + $misses;
                 $hitRate = $totalRequests > 0 ? round($hits / $totalRequests * 100, 2) : 0;
                 $healthData['cache'] = [
-                    'status' => 'healthy',
-                    'hits' => $hits,
-                    'misses' => $misses,
+                    'status'   => 'healthy',
+                    'hits'     => $hits,
+                    'misses'   => $misses,
                     'hit_rate' => $hitRate,
                 ];
                 // 如果命中率過低，標記為警告
@@ -452,7 +452,7 @@ class StatisticsAdminController extends BaseController
             } catch (Throwable $e) {
                 $healthData['cache'] = [
                     'status' => 'critical',
-                    'error' => $e->getMessage(),
+                    'error'  => $e->getMessage(),
                 ];
                 $overallStatus = 'critical';
             }
@@ -466,7 +466,7 @@ class StatisticsAdminController extends BaseController
                 );
                 $connectionTime = round((microtime(true) - $startTime) * 1000, 2);
                 $healthData['database'] = [
-                    'status' => 'healthy',
+                    'status'          => 'healthy',
                     'connection_time' => $connectionTime,
                 ];
                 // 如果連接時間過長，標記為警告
@@ -479,30 +479,30 @@ class StatisticsAdminController extends BaseController
             } catch (Throwable $e) {
                 $healthData['database'] = [
                     'status' => 'critical',
-                    'error' => $e->getMessage(),
+                    'error'  => $e->getMessage(),
                 ];
                 $overallStatus = 'critical';
             }
             // 檢查服務可用性
             $healthData['services'] = [
                 'statistics_application_service' => 'healthy',
-                'statistics_query_service' => 'healthy',
-                'cache_service' => 'healthy',
+                'statistics_query_service'       => 'healthy',
+                'cache_service'                  => 'healthy',
             ];
             // 所有核心服務都被成功注入，所以狀態都是 healthy
             $healthData['overall_status'] = $overallStatus;
             $healthData['timestamp'] = new DateTimeImmutable()->format('c');
             $statusCode = match ($overallStatus) {
-                'healthy' => 200,
-                'warning' => 200,
+                'healthy'  => 200,
+                'warning'  => 200,
                 'critical' => 503,
             };
 
             return $this->json($response, [
                 'success' => $overallStatus !== 'critical',
                 'message' => match ($overallStatus) {
-                    'healthy' => '系統狀態正常',
-                    'warning' => '系統運行正常，但有一些警告',
+                    'healthy'  => '系統狀態正常',
+                    'warning'  => '系統運行正常，但有一些警告',
                     'critical' => '系統狀態異常，需要立即處理',
                 },
                 'data' => $healthData,
@@ -511,7 +511,7 @@ class StatisticsAdminController extends BaseController
             return $this->json($response, [
                 'success' => false,
                 'message' => '健康檢查失敗',
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
             ], 500);
         }
     }
@@ -558,11 +558,11 @@ class StatisticsAdminController extends BaseController
             $userIdString = (string) $userId;
         }
         app_log('info', 'ADMIN_ACTION', [
-            'user_id' => $userIdString,
-            'action' => $action,
-            'ip' => $ipAddress,
+            'user_id'    => $userIdString,
+            'action'     => $action,
+            'ip'         => $ipAddress,
             'user_agent' => $userAgent,
-            'details' => $details,
+            'details'    => $details,
         ]);
     }
 

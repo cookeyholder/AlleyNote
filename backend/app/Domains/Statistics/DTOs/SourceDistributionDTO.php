@@ -45,6 +45,7 @@ class SourceDistributionDTO implements JsonSerializable
      * 從陣列建立 DTO.
      *
      * @param array<string, mixed> $data 原始資料陣列
+     *
      * @throws InvalidArgumentException 當資料格式不正確時
      */
     public static function fromArray(array $data): self
@@ -356,12 +357,12 @@ class SourceDistributionDTO implements JsonSerializable
         $qualityScore = $this->calculateQualityScore($organicPercentage, $directPercentage, $socialPercentage);
 
         return [
-            'quality_score' => $qualityScore,
+            'quality_score'      => $qualityScore,
             'organic_percentage' => $organicPercentage,
-            'direct_percentage' => $directPercentage,
-            'social_percentage' => $socialPercentage,
-            'quality_level' => $this->getQualityLevel($qualityScore),
-            'recommendations' => $this->getQualityRecommendations($organicPercentage, $directPercentage, $socialPercentage),
+            'direct_percentage'  => $directPercentage,
+            'social_percentage'  => $socialPercentage,
+            'quality_level'      => $this->getQualityLevel($qualityScore),
+            'recommendations'    => $this->getQualityRecommendations($organicPercentage, $directPercentage, $socialPercentage),
         ];
     }
 
@@ -377,9 +378,9 @@ class SourceDistributionDTO implements JsonSerializable
         foreach ($this->byChannel as $channel => $traffic) {
             $percentage = $totalTraffic > 0 ? round(($traffic / $totalTraffic) * 100, 2) : 0.0;
             $channelPerformance[$channel] = [
-                'traffic' => $traffic,
+                'traffic'    => $traffic,
                 'percentage' => $percentage,
-                'rank' => 0, // 將在後續計算中設定
+                'rank'       => 0, // 將在後續計算中設定
             ];
         }
         // 按流量排序並設定排名
@@ -390,8 +391,8 @@ class SourceDistributionDTO implements JsonSerializable
         }
 
         return [
-            'channels' => $channelPerformance,
-            'top_performer' => array_key_first($channelPerformance),
+            'channels'        => $channelPerformance,
+            'top_performer'   => array_key_first($channelPerformance),
             'diversity_score' => $this->calculateChannelDiversity(),
         ];
     }
@@ -407,19 +408,19 @@ class SourceDistributionDTO implements JsonSerializable
         $desktopPercentage = $this->getDesktopPercentage();
         $tabletPercentage = 100 - $mobilePercentage - $desktopPercentage;
         $pattern = match (true) {
-            $mobilePercentage > 70 => 'mobile_first',
-            $desktopPercentage > 60 => 'desktop_dominant',
+            $mobilePercentage > 70                                            => 'mobile_first',
+            $desktopPercentage > 60                                           => 'desktop_dominant',
             $desktopPercentage > 50 && $desktopPercentage > $mobilePercentage => 'desktop_dominant',
-            abs($mobilePercentage - $desktopPercentage) < 20 => 'balanced',
-            default => 'mixed',
+            abs($mobilePercentage - $desktopPercentage) < 20                  => 'balanced',
+            default                                                           => 'mixed',
         };
 
         return [
-            'pattern' => $pattern,
-            'mobile_percentage' => $mobilePercentage,
+            'pattern'            => $pattern,
+            'mobile_percentage'  => $mobilePercentage,
             'desktop_percentage' => $desktopPercentage,
-            'tablet_percentage' => $tabletPercentage,
-            'is_mobile_first' => $mobilePercentage > 50,
+            'tablet_percentage'  => $tabletPercentage,
+            'is_mobile_first'    => $mobilePercentage > 50,
         ];
     }
 
@@ -434,10 +435,10 @@ class SourceDistributionDTO implements JsonSerializable
         $trendDirection = $this->trends['direction'] ?? 'stable';
 
         return [
-            'growth_rate' => is_numeric($growthRate) ? (float) $growthRate : 0.0,
-            'trend_direction' => is_string($trendDirection) ? $trendDirection : 'stable',
-            'key_drivers' => $this->trends['key_drivers'] ?? [],
-            'emerging_sources' => $this->trends['emerging_sources'] ?? [],
+            'growth_rate'       => is_numeric($growthRate) ? (float) $growthRate : 0.0,
+            'trend_direction'   => is_string($trendDirection) ? $trendDirection : 'stable',
+            'key_drivers'       => $this->trends['key_drivers'] ?? [],
+            'emerging_sources'  => $this->trends['emerging_sources'] ?? [],
             'declining_sources' => $this->trends['declining_sources'] ?? [],
             'seasonal_patterns' => $this->trends['seasonal_patterns'] ?? [],
         ];
@@ -451,32 +452,32 @@ class SourceDistributionDTO implements JsonSerializable
     public function toArray(): array
     {
         $data = [
-            'top_sources' => $this->topSources,
-            'by_traffic_type' => $this->byTrafficType,
-            'by_channel' => $this->byChannel,
-            'by_device' => $this->byDevice,
-            'by_geographic' => $this->byGeographic,
-            'search_engines' => $this->searchEngines,
-            'social_media' => $this->socialMedia,
-            'referral_sites' => $this->referralSites,
-            'content_types' => $this->contentTypes,
-            'trends' => $this->trends,
+            'top_sources'        => $this->topSources,
+            'by_traffic_type'    => $this->byTrafficType,
+            'by_channel'         => $this->byChannel,
+            'by_device'          => $this->byDevice,
+            'by_geographic'      => $this->byGeographic,
+            'search_engines'     => $this->searchEngines,
+            'social_media'       => $this->socialMedia,
+            'referral_sites'     => $this->referralSites,
+            'content_types'      => $this->contentTypes,
+            'trends'             => $this->trends,
             'calculated_metrics' => [
-                'total_traffic' => $this->getTotalTraffic(),
-                'organic_percentage' => $this->getOrganicPercentage(),
-                'paid_percentage' => $this->getPaidPercentage(),
-                'mobile_percentage' => $this->getMobilePercentage(),
-                'desktop_percentage' => $this->getDesktopPercentage(),
-                'top_source' => $this->getTopSource(),
-                'top_search_engine' => $this->getTopSearchEngine(),
-                'top_social_platform' => $this->getTopSocialPlatform(),
-                'top_referral_site' => $this->getTopReferralSite(),
+                'total_traffic'           => $this->getTotalTraffic(),
+                'organic_percentage'      => $this->getOrganicPercentage(),
+                'paid_percentage'         => $this->getPaidPercentage(),
+                'mobile_percentage'       => $this->getMobilePercentage(),
+                'desktop_percentage'      => $this->getDesktopPercentage(),
+                'top_source'              => $this->getTopSource(),
+                'top_search_engine'       => $this->getTopSearchEngine(),
+                'top_social_platform'     => $this->getTopSocialPlatform(),
+                'top_referral_site'       => $this->getTopReferralSite(),
                 'top_geographic_location' => $this->getTopGeographicLocation(),
             ],
-            'traffic_quality_analysis' => $this->getTrafficQualityAnalysis(),
+            'traffic_quality_analysis'     => $this->getTrafficQualityAnalysis(),
             'channel_performance_analysis' => $this->getChannelPerformanceAnalysis(),
-            'device_usage_pattern' => $this->getDeviceUsagePattern(),
-            'trend_insights' => $this->getTrendInsights(),
+            'device_usage_pattern'         => $this->getDeviceUsagePattern(),
+            'trend_insights'               => $this->getTrendInsights(),
         ];
         if ($this->generatedAt !== null) {
             $data['generated_at'] = $this->generatedAt->format('Y-m-d\TH:i:s\Z');
@@ -514,12 +515,12 @@ class SourceDistributionDTO implements JsonSerializable
     public function getSummary(): array
     {
         return [
-            'total_traffic' => $this->getTotalTraffic(),
+            'total_traffic'      => $this->getTotalTraffic(),
             'organic_percentage' => $this->getOrganicPercentage(),
-            'mobile_percentage' => $this->getMobilePercentage(),
-            'top_source' => $this->getTopSource()['name'] ?? null,
-            'top_search_engine' => $this->getTopSearchEngine(),
-            'device_pattern' => $this->getDeviceUsagePattern()['pattern'],
+            'mobile_percentage'  => $this->getMobilePercentage(),
+            'top_source'         => $this->getTopSource()['name'] ?? null,
+            'top_search_engine'  => $this->getTopSearchEngine(),
+            'device_pattern'     => $this->getDeviceUsagePattern()['pattern'],
         ];
     }
 
@@ -596,7 +597,7 @@ class SourceDistributionDTO implements JsonSerializable
             $qualityScore >= 70 => 'excellent',
             $qualityScore >= 50 => 'good',
             $qualityScore >= 30 => 'average',
-            default => 'poor',
+            default             => 'poor',
         };
     }
 
@@ -643,6 +644,7 @@ class SourceDistributionDTO implements JsonSerializable
      * 確保回傳 array<string, mixed> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, mixed>
      */
     private static function ensureStringMixedArray($data): array
@@ -664,6 +666,7 @@ class SourceDistributionDTO implements JsonSerializable
      * 確保回傳 array<string, int> 型別.
      *
      * @param mixed $data
+     *
      * @return array<string, int>
      */
     private static function ensureStringIntArray($data): array
@@ -685,6 +688,7 @@ class SourceDistributionDTO implements JsonSerializable
      * 確保回傳 array<int, array<string, mixed>> 型別.
      *
      * @param mixed $data
+     *
      * @return array<int, array<string, mixed>>
      */
     private static function ensureIntArrayStringMixedArray($data): array

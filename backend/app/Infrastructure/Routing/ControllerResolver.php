@@ -264,9 +264,9 @@ class ControllerResolver
         }
 
         return match ($type->getName()) {
-            'int' => (int) $value,
+            'int'   => (int) $value,
             'float' => (float) $value,
-            'bool' => filter_var($value, FILTER_VALIDATE_BOOLEAN),
+            'bool'  => filter_var($value, FILTER_VALIDATE_BOOLEAN),
             default => $value,
         };
     }

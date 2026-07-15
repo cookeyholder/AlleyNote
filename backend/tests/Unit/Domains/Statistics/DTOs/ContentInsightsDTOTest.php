@@ -19,85 +19,85 @@ class ContentInsightsDTOTest extends UnitTestCase
         $this->validData = [
             'top_performing_content' => [
                 [
-                    'id' => 101,
-                    'title' => '如何學習程式設計',
+                    'id'           => 101,
+                    'title'        => '如何學習程式設計',
                     'metric_value' => 1500,
-                    'type' => 'views',
+                    'type'         => 'views',
                 ],
                 [
-                    'id' => 102,
-                    'title' => 'PHP 最佳實踐',
+                    'id'           => 102,
+                    'title'        => 'PHP 最佳實踐',
                     'metric_value' => 1200,
-                    'type' => 'views',
+                    'type'         => 'views',
                 ],
             ],
             'content_performance_metrics' => [
                 'avg_views_per_content' => 850.5,
-                'avg_engagement_rate' => 6.5,
-                'avg_read_time' => 320, // seconds
-                'bounce_rate' => 35.2,
-                'completion_rate' => 68.7,
-                'share_rate' => 3.8,
+                'avg_engagement_rate'   => 6.5,
+                'avg_read_time'         => 320, // seconds
+                'bounce_rate'           => 35.2,
+                'completion_rate'       => 68.7,
+                'share_rate'            => 3.8,
             ],
             'popular_topics' => [
-                'programming' => 450,
+                'programming'     => 450,
                 'web_development' => 380,
-                'database' => 280,
-                'api_design' => 200,
+                'database'        => 280,
+                'api_design'      => 200,
             ],
             'content_formats' => [
-                'article' => 650,
-                'tutorial' => 420,
-                'video' => 300,
+                'article'     => 650,
+                'tutorial'    => 420,
+                'video'       => 300,
                 'infographic' => 150,
             ],
             'user_engagement_patterns' => [
-                'peak_hour' => '14:00',
-                'peak_day' => 'Tuesday',
+                'peak_hour'            => '14:00',
+                'peak_day'             => 'Tuesday',
                 'avg_session_duration' => 480, // seconds
-                'discovery_patterns' => [
-                    'search' => 45.2,
-                    'direct' => 28.7,
-                    'social' => 16.1,
+                'discovery_patterns'   => [
+                    'search'   => 45.2,
+                    'direct'   => 28.7,
+                    'social'   => 16.1,
                     'referral' => 10.0,
                 ],
             ],
             'content_lifecycle_analysis' => [
                 'avg_lifespan_days' => 45,
                 'peak_views_period' => 'first_week',
-                'decay_rate' => 15.5, // percent per week
+                'decay_rate'        => 15.5, // percent per week
             ],
             'reading_patterns' => [
                 'optimal_length_words' => 1200,
-                'avg_scroll_depth' => 72.5,
-                'return_reader_rate' => 28.3,
-                'reading_speed_wpm' => 250,
+                'avg_scroll_depth'     => 72.5,
+                'return_reader_rate'   => 28.3,
+                'reading_speed_wpm'    => 250,
             ],
             'shareability' => [
                 'avg_shares_per_content' => 4.2,
-                'most_sharable_type' => 'infographic',
-                'share_platforms' => [
+                'most_sharable_type'     => 'infographic',
+                'share_platforms'        => [
                     'Facebook' => 35.5,
-                    'Twitter' => 28.2,
+                    'Twitter'  => 28.2,
                     'LinkedIn' => 22.1,
-                    'Others' => 14.2,
+                    'Others'   => 14.2,
                 ],
             ],
             'seasonal_trends' => [
                 'spring' => [
-                    'trending_topics' => ['新年目標', '學習計劃'],
-                    'popular_formats' => ['article', 'tutorial'],
+                    'trending_topics'     => ['新年目標', '學習計劃'],
+                    'popular_formats'     => ['article', 'tutorial'],
                     'engagement_patterns' => ['higher_morning_activity'],
                 ],
                 'summer' => [
-                    'trending_topics' => ['度假技巧', '輕鬆閱讀'],
-                    'popular_formats' => ['infographic', 'video'],
+                    'trending_topics'     => ['度假技巧', '輕鬆閱讀'],
+                    'popular_formats'     => ['infographic', 'video'],
                     'engagement_patterns' => ['lower_overall_engagement'],
                 ],
             ],
             'content_optimization' => [
                 'title_optimization' => [
-                    'optimal_length' => 60,
+                    'optimal_length'           => 60,
                     'high_performing_keywords' => ['完整指南', '最佳實踐', '深入解析'],
                 ],
                 'seo_recommendations' => [
@@ -107,9 +107,9 @@ class ContentInsightsDTOTest extends UnitTestCase
                 ],
             ],
             'generated_at' => '2024-01-15T10:30:00Z',
-            'metadata' => [
-                'report_id' => 'content_insights_001',
-                'version' => '1.0',
+            'metadata'     => [
+                'report_id'       => 'content_insights_001',
+                'version'         => '1.0',
                 'analysis_period' => '2024-01-01_to_2024-01-15',
             ],
         ];
@@ -262,11 +262,11 @@ class ContentInsightsDTOTest extends UnitTestCase
         $data = $this->validData;
         $data['content_performance_metrics'] = [
             'avg_views_per_content' => 1000.0,
-            'avg_engagement_rate' => 90.0, // 高參與率
-            'avg_read_time' => 400,
-            'bounce_rate' => 10.0,
-            'completion_rate' => 95.0, // 高完成率
-            'share_rate' => 15.0, // 高分享率
+            'avg_engagement_rate'   => 90.0, // 高參與率
+            'avg_read_time'         => 400,
+            'bounce_rate'           => 10.0,
+            'completion_rate'       => 95.0, // 高完成率
+            'share_rate'            => 15.0, // 高分享率
         ];
 
         $dto = ContentInsightsDTO::fromArray($data);
@@ -281,11 +281,11 @@ class ContentInsightsDTOTest extends UnitTestCase
         $data = $this->validData;
         $data['content_performance_metrics'] = [
             'avg_views_per_content' => 100.0,
-            'avg_engagement_rate' => 2.0, // 低參與率
-            'avg_read_time' => 120,
-            'bounce_rate' => 70.0,
-            'completion_rate' => 40.0, // 低完成率
-            'share_rate' => 1.0, // 低分享率
+            'avg_engagement_rate'   => 2.0, // 低參與率
+            'avg_read_time'         => 120,
+            'bounce_rate'           => 70.0,
+            'completion_rate'       => 40.0, // 低完成率
+            'share_rate'            => 1.0, // 低分享率
         ];
 
         $dto = ContentInsightsDTO::fromArray($data);
@@ -450,11 +450,11 @@ class ContentInsightsDTOTest extends UnitTestCase
         $metricsOnlyDto = ContentInsightsDTO::fromArray([
             'content_performance_metrics' => [
                 'avg_views_per_content' => 100.0,
-                'avg_engagement_rate' => 5.0,
-                'avg_read_time' => 300,
-                'bounce_rate' => 30.0,
-                'completion_rate' => 70.0,
-                'share_rate' => 2.5,
+                'avg_engagement_rate'   => 5.0,
+                'avg_read_time'         => 300,
+                'bounce_rate'           => 30.0,
+                'completion_rate'       => 70.0,
+                'share_rate'            => 2.5,
             ],
         ]);
         $this->assertTrue($metricsOnlyDto->hasData());

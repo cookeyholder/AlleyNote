@@ -113,7 +113,7 @@ final readonly class PostSlug implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'slug' => $this->value,
+            'slug'   => $this->value,
             'length' => $this->getLength(),
         ];
     }

@@ -106,10 +106,10 @@ final class StatisticsApiSimpleIntegrationTest extends IntegrationTestCase
         // 測試 API 參數驗證
         $parameters = [
             'start_date' => 'YYYY-MM-DD 格式驗證',
-            'end_date' => 'YYYY-MM-DD 格式驗證',
-            'period' => 'daily|weekly|monthly 枚舉驗證',
-            'type' => '統計類型驗證',
-            'limit' => '數量限制驗證',
+            'end_date'   => 'YYYY-MM-DD 格式驗證',
+            'period'     => 'daily|weekly|monthly 枚舉驗證',
+            'type'       => '統計類型驗證',
+            'limit'      => '數量限制驗證',
         ];
 
         foreach ($parameters as $param => $validation) {
@@ -121,11 +121,11 @@ final class StatisticsApiSimpleIntegrationTest extends IntegrationTestCase
     {
         // 測試錯誤處理
         $errorScenarios = [
-            '401 Unauthorized' => '未認證存取',
-            '403 Forbidden' => '權限不足',
-            '400 Bad Request' => '參數驗證錯誤',
-            '404 Not Found' => '資源不存在',
-            '429 Too Many Requests' => '速率限制',
+            '401 Unauthorized'          => '未認證存取',
+            '403 Forbidden'             => '權限不足',
+            '400 Bad Request'           => '參數驗證錯誤',
+            '404 Not Found'             => '資源不存在',
+            '429 Too Many Requests'     => '速率限制',
             '500 Internal Server Error' => '伺服器內部錯誤',
         ];
 

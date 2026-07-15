@@ -34,10 +34,10 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
 
     private const CONCURRENCY_THRESHOLDS = [
         'max_concurrent_requests' => 50,
-        'avg_response_time' => 2.0, // 秒
-        'cache_hit_rate_target' => 0.80, // 80%
-        'failure_rate_max' => 0.05, // 5%
-        'memory_increase_limit' => 100 * 1024 * 1024, // 100MB
+        'avg_response_time'       => 2.0, // 秒
+        'cache_hit_rate_target'   => 0.80, // 80%
+        'failure_rate_max'        => 0.05, // 5%
+        'memory_increase_limit'   => 100 * 1024 * 1024, // 100MB
     ];
 
     protected function setUp(): void
@@ -117,15 +117,15 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
 
         // 輸出並發測試報告
         $this->outputConcurrencyReport([
-            'total_requests' => $totalRequests,
-            'total_duration' => $totalDuration,
+            'total_requests'    => $totalRequests,
+            'total_duration'    => $totalDuration,
             'avg_response_time' => $avgResponseTime,
             'max_response_time' => $maxResponseTime,
             'min_response_time' => $minResponseTime,
-            'failure_count' => $failureCount,
-            'failure_rate' => $failureRate,
-            'memory_increase' => $memoryIncrease,
-            'throughput' => $totalRequests / $totalDuration,
+            'failure_count'     => $failureCount,
+            'failure_rate'      => $failureRate,
+            'memory_increase'   => $memoryIncrease,
+            'throughput'        => $totalRequests / $totalDuration,
         ]);
     }
 
@@ -166,8 +166,8 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
             $duration = $endTime - $startTime;
 
             $cacheResults[] = [
-                'query_index' => $queryIndex,
-                'duration' => $duration,
+                'query_index'   => $queryIndex,
+                'duration'      => $duration,
                 'is_from_cache' => $duration < 0.01, // 小於 10ms 認為是快取命中
             ];
         }
@@ -224,10 +224,10 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
 
             $iterationEndMemory = memory_get_usage(true);
             $memoryReadings[] = [
-                'iteration' => $iteration,
+                'iteration'     => $iteration,
                 'memory_before' => $iterationStartMemory,
-                'memory_after' => $iterationEndMemory,
-                'memory_diff' => $iterationEndMemory - $iterationStartMemory,
+                'memory_after'  => $iterationEndMemory,
+                'memory_diff'   => $iterationEndMemory - $iterationStartMemory,
             ];
         }
 
@@ -346,10 +346,10 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
         for ($user = 0; $user < $users; $user++) {
             for ($request = 0; $request < $requestsPerUser; $request++) {
                 $requests[] = [
-                    'user_id' => $user,
+                    'user_id'    => $user,
                     'request_id' => $request,
-                    'endpoint' => $apiEndpoints[array_rand($apiEndpoints)],
-                    'params' => $this->generateRandomParams(),
+                    'endpoint'   => $apiEndpoints[array_rand($apiEndpoints)],
+                    'params'     => $this->generateRandomParams(),
                 ];
             }
         }
@@ -383,10 +383,10 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
             $endTime = microtime(true);
 
             $results[] = [
-                'request' => $request,
-                'success' => $success,
-                'error' => $error,
-                'result' => $result,
+                'request'  => $request,
+                'success'  => $success,
+                'error'    => $error,
+                'result'   => $result,
                 'duration' => $endTime - $startTime,
             ];
         }
@@ -493,9 +493,9 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
         $periods = ['daily', 'weekly', 'monthly'];
 
         return [
-            'period' => $periods[array_rand($periods)],
+            'period'     => $periods[array_rand($periods)],
             'start_date' => '2024-01-01',
-            'end_date' => '2024-01-31',
+            'end_date'   => '2024-01-31',
         ];
     }
 
@@ -504,8 +504,8 @@ class StatisticsApiConcurrencyTest extends SecureDDDTestCase
         $queries = [];
         for ($i = 0; $i < $count; $i++) {
             $queries[] = [
-                'id' => $i,
-                'query' => "SELECT COUNT(*) FROM posts WHERE id % 10 = $i",
+                'id'     => $i,
+                'query'  => "SELECT COUNT(*) FROM posts WHERE id % 10 = $i",
                 'result' => ['count' => rand(100, 1000)],
             ];
         }

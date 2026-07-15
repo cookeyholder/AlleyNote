@@ -128,9 +128,9 @@ class CacheMonitoringIntegrationTest extends IntegrationTestCase
         $initialOperations = $initialMetrics['total_operations'];
 
         $testData = [
-            'small_data' => 'small',
+            'small_data'  => 'small',
             'medium_data' => str_repeat('x', 1000),
-            'large_data' => str_repeat('y', 10000),
+            'large_data'  => str_repeat('y', 10000),
         ];
 
         foreach ($testData as $key => $data) {

@@ -16,11 +16,11 @@ use InvalidArgumentException;
 class TimeSeriesProcessor
 {
     private const SUPPORTED_GRANULARITIES = [
-        'hour' => 'PT1H',
-        'day' => 'P1D',
-        'week' => 'P1W',
+        'hour'  => 'PT1H',
+        'day'   => 'P1D',
+        'week'  => 'P1W',
         'month' => 'P1M',
-        'year' => 'P1Y',
+        'year'  => 'P1Y',
     ];
 
     public function processTimeSeriesData(

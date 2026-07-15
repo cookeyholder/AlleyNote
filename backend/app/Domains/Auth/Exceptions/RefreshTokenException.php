@@ -67,8 +67,8 @@ class RefreshTokenException extends JwtException
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason);
         $context = array_merge([
-            'reason' => $reason,
-            'timestamp' => time(),
+            'reason'       => $reason,
+            'timestamp'    => time(),
             'operation_id' => uniqid('refresh_', true),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
@@ -82,24 +82,24 @@ class RefreshTokenException extends JwtException
     private function buildDefaultMessage(string $reason): string
     {
         return match ($reason) {
-            self::REASON_NOT_FOUND => 'Refresh token not found or does not exist',
-            self::REASON_REVOKED => 'Refresh token has been revoked',
-            self::REASON_ALREADY_USED => 'Refresh token has already been used',
-            self::REASON_DEVICE_MISMATCH => 'Refresh token device fingerprint does not match',
-            self::REASON_USER_MISMATCH => 'Refresh token does not belong to the specified user',
-            self::REASON_STORAGE_FAILED => 'Failed to store refresh token in database',
-            self::REASON_DELETION_FAILED => 'Failed to delete refresh token from database',
-            self::REASON_ROTATION_FAILED => 'Failed to rotate refresh token',
-            self::REASON_LIMIT_EXCEEDED => 'Refresh token limit exceeded for this user',
-            self::REASON_FAMILY_MISMATCH => 'Refresh token does not belong to the expected token family',
-            self::REASON_CREATION_FAILED => 'Failed to create refresh token',
-            self::REASON_DATABASE_ERROR => 'Database operation failed',
-            self::REASON_UPDATE_FAILED => 'Failed to update refresh token',
-            self::REASON_REVOCATION_FAILED => 'Failed to revoke refresh token',
-            self::REASON_CLEANUP_FAILED => 'Failed to cleanup refresh tokens',
+            self::REASON_NOT_FOUND                => 'Refresh token not found or does not exist',
+            self::REASON_REVOKED                  => 'Refresh token has been revoked',
+            self::REASON_ALREADY_USED             => 'Refresh token has already been used',
+            self::REASON_DEVICE_MISMATCH          => 'Refresh token device fingerprint does not match',
+            self::REASON_USER_MISMATCH            => 'Refresh token does not belong to the specified user',
+            self::REASON_STORAGE_FAILED           => 'Failed to store refresh token in database',
+            self::REASON_DELETION_FAILED          => 'Failed to delete refresh token from database',
+            self::REASON_ROTATION_FAILED          => 'Failed to rotate refresh token',
+            self::REASON_LIMIT_EXCEEDED           => 'Refresh token limit exceeded for this user',
+            self::REASON_FAMILY_MISMATCH          => 'Refresh token does not belong to the expected token family',
+            self::REASON_CREATION_FAILED          => 'Failed to create refresh token',
+            self::REASON_DATABASE_ERROR           => 'Database operation failed',
+            self::REASON_UPDATE_FAILED            => 'Failed to update refresh token',
+            self::REASON_REVOCATION_FAILED        => 'Failed to revoke refresh token',
+            self::REASON_CLEANUP_FAILED           => 'Failed to cleanup refresh tokens',
             self::REASON_FAMILY_REVOCATION_FAILED => 'Failed to revoke token family',
-            self::REASON_BATCH_OPERATION_FAILED => 'Batch operation failed',
-            default => 'Refresh token operation failed',
+            self::REASON_BATCH_OPERATION_FAILED   => 'Batch operation failed',
+            default                               => 'Refresh token operation failed',
         };
     }
 
@@ -111,17 +111,17 @@ class RefreshTokenException extends JwtException
         $reason = $this->getReason();
 
         return match ($reason) {
-            self::REASON_NOT_FOUND => '找不到有效的 Refresh Token，請重新登入。',
-            self::REASON_REVOKED => '您的登入憑證已被撤銷，請重新登入。',
-            self::REASON_ALREADY_USED => '此 Refresh Token 已經使用過，請重新登入。',
+            self::REASON_NOT_FOUND       => '找不到有效的 Refresh Token，請重新登入。',
+            self::REASON_REVOKED         => '您的登入憑證已被撤銷，請重新登入。',
+            self::REASON_ALREADY_USED    => '此 Refresh Token 已經使用過，請重新登入。',
             self::REASON_DEVICE_MISMATCH => '裝置驗證失敗，可能有安全風險。請重新登入。',
-            self::REASON_USER_MISMATCH => '此 Token 不屬於當前用戶，請重新登入。',
+            self::REASON_USER_MISMATCH   => '此 Token 不屬於當前用戶，請重新登入。',
             self::REASON_STORAGE_FAILED,
             self::REASON_DELETION_FAILED => '系統暫時無法處理您的請求，請稍後重試。',
             self::REASON_ROTATION_FAILED => 'Token 更新失敗，請重新登入。',
-            self::REASON_LIMIT_EXCEEDED => '您的登入裝置數量已達上限，請登出其他裝置後重試。',
+            self::REASON_LIMIT_EXCEEDED  => '您的登入裝置數量已達上限，請登出其他裝置後重試。',
             self::REASON_FAMILY_MISMATCH => 'Token 系列驗證失敗，請重新登入。',
-            default => 'Token 操作失敗，請重新登入。',
+            default                      => 'Token 操作失敗，請重新登入。',
         };
     }
 
@@ -248,10 +248,10 @@ class RefreshTokenException extends JwtException
     public static function revoked(string $tokenId, int $revokedAt, string $revokedReason = ''): self
     {
         return new self(self::REASON_REVOKED, '', [
-            'token_id' => $tokenId,
-            'revoked_at' => $revokedAt,
+            'token_id'         => $tokenId,
+            'revoked_at'       => $revokedAt,
             'revoked_at_human' => date('Y-m-d H:i:s', $revokedAt),
-            'revoked_reason' => $revokedReason,
+            'revoked_reason'   => $revokedReason,
         ]);
     }
 
@@ -264,8 +264,8 @@ class RefreshTokenException extends JwtException
     public static function alreadyUsed(string $tokenId, int $usedAt): self
     {
         return new self(self::REASON_ALREADY_USED, '', [
-            'token_id' => $tokenId,
-            'used_at' => $usedAt,
+            'token_id'      => $tokenId,
+            'used_at'       => $usedAt,
             'used_at_human' => date('Y-m-d H:i:s', $usedAt),
         ]);
     }
@@ -283,9 +283,9 @@ class RefreshTokenException extends JwtException
         string $tokenId,
     ): self {
         return new self(self::REASON_DEVICE_MISMATCH, '', [
-            'token_id' => $tokenId,
+            'token_id'             => $tokenId,
             'expected_fingerprint' => $expectedFingerprint,
-            'actual_fingerprint' => $actualFingerprint,
+            'actual_fingerprint'   => $actualFingerprint,
         ]);
     }
 
@@ -299,9 +299,9 @@ class RefreshTokenException extends JwtException
     public static function userMismatch(int $expectedUserId, int $actualUserId, string $tokenId): self
     {
         return new self(self::REASON_USER_MISMATCH, '', [
-            'token_id' => $tokenId,
+            'token_id'         => $tokenId,
             'expected_user_id' => $expectedUserId,
-            'actual_user_id' => $actualUserId,
+            'actual_user_id'   => $actualUserId,
         ]);
     }
 
@@ -315,7 +315,7 @@ class RefreshTokenException extends JwtException
     {
         return new self(self::REASON_STORAGE_FAILED, '', [
             'storage_error' => $error,
-            'token_data' => $tokenData,
+            'token_data'    => $tokenData,
         ]);
     }
 
@@ -328,7 +328,7 @@ class RefreshTokenException extends JwtException
     public static function deletionFailed(string $tokenId, string $error): self
     {
         return new self(self::REASON_DELETION_FAILED, '', [
-            'token_id' => $tokenId,
+            'token_id'       => $tokenId,
             'deletion_error' => $error,
         ]);
     }
@@ -342,7 +342,7 @@ class RefreshTokenException extends JwtException
     public static function rotationFailed(string $oldTokenId, string $error): self
     {
         return new self(self::REASON_ROTATION_FAILED, '', [
-            'old_token_id' => $oldTokenId,
+            'old_token_id'   => $oldTokenId,
             'rotation_error' => $error,
         ]);
     }
@@ -357,9 +357,9 @@ class RefreshTokenException extends JwtException
     public static function limitExceeded(int $userId, int $currentCount, int $maxLimit): self
     {
         return new self(self::REASON_LIMIT_EXCEEDED, '', [
-            'user_id' => $userId,
+            'user_id'       => $userId,
             'current_count' => $currentCount,
-            'max_limit' => $maxLimit,
+            'max_limit'     => $maxLimit,
         ]);
     }
 
@@ -373,9 +373,9 @@ class RefreshTokenException extends JwtException
     public static function familyMismatch(string $expectedFamily, string $actualFamily, string $tokenId): self
     {
         return new self(self::REASON_FAMILY_MISMATCH, '', [
-            'token_id' => $tokenId,
+            'token_id'        => $tokenId,
             'expected_family' => $expectedFamily,
-            'actual_family' => $actualFamily,
+            'actual_family'   => $actualFamily,
         ]);
     }
 }

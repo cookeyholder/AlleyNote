@@ -49,6 +49,7 @@ trait HttpRequestTestTrait
      *
      * @param ServerRequestInterface $request 原始請求
      * @param string $token JWT Token 字串
+     *
      * @return ServerRequestInterface 新的請求實體
      */
     protected function withJwtAuth(ServerRequestInterface $request, string $token): ServerRequestInterface
@@ -61,6 +62,7 @@ trait HttpRequestTestTrait
      *
      * @param ServerRequestInterface $request 原始請求
      * @param array $data 欲編碼的資料
+     *
      * @return ServerRequestInterface 新的請求實體
      */
     protected function withJsonBody(ServerRequestInterface $request, array $data): ServerRequestInterface

@@ -55,10 +55,10 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $userRole = $this->resolveUserRole($roles);
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
-                'email' => $userEmail,
+                'email'    => $userEmail,
                 'username' => $userName,
-                'role' => $userRole,
-                'scopes' => $request->scopes ?? [],
+                'role'     => $userRole,
+                'scopes'   => $request->scopes ?? [],
             ]);
             // 7. 更新使用者最後登入時間
             $this->userRepository->updateLastLogin($userId);
@@ -195,8 +195,8 @@ final class AuthenticationService implements AuthenticationServiceInterface
             return $this->refreshTokenRepository->getUserTokenStats($userId);
         } catch (Throwable) {
             return [
-                'total' => 0,
-                'active' => 0,
+                'total'   => 0,
+                'active'  => 0,
                 'expired' => 0,
                 'revoked' => 0,
             ];
@@ -241,13 +241,13 @@ final class AuthenticationService implements AuthenticationServiceInterface
             }
 
             return [
-                'user' => $user,
+                'user'       => $user,
                 'token_info' => [
-                    'user_id' => $payload->getUserId(),
-                    'subject' => $payload->getSubject(),
-                    'issued_at' => $payload->getIssuedAt()->getTimestamp(),
-                    'expires_at' => $payload->getExpiresAt()->getTimestamp(),
-                    'token_id' => $payload->getJti(),
+                    'user_id'       => $payload->getUserId(),
+                    'subject'       => $payload->getSubject(),
+                    'issued_at'     => $payload->getIssuedAt()->getTimestamp(),
+                    'expires_at'    => $payload->getExpiresAt()->getTimestamp(),
+                    'token_id'      => $payload->getJti(),
                     'custom_claims' => $payload->getCustomClaims(),
                 ],
             ];

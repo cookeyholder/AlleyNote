@@ -28,6 +28,7 @@ final readonly class SourceType implements JsonSerializable
      * 從陣列建立來源類型物件.
      *
      * @param array{code: string, name: string, description?: string} $data
+     *
      * @throws InvalidArgumentException
      */
     public static function fromArray(array $data): self
@@ -91,12 +92,12 @@ final readonly class SourceType implements JsonSerializable
     public static function fromCode(string $code): self
     {
         return match (strtolower($code)) {
-            'web' => self::createWeb(),
-            'api' => self::createApi(),
-            'mobile' => self::createMobile(),
-            'import' => self::createImport(),
+            'web'       => self::createWeb(),
+            'api'       => self::createApi(),
+            'mobile'    => self::createMobile(),
+            'import'    => self::createImport(),
             'migration' => self::createMigration(),
-            default => throw new InvalidArgumentException("Invalid source code: {$code}"),
+            default     => throw new InvalidArgumentException("Invalid source code: {$code}"),
         };
     }
 
@@ -146,12 +147,12 @@ final readonly class SourceType implements JsonSerializable
     public function getPriority(): int
     {
         return match ($this->code) {
-            'web' => 1,
-            'api' => 2,
-            'mobile' => 3,
-            'import' => 4,
+            'web'       => 1,
+            'api'       => 2,
+            'mobile'    => 3,
+            'import'    => 4,
             'migration' => 5,
-            default => 999,
+            default     => 999,
         };
     }
 
@@ -163,8 +164,8 @@ final readonly class SourceType implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'code' => $this->code,
-            'name' => $this->name,
+            'code'        => $this->code,
+            'name'        => $this->name,
             'description' => $this->description,
         ];
     }

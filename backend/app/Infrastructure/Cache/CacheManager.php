@@ -191,8 +191,8 @@ class CacheManager
         }
 
         return [
-            'total_keys' => count($this->cache),
-            'active_keys' => $active,
+            'total_keys'   => count($this->cache),
+            'active_keys'  => $active,
             'expired_keys' => $expired,
             'memory_usage' => $this->getMemoryUsage(),
         ];

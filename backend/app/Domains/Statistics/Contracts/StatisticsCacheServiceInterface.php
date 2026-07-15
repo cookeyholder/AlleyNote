@@ -12,6 +12,7 @@ interface StatisticsCacheServiceInterface
      * @param string $key 快取鍵
      * @param callable $callback 回調函式
      * @param int $ttl 存活時間（秒）
+     *
      * @return mixed 快取的資料或回調結果
      */
     public function remember(string $key, callable $callback, int $ttl): mixed;
@@ -34,6 +35,7 @@ interface StatisticsCacheServiceInterface
      * 從快取中取得資料.
      *
      * @param string $key 快取鍵
+     *
      * @return mixed 快取的資料，若不存在則返回 null
      */
     public function get(string $key): mixed;
@@ -45,6 +47,7 @@ interface StatisticsCacheServiceInterface
      * @param mixed $value 要快取的資料
      * @param int $ttl 存活時間（秒）
      * @param array<string> $tags 快取標籤
+     *
      * @return bool 是否成功存入
      */
     public function put(string $key, mixed $value, int $ttl, array $tags = []): bool;
@@ -53,6 +56,7 @@ interface StatisticsCacheServiceInterface
      * 檢查快取鍵是否存在.
      *
      * @param string $key 快取鍵
+     *
      * @return bool 是否存在
      */
     public function has(string $key): bool;
@@ -76,6 +80,7 @@ interface StatisticsCacheServiceInterface
      *
      * @param array<string, callable> $warmupCallbacks 預熱回調函式陣列
      * @param int $warmupTtl 預熱快取存活時間（秒）
+     *
      * @return array<string, array{success: bool, duration?: float, error?: string}> 預熱結果
      */
     public function warmup(array $warmupCallbacks, int $warmupTtl = 7200): array;

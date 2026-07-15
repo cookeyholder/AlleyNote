@@ -11,6 +11,7 @@ use Tests\Support\UnitTestCase;
  * 身份驗證失敗例外單元測試.
  *
  * @author GitHub Copilot
+ *
  * @since 1.0.0
  */
 class AuthenticationExceptionTest extends UnitTestCase
@@ -59,9 +60,9 @@ class AuthenticationExceptionTest extends UnitTestCase
     public function testAdditionalContext(): void
     {
         $additionalContext = [
-            'username' => 'testuser',
-            'ip_address' => '192.168.1.100',
-            'user_id' => 123,
+            'username'      => 'testuser',
+            'ip_address'    => '192.168.1.100',
+            'user_id'       => 123,
             'attempt_count' => 3,
         ];
 
@@ -87,16 +88,16 @@ class AuthenticationExceptionTest extends UnitTestCase
     public function testAllDefaultMessages(): void
     {
         $reasons = [
-            AuthenticationException::REASON_INVALID_CREDENTIALS => 'Invalid username or password',
-            AuthenticationException::REASON_ACCOUNT_LOCKED => 'Account has been locked due to security reasons',
-            AuthenticationException::REASON_ACCOUNT_DISABLED => 'Account has been disabled',
-            AuthenticationException::REASON_ACCOUNT_NOT_VERIFIED => 'Account has not been verified',
-            AuthenticationException::REASON_TOO_MANY_ATTEMPTS => 'Too many failed authentication attempts',
-            AuthenticationException::REASON_USER_NOT_FOUND => 'User not found',
-            AuthenticationException::REASON_PASSWORD_EXPIRED => 'Password has expired and needs to be changed',
-            AuthenticationException::REASON_MISSING_CREDENTIALS => 'Authentication credentials are missing',
-            AuthenticationException::REASON_INVALID_TOKEN => 'Invalid authentication token',
-            AuthenticationException::REASON_TOKEN_REQUIRED => 'Authentication token is required',
+            AuthenticationException::REASON_INVALID_CREDENTIALS     => 'Invalid username or password',
+            AuthenticationException::REASON_ACCOUNT_LOCKED          => 'Account has been locked due to security reasons',
+            AuthenticationException::REASON_ACCOUNT_DISABLED        => 'Account has been disabled',
+            AuthenticationException::REASON_ACCOUNT_NOT_VERIFIED    => 'Account has not been verified',
+            AuthenticationException::REASON_TOO_MANY_ATTEMPTS       => 'Too many failed authentication attempts',
+            AuthenticationException::REASON_USER_NOT_FOUND          => 'User not found',
+            AuthenticationException::REASON_PASSWORD_EXPIRED        => 'Password has expired and needs to be changed',
+            AuthenticationException::REASON_MISSING_CREDENTIALS     => 'Authentication credentials are missing',
+            AuthenticationException::REASON_INVALID_TOKEN           => 'Invalid authentication token',
+            AuthenticationException::REASON_TOKEN_REQUIRED          => 'Authentication token is required',
             AuthenticationException::REASON_INSUFFICIENT_PRIVILEGES => 'Insufficient privileges to access this resource',
         ];
 
@@ -151,9 +152,9 @@ class AuthenticationExceptionTest extends UnitTestCase
     public function testContextGetters(): void
     {
         $context = [
-            'user_id' => 123,
-            'username' => 'testuser',
-            'ip_address' => '192.168.1.100',
+            'user_id'       => 123,
+            'username'      => 'testuser',
+            'ip_address'    => '192.168.1.100',
             'attempt_count' => 5,
             'lockout_until' => 1641000000,
         ];
@@ -535,14 +536,14 @@ class AuthenticationExceptionTest extends UnitTestCase
     public function testComplexScenario(): void
     {
         $additionalContext = [
-            'username' => 'compromised_user',
-            'user_id' => 987,
-            'ip_address' => '192.168.1.200',
-            'attempt_count' => 10,
-            'lockout_until' => time() + 3600, // 1 hour from now
-            'user_agent' => 'Suspicious Bot/1.0',
-            'request_id' => 'req-security-alert-123',
-            'geolocation' => ['country' => 'Unknown', 'city' => 'Unknown'],
+            'username'                  => 'compromised_user',
+            'user_id'                   => 987,
+            'ip_address'                => '192.168.1.200',
+            'attempt_count'             => 10,
+            'lockout_until'             => time() + 3600, // 1 hour from now
+            'user_agent'                => 'Suspicious Bot/1.0',
+            'request_id'                => 'req-security-alert-123',
+            'geolocation'               => ['country' => 'Unknown', 'city' => 'Unknown'],
             'previous_successful_login' => time() - 86400, // 1 day ago
         ];
 

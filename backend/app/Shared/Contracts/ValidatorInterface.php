@@ -14,6 +14,7 @@ interface ValidatorInterface
      *
      * @param array<string, mixed> $data 要驗證的資料
      * @param array<string, mixed> $rules 驗證規則
+     *
      * @return ValidationResult 驗證結果
      */
     public function validate(array $data, array $rules): ValidationResult;
@@ -23,7 +24,9 @@ interface ValidatorInterface
      *
      * @param array<string, mixed> $data 要驗證的資料
      * @param array<string, mixed> $rules 驗證規則
+     *
      * @throws ValidationException 當驗證失敗時
+     *
      * @return array 驗證通過的資料
      */
     public function validateOrFail(array $data, array $rules): array;
@@ -34,6 +37,7 @@ interface ValidatorInterface
      * @param mixed $value 要檢查的值
      * @param string $rule 驗證規則
      * @param array<string, mixed> $parameters 規則參數
+     *
      * @return bool 是否通過驗證
      */
     public function checkRule(mixed $value, string $rule, array $parameters = []): bool;

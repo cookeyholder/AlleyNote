@@ -205,7 +205,7 @@ final class StatisticsCacheServiceTest extends UnitTestCase
             ->expects($this->once())
             ->method('debug')
             ->with('刪除統計快取', [
-                'keys' => [$key],
+                'keys'  => [$key],
                 'count' => 1,
             ]);
 
@@ -230,7 +230,7 @@ final class StatisticsCacheServiceTest extends UnitTestCase
             ->expects($this->once())
             ->method('debug')
             ->with('刪除統計快取', [
-                'keys' => $keys,
+                'keys'  => $keys,
                 'count' => 2,
             ]);
 
@@ -415,7 +415,7 @@ final class StatisticsCacheServiceTest extends UnitTestCase
             ->expects($this->once())
             ->method('info')
             ->with('按標籤清除統計快取', [
-                'tags' => $tags,
+                'tags'  => $tags,
                 'count' => 2,
             ]);
 

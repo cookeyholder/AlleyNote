@@ -68,6 +68,7 @@ interface MiddlewareManagerInterface
      *
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param RequestHandlerInterface $finalHandler 最終處理器
+     *
      * @return ResponseInterface HTTP 回應物件
      */
     public function process(

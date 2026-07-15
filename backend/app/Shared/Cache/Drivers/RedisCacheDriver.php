@@ -19,11 +19,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
 
     /** @var array<string, int> 統計資料 */
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'sets' => 0,
+        'hits'    => 0,
+        'misses'  => 0,
+        'sets'    => 0,
         'deletes' => 0,
-        'clears' => 0,
+        'clears'  => 0,
     ];
 
     /** @var array<string> 當前標籤 */
@@ -302,8 +302,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         try {
             $info = $this->redis->info('memory');
             $redisStats = [
-                'redis_memory_used' => $info['used_memory'] ?? 0,
-                'redis_memory_peak' => $info['used_memory_peak'] ?? 0,
+                'redis_memory_used'       => $info['used_memory'] ?? 0,
+                'redis_memory_peak'       => $info['used_memory_peak'] ?? 0,
                 'redis_connected_clients' => $this->redis->info('clients')['connected_clients'] ?? 0,
             ];
         } catch (RedisException) {
@@ -311,8 +311,8 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
         }
 
         return array_merge($this->stats, $redisStats, [
-            'hit_rate' => round($hitRate, 2),
-            'prefix' => $this->prefix,
+            'hit_rate'          => round($hitRate, 2),
+            'prefix'            => $this->prefix,
             'connection_status' => $this->isAvailable(),
         ]);
     }
@@ -392,11 +392,11 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     public function resetStats(): void
     {
         $this->stats = [
-            'hits' => 0,
-            'misses' => 0,
-            'sets' => 0,
+            'hits'    => 0,
+            'misses'  => 0,
+            'sets'    => 0,
             'deletes' => 0,
-            'clears' => 0,
+            'clears'  => 0,
         ];
     }
 
@@ -419,6 +419,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 設定快取標籤.
      *
      * @param array<string>|string $tags 標籤陣列或單一標籤
+     *
      * @return TaggedCacheInterface 標籤化快取實例
      */
     public function tags(array|string $tags): TaggedCacheInterface
@@ -445,6 +446,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 根據標籤清空快取.
      *
      * @param array<string>|string $tags 要清空的標籤
+     *
      * @return int 清空的項目數量
      */
     public function flushByTags(array|string $tags): int
@@ -476,6 +478,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 根據標籤取得快取鍵.
      *
      * @param string $tag 標籤名稱
+     *
      * @return array<string> 快取鍵陣列
      */
     public function getKeysByTag(string $tag): array
@@ -504,6 +507,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 根據多個標籤取得共同的快取鍵.
      *
      * @param array<string> $tags 標籤陣列
+     *
      * @return array<string> 共同的快取鍵陣列
      */
     public function getKeysByTags(array $tags): array
@@ -540,6 +544,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 檢查標籤是否存在.
      *
      * @param string $tag 標籤名稱
+     *
      * @return bool 是否存在
      */
     public function tagExists(string $tag): bool
@@ -587,7 +592,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
     {
         $statistics = [
             'total_tags' => 0,
-            'tags' => [],
+            'tags'       => [],
         ];
 
         try {
@@ -596,7 +601,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
             foreach ($allTags as $tag) {
                 $keys = $this->getKeysByTag($tag);
                 $statistics['tags'][$tag] = [
-                    'key_count' => count($keys),
+                    'key_count'   => count($keys),
                     'sample_keys' => array_slice($keys, 0, 5), // 顯示前 5 個鍵作為範例
                 ];
             }
@@ -777,6 +782,7 @@ class RedisCacheDriver implements CacheDriverInterface, TaggedCacheInterface
      * 取得標籤索引鍵.
      *
      * @param string $tag 標籤名稱
+     *
      * @return string 標籤索引鍵
      */
     private function getTagIndexKey(string $tag): string

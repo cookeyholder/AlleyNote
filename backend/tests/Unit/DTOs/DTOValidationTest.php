@@ -36,12 +36,12 @@ class DTOValidationTest extends UnitTestCase
     {
         // 測試有效資料
         $validData = [
-            'title' => '測試文章標題',
-            'content' => '這是一篇測試文章的內容',
-            'user_id' => 1,
-            'user_ip' => '192.168.1.1',
+            'title'        => '測試文章標題',
+            'content'      => '這是一篇測試文章的內容',
+            'user_id'      => 1,
+            'user_ip'      => '192.168.1.1',
             'is_anonymous' => false,
-            'category' => 'general',
+            'category'     => 'general',
         ];
 
         $dto = new CreatePostDTO($this->validator, $validData);
@@ -61,7 +61,7 @@ class DTOValidationTest extends UnitTestCase
     public function test_create_post_dto_title_validation(): void
     {
         $baseData = [
-            'title' => '測試標題',
+            'title'   => '測試標題',
             'content' => '內容',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
@@ -106,7 +106,7 @@ class DTOValidationTest extends UnitTestCase
     public function test_create_post_dto_content_validation(): void
     {
         $baseData = [
-            'title' => '測試標題',
+            'title'   => '測試標題',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];
@@ -131,7 +131,7 @@ class DTOValidationTest extends UnitTestCase
     public function test_create_post_dto_user_validation(): void
     {
         $baseData = [
-            'title' => '測試標題',
+            'title'   => '測試標題',
             'content' => '內容',
             'user_ip' => '192.168.1.1',
         ];
@@ -164,7 +164,7 @@ class DTOValidationTest extends UnitTestCase
     public function test_create_post_dto_ip_validation(): void
     {
         $baseData = [
-            'title' => '測試標題',
+            'title'   => '測試標題',
             'content' => '內容',
             'user_id' => 1,
         ];
@@ -206,7 +206,7 @@ class DTOValidationTest extends UnitTestCase
 
         // 測試更新多個欄位
         $multipleFieldsData = [
-            'title' => '新標題',
+            'title'   => '新標題',
             'content' => '新內容',
         ];
         $dto = new UpdatePostDTO($this->validator, $multipleFieldsData);
@@ -241,13 +241,13 @@ class DTOValidationTest extends UnitTestCase
     {
         // 測試有效資料
         $validData = [
-            'post_id' => 1,
-            'filename' => 'test-file.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test-file.jpg',
             'original_name' => 'original.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => 'uploads/test-file.jpg',
-            'uploaded_by' => 1,
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => 'uploads/test-file.jpg',
+            'uploaded_by'   => 1,
         ];
 
         $dto = new CreateAttachmentDTO($this->validator, $validData);
@@ -267,13 +267,13 @@ class DTOValidationTest extends UnitTestCase
     public function test_create_attachment_dto_file_validation(): void
     {
         $baseData = [
-            'post_id' => 1,
-            'filename' => 'test.jpg',
+            'post_id'       => 1,
+            'filename'      => 'test.jpg',
             'original_name' => 'original.jpg',
-            'mime_type' => 'image/jpeg',
-            'file_size' => 1024,
-            'storage_path' => 'uploads/test.jpg',
-            'uploaded_by' => 1,
+            'mime_type'     => 'image/jpeg',
+            'file_size'     => 1024,
+            'storage_path'  => 'uploads/test.jpg',
+            'uploaded_by'   => 1,
         ];
 
         // 測試無效的檔案大小
@@ -298,11 +298,11 @@ class DTOValidationTest extends UnitTestCase
     {
         // 測試有效資料
         $validData = [
-            'username' => 'testuser123',
-            'email' => 'test@example.com',
-            'password' => 'SecurePass123',
+            'username'         => 'testuser123',
+            'email'            => 'test@example.com',
+            'password'         => 'SecurePass123',
             'confirm_password' => 'SecurePass123',
-            'user_ip' => '192.168.1.1',
+            'user_ip'          => '192.168.1.1',
         ];
 
         $dto = new RegisterUserDTO($this->validator, $validData);
@@ -322,11 +322,11 @@ class DTOValidationTest extends UnitTestCase
     public function test_register_user_dto_username_validation(): void
     {
         $baseData = [
-            'username' => 'validuser',
-            'email' => 'test@example.com',
-            'password' => 'SecurePass123',
+            'username'         => 'validuser',
+            'email'            => 'test@example.com',
+            'password'         => 'SecurePass123',
             'confirm_password' => 'SecurePass123',
-            'user_ip' => '192.168.1.1',
+            'user_ip'          => '192.168.1.1',
         ];
 
         // 測試使用者名稱太短
@@ -357,11 +357,11 @@ class DTOValidationTest extends UnitTestCase
     public function test_register_user_dto_email_validation(): void
     {
         $baseData = [
-            'username' => 'testuser',
-            'email' => 'valid@example.com',
-            'password' => 'SecurePass123',
+            'username'         => 'testuser',
+            'email'            => 'valid@example.com',
+            'password'         => 'SecurePass123',
             'confirm_password' => 'SecurePass123',
-            'user_ip' => '192.168.1.1',
+            'user_ip'          => '192.168.1.1',
         ];
 
         // 測試無效的電子郵件格式
@@ -386,8 +386,8 @@ class DTOValidationTest extends UnitTestCase
     {
         $baseData = [
             'username' => 'testuser',
-            'email' => 'test@example.com',
-            'user_ip' => '192.168.1.1',
+            'email'    => 'test@example.com',
+            'user_ip'  => '192.168.1.1',
         ];
 
         // 測試密碼太短
@@ -423,8 +423,8 @@ class DTOValidationTest extends UnitTestCase
         // 測試有效資料
         $validData = [
             'ip_address' => '192.168.1.1',
-            'action' => 'block',
-            'reason' => '惡意行為',
+            'action'     => 'block',
+            'reason'     => '惡意行為',
             'created_by' => 1,
         ];
 
@@ -446,8 +446,8 @@ class DTOValidationTest extends UnitTestCase
     {
         $baseData = [
             'ip_address' => '192.168.1.1',
-            'action' => 'block',
-            'reason' => '測試',
+            'action'     => 'block',
+            'reason'     => '測試',
             'created_by' => 1,
         ];
 
@@ -479,8 +479,8 @@ class DTOValidationTest extends UnitTestCase
     {
         $baseData = [
             'ip_address' => '192.168.1.1',
-            'action' => 'block',
-            'reason' => '測試',
+            'action'     => 'block',
+            'reason'     => '測試',
             'created_by' => 1,
         ];
 
@@ -508,7 +508,7 @@ class DTOValidationTest extends UnitTestCase
     {
         // 測試 CreatePostDTO 資料清理
         $dirtyPostData = [
-            'title' => '  測試標題  ',
+            'title'   => '  測試標題  ',
             'content' => '  內容  ',
             'user_id' => '1',
             'user_ip' => '192.168.1.1',
@@ -534,10 +534,10 @@ class DTOValidationTest extends UnitTestCase
         // 測試大量 DTO 建立
         for ($i = 0; $i < 100; $i++) {
             $postData = [
-                'title' => "測試文章標題 {$i}",
-                'content' => "這是第 {$i} 篇測試文章的內容",
-                'user_id' => $i + 1,
-                'user_ip' => '192.168.1.' . ($i % 255 + 1),
+                'title'        => "測試文章標題 {$i}",
+                'content'      => "這是第 {$i} 篇測試文章的內容",
+                'user_id'      => $i + 1,
+                'user_ip'      => '192.168.1.' . ($i % 255 + 1),
                 'is_anonymous' => $i % 2 === 0,
             ];
 
@@ -563,10 +563,10 @@ class DTOValidationTest extends UnitTestCase
     public function test_dto_serialization(): void
     {
         $originalData = [
-            'title' => '測試標題',
-            'content' => '測試內容',
-            'user_id' => 1,
-            'user_ip' => '192.168.1.1',
+            'title'        => '測試標題',
+            'content'      => '測試內容',
+            'user_id'      => 1,
+            'user_ip'      => '192.168.1.1',
             'is_anonymous' => false,
         ];
 
@@ -593,7 +593,7 @@ class DTOValidationTest extends UnitTestCase
     {
         // 測試極長的字串
         $extremeData = [
-            'title' => str_repeat('測試', 100),
+            'title'   => str_repeat('測試', 100),
             'content' => str_repeat('內容', 1000),
             'user_id' => PHP_INT_MAX,
             'user_ip' => '255.255.255.255',
@@ -610,7 +610,7 @@ class DTOValidationTest extends UnitTestCase
 
         // 測試邊界值
         $boundaryData = [
-            'title' => str_repeat('A', 255), // 最大允許長度
+            'title'   => str_repeat('A', 255), // 最大允許長度
             'content' => '最小內容',
             'user_id' => 1,
             'user_ip' => '0.0.0.0',

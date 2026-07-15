@@ -163,14 +163,14 @@ final class StatisticsDatabaseAdapterFactory
     public function canCreate(string $type): bool
     {
         return match ($type) {
-            'base' => true,
-            'cache' => $this->cache !== null,
-            'logging' => $this->logger !== null,
-            'transaction' => $this->db !== null,
-            'cached_logging' => $this->cache !== null && $this->logger !== null,
+            'base'                  => true,
+            'cache'                 => $this->cache !== null,
+            'logging'               => $this->logger !== null,
+            'transaction'           => $this->db !== null,
+            'cached_logging'        => $this->cache !== null && $this->logger !== null,
             'transactional_logging' => $this->db !== null && $this->logger !== null,
-            'full' => $this->cache !== null && $this->logger !== null && $this->db !== null,
-            default => false,
+            'full'                  => $this->cache !== null && $this->logger !== null && $this->db !== null,
+            default                 => false,
         };
     }
 

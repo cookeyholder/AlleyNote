@@ -274,8 +274,8 @@ class CacheServiceProvider
                 return new RedisCacheDriver($config);
             }),
             MemoryCacheDriver::class => \DI\get('cache.driver.' . CacheType::MEMORY->value),
-            FileCacheDriver::class => \DI\get('cache.driver.' . CacheType::FILE->value),
-            RedisCacheDriver::class => \DI\get('cache.driver.' . CacheType::REDIS->value),
+            FileCacheDriver::class   => \DI\get('cache.driver.' . CacheType::FILE->value),
+            RedisCacheDriver::class  => \DI\get('cache.driver.' . CacheType::REDIS->value),
             // 標籤倉庫
             'cache.tag.repository.memory' => \DI\factory(function (ContainerInterface $c) {
                 return new MemoryTagRepository();
@@ -403,40 +403,40 @@ class CacheServiceProvider
     {
         return [
             'default_driver' => CacheType::MEMORY->value,
-            'drivers' => [
+            'drivers'        => [
                 CacheType::MEMORY->value => [
-                    'enabled' => true,
+                    'enabled'  => true,
                     'priority' => 90,
                     'max_size' => 1000,
-                    'ttl' => 3600,
+                    'ttl'      => 3600,
                 ],
                 CacheType::FILE->value => [
-                    'enabled' => true,
+                    'enabled'  => true,
                     'priority' => 50,
-                    'path' => $this->getDefaultCachePath(),
-                    'ttl' => 3600,
+                    'path'     => $this->getDefaultCachePath(),
+                    'ttl'      => 3600,
                 ],
                 CacheType::REDIS->value => [
-                    'enabled' => false,
+                    'enabled'  => false,
                     'priority' => 70,
-                    'host' => '127.0.0.1',
-                    'port' => 6379,
+                    'host'     => '127.0.0.1',
+                    'port'     => 6379,
                     'database' => 0,
-                    'timeout' => 2.0,
-                    'prefix' => 'alleynote:cache:',
+                    'timeout'  => 2.0,
+                    'prefix'   => 'alleynote:cache:',
                 ],
             ],
             'strategy' => [
-                'min_ttl' => 60,
-                'max_ttl' => 86400,
-                'max_value_size' => 1024 * 1024,
+                'min_ttl'          => 60,
+                'max_ttl'          => 86400,
+                'max_value_size'   => 1024 * 1024,
                 'exclude_patterns' => ['temp:*', 'debug:*'],
             ],
             'manager' => [
-                'enable_sync' => false,
-                'sync_ttl' => 3600,
+                'enable_sync'        => false,
+                'sync_ttl'           => 3600,
                 'max_retry_attempts' => 3,
-                'retry_delay' => 100,
+                'retry_delay'        => 100,
             ],
         ];
     }
@@ -496,10 +496,10 @@ class CacheConfigBuilder
             $this->config['drivers'] = [];
         }
         $this->config['drivers'][CacheType::MEMORY->value] = array_merge([
-            'enabled' => true,
+            'enabled'  => true,
             'priority' => 90,
             'max_size' => 1000,
-            'ttl' => 3600,
+            'ttl'      => 3600,
         ], $config);
 
         return $this;
@@ -511,9 +511,9 @@ class CacheConfigBuilder
     public function fileDriver(?string $path = null, array $config = []): self
     {
         $defaultConfig = [
-            'enabled' => true,
+            'enabled'  => true,
             'priority' => 50,
-            'ttl' => 3600,
+            'ttl'      => 3600,
         ];
         if ($path !== null) {
             $defaultConfig['path'] = $path;
@@ -535,13 +535,13 @@ class CacheConfigBuilder
             $this->config['drivers'] = [];
         }
         $this->config['drivers'][CacheType::REDIS->value] = array_merge([
-            'enabled' => true,
+            'enabled'  => true,
             'priority' => 70,
-            'host' => '127.0.0.1',
-            'port' => 6379,
+            'host'     => '127.0.0.1',
+            'port'     => 6379,
             'database' => 0,
-            'timeout' => 2.0,
-            'prefix' => 'alleynote:cache:',
+            'timeout'  => 2.0,
+            'prefix'   => 'alleynote:cache:',
         ], $config);
 
         return $this;
@@ -553,9 +553,9 @@ class CacheConfigBuilder
     public function strategy(array $config): self
     {
         $this->config['strategy'] = array_merge([
-            'min_ttl' => 60,
-            'max_ttl' => 86400,
-            'max_value_size' => 1024 * 1024,
+            'min_ttl'          => 60,
+            'max_ttl'          => 86400,
+            'max_value_size'   => 1024 * 1024,
             'exclude_patterns' => ['temp:*', 'debug:*'],
         ], $config);
 
@@ -568,10 +568,10 @@ class CacheConfigBuilder
     public function manager(array $config): self
     {
         $this->config['manager'] = array_merge([
-            'enable_sync' => false,
-            'sync_ttl' => 3600,
+            'enable_sync'        => false,
+            'sync_ttl'           => 3600,
             'max_retry_attempts' => 3,
-            'retry_delay' => 100,
+            'retry_delay'        => 100,
         ], $config);
 
         return $this;

@@ -62,10 +62,21 @@ class PostService implements PostServiceInterface
 
     /**
      * 取得分頁貼文列表.
+     *
+     * @return array{
+     *     items: Post[],
+     *     total: int,
+     *     page: int,
+     *     perPage: int,
+     *     lastPage: float
+     * }
      */
     public function listPosts(int $page = 1, int $perPage = 10, array $filters = []): array
     {
-        return $this->repository->paginate($page, $perPage, $filters);
+        /** @var array{items: Post[], total: int, page: int, perPage: int, lastPage: float} $result */
+        $result = $this->repository->paginate($page, $perPage, $filters);
+
+        return $result;
     }
 
     /**

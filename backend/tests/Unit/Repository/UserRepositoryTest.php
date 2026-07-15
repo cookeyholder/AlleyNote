@@ -55,7 +55,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -74,12 +74,12 @@ class UserRepositoryTest extends UnitTestCase
     {
         $user = $this->repository->create([
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ]);
 
         $updateData = [
-            'email' => 'updated@example.com',
+            'email'  => 'updated@example.com',
             'status' => 0,
         ];
 
@@ -97,7 +97,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $user = $this->repository->create([
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ]);
 
@@ -115,7 +115,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -132,7 +132,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -148,7 +148,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -164,7 +164,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser',
-            'email' => 'test1@example.com',
+            'email'    => 'test1@example.com',
             'password' => 'password123',
         ];
 
@@ -181,7 +181,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser1',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -198,7 +198,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $userData = [
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ];
 
@@ -222,7 +222,7 @@ class UserRepositoryTest extends UnitTestCase
     {
         $user = $this->repository->create([
             'username' => 'testuser',
-            'email' => 'test@example.com',
+            'email'    => 'test@example.com',
             'password' => 'password123',
         ]);
 

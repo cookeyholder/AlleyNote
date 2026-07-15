@@ -542,17 +542,17 @@ class ValidatorTest extends UnitTestCase
     public function test_multiple_rules(): void
     {
         $data = [
-            'name' => 'John Doe',
+            'name'  => 'John Doe',
             'email' => 'john@example.com',
-            'age' => 25,
-            'bio' => 'Software developer',
+            'age'   => 25,
+            'bio'   => 'Software developer',
         ];
 
         $rules = [
-            'name' => 'required|string|min_length:2|max_length:50',
+            'name'  => 'required|string|min_length:2|max_length:50',
             'email' => 'required|email',
-            'age' => 'required|integer|min:18|max:120',
-            'bio' => 'string|max_length:200',
+            'age'   => 'required|integer|min:18|max:120',
+            'bio'   => 'string|max_length:200',
         ];
 
         $result = $this->validator->validate($data, $rules);
@@ -680,9 +680,9 @@ class ValidatorTest extends UnitTestCase
         // 建立多個規則都會失敗的資料
         $data = ['name' => '', 'email' => 'invalid', 'age' => 'abc'];
         $rules = [
-            'name' => 'required',
+            'name'  => 'required',
             'email' => 'required|email',
-            'age' => 'required|integer',
+            'age'   => 'required|integer',
         ];
 
         // 測試不停止在第一個錯誤
@@ -715,17 +715,17 @@ class ValidatorTest extends UnitTestCase
         // 執行大量驗證操作
         for ($i = 0; $i < 1000; $i++) {
             $data = [
-                'name' => "user_{$i}",
+                'name'  => "user_{$i}",
                 'email' => "user{$i}@example.com",
-                'age' => 20 + ($i % 50),
-                'bio' => str_repeat('a', 50 + ($i % 100)),
+                'age'   => 20 + ($i % 50),
+                'bio'   => str_repeat('a', 50 + ($i % 100)),
             ];
 
             $rules = [
-                'name' => 'required|string|min_length:3|max_length:50',
+                'name'  => 'required|string|min_length:3|max_length:50',
                 'email' => 'required|email',
-                'age' => 'required|integer|min:18|max:120',
-                'bio' => 'string|max_length:200',
+                'age'   => 'required|integer|min:18|max:120',
+                'bio'   => 'string|max_length:200',
             ];
 
             $result = $this->validator->validate($data, $rules);

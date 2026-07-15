@@ -17,14 +17,14 @@ class MiddlewareResolver
      * 預定義的中介軟體別名對應.
      */
     private static array $middlewareAliases = [
-        'auth' => 'jwt.auth',
-        'jwt' => 'jwt.auth',
-        'jwt.auth' => 'jwt.auth',
-        'admin' => 'jwt.authorize',
-        'authorize' => 'jwt.authorize',
-        'jwt.authorize' => 'jwt.authorize',
-        'csrf' => CsrfMiddleware::class,
-        'rate_limit' => RateLimitMiddleware::class,
+        'auth'                 => 'jwt.auth',
+        'jwt'                  => 'jwt.auth',
+        'jwt.auth'             => 'jwt.auth',
+        'admin'                => 'jwt.authorize',
+        'authorize'            => 'jwt.authorize',
+        'jwt.authorize'        => 'jwt.authorize',
+        'csrf'                 => CsrfMiddleware::class,
+        'rate_limit'           => RateLimitMiddleware::class,
         'post_view_rate_limit' => PostViewRateLimitMiddleware::class,
     ];
 
@@ -36,6 +36,7 @@ class MiddlewareResolver
      * 解析中介軟體（支援字串別名和實例）.
      *
      * @param string|MiddlewareInterface $middleware
+     *
      * @throws InvalidArgumentException
      */
     public function resolve($middleware): MiddlewareInterface
@@ -81,6 +82,7 @@ class MiddlewareResolver
      * 解析中介軟體陣列.
      *
      * @param array<string|MiddlewareInterface> $middlewares
+     *
      * @return MiddlewareInterface[]
      */
     public function resolveMultiple(array $middlewares): array

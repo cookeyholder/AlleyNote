@@ -15,18 +15,18 @@ class UserAgentParserService
     {
         if ($userAgent === null || $userAgent === '') {
             return [
-                'browser' => 'Unknown',
+                'browser'         => 'Unknown',
                 'browser_version' => '',
-                'device_type' => 'Unknown',
-                'os' => 'Unknown',
+                'device_type'     => 'Unknown',
+                'os'              => 'Unknown',
             ];
         }
 
         return [
-            'browser' => $this->detectBrowser($userAgent),
+            'browser'         => $this->detectBrowser($userAgent),
             'browser_version' => $this->detectBrowserVersion($userAgent),
-            'device_type' => $this->detectDeviceType($userAgent),
-            'os' => $this->detectOS($userAgent),
+            'device_type'     => $this->detectDeviceType($userAgent),
+            'os'              => $this->detectOS($userAgent),
         ];
     }
 
@@ -36,12 +36,12 @@ class UserAgentParserService
     private function detectBrowser(string $userAgent): string
     {
         $browsers = [
-            'Edge' => '/Edg\/([\d\.]+)/',
-            'Chrome' => '/Chrome\/([\d\.]+)/',
-            'Safari' => '/Safari\/([\d\.]+)/',
+            'Edge'    => '/Edg\/([\d\.]+)/',
+            'Chrome'  => '/Chrome\/([\d\.]+)/',
+            'Safari'  => '/Safari\/([\d\.]+)/',
             'Firefox' => '/Firefox\/([\d\.]+)/',
-            'Opera' => '/Opera\/([\d\.]+)/',
-            'IE' => '/MSIE ([\d\.]+)/',
+            'Opera'   => '/Opera\/([\d\.]+)/',
+            'IE'      => '/MSIE ([\d\.]+)/',
         ];
         foreach ($browsers as $browser => $pattern) {
             if (preg_match($pattern, $userAgent)) {
@@ -96,17 +96,17 @@ class UserAgentParserService
     private function detectOS(string $userAgent): string
     {
         $osList = [
-            'iOS' => '/iPhone|iPad|iPod/i',
-            'Android' => '/Android/i',
-            'Windows 11' => '/Windows NT 10\.0.*Edg/i',
-            'Windows 10' => '/Windows NT 10\.0/i',
+            'iOS'         => '/iPhone|iPad|iPod/i',
+            'Android'     => '/Android/i',
+            'Windows 11'  => '/Windows NT 10\.0.*Edg/i',
+            'Windows 10'  => '/Windows NT 10\.0/i',
             'Windows 8.1' => '/Windows NT 6\.3/i',
-            'Windows 8' => '/Windows NT 6\.2/i',
-            'Windows 7' => '/Windows NT 6\.1/i',
-            'Mac OS X' => '/Mac OS X/i',
-            'macOS' => '/Macintosh/i',
-            'Linux' => '/Linux/i',
-            'Ubuntu' => '/Ubuntu/i',
+            'Windows 8'   => '/Windows NT 6\.2/i',
+            'Windows 7'   => '/Windows NT 6\.1/i',
+            'Mac OS X'    => '/Mac OS X/i',
+            'macOS'       => '/Macintosh/i',
+            'Linux'       => '/Linux/i',
+            'Ubuntu'      => '/Ubuntu/i',
         ];
         foreach ($osList as $os => $pattern) {
             if (preg_match($pattern, $userAgent)) {
@@ -121,6 +121,7 @@ class UserAgentParserService
      * 批量解析多個 User-Agent.
      *
      * @param array<string|null> $userAgents
+     *
      * @return array<array{browser: string, browser_version: string, device_type: string, os: string}>
      */
     public function parseBatch(array $userAgents): array

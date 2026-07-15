@@ -28,8 +28,8 @@ final class PostContentUpdated extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'post_id' => $this->postId,
-            'title' => $this->title,
+            'post_id'    => $this->postId,
+            'title'      => $this->title,
             'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
         ];
     }

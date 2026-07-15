@@ -77,6 +77,7 @@ interface RouteInterface
      * 檢查路由是否匹配指定的 URI 路徑.
      *
      * @param string $path URI 路徑
+     *
      * @return RouteMatchResult 匹配結果
      */
     public function matchesPath(string $path): RouteMatchResult;
@@ -85,6 +86,7 @@ interface RouteInterface
      * 檢查路由是否完全匹配請求.
      *
      * @param ServerRequestInterface $request HTTP 請求
+     *
      * @return RouteMatchResult 匹配結果
      */
     public function matches(ServerRequestInterface $request): RouteMatchResult;
@@ -94,7 +96,9 @@ interface RouteInterface
      *
      * @param array<string, scalar> $parameters 路由參數
      * @param array<string, scalar> $queryParams 查詢參數
+     *
      * @return string 生成的 URL
+     *
      * @throws InvalidArgumentException 當參數無效時
      */
     public function generateUrl(array $parameters = [], array $queryParams = []): string;
@@ -103,6 +107,7 @@ interface RouteInterface
      * 從路徑中提取參數.
      *
      * @param string $path URI 路徑
+     *
      * @return array<string, string> 提取的參數
      */
     public function extractParameters(string $path): array;

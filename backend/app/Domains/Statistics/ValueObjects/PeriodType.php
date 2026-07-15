@@ -14,20 +14,20 @@ enum PeriodType: string
     public function getDisplayName(): string
     {
         return match ($this) {
-            self::DAILY => '日統計',
-            self::WEEKLY => '週統計',
+            self::DAILY   => '日統計',
+            self::WEEKLY  => '週統計',
             self::MONTHLY => '月統計',
-            self::YEARLY => '年統計',
+            self::YEARLY  => '年統計',
         };
     }
 
     public function getSortOrder(): int
     {
         return match ($this) {
-            self::DAILY => 1,
-            self::WEEKLY => 2,
+            self::DAILY   => 1,
+            self::WEEKLY  => 2,
             self::MONTHLY => 3,
-            self::YEARLY => 4,
+            self::YEARLY  => 4,
         };
     }
 

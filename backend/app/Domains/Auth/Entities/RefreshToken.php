@@ -361,18 +361,18 @@ class RefreshToken implements JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->id,
-            'jti' => $this->jti,
-            'user_id' => $this->userId,
-            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
-            'device_info' => $this->deviceInfo->jsonSerialize(),
-            'status' => $this->status,
-            'revoked_reason' => $this->revokedReason,
-            'revoked_at' => $this->revokedAt?->format('Y-m-d H:i:s'),
-            'last_used_at' => $this->lastUsedAt?->format('Y-m-d H:i:s'),
+            'id'               => $this->id,
+            'jti'              => $this->jti,
+            'user_id'          => $this->userId,
+            'expires_at'       => $this->expiresAt->format('Y-m-d H:i:s'),
+            'device_info'      => $this->deviceInfo->jsonSerialize(),
+            'status'           => $this->status,
+            'revoked_reason'   => $this->revokedReason,
+            'revoked_at'       => $this->revokedAt?->format('Y-m-d H:i:s'),
+            'last_used_at'     => $this->lastUsedAt?->format('Y-m-d H:i:s'),
             'parent_token_jti' => $this->parentTokenJti,
-            'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
+            'created_at'       => $this->createdAt?->format('Y-m-d H:i:s'),
+            'updated_at'       => $this->updatedAt?->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -384,19 +384,19 @@ class RefreshToken implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'id' => $this->id,
-            'jti' => $this->jti,
-            'user_id' => $this->userId,
-            'token_hash' => $this->tokenHash,
-            'expires_at' => $this->expiresAt->format('Y-m-d H:i:s'),
-            'device_info' => $this->deviceInfo->toArray(),
-            'status' => $this->status,
-            'revoked_reason' => $this->revokedReason,
-            'revoked_at' => $this->revokedAt?->format('Y-m-d H:i:s'),
-            'last_used_at' => $this->lastUsedAt?->format('Y-m-d H:i:s'),
+            'id'               => $this->id,
+            'jti'              => $this->jti,
+            'user_id'          => $this->userId,
+            'token_hash'       => $this->tokenHash,
+            'expires_at'       => $this->expiresAt->format('Y-m-d H:i:s'),
+            'device_info'      => $this->deviceInfo->toArray(),
+            'status'           => $this->status,
+            'revoked_reason'   => $this->revokedReason,
+            'revoked_at'       => $this->revokedAt?->format('Y-m-d H:i:s'),
+            'last_used_at'     => $this->lastUsedAt?->format('Y-m-d H:i:s'),
             'parent_token_jti' => $this->parentTokenJti,
-            'created_at' => $this->createdAt?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt?->format('Y-m-d H:i:s'),
+            'created_at'       => $this->createdAt?->format('Y-m-d H:i:s'),
+            'updated_at'       => $this->updatedAt?->format('Y-m-d H:i:s'),
         ];
     }
 

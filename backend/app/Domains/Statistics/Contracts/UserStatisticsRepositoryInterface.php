@@ -13,6 +13,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param string $activityType 活動類型（login, post, view, comment）
+     *
      * @return int 活躍使用者數量
      */
     public function getActiveUsersCount(StatisticsPeriod $period, string $activityType = 'login'): int;
@@ -21,6 +22,7 @@ interface UserStatisticsRepositoryInterface
      * 取得新註冊使用者數量.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return int 新註冊使用者數量
      */
     public function getNewUsersCount(StatisticsPeriod $period): int;
@@ -29,6 +31,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者總數統計.
      *
      * @param StatisticsPeriod $period 統計週期（以此為基準點）
+     *
      * @return int 截至該週期結束的使用者總數
      */
     public function getTotalUsersCount(StatisticsPeriod $period): int;
@@ -37,6 +40,7 @@ interface UserStatisticsRepositoryInterface
      * 根據活動類型分組統計活躍使用者.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, int> 活動類型為鍵，使用者數為值的陣列
      */
     public function getActiveUsersByActivityType(StatisticsPeriod $period): array;
@@ -47,6 +51,7 @@ interface UserStatisticsRepositoryInterface
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 取得數量
      * @param string $metric 排序指標（posts, views, logins, activity_score）
+     *
      * @return array<int, array{user_id: int, username: string, metric_value: int, rank: int}> 活躍使用者陣列
      */
     public function getMostActiveUsers(StatisticsPeriod $period, int $limit = 10, string $metric = 'posts'): array;
@@ -55,6 +60,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者登入活動分析.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array{
      *   total_logins: int,
      *   unique_users: int,
@@ -70,6 +76,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $currentPeriod 當前週期
      * @param StatisticsPeriod $previousPeriod 上一週期
+     *
      * @return array{current: int, previous: int, growth_rate: float, growth_count: int}
      */
     public function getUserRegistrationTrend(StatisticsPeriod $currentPeriod, StatisticsPeriod $previousPeriod): array;
@@ -79,6 +86,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param string $groupBy 分組方式（hour, day, week）
+     *
      * @return array<string, int> 時間段為鍵，活動使用者數為值的陣列
      */
     public function getUserActivityTimeDistribution(StatisticsPeriod $period, string $groupBy = 'hour'): array;
@@ -88,6 +96,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $cohortPeriod 世代週期（註冊時間）
      * @param int $daysAfterRegistration 註冊後天數
+     *
      * @return array{
      *   cohort_size: int,
      *   retained_users: int,
@@ -101,6 +110,7 @@ interface UserStatisticsRepositoryInterface
      * 根據使用者角色統計數量.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array<string, int> 角色為鍵，數量為值的陣列
      */
     public function getUsersCountByRole(StatisticsPeriod $period): array;
@@ -109,6 +119,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者參與度統計.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array{
      *   high_engagement: int,
      *   medium_engagement: int,
@@ -123,6 +134,7 @@ interface UserStatisticsRepositoryInterface
      * 取得使用者來源分析.
      *
      * @param StatisticsPeriod $period 統計週期（註冊時間範圍）
+     *
      * @return array<string, int> 來源管道為鍵，註冊數為值的陣列
      */
     public function getUserRegistrationSources(StatisticsPeriod $period): array;
@@ -132,6 +144,7 @@ interface UserStatisticsRepositoryInterface
      *
      * @param StatisticsPeriod $period 統計週期
      * @param int $limit 取得前 N 個地區
+     *
      * @return array<int, array{location: string, users_count: int, percentage: float}> 地理分布陣列
      */
     public function getUserGeographicalDistribution(StatisticsPeriod $period, int $limit = 10): array;
@@ -140,6 +153,7 @@ interface UserStatisticsRepositoryInterface
      * 檢查指定週期是否有使用者統計資料.
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return bool 是否有資料
      */
     public function hasDataForPeriod(StatisticsPeriod $period): bool;
@@ -148,6 +162,7 @@ interface UserStatisticsRepositoryInterface
      * 取得指定週期的使用者活動摘要
      *
      * @param StatisticsPeriod $period 統計週期
+     *
      * @return array{
      *   total_users: int,
      *   active_users: int,

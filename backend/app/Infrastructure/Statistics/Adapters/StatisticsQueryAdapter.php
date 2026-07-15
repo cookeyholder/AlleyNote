@@ -28,7 +28,7 @@ class StatisticsQueryAdapter
     ): array {
         $options = [
             'period_start' => DateTime::createFromInterface($startDate),
-            'period_end' => DateTime::createFromInterface($endDate),
+            'period_end'   => DateTime::createFromInterface($endDate),
         ];
         $data = $this->baseQueryService->getPostStatistics($options);
 
@@ -48,7 +48,7 @@ class StatisticsQueryAdapter
     ): array {
         $options = [
             'period_start' => DateTime::createFromInterface($startDate),
-            'period_end' => DateTime::createFromInterface($endDate),
+            'period_end'   => DateTime::createFromInterface($endDate),
         ];
         $data = $this->baseQueryService->getUserStatistics($options);
 
@@ -159,6 +159,7 @@ class StatisticsQueryAdapter
      * 取得自訂指標資料.
      *
      * @param array<string, mixed> $parameters
+     *
      * @return array<array{timestamp?: string, category?: string, value: float}>
      */
     public function getCustomMetricData(string $metricName, array $parameters): array
@@ -232,22 +233,22 @@ class StatisticsQueryAdapter
         $current = DateTimeImmutable::createFromInterface($startDate);
         $end = DateTimeImmutable::createFromInterface($endDate);
         $interval = match ($granularity) {
-            'hour' => new DateInterval('PT1H'),
-            'day' => new DateInterval('P1D'),
-            'week' => new DateInterval('P1W'),
+            'hour'  => new DateInterval('PT1H'),
+            'day'   => new DateInterval('P1D'),
+            'week'  => new DateInterval('P1W'),
             'month' => new DateInterval('P1M'),
-            'year' => new DateInterval('P1Y'),
+            'year'  => new DateInterval('P1Y'),
             default => new DateInterval('P1D'),
         };
         $baseValue = match ($type) {
-            'posts' => 50,
-            'users' => 100,
-            'comments' => 200,
+            'posts'         => 50,
+            'users'         => 100,
+            'comments'      => 200,
             'registrations' => 10,
             'response_time' => 150,
-            'error_rate' => 2,
-            'throughput' => 500,
-            default => 100,
+            'error_rate'    => 2,
+            'throughput'    => 500,
+            default         => 100,
         };
         while ($current <= $end) {
             // 加入一些隨機波動和趨勢
@@ -262,7 +263,7 @@ class StatisticsQueryAdapter
             }
             $data[] = [
                 'timestamp' => $current->format('Y-m-d H:i:s'),
-                'value' => round($value, 2),
+                'value'     => round($value, 2),
             ];
             $current = $current->add($interval);
         }
@@ -278,10 +279,10 @@ class StatisticsQueryAdapter
     private function generateMockCategoryData(string $type, int $limit): array
     {
         $categories = match ($type) {
-            'source' => ['官方網站', 'RSS 訂閱', '手動輸入', 'API 匯入', '社群媒體', '新聞聚合'],
-            'tags' => ['技術', '生活', '科技', '教育', '娛樂', '健康', '財經', '體育', '旅遊', '美食'],
+            'source'  => ['官方網站', 'RSS 訂閱', '手動輸入', 'API 匯入', '社群媒體', '新聞聚合'],
+            'tags'    => ['技術', '生活', '科技', '教育', '娛樂', '健康', '財經', '體育', '旅遊', '美食'],
             'content' => ['React 入門指南', 'PHP 最佳實踐', 'Docker 容器化', 'API 設計原則', 'MySQL 優化'],
-            default => ['項目1', '項目2', '項目3', '項目4', '項目5'],
+            default   => ['項目1', '項目2', '項目3', '項目4', '項目5'],
         };
         $data = [];
         $totalValue = 1000;
@@ -291,7 +292,7 @@ class StatisticsQueryAdapter
             $value = max(10, mt_rand(10, (int) $maxValue));
             $data[] = [
                 'category' => $categories[$i],
-                'value' => (float) $value,
+                'value'    => (float) $value,
             ];
             $remainingValue -= $value;
             if ($remainingValue <= 0) {
@@ -333,6 +334,7 @@ class StatisticsQueryAdapter
      * 取得多個效能指標資料.
      *
      * @param array<string> $metrics
+     *
      * @return array<string, array<array{timestamp: string, value: float}>>
      */
     public function getPerformanceMetricsData(
@@ -378,8 +380,8 @@ class StatisticsQueryAdapter
         $result = [];
         foreach (array_slice($categories, 0, $limit) as $index => $category) {
             $result[] = [
-                'category' => $category,
-                'value' => rand(10, 100),
+                'category'   => $category,
+                'value'      => rand(10, 100),
                 'percentage' => rand(5, 30),
             ];
         }
@@ -395,9 +397,9 @@ class StatisticsQueryAdapter
         $result = [];
         for ($i = 1; $i <= $limit; $i++) {
             $result[] = [
-                'title' => "Popular Article {$i}",
-                'views' => rand(100, 1000),
-                'likes' => rand(10, 100),
+                'title'  => "Popular Article {$i}",
+                'views'  => rand(100, 1000),
+                'likes'  => rand(10, 100),
                 'shares' => rand(5, 50),
             ];
         }

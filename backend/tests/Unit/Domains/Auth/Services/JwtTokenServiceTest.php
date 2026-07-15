@@ -104,12 +104,12 @@ final class JwtTokenServiceTest extends UnitTestCase
                 ],
                 // Second call: parsing access token for extractPayload
                 [
-                    'jti' => 'test-access-jti',
-                    'sub' => (string) $userId,
-                    'iss' => 'test-issuer',
-                    'aud' => 'test-audience',
-                    'iat' => time(),
-                    'exp' => time() + 3600,
+                    'jti'  => 'test-access-jti',
+                    'sub'  => (string) $userId,
+                    'iss'  => 'test-issuer',
+                    'aud'  => 'test-audience',
+                    'iat'  => time(),
+                    'exp'  => time() + 3600,
                     'role' => 'user',
                     'type' => 'access',
                 ],
@@ -186,12 +186,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         // Arrange
         $token = 'valid-access-token';
         $payload = [
-            'jti' => 'test-jti',
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 3600,
+            'jti'  => 'test-jti',
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 3600,
             'type' => 'access',
         ];
 
@@ -229,12 +229,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $token = 'blacklisted-token';
         $jti = 'test-jti';
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'alleynote-api',
-            'aud' => 'alleynote-client',
-            'iat' => time(),
-            'exp' => time() + 3600,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'alleynote-api',
+            'aud'  => 'alleynote-client',
+            'iat'  => time(),
+            'exp'  => time() + 3600,
             'type' => 'access',
         ];
 
@@ -266,12 +266,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         // Arrange
         $token = 'valid-token';
         $payload = [
-            'jti' => 'test-jti',
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 3600,
+            'jti'  => 'test-jti',
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 3600,
             'type' => 'access',
         ];
 
@@ -302,12 +302,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJyZWZyZXNoLWp0aS0xMjMiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODc0MTM1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature';
         $jti = 'refresh-jti-123';
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 7200,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 7200,
             'type' => 'refresh',
         ];
 
@@ -356,12 +356,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJtaXNzaW5nLWp0aSIsInN1YiI6IjEyMyIsImlhdCI6MTczODEzNjU1NSwiZXhwIjoxNzM4NzQxMzU1LCJ0eXBlIjoicmVmcmVzaCJ9.fake-signature';
         $jti = 'missing-jti';
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 7200,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 7200,
             'type' => 'refresh',
         ];
 
@@ -401,12 +401,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJyZXZva2VkLWp0aSIsInN1YiI6IjEyMyIsImlhdCI6MTczODEzNjU1NSwiZXhwIjoxNzM4NzQxMzU1LCJ0eXBlIjoicmVmcmVzaCJ9.fake-signature';
         $jti = 'revoked-jti';
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 7200,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 7200,
             'type' => 'refresh',
         ];
 
@@ -481,12 +481,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $newRefreshToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ0ZXN0LWlzc3VlciIsImF1ZCI6InRlc3QtYXVkaWVuY2UiLCJqdGkiOiJuZXctcmVmcmVzaC1qdGkiLCJzdWIiOiIxMjMiLCJpYXQiOjE3MzgxMzY1NTUsImV4cCI6MTczODc0MTM1NSwidHlwZSI6InJlZnJlc2gifQ.fake-signature';
         $jti = 'old-jti';
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 7200,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 7200,
             'type' => 'refresh',
         ];
 
@@ -534,12 +534,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $reason = 'manual_revocation'; // 使用有效的 reason
         $now = time();
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => $now - 3600,
-            'exp' => $now + 3600,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => $now - 3600,
+            'exp'  => $now + 3600,
             'type' => 'access',
         ];
 
@@ -568,12 +568,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         $token = 'refresh-token-to-revoke';
         $jti = 'refresh-jti';
         $payload = [
-            'jti' => $jti,
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 7200,
+            'jti'  => $jti,
+            'sub'  => '123',
+            'iss'  => 'test-issuer',
+            'aud'  => 'test-audience',
+            'iat'  => time(),
+            'exp'  => time() + 7200,
             'type' => 'refresh',
         ];
 
@@ -885,12 +885,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         // Arrange
         $token = 'device-token';
         $payload = [
-            'jti' => 'test-jti',
-            'sub' => '123',
-            'iss' => 'test',
-            'aud' => 'test',
-            'iat' => time(),
-            'exp' => time() + 3600,
+            'jti'       => 'test-jti',
+            'sub'       => '123',
+            'iss'       => 'test',
+            'aud'       => 'test',
+            'iat'       => time(),
+            'exp'       => time() + 3600,
             'device_id' => 'test-device-123',
         ];
 
@@ -911,12 +911,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         // Arrange
         $token = 'other-device-token';
         $payload = [
-            'jti' => 'test-jti',
-            'sub' => '123',
-            'iss' => 'test',
-            'aud' => 'test',
-            'iat' => time(),
-            'exp' => time() + 3600,
+            'jti'       => 'test-jti',
+            'sub'       => '123',
+            'iss'       => 'test',
+            'aud'       => 'test',
+            'iat'       => time(),
+            'exp'       => time() + 3600,
             'device_id' => 'other-device-456',
         ];
 
@@ -967,12 +967,12 @@ final class JwtTokenServiceTest extends UnitTestCase
         // 這是私有方法的間接測試，透過 extractPayload 方法
         $token = 'test-token';
         $payload = [
-            'jti' => 'test-jti',
-            'sub' => '123',
-            'iss' => 'test-issuer',
-            'aud' => 'test-audience',
-            'iat' => time(),
-            'exp' => time() + 3600,
+            'jti'          => 'test-jti',
+            'sub'          => '123',
+            'iss'          => 'test-issuer',
+            'aud'          => 'test-audience',
+            'iat'          => time(),
+            'exp'          => time() + 3600,
             'custom_claim' => 'custom_value',
         ];
 

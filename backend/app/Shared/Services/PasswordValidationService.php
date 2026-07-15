@@ -83,11 +83,11 @@ class PasswordValidationService
         $score = max(0, min(100, $score));
 
         return [
-            'is_valid' => empty($errors),
-            'score' => $score,
-            'strength' => $this->getStrengthLevel($score),
-            'errors' => $errors,
-            'warnings' => $warnings,
+            'is_valid'    => empty($errors),
+            'score'       => $score,
+            'strength'    => $this->getStrengthLevel($score),
+            'errors'      => $errors,
+            'warnings'    => $warnings,
             'suggestions' => $this->getSuggestions($errors, $warnings),
         ];
     }
@@ -235,6 +235,7 @@ class PasswordValidationService
      *
      * @param array<string> $errors
      * @param array<string> $warnings
+     *
      * @return array<string>
      */
     /**
@@ -242,6 +243,7 @@ class PasswordValidationService
      *
      * @param list<string> $errors
      * @param list<string> $warnings
+     *
      * @return list<string>
      */
     private function getSuggestions(array $errors, array $warnings): array

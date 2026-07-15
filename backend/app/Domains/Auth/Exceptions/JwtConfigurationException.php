@@ -54,7 +54,7 @@ class JwtConfigurationException extends JwtException
         array $additionalContext = [],
     ) {
         $context = array_merge([
-            'reason' => $reason,
+            'reason'    => $reason,
             'timestamp' => time(),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, $previous, $context);
@@ -80,12 +80,12 @@ class JwtConfigurationException extends JwtException
             self::INVALID_PRIVATE_KEY_FORMAT,
             self::INVALID_PUBLIC_KEY_FORMAT => 'JWT 金鑰格式錯誤，請檢查金鑰檔案格式。',
             self::KEY_FILE_NOT_READABLE,
-            self::KEY_FILE_READ_ERROR => 'JWT 金鑰檔案無法讀取，請檢查檔案權限和路徑。',
-            self::KEY_MISMATCH => 'JWT 私鑰和公鑰不匹配，請檢查金鑰對。',
+            self::KEY_FILE_READ_ERROR   => 'JWT 金鑰檔案無法讀取，請檢查檔案權限和路徑。',
+            self::KEY_MISMATCH          => 'JWT 私鑰和公鑰不匹配，請檢查金鑰對。',
             self::MISSING_CONFIGURATION => 'JWT 配置缺失，請檢查環境變數設定。',
-            self::INVALID_TTL => 'JWT Token 存活時間設定無效。',
-            self::INVALID_ALGORITHM => 'JWT 演算法設定無效。',
-            default => 'JWT 配置錯誤，請聯絡系統管理員。',
+            self::INVALID_TTL           => 'JWT Token 存活時間設定無效。',
+            self::INVALID_ALGORITHM     => 'JWT 演算法設定無效。',
+            default                     => 'JWT 配置錯誤，請聯絡系統管理員。',
         };
     }
 

@@ -42,10 +42,10 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
     private StatisticsTestSeeder $seeder;
 
     private const PERFORMANCE_THRESHOLDS = [
-        'api_response_time' => 2.0, // 秒
-        'large_dataset_query_time' => 5.0, // 秒
-        'cache_hit_rate_minimum' => 0.80, // 80%
-        'memory_usage_limit' => 256 * 1024 * 1024, // 256MB
+        'api_response_time'            => 2.0, // 秒
+        'large_dataset_query_time'     => 5.0, // 秒
+        'cache_hit_rate_minimum'       => 0.80, // 80%
+        'memory_usage_limit'           => 256 * 1024 * 1024, // 256MB
         'concurrent_requests_max_time' => 3.0, // 秒
     ];
 
@@ -88,13 +88,13 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
 
         // 測試各種統計查詢的效能
         $queries = [
-            'getTotalPostsCount' => fn() => $this->postStatsRepo->getTotalPostsCount($period),
-            'getPostsCountByStatus' => fn() => $this->postStatsRepo->getPostsCountByStatus($period),
-            'getPostsCountBySource' => fn() => $this->postStatsRepo->getPostsCountBySource($period),
-            'getPostViewsStatistics' => fn() => $this->postStatsRepo->getPostViewsStatistics($period),
+            'getTotalPostsCount'       => fn() => $this->postStatsRepo->getTotalPostsCount($period),
+            'getPostsCountByStatus'    => fn() => $this->postStatsRepo->getPostsCountByStatus($period),
+            'getPostsCountBySource'    => fn() => $this->postStatsRepo->getPostsCountBySource($period),
+            'getPostViewsStatistics'   => fn() => $this->postStatsRepo->getPostViewsStatistics($period),
             'getPostsLengthStatistics' => fn() => $this->postStatsRepo->getPostsLengthStatistics($period),
-            'getActiveUsersCount' => fn() => $this->userStatsRepo->getActiveUsersCount($period),
-            'getTotalUsersCount' => fn() => $this->userStatsRepo->getTotalUsersCount($period),
+            'getActiveUsersCount'      => fn() => $this->userStatsRepo->getActiveUsersCount($period),
+            'getTotalUsersCount'       => fn() => $this->userStatsRepo->getTotalUsersCount($period),
         ];
 
         $performanceResults = [];
@@ -115,7 +115,7 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
             $duration = $endTime - $startTime;
 
             $performanceResults[$queryName] = [
-                'duration' => $duration,
+                'duration'    => $duration,
                 'memory_used' => $memoryUsed,
                 'result_size' => is_array($result) ? count($result) : 1,
             ];
@@ -166,24 +166,24 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
         $apiOperations = [
             'overview_stats' => function () use ($period) {
                 return [
-                    'total_posts' => $this->postStatsRepo->getTotalPostsCount($period),
-                    'total_users' => $this->userStatsRepo->getTotalUsersCount($period),
+                    'total_posts'  => $this->postStatsRepo->getTotalPostsCount($period),
+                    'total_users'  => $this->userStatsRepo->getTotalUsersCount($period),
                     'active_users' => $this->userStatsRepo->getActiveUsersCount($period),
-                    'post_views' => $this->postStatsRepo->getPostViewsStatistics($period),
+                    'post_views'   => $this->postStatsRepo->getPostViewsStatistics($period),
                 ];
             },
             'posts_analysis' => function () use ($period) {
                 return [
-                    'by_status' => $this->postStatsRepo->getPostsCountByStatus($period),
-                    'by_source' => $this->postStatsRepo->getPostsCountBySource($period),
+                    'by_status'    => $this->postStatsRepo->getPostsCountByStatus($period),
+                    'by_source'    => $this->postStatsRepo->getPostsCountBySource($period),
                     'length_stats' => $this->postStatsRepo->getPostsLengthStatistics($period),
                 ];
             },
             'user_insights' => function () use ($period) {
                 return [
-                    'total_users' => $this->userStatsRepo->getTotalUsersCount($period),
+                    'total_users'  => $this->userStatsRepo->getTotalUsersCount($period),
                     'active_users' => $this->userStatsRepo->getActiveUsersCount($period, 'login'),
-                    'new_users' => $this->userStatsRepo->getNewUsersCount($period),
+                    'new_users'    => $this->userStatsRepo->getNewUsersCount($period),
                 ];
             },
         ];
@@ -198,7 +198,7 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
             $duration = $endTime - $startTime;
 
             $apiResults[$operationName] = [
-                'duration' => $duration,
+                'duration'    => $duration,
                 'data_points' => $this->countDataPoints($result),
             ];
 
@@ -297,9 +297,9 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
         $memoryTestResults = [];
 
         $queries = [
-            'large_aggregation' => fn() => $this->postStatsRepo->getPostsCountBySource($period),
+            'large_aggregation'   => fn() => $this->postStatsRepo->getPostsCountBySource($period),
             'complex_calculation' => fn() => $this->postStatsRepo->getPostsLengthStatistics($period),
-            'user_analysis' => fn() => $this->userStatsRepo->getActiveUsersCount($period),
+            'user_analysis'       => fn() => $this->userStatsRepo->getActiveUsersCount($period),
         ];
 
         foreach ($queries as $queryName => $query) {
@@ -313,8 +313,8 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
 
             $memoryTestResults[$queryName] = [
                 'memory_increase' => $memoryIncrease,
-                'peak_increase' => $peakIncrease,
-                'result_size' => is_array($result) ? count($result) : 1,
+                'peak_increase'   => $peakIncrease,
+                'result_size'     => is_array($result) ? count($result) : 1,
             ];
 
             // 驗證記憶體使用不會無限增長
@@ -377,9 +377,9 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
                         $period,
                         [
                             'test_data' => [
-                                'batch' => $batch,
-                                'index' => $i,
-                                'timestamp' => time(),
+                                'batch'       => $batch,
+                                'index'       => $i,
+                                'timestamp'   => time(),
                                 'random_data' => str_repeat('x', 100), // 增加資料大小
                             ],
                         ],
@@ -396,8 +396,8 @@ class StatisticsPerformanceTest extends SecureDDDTestCase
             $throughput = $snapshotCount / $duration;
 
             $results[$batchSize] = [
-                'duration' => $duration,
-                'throughput' => $throughput,
+                'duration'         => $duration,
+                'throughput'       => $throughput,
                 'avg_per_snapshot' => $duration / $snapshotCount,
             ];
 

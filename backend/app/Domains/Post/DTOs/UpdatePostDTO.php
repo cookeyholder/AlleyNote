@@ -25,6 +25,7 @@ class UpdatePostDTO extends BaseDTO
     /**
      * @param ValidatorInterface $validator 驗證器實例
      * @param array $data 輸入資料
+     *
      * @throws ValidationException 當驗證失敗時
      */
     public function __construct(ValidatorInterface $validator, array $data)
@@ -175,10 +176,10 @@ class UpdatePostDTO extends BaseDTO
     {
         // UpdatePostDTO 使用動態驗證規則，此方法不直接使用
         return [
-            'title' => 'string|post_title_update:1,255',
-            'content' => 'string|post_content_update:1',
-            'is_pinned' => 'boolean',
-            'status' => 'string|post_status',
+            'title'        => 'string|post_title_update:1,255',
+            'content'      => 'string|post_content_update:1',
+            'is_pinned'    => 'boolean',
+            'status'       => 'string|post_status',
             'publish_date' => 'rfc3339_datetime',
         ];
     }
@@ -187,7 +188,9 @@ class UpdatePostDTO extends BaseDTO
      * 動態驗證資料（只驗證提供的欄位）.
      *
      * @param array $data 要驗證的資料
+     *
      * @return array<mixed> 驗證通過的資料
+     *
      * @throws ValidationException 當驗證失敗時
      */
     protected function validatePartialData(array $data): mixed

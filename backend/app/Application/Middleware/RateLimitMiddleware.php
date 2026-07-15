@@ -103,11 +103,11 @@ class RateLimitMiddleware implements MiddlewareInterface
             || strpos($request->getUri()->getPath(), '/api/') === 0;
         if ($isJsonRequest) {
             $body = json_encode([
-                'error' => 'Rate limit exceeded',
-                'message' => '請求過於頻繁，請稍後再試',
-                'limit' => $result['limit'],
-                'remaining' => $result['remaining'],
-                'reset' => $result['reset'],
+                'error'       => 'Rate limit exceeded',
+                'message'     => '請求過於頻繁，請稍後再試',
+                'limit'       => $result['limit'],
+                'remaining'   => $result['remaining'],
+                'reset'       => $result['reset'],
                 'retry_after' => $result['reset'] - time(),
             ]) ?: '';
             $response = new Response(429, ['Content-Type' => 'application/json'], $body);

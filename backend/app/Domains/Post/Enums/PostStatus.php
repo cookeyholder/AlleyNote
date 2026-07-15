@@ -13,18 +13,18 @@ enum PostStatus: string
     public function getLabel(): string
     {
         return match ($this) {
-            self::DRAFT => '草稿',
+            self::DRAFT     => '草稿',
             self::PUBLISHED => '已發布',
-            self::ARCHIVED => '已封存',
+            self::ARCHIVED  => '已封存',
         };
     }
 
     public function canTransitionTo(self $target): bool
     {
         return match ($this) {
-            self::DRAFT => $target !== self::DRAFT,
+            self::DRAFT     => $target !== self::DRAFT,
             self::PUBLISHED => $target === self::ARCHIVED,
-            self::ARCHIVED => false,
+            self::ARCHIVED  => false,
         };
     }
 

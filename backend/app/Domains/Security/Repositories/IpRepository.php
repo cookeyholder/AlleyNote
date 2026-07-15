@@ -77,14 +77,14 @@ class IpRepository implements IpRepositoryInterface
     {
         // 確保資料欄位型別正確
         return new IpList([
-            'id' => (int) $data['id'],
-            'uuid' => (string) $data['uuid'],
-            'ip_address' => (string) $data['ip_address'],
-            'type' => (int) $data['type'],
-            'unit_id' => isset($data['unit_id']) ? (int) $data['unit_id'] : null,
+            'id'          => (int) $data['id'],
+            'uuid'        => (string) $data['uuid'],
+            'ip_address'  => (string) $data['ip_address'],
+            'type'        => (int) $data['type'],
+            'unit_id'     => isset($data['unit_id']) ? (int) $data['unit_id'] : null,
             'description' => $data['description'] ?? null,
-            'created_at' => (string) $data['created_at'],
-            'updated_at' => (string) $data['updated_at'],
+            'created_at'  => (string) $data['created_at'],
+            'updated_at'  => (string) $data['updated_at'],
         ]);
     }
 
@@ -100,25 +100,25 @@ class IpRepository implements IpRepositoryInterface
             $this->db->beginTransaction();
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
-                'uuid' => $uuid,
-                'ip_address' => $data['ip_address'],
-                'type' => $data['type'] ?? 0,
-                'unit_id' => $data['unit_id'] ?? null,
+                'uuid'        => $uuid,
+                'ip_address'  => $data['ip_address'],
+                'type'        => $data['type'] ?? 0,
+                'unit_id'     => $data['unit_id'] ?? null,
                 'description' => $data['description'] ?? null,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'created_at'  => $now,
+                'updated_at'  => $now,
             ]);
             $id = (int) $this->db->lastInsertId();
             // 直接從已知資料建立物件
             $ipList = new IpList([
-                'id' => $id,
-                'uuid' => $uuid,
-                'ip_address' => $data['ip_address'],
-                'type' => $data['type'] ?? 0,
-                'unit_id' => $data['unit_id'] ?? null,
+                'id'          => $id,
+                'uuid'        => $uuid,
+                'ip_address'  => $data['ip_address'],
+                'type'        => $data['type'] ?? 0,
+                'unit_id'     => $data['unit_id'] ?? null,
                 'description' => $data['description'] ?? null,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'created_at'  => $now,
+                'updated_at'  => $now,
             ]);
             $this->db->commit();
             // 儲存到快取
@@ -280,10 +280,10 @@ class IpRepository implements IpRepositoryInterface
         );
 
         return [
-            'items' => $items,
-            'total' => $total,
-            'page' => $page,
-            'per_page' => $perPage,
+            'items'     => $items,
+            'total'     => $total,
+            'page'      => $page,
+            'per_page'  => $perPage,
             'last_page' => ceil($total / $perPage),
         ];
     }

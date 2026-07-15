@@ -121,10 +121,10 @@ class RouteCollection implements RouteCollectionInterface
         $data = [];
         foreach ($this->routes as $route) {
             $data[] = [
-                'methods' => $route->getMethods(),
-                'pattern' => $route->getPattern(),
-                'handler' => $this->serializeHandler($route->getHandler()),
-                'name' => $route->getName(),
+                'methods'    => $route->getMethods(),
+                'pattern'    => $route->getPattern(),
+                'handler'    => $this->serializeHandler($route->getHandler()),
+                'name'       => $route->getName(),
                 'middleware' => $route->getMiddlewares(),
             ];
         }

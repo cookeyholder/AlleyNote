@@ -19,7 +19,9 @@ if (!function_exists('generate_uuid')) {
 if (!function_exists('format_datetime')) {
     /**
      * 格式化日期時間.
+     *
      * @param string|null $datetime 要格式化的日期時間，若為空則使用當前時間
+     *
      * @return string 格式化後的日期時間字串
      */
     function format_datetime(?string $datetime = null): string
@@ -33,7 +35,9 @@ if (!function_exists('format_datetime')) {
 if (!function_exists('normalize_path')) {
     /**
      * 正規化檔案路徑.
+     *
      * @param string $path 檔案路徑
+     *
      * @return string 正規化後的路徑
      */
     function normalize_path(string $path): string
@@ -111,34 +115,6 @@ if (!function_exists('get_file_mime_type')) {
     }
 }
 
-if (!function_exists('sanitize_post_array')) {
-    /**
-     * 清理 Post 陣列中的 HTML 內容，適用於 API 輸出.
-     *
-     * @deprecated 已改用 HTMLPurifier 與 DOMPurify 雙層防護
-     * @param array<string, mixed> $posts Post 資料陣列
-     * @return array 清理過的陣列
-     */
-    function sanitize_post_array(array $posts): array
-    {
-        return array_map(function ($post) {
-            if (is_array($post)) {
-                $sanitized = $post;
-                if (isset($sanitized['title'])) {
-                    $sanitized['title'] = htmlspecialchars($sanitized['title'], ENT_QUOTES, 'UTF-8');
-                }
-                if (isset($sanitized['content'])) {
-                    $sanitized['content'] = htmlspecialchars($sanitized['content'], ENT_QUOTES, 'UTF-8');
-                }
-
-                return $sanitized;
-            }
-
-            return $post;
-        }, $posts);
-    }
-}
-
 if (!function_exists('app_log')) {
     /**
      * 使用 Monolog 記錄應用程式日誌.
@@ -166,7 +142,7 @@ if (!function_exists('app_log')) {
         try {
             $normalizedLevel = match ($level) {
                 'debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency' => $level,
-                default => 'error',
+                default                                                                         => 'error',
             };
 
             $logger->log($normalizedLevel, $message, $context);

@@ -899,11 +899,11 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->postStatisticsRepository
             ->method('getPostActivitySummary')
             ->willReturn([
-                'total_posts' => 100,
+                'total_posts'     => 100,
                 'published_posts' => 90,
-                'draft_posts' => 10,
-                'total_views' => 1000,
-                'active_authors' => 20,
+                'draft_posts'     => 10,
+                'total_views'     => 1000,
+                'active_authors'  => 20,
                 'popular_sources' => ['web' => 50, 'mobile' => 50],
             ]);
 
@@ -918,8 +918,8 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->postStatisticsRepository
             ->method('getPostViewsStatistics')
             ->willReturn([
-                'total_views' => 1000,
-                'unique_views' => 800,
+                'total_views'        => 1000,
+                'unique_views'       => 800,
                 'avg_views_per_post' => 10.0,
             ]);
 
@@ -933,9 +933,9 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->postStatisticsRepository
             ->method('getPostsLengthStatistics')
             ->willReturn([
-                'avg_length' => 500.0,
-                'min_length' => 100,
-                'max_length' => 1000,
+                'avg_length'  => 500.0,
+                'min_length'  => 100,
+                'max_length'  => 1000,
                 'total_chars' => 50000,
             ]);
 
@@ -953,9 +953,9 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->postStatisticsRepository
             ->method('getPinnedPostsStatistics')
             ->willReturn([
-                'pinned_count' => 5,
+                'pinned_count'   => 5,
                 'unpinned_count' => 95,
-                'pinned_views' => 500,
+                'pinned_views'   => 500,
             ]);
     }
 
@@ -975,12 +975,12 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->userStatisticsRepository
             ->method('getUserActivitySummary')
             ->willReturn([
-                'total_users' => 100,
-                'active_users' => 50,
-                'new_users' => 10,
-                'returning_users' => 40,
+                'total_users'        => 100,
+                'active_users'       => 50,
+                'new_users'          => 10,
+                'returning_users'    => 40,
                 'user_activity_rate' => 50.0,
-                'top_active_hours' => [9, 10, 11],
+                'top_active_hours'   => [9, 10, 11],
             ]);
 
         $this->userStatisticsRepository
@@ -990,10 +990,10 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->userStatisticsRepository
             ->method('getUserLoginActivity')
             ->willReturn([
-                'total_logins' => 200,
-                'unique_users' => 50,
-                'avg_logins_per_user' => 4.0,
-                'peak_hour' => 10,
+                'total_logins'                 => 200,
+                'unique_users'                 => 50,
+                'avg_logins_per_user'          => 4.0,
+                'peak_hour'                    => 10,
                 'login_frequency_distribution' => ['daily' => 20, 'weekly' => 30],
             ]);
 
@@ -1007,10 +1007,10 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->userStatisticsRepository
             ->method('getUserEngagementStatistics')
             ->willReturn([
-                'high_engagement' => 10,
-                'medium_engagement' => 20,
-                'low_engagement' => 15,
-                'inactive' => 5,
+                'high_engagement'      => 10,
+                'medium_engagement'    => 20,
+                'low_engagement'       => 15,
+                'inactive'             => 5,
                 'avg_engagement_score' => 75.0,
             ]);
 
@@ -1043,7 +1043,7 @@ class StatisticsAggregationServiceTest extends UnitTestCase
             $type,
             $this->testPeriod,
             ['total_count' => 100, 'test_data' => true],
-            ['test' => true],
+            ['test'        => true],
         );
     }
 

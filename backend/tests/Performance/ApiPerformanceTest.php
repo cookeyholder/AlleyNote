@@ -39,10 +39,10 @@ class ApiPerformanceTest extends DatabaseTestCase
     {
         for ($i = 1; $i <= $count; $i++) {
             $this->insertTestPost([
-                'uuid' => "uuid-$i",
+                'uuid'       => "uuid-$i",
                 'seq_number' => $i,
-                'title' => "Title $i",
-                'content' => "Content for post $i",
+                'title'      => "Title $i",
+                'content'    => "Content for post $i",
             ]);
         }
     }

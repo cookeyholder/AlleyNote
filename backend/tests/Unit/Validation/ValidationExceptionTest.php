@@ -23,11 +23,11 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目'],
+            'name'  => ['名稱為必填項目'],
             'email' => ['電子郵件格式不正確'],
         ];
         $failedRules = [
-            'name' => ['required'],
+            'name'  => ['required'],
             'email' => ['email'],
         ];
         $validationResult = ValidationResult::failure($errors, $failedRules);
@@ -164,9 +164,9 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目', '名稱長度不足'],
+            'name'  => ['名稱為必填項目', '名稱長度不足'],
             'email' => ['電子郵件格式錯誤'],
-            'age' => [],
+            'age'   => [],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -184,8 +184,8 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['錯誤'],
-            'email' => ['錯誤'],
+            'name'        => ['錯誤'],
+            'email'       => ['錯誤'],
             'valid_field' => [],
         ];
         $exception = ValidationException::fromErrors($errors);
@@ -222,8 +222,8 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['第一個名稱錯誤', '第二個名稱錯誤'],
-            'email' => ['電子郵件錯誤'],
+            'name'        => ['第一個名稱錯誤', '第二個名稱錯誤'],
+            'email'       => ['電子郵件錯誤'],
             'empty_field' => [],
         ];
         $exception = ValidationException::fromErrors($errors);
@@ -242,9 +242,9 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱錯誤1', '名稱錯誤2'],
+            'name'  => ['名稱錯誤1', '名稱錯誤2'],
             'email' => ['電子郵件錯誤'],
-            'age' => ['年齡錯誤1', '年齡錯誤2', '年齡錯誤3'],
+            'age'   => ['年齡錯誤1', '年齡錯誤2', '年齡錯誤3'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -274,7 +274,7 @@ class ValidationExceptionTest extends UnitTestCase
         // Arrange
         $errors = ['name' => ['錯誤'], 'email' => ['錯誤']];
         $failedRules = [
-            'name' => ['required', 'min_length'],
+            'name'  => ['required', 'min_length'],
             'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors, $failedRules);
@@ -293,11 +293,11 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['名稱為必填項目'],
+            'name'  => ['名稱為必填項目'],
             'email' => ['電子郵件格式不正確'],
         ];
         $failedRules = [
-            'name' => ['required'],
+            'name'  => ['required'],
             'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors, $failedRules, '驗證失敗');
@@ -342,9 +342,9 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange
         $errors = [
-            'name' => ['錯誤1', '錯誤2'],
+            'name'  => ['錯誤1', '錯誤2'],
             'email' => ['錯誤3'],
-            'age' => ['錯誤4', '錯誤5', '錯誤6'],
+            'age'   => ['錯誤4', '錯誤5', '錯誤6'],
         ];
         $exception = ValidationException::fromErrors($errors);
 
@@ -361,7 +361,7 @@ class ValidationExceptionTest extends UnitTestCase
         // Arrange
         $errors = ['name' => ['錯誤'], 'email' => ['錯誤']];
         $failedRules = [
-            'name' => ['required', 'min_length'],
+            'name'  => ['required', 'min_length'],
             'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors, $failedRules);
@@ -382,7 +382,7 @@ class ValidationExceptionTest extends UnitTestCase
         // Arrange
         $errors = ['name' => ['錯誤'], 'email' => ['錯誤']];
         $failedRules = [
-            'name' => ['required', 'min_length'],
+            'name'  => ['required', 'min_length'],
             'email' => ['email'],
         ];
         $exception = ValidationException::fromErrors($errors, $failedRules);
@@ -484,7 +484,7 @@ class ValidationExceptionTest extends UnitTestCase
     {
         // Arrange - 測試中文錯誤訊息
         $chineseErrors = [
-            'name' => ['姓名為必填項目', '姓名長度必須至少2個字元'],
+            'name'  => ['姓名為必填項目', '姓名長度必須至少2個字元'],
             'email' => ['電子郵件地址格式不正確'],
         ];
         $chineseException = ValidationException::fromErrors($chineseErrors);
@@ -496,7 +496,7 @@ class ValidationExceptionTest extends UnitTestCase
 
         // Arrange - 測試英文錯誤訊息
         $englishErrors = [
-            'name' => ['Name is required', 'Name must be at least 2 characters'],
+            'name'  => ['Name is required', 'Name must be at least 2 characters'],
             'email' => ['Email format is invalid'],
         ];
         $englishException = ValidationException::fromErrors($englishErrors);

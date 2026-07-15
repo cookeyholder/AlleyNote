@@ -210,12 +210,7 @@ settings.footer_description = footerDescription;
 
 ## 測試
 
-測試文件位於 `frontend/test-ckeditor.html`，可以用來測試編輯器的基本功能。
-
-訪問方式：
-```
-http://localhost:3000/test-ckeditor.html
-```
+可使用 `frontend/index.html` 中的編輯器進行功能測試。
 
 ## 未來改進
 

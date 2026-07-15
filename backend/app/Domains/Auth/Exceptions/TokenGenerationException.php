@@ -58,9 +58,9 @@ class TokenGenerationException extends JwtException
     ) {
         $message = $customMessage ?: $this->buildDefaultMessage($reason, $tokenType);
         $context = array_merge([
-            'reason' => $reason,
-            'token_type' => $tokenType,
-            'timestamp' => time(),
+            'reason'                => $reason,
+            'token_type'            => $tokenType,
+            'timestamp'             => time(),
             'generation_attempt_id' => uniqid('gen_', true),
         ], $additionalContext);
         parent::__construct($message, self::ERROR_CODE, null, $context);
@@ -77,14 +77,14 @@ class TokenGenerationException extends JwtException
         $tokenName = $tokenType === self::ACCESS_TOKEN ? 'Access token' : 'Refresh token';
 
         return match ($reason) {
-            self::REASON_KEY_INVALID => sprintf('Failed to generate %s: private key is invalid or corrupted', $tokenName),
-            self::REASON_KEY_MISSING => sprintf('Failed to generate %s: private key is missing', $tokenName),
-            self::REASON_PAYLOAD_INVALID => sprintf('Failed to generate %s: payload contains invalid data', $tokenName),
+            self::REASON_KEY_INVALID           => sprintf('Failed to generate %s: private key is invalid or corrupted', $tokenName),
+            self::REASON_KEY_MISSING           => sprintf('Failed to generate %s: private key is missing', $tokenName),
+            self::REASON_PAYLOAD_INVALID       => sprintf('Failed to generate %s: payload contains invalid data', $tokenName),
             self::REASON_ALGORITHM_UNSUPPORTED => sprintf('Failed to generate %s: algorithm is not supported', $tokenName),
-            self::REASON_CLAIMS_INVALID => sprintf('Failed to generate %s: claims validation failed', $tokenName),
-            self::REASON_SIGNATURE_FAILED => sprintf('Failed to generate %s: signature generation failed', $tokenName),
-            self::REASON_RESOURCE_EXHAUSTED => sprintf('Failed to generate %s: system resources exhausted', $tokenName),
-            default => sprintf('Failed to generate %s: encoding process failed', $tokenName),
+            self::REASON_CLAIMS_INVALID        => sprintf('Failed to generate %s: claims validation failed', $tokenName),
+            self::REASON_SIGNATURE_FAILED      => sprintf('Failed to generate %s: signature generation failed', $tokenName),
+            self::REASON_RESOURCE_EXHAUSTED    => sprintf('Failed to generate %s: system resources exhausted', $tokenName),
+            default                            => sprintf('Failed to generate %s: encoding process failed', $tokenName),
         };
     }
 
@@ -99,11 +99,11 @@ class TokenGenerationException extends JwtException
             self::REASON_KEY_INVALID,
             self::REASON_KEY_MISSING => '系統配置錯誤，無法產生安全 Token。請聯絡系統管理員。',
             self::REASON_PAYLOAD_INVALID,
-            self::REASON_CLAIMS_INVALID => '提供的用戶資訊格式錯誤，請檢查後重試。',
+            self::REASON_CLAIMS_INVALID        => '提供的用戶資訊格式錯誤，請檢查後重試。',
             self::REASON_ALGORITHM_UNSUPPORTED => '系統安全演算法配置錯誤，請聯絡系統管理員。',
-            self::REASON_RESOURCE_EXHAUSTED => '系統資源不足，請稍後重試。',
-            self::REASON_SIGNATURE_FAILED => '數位簽章產生失敗，請聯絡系統管理員。',
-            default => 'Token 生成過程發生錯誤，請稍後重試。如問題持續發生，請聯絡系統管理員。',
+            self::REASON_RESOURCE_EXHAUSTED    => '系統資源不足，請稍後重試。',
+            self::REASON_SIGNATURE_FAILED      => '數位簽章產生失敗，請聯絡系統管理員。',
+            default                            => 'Token 生成過程發生錯誤，請稍後重試。如問題持續發生，請聯絡系統管理員。',
         };
     }
 

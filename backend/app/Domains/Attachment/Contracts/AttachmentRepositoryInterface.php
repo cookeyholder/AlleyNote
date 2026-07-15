@@ -120,6 +120,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 統計附件資訊.
      *
      * @param array<string, mixed> $conditions 統計條件
+     *
      * @return array 包含總數、總大小、各類型數量等
      */
     public function getStats(array $conditions = []): array;
@@ -136,6 +137,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      * 清理過期的臨時附件.
      *
      * @param int $olderThanHours 超過指定小時數的臨時附件
+     *
      * @return int 清理的附件數量
      */
     public function cleanupTempFiles(int $olderThanHours = 24): int;
@@ -145,6 +147,7 @@ interface AttachmentRepositoryInterface extends RepositoryInterface
      *
      * @param array<string, mixed> $ids 附件 ID 陣列
      * @param string $status 新狀態
+     *
      * @return int 更新的數量
      */
     public function batchUpdateStatus(array $ids, string $status): int;

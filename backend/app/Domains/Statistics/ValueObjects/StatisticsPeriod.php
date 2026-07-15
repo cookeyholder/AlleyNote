@@ -30,6 +30,7 @@ final readonly class StatisticsPeriod implements JsonSerializable
      * 從陣列建立統計週期物件.
      *
      * @param array{type: string, start_time: string, end_time: string, timezone?: string} $data
+     *
      * @throws InvalidArgumentException
      */
     public static function fromArray(array $data): self
@@ -122,10 +123,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
     public function format(string $format = 'Y-m-d'): string
     {
         return match ($this->type) {
-            PeriodType::DAILY => $this->startTime->format($format),
-            PeriodType::WEEKLY => $this->startTime->format($format) . ' ~ ' . $this->endTime->format($format),
+            PeriodType::DAILY   => $this->startTime->format($format),
+            PeriodType::WEEKLY  => $this->startTime->format($format) . ' ~ ' . $this->endTime->format($format),
             PeriodType::MONTHLY => $this->startTime->format('Y-m'),
-            PeriodType::YEARLY => $this->startTime->format('Y'),
+            PeriodType::YEARLY  => $this->startTime->format('Y'),
         };
     }
 
@@ -137,10 +138,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
     public function toArray(): array
     {
         return [
-            'type' => $this->type->value,
+            'type'       => $this->type->value,
             'start_time' => $this->startTime->format(DateTime::ATOM),
-            'end_time' => $this->endTime->format(DateTime::ATOM),
-            'timezone' => $this->timezone,
+            'end_time'   => $this->endTime->format(DateTime::ATOM),
+            'timezone'   => $this->timezone,
         ];
     }
 
@@ -205,10 +206,10 @@ final readonly class StatisticsPeriod implements JsonSerializable
     {
         $durationInDays = $this->getDurationInDays();
         match ($this->type) {
-            PeriodType::DAILY => $durationInDays === 1 ?: throw new InvalidArgumentException('Daily period must be exactly 1 day'),
-            PeriodType::WEEKLY => $durationInDays === 7 ?: throw new InvalidArgumentException('Weekly period must be exactly 7 days'),
+            PeriodType::DAILY   => $durationInDays === 1 ?: throw new InvalidArgumentException('Daily period must be exactly 1 day'),
+            PeriodType::WEEKLY  => $durationInDays === 7 ?: throw new InvalidArgumentException('Weekly period must be exactly 7 days'),
             PeriodType::MONTHLY => ($durationInDays >= 28 && $durationInDays <= 31) ?: throw new InvalidArgumentException('Monthly period must be 28-31 days'),
-            PeriodType::YEARLY => ($durationInDays >= 365 && $durationInDays <= 366) ?: throw new InvalidArgumentException('Yearly period must be 365-366 days'),
+            PeriodType::YEARLY  => ($durationInDays >= 365 && $durationInDays <= 366) ?: throw new InvalidArgumentException('Yearly period must be 365-366 days'),
         };
     }
 

@@ -312,9 +312,9 @@ final class PostStatisticsRepositoryIntegrationTest extends IntegrationTestCase
         );
 
         $lengthRanges = [
-            'short' => ['min' => 0, 'max' => 500],
-            'medium' => ['min' => 501, 'max' => 1000],
-            'long' => ['min' => 1001, 'max' => 2000],
+            'short'      => ['min' => 0, 'max' => 500],
+            'medium'     => ['min' => 501, 'max' => 1000],
+            'long'       => ['min' => 1001, 'max' => 2000],
             'extra_long' => ['min' => 2001, 'max' => 5000], // 使用具體數值而非 null
         ];
 

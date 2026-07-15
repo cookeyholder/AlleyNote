@@ -73,23 +73,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
             ->method('fetch')
             ->with(PDO::FETCH_ASSOC)
             ->willReturn([
-                'id' => 1,
-                'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-                'user_id' => 1,
-                'session_id' => null,
-                'action_type' => ActivityType::LOGIN_SUCCESS->value,
+                'id'              => 1,
+                'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+                'user_id'         => 1,
+                'session_id'      => null,
+                'action_type'     => ActivityType::LOGIN_SUCCESS->value,
                 'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
-                'target_type' => null,
-                'target_id' => null,
-                'status' => ActivityStatus::SUCCESS->value,
-                'description' => 'User login successful',
-                'metadata' => null,
-                'ip_address' => null,
-                'user_agent' => null,
-                'request_method' => null,
-                'request_path' => null,
-                'created_at' => '2024-01-01 12:00:00',
-                'occurred_at' => '2024-01-01 12:00:00',
+                'target_type'     => null,
+                'target_id'       => null,
+                'status'          => ActivityStatus::SUCCESS->value,
+                'description'     => 'User login successful',
+                'metadata'        => null,
+                'ip_address'      => null,
+                'user_agent'      => null,
+                'request_method'  => null,
+                'request_path'    => null,
+                'created_at'      => '2024-01-01 12:00:00',
+                'occurred_at'     => '2024-01-01 12:00:00',
             ]);
 
         // Setup prepare method to return different statements
@@ -122,23 +122,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
     {
         // Arrange
         $mockData = [
-            'id' => 1,
-            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'id'              => 1,
+            'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_SUCCESS->value,
             'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::SUCCESS->value,
-            'description' => 'User login successful',
-            'metadata' => null,
-            'ip_address' => null,
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-01 12:00:00',
-            'occurred_at' => '2024-01-01 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::SUCCESS->value,
+            'description'     => 'User login successful',
+            'metadata'        => null,
+            'ip_address'      => null,
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-01 12:00:00',
+            'occurred_at'     => '2024-01-01 12:00:00',
         ];
 
         $this->pdo->expects($this->once())
@@ -193,23 +193,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
         // Arrange
         $uuid = '550e8400-e29b-41d4-a716-446655440000';
         $mockData = [
-            'id' => 1,
-            'uuid' => $uuid,
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'id'              => 1,
+            'uuid'            => $uuid,
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_SUCCESS->value,
             'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::SUCCESS->value,
-            'description' => 'User login successful',
-            'metadata' => null,
-            'ip_address' => null,
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-01 12:00:00',
-            'occurred_at' => '2024-01-01 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::SUCCESS->value,
+            'description'     => 'User login successful',
+            'metadata'        => null,
+            'ip_address'      => null,
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-01 12:00:00',
+            'occurred_at'     => '2024-01-01 12:00:00',
         ];
 
         $this->pdo->expects($this->once())
@@ -239,23 +239,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
         // Arrange
         $userId = 1;
         $mockData = [
-            'id' => 1,
-            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'id'              => 1,
+            'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_SUCCESS->value,
             'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::SUCCESS->value,
-            'description' => 'User login successful',
-            'metadata' => null,
-            'ip_address' => null,
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-01 12:00:00',
-            'occurred_at' => '2024-01-01 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::SUCCESS->value,
+            'description'     => 'User login successful',
+            'metadata'        => null,
+            'ip_address'      => null,
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-01 12:00:00',
+            'occurred_at'     => '2024-01-01 12:00:00',
         ];
 
         $this->pdo->expects($this->once())
@@ -364,23 +364,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
         $startTime = new DateTimeImmutable('2024-01-01 00:00:00');
         $endTime = new DateTimeImmutable('2024-01-31 23:59:59');
         $mockData = [
-            'id' => 1,
-            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'id'              => 1,
+            'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_SUCCESS->value,
             'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::SUCCESS->value,
-            'description' => 'User login successful',
-            'metadata' => null,
-            'ip_address' => null,
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-15 12:00:00',
-            'occurred_at' => '2024-01-15 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::SUCCESS->value,
+            'description'     => 'User login successful',
+            'metadata'        => null,
+            'ip_address'      => null,
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-15 12:00:00',
+            'occurred_at'     => '2024-01-15 12:00:00',
         ];
 
         $this->pdo->expects($this->once())
@@ -415,23 +415,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
     {
         // Arrange
         $mockData = [
-            'id' => 1,
-            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_FAILED->value,
+            'id'              => 1,
+            'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_FAILED->value,
             'action_category' => ActivityType::LOGIN_FAILED->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::FAILED->value,
-            'description' => 'Login failed',
-            'metadata' => null,
-            'ip_address' => '192.168.1.100',
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-15 12:00:00',
-            'occurred_at' => '2024-01-15 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::FAILED->value,
+            'description'     => 'Login failed',
+            'metadata'        => null,
+            'ip_address'      => '192.168.1.100',
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-15 12:00:00',
+            'occurred_at'     => '2024-01-15 12:00:00',
         ];
 
         $this->pdo->expects($this->once())
@@ -466,23 +466,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
     {
         // Arrange
         $mockData = [
-            'id' => 1,
-            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_FAILED->value,
+            'id'              => 1,
+            'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_FAILED->value,
             'action_category' => ActivityType::LOGIN_FAILED->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::FAILED->value,
-            'description' => 'Login failed',
-            'metadata' => null,
-            'ip_address' => '192.168.1.100',
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-15 12:00:00',
-            'occurred_at' => '2024-01-15 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::FAILED->value,
+            'description'     => 'Login failed',
+            'metadata'        => null,
+            'ip_address'      => '192.168.1.100',
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-15 12:00:00',
+            'occurred_at'     => '2024-01-15 12:00:00',
         ];
 
         $this->pdo->expects($this->once())
@@ -527,9 +527,9 @@ class ActivityLogRepositoryTest extends UnitTestCase
         $this->statement->expects($this->once())
             ->method('execute')
             ->with([
-                ':user_id' => $userId,
+                ':user_id'    => $userId,
                 ':start_time' => $startTime->format('Y-m-d H:i:s'),
-                ':end_time' => $endTime->format('Y-m-d H:i:s'),
+                ':end_time'   => $endTime->format('Y-m-d H:i:s'),
             ]);
 
         $this->statement->expects($this->once())
@@ -564,7 +564,7 @@ class ActivityLogRepositoryTest extends UnitTestCase
             ->method('execute')
             ->with([
                 ':start_time' => $startTime->format('Y-m-d H:i:s'),
-                ':end_time' => $endTime->format('Y-m-d H:i:s'),
+                ':end_time'   => $endTime->format('Y-m-d H:i:s'),
             ]);
 
         $this->statement->expects($this->once())
@@ -655,23 +655,23 @@ class ActivityLogRepositoryTest extends UnitTestCase
         // Arrange
         $searchTerm = 'login';
         $mockData = [
-            'id' => 1,
-            'uuid' => '550e8400-e29b-41d4-a716-446655440000',
-            'user_id' => 1,
-            'session_id' => null,
-            'action_type' => ActivityType::LOGIN_SUCCESS->value,
+            'id'              => 1,
+            'uuid'            => '550e8400-e29b-41d4-a716-446655440000',
+            'user_id'         => 1,
+            'session_id'      => null,
+            'action_type'     => ActivityType::LOGIN_SUCCESS->value,
             'action_category' => ActivityType::LOGIN_SUCCESS->getCategory()->value,
-            'target_type' => null,
-            'target_id' => null,
-            'status' => ActivityStatus::SUCCESS->value,
-            'description' => 'User login successful',
-            'metadata' => null,
-            'ip_address' => null,
-            'user_agent' => null,
-            'request_method' => null,
-            'request_path' => null,
-            'created_at' => '2024-01-15 12:00:00',
-            'occurred_at' => '2024-01-15 12:00:00',
+            'target_type'     => null,
+            'target_id'       => null,
+            'status'          => ActivityStatus::SUCCESS->value,
+            'description'     => 'User login successful',
+            'metadata'        => null,
+            'ip_address'      => null,
+            'user_agent'      => null,
+            'request_method'  => null,
+            'request_path'    => null,
+            'created_at'      => '2024-01-15 12:00:00',
+            'occurred_at'     => '2024-01-15 12:00:00',
         ];
 
         $this->pdo->expects($this->once())

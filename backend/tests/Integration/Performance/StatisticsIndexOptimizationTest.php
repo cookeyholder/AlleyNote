@@ -210,7 +210,7 @@ final class StatisticsIndexOptimizationTest extends IntegrationTestCase
         $queries = [
             'posts_by_source' => "SELECT creation_source, COUNT(*) as count FROM posts WHERE created_at >= '2025-01-01' AND created_at <= '2025-12-31' GROUP BY creation_source",
             'posts_by_status' => "SELECT status, COUNT(*) as count FROM posts WHERE created_at >= '2025-01-01' AND created_at <= '2025-12-31' GROUP BY status",
-            'popular_posts' => "SELECT id, title, views FROM posts WHERE created_at >= '2025-01-01' AND created_at <= '2025-12-31' AND status = 'published' ORDER BY views DESC LIMIT 10",
+            'popular_posts'   => "SELECT id, title, views FROM posts WHERE created_at >= '2025-01-01' AND created_at <= '2025-12-31' AND status = 'published' ORDER BY views DESC LIMIT 10",
         ];
 
         foreach ($queries as $queryName => $sql) {

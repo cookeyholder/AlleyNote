@@ -22,14 +22,14 @@ final readonly class RefreshResponseDTO
     public function toArray(): array
     {
         return [
-            'access_token' => $this->tokens->getAccessToken(),
+            'access_token'  => $this->tokens->getAccessToken(),
             'refresh_token' => $this->tokens->getRefreshToken(),
-            'token_type' => $this->tokens->getTokenType(),
-            'expires_in' => $this->expiresAt - time(),
-            'expires_at' => $this->expiresAt,
-            'user_id' => $this->userId,
-            'session_id' => $this->sessionId,
-            'permissions' => $this->permissions,
+            'token_type'    => $this->tokens->getTokenType(),
+            'expires_in'    => $this->expiresAt - time(),
+            'expires_at'    => $this->expiresAt,
+            'user_id'       => $this->userId,
+            'session_id'    => $this->sessionId,
+            'permissions'   => $this->permissions,
         ];
     }
 }

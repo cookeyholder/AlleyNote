@@ -130,7 +130,7 @@ final readonly class ViewCount implements JsonSerializable, Stringable
     public function toArray(): array
     {
         return [
-            'views' => $this->value,
+            'views'     => $this->value,
             'formatted' => $this->format(),
         ];
     }

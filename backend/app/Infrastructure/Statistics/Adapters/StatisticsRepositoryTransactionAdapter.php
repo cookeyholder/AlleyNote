@@ -112,7 +112,9 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
      * 批量儲存統計快照（事務處理）.
      *
      * @param StatisticsSnapshot[] $snapshots 要儲存的快照陣列
+     *
      * @return StatisticsSnapshot[] 儲存後的快照陣列
+     *
      * @throws RuntimeException 當任一快照儲存失敗時
      */
     public function batchSave(array $snapshots): array
@@ -131,7 +133,9 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
      * 批量更新統計快照（事務處理）.
      *
      * @param StatisticsSnapshot[] $snapshots 要更新的快照陣列
+     *
      * @return StatisticsSnapshot[] 更新後的快照陣列
+     *
      * @throws RuntimeException 當任一快照更新失敗時
      */
     public function batchUpdate(array $snapshots): array
@@ -150,7 +154,9 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
      * 批量刪除統計快照（事務處理）.
      *
      * @param StatisticsSnapshot[] $snapshots 要刪除的快照陣列
+     *
      * @return int 成功刪除的數量
+     *
      * @throws RuntimeException 當任一快照刪除失敗時
      */
     public function batchDelete(array $snapshots): int
@@ -172,7 +178,9 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
      *
      * @param string $snapshotType 快照類型
      * @param StatisticsSnapshot[] $newSnapshots 新的快照陣列
+     *
      * @return StatisticsSnapshot[] 儲存後的快照陣列
+     *
      * @throws RuntimeException 當操作失敗時
      */
     public function replaceByType(string $snapshotType, array $newSnapshots): array
@@ -202,8 +210,11 @@ final class StatisticsRepositoryTransactionAdapter implements StatisticsReposito
      * 在事務中執行操作.
      *
      * @template T
+     *
      * @param callable(): T $operation
+     *
      * @return T
+     *
      * @throws RuntimeException 當操作失敗時
      */
     private function executeInTransaction(callable $operation): mixed

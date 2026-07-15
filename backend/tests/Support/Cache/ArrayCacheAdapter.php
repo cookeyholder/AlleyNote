@@ -19,9 +19,9 @@ class ArrayCacheAdapter
     private array $expiry = [];
 
     private array $stats = [
-        'hits' => 0,
-        'misses' => 0,
-        'sets' => 0,
+        'hits'    => 0,
+        'misses'  => 0,
+        'sets'    => 0,
         'deletes' => 0,
     ];
 
@@ -152,8 +152,8 @@ class ArrayCacheAdapter
 
         return array_merge($this->stats, [
             'total_requests' => $total,
-            'hit_rate' => $hitRate,
-            'cache_size' => count($this->cache),
+            'hit_rate'       => $hitRate,
+            'cache_size'     => count($this->cache),
         ]);
     }
 
@@ -163,9 +163,9 @@ class ArrayCacheAdapter
     public function clearStats(): void
     {
         $this->stats = [
-            'hits' => 0,
-            'misses' => 0,
-            'sets' => 0,
+            'hits'    => 0,
+            'misses'  => 0,
+            'sets'    => 0,
             'deletes' => 0,
         ];
     }

@@ -144,7 +144,7 @@ class PostRepositoryPerformanceTest extends UnitTestCase
 
         for ($i = 0; $i < $count; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {$i}",
+                'title'   => "文章 {$i}",
                 'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
@@ -165,7 +165,7 @@ class PostRepositoryPerformanceTest extends UnitTestCase
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {$i}",
+                'title'   => "文章 {$i}",
                 'content' => "內容 {$i}",
                 'user_id' => 1,
             ]);
@@ -189,10 +189,10 @@ class PostRepositoryPerformanceTest extends UnitTestCase
         // 建立 1000 筆測試資料
         for ($i = 0; $i < 1000; $i++) {
             $data = PostFactory::make([
-                'title' => "文章 {$i}",
+                'title'   => "文章 {$i}",
                 'content' => "內容 {$i}",
                 'user_id' => 1,
-                'status' => 'published',
+                'status'  => 'published',
             ]);
             $data['publish_date'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);
             $data['created_at'] = new DateTimeImmutable()->format(DateTimeInterface::RFC3339);

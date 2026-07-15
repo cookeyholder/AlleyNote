@@ -35,9 +35,9 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
     {
         // 模擬有效的文章資料
         $validPostData = [
-            'title' => '測試文章標題',
+            'title'   => '測試文章標題',
             'content' => '這是一篇測試文章的內容，應該要足夠長才能通過驗證要求。',
-            'status' => 'draft',
+            'status'  => 'draft',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];
@@ -57,7 +57,7 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
     public function testPostControllerUpdateWithValidDTO(): void
     {
         $updateData = [
-            'title' => '更新後的標題',
+            'title'   => '更新後的標題',
             'content' => '更新後的內容，這應該要足夠長才能通過驗證。',
         ];
 
@@ -75,9 +75,9 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
     {
         // 測試無效資料
         $invalidData = [
-            'title' => '', // 空標題
+            'title'   => '', // 空標題
             'content' => '', // 空內容
-            'status' => 'invalid-status',
+            'status'  => 'invalid-status',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];
@@ -92,9 +92,9 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
     public function testDTODataSanitization(): void
     {
         $dirtyData = [
-            'title' => '  測試標題  ', // 前後有空格
+            'title'   => '  測試標題  ', // 前後有空格
             'content' => '  這是測試內容，有多餘的空格  ',
-            'status' => 'draft', // 使用有效的狀態值
+            'status'  => 'draft', // 使用有效的狀態值
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];
@@ -129,16 +129,16 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
     {
         $batchData = [
             [
-                'title' => '第一篇文章',
+                'title'   => '第一篇文章',
                 'content' => '第一篇文章的內容，應該要足夠長才能通過驗證。',
-                'status' => 'draft',
+                'status'  => 'draft',
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
             ],
             [
-                'title' => '第二篇文章',
+                'title'   => '第二篇文章',
                 'content' => '第二篇文章的內容，也應該要足夠長才能通過驗證。',
-                'status' => 'published',
+                'status'  => 'published',
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
             ],
@@ -165,9 +165,9 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
         $dtos = [];
         for ($i = 0; $i < 100; $i++) {
             $dtos[] = new CreatePostDTO($this->validator, [
-                'title' => "測試標題 {$i}",
+                'title'   => "測試標題 {$i}",
                 'content' => "測試內容 {$i}，這應該要足夠長才能通過驗證要求。",
-                'status' => 'draft',
+                'status'  => 'draft',
                 'user_id' => 1,
                 'user_ip' => '192.168.1.1',
             ]);
@@ -187,9 +187,9 @@ class DTOControllerIntegrationTest extends IntegrationTestCase
     public function testDTOSerialization(): void
     {
         $originalData = [
-            'title' => '測試序列化',
+            'title'   => '測試序列化',
             'content' => '測試 DTO 的序列化功能，這應該要足夠長才能通過驗證。',
-            'status' => 'draft',
+            'status'  => 'draft',
             'user_id' => 1,
             'user_ip' => '192.168.1.1',
         ];

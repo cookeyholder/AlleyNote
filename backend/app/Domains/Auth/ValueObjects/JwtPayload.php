@@ -46,6 +46,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 從陣列建立 JWT Payload.
      *
      * @param array<string, mixed> $data JWT payload 資料
+     *
      * @throws InvalidArgumentException 當資料格式無效時
      */
     public static function fromArray(array $data): self
@@ -164,6 +165,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 取得特定自訂宣告.
      *
      * @param string $claim 宣告名稱
+     *
      * @return mixed|null
      */
     public function getCustomClaim(string $claim): mixed
@@ -293,6 +295,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 驗證 JWT ID.
      *
      * @param string $jti JWT ID
+     *
      * @throws InvalidArgumentException 當 JTI 無效時
      */
     private function validateJti(string $jti): void
@@ -309,6 +312,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 驗證主題.
      *
      * @param string $sub 主題
+     *
      * @throws InvalidArgumentException 當主題無效時
      */
     private function validateSub(string $sub): void
@@ -326,6 +330,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 驗證發行者.
      *
      * @param string $iss 發行者
+     *
      * @throws InvalidArgumentException 當發行者無效時
      */
     private function validateIss(string $iss): void
@@ -339,6 +344,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 驗證受眾.
      *
      * @param array<string> $aud 受眾陣列
+     *
      * @throws InvalidArgumentException 當受眾無效時
      */
     private function validateAud(array $aud): void
@@ -359,6 +365,7 @@ final readonly class JwtPayload implements JsonSerializable
      * @param DateTimeImmutable $iat 發行時間
      * @param DateTimeImmutable $exp 過期時間
      * @param DateTimeImmutable|null $nbf 生效時間
+     *
      * @throws InvalidArgumentException 當時間設定無效時
      */
     private function validateTimes(DateTimeImmutable $iat, DateTimeImmutable $exp, ?DateTimeImmutable $nbf): void
@@ -375,6 +382,7 @@ final readonly class JwtPayload implements JsonSerializable
      * 驗證自訂宣告.
      *
      * @param array<string, mixed> $customClaims 自訂宣告
+     *
      * @throws InvalidArgumentException 當自訂宣告無效時
      */
     private function validateCustomClaims(array $customClaims): void

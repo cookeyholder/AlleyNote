@@ -41,10 +41,10 @@ final readonly class LoginRequestDTO
     public function toArray(): array
     {
         return [
-            'email' => $this->email,
-            'password' => '[REDACTED]', // 不記錄密碼
+            'email'       => $this->email,
+            'password'    => '[REDACTED]', // 不記錄密碼
             'remember_me' => $this->rememberMe,
-            'scopes' => $this->scopes,
+            'scopes'      => $this->scopes,
         ];
     }
 

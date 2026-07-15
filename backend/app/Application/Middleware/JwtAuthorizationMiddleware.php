@@ -54,6 +54,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param RequestHandlerInterface $handler 請求處理器
+     *
      * @return ResponseInterface HTTP 回應物件
      */
     public function process(
@@ -115,6 +116,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return AuthorizationResult 授權結果
      */
     private function authorize(
@@ -170,6 +172,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param string|null $userRole 使用者角色
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
+     *
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByRole(?string $userRole, string $resource, string $action): AuthorizationResult
@@ -212,6 +215,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param array<string> $userPermissions 使用者權限
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
+     *
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByPermission(array $userPermissions, string $resource, string $action): AuthorizationResult
@@ -255,6 +259,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByAttributes(
@@ -294,6 +299,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return AuthorizationResult 授權結果
      */
     private function authorizeByCustomRules(
@@ -339,6 +345,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param string|null $userRole 使用者角色
      * @param string $action 操作名稱
+     *
      * @return AuthorizationResult 授權結果
      */
     private function checkTimeBasedAccess(?string $userRole, string $action): AuthorizationResult
@@ -372,6 +379,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param string|null $userRole 使用者角色
      * @param string $resource 資源名稱
      * @param string $action 操作名稱
+     *
      * @return AuthorizationResult 授權結果
      */
     private function checkIpBasedAccess(
@@ -420,6 +428,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * @param int $userId 使用者 ID
      * @param string $resource 資源名稱
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return AuthorizationResult 授權結果
      */
     private function checkResourceOwnership(
@@ -454,6 +463,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 從請求中提取資源名稱.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return string 資源名稱
      */
     private function extractResource(ServerRequestInterface $request): string
@@ -478,6 +488,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 從請求中提取操作名稱.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return string 操作名稱
      */
     private function extractAction(ServerRequestInterface $request): string
@@ -494,11 +505,11 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
         $resourceId = $this->extractResourceIdFromPath($segments);
 
         return match ($method) {
-            'GET' => $resourceId ? 'show' : 'index',
-            'POST' => 'create',
+            'GET'          => $resourceId ? 'show' : 'index',
+            'POST'         => 'create',
             'PUT', 'PATCH' => 'update',
-            'DELETE' => 'delete',
-            default => 'unknown'
+            'DELETE'       => 'delete',
+            default        => 'unknown'
         };
     }
 
@@ -507,6 +518,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param string $resource 資源名稱
+     *
      * @return int|null 資源 ID 或 null
      */
     private function extractResourceId(ServerRequestInterface $request, string $resource): ?int
@@ -537,6 +549,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 從路徑片段中提取資源 ID.
      *
      * @param array<string> $segments 路徑片段
+     *
      * @return int|null 資源 ID 或 null
      */
     private function extractResourceIdFromPath(array $segments): ?int
@@ -585,6 +598,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 取得客戶端真實 IP 位址.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return string 客戶端 IP 位址
      */
     private function getClientIpAddress(ServerRequestInterface $request): string
@@ -774,7 +788,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
                 appliedRules: ["custom:{$ruleName}"],
             ),
             'conditional' => $this->evaluateConditionalRule($ruleConfig, $userId, $userRole, $request),
-            default => null,
+            default       => null,
         };
     }
 
@@ -823,6 +837,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param ServerRequestInterface $request HTTP 請求物件
      * @param AuthorizationResult $result 授權結果
+     *
      * @return ServerRequestInterface 注入授權資訊後的請求物件
      */
     private function injectAuthorizationContext(
@@ -842,14 +857,15 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      *
      * @param string $message 錯誤訊息
      * @param string $code 錯誤代碼
+     *
      * @return ResponseInterface HTTP 回應物件
      */
     private function createForbiddenResponse(string $message, string $code = 'FORBIDDEN'): ResponseInterface
     {
         $responseData = [
-            'success' => false,
-            'error' => $message,
-            'code' => $code,
+            'success'   => false,
+            'error'     => $message,
+            'code'      => $code,
             'timestamp' => date('c'),
         ];
 
@@ -864,6 +880,7 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
      * 檢查是否應該處理此請求.
      *
      * @param ServerRequestInterface $request HTTP 請求物件
+     *
      * @return bool 是否應該處理
      */
     public function shouldProcess(ServerRequestInterface $request): bool
@@ -911,20 +928,20 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
     private function getDefaultConfig(): array
     {
         return [
-            'default_policy' => self::DEFAULT_POLICY,
-            'admin_roles' => self::ADMIN_ROLES,
-            'skip_paths' => [],
-            'auth_paths' => ['/api/', '/admin/'],
+            'default_policy'   => self::DEFAULT_POLICY,
+            'admin_roles'      => self::ADMIN_ROLES,
+            'skip_paths'       => [],
+            'auth_paths'       => ['/api/', '/admin/'],
             'role_permissions' => [
-                'admin' => ['*'],
+                'admin'     => ['*'],
                 'moderator' => ['posts.*', 'comments.*'],
-                'user' => ['posts.show', 'posts.create', 'comments.show', 'comments.create'],
-                'guest' => ['posts.show', 'comments.show'],
+                'user'      => ['posts.show', 'posts.create', 'comments.show', 'comments.create'],
+                'guest'     => ['posts.show', 'comments.show'],
             ],
-            'ownership_rules' => [],
+            'ownership_rules'   => [],
             'time_restrictions' => [],
-            'ip_restrictions' => [],
-            'custom_rules' => [],
+            'ip_restrictions'   => [],
+            'custom_rules'      => [],
         ];
     }
 

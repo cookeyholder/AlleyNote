@@ -16,6 +16,7 @@ interface StatisticsQueryServiceInterface
      *     period_end?: DateTime,
      *     include_details?: bool
      * } $options
+     *
      * @return array<string, mixed>
      */
     public function getOverview(array $options = []): array;
@@ -29,6 +30,7 @@ interface StatisticsQueryServiceInterface
      *     limit?: int,
      *     offset?: int
      * } $options
+     *
      * @return array<string, mixed>
      */
     public function getPostStatistics(array $options = []): array;
@@ -41,6 +43,7 @@ interface StatisticsQueryServiceInterface
      *     period_end?: DateTime,
      *     group_by_detail?: bool
      * } $options
+     *
      * @return array<string, mixed>
      */
     public function getSourceDistribution(array $options = []): array;
@@ -53,6 +56,7 @@ interface StatisticsQueryServiceInterface
      *     period_end?: DateTime,
      *     include_inactive?: bool
      * } $options
+     *
      * @return array<string, mixed>
      */
     public function getUserStatistics(array $options = []): array;
@@ -65,6 +69,7 @@ interface StatisticsQueryServiceInterface
      *     period_end?: DateTime,
      *     limit?: int
      * } $options
+     *
      * @return array<string, mixed>
      */
     public function getPopularContent(array $options = []): array;

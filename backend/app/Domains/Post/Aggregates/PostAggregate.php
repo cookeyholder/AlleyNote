@@ -63,6 +63,7 @@ final class PostAggregate
      * @param PostContent $content 文章內容
      * @param int $authorId 作者 ID
      * @param string|null $creationSource 建立來源
+     *
      * @throws InvalidArgumentException 當參數無效時
      */
     public static function create(
@@ -94,6 +95,7 @@ final class PostAggregate
      * 從現有資料重建聚合.
      *
      * @param array<string, mixed> $data 資料陣列
+     *
      * @throws InvalidArgumentException 當資料無效時
      */
     public static function reconstitute(array $data): self
@@ -179,6 +181,7 @@ final class PostAggregate
      *
      * @param PostTitle $title 新標題
      * @param PostContent $content 新內容
+     *
      * @throws PostValidationException 當文章狀態不允許編輯時
      */
     public function updateContent(PostTitle $title, PostContent $content): void
@@ -380,17 +383,17 @@ final class PostAggregate
     public function toArray(): array
     {
         return [
-            'uuid' => $this->id->toString(),
-            'title' => $this->title->toString(),
-            'content' => $this->content->toString(),
-            'user_id' => $this->authorId,
-            'status' => $this->status->value,
-            'views' => $this->viewCount->getValue(),
-            'is_pinned' => $this->isPinned,
-            'seq_number' => $this->slug?->toString(),
-            'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
-            'publish_date' => $this->publishedAt?->format('Y-m-d H:i:s'),
+            'uuid'            => $this->id->toString(),
+            'title'           => $this->title->toString(),
+            'content'         => $this->content->toString(),
+            'user_id'         => $this->authorId,
+            'status'          => $this->status->value,
+            'views'           => $this->viewCount->getValue(),
+            'is_pinned'       => $this->isPinned,
+            'seq_number'      => $this->slug?->toString(),
+            'created_at'      => $this->createdAt->format('Y-m-d H:i:s'),
+            'updated_at'      => $this->updatedAt->format('Y-m-d H:i:s'),
+            'publish_date'    => $this->publishedAt?->format('Y-m-d H:i:s'),
             'creation_source' => $this->creationSource,
         ];
     }

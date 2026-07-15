@@ -29,9 +29,9 @@ final class PostPublished extends AbstractDomainEvent
     public function getEventData(): array
     {
         return [
-            'post_id' => $this->postId,
-            'title' => $this->title,
-            'author_id' => $this->authorId,
+            'post_id'      => $this->postId,
+            'title'        => $this->title,
+            'author_id'    => $this->authorId,
             'published_at' => $this->publishedAt->format('Y-m-d H:i:s'),
         ];
     }

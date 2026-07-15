@@ -268,9 +268,9 @@ class ErrorTrackerServiceTest extends UnitTestCase
         $this->errorTracker->addNotificationHandler(function ($level, $message, $context, $exception) use (&$notificationReceived, &$receivedData) {
             $notificationReceived = true;
             $receivedData = [
-                'level' => $level,
-                'message' => $message,
-                'context' => $context,
+                'level'     => $level,
+                'message'   => $message,
+                'context'   => $context,
                 'exception' => $exception,
             ];
         });

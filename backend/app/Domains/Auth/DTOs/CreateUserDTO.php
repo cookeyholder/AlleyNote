@@ -38,7 +38,7 @@ final readonly class CreateUserDTO
     {
         return [
             'username' => $this->username,
-            'email' => $this->email,
+            'email'    => $this->email,
             'password' => $this->password,
             'role_ids' => $this->roleIds,
         ];
