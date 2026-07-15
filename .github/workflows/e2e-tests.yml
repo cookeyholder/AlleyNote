@@ -3,6 +3,7 @@ name: E2E Tests
 permissions:
   contents: read
   issues: write
+  actions: write
 
 on:
   push:
@@ -173,3 +174,11 @@ jobs:
                 body: body
               });
             }
+
+      - name: Cancel other workflows on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Canceling other running workflows for commit ${{ github.sha }}..."
+          gh run list --commit ${{ github.sha }} --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true

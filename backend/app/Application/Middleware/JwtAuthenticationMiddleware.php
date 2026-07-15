@@ -185,7 +185,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             }
         }
 
-        return str_starts_with($path, '/api/') || str_starts_with($path, '/auth/me');
+        return str_starts_with($path, '/api/') || str_starts_with($path, '/auth/me') || $path === '/admin' || str_starts_with($path, '/admin/');
     }
 
     public function getPriority(): int

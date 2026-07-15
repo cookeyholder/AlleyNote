@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
+use App\Application\Middleware\SecurityHeadersMiddleware;
+use App\Domains\Security\Services\Headers\SecurityHeaderService;
+use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
@@ -33,19 +36,58 @@ class RouteDispatcher
         // 1. 路由匹配
         $matchResult = $this->router->dispatch($request);
         if (!$matchResult->isMatched()) {
-            return $this->handleNotFound($request);
+            $response = $this->handleNotFound($request);
+
+            try {
+                if ($this->container->has(SecurityHeaderService::class)) {
+                    /** @var SecurityHeaderService $headerService */
+                    $headerService = $this->container->get(SecurityHeaderService::class);
+                    $headers = $headerService->generateHeaders();
+                    foreach ($headers as $name => $value) {
+                        /** @var string $name */
+                        /** @var string|array<string> $value */
+                        $response = $response->withHeader($name, $value);
+                    }
+                    $response = $response->withoutHeader('X-Powered-By');
+                    if ($headerService->isServerSignatureEnabled()) {
+                        if (isset($headers['Server'])) {
+                            /** @var string|array<string> $serverHeaderVal */
+                            $serverHeaderVal = $headers['Server'];
+                            $response = $response->withHeader('Server', $serverHeaderVal);
+                        }
+                    } else {
+                        $response = $response->withoutHeader('Server');
+                    }
+                }
+            } catch (Throwable $e) {
+                // 忽略以防服務未註冊
+            }
+
+            return $response;
         }
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
-        // 2. 準備中間件鏈（解析字串別名）
-        $middlewares = $route->getMiddlewares();
+        // 2. 準備中間件鏈（將全域安全性標頭中間件放在最前面）
+        /** @var array<MiddlewareInterface> $resolvedMiddlewares */
         $resolvedMiddlewares = [];
+
+        try {
+            if ($this->container->has(SecurityHeadersMiddleware::class)) {
+                /** @var MiddlewareInterface $securityMiddleware */
+                $securityMiddleware = $this->container->get(SecurityHeadersMiddleware::class);
+                $resolvedMiddlewares[] = $securityMiddleware;
+            }
+        } catch (Throwable $e) {
+            // 忽略
+        }
+
+        $middlewares = $route->getMiddlewares();
         foreach ($middlewares as $middleware) {
             try {
                 if (is_string($middleware)) {
                     // 解析字串別名
                     $resolvedMiddlewares[] = $this->middlewareResolver->resolve($middleware);
-                } else {
+                } elseif ($middleware instanceof MiddlewareInterface) {
                     // 已經是實例，直接使用
                     $resolvedMiddlewares[] = $middleware;
                 }

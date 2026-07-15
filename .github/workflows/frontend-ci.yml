@@ -2,6 +2,7 @@ name: Frontend CI/CD
 
 permissions:
   contents: read
+  actions: write
 
 on:
   push:
@@ -172,3 +173,11 @@ jobs:
           tags: alleynote-frontend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Cancel other workflows on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Canceling other running workflows for commit ${{ github.sha }}..."
+          gh run list --commit ${{ github.sha }} --status in_progress --json databaseId --jq '.[].databaseId' | grep -v "${{ github.run_id }}" | xargs -I {} gh run cancel {} || true
