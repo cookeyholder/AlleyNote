@@ -107,4 +107,23 @@ interface PostRepositoryInterface extends RepositoryInterface
         int $page = 1,
         int $perPage = 10,
     ): array;
+
+    /**
+     * 依標題搜尋文章.
+     *
+     * @return Post[]
+     */
+    public function searchByTitle(string $title): mixed;
+
+    /**
+     * 搜尋文章（標題或內容）.
+     *
+     * @return Post[]
+     */
+    public function search(string $keyword): mixed;
+
+    /**
+     * 搜尋使用者的最新一篇文章.
+     */
+    public function findLatestByUserId(int $userId): ?Post;
 }

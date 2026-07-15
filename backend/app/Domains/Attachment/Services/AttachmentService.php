@@ -8,7 +8,7 @@ use App\Domains\Attachment\Contracts\AttachmentServiceInterface;
 use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Auth\Services\AuthorizationService;
-use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Enums\ActivityType;
 use App\Shared\Exceptions\NotFoundException;
@@ -90,7 +90,7 @@ class AttachmentService implements AttachmentServiceInterface
 
     public function __construct(
         private AttachmentRepository $attachmentRepo,
-        private PostRepository $postRepo,
+        private PostRepositoryInterface $postRepo,
         private AuthorizationService $authService,
         private ActivityLoggingServiceInterface $activityLogger,
         private string $uploadDir,

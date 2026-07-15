@@ -8,6 +8,7 @@ use App\Domains\Attachment\Models\Attachment;
 use App\Domains\Attachment\Repositories\AttachmentRepository;
 use App\Domains\Attachment\Services\AttachmentService;
 use App\Domains\Auth\Services\AuthorizationService;
+use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
@@ -37,7 +38,7 @@ class AttachmentUploadTest extends IntegrationTestCase
 
     protected AttachmentRepository $attachmentRepo;
 
-    protected PostRepository $postRepo;
+    protected PostRepositoryInterface $postRepo;
 
     protected function setUp(): void
     {

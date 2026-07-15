@@ -3,53 +3,64 @@
 declare(strict_types=1);
 
 /**
- * DI 容器配置檔案
+ * DI 容器配置檔案.
  *
  * 定義應用程式所有服務的依賴注入配置
  */
 
-use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
+use App\Application\Controllers\Admin\CacheMonitorController;
+use App\Application\Controllers\Admin\TagManagementController;
+use App\Application\Controllers\Api\V1\PostViewController;
+use App\Application\Controllers\Api\V1\RoleController;
+use App\Application\Controllers\Api\V1\UserController;
+use App\Application\Middleware\CsrfMiddleware;
+use App\Application\Middleware\PostViewRateLimitMiddleware;
+use App\Application\Middleware\SecurityHeadersMiddleware;
 use App\Domains\Auth\Contracts\AuthorizationServiceInterface;
-use App\Domains\Auth\Repositories\RoleRepository;
+use App\Domains\Auth\Providers\SimpleAuthServiceProvider;
 use App\Domains\Auth\Repositories\PermissionRepository;
+use App\Domains\Auth\Repositories\RoleRepository;
 use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthorizationService;
-use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Auth\Services\RoleManagementService;
-use App\Application\Controllers\Api\V1\UserController;
-use App\Application\Controllers\Api\V1\RoleController;
+use App\Domains\Auth\Services\UserManagementService;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Contracts\TagRepositoryInterface;
+use App\Domains\Post\Repositories\PostAnalyticsRepository;
+use App\Domains\Post\Repositories\PostCrudRepository;
 use App\Domains\Post\Repositories\PostRepository;
+use App\Domains\Post\Repositories\PostSearchRepository;
 use App\Domains\Post\Repositories\TagRepository;
+use App\Domains\Post\Services\PostCacheInvalidator;
 use App\Domains\Post\Services\PostService;
 use App\Domains\Post\Services\TagManagementService;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
 use App\Domains\Security\Providers\SecurityServiceProvider;
+use App\Domains\Security\Services\Headers\SecurityHeaderService;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
 use App\Domains\Statistics\Providers\StatisticsServiceProvider;
 use App\Infrastructure\Http\Response;
-use App\Infrastructure\Http\ServerRequest;
 use App\Infrastructure\Http\ServerRequestFactory;
 use App\Infrastructure\Http\Stream;
 use App\Infrastructure\Routing\Providers\RoutingServiceProvider;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\OutputSanitizerService;
 use App\Infrastructure\Services\RateLimitService;
+use App\Shared\Cache\Contracts\CacheManagerInterface;
 use App\Shared\Cache\Providers\CacheServiceProvider;
+use App\Shared\Cache\Services\CacheGroupManager;
 use App\Shared\Config\EnvironmentConfig;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Contracts\OutputSanitizerInterface;
 use App\Shared\Contracts\ValidatorInterface;
-use App\Shared\Monitoring\Contracts\ErrorTrackerInterface;
-use App\Shared\Monitoring\Contracts\PerformanceMonitorInterface;
-use App\Shared\Monitoring\Contracts\SystemMonitorInterface;
+use App\Shared\Monitoring\Contracts\CacheMonitorInterface;
 use App\Shared\Monitoring\Providers\MonitoringServiceProvider;
 use App\Shared\Validation\Factory\ValidatorFactory;
 use App\Shared\Validation\Validator;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
@@ -80,9 +91,10 @@ return array_merge(
         }),
 
         // 資料庫連線
-        \PDO::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+        PDO::class => \DI\factory(function (ContainerInterface $c) {
             $dbPath = $c->get('db.path');
-            return new \PDO('sqlite:' . $dbPath);
+
+            return new PDO('sqlite:' . $dbPath);
         }),
     ],
 
@@ -102,106 +114,108 @@ return array_merge(
     // 自訂中介軟體
     [
         // PostView 速率限制中介軟體
-        \App\Application\Middleware\PostViewRateLimitMiddleware::class => \DI\autowire(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
-        'post_view_rate_limit' => \DI\get(\App\Application\Middleware\PostViewRateLimitMiddleware::class),
+        PostViewRateLimitMiddleware::class => \DI\autowire(PostViewRateLimitMiddleware::class),
+        'post_view_rate_limit'             => \DI\get(PostViewRateLimitMiddleware::class),
 
         // CSRF 中介層（Secure flag 依環境變數 CSRF_COOKIE_SECURE 決定，預設 production 開啟）
-        \App\Application\Middleware\CsrfMiddleware::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
-            $config = $c->get(\App\Shared\Config\EnvironmentConfig::class);
+        CsrfMiddleware::class => \DI\factory(function (ContainerInterface $c) {
+            $config = $c->get(EnvironmentConfig::class);
             $secureEnv = $config->get('CSRF_COOKIE_SECURE');
             // 若未設定 CSRF_COOKIE_SECURE，則依環境名稱決定：production 開啟，其餘關閉
             // 使用 FILTER_NULL_ON_FAILURE 避免非法值靜默降級為 false
             $secureCookie = $secureEnv !== null
                 ? (filter_var($secureEnv, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? ($config->getEnvironment() === 'production'))
                 : $config->getEnvironment() === 'production';
-            return new \App\Application\Middleware\CsrfMiddleware(
+
+            return new CsrfMiddleware(
                 secureCookie: $secureCookie,
                 logger: $c->get(LoggerInterface::class),
             );
         }),
-        'csrf' => \DI\get(\App\Application\Middleware\CsrfMiddleware::class),
+        'csrf' => \DI\get(CsrfMiddleware::class),
 
         // 安全性標頭全域中間件
-        \App\Application\Middleware\SecurityHeadersMiddleware::class => \DI\autowire(\App\Application\Middleware\SecurityHeadersMiddleware::class),
-        'security_headers' => \DI\get(\App\Application\Middleware\SecurityHeadersMiddleware::class),
+        SecurityHeadersMiddleware::class => \DI\autowire(SecurityHeadersMiddleware::class),
+        'security_headers'               => \DI\get(SecurityHeadersMiddleware::class),
 
         // 其他控制器
-        \App\Application\Controllers\Api\V1\PostViewController::class => \DI\autowire(\App\Application\Controllers\Api\V1\PostViewController::class),
+        PostViewController::class => \DI\autowire(PostViewController::class),
     ],
 
     // 基本應用程式服務
     [
         // 環境配置
-        'app.debug' => \DI\env('APP_DEBUG', false),
-        'app.name' => \DI\env('APP_NAME', 'AlleyNote'),
+        'app.debug'   => \DI\env('APP_DEBUG', false),
+        'app.name'    => \DI\env('APP_NAME', 'AlleyNote'),
         'app.version' => '1.0.0',
 
         // 資料庫配置（為將來準備）
-        'db.path' => \DI\env('DB_PATH', __DIR__ . '/../database/alleynote.sqlite3'),
+        'db.path'   => \DI\env('DB_PATH', __DIR__ . '/../database/alleynote.sqlite3'),
         'db.driver' => \DI\env('DB_DRIVER', 'sqlite'),
 
         // 日誌配置
-        'log.path' => \DI\env('LOG_PATH', __DIR__ . '/../storage/logs/app.log'),
+        'log.path'  => \DI\env('LOG_PATH', __DIR__ . '/../storage/logs/app.log'),
         'log.level' => \DI\env('LOG_LEVEL', 'info'),
 
         // 快取配置
         'cache.default_driver' => \DI\env('CACHE_DEFAULT_DRIVER', 'memory'),
-        'cache.path' => \DI\env('CACHE_PATH', __DIR__ . '/../storage/cache'),
+        'cache.path'           => \DI\env('CACHE_PATH', __DIR__ . '/../storage/cache'),
 
         // 快取驅動設定
         'cache.drivers.memory' => [
-            'enabled' => true,
+            'enabled'  => true,
             'priority' => 90,
             'max_size' => 1000,
-            'ttl' => 3600,
+            'ttl'      => 3600,
         ],
         'cache.drivers.file' => [
-            'enabled' => true,
+            'enabled'  => true,
             'priority' => 50,
-            'ttl' => 3600,
+            'ttl'      => 3600,
         ],
         'cache.drivers.redis' => [
-            'enabled' => \DI\env('REDIS_ENABLED', false),
+            'enabled'  => \DI\env('REDIS_ENABLED', false),
             'priority' => 70,
-            'host' => \DI\env('REDIS_HOST', '127.0.0.1'),
-            'port' => \DI\env('REDIS_PORT', 6379),
+            'host'     => \DI\env('REDIS_HOST', '127.0.0.1'),
+            'port'     => \DI\env('REDIS_PORT', 6379),
             'database' => \DI\env('REDIS_DATABASE', 0),
-            'timeout' => 2.0,
-            'prefix' => 'alleynote:cache:',
+            'timeout'  => 2.0,
+            'prefix'   => 'alleynote:cache:',
         ],
 
         // 快取策略設定
         'cache.strategy' => [
-            'min_ttl' => 60,
-            'max_ttl' => 86400,
-            'max_value_size' => 1024 * 1024,
+            'min_ttl'          => 60,
+            'max_ttl'          => 86400,
+            'max_value_size'   => 1024 * 1024,
             'exclude_patterns' => ['temp:*', 'debug:*'],
         ],
 
         // 快取管理器設定
         'cache.manager' => [
-            'enable_sync' => false,
-            'sync_ttl' => 3600,
+            'enable_sync'        => false,
+            'sync_ttl'           => 3600,
             'max_retry_attempts' => 3,
-            'retry_delay' => 100,
+            'retry_delay'        => 100,
         ],
 
         // API 配置
         'api.base_url' => \DI\env('API_BASE_URL', 'http://localhost'),
-        'api.version' => \DI\env('API_VERSION', 'v1'),
+        'api.version'  => \DI\env('API_VERSION', 'v1'),
 
         // 安全配置
-        'security.jwt_secret' => \DI\env('JWT_SECRET'),
+        'security.jwt_secret'       => \DI\env('JWT_SECRET'),
         'security.session_lifetime' => \DI\env('SESSION_LIFETIME', 3600),
     ],
 
     // 第三方服務配置
     [
         // Monolog Logger
-        LoggerInterface::class => \DI\factory(function (\Psr\Container\ContainerInterface $c) {
+        LoggerInterface::class => \DI\factory(function (ContainerInterface $c) {
             $logger = new Logger($c->get('app.name'));
             $handler = new StreamHandler($c->get('log.path'), Logger::DEBUG);
             $logger->pushHandler($handler);
+
             return $logger;
         }),
 
@@ -214,56 +228,75 @@ return array_merge(
         // }),
 
         // Cache Monitor Controller
-        \App\Application\Controllers\Admin\CacheMonitorController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
-            return new \App\Application\Controllers\Admin\CacheMonitorController(
-                $container->get(\App\Shared\Monitoring\Contracts\CacheMonitorInterface::class),
-                $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class)
+        CacheMonitorController::class => \DI\factory(function (ContainerInterface $container) {
+            return new CacheMonitorController(
+                $container->get(CacheMonitorInterface::class),
+                $container->get(CacheManagerInterface::class),
             );
         }),
 
         // Tag Management Controller
-        \App\Application\Controllers\Admin\TagManagementController::class => \DI\factory(function (\Psr\Container\ContainerInterface $container) {
-            $cacheManager = $container->get(\App\Shared\Cache\Contracts\CacheManagerInterface::class);
+        TagManagementController::class => \DI\factory(function (ContainerInterface $container) {
+            $cacheManager = $container->get(CacheManagerInterface::class);
 
             $groupManager = null;
+
             try {
-                $groupManager = $container->get(\App\Shared\Cache\Services\CacheGroupManager::class);
-            } catch (\Exception) {
+                $groupManager = $container->get(CacheGroupManager::class);
+            } catch (Exception) {
                 // 分組管理器不可用
             }
 
             $logger = null;
+
             try {
-                $logger = $container->get(\Psr\Log\LoggerInterface::class);
-            } catch (\Exception) {
+                $logger = $container->get(LoggerInterface::class);
+            } catch (Exception) {
                 // 記錄器不可用
             }
 
             $headerService = null;
+
             try {
-                $headerService = $container->get(\App\Domains\Security\Services\Headers\SecurityHeaderService::class);
-            } catch (\Exception) {
+                $headerService = $container->get(SecurityHeaderService::class);
+            } catch (Exception) {
                 // 安全性標頭服務不可用
             }
 
-            return new \App\Application\Controllers\Admin\TagManagementController(
+            return new TagManagementController(
                 $cacheManager,
                 $groupManager,
                 $logger,
-                $headerService
+                $headerService,
             );
         }),
     ],
 
     // 核心領域與共用服務
     [
-        CacheService::class => \DI\autowire(CacheService::class),
+        CacheService::class          => \DI\autowire(CacheService::class),
         CacheServiceInterface::class => \DI\get(CacheService::class),
 
         LoggingSecurityServiceInterface::class => \DI\autowire(LoggingSecurityService::class),
 
+        PostCrudRepository::class => \DI\autowire(PostCrudRepository::class)
+            ->constructorParameter('db', \DI\get(PDO::class))
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class))
+            ->constructorParameter('logger', \DI\get(LoggingSecurityServiceInterface::class)),
+
+        PostSearchRepository::class => \DI\autowire(PostSearchRepository::class)
+            ->constructorParameter('db', \DI\get(PDO::class))
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class)),
+
+        PostAnalyticsRepository::class => \DI\autowire(PostAnalyticsRepository::class)
+            ->constructorParameter('db', \DI\get(PDO::class))
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class)),
+
+        PostCacheInvalidator::class => \DI\autowire(PostCacheInvalidator::class)
+            ->constructorParameter('cache', \DI\get(CacheServiceInterface::class)),
+
         PostRepositoryInterface::class => \DI\autowire(PostRepository::class)
-            ->constructorParameter('db', \DI\get(\PDO::class))
+            ->constructorParameter('db', \DI\get(PDO::class))
             ->constructorParameter('cache', \DI\get(CacheServiceInterface::class))
             ->constructorParameter('logger', \DI\get(LoggingSecurityServiceInterface::class)),
 
@@ -271,7 +304,7 @@ return array_merge(
             ->constructorParameter('repository', \DI\get(PostRepositoryInterface::class)),
 
         TagRepositoryInterface::class => \DI\autowire(TagRepository::class)
-            ->constructorParameter('db', \DI\get(\PDO::class)),
+            ->constructorParameter('db', \DI\get(PDO::class)),
 
         TagManagementService::class => \DI\autowire(TagManagementService::class)
             ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class)),
@@ -279,27 +312,27 @@ return array_merge(
         RateLimitService::class => \DI\autowire(RateLimitService::class)
             ->constructorParameter('cache', \DI\get(CacheService::class)),
 
-        ValidatorFactory::class => \DI\autowire(ValidatorFactory::class),
-        ValidatorInterface::class => \DI\factory(static fn (ValidatorFactory $factory) => $factory->createForDTO()),
-        Validator::class => \DI\autowire(Validator::class),
-        OutputSanitizerInterface::class => \DI\autowire(OutputSanitizerService::class),
+        ValidatorFactory::class              => \DI\autowire(ValidatorFactory::class),
+        ValidatorInterface::class            => \DI\factory(static fn(ValidatorFactory $factory) => $factory->createForDTO()),
+        Validator::class                     => \DI\autowire(Validator::class),
+        OutputSanitizerInterface::class      => \DI\autowire(OutputSanitizerService::class),
         AuthorizationServiceInterface::class => \DI\autowire(AuthorizationService::class)
-            ->constructorParameter('db', \DI\get(\PDO::class))
+            ->constructorParameter('db', \DI\get(PDO::class))
             ->constructorParameter('cache', \DI\get(CacheServiceInterface::class)),
 
         // ========================================
         // 使用者管理模組
         // ========================================
-        
+
         // Repositories
         RoleRepository::class => \DI\autowire(RoleRepository::class)
-            ->constructorParameter('db', \DI\get(\PDO::class)),
+            ->constructorParameter('db', \DI\get(PDO::class)),
 
         PermissionRepository::class => \DI\autowire(PermissionRepository::class)
-            ->constructorParameter('db', \DI\get(\PDO::class)),
+            ->constructorParameter('db', \DI\get(PDO::class)),
 
         UserRepository::class => \DI\autowire(UserRepository::class)
-            ->constructorParameter('db', \DI\get(\PDO::class)),
+            ->constructorParameter('db', \DI\get(PDO::class)),
 
         // Services
         UserManagementService::class => \DI\autowire(UserManagementService::class)
@@ -318,5 +351,5 @@ return array_merge(
     ],
 
     // 監控服務
-    MonitoringServiceProvider::getDefinitions()
+    MonitoringServiceProvider::getDefinitions(),
 );
