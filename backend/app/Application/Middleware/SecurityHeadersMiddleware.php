@@ -45,6 +45,11 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         return $this->priority;
     }
 
+    public function shouldProcess(ServerRequestInterface $request): bool
+    {
+        return $this->enabled;
+    }
+
     public function getName(): string
     {
         return self::MIDDLEWARE_NAME;
