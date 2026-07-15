@@ -64,15 +64,20 @@ abstract class PostBaseRepository
             }
         }
 
+        $id = $result['id'] ?? 0;
+        $seqNumber = $result['seq_number'] ?? '';
+        $userId = $result['user_id'] ?? 0;
+        $views = $result['views'] ?? 0;
+
         return [
-            'id'                     => (int) ($result['id'] ?? 0),
+            'id'                     => is_numeric($id) ? (int) $id : 0,
             'uuid'                   => $result['uuid'] ?? '',
-            'seq_number'             => (string) ($result['seq_number'] ?? ''),
+            'seq_number'             => is_scalar($seqNumber) ? (string) $seqNumber : '',
             'title'                  => $result['title'] ?? '',
             'content'                => $result['content'] ?? '',
-            'user_id'                => (int) ($result['user_id'] ?? 0),
+            'user_id'                => is_numeric($userId) ? (int) $userId : 0,
             'user_ip'                => $result['user_ip'] ?? null,
-            'views'                  => (int) ($result['views'] ?? 0),
+            'views'                  => is_numeric($views) ? (int) $views : 0,
             'is_pinned'              => (bool) ($result['is_pinned'] ?? false),
             'status'                 => $result['status'] ?? 'draft',
             'publish_date'           => $publishDate,
@@ -97,7 +102,7 @@ abstract class PostBaseRepository
             $stmt->execute();
             /** @var array<string, mixed>|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            $nextSeq = $result !== false ? (int) $result['next_seq'] : 1;
+            $nextSeq = $result !== false && is_numeric($result['next_seq']) ? (int) $result['next_seq'] : 1;
             if (!$inTransaction) {
                 $this->db->exec('COMMIT');
             }

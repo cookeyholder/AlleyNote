@@ -167,7 +167,8 @@ class PostCrudRepository extends PostBaseRepository
             if (!$stmt->execute($data)) {
                 $errorInfo = $stmt->errorInfo();
 
-                throw new PDOException('Failed to insert post: ' . ((string) ($errorInfo[2] ?? 'unknown')));
+                $errorMsg = $errorInfo[2] ?? 'unknown';
+throw new PDOException('Failed to insert post: ' . (is_scalar($errorMsg) ? (string) $errorMsg : 'unknown'));
             }
             $postId = (int) $this->db->lastInsertId();
 
@@ -335,7 +336,7 @@ class PostCrudRepository extends PostBaseRepository
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
-        /** @var array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float} $result */
+        /** @var array{items: list<Post>, total: int, page: int, perPage: int, lastPage: int} $result */
         $result = $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
             $publishTimeCheck = "AND (p.status != 'published' OR p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
