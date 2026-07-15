@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Routing;
 
+use App\Application\Middleware\SecurityHeadersMiddleware;
+use App\Domains\Security\Services\Headers\SecurityHeaderService;
 use App\Infrastructure\Routing\Contracts\RouterInterface;
 use App\Infrastructure\Routing\Middleware\MiddlewareDispatcher;
 use App\Infrastructure\Routing\Middleware\MiddlewareResolver;
@@ -34,9 +36,10 @@ class RouteDispatcher
         $matchResult = $this->router->dispatch($request);
         if (!$matchResult->isMatched()) {
             $response = $this->handleNotFound($request);
+
             try {
-                if ($this->container->has(\App\Domains\Security\Services\Headers\SecurityHeaderService::class)) {
-                    $headerService = $this->container->get(\App\Domains\Security\Services\Headers\SecurityHeaderService::class);
+                if ($this->container->has(SecurityHeaderService::class)) {
+                    $headerService = $this->container->get(SecurityHeaderService::class);
                     $headers = $headerService->generateHeaders();
                     foreach ($headers as $name => $value) {
                         $response = $response->withHeader($name, $value);
@@ -53,15 +56,17 @@ class RouteDispatcher
             } catch (Throwable $e) {
                 // 忽略以防服務未註冊
             }
+
             return $response;
         }
         $route = $matchResult->getRoute();
         $parameters = $matchResult->getParameters();
         // 2. 準備中間件鏈（將全域安全性標頭中間件放在最前面）
         $resolvedMiddlewares = [];
+
         try {
-            if ($this->container->has(\App\Application\Middleware\SecurityHeadersMiddleware::class)) {
-                $resolvedMiddlewares[] = $this->container->get(\App\Application\Middleware\SecurityHeadersMiddleware::class);
+            if ($this->container->has(SecurityHeadersMiddleware::class)) {
+                $resolvedMiddlewares[] = $this->container->get(SecurityHeadersMiddleware::class);
             }
         } catch (Throwable $e) {
             // 忽略

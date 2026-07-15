@@ -116,6 +116,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
         if ($this->config['server_signature']['enabled']) {
             $headers['Server'] = $this->config['server_signature']['value'];
         }
+
         return $headers;
     }
 
