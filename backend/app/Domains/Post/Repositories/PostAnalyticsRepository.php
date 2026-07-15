@@ -13,7 +13,8 @@ class PostAnalyticsRepository extends PostBaseRepository
     {
         $cacheKey = sprintf('posts:source:%s:limit:%d:offset:%d', $creationSource, $limit, $offset);
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource, $limit, $offset) {
+        /** @var list<Post> $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource, $limit, $offset) {
             $sql = $this->buildSelectQuery('p.creation_source = :creation_source')
                 . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
             $stmt = $this->db->prepare($sql);
@@ -22,22 +23,29 @@ class PostAnalyticsRepository extends PostBaseRepository
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
+            /** @var list<array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                fn(array $row): Post => Post::fromArray($this->preparePostData($row)),
+                $rows,
             );
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function getSourceDistribution(): array
     {
         $cacheKey = 'posts:source_distribution';
 
-        return $this->cache->remember($cacheKey, function () {
+        /** @var array<string, int> $result */
+        $result = $this->cache->remember($cacheKey, function () {
             $sql = 'SELECT creation_source, COUNT(*) as count FROM posts WHERE deleted_at IS NULL GROUP BY creation_source ORDER BY count DESC';
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $result = [];
+            /** @var array|false $row */
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 if (!is_array($row)) {
                     continue;
@@ -49,6 +57,8 @@ class PostAnalyticsRepository extends PostBaseRepository
 
             return $result;
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function findByCreationSourceAndDetail(
@@ -65,7 +75,8 @@ class PostAnalyticsRepository extends PostBaseRepository
             $offset,
         );
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource, $creationSourceDetail, $limit, $offset) {
+        /** @var list<Post> $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource, $creationSourceDetail, $limit, $offset) {
             if ($creationSourceDetail === null) {
                 $sql = $this->buildSelectQuery('p.creation_source = :creation_source AND p.creation_source_detail IS NULL')
                     . ' ORDER BY p.created_at DESC LIMIT :limit OFFSET :offset';
@@ -88,18 +99,24 @@ class PostAnalyticsRepository extends PostBaseRepository
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
 
+            /** @var list<array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                fn(array $row): Post => Post::fromArray($this->preparePostData($row)),
+                $rows,
             );
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function countByCreationSource(string $creationSource): int
     {
         $cacheKey = sprintf('posts:count:source:%s', $creationSource);
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource) {
+        /** @var int $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource) {
             $sql = 'SELECT COUNT(*) FROM posts WHERE creation_source = :creation_source AND deleted_at IS NULL';
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':creation_source', $creationSource, PDO::PARAM_STR);
@@ -107,6 +124,8 @@ class PostAnalyticsRepository extends PostBaseRepository
 
             return (int) $stmt->fetchColumn();
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function paginateByCreationSource(
@@ -116,7 +135,8 @@ class PostAnalyticsRepository extends PostBaseRepository
     ): array {
         $cacheKey = sprintf('posts:paginate:source:%s:page:%d:per:%d', $creationSource, $page, $perPage);
 
-        return $this->cache->remember($cacheKey, function () use ($creationSource, $page, $perPage) {
+        /** @var array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float} $result */
+        $result = $this->cache->remember($cacheKey, function () use ($creationSource, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
             $total = $this->countByCreationSource($creationSource);
 
@@ -127,9 +147,11 @@ class PostAnalyticsRepository extends PostBaseRepository
             $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->execute();
+            /** @var list<array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                fn(array $row): Post => Post::fromArray($this->preparePostData($row)),
+                $rows,
             );
 
             return [
@@ -140,5 +162,7 @@ class PostAnalyticsRepository extends PostBaseRepository
                 'lastPage' => ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
+
+        return $result;
     }
 }

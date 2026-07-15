@@ -78,11 +78,17 @@ class PostRepository implements PostRepositoryInterface
         return $this->crud->paginate($page, $perPage, $conditions);
     }
 
+    /**
+     * @return Post[]
+     */
     public function getPinnedPosts(int $limit = 5): array
     {
         return $this->crud->getPinnedPosts($limit);
     }
 
+    /**
+     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float}
+     */
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         return $this->crud->getPostsByTag($tagId, $page, $perPage);
@@ -93,6 +99,9 @@ class PostRepository implements PostRepositoryInterface
         return $this->crud->incrementViews($id, $userIp, $userId);
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function getPostTags(int $id): array
     {
         return $this->crud->getPostTags($id);
@@ -108,7 +117,10 @@ class PostRepository implements PostRepositoryInterface
         $this->crud->setTags($id, $tagIds);
     }
 
-    public function searchByTitle(string $title): mixed
+    /**
+     * @return Post[]
+     */
+    public function searchByTitle(string $title): array
     {
         return $this->search->searchByTitle($title);
     }
@@ -118,21 +130,33 @@ class PostRepository implements PostRepositoryInterface
         return $this->search->findLatestByUserId($userId);
     }
 
-    public function search(string $keyword): mixed
+    /**
+     * @return Post[]
+     */
+    public function search(string $keyword): array
     {
         return $this->search->search($keyword);
     }
 
+    /**
+     * @return Post[]
+     */
     public function findByCreationSource(string $creationSource, int $limit = 10, int $offset = 0): array
     {
         return $this->analytics->findByCreationSource($creationSource, $limit, $offset);
     }
 
+    /**
+     * @return array<string, int>
+     */
     public function getSourceDistribution(): array
     {
         return $this->analytics->getSourceDistribution();
     }
 
+    /**
+     * @return Post[]
+     */
     public function findByCreationSourceAndDetail(
         string $creationSource,
         ?string $creationSourceDetail = null,
@@ -147,6 +171,9 @@ class PostRepository implements PostRepositoryInterface
         return $this->analytics->countByCreationSource($creationSource);
     }
 
+    /**
+     * @return array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float}
+     */
     public function paginateByCreationSource(
         string $creationSource,
         int $page = 1,

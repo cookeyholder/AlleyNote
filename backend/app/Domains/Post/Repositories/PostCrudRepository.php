@@ -59,10 +59,12 @@ class PostCrudRepository extends PostBaseRepository
     public function find(int $id): ?Post
     {
         $cacheKey = PostCacheKeyService::post($id);
+        /** @var array|null $data */
         $data = $this->cache->remember($cacheKey, function () use ($id) {
             $sql = $this->buildSelectQuery('p.id = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$id]);
+            /** @var array|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$result) {
                 return null;
@@ -71,7 +73,7 @@ class PostCrudRepository extends PostBaseRepository
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
-        return $data ? Post::fromArray($data) : null;
+        return $data !== null ? Post::fromArray($data) : null;
     }
 
     public function findWithLock(int $id): ?Post
@@ -79,6 +81,7 @@ class PostCrudRepository extends PostBaseRepository
         $sql = $this->buildSelectQuery('p.id = ?');
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$id]);
+        /** @var array|false $result */
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
             return null;
@@ -90,10 +93,12 @@ class PostCrudRepository extends PostBaseRepository
     public function findByUuid(string $uuid): ?Post
     {
         $cacheKey = PostCacheKeyService::postByUuid($uuid);
+        /** @var array|null $data */
         $data = $this->cache->remember($cacheKey, function () use ($uuid) {
             $sql = $this->buildSelectQuery('p.uuid = ?');
             $stmt = $this->db->prepare($sql);
             $stmt->execute([$uuid]);
+            /** @var array|false $result */
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$result) {
                 return null;
@@ -102,7 +107,7 @@ class PostCrudRepository extends PostBaseRepository
             return $this->preparePostData($result);
         }, self::CACHE_TTL);
 
-        return $data ? Post::fromArray($data) : null;
+        return $data !== null ? Post::fromArray($data) : null;
     }
 
     public function findBySeqNumber(int $seqNumber): ?Post
@@ -110,6 +115,7 @@ class PostCrudRepository extends PostBaseRepository
         $sql = $this->buildSelectQuery('seq_number = ?');
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$seqNumber]);
+        /** @var array|false $result */
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$result) {
             return null;
@@ -120,6 +126,7 @@ class PostCrudRepository extends PostBaseRepository
 
     public function safeDelete(int $id): bool
     {
+        /** @var bool */
         return $this->executeInTransaction(function () use ($id) {
             $post = $this->findWithLock($id);
             if (!$post) {
@@ -136,6 +143,7 @@ class PostCrudRepository extends PostBaseRepository
 
     public function safeSetPinned(int $id, bool $isPinned): bool
     {
+        /** @var bool */
         return $this->executeInTransaction(function () use ($id, $isPinned) {
             $post = $this->findWithLock($id);
             if (!$post) {
@@ -152,13 +160,14 @@ class PostCrudRepository extends PostBaseRepository
 
     public function create(array $data, array $tagIds = []): Post
     {
+        /** @var Post */
         return $this->executeInTransaction(function () use ($data, $tagIds) {
             $data = $this->prepareNewPostData($data);
             $stmt = $this->db->prepare(self::SQL_INSERT_POST);
             if (!$stmt->execute($data)) {
                 $errorInfo = $stmt->errorInfo();
 
-                throw new PDOException('Failed to insert post: ' . $errorInfo[2]);
+                throw new PDOException('Failed to insert post: ' . ($errorInfo[2] ?? 'unknown'));
             }
             $postId = (int) $this->db->lastInsertId();
 
@@ -217,7 +226,12 @@ class PostCrudRepository extends PostBaseRepository
 
         $this->invalidateCache($id);
 
-        return $this->find($id);
+        $updated = $this->find($id);
+        if (!$updated) {
+            throw new RuntimeException('更新後找不到文章');
+        }
+
+        return $updated;
     }
 
     public function delete(int $id): bool
@@ -268,9 +282,11 @@ class PostCrudRepository extends PostBaseRepository
             $stmt->bindValue(":{$key}", $value);
         }
         $stmt->execute();
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $items = array_map(
-            fn($row) => Post::fromArray($this->preparePostData($row)),
-            $stmt->fetchAll(PDO::FETCH_ASSOC),
+            fn(array $row): Post => Post::fromArray($this->preparePostData($row)),
+            $rows,
         );
 
         return [
@@ -286,25 +302,32 @@ class PostCrudRepository extends PostBaseRepository
     {
         $cacheKey = PostCacheKeyService::pinnedPosts();
 
-        return $this->cache->remember($cacheKey, function () use ($limit) {
+        /** @var list<Post> $result */
+        $result = $this->cache->remember($cacheKey, function () use ($limit) {
             $sql = $this->buildSelectQuery("is_pinned = 1 AND (status != 'published' OR publish_date IS NULL OR publish_date <= datetime('now'))")
                 . ' ORDER BY publish_date DESC LIMIT :limit';
             $stmt = $this->db->prepare($sql);
             $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
             $stmt->execute();
 
+            /** @var list<array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             return array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                fn(array $row): Post => Post::fromArray($this->preparePostData($row)),
+                $rows,
             );
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function getPostsByTag(int $tagId, int $page = 1, int $perPage = 10): array
     {
         $cacheKey = PostCacheKeyService::tagPosts($tagId, $page);
 
-        return $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
+        /** @var array{items: list<Post>, total: int, page: int, perPage: int, lastPage: float} $result */
+        $result = $this->cache->remember($cacheKey, function () use ($tagId, $page, $perPage) {
             $offset = ($page - 1) * $perPage;
             $publishTimeCheck = "AND (p.status != 'published' OR p.publish_date IS NULL OR p.publish_date <= datetime('now'))";
             $countSql = 'SELECT COUNT(*) FROM posts p '
@@ -326,9 +349,11 @@ class PostCrudRepository extends PostBaseRepository
             $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
             $stmt->execute();
+            /** @var list<array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
             $items = array_map(
-                fn($row) => Post::fromArray($this->preparePostData($row)),
-                $stmt->fetchAll(PDO::FETCH_ASSOC),
+                fn(array $row): Post => Post::fromArray($this->preparePostData($row)),
+                $rows,
             );
 
             return [
@@ -339,6 +364,8 @@ class PostCrudRepository extends PostBaseRepository
                 'lastPage' => ceil($total / $perPage),
             ];
         }, self::CACHE_TTL);
+
+        return $result;
     }
 
     public function incrementViews(int $id, string $userIp, ?int $userId = null): bool
@@ -433,11 +460,13 @@ class PostCrudRepository extends PostBaseRepository
 
             $oldTagStmt = $this->db->prepare('SELECT tag_id FROM post_tags WHERE post_id = ?');
             $oldTagStmt->execute([$id]);
+            /** @var list<array<string, mixed>> $oldTagRows */
             $oldTagRows = $oldTagStmt->fetchAll(PDO::FETCH_ASSOC);
             $oldTagIds = [];
             foreach ($oldTagRows as $row) {
                 if (is_array($row) && isset($row['tag_id'])) {
-                    $oldTagIds[] = (int) $row['tag_id'];
+                    $tagId = $row['tag_id'];
+                    $oldTagIds[] = is_numeric($tagId) ? (int) $tagId : 0;
                 }
             }
 
@@ -544,7 +573,10 @@ class PostCrudRepository extends PostBaseRepository
         }
 
         try {
-            $uniqueTagIds = array_values(array_unique(array_map('intval', $tagIds)));
+            $uniqueTagIds = array_values(array_unique(array_map(
+                static fn(mixed $id): int => is_numeric($id) ? (int) $id : 0,
+                $tagIds,
+            )));
             $placeholders = implode(',', array_fill(0, count($uniqueTagIds), '?'));
             $sql = "
                 UPDATE tags
