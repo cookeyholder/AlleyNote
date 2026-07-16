@@ -40,6 +40,6 @@
 
 ## 6. 驗證
 
-- [ ] 6.1 執行 `composer test` 確認所有測試通過
-- [ ] 6.2 執行 `composer analyse`（PHPStan Level 10）確認無新增型別錯誤
-- [ ] 6.3 執行 `npm run lint` 確認前端程式碼風格一致
+- [x] 6.1 執行 `composer test` 確認所有測試通過
+- [x] 6.2 執行 `composer analyse`（PHPStan Level 10）確認無新增型別錯誤
+- [x] 6.3 執行 `npm run lint` 確認前端程式碼風格一致
