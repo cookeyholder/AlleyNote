@@ -9,7 +9,6 @@ use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use App\Domains\Statistics\Services\StatisticsConfigService;
 use DateTimeImmutable;
@@ -27,8 +26,6 @@ final class StatisticsQueryServiceTest extends UnitTestCase
     private StatisticsApplicationService $service;
 
     private StatisticsAggregationServiceInterface&MockInterface $aggregationService;
-
-    private StatisticsRepositoryInterface&MockInterface $statisticsRepository;
 
     private StatisticsCacheServiceInterface&MockInterface $cacheService;
 

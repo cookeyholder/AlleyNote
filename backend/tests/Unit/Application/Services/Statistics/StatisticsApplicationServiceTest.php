@@ -7,7 +7,6 @@ namespace Tests\Unit\Application\Services\Statistics;
 use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
