@@ -192,7 +192,7 @@ test.describe("使用者管理功能測試", () => {
       );
       await expect(confirmDialog).toBeVisible();
 
-      await page.locator('[data-action="cancel"]').click();
+      await page.locator('[data-action="cancel"]').click({ force: true });
       await expect(confirmDialog).not.toBeVisible();
     }
   });
