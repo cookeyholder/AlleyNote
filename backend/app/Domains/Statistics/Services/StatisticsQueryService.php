@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Services\Statistics;
+namespace App\Domains\Statistics\Services;
 
-use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\DTOs\PaginatedStatisticsDTO;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
@@ -16,7 +16,12 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 
-final class StatisticsQueryService
+/**
+ * 統計查詢服務.
+ *
+ * 負責處理統計資料的查詢邏輯，包含快取機制與資料聚合。
+ */
+class StatisticsQueryService
 {
     private const CACHE_TTL = 3600; // 1 小時
 

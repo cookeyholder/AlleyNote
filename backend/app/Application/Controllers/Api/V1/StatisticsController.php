@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
-use App\Application\Services\Statistics\StatisticsQueryService;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;

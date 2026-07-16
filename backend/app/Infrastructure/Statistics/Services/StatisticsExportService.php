@@ -8,8 +8,10 @@ use App\Domains\Statistics\Contracts\BatchExportResult;
 use App\Domains\Statistics\Contracts\ExportResult;
 use App\Domains\Statistics\Contracts\StatisticsExportServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use DateTime;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use RuntimeException;
 use Throwable;
@@ -32,7 +34,7 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
      * @param array<string, StatisticsFormatterInterface> $formatters 格式化器陣列
      */
     public function __construct(
-        private readonly StatisticsQueryServiceInterface $queryService,
+        private readonly StatisticsQueryService $queryService,
         private readonly array $formatters,
     ) {}
 
@@ -43,11 +45,12 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         $this->validateFormat($format);
 
         try {
-            // 準備查詢選項
-            $queryOptions = $this->prepareQueryOptions($options);
+            // 準備查詢 DTO
+            $queryDTO = $this->buildQueryDTO($options);
             // 取得統計資料
-            /** @phpstan-ignore-next-line argument.type */
-            $data = $this->queryService->getOverview($queryOptions);
+            $overview = $this->queryService->getOverview($queryDTO);
+            /** @var array<string, mixed> $data */
+            $data = $overview->toArray();
             // 格式化資料
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
@@ -74,9 +77,10 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         $this->validateFormat($format);
 
         try {
-            $queryOptions = $this->prepareQueryOptions($options);
-            /** @phpstan-ignore-next-line argument.type */
-            $data = $this->queryService->getPostStatistics($queryOptions);
+            $queryDTO = $this->buildQueryDTO($options);
+            $postStats = $this->queryService->getPostStatistics($queryDTO);
+            /** @var array<string, mixed> $data */
+            $data = $postStats->toArray();
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -101,9 +105,9 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         $this->validateFormat($format);
 
         try {
-            $queryOptions = $this->prepareQueryOptions($options);
-            /** @phpstan-ignore-next-line argument.type */
-            $data = $this->queryService->getSourceDistribution($queryOptions);
+            $queryDTO = $this->buildQueryDTO($options);
+            /** @var array<string, mixed> $data */
+            $data = $this->queryService->getSourceDistribution($queryDTO);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -128,9 +132,10 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         $this->validateFormat($format);
 
         try {
-            $queryOptions = $this->prepareQueryOptions($options);
-            /** @phpstan-ignore-next-line argument.type */
-            $data = $this->queryService->getUserStatistics($queryOptions);
+            $queryDTO = $this->buildQueryDTO($options);
+            $userStats = $this->queryService->getUserStatistics($queryDTO);
+            /** @var array<string, mixed> $data */
+            $data = $userStats->toArray();
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -155,9 +160,9 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
         $this->validateFormat($format);
 
         try {
-            $queryOptions = $this->prepareQueryOptions($options);
-            /** @phpstan-ignore-next-line argument.type */
-            $data = $this->queryService->getPopularContent($queryOptions);
+            $queryDTO = $this->buildQueryDTO($options);
+            /** @var array<string, mixed> $data */
+            $data = $this->queryService->getPopularContent($queryDTO);
             $formatter = $this->formatters[$format];
             $content = $formatter->format($data, $options);
 
@@ -248,39 +253,34 @@ final class StatisticsExportService implements StatisticsExportServiceInterface
     }
 
     /**
-     * 準備查詢選項.
-     *
-     * @return array<string, mixed>
+     * 從選項陣列建構統計查詢 DTO.
      */
-    private function prepareQueryOptions(array $options): array
+    private function buildQueryDTO(array $options): StatisticsQueryDTO
     {
-        $queryOptions = [];
-        // 處理時間範圍
+        $startDate = null;
+        $endDate = null;
+
         if (isset($options['period_start'])) {
-            $queryOptions['period_start'] = $options['period_start'];
+            $startDate = $options['period_start'] instanceof DateTimeImmutable
+                ? $options['period_start']
+                : ($options['period_start'] instanceof DateTime
+                    ? DateTimeImmutable::createFromMutable($options['period_start'])
+                    : null);
         }
         if (isset($options['period_end'])) {
-            $queryOptions['period_end'] = $options['period_end'];
-        }
-        // 處理分頁
-        if (isset($options['limit'])) {
-            $queryOptions['limit'] = $options['limit'];
-        }
-        if (isset($options['offset'])) {
-            $queryOptions['offset'] = $options['offset'];
-        }
-        // 處理其他選項
-        if (isset($options['include_details'])) {
-            $queryOptions['include_details'] = $options['include_details'];
-        }
-        if (isset($options['group_by_detail'])) {
-            $queryOptions['group_by_detail'] = $options['group_by_detail'];
-        }
-        if (isset($options['include_inactive'])) {
-            $queryOptions['include_inactive'] = $options['include_inactive'];
+            $endDate = $options['period_end'] instanceof DateTimeImmutable
+                ? $options['period_end']
+                : ($options['period_end'] instanceof DateTime
+                    ? DateTimeImmutable::createFromMutable($options['period_end'])
+                    : null);
         }
 
-        return $queryOptions;
+        return new StatisticsQueryDTO(
+            startDate: $startDate,
+            endDate: $endDate,
+            page: isset($options['page']) && is_int($options['page']) ? max(1, $options['page']) : 1,
+            limit: isset($options['limit']) && is_int($options['limit']) ? max(1, min(100, $options['limit'])) : 20,
+        );
     }
 
     /**

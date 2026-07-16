@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
 
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface as BaseQueryServiceInterface;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use DateInterval;
 use DateTime;
 use DateTimeImmutable;
@@ -13,7 +14,7 @@ use DateTimeInterface;
 class StatisticsQueryAdapter
 {
     public function __construct(
-        private BaseQueryServiceInterface $baseQueryService,
+        private StatisticsQueryService $baseQueryService,
     ) {}
 
     /**
@@ -26,11 +27,8 @@ class StatisticsQueryAdapter
         DateTimeInterface $endDate,
         string $granularity,
     ): array {
-        $options = [
-            'period_start' => DateTime::createFromInterface($startDate),
-            'period_end'   => DateTime::createFromInterface($endDate),
-        ];
-        $data = $this->baseQueryService->getPostStatistics($options);
+        $query = $this->buildQueryDTO($startDate, $endDate);
+        $this->baseQueryService->getPostStatistics($query);
 
         // 模擬時間序列資料生成
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'posts');
@@ -46,11 +44,8 @@ class StatisticsQueryAdapter
         DateTimeInterface $endDate,
         string $granularity,
     ): array {
-        $options = [
-            'period_start' => DateTime::createFromInterface($startDate),
-            'period_end'   => DateTime::createFromInterface($endDate),
-        ];
-        $data = $this->baseQueryService->getUserStatistics($options);
+        $query = $this->buildQueryDTO($startDate, $endDate);
+        $this->baseQueryService->getUserStatistics($query);
 
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'users');
     }
@@ -65,14 +60,10 @@ class StatisticsQueryAdapter
         ?DateTimeInterface $endDate = null,
         int $limit = 10,
     ): array {
-        $options = [];
-        if ($startDate) {
-            $options['period_start'] = DateTime::createFromInterface($startDate);
-        }
-        if ($endDate) {
-            $options['period_end'] = DateTime::createFromInterface($endDate);
-        }
-        $data = $this->baseQueryService->getSourceDistribution($options);
+        $query = $startDate && $endDate
+            ? $this->buildQueryDTO($startDate, $endDate)
+            : new StatisticsQueryDTO();
+        $this->baseQueryService->getSourceDistribution($query);
 
         return $this->generateMockCategoryData('source', $limit);
     }
@@ -127,14 +118,10 @@ class StatisticsQueryAdapter
         string $sortBy = 'views',
         int $limit = 10,
     ): array {
-        $options = [];
-        if ($startDate) {
-            $options['period_start'] = DateTime::createFromInterface($startDate);
-        }
-        if ($endDate) {
-            $options['period_end'] = DateTime::createFromInterface($endDate);
-        }
-        $data = $this->baseQueryService->getPopularContent($options);
+        $query = $startDate && $endDate
+            ? $this->buildQueryDTO($startDate, $endDate)
+            : new StatisticsQueryDTO();
+        $this->baseQueryService->getPopularContent($query);
 
         return $this->generateMockCategoryData('content', $limit);
     }
@@ -419,5 +406,22 @@ class StatisticsQueryAdapter
         $endDate ??= new DateTimeImmutable();
 
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'engagement');
+    }
+
+    /**
+     * 從日期介面建構統計查詢 DTO.
+     */
+    private function buildQueryDTO(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+    ): StatisticsQueryDTO {
+        return new StatisticsQueryDTO(
+            startDate: $startDate instanceof DateTimeImmutable
+                ? $startDate
+                : DateTimeImmutable::createFromInterface($startDate),
+            endDate: $endDate instanceof DateTimeImmutable
+                ? $endDate
+                : DateTimeImmutable::createFromInterface($endDate),
+        );
     }
 }

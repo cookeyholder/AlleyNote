@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsApplicationService;
-use App\Application\Services\Statistics\StatisticsQueryService;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\ValueObjects\PeriodType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;

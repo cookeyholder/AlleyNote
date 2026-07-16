@@ -2,8 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Services\Statistics\DTOs;
+namespace App\Domains\Statistics\DTOs;
 
+/**
+ * 分頁統計資料傳輸物件.
+ *
+ * 用於封裝分頁查詢的統計結果資料，包含資料列表與分頁資訊。
+ */
 final class PaginatedStatisticsDTO
 {
     public function __construct(
@@ -73,6 +78,11 @@ final class PaginatedStatisticsDTO
         return min($to, $this->totalCount);
     }
 
+    /**
+     * 轉換為陣列.
+     *
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [

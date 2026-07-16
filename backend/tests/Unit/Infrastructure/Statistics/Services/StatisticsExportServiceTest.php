@@ -7,10 +7,15 @@ namespace Tests\Unit\Infrastructure\Statistics\Services;
 use App\Domains\Statistics\Contracts\BatchExportResult;
 use App\Domains\Statistics\Contracts\ExportResult;
 use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
+use App\Domains\Statistics\DTOs\PaginatedStatisticsDTO;
+use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
 use InvalidArgumentException;
+use Mockery;
+use Mockery\MockInterface;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
@@ -26,7 +31,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /** @var array<string, StatisticsFormatterInterface> */
     private array $formatters;
 
-    private StatisticsQueryServiceInterface $queryService;
+    private StatisticsQueryService&MockInterface $queryService;
 
     protected function setUp(): void
     {
@@ -142,32 +147,27 @@ final class StatisticsExportServiceTest extends UnitTestCase
     public function test批次匯出部分失敗時應該正確處理(): void
     {
         // Arrange - 建立會失敗的查詢服務
-        $failingQueryService = new class implements StatisticsQueryServiceInterface {
-            public function getOverview(array $options = []): array
-            {
-                throw new RuntimeException('Query failed');
-            }
-
-            public function getPostStatistics(array $options = []): array
-            {
-                return ['posts' => [['id' => 1, 'title' => 'Test']]];
-            }
-
-            public function getSourceDistribution(array $options = []): array
-            {
-                return ['sources' => [['source' => 'web', 'count' => 10]]];
-            }
-
-            public function getUserStatistics(array $options = []): array
-            {
-                return [];
-            }
-
-            public function getPopularContent(array $options = []): array
-            {
-                return [];
-            }
-        };
+        $failingQueryService = Mockery::mock(StatisticsQueryService::class);
+        $failingQueryService->shouldReceive('getOverview')
+            ->andThrow(new RuntimeException('Query failed'));
+        $failingQueryService->shouldReceive('getPostStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [['id' => 1, 'title' => 'Test']],
+                totalCount: 1,
+                currentPage: 1,
+                perPage: 20,
+            ));
+        $failingQueryService->shouldReceive('getSourceDistribution')
+            ->andReturn(['sources' => [['source' => 'web', 'count' => 10]]]);
+        $failingQueryService->shouldReceive('getUserStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [],
+                totalCount: 0,
+                currentPage: 1,
+                perPage: 20,
+            ));
+        $failingQueryService->shouldReceive('getPopularContent')
+            ->andReturn([]);
 
         $exportService = new StatisticsExportService($failingQueryService, $this->formatters);
         $types = ['overview', 'posts', 'sources'];
@@ -239,24 +239,23 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /**
      * 建立測試用的查詢服務.
      */
-    private function createTestQueryService(): StatisticsQueryServiceInterface
+    private function createTestQueryService(): StatisticsQueryService&MockInterface
     {
-        return new class implements StatisticsQueryServiceInterface {
-            public function getOverview(array $options = []): array
-            {
-                return [
-                    'total_posts'  => 100,
-                    'total_views'  => 5000,
-                    'total_users'  => 50,
-                    'period_start' => '2025-09-01',
-                    'period_end'   => '2025-09-30',
-                ];
-            }
-
-            public function getPostStatistics(array $options = []): array
-            {
+        $queryService = Mockery::mock(StatisticsQueryService::class);
+        $queryService->shouldReceive('getOverview')
+            ->andReturn(new StatisticsOverviewDTO(
+                totalPosts: 100,
+                activeUsers: 50,
+                newUsers: 10,
+                postActivity: ['total_posts' => 100, 'published_posts' => 80, 'draft_posts' => 20],
+                userActivity: ['total_users' => 50, 'active_users' => 30, 'new_users' => 10],
+                engagementMetrics: ['posts_per_active_user' => 2.0, 'user_growth_rate' => 5.0],
+                periodSummary: ['type' => 'monthly', 'duration_days' => 30],
+            ));
+        $queryService->shouldReceive('getPostStatistics')
+            ->andReturnUsing(function (StatisticsQueryDTO $query): PaginatedStatisticsDTO {
                 $posts = [];
-                $limit = $options['limit'] ?? 10;
+                $limit = $query->getLimit();
 
                 for ($i = 1; $i <= $limit; $i++) {
                     $posts[] = [
@@ -267,33 +266,34 @@ final class StatisticsExportServiceTest extends UnitTestCase
                     ];
                 }
 
-                return ['posts' => $posts];
-            }
-
-            public function getSourceDistribution(array $options = []): array
-            {
-                return [
-                    'sources' => [
-                        ['source' => 'web', 'count' => 60, 'percentage' => 60.0],
-                        ['source' => 'mobile', 'count' => 30, 'percentage' => 30.0],
-                        ['source' => 'api', 'count' => 10, 'percentage' => 10.0],
-                    ],
-                ];
-            }
-
-            public function getUserStatistics(array $options = []): array
-            {
-                return [
-                    'users' => [
-                        ['id' => 1, 'username' => 'user1', 'post_count' => 10, 'last_active' => '2025-09-23'],
-                        ['id' => 2, 'username' => 'user2', 'post_count' => 15, 'last_active' => '2025-09-22'],
-                    ],
-                ];
-            }
-
-            public function getPopularContent(array $options = []): array
-            {
-                $limit = $options['limit'] ?? 10;
+                return new PaginatedStatisticsDTO(
+                    data: $posts,
+                    totalCount: 100,
+                    currentPage: $query->getPage(),
+                    perPage: $query->getLimit(),
+                );
+            });
+        $queryService->shouldReceive('getSourceDistribution')
+            ->andReturn([
+                'sources' => [
+                    ['source' => 'web', 'count' => 60, 'percentage' => 60.0],
+                    ['source' => 'mobile', 'count' => 30, 'percentage' => 30.0],
+                    ['source' => 'api', 'count' => 10, 'percentage' => 10.0],
+                ],
+            ]);
+        $queryService->shouldReceive('getUserStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [
+                    ['id' => 1, 'username' => 'user1', 'post_count' => 10, 'last_active' => '2025-09-23'],
+                    ['id' => 2, 'username' => 'user2', 'post_count' => 15, 'last_active' => '2025-09-22'],
+                ],
+                totalCount: 2,
+                currentPage: 1,
+                perPage: 20,
+            ));
+        $queryService->shouldReceive('getPopularContent')
+            ->andReturnUsing(function (StatisticsQueryDTO $query): array {
+                $limit = min($query->getLimit(), 10);
                 $popular = [];
 
                 for ($i = 1; $i <= $limit; $i++) {
@@ -306,8 +306,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
                 }
 
                 return ['popular_posts' => $popular];
-            }
-        };
+            });
+
+        return $queryService;
     }
 
     /**
@@ -335,7 +336,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
             public function format(array $data, array $options = []): string
             {
-                return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                $result = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                return $result !== false ? $result : '';
             }
 
             public function supportsLargeData(): bool
