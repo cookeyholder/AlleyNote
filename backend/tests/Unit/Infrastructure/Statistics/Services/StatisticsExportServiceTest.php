@@ -11,9 +11,9 @@ use App\Domains\Statistics\Contracts\ExportResult;
 use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
-use Mockery;
 use DateTime;
 use InvalidArgumentException;
+use Mockery;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
