@@ -44,6 +44,9 @@ class StatisticsApplicationService
         private readonly PDO $db,
     ) {}
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function createOverviewSnapshot(
         StatisticsPeriod $period,
         array $metadata = [],
@@ -61,6 +64,9 @@ class StatisticsApplicationService
         }
     }
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function createPostsSnapshot(
         StatisticsPeriod $period,
         array $metadata = [],
@@ -78,6 +84,9 @@ class StatisticsApplicationService
         }
     }
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function createUsersSnapshot(
         StatisticsPeriod $period,
         array $metadata = [],
@@ -95,6 +104,9 @@ class StatisticsApplicationService
         }
     }
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function createPopularSnapshot(
         StatisticsPeriod $period,
         array $metadata = [],
@@ -112,6 +124,10 @@ class StatisticsApplicationService
         }
     }
 
+    /**
+     * @param array<string> $types
+     * @param array<string, mixed> $metadata
+     */
     public function createBatchSnapshots(
         StatisticsPeriod $period,
         array $types,
@@ -192,6 +208,11 @@ class StatisticsApplicationService
         return $result;
     }
 
+    /**
+     * @param array<string> $snapshotTypes
+     *
+     * @return array<string, bool>
+     */
     public function warmCache(array $snapshotTypes, StatisticsPeriod $period): array
     {
         $results = [];
@@ -207,6 +228,9 @@ class StatisticsApplicationService
         return $results;
     }
 
+    /**
+     * @param array<string> $tags
+     */
     public function invalidateCache(array $tags): void
     {
         $this->cacheService->flushByTags($tags);
@@ -850,6 +874,8 @@ class StatisticsApplicationService
 
     /**
      * 驗證快照類型陣列.
+     *
+     * @param array<string> $types
      */
     private function validateSnapshotTypes(array $types): void
     {

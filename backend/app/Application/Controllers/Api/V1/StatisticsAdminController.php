@@ -404,8 +404,8 @@ class StatisticsAdminController extends BaseController
                                     property: 'services',
                                     type: 'object',
                                     properties: [
-                                        'statistics_application_service' => new OA\Property(property: 'statistics_application_service', type: 'string'),
-                                        'cache_service'                  => new OA\Property(property: 'cache_service', type: 'string'),
+                                        new OA\Property(property: 'statistics_application_service', type: 'string'),
+                                        new OA\Property(property: 'cache_service', type: 'string'),
                                     ],
                                 ),
                                 'timestamp' => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),

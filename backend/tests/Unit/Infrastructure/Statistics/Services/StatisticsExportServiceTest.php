@@ -314,7 +314,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
             public function format(array $data, array $options = []): string
             {
-                return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '';
             }
 
             public function supportsLargeData(): bool
