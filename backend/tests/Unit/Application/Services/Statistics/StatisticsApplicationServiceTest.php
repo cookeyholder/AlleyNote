@@ -11,12 +11,12 @@ use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
-use PDO;
-use Psr\Log\LoggerInterface;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
+use PDO;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
