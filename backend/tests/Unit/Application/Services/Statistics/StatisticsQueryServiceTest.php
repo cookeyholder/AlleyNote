@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Services\Statistics;
 
-use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
-use App\Application\Services\Statistics\StatisticsApplicationService;
-use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\DTOs\PaginatedStatisticsDTO;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
-use App\Domains\Statistics\Services\StatisticsConfigService;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
@@ -20,16 +19,14 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Log\LoggerInterface;
 use Tests\Support\UnitTestCase;
 
-#[CoversClass(StatisticsApplicationService::class)]
+#[CoversClass(StatisticsQueryService::class)]
 final class StatisticsQueryServiceTest extends UnitTestCase
 {
-    private StatisticsApplicationService $service;
+    private StatisticsQueryService $service;
 
-    private StatisticsAggregationServiceInterface&MockInterface $aggregationService;
+    private StatisticsRepositoryInterface&MockInterface $statisticsRepository;
 
     private StatisticsCacheServiceInterface&MockInterface $cacheService;
-
-    private StatisticsConfigService $configService;
 
     private LoggerInterface&MockInterface $logger;
 
@@ -39,16 +36,14 @@ final class StatisticsQueryServiceTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->aggregationService = Mockery::mock(StatisticsAggregationServiceInterface::class);
+        $this->statisticsRepository = Mockery::mock(StatisticsRepositoryInterface::class);
         $this->cacheService = Mockery::mock(StatisticsCacheServiceInterface::class);
-        $this->configService = new StatisticsConfigService();
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->db = Mockery::mock(PDO::class);
 
-        $this->service = new StatisticsApplicationService(
-            $this->aggregationService,
+        $this->service = new StatisticsQueryService(
+            $this->statisticsRepository,
             $this->cacheService,
-            $this->configService,
             $this->logger,
             $this->db,
         );

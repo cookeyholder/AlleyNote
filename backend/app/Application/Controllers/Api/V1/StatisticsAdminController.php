@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Domains\Statistics\ValueObjects\PeriodType;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use App\Shared\Exceptions\ValidationException;
@@ -22,6 +23,7 @@ class StatisticsAdminController extends BaseController
 {
     public function __construct(
         private readonly StatisticsApplicationService $statisticsApplicationService,
+        private readonly StatisticsQueryService $statisticsQueryService,
         private readonly StatisticsCacheServiceInterface $cacheService,
     ) {}
 
@@ -404,8 +406,9 @@ class StatisticsAdminController extends BaseController
                                     property: 'services',
                                     type: 'object',
                                     properties: [
-                                        new OA\Property(property: 'statistics_application_service', type: 'string'),
-                                        new OA\Property(property: 'cache_service', type: 'string'),
+                                        'statistics_application_service' => new OA\Property(property: 'statistics_application_service', type: 'string'),
+                                        'statistics_query_service'       => new OA\Property(property: 'statistics_query_service', type: 'string'),
+                                        'cache_service'                  => new OA\Property(property: 'cache_service', type: 'string'),
                                     ],
                                 ),
                                 'timestamp' => new OA\Property(property: 'timestamp', type: 'string', format: 'date-time'),
@@ -459,7 +462,7 @@ class StatisticsAdminController extends BaseController
             try {
                 $startTime = microtime(true);
                 // 嘗試執行一個簡單的查詢
-                $this->statisticsApplicationService->getOverview(
+                $this->statisticsQueryService->getOverview(
                     new StatisticsQueryDTO(),
                 );
                 $connectionTime = round((microtime(true) - $startTime) * 1000, 2);
@@ -484,6 +487,7 @@ class StatisticsAdminController extends BaseController
             // 檢查服務可用性
             $healthData['services'] = [
                 'statistics_application_service' => 'healthy',
+                'statistics_query_service'       => 'healthy',
                 'cache_service'                  => 'healthy',
             ];
             // 所有核心服務都被成功注入，所以狀態都是 healthy

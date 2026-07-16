@@ -2,11 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Application\Services\Statistics\DTOs;
+namespace App\Domains\Statistics\DTOs;
 
 use DateTimeImmutable;
 use InvalidArgumentException;
 
+/**
+ * 統計查詢資料傳輸物件.
+ *
+ * 用於封裝統計查詢的參數，包含日期範圍、分頁、排序與篩選條件。
+ */
 final class StatisticsQueryDTO
 {
     public function __construct(

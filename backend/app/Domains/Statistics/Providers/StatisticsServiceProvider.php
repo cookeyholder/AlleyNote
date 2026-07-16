@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Providers;
 
-use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Analyzers\ContentInsightsAnalyzer;
 use App\Domains\Statistics\Analyzers\PostStatisticsAnalyzer;
 use App\Domains\Statistics\Analyzers\SourceDistributionAnalyzer;
@@ -14,7 +13,6 @@ use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
-use App\Domains\Statistics\Contracts\StatisticsExportServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
@@ -24,12 +22,10 @@ use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
 use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\Services\StatisticsExportService;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Domains\Statistics\Services\UserAgentParserService;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Statistics\Adapters\StatisticsQueryAdapter;
-use App\Infrastructure\Statistics\Formatters\CSVStatisticsFormatter;
-use App\Infrastructure\Statistics\Formatters\JSONStatisticsFormatter;
-use App\Infrastructure\Statistics\Formatters\PDFStatisticsFormatter;
 use App\Infrastructure\Statistics\Processors\CategoryProcessor;
 use App\Infrastructure\Statistics\Processors\TimeSeriesProcessor;
 use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
@@ -37,7 +33,6 @@ use App\Infrastructure\Statistics\Repositories\StatisticsRepository;
 use App\Infrastructure\Statistics\Repositories\UserStatisticsRepository;
 use App\Infrastructure\Statistics\Services\SlowQueryMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsCacheService;
-use App\Infrastructure\Statistics\Services\StatisticsExportService as InfrastructureStatisticsExportService;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsVisualizationService;
 use App\Shared\Contracts\CacheServiceInterface;
@@ -130,6 +125,20 @@ class StatisticsServiceProvider
             }),
             // 綁定介面到實作
             StatisticsAggregationServiceInterface::class => \DI\get(StatisticsAggregationService::class),
+            // 應用服務
+            StatisticsQueryService::class => \DI\factory(function (ContainerInterface $container): StatisticsQueryService {
+                /** @var StatisticsRepositoryInterface $statisticsRepository */
+                $statisticsRepository = $container->get(StatisticsRepositoryInterface::class);
+                /** @var StatisticsCacheServiceInterface $cacheService */
+                $cacheService = $container->get(StatisticsCacheServiceInterface::class);
+                /** @var LoggerInterface $logger */
+                $logger = $container->get(LoggerInterface::class);
+                /** @var PDO $db */
+                $db = $container->get(PDO::class);
+
+                return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
+            }),
+
             // 配置服務
             StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
                 return new StatisticsConfigService();
@@ -172,20 +181,6 @@ class StatisticsServiceProvider
                 $analyticsService = $container->get(AdvancedAnalyticsService::class);
 
                 return new StatisticsExportService($pdo, $analyticsService);
-            }),
-            // 統計報表匯出服務介面綁定
-            StatisticsExportServiceInterface::class => \DI\factory(function (ContainerInterface $container): InfrastructureStatisticsExportService {
-                /** @var StatisticsApplicationService $appService */
-                $appService = $container->get(StatisticsApplicationService::class);
-
-                return new InfrastructureStatisticsExportService(
-                    $appService,
-                    [
-                        'json' => new JSONStatisticsFormatter(),
-                        'csv'  => new CSVStatisticsFormatter(),
-                        'pdf'  => new PDFStatisticsFormatter(),
-                    ],
-                );
             }),
             // 分析器（無狀態，無依賴）
             SourceDistributionAnalyzer::class => \DI\autowire(SourceDistributionAnalyzer::class),

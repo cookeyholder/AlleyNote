@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
 
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
-use App\Application\Services\Statistics\StatisticsApplicationService;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use DateInterval;
 use DateTimeImmutable;
 use DateTimeInterface;
@@ -13,7 +13,7 @@ use DateTimeInterface;
 class StatisticsQueryAdapter
 {
     public function __construct(
-        private StatisticsApplicationService $statisticsApplicationService,
+        private StatisticsQueryService $baseQueryService,
     ) {}
 
     /**
@@ -26,12 +26,10 @@ class StatisticsQueryAdapter
         DateTimeInterface $endDate,
         string $granularity,
     ): array {
-        $queryDTO = new StatisticsQueryDTO(
-            startDate: DateTimeImmutable::createFromInterface($startDate),
-            endDate: DateTimeImmutable::createFromInterface($endDate),
-        );
-        $this->statisticsApplicationService->getPostStatistics($queryDTO);
+        $query = $this->buildQueryDTO($startDate, $endDate);
+        $this->baseQueryService->getPostStatistics($query);
 
+        // 模擬時間序列資料生成
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'posts');
     }
 
@@ -45,11 +43,8 @@ class StatisticsQueryAdapter
         DateTimeInterface $endDate,
         string $granularity,
     ): array {
-        $queryDTO = new StatisticsQueryDTO(
-            startDate: DateTimeImmutable::createFromInterface($startDate),
-            endDate: DateTimeImmutable::createFromInterface($endDate),
-        );
-        $this->statisticsApplicationService->getUserStatistics($queryDTO);
+        $query = $this->buildQueryDTO($startDate, $endDate);
+        $this->baseQueryService->getUserStatistics($query);
 
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'users');
     }
@@ -64,11 +59,10 @@ class StatisticsQueryAdapter
         ?DateTimeInterface $endDate = null,
         int $limit = 10,
     ): array {
-        $queryDTO = new StatisticsQueryDTO(
-            startDate: $startDate !== null ? DateTimeImmutable::createFromInterface($startDate) : null,
-            endDate: $endDate !== null ? DateTimeImmutable::createFromInterface($endDate) : null,
-        );
-        $this->statisticsApplicationService->getSourceDistribution($queryDTO);
+        $query = $startDate && $endDate
+            ? $this->buildQueryDTO($startDate, $endDate)
+            : new StatisticsQueryDTO();
+        $this->baseQueryService->getSourceDistribution($query);
 
         return $this->generateMockCategoryData('source', $limit);
     }
@@ -123,11 +117,10 @@ class StatisticsQueryAdapter
         string $sortBy = 'views',
         int $limit = 10,
     ): array {
-        $queryDTO = new StatisticsQueryDTO(
-            startDate: $startDate !== null ? DateTimeImmutable::createFromInterface($startDate) : null,
-            endDate: $endDate !== null ? DateTimeImmutable::createFromInterface($endDate) : null,
-        );
-        $this->statisticsApplicationService->getPopularContent($queryDTO);
+        $query = $startDate && $endDate
+            ? $this->buildQueryDTO($startDate, $endDate)
+            : new StatisticsQueryDTO();
+        $this->baseQueryService->getPopularContent($query);
 
         return $this->generateMockCategoryData('content', $limit);
     }
@@ -412,5 +405,22 @@ class StatisticsQueryAdapter
         $endDate ??= new DateTimeImmutable();
 
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'engagement');
+    }
+
+    /**
+     * 從日期介面建構統計查詢 DTO.
+     */
+    private function buildQueryDTO(
+        DateTimeInterface $startDate,
+        DateTimeInterface $endDate,
+    ): StatisticsQueryDTO {
+        return new StatisticsQueryDTO(
+            startDate: $startDate instanceof DateTimeImmutable
+                ? $startDate
+                : DateTimeImmutable::createFromInterface($startDate),
+            endDate: $endDate instanceof DateTimeImmutable
+                ? $endDate
+                : DateTimeImmutable::createFromInterface($endDate),
+        );
     }
 }

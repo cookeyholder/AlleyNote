@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Statistics\Services;
 
-use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
-use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\BatchExportResult;
 use App\Domains\Statistics\Contracts\ExportResult;
 use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
+use App\Domains\Statistics\DTOs\PaginatedStatisticsDTO;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\MockInterface;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
@@ -29,7 +31,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /** @var array<string, StatisticsFormatterInterface> */
     private array $formatters;
 
-    private StatisticsApplicationService $queryService;
+    private StatisticsQueryService&MockInterface $queryService;
 
     protected function setUp(): void
     {
@@ -145,7 +147,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     public function test批次匯出部分失敗時應該正確處理(): void
     {
         // Arrange - 建立會失敗的查詢服務
-        $failingQueryService = Mockery::mock(StatisticsApplicationService::class);
+        $failingQueryService = Mockery::mock(StatisticsQueryService::class);
         $failingQueryService->shouldReceive('getOverview')
             ->andThrow(new RuntimeException('Query failed'));
         $failingQueryService->shouldReceive('getPostStatistics')
@@ -237,32 +239,41 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /**
      * 建立測試用的查詢服務.
      */
-    private function createTestQueryService(): StatisticsApplicationService
+    private function createTestQueryService(): StatisticsQueryService&MockInterface
     {
-        $mock = Mockery::mock(StatisticsApplicationService::class);
-
-        $mock->shouldReceive('getOverview')
+        $queryService = Mockery::mock(StatisticsQueryService::class);
+        $queryService->shouldReceive('getOverview')
             ->andReturn(new StatisticsOverviewDTO(
                 totalPosts: 100,
                 activeUsers: 50,
                 newUsers: 10,
                 postActivity: ['total_posts' => 100, 'published_posts' => 80, 'draft_posts' => 20],
                 userActivity: ['total_users' => 50, 'active_users' => 30, 'new_users' => 10],
-                engagementMetrics: ['posts_per_active_user' => 2.0, 'user_growth_rate' => 25.0],
+                engagementMetrics: ['posts_per_active_user' => 2.0, 'user_growth_rate' => 5.0],
                 periodSummary: ['type' => 'monthly', 'duration_days' => 30],
             ));
+        $queryService->shouldReceive('getPostStatistics')
+            ->andReturnUsing(function (StatisticsQueryDTO $query): PaginatedStatisticsDTO {
+                $posts = [];
+                $limit = $query->getLimit();
 
-        $mock->shouldReceive('getPostStatistics')
-            ->andReturn(new PaginatedStatisticsDTO(
-                data: [
-                    ['id' => 1, 'title' => 'Test Post', 'views' => 100],
-                ],
-                totalCount: 100,
-                currentPage: 1,
-                perPage: 20,
-            ));
+                for ($i = 1; $i <= $limit; $i++) {
+                    $posts[] = [
+                        'id'         => $i,
+                        'title'      => "測試文章 {$i}",
+                        'views'      => rand(10, 1000),
+                        'created_at' => '2025-09-' . str_pad((string) rand(1, 30), 2, '0', STR_PAD_LEFT),
+                    ];
+                }
 
-        $mock->shouldReceive('getSourceDistribution')
+                return new PaginatedStatisticsDTO(
+                    data: $posts,
+                    totalCount: 100,
+                    currentPage: $query->getPage(),
+                    perPage: $query->getLimit(),
+                );
+            });
+        $queryService->shouldReceive('getSourceDistribution')
             ->andReturn([
                 'sources' => [
                     ['source' => 'web', 'count' => 60, 'percentage' => 60.0],
@@ -270,23 +281,34 @@ final class StatisticsExportServiceTest extends UnitTestCase
                     ['source' => 'api', 'count' => 10, 'percentage' => 10.0],
                 ],
             ]);
-
-        $mock->shouldReceive('getUserStatistics')
+        $queryService->shouldReceive('getUserStatistics')
             ->andReturn(new PaginatedStatisticsDTO(
                 data: [
-                    ['id' => 1, 'username' => 'user1', 'post_count' => 10],
+                    ['id' => 1, 'username' => 'user1', 'post_count' => 10, 'last_active' => '2025-09-23'],
+                    ['id' => 2, 'username' => 'user2', 'post_count' => 15, 'last_active' => '2025-09-22'],
                 ],
-                totalCount: 200,
+                totalCount: 2,
                 currentPage: 1,
                 perPage: 20,
             ));
+        $queryService->shouldReceive('getPopularContent')
+            ->andReturnUsing(function (StatisticsQueryDTO $query): array {
+                $limit = min($query->getLimit(), 10);
+                $popular = [];
 
-        $mock->shouldReceive('getPopularContent')
-            ->andReturn([
-                ['id' => 1, 'title' => 'Popular Post', 'views' => 1000],
-            ]);
+                for ($i = 1; $i <= $limit; $i++) {
+                    $popular[] = [
+                        'id'    => $i,
+                        'title' => "熱門文章 {$i}",
+                        'views' => 1000 - $i * 50,
+                        'rank'  => $i,
+                    ];
+                }
 
-        return $mock;
+                return ['popular_posts' => $popular];
+            });
+
+        return $queryService;
     }
 
     /**
@@ -314,7 +336,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
 
             public function format(array $data, array $options = []): string
             {
-                return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '';
+                $result = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+                return $result !== false ? $result : '';
             }
 
             public function supportsLargeData(): bool

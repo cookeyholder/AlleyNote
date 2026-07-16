@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\BaseController;
-use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
-use App\Application\Services\Statistics\StatisticsApplicationService;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Shared\Contracts\ValidatorInterface;
 use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
@@ -18,7 +18,7 @@ use Throwable;
 class StatisticsController extends BaseController
 {
     public function __construct(
-        private readonly StatisticsApplicationService $statisticsApplicationService,
+        private readonly StatisticsQueryService $statisticsQueryService,
         private readonly ValidatorInterface $validator,
     ) {}
 
@@ -102,7 +102,7 @@ class StatisticsController extends BaseController
             /** @var array<string, mixed> $queryParams */
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
-            $overview = $this->statisticsApplicationService->getOverview($queryDTO);
+            $overview = $this->statisticsQueryService->getOverview($queryDTO);
 
             return $this->json($response, [
                 'success' => true,
@@ -207,7 +207,7 @@ class StatisticsController extends BaseController
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
-            $paginatedResult = $this->statisticsApplicationService->getPostStatistics($queryDTO);
+            $paginatedResult = $this->statisticsQueryService->getPostStatistics($queryDTO);
 
             return $this->json($response, [
                 'success'    => true,
@@ -299,7 +299,7 @@ class StatisticsController extends BaseController
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
-            $sourceDistribution = $this->statisticsApplicationService->getSourceDistribution($queryDTO);
+            $sourceDistribution = $this->statisticsQueryService->getSourceDistribution($queryDTO);
 
             return $this->json($response, [
                 'success' => true,
@@ -398,7 +398,7 @@ class StatisticsController extends BaseController
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
-            $paginatedResult = $this->statisticsApplicationService->getUserStatistics($queryDTO);
+            $paginatedResult = $this->statisticsQueryService->getUserStatistics($queryDTO);
 
             return $this->json($response, [
                 'success'    => true,
@@ -497,7 +497,7 @@ class StatisticsController extends BaseController
             // 解析查詢參數
             $queryDTO = $this->buildQueryDTO($queryParams);
             // 呼叫應用服務
-            $popularContent = $this->statisticsApplicationService->getPopularContent($queryDTO);
+            $popularContent = $this->statisticsQueryService->getPopularContent($queryDTO);
 
             return $this->json($response, [
                 'success' => true,
