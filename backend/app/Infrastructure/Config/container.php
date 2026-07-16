@@ -31,12 +31,13 @@ use App\Domains\Post\Services\PostService;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use App\Domains\Security\Contracts\XssProtectionServiceInterface;
 use App\Domains\Security\Repositories\IpRepository;
 use App\Domains\Security\Services\Core\CsrfProtectionService;
 use App\Domains\Security\Services\Core\XssProtectionService;
-use App\Domains\Security\Services\Headers\SecurityHeaderService;
 // Validation Services
+use App\Domains\Security\Services\Headers\SecurityHeaderService;
 use App\Domains\Security\Services\IpService;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
@@ -107,6 +108,7 @@ return [
 
     RateLimitService::class => DI\autowire(RateLimitService::class)
         ->constructorParameter('cache', DI\get(CacheServiceInterface::class)),
+    RateLimitServiceInterface::class => DI\get(RateLimitService::class),
 
     // Security Services
     XssProtectionServiceInterface::class => DI\autowire(XssProtectionService::class),

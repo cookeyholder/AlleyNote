@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
 
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use Throwable;
 
-class RateLimitService
+class RateLimitService implements RateLimitServiceInterface
 {
     public function __construct(
         private readonly CacheService $cache,
@@ -17,31 +18,37 @@ class RateLimitService
         $key = "rate_limit:{$ip}";
 
         try {
+            /** @var array{count: int, reset: int}|null $data */
             $data = $this->cache->get($key);
             if ($data === null) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
             }
+            $reset = (int) $data['reset'];
+            $count = (int) $data['count'];
             // 檢查是否需要重置計數器
-            if (time() > $data['reset']) {
+            if (time() > $reset) {
                 $data = ['count' => 0, 'reset' => time() + $timeWindow];
+                $count = 0;
+                $reset = time() + $timeWindow;
             }
             // 如果已經超過限制，直接回傳結果
-            if ($data['count'] >= $maxRequests) {
+            if ($count >= $maxRequests) {
                 return [
                     'allowed'   => false,
                     'remaining' => 0,
-                    'reset'     => $data['reset'],
+                    'reset'     => $reset,
                 ];
             }
             // 增加請求計數
-            $data['count']++;
+            $count++;
+            $data['count'] = $count;
             // 更新快取
             $this->cache->set($key, $data, $timeWindow);
 
             return [
-                'allowed'   => $data['count'] <= $maxRequests,
-                'remaining' => max(0, $maxRequests - $data['count']),
-                'reset'     => $data['reset'],
+                'allowed'   => $count <= $maxRequests,
+                'remaining' => max(0, $maxRequests - $count),
+                'reset'     => $reset,
             ];
         } catch (Throwable $e) {
             // 如果快取服務不可用，拒絕請求（fail-closed）

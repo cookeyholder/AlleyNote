@@ -561,7 +561,7 @@ parameters:
 		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
-			count: 1
+			count: 3
 			path: app/Application/Middleware/RateLimitMiddleware.php
 
 		-
@@ -583,12 +583,6 @@ parameters:
 			path: app/Application/Middleware/RateLimitMiddleware.php
 
 		-
-			message: '#^Parameter \#2 \$maxRequests of method App\\Infrastructure\\Services\\RateLimitService\:\:checkLimit\(\) expects int, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Application/Middleware/RateLimitMiddleware.php
-
-		-
 			message: '#^Parameter \#2 \$string of function explode expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -596,12 +590,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#2 \$timestamp of function date expects int\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Application/Middleware/RateLimitMiddleware.php
-
-		-
-			message: '#^Parameter \#3 \$timeWindow of method App\\Infrastructure\\Services\\RateLimitService\:\:checkLimit\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Application/Middleware/RateLimitMiddleware.php

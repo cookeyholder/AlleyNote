@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Middleware;
 
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
-use App\Infrastructure\Services\RateLimitService;
 use App\Shared\Helpers\NetworkHelper;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -14,11 +14,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
-    private RateLimitService $rateLimitService;
+    private RateLimitServiceInterface $rateLimitService;
 
     private array $config;
 
-    public function __construct(RateLimitService $rateLimitService, array $config = [])
+    public function __construct(RateLimitServiceInterface $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);
@@ -38,8 +38,8 @@ class RateLimitMiddleware implements MiddlewareInterface
         // 取得使用者 ID（如果已登入）
         $userId = $this->getUserId($request);
         // 檢查速率限制
-        $maxRequests = $this->config['max_requests'] ?? 60;
-        $timeWindow = $this->config['time_window'] ?? 60;
+        $maxRequests = (int) ($this->config['max_requests'] ?? 60);
+        $timeWindow = (int) ($this->config['time_window'] ?? 60);
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
         // RateLimitService 不會回傳 limit 欄位，統一在 middleware 補齊供 header/response 使用
         $result['limit'] = $maxRequests;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Middleware;
 
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface as RoutingMiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
-use App\Infrastructure\Services\RateLimitService;
 use App\Shared\Helpers\NetworkHelper;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -24,7 +24,7 @@ class PostViewRateLimitMiddleware implements RoutingMiddlewareInterface
     private const TIME_WINDOW = 60;
 
     public function __construct(
-        private readonly RateLimitService $rateLimitService,
+        private readonly RateLimitServiceInterface $rateLimitService,
     ) {}
 
     public function getPriority(): int
