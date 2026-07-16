@@ -130,6 +130,7 @@ return array_merge(
             return new CsrfMiddleware(
                 secureCookie: $secureCookie,
                 logger: $c->get(LoggerInterface::class),
+                skipPaths: ['/api/csrf-token'],
             );
         }),
         'csrf' => \DI\get(CsrfMiddleware::class),

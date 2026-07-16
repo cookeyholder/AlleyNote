@@ -55,6 +55,16 @@ final class JwtConfig
     }
 
     /**
+     * 取得目前環境.
+     */
+    public function getEnvironment(): string
+    {
+        $env = $_ENV['APP_ENV'] ?? getenv('APP_ENV');
+
+        return is_string($env) && $env !== '' ? $env : 'development';
+    }
+
+    /**
      * 檢查是否為對稱算法.
      */
     private function isSymmetricAlgorithm(string $algorithm): bool

@@ -369,7 +369,7 @@ class AuthController extends BaseController implements AuthApiInterface
             'Path=/',
             sprintf('Expires=%s', gmdate('D, d M Y H:i:s T', $expiresAt)),
             sprintf('Max-Age=%d', $maxAge),
-            'SameSite=Lax',
+            'SameSite=Strict',
         ];
         if ($isSecure) {
             $parts[] = 'Secure';

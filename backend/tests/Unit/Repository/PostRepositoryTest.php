@@ -14,6 +14,7 @@ use Exception;
 use Mockery;
 use Mockery\MockInterface;
 use PDO;
+use PDOException;
 use Tests\Factory\PostFactory;
 use Tests\Support\UnitTestCase;
 
@@ -115,7 +116,8 @@ class PostRepositoryTest extends UnitTestCase
                 post_id INTEGER,
                 tag_id INTEGER,
                 created_at DATETIME,
-                PRIMARY KEY (post_id, tag_id)
+                PRIMARY KEY (post_id, tag_id),
+                FOREIGN KEY (tag_id) REFERENCES tags(id)
             )
         ');
 
@@ -224,6 +226,7 @@ class PostRepositoryTest extends UnitTestCase
 
         $result = $this->repository->paginate(1, 10);
 
+        // @phpstan-ignore-next-line — $result['items'] 型別由 @return shape 定義但 PHPStan 不解析
         $this->assertCount(10, $result['items']);
         $this->assertEquals(15, $result['total']);
         $this->assertEquals(1, $result['page']);
@@ -453,5 +456,55 @@ class PostRepositoryTest extends UnitTestCase
         // 測試第二頁
         $result2 = $this->repository->paginateByCreationSource('web', 2, 3);
         $this->assertCount(2, $result2['items']);
+    }
+
+    public function testPaginateWithBatchTagLoading(): void
+    {
+        $now = date('Y-m-d H:i:s');
+        $this->db->exec("INSERT INTO tags (id, name, usage_count, created_at, updated_at) VALUES (1, 'PHP', 0, '{$now}', '{$now}')");
+        $this->db->exec("INSERT INTO tags (id, name, usage_count, created_at, updated_at) VALUES (2, 'Laravel', 0, '{$now}', '{$now}')");
+        $this->db->exec("INSERT INTO tags (id, name, usage_count, created_at, updated_at) VALUES (3, 'Vue', 0, '{$now}', '{$now}')");
+
+        $post1 = $this->repository->create(PostFactory::make(['title' => '文章 A']), [1, 2]);
+        $post2 = $this->repository->create(PostFactory::make(['title' => '文章 B']), [2, 3]);
+        $post3 = $this->repository->create(PostFactory::make(['title' => '文章 C']), []);
+
+        $result = $this->repository->paginate(1, 10);
+
+        // @phpstan-ignore-next-line — $result['items'] 型別由 @return shape 定義但 PHPStan 不解析
+        foreach ($result['items'] as $item) {
+            $this->assertInstanceOf(Post::class, $item);
+            if ($item->getId() === $post1->getId()) {
+                $tags = $item->getTags();
+                $this->assertCount(2, $tags);
+                $tagNames = array_column($tags, 'name');
+                $this->assertContains('PHP', $tagNames);
+                $this->assertContains('Laravel', $tagNames);
+            } elseif ($item->getId() === $post2->getId()) {
+                $tags = $item->getTags();
+                $this->assertCount(2, $tags);
+                $tagNames = array_column($tags, 'name');
+                $this->assertContains('Laravel', $tagNames);
+                $this->assertContains('Vue', $tagNames);
+            } elseif ($item->getId() === $post3->getId()) {
+                $this->assertCount(0, $item->getTags());
+            }
+        }
+    }
+
+    public function testForeignKeyRollbackOnCreateWithInvalidTags(): void
+    {
+        $this->db->exec('PRAGMA foreign_keys = ON');
+
+        try {
+            $this->repository->create(PostFactory::make(), [999]);
+            $this->fail('應該拋出 PDOException');
+        } catch (PDOException $e) {
+            // 確認文章也不存在（交易已回溯）
+            $stmt = $this->db->query('SELECT COUNT(*) FROM posts');
+            $this->assertNotFalse($stmt);
+            $count = (int) $stmt->fetchColumn();
+            $this->assertEquals(0, $count, '交易應完全回溯，不應留下任何文章');
+        }
     }
 }

@@ -166,18 +166,13 @@ class ApiClient {
           this._refreshing = true;
 
           const hasRefreshCookie = this.getCookie("auth_mode") === "cookie";
-          const refreshToken = storage.get("refresh_token");
-          const refreshPayload =
-            typeof refreshToken === "string" && refreshToken
-              ? { refresh_token: refreshToken }
-              : {};
 
-          if (hasRefreshCookie || refreshToken || this.withCredentials) {
+          if (hasRefreshCookie || this.withCredentials) {
             this._refreshPromise = fetch(`${this.baseURL}/auth/refresh`, {
               method: "POST",
               headers: this.buildHeaders({}, "POST"),
               credentials: this.withCredentials ? "include" : "same-origin",
-              body: JSON.stringify(refreshPayload),
+              body: JSON.stringify({}), // refresh token 透過 HttpOnly Cookie 傳遞
             });
 
             const response = await this._refreshPromise;
@@ -186,9 +181,6 @@ class ApiClient {
               const data = await response.json();
               if (data.success && data.access_token) {
                 this.setAuthToken(data.access_token);
-                if (data.refresh_token) {
-                  storage.set("refresh_token", data.refresh_token);
-                }
 
                 this._refreshing = false;
                 this._refreshPromise = null;
@@ -209,11 +201,9 @@ class ApiClient {
         }
 
         this.removeAuthToken();
-        storage.remove("refresh_token");
         window.dispatchEvent(new CustomEvent("auth:logout"));
       } else if (error.status === 401) {
         this.removeAuthToken();
-        storage.remove("refresh_token");
         window.dispatchEvent(new CustomEvent("auth:logout"));
       }
 

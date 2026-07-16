@@ -55,7 +55,6 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $userRole = $this->resolveUserRole($roles);
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
-                'email'    => $userEmail,
                 'username' => $userName,
                 'role'     => $userRole,
                 'scopes'   => $request->scopes ?? [],

@@ -95,6 +95,26 @@ class SqlInjectionTest extends SecureDDDTestCase
             )
         ');
 
+        // 建立標籤資料表（為批次標籤載入）
+        $this->db->exec('
+            CREATE TABLE tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR(50) NOT NULL,
+                usage_count INTEGER DEFAULT 0,
+                created_at DATETIME NOT NULL,
+                updated_at DATETIME
+            )
+        ');
+
+        $this->db->exec('
+            CREATE TABLE post_tags (
+                post_id INTEGER,
+                tag_id INTEGER,
+                created_at DATETIME,
+                PRIMARY KEY (post_id, tag_id)
+            )
+        ');
+
         // 插入一些測試資料
         $this->db->exec("
             INSERT INTO posts (uuid, title, content, user_id, user_ip, status, views, creation_source) VALUES

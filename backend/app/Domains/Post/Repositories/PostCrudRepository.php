@@ -294,6 +294,15 @@ class PostCrudRepository extends PostBaseRepository
             $rows,
         );
 
+        $postIds = array_map(fn(Post $post): int => $post->getId(), $items);
+        if (!empty($postIds)) {
+            $tagsByPost = $this->getTagsForPosts($postIds);
+            foreach ($items as $post) {
+                $tags = $tagsByPost[$post->getId()] ?? [];
+                $post->setTags($tags);
+            }
+        }
+
         return [
             'items'    => $items,
             'total'    => $total,
@@ -441,6 +450,39 @@ class PostCrudRepository extends PostBaseRepository
         return $tags;
     }
 
+    /**
+     * 批次查詢多篇文章的標籤.
+     *
+     * @param list<int> $postIds
+     *
+     * @return array<int, list<array{id: int, name: string}>>
+     */
+    public function getTagsForPosts(array $postIds): array
+    {
+        if (empty($postIds)) {
+            return [];
+        }
+
+        $ids = array_map('intval', $postIds);
+        $sql = 'SELECT pt.post_id, t.id, t.name FROM post_tags pt INNER JOIN tags t ON t.id = pt.tag_id WHERE pt.post_id IN (' . implode(',', $ids) . ')';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        /** @var list<array{post_id: int, id: int, name: string}> $rows */
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $result = [];
+        foreach ($postIds as $postId) {
+            $result[$postId] = [];
+        }
+
+        foreach ($rows as $row) {
+            $postId = (int) $row['post_id'];
+            $result[$postId][] = ['id' => (int) $row['id'], 'name' => $row['name']];
+        }
+
+        return $result;
+    }
+
     public function setPinned(int $id, bool $isPinned): bool
     {
         $stmt = $this->db->prepare('UPDATE posts SET is_pinned = :is_pinned WHERE id = :id');
@@ -567,10 +609,6 @@ class PostCrudRepository extends PostBaseRepository
 
     private function assignTags(int $postId, array $tagIds): void
     {
-        if (!$this->tagsExist($tagIds)) {
-            throw new PDOException('指定的標籤不存在');
-        }
-
         $stmt = $this->db->prepare(self::SQL_INSERT_TAG);
         $now = format_datetime();
         foreach ($tagIds as $tagId) {

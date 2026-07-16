@@ -31,6 +31,11 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         // 建立測試用的 RSA 金鑰對
         $this->generateTestKeys();
 
+        // 清除路徑環境變數，避免 phpunit.xml 中的設定干擾
+        unset($_ENV['JWT_PRIVATE_KEY_PATH'], $_ENV['JWT_PUBLIC_KEY_PATH']);
+        putenv('JWT_PRIVATE_KEY_PATH');
+        putenv('JWT_PUBLIC_KEY_PATH');
+
         // 設定測試環境變數
         $_ENV['JWT_ALGORITHM'] = 'RS256';
         $_ENV['JWT_PRIVATE_KEY'] = str_replace("\n", '\\n', $this->validPrivateKey);
@@ -491,6 +496,25 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $this->assertNotEquals($payload1['jti'], $payload2['jti']);
         $this->assertNotEmpty($payload1['jti']);
         $this->assertNotEmpty($payload2['jti']);
+    }
+
+    /**
+     * 測試產生的 JTI 符合 UUID v4 格式.
+     */
+    public function testGeneratedJtiIsValidUuidV4(): void
+    {
+        $config = new JwtConfig();
+        $provider = new FirebaseJwtProvider($config);
+
+        $token = $provider->generateAccessToken(['sub' => 'user-123']);
+        $payload = $provider->parseTokenUnsafe($token);
+
+        $this->assertIsString($payload['jti']);
+        $this->assertMatchesRegularExpression(
+            '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/',
+            $payload['jti'],
+            'JTI 應符合 UUID v4 格式',
+        );
     }
 
     /**

@@ -45,6 +45,9 @@ class Post implements JsonSerializable
 
     private ?string $author; // 作者用戶名（從 users 表 JOIN 得到）
 
+    /** @var list<array{id: int, name: string}> */
+    private array $tags = [];
+
     public function __construct(array $data)
     {
         $this->id = (int) ($data['id'] ?? 0);
@@ -165,6 +168,22 @@ class Post implements JsonSerializable
     }
 
     /**
+     * @return list<array{id: int, name: string}>
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param list<array{id: int, name: string}> $tags
+     */
+    public function setTags(array $tags): void
+    {
+        $this->tags = $tags;
+    }
+
+    /**
      * @return array<mixed>
      */
     public function toArray(): array
@@ -186,6 +205,7 @@ class Post implements JsonSerializable
             'creation_source'        => $this->creationSource,
             'creation_source_detail' => $this->creationSourceDetail,
             'author'                 => $this->author,
+            'tags'                   => $this->tags,
         ];
     }
 

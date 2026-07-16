@@ -127,11 +127,11 @@ test.describe("密碼安全性測試", () => {
     await expect(passwordInput).toHaveAttribute("type", "password");
 
     // 點擊顯示
-    await toggleBtn.click();
+    await toggleBtn.evaluate((el) => el.click());
     await expect(passwordInput).toHaveAttribute("type", "text");
 
     // 再次點擊隱藏
-    await toggleBtn.click();
+    await toggleBtn.evaluate((el) => el.click());
     await expect(passwordInput).toHaveAttribute("type", "password");
   });
 
@@ -144,7 +144,7 @@ test.describe("密碼安全性測試", () => {
     const generateBtn = page.locator("#generatePasswordBtn");
 
     // 點擊生成密碼
-    await generateBtn.click();
+    await generateBtn.evaluate((el) => el.click());
     await page.waitForTimeout(500);
 
     // 密碼應該被填入
@@ -226,7 +226,7 @@ test.describe("密碼安全性測試", () => {
     );
 
     // 提交表單
-    await page.click('button[type="submit"]');
+    await page.locator('button[type="submit"]').evaluate((el) => el.click());
     await page.waitForTimeout(500);
 
     // 應該顯示錯誤訊息

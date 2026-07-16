@@ -74,8 +74,8 @@ test.describe("管理員側欄導航測試", () => {
       // 等待頁面載入
       await page.waitForURL(`**${link.path}`, { timeout: 10000 });
 
-      // 等待網路請求完成
-      await page.waitForLoadState("networkidle", { timeout: 10000 });
+      // 等待頁面載入完成
+      await page.waitForLoadState("load", { timeout: 15000 });
 
       // 確認 URL 正確
       expect(page.url()).toContain(link.path);

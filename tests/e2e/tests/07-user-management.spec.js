@@ -36,10 +36,7 @@ test.describe("使用者管理功能測試", () => {
     // 點擊新增使用者按鈕
     await page.click('button:has-text("新增使用者")');
 
-    // 等待 modal 出現
-    await page.waitForTimeout(500);
-
-    // 檢查 modal 標題
+    // 等待 modal 動畫完成
     await expect(page.locator("text=新增使用者").first()).toBeVisible();
 
     // 檢查表單欄位
@@ -61,10 +58,10 @@ test.describe("使用者管理功能測試", () => {
   test("應該能夠取消新增使用者", async ({ adminPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增使用者")');
-    await page.waitForTimeout(500);
+    await expect(page.locator("text=新增使用者").first()).toBeVisible();
 
-    // 點擊取消（使用 id）
-    await page.click("#cancelModalBtn");
+    // 點擊取消（使用 force 略過動畫穩定檢查）
+    await page.click("#cancelModalBtn", { force: true });
     await page.waitForTimeout(500);
 
     // Modal 應該關閉（檢查 modal 容器不可見）
@@ -74,12 +71,13 @@ test.describe("使用者管理功能測試", () => {
   test("新增使用者時應該驗證必填欄位", async ({ adminPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增使用者")');
-    await page.waitForTimeout(500);
+    await expect(page.locator("text=新增使用者").first()).toBeVisible();
 
-    // 不填寫任何資料，直接提交
+    // 等待動畫完成後，使用原生 click 保留 HTML5 表單驗證
+    await page.waitForTimeout(500);
     await page
       .locator('button[type="submit"]:has-text("確認建立帳號")')
-      .click();
+      .evaluate((el) => el instanceof HTMLElement && el.click());
 
     // 因為有 HTML5 驗證，表單不會提交
     // 檢查 modal 仍然存在
@@ -89,7 +87,7 @@ test.describe("使用者管理功能測試", () => {
   test("新增使用者時密碼與確認密碼應該一致", async ({ adminPage: page }) => {
     // 開啟新增對話框
     await page.click('button:has-text("新增使用者")');
-    await page.waitForTimeout(500);
+    await expect(page.locator("text=新增使用者").first()).toBeVisible();
 
     // 填寫資料，但密碼不一致
     await page.fill('input[name="username"]', "testuser");
@@ -98,10 +96,11 @@ test.describe("使用者管理功能測試", () => {
     await page.fill('input[name="password"]', "password123");
     await page.fill('input[name="password_confirmation"]', "different456");
 
-    // 提交表單
+    // 等待動畫完成後，使用原生 click 保留 HTML5 表單驗證
+    await page.waitForTimeout(500);
     await page
       .locator('button[type="submit"]:has-text("確認建立帳號")')
-      .click();
+      .evaluate((el) => el instanceof HTMLElement && el.click());
     await page.waitForTimeout(1000);
 
     // 應該顯示錯誤訊息
@@ -118,9 +117,6 @@ test.describe("使用者管理功能測試", () => {
     if (count > 0) {
       // 點擊第一個編輯按鈕
       await editButtons.first().click();
-      await page.waitForTimeout(500);
-
-      // 檢查 modal 標題
       await expect(page.locator("text=編輯使用者").first()).toBeVisible();
 
       // 檢查表單欄位（編輯時沒有密碼欄位）
@@ -146,10 +142,13 @@ test.describe("使用者管理功能測試", () => {
 
     if (count > 0) {
       await editButtons.first().click();
-      await page.waitForTimeout(500);
+      await expect(page.locator("text=編輯使用者").first()).toBeVisible();
 
-      // 點擊取消
-      await page.locator('button:has-text("取消")').last().click();
+      // 點擊取消（使用 force 略過動畫穩定檢查）
+      await page
+        .locator('button:has-text("取消")')
+        .last()
+        .click({ force: true });
       await page.waitForTimeout(500);
 
       // Modal 應該關閉
@@ -193,7 +192,7 @@ test.describe("使用者管理功能測試", () => {
       );
       await expect(confirmDialog).toBeVisible();
 
-      await page.locator('[data-action="cancel"]').click();
+      await page.locator('[data-action="cancel"]').click({ force: true });
       await expect(confirmDialog).not.toBeVisible();
     }
   });

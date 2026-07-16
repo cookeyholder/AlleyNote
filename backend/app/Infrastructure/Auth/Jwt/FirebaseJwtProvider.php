@@ -106,12 +106,17 @@ final class FirebaseJwtProvider implements JwtProviderInterface
         }
 
         try {
-            file_put_contents('php://stderr', "[JWT] 開始驗證 Token...\n");
-            file_put_contents('php://stderr', '[JWT] Token 前 50 字元: ' . substr($token, 0, 50) . "...\n");
-            file_put_contents('php://stderr', '[JWT] 公鑰長度: ' . strlen($this->publicKey) . " bytes\n");
+            $isDevelopment = $this->config->getEnvironment() === 'development';
+            if ($isDevelopment) {
+                app_log('debug', '[JWT] 開始驗證 Token...');
+                app_log('debug', '[JWT] Token 前 50 字元: ' . substr($token, 0, 50) . '...');
+                app_log('debug', '[JWT] 公鑰長度: ' . strlen($this->publicKey) . ' bytes');
+            }
             $decoded = JWT::decode($token, new Key($this->publicKey, $this->config->getAlgorithm()));
             $payload = (array) $decoded;
-            file_put_contents('php://stderr', "[JWT] Token 解碼成功\n");
+            if ($isDevelopment) {
+                app_log('debug', '[JWT] Token 解碼成功');
+            }
             // 驗證必要欄位
             $this->validateRequiredFields($payload);
             // 驗證 token 類型
@@ -120,11 +125,15 @@ final class FirebaseJwtProvider implements JwtProviderInterface
             }
             // 驗證 issuer 和 audience
             $this->validateIssuerAndAudience($payload);
-            file_put_contents('php://stderr', "[JWT] 所有驗證通過\n");
+            if ($isDevelopment) {
+                app_log('debug', '[JWT] 所有驗證通過');
+            }
 
             return $payload;
         } catch (ExpiredException $e) {
-            file_put_contents('php://stderr', "[JWT] Token 已過期\n");
+            if ($this->config->getEnvironment() === 'development') {
+                app_log('debug', '[JWT] Token 已過期');
+            }
             // 嘗試從過期的 token 中取得過期時間
             $expiredAt = null;
 
@@ -142,11 +151,15 @@ final class FirebaseJwtProvider implements JwtProviderInterface
                 'Token 已過期',
             );
         } catch (SignatureInvalidException $e) {
-            file_put_contents('php://stderr', '[JWT] 簽名無效: ' . $e->getMessage() . "\n");
+            if ($this->config->getEnvironment() === 'development') {
+                app_log('debug', '[JWT] 簽名無效: ' . $e->getMessage());
+            }
 
             throw TokenValidationException::invalidSignature($e);
         } catch (UnexpectedValueException $e) {
-            file_put_contents('php://stderr', '[JWT] Token 格式無效: ' . $e->getMessage() . "\n");
+            if ($this->config->getEnvironment() === 'development') {
+                app_log('debug', '[JWT] Token 格式無效: ' . $e->getMessage());
+            }
 
             throw new InvalidTokenException(
                 InvalidTokenException::REASON_MALFORMED,
@@ -351,19 +364,37 @@ final class FirebaseJwtProvider implements JwtProviderInterface
     }
 
     /**
-     * 產生唯一的 JWT ID.
+     * 產生 UUID v4 格式的 JWT ID.
      *
-     * @return string 唯一的 JWT ID
+     * @return string UUID v4 字串
      */
     private function generateJti(): string
     {
-        // 使用更精確的微秒時間戳和更多隨機位元組來確保唯一性
-        $timestamp = number_format(microtime(true) * 1000000, 0, '', ''); // 精確到微秒
-        $randomBytes = bin2hex(random_bytes(16)); // 增加隨機位元組
-        $processId = getmypid(); // 加入進程 ID
-        $uniqid = uniqid('', true); // 加入 PHP 的 uniqid
+        $data = random_bytes(16);
+        // 設定版本為 0100（UUID v4）
+        $data[6] = chr((ord($data[6]) & 0x0f) | 0x40);
+        // 設定變體為 10xx
+        $data[8] = chr((ord($data[8]) & 0x3f) | 0x80);
 
-        return $timestamp . $processId . $randomBytes . $uniqid;
+        return sprintf(
+            '%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x',
+            ord($data[0]),
+            ord($data[1]),
+            ord($data[2]),
+            ord($data[3]),
+            ord($data[4]),
+            ord($data[5]),
+            ord($data[6]),
+            ord($data[7]),
+            ord($data[8]),
+            ord($data[9]),
+            ord($data[10]),
+            ord($data[11]),
+            ord($data[12]),
+            ord($data[13]),
+            ord($data[14]),
+            ord($data[15]),
+        );
     }
 
     /**

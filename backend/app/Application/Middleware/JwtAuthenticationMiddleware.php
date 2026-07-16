@@ -6,7 +6,9 @@ namespace App\Application\Middleware;
 
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Exceptions\InvalidTokenException;
+use App\Domains\Auth\Exceptions\RoleChangedException;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Services\JwtRoleFreshnessValidator;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
@@ -24,6 +26,7 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
 
     public function __construct(
         private readonly JwtTokenServiceInterface $jwtTokenService,
+        private readonly ?JwtRoleFreshnessValidator $roleFreshnessValidator = null,
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
     ) {}
@@ -54,6 +57,8 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             $this->performSecurityChecks($request, $payload);
             // 4. 將使用者資訊注入到請求中
             $request = $this->injectUserContext($request, $payload, $accessToken);
+        } catch (RoleChangedException $e) {
+            return $this->createForbiddenResponse('角色權限已變更，請重新登入');
         } catch (TokenExpiredException $e) {
             return $this->createUnauthorizedResponse('Token 已過期', 'TOKEN_EXPIRED');
         } catch (InvalidTokenException $e) {
@@ -105,7 +110,15 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
      */
     private function performSecurityChecks(ServerRequestInterface $request, JwtPayload $payload): void
     {
-        // 1. IP 地址驗證（可配置，預設關閉以免影響行動網路/NAT 使用者）
+        // 1. 角色時效驗證
+        if ($this->roleFreshnessValidator !== null) {
+            $userId = $payload->getUserId();
+            $iat = $payload->getIssuedAt()->getTimestamp();
+            if (!$this->roleFreshnessValidator->validate($userId, $iat)) {
+                throw new RoleChangedException('角色權限已變更，請重新登入');
+            }
+        }
+        // 2. IP 地址驗證（可配置，預設關閉以免影響行動網路/NAT 使用者）
         $enableIpBinding = filter_var(
             getenv('JWT_IP_BINDING_ENABLED') ?: ($_ENV['JWT_IP_BINDING_ENABLED'] ?? 'false'),
             FILTER_VALIDATE_BOOLEAN,
@@ -138,6 +151,25 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             ->withAttribute('role', $payload->getCustomClaim('role'))
             ->withAttribute('permissions', $payload->getCustomClaim('permissions') ?? [])
             ->withAttribute('authenticated', true);
+    }
+
+    /**
+     * 建立禁止存取的回應.
+     */
+    private function createForbiddenResponse(string $message): ResponseInterface
+    {
+        $responseData = [
+            'success'   => false,
+            'error'     => $message,
+            'code'      => 'FORBIDDEN',
+            'timestamp' => date('c'),
+        ];
+
+        return new Response(
+            statusCode: 403,
+            headers: ['Content-Type' => 'application/json'],
+            body: json_encode($responseData, JSON_UNESCAPED_UNICODE) ?: '',
+        );
     }
 
     /**

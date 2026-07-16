@@ -325,8 +325,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'monitoring_endpoint' => null, // 可設定外部監控服務端點
                 'directives'          => [
                     'default-src'               => ["'self'"],
-                    'script-src'                => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
-                    'style-src'                 => ["'self'"], // 移除 unsafe-inline，使用 nonce 策略
+                    'script-src'                => ["'self'", 'https://cdn.tailwindcss.com'], // 移除 unsafe-inline，使用 nonce 策略
+                    'style-src'                 => ["'self'", 'https://cdn.tailwindcss.com'], // 移除 unsafe-inline，使用 nonce 策略
                     'img-src'                   => ["'self'", 'data:', 'https:'],
                     'font-src'                  => ["'self'"],
                     'connect-src'               => ["'self'"],
