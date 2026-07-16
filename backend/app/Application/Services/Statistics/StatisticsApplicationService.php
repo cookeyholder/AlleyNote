@@ -8,7 +8,6 @@ use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
 use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
-use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Services\StatisticsConfigService;
@@ -21,7 +20,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 
-class StatisticsApplicationService
+final class StatisticsApplicationService
 {
     private const VALID_SNAPSHOT_TYPES = [
         StatisticsSnapshot::TYPE_OVERVIEW,
@@ -38,8 +37,6 @@ class StatisticsApplicationService
         private readonly StatisticsAggregationServiceInterface $aggregationService,
         private readonly StatisticsCacheServiceInterface $cacheService,
         private readonly StatisticsConfigService $configService,
-        /** @phpstan-ignore-next-line property.onlyWritten */
-        private readonly StatisticsRepositoryInterface $statisticsRepository,
         private readonly LoggerInterface $logger,
         private readonly PDO $db,
     ) {}
