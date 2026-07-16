@@ -35,25 +35,25 @@ class CacheService implements CacheServiceInterface
         }
     }
 
-    public function get(string $key): mixed
+    public function get(string $key, mixed $default = null): mixed
     {
         $filename = $this->getCacheFilename($key);
         if (!file_exists($filename)) {
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $data = file_get_contents($filename);
         if ($data === false) {
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'], $cacheData['data'])) {
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $expiry = $cacheData['expiry'];
         if (!is_int($expiry)) {
@@ -62,14 +62,14 @@ class CacheService implements CacheServiceInterface
             } else {
                 $this->incrementStat('misses');
 
-                return null;
+                return $default;
             }
         }
         if (time() > $expiry) {
             $this->delete($key);
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $this->incrementStat('hits');
 
@@ -143,13 +143,13 @@ class CacheService implements CacheServiceInterface
         return true;
     }
 
-    public function remember(string $key, callable $callback, ?int $ttl = null): mixed
+    public function remember(string $key, callable $callback, int $ttl = 3600): mixed
     {
         $value = $this->get($key);
         if ($value === null) {
             $value = $callback();
             if ($value !== null) {
-                $this->set($key, $value, $ttl ?: self::TTL);
+                $this->set($key, $value, $ttl);
             }
         }
 

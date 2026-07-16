@@ -4,38 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Cache\Contracts;
 
-interface CacheManagerInterface
+interface CacheManagerInterface extends CacheInterface
 {
-    /**
-     * 取得快取資料。
-     */
-    public function get(string $key, mixed $default = null): mixed;
-
-    /**
-     * 設定快取資料。
-     */
-    public function set(string $key, mixed $value, int $ttl = 3600): bool;
-
-    /**
-     * 檢查快取是否存在。
-     */
-    public function has(string $key): bool;
-
-    /**
-     * 刪除快取。
-     */
-    public function delete(string $key): bool;
-
-    /**
-     * 清空所有快取。
-     */
-    public function clear(): bool;
-
-    /**
-     * 記憶化取得。
-     */
-    public function remember(string $key, callable $callback, int $ttl = 3600): mixed;
-
     /**
      * 取得或設定標籤化快取。
      *
@@ -52,11 +22,6 @@ interface CacheManagerInterface
      * 取得指定驅動的快取實例。
      */
     public function driver(?string $driver = null): CacheDriverInterface;
-
-    /**
-     * 取得快取統計資訊。
-     */
-    public function getStats(): array;
 
     /**
      * 取得所有驅動的健康狀態。
