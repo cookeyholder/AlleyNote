@@ -311,9 +311,9 @@ return array_merge(
         TagManagementService::class => \DI\autowire(TagManagementService::class)
             ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class)),
 
-        RateLimitService::class                => \DI\autowire(RateLimitService::class)
+        RateLimitService::class => \DI\autowire(RateLimitService::class)
             ->constructorParameter('cache', \DI\get(CacheService::class)),
-        RateLimitServiceInterface::class        => \DI\get(RateLimitService::class),
+        RateLimitServiceInterface::class => \DI\get(RateLimitService::class),
 
         ValidatorFactory::class              => \DI\autowire(ValidatorFactory::class),
         ValidatorInterface::class            => \DI\factory(static fn(ValidatorFactory $factory) => $factory->createForDTO()),

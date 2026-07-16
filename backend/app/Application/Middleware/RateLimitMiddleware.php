@@ -38,8 +38,8 @@ class RateLimitMiddleware implements MiddlewareInterface
         // 取得使用者 ID（如果已登入）
         $userId = $this->getUserId($request);
         // 檢查速率限制
-        $maxRequests = $this->config['max_requests'] ?? 60;
-        $timeWindow = $this->config['time_window'] ?? 60;
+        $maxRequests = (int) ($this->config['max_requests'] ?? 60);
+        $timeWindow = (int) ($this->config['time_window'] ?? 60);
         $result = $this->rateLimitService->checkLimit($ip, $maxRequests, $timeWindow);
         // RateLimitService 不會回傳 limit 欄位，統一在 middleware 補齊供 header/response 使用
         $result['limit'] = $maxRequests;
