@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 /**
- * CSRF Token 控制器
+ * CSRF Token 控制器.
  *
  * 提供 CSRF Token 的發放與重新整理功能。
  */

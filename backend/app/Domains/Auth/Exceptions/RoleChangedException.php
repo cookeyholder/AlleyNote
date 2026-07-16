@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Exceptions;
 
-use App\Domains\Auth\Exceptions\JwtException;
-
 /**
  * 角色權限變更例外.
  *

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Controllers\Api\V1;
 
 use App\Application\Controllers\Api\V1\CsrfTokenController;
+use App\Infrastructure\Http\Response;
 use App\Shared\Config\EnvironmentConfig;
 use Tests\Support\UnitTestCase;
 
@@ -27,7 +28,7 @@ final class CsrfTokenControllerTest extends UnitTestCase
     public function testGetTokenReturnsJsonWithToken(): void
     {
         $request = $this->createRequest('GET', '/api/csrf-token');
-        $response = new \App\Infrastructure\Http\Response();
+        $response = new Response();
 
         $result = $this->controller->getToken($request, $response);
 
@@ -46,7 +47,7 @@ final class CsrfTokenControllerTest extends UnitTestCase
     public function testGetTokenSetsCsrfCookie(): void
     {
         $request = $this->createRequest('GET', '/api/csrf-token');
-        $response = new \App\Infrastructure\Http\Response();
+        $response = new Response();
 
         $result = $this->controller->getToken($request, $response);
 
@@ -69,11 +70,11 @@ final class CsrfTokenControllerTest extends UnitTestCase
     {
         $request = $this->createRequest('GET', '/api/csrf-token');
 
-        $response1 = new \App\Infrastructure\Http\Response();
+        $response1 = new Response();
         $result1 = $this->controller->getToken($request, $response1);
         $data1 = json_decode((string) $result1->getBody(), true);
 
-        $response2 = new \App\Infrastructure\Http\Response();
+        $response2 = new Response();
         $result2 = $this->controller->getToken($request, $response2);
         $data2 = json_decode((string) $result2->getBody(), true);
 

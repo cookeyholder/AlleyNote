@@ -8,6 +8,7 @@ use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
+use RuntimeException;
 use Tests\Support\UnitTestCase;
 
 #[CoversClass(RateLimitService::class)]
@@ -18,7 +19,7 @@ class RateLimitServiceTest extends UnitTestCase
     {
         $cache = $this->createMock(CacheService::class);
         $cache->method('get')
-            ->willThrowException(new \RuntimeException('Redis 連線失敗'));
+            ->willThrowException(new RuntimeException('Redis 連線失敗'));
 
         $service = new RateLimitService($cache);
         $result = $service->checkLimit('192.168.1.1');
@@ -37,7 +38,7 @@ class RateLimitServiceTest extends UnitTestCase
     {
         $cache = $this->createMock(CacheService::class);
         $cache->method('get')
-            ->willThrowException(new \RuntimeException('Redis 連線失敗'));
+            ->willThrowException(new RuntimeException('Redis 連線失敗'));
 
         $service = new RateLimitService($cache);
         $result = $service->isAllowed('192.168.1.1');

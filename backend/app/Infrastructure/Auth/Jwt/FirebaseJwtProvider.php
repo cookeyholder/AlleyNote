@@ -378,11 +378,22 @@ final class FirebaseJwtProvider implements JwtProviderInterface
 
         return sprintf(
             '%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x',
-            ord($data[0]), ord($data[1]), ord($data[2]), ord($data[3]),
-            ord($data[4]), ord($data[5]),
-            ord($data[6]), ord($data[7]),
-            ord($data[8]), ord($data[9]),
-            ord($data[10]), ord($data[11]), ord($data[12]), ord($data[13]), ord($data[14]), ord($data[15]),
+            ord($data[0]),
+            ord($data[1]),
+            ord($data[2]),
+            ord($data[3]),
+            ord($data[4]),
+            ord($data[5]),
+            ord($data[6]),
+            ord($data[7]),
+            ord($data[8]),
+            ord($data[9]),
+            ord($data[10]),
+            ord($data[11]),
+            ord($data[12]),
+            ord($data[13]),
+            ord($data[14]),
+            ord($data[15]),
         );
     }
 
