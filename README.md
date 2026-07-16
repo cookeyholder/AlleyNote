@@ -4,7 +4,7 @@
 
 ![PHP](https://img.shields.io/badge/PHP-8.4-%23777BB4?logo=php&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-2220+ passes-brightgreen)
+[![CI](https://github.com/cookeyholder/AlleyNote/actions/workflows/ci.yml/badge.svg)](https://github.com/cookeyholder/AlleyNote/actions/workflows/ci.yml)
 
 ---
 
