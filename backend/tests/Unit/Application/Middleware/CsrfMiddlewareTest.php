@@ -8,7 +8,6 @@ use App\Application\Middleware\CsrfMiddleware;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Mockery;
-use Mockery\MockInterface;
 use Tests\Support\UnitTestCase;
 
 /**
