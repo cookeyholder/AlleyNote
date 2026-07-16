@@ -73,10 +73,11 @@ test.describe("使用者管理功能測試", () => {
     await page.click('button:has-text("新增使用者")');
     await expect(page.locator("text=新增使用者").first()).toBeVisible();
 
-    // 不填寫任何資料，直接提交（使用 force 略過動畫穩定檢查）
+    // 等待動畫完成後，使用原生 click 保留 HTML5 表單驗證
+    await page.waitForTimeout(500);
     await page
       .locator('button[type="submit"]:has-text("確認建立帳號")')
-      .click({ force: true });
+      .evaluate((el) => el instanceof HTMLElement && el.click());
 
     // 因為有 HTML5 驗證，表單不會提交
     // 檢查 modal 仍然存在
@@ -95,10 +96,11 @@ test.describe("使用者管理功能測試", () => {
     await page.fill('input[name="password"]', "password123");
     await page.fill('input[name="password_confirmation"]', "different456");
 
-    // 提交表單（使用 force 略過動畫穩定檢查）
+    // 等待動畫完成後，使用原生 click 保留 HTML5 表單驗證
+    await page.waitForTimeout(500);
     await page
       .locator('button[type="submit"]:has-text("確認建立帳號")')
-      .click({ force: true });
+      .evaluate((el) => el instanceof HTMLElement && el.click());
     await page.waitForTimeout(1000);
 
     // 應該顯示錯誤訊息
