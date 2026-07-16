@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Throwable;
 
-final class StatisticsApplicationService
+class StatisticsApplicationService
 {
     private const VALID_SNAPSHOT_TYPES = [
         StatisticsSnapshot::TYPE_OVERVIEW,

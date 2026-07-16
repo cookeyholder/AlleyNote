@@ -14,7 +14,6 @@ use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
 use InvalidArgumentException;
 use Mockery;
-use Mockery\MockInterface;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
@@ -30,7 +29,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /** @var array<string, StatisticsFormatterInterface> */
     private array $formatters;
 
-    private StatisticsApplicationService|MockInterface $queryService;
+    private StatisticsApplicationService $queryService;
 
     protected function setUp(): void
     {
@@ -146,7 +145,6 @@ final class StatisticsExportServiceTest extends UnitTestCase
     public function test批次匯出部分失敗時應該正確處理(): void
     {
         // Arrange - 建立會失敗的查詢服務
-        /** @var StatisticsApplicationService&MockInterface $failingQueryService */
         $failingQueryService = Mockery::mock(StatisticsApplicationService::class);
         $failingQueryService->shouldReceive('getOverview')
             ->andThrow(new RuntimeException('Query failed'));
@@ -239,9 +237,8 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /**
      * 建立測試用的查詢服務.
      */
-    private function createTestQueryService(): StatisticsApplicationService|MockInterface
+    private function createTestQueryService(): StatisticsApplicationService
     {
-        /** @var StatisticsApplicationService&MockInterface $mock */
         $mock = Mockery::mock(StatisticsApplicationService::class);
 
         $mock->shouldReceive('getOverview')
