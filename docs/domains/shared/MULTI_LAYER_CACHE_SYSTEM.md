@@ -355,3 +355,69 @@ $manager->addDriver('file', $fileDriver, 60);       // 最低
 | `getHealthStatus()` | 取得健康狀態 | 無 | array |
 
 這個多層快取系統為 AlleyNote 提供了高效能、可靠的快取解決方案，支援從簡單的記憶體快取到複雜的分散式 Redis 快取等多種場景。
+
+---
+
+## 近期架構演進
+
+### CacheInterface 萃取（PR #123）
+
+為了解耦具體實作與提升可測試性，快取系統從具體類別依賴改為介面驅動設計：
+
+```php
+interface CacheInterface
+{
+    public function get(string $key, mixed $default = null): mixed;
+    public function set(string $key, mixed $value, ?int $ttl = null): bool;
+    public function delete(string $key): bool;
+    public function has(string $key): bool;
+    public function clear(): bool;
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed;
+}
+```
+
+所有快取驅動（MemoryCacheDriver、FileCacheDriver、RedisCacheDriver）皆實作此介面，後續可透過 PHP-DI 容器動態注入。
+
+### LayeredCacheDriver
+
+多層快取驅動，將多個快取層疊加為單一邏輯實體：
+
+```php
+$driver = new LayeredCacheDriver([
+    $container->get(MemoryCacheDriver::class),   // L1：記憶體
+    $container->get(RedisCacheDriver::class),     // L2：Redis
+    $container->get(FileCacheDriver::class),      // L3：檔案
+]);
+```
+
+- **讀取**：依序檢查各層，命中後回寫上層（write-through）
+- **寫入**：同步寫入所有層
+- **失效**：同步刪除所有層
+
+### TaggedCacheManager
+
+提供標籤式快取失效，允許依 `tag` 批量清除相關鍵值：
+
+```php
+$manager = new TaggedCacheManager($cache);
+
+// 標記儲存
+$manager->set('post:123', $data, ['tags' => ['posts', 'category:5']]);
+
+// 依標籤失效
+$manager->invalidateByTag('category:5');
+```
+
+### CacheMonitor
+
+快取效能監控，記錄命中率、操作延遲與健康狀態：
+
+```php
+$monitor = $container->get(CacheMonitor::class);
+$report = $monitor->getReport();
+
+echo "整體命中率: {$report->hitRate()}%";
+echo "平均延遲: {$report->averageLatency()}ms";
+```
+
+可整合至 Prometheus 或內部儀表板進行即時監控。

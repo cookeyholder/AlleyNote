@@ -1,28 +1,21 @@
 # AlleyNote
 
-AlleyNote 是採用 DDD 思維的公告／佈告平台，具備角色式管理、安全控制與統計分析功能。
+公告／佈告欄平台，DDD 架構，PHP 8.4 + SQLite + ES6 SPA。
 
-## Canonical 文件入口
+## 你是誰？
 
-- 文件總索引：[docs/INDEX.md](docs/INDEX.md)
-- 開發 runbook：[docs/runbooks/DEVELOPMENT.md](docs/runbooks/DEVELOPMENT.md)
-- 重構技術細節（2026-04）：[docs/architecture/BACKEND_REFACTOR_2026-04.md](docs/architecture/BACKEND_REFACTOR_2026-04.md)
-- CI/CD runbook：[docs/runbooks/CI_CD.md](docs/runbooks/CI_CD.md)
-- 安全 runbook：[docs/runbooks/SECURITY.md](docs/runbooks/SECURITY.md)
-- API 文件入口：[docs/api/README.md](docs/api/README.md)
-- 文件治理規範：[docs/DOCUMENTATION_GOVERNANCE.md](docs/DOCUMENTATION_GOVERNANCE.md)
+| 角色 | 從這裡開始 |
+|------|-----------|
+| 🖥️ 後端開發者 | `docs/architecture/01-統計分析器模式.md` |
+| 🎨 前端開發者 | `docs/frontend/01-架構總覽.md` |
+| 📝 內容管理者 | `docs/guides/content-creators/01-管理後台使用手冊.md` |
+| ⚙️ 系統管理員 | `docs/guides/admin/03-系統需求.md` |
+| 🔌 API 整合者 | `docs/api/README.md` |
+| 👋 新進成員 | `docs/INDEX.md` |
 
 ## 快速開始
 
-```bash
-git clone https://github.com/cookeyholder/AlleyNote.git
-cd AlleyNote
-cp backend/.env.example backend/.env
-docker compose up -d
-```
-
-完整流程請參考：
-- [docs/runbooks/DEVELOPMENT.md](docs/runbooks/DEVELOPMENT.md)
+[見開發環境 runbook](docs/runbooks/01-開發環境.md)
 
 ## 授權
 
