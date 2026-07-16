@@ -39,7 +39,7 @@ test.describe("文章標籤管理", () => {
     if (tagCount === 0) {
       await page.click("#addTagBtn");
       await tagNameInput(page).fill("測試標籤");
-      await page.click('button[type="submit"]');
+      await page.locator('button[type="submit"]').evaluate((el) => el.click());
       await page.waitForTimeout(1000);
     }
 
@@ -161,7 +161,9 @@ test.describe("文章標籤管理", () => {
       for (let i = tagCount; i < 2; i++) {
         await page.click("#addTagBtn");
         await tagNameInput(page).fill(`測試標籤${i + 1}`);
-        await page.click('button[type="submit"]');
+        await page
+          .locator('button[type="submit"]')
+          .evaluate((el) => el.click());
         await page.waitForTimeout(1000);
       }
     }
