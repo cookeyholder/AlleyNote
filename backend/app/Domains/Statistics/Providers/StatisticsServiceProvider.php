@@ -17,6 +17,8 @@ use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
+use App\Domains\Statistics\Listeners\PostViewedListener;
+use App\Domains\Statistics\Listeners\StatisticsSnapshotCreatedListener;
 use App\Domains\Statistics\Services\AdvancedAnalyticsService;
 use App\Domains\Statistics\Services\PostViewStatisticsService;
 use App\Domains\Statistics\Services\StatisticsAggregationService;
@@ -98,12 +100,29 @@ class StatisticsServiceProvider
 
                 return new StatisticsMonitoringService($slowQueryService, $pdo, $logger);
             }),
+            StatisticsMonitoringService::class => \DI\get(StatisticsMonitoringServiceInterface::class),
             // 事件分派器
             EventDispatcherInterface::class => \DI\factory(function (ContainerInterface $container): EventDispatcherInterface {
                 /** @var LoggerInterface|null $logger */
                 $logger = $container->has(LoggerInterface::class) ? $container->get(LoggerInterface::class) : null;
 
-                return new SimpleEventDispatcher($logger);
+                $dispatcher = new SimpleEventDispatcher($logger);
+
+                // 註冊監聽器
+                $dispatcher->registerListeners([
+                    new PostViewedListener(
+                        $container->get(StatisticsMonitoringServiceInterface::class),
+                        $container->get(PostViewStatisticsService::class),
+                        $logger,
+                    ),
+                    new StatisticsSnapshotCreatedListener(
+                        $container->get(StatisticsCacheServiceInterface::class),
+                        $container->get(StatisticsMonitoringService::class),
+                        $logger,
+                    ),
+                ]);
+
+                return $dispatcher;
             }),
             // 領域服務
             StatisticsAggregationService::class => \DI\factory(function (ContainerInterface $container): StatisticsAggregationService {
