@@ -7,8 +7,11 @@ namespace Tests\Unit\Application\Services\Statistics;
 use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Services\StatisticsConfigService;
+use PDO;
+use Psr\Log\LoggerInterface;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use InvalidArgumentException;
@@ -36,6 +39,12 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
 
     private StatisticsConfigService $configService;
 
+    private StatisticsRepositoryInterface|MockInterface $statisticsRepository;
+
+    private LoggerInterface|MockInterface $logger;
+
+    private PDO|MockInterface $db;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -58,11 +67,17 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
                 ],
             ],
         ], 'production');
+        $this->statisticsRepository = Mockery::mock(StatisticsRepositoryInterface::class);
+        $this->logger = Mockery::mock(LoggerInterface::class);
+        $this->db = Mockery::mock(PDO::class);
 
         $this->service = new StatisticsApplicationService(
             $this->aggregationService,
             $this->cacheService,
             $this->configService,
+            $this->statisticsRepository,
+            $this->logger,
+            $this->db,
         );
     }
 

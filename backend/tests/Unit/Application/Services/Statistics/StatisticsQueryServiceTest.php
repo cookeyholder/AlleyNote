@@ -6,10 +6,12 @@ namespace Tests\Unit\Application\Services\Statistics;
 
 use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
 use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
-use App\Application\Services\Statistics\StatisticsQueryService;
+use App\Application\Services\Statistics\StatisticsApplicationService;
+use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
+use App\Domains\Statistics\Services\StatisticsConfigService;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
@@ -19,14 +21,18 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Log\LoggerInterface;
 use Tests\Support\UnitTestCase;
 
-#[CoversClass(StatisticsQueryService::class)]
+#[CoversClass(StatisticsApplicationService::class)]
 final class StatisticsQueryServiceTest extends UnitTestCase
 {
-    private StatisticsQueryService $service;
+    private StatisticsApplicationService $service;
+
+    private StatisticsAggregationServiceInterface&MockInterface $aggregationService;
 
     private StatisticsRepositoryInterface&MockInterface $statisticsRepository;
 
     private StatisticsCacheServiceInterface&MockInterface $cacheService;
+
+    private StatisticsConfigService $configService;
 
     private LoggerInterface&MockInterface $logger;
 
@@ -36,14 +42,18 @@ final class StatisticsQueryServiceTest extends UnitTestCase
     {
         parent::setUp();
 
+        $this->aggregationService = Mockery::mock(StatisticsAggregationServiceInterface::class);
         $this->statisticsRepository = Mockery::mock(StatisticsRepositoryInterface::class);
         $this->cacheService = Mockery::mock(StatisticsCacheServiceInterface::class);
+        $this->configService = new StatisticsConfigService();
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->db = Mockery::mock(PDO::class);
 
-        $this->service = new StatisticsQueryService(
-            $this->statisticsRepository,
+        $this->service = new StatisticsApplicationService(
+            $this->aggregationService,
             $this->cacheService,
+            $this->configService,
+            $this->statisticsRepository,
             $this->logger,
             $this->db,
         );

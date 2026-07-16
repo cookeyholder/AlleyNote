@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Providers;
 
-use App\Application\Services\Statistics\StatisticsQueryService;
 use App\Domains\Statistics\Analyzers\ContentInsightsAnalyzer;
 use App\Domains\Statistics\Analyzers\PostStatisticsAnalyzer;
 use App\Domains\Statistics\Analyzers\SourceDistributionAnalyzer;
@@ -15,7 +14,6 @@ use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
@@ -126,21 +124,6 @@ class StatisticsServiceProvider
             }),
             // 綁定介面到實作
             StatisticsAggregationServiceInterface::class => \DI\get(StatisticsAggregationService::class),
-            // 應用服務
-            StatisticsQueryService::class => \DI\factory(function (ContainerInterface $container): StatisticsQueryService {
-                /** @var StatisticsRepositoryInterface $statisticsRepository */
-                $statisticsRepository = $container->get(StatisticsRepositoryInterface::class);
-                /** @var StatisticsCacheServiceInterface $cacheService */
-                $cacheService = $container->get(StatisticsCacheServiceInterface::class);
-                /** @var LoggerInterface $logger */
-                $logger = $container->get(LoggerInterface::class);
-                /** @var PDO $db */
-                $db = $container->get(PDO::class);
-
-                return new StatisticsQueryService($statisticsRepository, $cacheService, $logger, $db);
-            }),
-            // 綁定介面到實作
-            StatisticsQueryServiceInterface::class => \DI\get(StatisticsQueryService::class),
             // 配置服務
             StatisticsConfigService::class => \DI\factory(function (): StatisticsConfigService {
                 return new StatisticsConfigService();

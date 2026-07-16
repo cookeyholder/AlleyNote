@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Infrastructure\Statistics\Services;
 
+use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
+use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\BatchExportResult;
 use App\Domains\Statistics\Contracts\ExportResult;
 use App\Domains\Statistics\Contracts\StatisticsFormatterInterface;
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface;
+use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
+use Mockery;
 use DateTime;
 use InvalidArgumentException;
 use RuntimeException;
@@ -26,7 +29,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /** @var array<string, StatisticsFormatterInterface> */
     private array $formatters;
 
-    private StatisticsQueryServiceInterface $queryService;
+    private StatisticsApplicationService $queryService;
 
     protected function setUp(): void
     {
@@ -142,32 +145,27 @@ final class StatisticsExportServiceTest extends UnitTestCase
     public function test批次匯出部分失敗時應該正確處理(): void
     {
         // Arrange - 建立會失敗的查詢服務
-        $failingQueryService = new class implements StatisticsQueryServiceInterface {
-            public function getOverview(array $options = []): array
-            {
-                throw new RuntimeException('Query failed');
-            }
-
-            public function getPostStatistics(array $options = []): array
-            {
-                return ['posts' => [['id' => 1, 'title' => 'Test']]];
-            }
-
-            public function getSourceDistribution(array $options = []): array
-            {
-                return ['sources' => [['source' => 'web', 'count' => 10]]];
-            }
-
-            public function getUserStatistics(array $options = []): array
-            {
-                return [];
-            }
-
-            public function getPopularContent(array $options = []): array
-            {
-                return [];
-            }
-        };
+        $failingQueryService = Mockery::mock(StatisticsApplicationService::class);
+        $failingQueryService->shouldReceive('getOverview')
+            ->andThrow(new RuntimeException('Query failed'));
+        $failingQueryService->shouldReceive('getPostStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [['id' => 1, 'title' => 'Test']],
+                totalCount: 1,
+                currentPage: 1,
+                perPage: 20,
+            ));
+        $failingQueryService->shouldReceive('getSourceDistribution')
+            ->andReturn(['sources' => [['source' => 'web', 'count' => 10]]]);
+        $failingQueryService->shouldReceive('getUserStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [],
+                totalCount: 0,
+                currentPage: 1,
+                perPage: 20,
+            ));
+        $failingQueryService->shouldReceive('getPopularContent')
+            ->andReturn([]);
 
         $exportService = new StatisticsExportService($failingQueryService, $this->formatters);
         $types = ['overview', 'posts', 'sources'];
@@ -239,75 +237,56 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /**
      * 建立測試用的查詢服務.
      */
-    private function createTestQueryService(): StatisticsQueryServiceInterface
+    private function createTestQueryService(): StatisticsApplicationService
     {
-        return new class implements StatisticsQueryServiceInterface {
-            public function getOverview(array $options = []): array
-            {
-                return [
-                    'total_posts'  => 100,
-                    'total_views'  => 5000,
-                    'total_users'  => 50,
-                    'period_start' => '2025-09-01',
-                    'period_end'   => '2025-09-30',
-                ];
-            }
+        $mock = Mockery::mock(StatisticsApplicationService::class);
 
-            public function getPostStatistics(array $options = []): array
-            {
-                $posts = [];
-                $limit = $options['limit'] ?? 10;
+        $mock->shouldReceive('getOverview')
+            ->andReturn(new StatisticsOverviewDTO(
+                totalPosts: 100,
+                activeUsers: 50,
+                newUsers: 10,
+                postActivity: ['total_posts' => 100, 'published_posts' => 80, 'draft_posts' => 20],
+                userActivity: ['total_users' => 50, 'active_users' => 30, 'new_users' => 10],
+                engagementMetrics: ['posts_per_active_user' => 2.0, 'user_growth_rate' => 25.0],
+                periodSummary: ['type' => 'monthly', 'duration_days' => 30],
+            ));
 
-                for ($i = 1; $i <= $limit; $i++) {
-                    $posts[] = [
-                        'id'         => $i,
-                        'title'      => "測試文章 {$i}",
-                        'views'      => rand(10, 1000),
-                        'created_at' => '2025-09-' . str_pad((string) rand(1, 30), 2, '0', STR_PAD_LEFT),
-                    ];
-                }
+        $mock->shouldReceive('getPostStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [
+                    ['id' => 1, 'title' => 'Test Post', 'views' => 100],
+                ],
+                totalCount: 100,
+                currentPage: 1,
+                perPage: 20,
+            ));
 
-                return ['posts' => $posts];
-            }
+        $mock->shouldReceive('getSourceDistribution')
+            ->andReturn([
+                'sources' => [
+                    ['source' => 'web', 'count' => 60, 'percentage' => 60.0],
+                    ['source' => 'mobile', 'count' => 30, 'percentage' => 30.0],
+                    ['source' => 'api', 'count' => 10, 'percentage' => 10.0],
+                ],
+            ]);
 
-            public function getSourceDistribution(array $options = []): array
-            {
-                return [
-                    'sources' => [
-                        ['source' => 'web', 'count' => 60, 'percentage' => 60.0],
-                        ['source' => 'mobile', 'count' => 30, 'percentage' => 30.0],
-                        ['source' => 'api', 'count' => 10, 'percentage' => 10.0],
-                    ],
-                ];
-            }
+        $mock->shouldReceive('getUserStatistics')
+            ->andReturn(new PaginatedStatisticsDTO(
+                data: [
+                    ['id' => 1, 'username' => 'user1', 'post_count' => 10],
+                ],
+                totalCount: 200,
+                currentPage: 1,
+                perPage: 20,
+            ));
 
-            public function getUserStatistics(array $options = []): array
-            {
-                return [
-                    'users' => [
-                        ['id' => 1, 'username' => 'user1', 'post_count' => 10, 'last_active' => '2025-09-23'],
-                        ['id' => 2, 'username' => 'user2', 'post_count' => 15, 'last_active' => '2025-09-22'],
-                    ],
-                ];
-            }
+        $mock->shouldReceive('getPopularContent')
+            ->andReturn([
+                ['id' => 1, 'title' => 'Popular Post', 'views' => 1000],
+            ]);
 
-            public function getPopularContent(array $options = []): array
-            {
-                $limit = $options['limit'] ?? 10;
-                $popular = [];
-
-                for ($i = 1; $i <= $limit; $i++) {
-                    $popular[] = [
-                        'id'    => $i,
-                        'title' => "熱門文章 {$i}",
-                        'views' => 1000 - $i * 50,
-                        'rank'  => $i,
-                    ];
-                }
-
-                return ['popular_posts' => $popular];
-            }
-        };
+        return $mock;
     }
 
     /**
