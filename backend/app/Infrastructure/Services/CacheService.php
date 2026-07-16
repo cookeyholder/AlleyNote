@@ -35,25 +35,25 @@ class CacheService implements CacheServiceInterface
         }
     }
 
-    public function get(string $key): mixed
+    public function get(string $key, mixed $default = null): mixed
     {
         $filename = $this->getCacheFilename($key);
         if (!file_exists($filename)) {
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $data = file_get_contents($filename);
         if ($data === false) {
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $cacheData = json_decode($data, true);
         if (!is_array($cacheData) || !isset($cacheData['expiry'], $cacheData['data'])) {
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $expiry = $cacheData['expiry'];
         if (!is_int($expiry)) {
@@ -62,21 +62,21 @@ class CacheService implements CacheServiceInterface
             } else {
                 $this->incrementStat('misses');
 
-                return null;
+                return $default;
             }
         }
         if (time() > $expiry) {
             $this->delete($key);
             $this->incrementStat('misses');
 
-            return null;
+            return $default;
         }
         $this->incrementStat('hits');
 
         return $cacheData['data'];
     }
 
-    public function set(string $key, mixed $value, int $ttl = 3600): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         $filename = $this->getCacheFilename($key);
         $this->incrementStat('sets');
@@ -149,7 +149,7 @@ class CacheService implements CacheServiceInterface
         if ($value === null) {
             $value = $callback();
             if ($value !== null) {
-                $this->set($key, $value, $ttl ?: self::TTL);
+                $this->set($key, $value, $ttl);
             }
         }
 
@@ -172,7 +172,7 @@ class CacheService implements CacheServiceInterface
         return $result;
     }
 
-    public function setMultiple(array $values, int $ttl = 3600): bool
+    public function setMultiple(array $values, ?int $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->set($this->normalizeKey($key), $value, $ttl);

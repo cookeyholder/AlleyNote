@@ -20,7 +20,7 @@ class PrefixedCacheManager implements CacheManagerInterface
         return $this->manager->get($this->prefixKey($key), $default);
     }
 
-    public function set(string $key, mixed $value, int $ttl = 3600): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         return $this->manager->set($this->prefixKey($key), $value, $ttl);
     }
@@ -40,7 +40,7 @@ class PrefixedCacheManager implements CacheManagerInterface
         return $this->manager->clear();
     }
 
-    public function remember(string $key, callable $callback, int $ttl = 3600): mixed
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
         return $this->manager->remember($this->prefixKey($key), $callback, $ttl);
     }

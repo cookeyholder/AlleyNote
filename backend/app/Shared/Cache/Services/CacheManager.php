@@ -435,9 +435,9 @@ class CacheManager implements CacheManagerInterface
         return false;
     }
 
-    public function set(string $key, mixed $value, int $ttl = 3600): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
-        return $this->put($key, $value, $ttl);
+        return $this->put($key, $value, $ttl ?? 3600);
     }
 
     public function delete(string $key): bool
@@ -450,7 +450,7 @@ class CacheManager implements CacheManagerInterface
         return $this->flush();
     }
 
-    public function remember(string $key, callable $callback, int $ttl = 3600): mixed
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
         $value = $this->get($key);
         if ($value !== null) {
@@ -459,7 +459,7 @@ class CacheManager implements CacheManagerInterface
 
         try {
             $value = $this->strategy->handleMiss($key, $callback);
-            $this->put($key, $value, $ttl);
+            $this->put($key, $value, $ttl ?? 3600);
 
             return $value;
         } catch (Throwable $e) {
