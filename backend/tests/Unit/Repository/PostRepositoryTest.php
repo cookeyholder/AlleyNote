@@ -226,7 +226,7 @@ class PostRepositoryTest extends UnitTestCase
 
         $result = $this->repository->paginate(1, 10);
 
-        $this->assertIsArray($result['items']);
+        // @phpstan-ignore-next-line — $result['items'] 型別由 @return shape 定義但 PHPStan 不解析
         $this->assertCount(10, $result['items']);
         $this->assertEquals(15, $result['total']);
         $this->assertEquals(1, $result['page']);
@@ -447,7 +447,6 @@ class PostRepositoryTest extends UnitTestCase
         $this->assertArrayHasKey('perPage', $result);
         $this->assertArrayHasKey('lastPage', $result);
 
-        $this->assertIsArray($result['items']);
         $this->assertCount(3, $result['items']);
         $this->assertEquals(5, $result['total']);
         $this->assertEquals(1, $result['page']);
@@ -456,7 +455,6 @@ class PostRepositoryTest extends UnitTestCase
 
         // 測試第二頁
         $result2 = $this->repository->paginateByCreationSource('web', 2, 3);
-        $this->assertIsArray($result2['items']);
         $this->assertCount(2, $result2['items']);
     }
 
@@ -473,7 +471,7 @@ class PostRepositoryTest extends UnitTestCase
 
         $result = $this->repository->paginate(1, 10);
 
-        $this->assertIsArray($result['items']);
+        // @phpstan-ignore-next-line — $result['items'] 型別由 @return shape 定義但 PHPStan 不解析
         foreach ($result['items'] as $item) {
             $this->assertInstanceOf(Post::class, $item);
             if ($item->getId() === $post1->getId()) {
@@ -489,9 +487,7 @@ class PostRepositoryTest extends UnitTestCase
                 $this->assertContains('Laravel', $tagNames);
                 $this->assertContains('Vue', $tagNames);
             } elseif ($item->getId() === $post3->getId()) {
-                $tagNames = $item->getTags();
-                $this->assertIsArray($tagNames);
-                $this->assertCount(0, $tagNames);
+                $this->assertCount(0, $item->getTags());
             }
         }
     }

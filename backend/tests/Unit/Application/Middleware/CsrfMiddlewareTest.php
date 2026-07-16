@@ -8,6 +8,7 @@ use App\Application\Middleware\CsrfMiddleware;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
 use Mockery;
+use Mockery\MockInterface;
 use Tests\Support\UnitTestCase;
 
 /**
@@ -17,7 +18,7 @@ final class CsrfMiddlewareTest extends UnitTestCase
 {
     private CsrfMiddleware $middleware;
 
-    private RequestHandlerInterface $handler;
+    private RequestHandlerInterface|MockInterface $handler;
 
     protected function setUp(): void
     {
@@ -84,6 +85,7 @@ final class CsrfMiddlewareTest extends UnitTestCase
             ->with($request)
             ->andReturn($expectedResponse);
 
+        // @phpstan-ignore-next-line - MockInterface satisfies RequestHandlerInterface at runtime
         $response = $this->middleware->process($request, $this->handler);
 
         $setCookieHeaders = $response->getHeader('Set-Cookie');
