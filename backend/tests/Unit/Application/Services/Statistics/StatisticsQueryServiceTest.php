@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\Services\Statistics;
 
-use App\Domains\Statistics\DTOs\PaginatedStatisticsDTO;
-use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
-use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
+use App\Domains\Statistics\DTOs\PaginatedStatisticsDTO;
 use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
+use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
+use App\Domains\Statistics\Services\StatisticsQueryService;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;

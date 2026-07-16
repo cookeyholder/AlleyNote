@@ -7,7 +7,6 @@ namespace App\Infrastructure\Statistics\Adapters;
 use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
 use App\Domains\Statistics\Services\StatisticsQueryService;
 use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 
