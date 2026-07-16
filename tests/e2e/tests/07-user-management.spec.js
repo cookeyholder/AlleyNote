@@ -145,7 +145,10 @@ test.describe("使用者管理功能測試", () => {
       await expect(page.locator("text=編輯使用者").first()).toBeVisible();
 
       // 點擊取消（使用 force 略過動畫穩定檢查）
-      await page.locator('button:has-text("取消")').last().click({ force: true });
+      await page
+        .locator('button:has-text("取消")')
+        .last()
+        .click({ force: true });
       await page.waitForTimeout(500);
 
       // Modal 應該關閉
