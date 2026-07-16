@@ -13,6 +13,7 @@
 | `guides/content-creators/` | 內容管理者操作手冊 | 內容管理者 |
 | `guides/admin/` | 系統管理員指南 | 系統管理員 |
 | `guides/developer/` | 開發者指南 | 後端開發者 |
+| `guides/frontend/` | 前端開發技術指南 | 前端開發者 |
 | `guides/deployment/` | 部署與維運 | 系統管理員 |
 | `api/` | API 文件 | API 整合者 |
 | `runbooks/` | 開發與維運 runbook | 開發者、管理員 |
