@@ -41,6 +41,7 @@ use App\Domains\Security\Services\IpService;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Infrastructure\Database\DatabaseConnection;
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use App\Infrastructure\Services\CacheService;
 use App\Infrastructure\Services\RateLimitService;
 use App\Infrastructure\Statistics\Commands\StatisticsCalculationCommand;
@@ -105,8 +106,9 @@ return [
     IpService::class => DI\autowire(IpService::class)
         ->constructorParameter('ipRepository', DI\get(IpRepositoryInterface::class)),
 
-    RateLimitService::class => DI\autowire(RateLimitService::class)
+    RateLimitService::class                => DI\autowire(RateLimitService::class)
         ->constructorParameter('cache', DI\get(CacheServiceInterface::class)),
+    RateLimitServiceInterface::class        => DI\get(RateLimitService::class),
 
     // Security Services
     XssProtectionServiceInterface::class => DI\autowire(XssProtectionService::class),

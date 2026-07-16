@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Services;
 
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use Throwable;
 
-class RateLimitService
+class RateLimitService implements RateLimitServiceInterface
 {
     public function __construct(
         private readonly CacheService $cache,

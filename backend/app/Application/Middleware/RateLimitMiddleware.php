@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Application\Middleware;
 
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use App\Infrastructure\Routing\Contracts\MiddlewareInterface;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
-use App\Infrastructure\Services\RateLimitService;
 use App\Shared\Helpers\NetworkHelper;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -14,11 +14,11 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class RateLimitMiddleware implements MiddlewareInterface
 {
-    private RateLimitService $rateLimitService;
+    private RateLimitServiceInterface $rateLimitService;
 
     private array $config;
 
-    public function __construct(RateLimitService $rateLimitService, array $config = [])
+    public function __construct(RateLimitServiceInterface $rateLimitService, array $config = [])
     {
         $this->rateLimitService = $rateLimitService;
         $this->config = array_merge($this->getDefaultConfig(), $config);

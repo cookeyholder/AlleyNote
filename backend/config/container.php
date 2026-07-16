@@ -36,6 +36,7 @@ use App\Domains\Post\Services\PostCacheInvalidator;
 use App\Domains\Post\Services\PostService;
 use App\Domains\Post\Services\TagManagementService;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;
+use App\Domains\Security\Contracts\RateLimitServiceInterface;
 use App\Domains\Security\Providers\SecurityServiceProvider;
 use App\Domains\Security\Services\Headers\SecurityHeaderService;
 use App\Domains\Security\Services\Logging\LoggingSecurityService;
@@ -310,8 +311,9 @@ return array_merge(
         TagManagementService::class => \DI\autowire(TagManagementService::class)
             ->constructorParameter('tagRepository', \DI\get(TagRepositoryInterface::class)),
 
-        RateLimitService::class => \DI\autowire(RateLimitService::class)
+        RateLimitService::class                => \DI\autowire(RateLimitService::class)
             ->constructorParameter('cache', \DI\get(CacheService::class)),
+        RateLimitServiceInterface::class        => \DI\get(RateLimitService::class),
 
         ValidatorFactory::class              => \DI\autowire(ValidatorFactory::class),
         ValidatorInterface::class            => \DI\factory(static fn(ValidatorFactory $factory) => $factory->createForDTO()),
