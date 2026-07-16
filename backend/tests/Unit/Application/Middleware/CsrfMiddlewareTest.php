@@ -18,7 +18,7 @@ final class CsrfMiddlewareTest extends UnitTestCase
 {
     private CsrfMiddleware $middleware;
 
-    private RequestHandlerInterface|MockInterface $handler;
+    private RequestHandlerInterface $handler;
 
     protected function setUp(): void
     {

@@ -71,7 +71,6 @@ class RateLimitServiceTest extends UnitTestCase
 
         // 不需要設定 set 的預期，因為在異常情況下不會呼叫 set
         $result = $this->rateLimitService->isAllowed($ip);
-        $this->assertFalse($result);
         $this->assertFalse($result, '當快取服務失敗時應該拒絕請求（fail-closed）');
     }
 
@@ -112,7 +111,6 @@ class RateLimitServiceTest extends UnitTestCase
 
         // 快取更新失敗時應該拒絕請求（fail-closed）
         $result = $this->rateLimitService->isAllowed($ip);
-        $this->assertFalse($result);
         $this->assertFalse($result, '當快取更新失敗時應該拒絕請求（fail-closed）');
     }
 

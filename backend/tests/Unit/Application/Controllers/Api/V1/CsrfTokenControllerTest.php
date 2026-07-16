@@ -78,6 +78,8 @@ final class CsrfTokenControllerTest extends UnitTestCase
         $result2 = $this->controller->getToken($request, $response2);
         $data2 = json_decode((string) $result2->getBody(), true);
 
+        $this->assertIsArray($data1);
+        $this->assertIsArray($data2);
         $this->assertNotSame($data1['token'], $data2['token'], 'Each call should generate a unique token');
     }
 }

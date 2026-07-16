@@ -511,7 +511,7 @@ final class FirebaseJwtProviderTest extends UnitTestCase
 
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/',
-            $payload['jti'],
+            (string) $payload['jti'],
             'JTI 應符合 UUID v4 格式',
         );
     }

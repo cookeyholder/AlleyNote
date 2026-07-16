@@ -24,7 +24,6 @@ class RateLimitServiceTest extends UnitTestCase
         $service = new RateLimitService($cache);
         $result = $service->checkLimit('192.168.1.1');
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('allowed', $result);
         $this->assertFalse($result['allowed']);
         $this->assertArrayHasKey('remaining', $result);

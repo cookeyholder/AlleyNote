@@ -226,6 +226,7 @@ class PostRepositoryTest extends UnitTestCase
 
         $result = $this->repository->paginate(1, 10);
 
+        $this->assertIsArray($result['items']);
         $this->assertCount(10, $result['items']);
         $this->assertEquals(15, $result['total']);
         $this->assertEquals(1, $result['page']);
@@ -446,6 +447,7 @@ class PostRepositoryTest extends UnitTestCase
         $this->assertArrayHasKey('perPage', $result);
         $this->assertArrayHasKey('lastPage', $result);
 
+        $this->assertIsArray($result['items']);
         $this->assertCount(3, $result['items']);
         $this->assertEquals(5, $result['total']);
         $this->assertEquals(1, $result['page']);
@@ -454,6 +456,7 @@ class PostRepositoryTest extends UnitTestCase
 
         // 測試第二頁
         $result2 = $this->repository->paginateByCreationSource('web', 2, 3);
+        $this->assertIsArray($result2['items']);
         $this->assertCount(2, $result2['items']);
     }
 
@@ -470,7 +473,9 @@ class PostRepositoryTest extends UnitTestCase
 
         $result = $this->repository->paginate(1, 10);
 
+        $this->assertIsArray($result['items']);
         foreach ($result['items'] as $item) {
+            $this->assertInstanceOf(Post::class, $item);
             if ($item->getId() === $post1->getId()) {
                 $tags = $item->getTags();
                 $this->assertCount(2, $tags);
@@ -484,7 +489,9 @@ class PostRepositoryTest extends UnitTestCase
                 $this->assertContains('Laravel', $tagNames);
                 $this->assertContains('Vue', $tagNames);
             } elseif ($item->getId() === $post3->getId()) {
-                $this->assertCount(0, $item->getTags());
+                $tagNames = $item->getTags();
+                $this->assertIsArray($tagNames);
+                $this->assertCount(0, $tagNames);
             }
         }
     }
@@ -499,6 +506,7 @@ class PostRepositoryTest extends UnitTestCase
         } catch (PDOException $e) {
             // 確認文章也不存在（交易已回溯）
             $stmt = $this->db->query('SELECT COUNT(*) FROM posts');
+            $this->assertNotFalse($stmt);
             $count = (int) $stmt->fetchColumn();
             $this->assertEquals(0, $count, '交易應完全回溯，不應留下任何文章');
         }
