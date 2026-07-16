@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Contracts;
 
-use App\Domains\Statistics\Models\StatisticsSnapshot;
+use App\Domains\Statistics\Entities\StatisticsSnapshot;
 
 interface StatisticsSnapshotRepositoryInterface
 {
