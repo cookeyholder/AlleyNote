@@ -109,15 +109,24 @@ class StatisticsServiceProvider
                 $dispatcher = new SimpleEventDispatcher($logger);
 
                 // 註冊監聽器
+                /** @var StatisticsMonitoringServiceInterface $monitoringService */
+                $monitoringService = $container->get(StatisticsMonitoringServiceInterface::class);
+                /** @var PostViewStatisticsService $postViewStatsService */
+                $postViewStatsService = $container->get(PostViewStatisticsService::class);
+                /** @var StatisticsCacheServiceInterface $cacheService */
+                $cacheService = $container->get(StatisticsCacheServiceInterface::class);
+                /** @var StatisticsMonitoringService $statsMonitoringService */
+                $statsMonitoringService = $container->get(StatisticsMonitoringService::class);
+
                 $dispatcher->registerListeners([
                     new PostViewedListener(
-                        $container->get(StatisticsMonitoringServiceInterface::class),
-                        $container->get(PostViewStatisticsService::class),
+                        $monitoringService,
+                        $postViewStatsService,
                         $logger,
                     ),
                     new StatisticsSnapshotCreatedListener(
-                        $container->get(StatisticsCacheServiceInterface::class),
-                        $container->get(StatisticsMonitoringService::class),
+                        $cacheService,
+                        $statsMonitoringService,
                         $logger,
                     ),
                 ]);
