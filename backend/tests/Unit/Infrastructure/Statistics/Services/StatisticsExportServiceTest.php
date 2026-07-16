@@ -14,6 +14,7 @@ use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
 use InvalidArgumentException;
 use Mockery;
+use Mockery\MockInterface;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
@@ -29,7 +30,7 @@ final class StatisticsExportServiceTest extends UnitTestCase
     /** @var array<string, StatisticsFormatterInterface> */
     private array $formatters;
 
-    private StatisticsApplicationService $queryService;
+    private StatisticsApplicationService|MockInterface $queryService;
 
     protected function setUp(): void
     {
