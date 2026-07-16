@@ -37,6 +37,15 @@ class CsrfMiddleware implements MiddlewareInterface
         if (!$this->enabled) {
             return $handler->handle($request);
         }
+
+        // 略過白名單路徑
+        $path = $request->getUri()->getPath();
+        foreach ($this->skipPaths as $skipPath) {
+            if (str_starts_with($path, $skipPath)) {
+                return $handler->handle($request);
+            }
+        }
+
         $method = $request->getMethod();
         // 安全方法：直接通過，但附加 CSRF Cookie
         if (in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {

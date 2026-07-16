@@ -172,7 +172,7 @@ class ApiClient {
               method: "POST",
               headers: this.buildHeaders({}, "POST"),
               credentials: this.withCredentials ? "include" : "same-origin",
-              body: JSON.stringify(refreshPayload),
+              body: JSON.stringify({}), // refresh token 透過 HttpOnly Cookie 傳遞
             });
 
             const response = await this._refreshPromise;
