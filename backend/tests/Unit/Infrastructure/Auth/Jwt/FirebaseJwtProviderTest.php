@@ -509,9 +509,10 @@ final class FirebaseJwtProviderTest extends UnitTestCase
         $token = $provider->generateAccessToken(['sub' => 'user-123']);
         $payload = $provider->parseTokenUnsafe($token);
 
+        $this->assertIsString($payload['jti']);
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/',
-            strval($payload['jti']),
+            $payload['jti'],
             'JTI 應符合 UUID v4 格式',
         );
     }

@@ -59,7 +59,9 @@ final class JwtConfig
      */
     public function getEnvironment(): string
     {
-        return (string) ($_ENV['APP_ENV'] ?? getenv('APP_ENV') ?: 'development');
+        $env = $_ENV['APP_ENV'] ?? getenv('APP_ENV');
+
+        return is_string($env) && $env !== '' ? $env : 'development';
     }
 
     /**
