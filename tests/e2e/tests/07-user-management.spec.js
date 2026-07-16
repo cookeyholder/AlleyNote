@@ -63,8 +63,8 @@ test.describe("使用者管理功能測試", () => {
     await page.click('button:has-text("新增使用者")');
     await page.waitForTimeout(500);
 
-    // 點擊取消（使用 id）
-    await page.click("#cancelModalBtn");
+    // 點擊取消（使用 id，force 略過動畫穩定檢查）
+    await page.click("#cancelModalBtn", { force: true });
     await page.waitForTimeout(500);
 
     // Modal 應該關閉（檢查 modal 容器不可見）
