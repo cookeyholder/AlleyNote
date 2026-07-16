@@ -8,6 +8,7 @@ declare(strict_types=1);
  * 這個檔案包含所有 API 相關的路由定義
  */
 
+use App\Application\Controllers\Api\V1\CsrfTokenController;
 use App\Application\Controllers\Api\V1\PostController;
 use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
@@ -33,13 +34,7 @@ return [
     'api.csrf-token' => [
         'methods' => ['GET'],
         'path' => '/api/csrf-token',
-        'handler' => function () {
-            return [
-                'success' => true,
-                'message' => 'CSRF token issued in cookie',
-            ];
-        },
-        'middleware' => ['csrf'],
+        'handler' => [CsrfTokenController::class, 'getToken'],
         'name' => 'api.csrf-token'
     ],
 

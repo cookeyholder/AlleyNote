@@ -8,6 +8,7 @@ import { notification } from "../../utils/notification.js";
 import { CKEditorWrapper } from "../../components/CKEditorWrapper.js";
 import { loading } from "../../components/Loading.js";
 import { timezoneUtils } from "../../utils/timezoneUtils.js";
+import { escapeHtml } from "../../utils/security.js";
 
 let editorInstance = null;
 let hasUnsavedChanges = false;
@@ -610,7 +611,7 @@ function renderSelectedTags() {
     tagEl.className =
       "inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-accent-200 text-accent-700 rounded-xl text-xs font-bold shadow-sm animate-fade-in";
     tagEl.innerHTML = `
-      ${tag.name}
+      ${escapeHtml(tag.name)}
       <button type="button" class="w-4 h-4 flex items-center justify-center rounded-full bg-accent-100 text-accent-600 hover:bg-red-500 hover:text-white transition-all" data-remove-tag="${tagId}" title="移除此標籤">
         <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>

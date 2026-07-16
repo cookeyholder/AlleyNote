@@ -44,12 +44,12 @@ class RateLimitService
                 'reset'     => $data['reset'],
             ];
         } catch (Throwable $e) {
-            // 如果快取服務不可用，預設允許請求
+            // 如果快取服務不可用，拒絕請求（fail-closed）
             app_log('error', '速率限制檢查失敗', ['exception' => $e->getMessage()]);
 
             return [
-                'allowed'   => true,
-                'remaining' => $maxRequests,
+                'allowed'   => false,
+                'remaining' => 0,
                 'reset'     => time() + $timeWindow,
             ];
         }

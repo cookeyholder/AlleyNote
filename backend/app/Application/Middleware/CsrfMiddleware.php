@@ -21,11 +21,15 @@ class CsrfMiddleware implements MiddlewareInterface
 
     private const TOKEN_LENGTH = 32;
 
+    /**
+     * @param string[] $skipPaths 略過 CSRF 保護的路徑列表
+     */
     public function __construct(
         private int $priority = self::DEFAULT_PRIORITY,
         private bool $enabled = true,
         private ?LoggerInterface $logger = null,
         private bool $secureCookie = true,
+        private array $skipPaths = [],
     ) {}
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -122,6 +126,11 @@ class CsrfMiddleware implements MiddlewareInterface
 
     public function shouldProcess(ServerRequestInterface $request): bool
     {
-        return $this->enabled;
+        if (!$this->enabled) {
+            return false;
+        }
+        $path = $request->getUri()->getPath();
+
+        return !in_array($path, $this->skipPaths, true);
     }
 }

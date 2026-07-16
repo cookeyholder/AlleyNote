@@ -175,7 +175,7 @@ class UserRepository
         $countStmt->execute($params);
         $total = (int) $countStmt->fetchColumn();
         // 取得資料
-        $sql = 'SELECT u.*, 
+        $sql = 'SELECT u.id, u.uuid, u.username, u.email, u.status, u.role, u.is_active, u.last_login, u.deleted_at, u.created_at, u.updated_at,
                 GROUP_CONCAT(r.id) as role_ids,
                 GROUP_CONCAT(r.name) as role_names,
                 GROUP_CONCAT(r.display_name) as role_display_names
@@ -277,7 +277,7 @@ class UserRepository
      */
     public function findByIdWithRoles(int $id): ?array
     {
-        $sql = 'SELECT u.*,
+        $sql = 'SELECT u.id, u.uuid, u.username, u.email, u.status, u.role, u.is_active, u.last_login, u.deleted_at, u.created_at, u.updated_at,
                 GROUP_CONCAT(r.id) as role_ids,
                 GROUP_CONCAT(r.name) as role_names,
                 GROUP_CONCAT(r.display_name) as role_display_names

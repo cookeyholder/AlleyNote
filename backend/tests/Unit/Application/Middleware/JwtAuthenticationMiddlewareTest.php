@@ -6,7 +6,9 @@ namespace Tests\Unit\Application\Middleware;
 
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\Exceptions\TokenExpiredException;
+use App\Domains\Auth\Services\JwtRoleFreshnessValidator;
 use App\Domains\Auth\ValueObjects\JwtPayload;
 use App\Infrastructure\Http\Response;
 use App\Infrastructure\Routing\Contracts\RequestHandlerInterface;
@@ -73,13 +75,44 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
         $request = $this->createRequest('GET', '/api/posts');
         $request = $this->withJwtAuth($request, $token);
 
-        $payload = new JwtPayload('jti', '123', 'iss', ['alleynote-client'], new DateTimeImmutable(), new DateTimeImmutable('+1 hour'));
+        $iat = new DateTimeImmutable();
+        $payload = new JwtPayload('jti', '123', 'iss', ['alleynote-client'], $iat, new DateTimeImmutable('+1 hour'));
 
         $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->with($token)->andReturn($payload);
         $this->handler->shouldReceive('handle')->once()->andReturn(new Response(200));
 
         $response = $this->middleware->process($request, $this->handler);
         $this->assertResponseStatus($response, 200);
+    }
+
+    public function testShouldReturn403WhenRoleChanged(): void
+    {
+        $token = 'role-changed-token';
+        $request = $this->createRequest('GET', '/api/posts');
+        $request = $this->withJwtAuth($request, $token);
+
+        $iat = new DateTimeImmutable('@1000');
+        $payload = new JwtPayload('jti', '123', 'iss', ['alleynote-client'], $iat, new DateTimeImmutable('+1 hour'));
+
+        $userRepository = Mockery::mock(UserRepositoryInterface::class);
+        $userRepository->shouldReceive('findById')
+            ->once()
+            ->with(123)
+            ->andReturn(['id' => 123, 'role_updated_at' => 2000]);
+
+        $validator = new JwtRoleFreshnessValidator($userRepository);
+        $middleware = new JwtAuthenticationMiddleware($this->jwtTokenService, $validator);
+
+        $this->jwtTokenService->shouldReceive('validateAccessToken')->once()->with($token)->andReturn($payload);
+        $this->handler->shouldNotReceive('handle');
+
+        $response = $middleware->process($request, $this->handler);
+
+        $this->assertResponseStatus($response, 403);
+        $this->assertJsonResponseMatches($response, [
+            'success' => false,
+            'error'   => '角色權限已變更，請重新登入',
+        ]);
     }
 
     public function testShouldReturn401WhenTokenExpired(): void

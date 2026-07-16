@@ -136,10 +136,10 @@ class RateLimitTest extends IntegrationTestCase
             ->with("rate_limit:{$ip}")
             ->andThrow(new Exception('快取錯誤'));
 
-        // 當快取服務不可用時，應該允許請求以確保服務可用性
+        // 當快取服務不可用時，應該拒絕請求（fail-closed）
         $result = $this->rateLimitService->checkLimit($ip);
 
-        $this->assertTrue($result['allowed'], '快取服務錯誤時應該允許請求');
+        $this->assertFalse($result['allowed'], '快取服務錯誤時應該拒絕請求（fail-closed）');
     }
 
     #[Test]
