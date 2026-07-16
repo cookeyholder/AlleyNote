@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Domains\Statistics\Providers;
 
+use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Analyzers\ContentInsightsAnalyzer;
 use App\Domains\Statistics\Analyzers\PostStatisticsAnalyzer;
 use App\Domains\Statistics\Analyzers\SourceDistributionAnalyzer;
 use App\Domains\Statistics\Analyzers\StatisticsOverviewAnalyzer;
 use App\Domains\Statistics\Analyzers\UserStatisticsAnalyzer;
 use App\Domains\Statistics\Contracts\PostStatisticsRepositoryInterface;
-use App\Application\Services\Statistics\StatisticsApplicationService;
 use App\Domains\Statistics\Contracts\SlowQueryMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
