@@ -43,7 +43,6 @@ final class StatisticsQueryServiceTest extends UnitTestCase
         parent::setUp();
 
         $this->aggregationService = Mockery::mock(StatisticsAggregationServiceInterface::class);
-        $this->statisticsRepository = Mockery::mock(StatisticsRepositoryInterface::class);
         $this->cacheService = Mockery::mock(StatisticsCacheServiceInterface::class);
         $this->configService = new StatisticsConfigService();
         $this->logger = Mockery::mock(LoggerInterface::class);
@@ -53,7 +52,6 @@ final class StatisticsQueryServiceTest extends UnitTestCase
             $this->aggregationService,
             $this->cacheService,
             $this->configService,
-            $this->statisticsRepository,
             $this->logger,
             $this->db,
         );

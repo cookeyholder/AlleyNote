@@ -39,8 +39,6 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
 
     private StatisticsConfigService $configService;
 
-    private StatisticsRepositoryInterface|MockInterface $statisticsRepository;
-
     private LoggerInterface|MockInterface $logger;
 
     private PDO|MockInterface $db;
@@ -67,7 +65,6 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
                 ],
             ],
         ], 'production');
-        $this->statisticsRepository = Mockery::mock(StatisticsRepositoryInterface::class);
         $this->logger = Mockery::mock(LoggerInterface::class);
         $this->db = Mockery::mock(PDO::class);
 
@@ -75,7 +72,6 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
             $this->aggregationService,
             $this->cacheService,
             $this->configService,
-            $this->statisticsRepository,
             $this->logger,
             $this->db,
         );
