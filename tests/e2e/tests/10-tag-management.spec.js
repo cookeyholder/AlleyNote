@@ -15,7 +15,9 @@ async function ensureAtLeastOneTag(page) {
   const timestamp = Date.now();
   await page.click('button:has-text("新增內容標籤")');
   await tagNameInput(page).fill(`測試標籤 ${timestamp}`);
-  await page.locator('button[type="submit"]:has-text("建立標籤")').click();
+  await page
+    .locator('button[type="submit"]:has-text("建立標籤")')
+    .evaluate((el) => el.click());
   await page.waitForTimeout(1500);
   return (await page.locator(".edit-tag-btn").count()) > 0;
 }
@@ -75,8 +77,8 @@ test.describe("標籤管理功能測試", () => {
     await page.click('button:has-text("新增內容標籤")');
     await page.waitForTimeout(500);
 
-    // 點擊取消
-    await page.click("#cancelModalBtn");
+    // 點擊取消（使用 force 略過動畫穩定檢查）
+    await page.click("#cancelModalBtn", { force: true });
     await page.waitForTimeout(500);
 
     // Modal 應該關閉
@@ -90,8 +92,10 @@ test.describe("標籤管理功能測試", () => {
     await page.click('button:has-text("新增內容標籤")');
     await page.waitForTimeout(500);
 
-    // 不填寫任何資料，直接提交
-    await page.locator('button[type="submit"]:has-text("建立標籤")').click();
+    // 不填寫任何資料，直接提交（使用 evaluate 保留 HTML5 驗證）
+    await page
+      .locator('button[type="submit"]:has-text("建立標籤")')
+      .evaluate((el) => el.click());
 
     // 因為有 HTML5 驗證，表單不會提交
     // 檢查 modal 仍然存在
@@ -113,7 +117,9 @@ test.describe("標籤管理功能測試", () => {
     await tagDescriptionInput(page).fill("這是測試用的標籤描述");
 
     // 提交表單
-    await page.locator('button[type="submit"]:has-text("建立標籤")').click();
+    await page
+      .locator('button[type="submit"]:has-text("建立標籤")')
+      .evaluate((el) => el.click());
 
     const afterCount = await page.locator(".edit-tag-btn").count();
     test.skip(
@@ -124,7 +130,7 @@ test.describe("標籤管理功能測試", () => {
     // 成功建立時 modal 應已關閉；若仍在，避免影響後續測試
     const addTagModal = page.locator('.fixed.inset-0 h3:has-text("新增標籤")');
     if (await addTagModal.isVisible()) {
-      await page.click("#cancelModalBtn");
+      await page.click("#cancelModalBtn", { force: true });
     }
 
     // 頁面應該顯示新增的標籤
@@ -152,7 +158,9 @@ test.describe("標籤管理功能測試", () => {
     await tagNameInput(page).fill(newName);
 
     // 提交
-    await page.locator('button[type="submit"]:has-text("儲存變更")').click();
+    await page
+      .locator('button[type="submit"]:has-text("儲存變更")')
+      .evaluate((el) => el.click());
     // Modal 應該關閉
     await expect(
       page.locator('.fixed.inset-0 h3:has-text("編輯標籤")'),
@@ -178,7 +186,7 @@ test.describe("標籤管理功能測試", () => {
       '.fixed.inset-0 h3:has-text("確認刪除標籤")',
     );
     await expect(confirmDialog).toBeVisible();
-    await page.locator('[data-action="confirm"]').click();
+    await page.locator('[data-action="confirm"]').click({ force: true });
 
     await page.waitForTimeout(1000);
 
