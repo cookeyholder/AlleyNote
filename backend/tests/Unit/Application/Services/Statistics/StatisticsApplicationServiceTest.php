@@ -14,8 +14,6 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
-use PDO;
-use Psr\Log\LoggerInterface;
 use RuntimeException;
 use Tests\Support\UnitTestCase;
 
@@ -37,10 +35,6 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
     private StatisticsCacheServiceInterface|MockInterface $cacheService;
 
     private StatisticsConfigService $configService;
-
-    private LoggerInterface|MockInterface $logger;
-
-    private PDO|MockInterface $db;
 
     protected function setUp(): void
     {
@@ -64,15 +58,11 @@ final class StatisticsApplicationServiceTest extends UnitTestCase
                 ],
             ],
         ], 'production');
-        $this->logger = Mockery::mock(LoggerInterface::class);
-        $this->db = Mockery::mock(PDO::class);
 
         $this->service = new StatisticsApplicationService(
             $this->aggregationService,
             $this->cacheService,
             $this->configService,
-            $this->logger,
-            $this->db,
         );
     }
 
