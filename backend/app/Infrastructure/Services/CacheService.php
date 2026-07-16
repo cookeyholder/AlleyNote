@@ -76,7 +76,7 @@ class CacheService implements CacheServiceInterface
         return $cacheData['data'];
     }
 
-    public function set(string $key, mixed $value, int $ttl = 3600): bool
+    public function set(string $key, mixed $value, ?int $ttl = null): bool
     {
         $filename = $this->getCacheFilename($key);
         $this->incrementStat('sets');
@@ -143,7 +143,7 @@ class CacheService implements CacheServiceInterface
         return true;
     }
 
-    public function remember(string $key, callable $callback, int $ttl = 3600): mixed
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed
     {
         $value = $this->get($key);
         if ($value === null) {
@@ -172,7 +172,7 @@ class CacheService implements CacheServiceInterface
         return $result;
     }
 
-    public function setMultiple(array $values, int $ttl = 3600): bool
+    public function setMultiple(array $values, ?int $ttl = null): bool
     {
         foreach ($values as $key => $value) {
             $this->set($this->normalizeKey($key), $value, $ttl);

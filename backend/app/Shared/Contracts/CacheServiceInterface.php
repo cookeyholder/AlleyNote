@@ -21,11 +21,11 @@ interface CacheServiceInterface extends CacheInterface
      * 批次設定多個快取。
      *
      * @param array<string, mixed> $values 快取資料陣列，格式為 [key => value]
-     * @param int $ttl 存活時間（秒）
+     * @param int|null $ttl 存活時間（秒），null 使用實作預設值
      *
      * @return bool 是否全部成功設定
      */
-    public function setMultiple(array $values, int $ttl = 3600): bool;
+    public function setMultiple(array $values, ?int $ttl = null): bool;
 
     /**
      * 批次刪除多個快取。

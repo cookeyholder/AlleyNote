@@ -21,11 +21,11 @@ interface CacheInterface
      *
      * @param string $key 快取鍵
      * @param mixed $value 要快取的資料
-     * @param int $ttl 存活時間（秒）
+     * @param int|null $ttl 存活時間（秒），null 使用實作預設值
      *
      * @return bool 是否成功存入
      */
-    public function set(string $key, mixed $value, int $ttl = 3600): bool;
+    public function set(string $key, mixed $value, ?int $ttl = null): bool;
 
     /**
      * 檢查快取鍵是否存在。
@@ -57,11 +57,11 @@ interface CacheInterface
      *
      * @param string $key 快取鍵
      * @param callable $callback 回調函式
-     * @param int $ttl 存活時間（秒）
+     * @param int|null $ttl 存活時間（秒），null 使用實作預設值
      *
      * @return mixed 快取的資料或回調結果
      */
-    public function remember(string $key, callable $callback, int $ttl = 3600): mixed;
+    public function remember(string $key, callable $callback, ?int $ttl = null): mixed;
 
     /**
      * 取得快取統計資訊。
