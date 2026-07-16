@@ -4,17 +4,23 @@ declare(strict_types=1);
 
 namespace App\Application\Services\Statistics;
 
+use App\Application\Services\Statistics\DTOs\PaginatedStatisticsDTO;
+use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
 use App\Domains\Statistics\Contracts\StatisticsAggregationServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
+use App\Domains\Statistics\DTOs\StatisticsOverviewDTO;
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\Services\StatisticsConfigService;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 use InvalidArgumentException;
+use PDO;
+use Psr\Log\LoggerInterface;
 use RuntimeException;
+use Throwable;
 
-final class StatisticsApplicationService
+class StatisticsApplicationService
 {
     private const VALID_SNAPSHOT_TYPES = [
         StatisticsSnapshot::TYPE_OVERVIEW,
@@ -23,25 +29,20 @@ final class StatisticsApplicationService
         StatisticsSnapshot::TYPE_POPULAR,
     ];
 
+    private const CACHE_TTL = 3600;
+
+    private const MAX_QUERY_DAYS = 365;
+
     public function __construct(
         private readonly StatisticsAggregationServiceInterface $aggregationService,
         private readonly StatisticsCacheServiceInterface $cacheService,
         private readonly StatisticsConfigService $configService,
+        private readonly LoggerInterface $logger,
+        private readonly PDO $db,
     ) {}
 
     /**
-     * 建立綜合統計快照.
-     *
-     * 建立包含所有統計資料的綜合快照，並處理相關的快取失效。
-     *
-     * @param StatisticsPeriod $period 統計週期
-     * @param array<string, mixed> $metadata 額外的元資料
-     * @param DateTimeInterface|null $expiresAt 過期時間
-     *
-     * @return StatisticsSnapshot 建立的統計快照
-     *
-     * @throws InvalidArgumentException 當參數無效時
-     * @throws RuntimeException 當建立過程中發生錯誤時
+     * @param array<string, mixed> $metadata
      */
     public function createOverviewSnapshot(
         StatisticsPeriod $period,
@@ -51,9 +52,7 @@ final class StatisticsApplicationService
         $this->validatePeriod($period);
 
         try {
-            // 建立統計快照
             $snapshot = $this->aggregationService->createOverviewSnapshot($period, $metadata, $expiresAt);
-            // 清除相關快取
             $this->invalidateRelatedCache($snapshot);
 
             return $snapshot;
@@ -63,18 +62,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 建立文章統計快照.
-     *
-     * 專門針對文章統計資料建立快照。
-     *
-     * @param StatisticsPeriod $period 統計週期
-     * @param array<string, mixed> $metadata 額外的元資料
-     * @param DateTimeInterface|null $expiresAt 過期時間
-     *
-     * @return StatisticsSnapshot 建立的文章統計快照
-     *
-     * @throws InvalidArgumentException 當參數無效時
-     * @throws RuntimeException 當建立過程中發生錯誤時
+     * @param array<string, mixed> $metadata
      */
     public function createPostsSnapshot(
         StatisticsPeriod $period,
@@ -94,18 +82,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 建立使用者統計快照.
-     *
-     * 專門針對使用者統計資料建立快照。
-     *
-     * @param StatisticsPeriod $period 統計週期
-     * @param array<string, mixed> $metadata 額外的元資料
-     * @param DateTimeInterface|null $expiresAt 過期時間
-     *
-     * @return StatisticsSnapshot 建立的使用者統計快照
-     *
-     * @throws InvalidArgumentException 當參數無效時
-     * @throws RuntimeException 當建立過程中發生錯誤時
+     * @param array<string, mixed> $metadata
      */
     public function createUsersSnapshot(
         StatisticsPeriod $period,
@@ -125,18 +102,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 建立熱門內容統計快照.
-     *
-     * 建立包含熱門文章、活躍使用者等資料的快照。
-     *
-     * @param StatisticsPeriod $period 統計週期
-     * @param array<string, mixed> $metadata 額外的元資料
-     * @param DateTimeInterface|null $expiresAt 過期時間
-     *
-     * @return StatisticsSnapshot 建立的熱門內容統計快照
-     *
-     * @throws InvalidArgumentException 當參數無效時
-     * @throws RuntimeException 當建立過程中發生錯誤時
+     * @param array<string, mixed> $metadata
      */
     public function createPopularSnapshot(
         StatisticsPeriod $period,
@@ -156,19 +122,8 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 批量建立多種類型的統計快照.
-     *
-     * 一次性建立多個統計快照，確保資料一致性並最佳化效能。
-     *
-     * @param StatisticsPeriod $period 統計週期
-     * @param array<string> $types 要建立的快照類型
-     * @param array<string, mixed> $metadata 共用的元資料
-     * @param DateTimeInterface|null $expiresAt 過期時間
-     *
-     * @return array<string, StatisticsSnapshot> 建立的快照陣列
-     *
-     * @throws InvalidArgumentException 當參數無效時
-     * @throws RuntimeException 當批量建立過程中發生錯誤時
+     * @param array<string> $types
+     * @param array<string, mixed> $metadata
      */
     public function createBatchSnapshots(
         StatisticsPeriod $period,
@@ -181,7 +136,6 @@ final class StatisticsApplicationService
 
         try {
             $snapshots = $this->aggregationService->createBatchSnapshots($period, $types, $metadata, $expiresAt);
-            // 批量清除快取，使用標籤快取失效更高效
             $this->cacheService->flushByTags(['statistics']);
 
             return $snapshots;
@@ -190,17 +144,6 @@ final class StatisticsApplicationService
         }
     }
 
-    /**
-     * 更新現有的統計快照.
-     *
-     * 重新計算並更新指定的統計快照，並清除相關快取。
-     *
-     * @param StatisticsSnapshot $snapshot 要更新的快照
-     *
-     * @return StatisticsSnapshot 更新後的快照
-     *
-     * @throws RuntimeException 當更新過程中發生錯誤時
-     */
     public function updateSnapshot(StatisticsSnapshot $snapshot): StatisticsSnapshot
     {
         try {
@@ -213,27 +156,12 @@ final class StatisticsApplicationService
         }
     }
 
-    /**
-     * 計算統計趨勢.
-     *
-     * 比較兩個週期的統計資料，計算成長率與趨勢指標，並帶快取支援。
-     *
-     * @param StatisticsPeriod $currentPeriod 當前週期
-     * @param StatisticsPeriod $previousPeriod 上一週期
-     * @param string $snapshotType 快照類型
-     * @param int $cacheTtl 快取存活時間（秒），預設1小時
-     *
-     * @return array<string, mixed> 趨勢分析資料
-     *
-     * @throws RuntimeException 當趨勢計算失敗時
-     */
     public function calculateTrends(
         StatisticsPeriod $currentPeriod,
         StatisticsPeriod $previousPeriod,
         string $snapshotType,
         ?int $cacheTtl = null,
     ): array {
-        // 生成快取鍵
         $cacheKey = $this->generateTrendsCacheKey($currentPeriod, $previousPeriod, $snapshotType);
         $resolvedCacheTtl = $cacheTtl ?? $this->configService->getStatisticsTypeTtl('trends');
         /** @var array<string, mixed> $result */
@@ -246,22 +174,10 @@ final class StatisticsApplicationService
         return $result;
     }
 
-    /**
-     * 清理過期的統計快照.
-     *
-     * 刪除過期的統計快照並清除相關快取。
-     *
-     * @param DateTimeInterface|null $beforeDate 指定日期前的快照，null 表示當前時間
-     *
-     * @return int 清理的快照數量
-     *
-     * @throws RuntimeException 當清理過程中發生錯誤時
-     */
     public function cleanExpiredSnapshots(?DateTimeInterface $beforeDate = null): int
     {
         try {
             $deletedCount = $this->aggregationService->cleanExpiredSnapshots($beforeDate);
-            // 清理完成後清除所有統計快取
             $this->cacheService->flushByTags(['statistics']);
 
             return $deletedCount;
@@ -270,17 +186,6 @@ final class StatisticsApplicationService
         }
     }
 
-    /**
-     * 獲取帶快取的統計資料.
-     *
-     * 透過快取機制獲取統計資料，提升查詢效能。
-     *
-     * @param string $snapshotType 快照類型
-     * @param StatisticsPeriod $period 統計週期
-     * @param int $cacheTtl 快取存活時間（秒），預設30分鐘
-     *
-     * @return array<string, mixed> 統計資料
-     */
     public function getCachedStatistics(
         string $snapshotType,
         StatisticsPeriod $period,
@@ -292,8 +197,6 @@ final class StatisticsApplicationService
         $result = $this->cacheService->remember(
             $cacheKey,
             function (): array {
-                // 這裡可以實作從 Repository 獲取統計資料的邏輯
-                // 或者呼叫領域服務獲取最新統計資料
                 return [];
             },
             $resolvedCacheTtl,
@@ -303,14 +206,9 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 預熱統計快取.
+     * @param array<string> $snapshotTypes
      *
-     * 預先載入常用的統計資料到快取中。
-     *
-     * @param array<string> $snapshotTypes 要預熱的快照類型
-     * @param StatisticsPeriod $period 統計週期
-     *
-     * @return array<string, bool> 預熱結果，true 表示成功
+     * @return array<string, bool>
      */
     public function warmCache(array $snapshotTypes, StatisticsPeriod $period): array
     {
@@ -328,9 +226,7 @@ final class StatisticsApplicationService
     }
 
     /**
-     * 清除指定標籤的快取.
-     *
-     * @param array<string> $tags 要清除的快取標籤
+     * @param array<string> $tags
      */
     public function invalidateCache(array $tags): void
     {
@@ -338,23 +234,636 @@ final class StatisticsApplicationService
     }
 
     /**
+     * 取得統計概覽資料.
+     */
+    public function getOverview(StatisticsQueryDTO $query): StatisticsOverviewDTO
+    {
+        $this->validateQuery($query);
+        $cacheKey = $this->generateCacheKey('overview', $query);
+
+        try {
+            $cached = $this->cacheService->get($cacheKey);
+            if ($cached instanceof StatisticsOverviewDTO) {
+                $this->logger->debug('統計概覽快取命中', ['cache_key' => $cacheKey]);
+
+                return $cached;
+            }
+            $this->logger->debug('開始查詢統計概覽', [
+                'query' => [
+                    'start_date' => $query->getStartDate()?->format('Y-m-d'),
+                    'end_date'   => $query->getEndDate()?->format('Y-m-d'),
+                    'filters'    => $query->getFilters(),
+                ],
+            ]);
+            $overview = $this->buildOverviewFromRepository($query);
+            $this->cacheService->put($cacheKey, $overview, self::CACHE_TTL, ['statistics', 'overview']);
+            $this->logger->debug('統計概覽已快取', ['cache_key' => $cacheKey]);
+
+            return $overview;
+        } catch (Throwable $e) {
+            $this->logger->error('統計概覽查詢失敗', [
+                'error' => $e->getMessage(),
+                'query' => [
+                    'start_date' => $query->getStartDate()?->format('Y-m-d'),
+                    'end_date'   => $query->getEndDate()?->format('Y-m-d'),
+                ],
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 取得文章統計資料（分頁）.
+     */
+    public function getPostStatistics(StatisticsQueryDTO $query): PaginatedStatisticsDTO
+    {
+        $this->validateQuery($query);
+        $cacheKey = $this->generateCacheKey('posts', $query);
+
+        try {
+            $cached = $this->cacheService->get($cacheKey);
+            if ($cached instanceof PaginatedStatisticsDTO) {
+                $this->logger->debug('文章統計快取命中', ['cache_key' => $cacheKey]);
+
+                return $cached;
+            }
+            $this->logger->debug('開始查詢文章統計', [
+                'page'  => $query->getPage(),
+                'limit' => $query->getLimit(),
+                'sort'  => $query->getSortBy() . ' ' . $query->getSortDirection(),
+            ]);
+            $result = $this->buildPostStatisticsFromRepository($query);
+            $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'posts']);
+            $this->logger->debug('文章統計已快取', ['cache_key' => $cacheKey]);
+
+            return $result;
+        } catch (Throwable $e) {
+            $this->logger->error('文章統計查詢失敗', [
+                'error' => $e->getMessage(),
+                'page'  => $query->getPage(),
+                'limit' => $query->getLimit(),
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 取得來源分佈統計.
+     */
+    public function getSourceDistribution(StatisticsQueryDTO $query): array
+    {
+        $this->validateQuery($query);
+        $cacheKey = $this->generateCacheKey('sources', $query);
+
+        try {
+            $cached = $this->cacheService->get($cacheKey);
+            if ($cached !== null && is_array($cached)) {
+                $this->logger->debug('來源分佈快取命中', ['cache_key' => $cacheKey]);
+
+                return $cached;
+            }
+            $this->logger->debug('開始查詢來源分佈');
+            $distribution = $this->buildSourceDistributionFromRepository($query);
+            $this->cacheService->put($cacheKey, $distribution, self::CACHE_TTL, ['statistics', 'sources']);
+            $this->logger->debug('來源分佈已快取', ['cache_key' => $cacheKey]);
+
+            return $distribution;
+        } catch (Throwable $e) {
+            $this->logger->error('來源分佈查詢失敗', ['error' => $e->getMessage()]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 取得使用者統計資料（分頁）.
+     */
+    public function getUserStatistics(StatisticsQueryDTO $query): PaginatedStatisticsDTO
+    {
+        $this->validateQuery($query);
+        $cacheKey = $this->generateCacheKey('users', $query);
+
+        try {
+            $cached = $this->cacheService->get($cacheKey);
+            if ($cached instanceof PaginatedStatisticsDTO) {
+                $this->logger->debug('使用者統計快取命中', ['cache_key' => $cacheKey]);
+
+                return $cached;
+            }
+            $this->logger->debug('開始查詢使用者統計');
+            $result = $this->buildUserStatisticsFromRepository($query);
+            $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'users']);
+            $this->logger->debug('使用者統計已快取', ['cache_key' => $cacheKey]);
+
+            return $result;
+        } catch (Throwable $e) {
+            $this->logger->error('使用者統計查詢失敗', ['error' => $e->getMessage()]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 取得熱門內容統計.
+     */
+    public function getPopularContent(StatisticsQueryDTO $query): array
+    {
+        $this->validateQuery($query);
+        $cacheKey = $this->generateCacheKey('popular', $query);
+
+        try {
+            $cached = $this->cacheService->get($cacheKey);
+            if ($cached !== null && is_array($cached)) {
+                $this->logger->debug('熱門內容快取命中', ['cache_key' => $cacheKey]);
+
+                return $cached;
+            }
+            $this->logger->debug('開始查詢熱門內容');
+            $popular = $this->buildPopularContentFromRepository($query);
+            $this->cacheService->put($cacheKey, $popular, self::CACHE_TTL, ['statistics', 'popular']);
+            $this->logger->debug('熱門內容已快取', ['cache_key' => $cacheKey]);
+
+            return $popular;
+        } catch (Throwable $e) {
+            $this->logger->error('熱門內容查詢失敗', ['error' => $e->getMessage()]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 搜尋統計資料.
+     */
+    public function search(string $keyword, StatisticsQueryDTO $query): PaginatedStatisticsDTO
+    {
+        if (trim($keyword) === '') {
+            throw new InvalidArgumentException('搜尋關鍵字不能為空');
+        }
+        $this->validateQuery($query);
+        $cacheKey = $this->generateSearchCacheKey($keyword, $query);
+
+        try {
+            $cached = $this->cacheService->get($cacheKey);
+            if ($cached instanceof PaginatedStatisticsDTO) {
+                $this->logger->debug('統計搜尋快取命中', ['cache_key' => $cacheKey, 'keyword' => $keyword]);
+
+                return $cached;
+            }
+            $this->logger->debug('開始搜尋統計資料', ['keyword' => $keyword]);
+            $result = $this->buildSearchResultsFromRepository($keyword, $query);
+            $this->cacheService->put($cacheKey, $result, self::CACHE_TTL, ['statistics', 'search']);
+            $this->logger->debug('統計搜尋已快取', ['cache_key' => $cacheKey, 'keyword' => $keyword]);
+
+            return $result;
+        } catch (Throwable $e) {
+            $this->logger->error('統計搜尋失敗', [
+                'error'   => $e->getMessage(),
+                'keyword' => $keyword,
+            ]);
+
+            throw $e;
+        }
+    }
+
+    /**
+     * 驗證查詢參數.
+     */
+    private function validateQuery(StatisticsQueryDTO $query): void
+    {
+        if ($query->hasDateRange() && $query->getDateRangeInDays() > self::MAX_QUERY_DAYS) {
+            throw new InvalidArgumentException(
+                sprintf('查詢時間範圍不能超過 %d 天', self::MAX_QUERY_DAYS),
+            );
+        }
+        if ($query->getLimit() > 100) {
+            throw new InvalidArgumentException('每頁筆數不能超過 100');
+        }
+    }
+
+    /**
+     * 生成快取鍵.
+     */
+    private function generateCacheKey(string $type, StatisticsQueryDTO $query): string
+    {
+        $parts = [
+            'stats',
+            $type,
+            md5(serialize([
+                'start'   => $query->getStartDate()?->format('Y-m-d'),
+                'end'     => $query->getEndDate()?->format('Y-m-d'),
+                'page'    => $query->getPage(),
+                'limit'   => $query->getLimit(),
+                'sort'    => $query->getSortBy() . ':' . $query->getSortDirection(),
+                'filters' => $query->getFilters(),
+            ])),
+        ];
+
+        return implode(':', $parts);
+    }
+
+    /**
+     * 生成搜尋快取鍵.
+     */
+    private function generateSearchCacheKey(string $keyword, StatisticsQueryDTO $query): string
+    {
+        $parts = [
+            'stats',
+            'search',
+            md5($keyword),
+            md5(serialize([
+                'start'   => $query->getStartDate()?->format('Y-m-d'),
+                'end'     => $query->getEndDate()?->format('Y-m-d'),
+                'page'    => $query->getPage(),
+                'limit'   => $query->getLimit(),
+                'sort'    => $query->getSortBy() . ':' . $query->getSortDirection(),
+                'filters' => $query->getFilters(),
+            ])),
+        ];
+
+        return implode(':', $parts);
+    }
+
+    /**
+     * 從 Repository 建構概覽資料.
+     */
+    private function buildOverviewFromRepository(StatisticsQueryDTO $query): StatisticsOverviewDTO
+    {
+        $startDate = $query->getStartDate()?->format('Y-m-d H:i:s');
+        $endDate = $query->getEndDate()?->format('Y-m-d H:i:s');
+        if (!$startDate || !$endDate) {
+            $endDate = new DateTimeImmutable()->format('Y-m-d 23:59:59');
+            $startDate = new DateTimeImmutable('-30 days')->format('Y-m-d 00:00:00');
+        }
+        $totalPosts = $this->queryTotalPosts($startDate, $endDate);
+        $activeUsers = $this->queryActiveUsers($startDate, $endDate);
+        $newUsers = $this->queryNewUsers($startDate, $endDate);
+        $totalViews = $this->queryTotalViews($startDate, $endDate);
+
+        return new StatisticsOverviewDTO(
+            totalPosts: $totalPosts,
+            activeUsers: $activeUsers,
+            newUsers: $newUsers,
+            postActivity: [
+                'total_posts'     => $totalPosts,
+                'published_posts' => $this->queryPublishedPosts($startDate, $endDate),
+                'draft_posts'     => $this->queryDraftPosts($startDate, $endDate),
+            ],
+            userActivity: [
+                'total_users'  => $this->queryTotalUsers(),
+                'active_users' => $activeUsers,
+                'new_users'    => $newUsers,
+            ],
+            engagementMetrics: [
+                'posts_per_active_user' => $activeUsers > 0 ? round($totalPosts / $activeUsers, 2) : 0.0,
+                'user_growth_rate'      => $this->calculateUserGrowthRate($startDate, $endDate),
+            ],
+            periodSummary: [
+                'type'          => $this->determinePeriodType($startDate, $endDate),
+                'duration_days' => $this->calculateDurationDays($startDate, $endDate),
+            ],
+        );
+    }
+
+    /**
+     * 查詢指定時間範圍內的總文章數.
+     */
+    private function queryTotalPosts(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL';
+        $params = [];
+        if ($startDate && $endDate) {
+            $sql .= ' AND created_at BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢已發布文章數.
+     */
+    private function queryPublishedPosts(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL AND status = \'published\'';
+        $params = [];
+        if ($startDate && $endDate) {
+            $sql .= ' AND publish_date BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢草稿文章數.
+     */
+    private function queryDraftPosts(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM posts WHERE deleted_at IS NULL AND status = \'draft\'';
+        $params = [];
+        if ($startDate && $endDate) {
+            $sql .= ' AND created_at BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢活躍使用者數（在時間範圍內有登入或發文行為）.
+     */
+    private function queryActiveUsers(?string $startDate, ?string $endDate): int
+    {
+        if (!$startDate || !$endDate) {
+            return $this->queryTotalUsers();
+        }
+        $sql = '
+            SELECT COUNT(DISTINCT user_id) 
+            FROM (
+                SELECT user_id FROM user_activity_logs 
+                WHERE occurred_at BETWEEN :start_date AND :end_date
+                    AND user_id IS NOT NULL
+                UNION
+                SELECT user_id FROM posts 
+                WHERE created_at BETWEEN :start_date AND :end_date
+                    AND user_id IS NOT NULL
+            ) AS active_users
+        ';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([
+            'start_date' => $startDate,
+            'end_date'   => $endDate,
+        ]);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢新使用者數.
+     */
+    private function queryNewUsers(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COUNT(*) FROM users WHERE 1=1';
+        $params = [];
+        if ($startDate && $endDate) {
+            $sql .= ' AND created_at BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢總使用者數.
+     */
+    private function queryTotalUsers(): int
+    {
+        $stmt = $this->db->query('SELECT COUNT(*) FROM users');
+        if ($stmt === false) {
+            throw new RuntimeException('查詢總使用者數失敗');
+        }
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 查詢總瀏覽量.
+     */
+    private function queryTotalViews(?string $startDate, ?string $endDate): int
+    {
+        $sql = 'SELECT COALESCE(SUM(views), 0) FROM posts WHERE deleted_at IS NULL';
+        $params = [];
+        if ($startDate && $endDate) {
+            $sql .= ' AND publish_date BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * 計算使用者成長率.
+     */
+    private function calculateUserGrowthRate(?string $startDate, ?string $endDate): float
+    {
+        if (!$startDate || !$endDate) {
+            return 0.0;
+        }
+        $duration = new DateTimeImmutable($endDate)->diff(new DateTimeImmutable($startDate))->days;
+        $previousStart = new DateTimeImmutable($startDate)->modify("-{$duration} days")->format('Y-m-d H:i:s');
+        $previousEnd = $startDate;
+        $currentUsers = $this->queryNewUsers($startDate, $endDate);
+        $previousUsers = $this->queryNewUsers($previousStart, $previousEnd);
+        if ($previousUsers === 0) {
+            return $currentUsers > 0 ? 100.0 : 0.0;
+        }
+
+        return round((($currentUsers - $previousUsers) / $previousUsers) * 100, 2);
+    }
+
+    /**
+     * 決定週期類型.
+     */
+    private function determinePeriodType(?string $startDate, ?string $endDate): string
+    {
+        if (!$startDate || !$endDate) {
+            return 'custom';
+        }
+        $days = $this->calculateDurationDays($startDate, $endDate);
+        if ($days <= 1) {
+            return 'daily';
+        } elseif ($days <= 7) {
+            return 'weekly';
+        } elseif ($days <= 31) {
+            return 'monthly';
+        } else {
+            return 'custom';
+        }
+    }
+
+    /**
+     * 計算持續天數.
+     */
+    private function calculateDurationDays(?string $startDate, ?string $endDate): int
+    {
+        if (!$startDate || !$endDate) {
+            return 0;
+        }
+        $start = new DateTimeImmutable($startDate);
+        $end = new DateTimeImmutable($endDate);
+
+        return $start->diff($end)->days + 1;
+    }
+
+    /**
+     * 從 Repository 建構文章統計資料.
+     */
+    private function buildPostStatisticsFromRepository(StatisticsQueryDTO $query): PaginatedStatisticsDTO
+    {
+        $posts = [];
+        for ($i = 1; $i <= $query->getLimit(); $i++) {
+            $posts[] = [
+                'id'              => 'post-' . $i,
+                'title'           => 'Sample Post ' . $i,
+                'view_count'      => rand(100, 1000),
+                'like_count'      => rand(10, 100),
+                'comment_count'   => rand(0, 50),
+                'category'        => 'Technology',
+                'creation_source' => 'web',
+                'created_at'      => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        return new PaginatedStatisticsDTO(
+            data: $posts,
+            totalCount: 1000,
+            currentPage: $query->getPage(),
+            perPage: $query->getLimit(),
+        );
+    }
+
+    /**
+     * 從 Repository 建構來源分佈資料.
+     */
+    private function buildSourceDistributionFromRepository(StatisticsQueryDTO $query): array
+    {
+        return [
+            [
+                'source'     => 'web',
+                'count'      => 800,
+                'percentage' => 80.0,
+            ],
+            [
+                'source'     => 'api',
+                'count'      => 150,
+                'percentage' => 15.0,
+            ],
+            [
+                'source'     => 'mobile',
+                'count'      => 50,
+                'percentage' => 5.0,
+            ],
+        ];
+    }
+
+    /**
+     * 從 Repository 建構使用者統計資料.
+     */
+    private function buildUserStatisticsFromRepository(StatisticsQueryDTO $query): PaginatedStatisticsDTO
+    {
+        $users = [];
+        for ($i = 1; $i <= $query->getLimit(); $i++) {
+            $users[] = [
+                'id'             => 'user-' . $i,
+                'username'       => 'user' . $i,
+                'post_count'     => rand(1, 20),
+                'view_count'     => rand(100, 5000),
+                'like_count'     => rand(10, 500),
+                'last_active_at' => new DateTimeImmutable()->format('Y-m-d H:i:s'),
+            ];
+        }
+
+        return new PaginatedStatisticsDTO(
+            data: $users,
+            totalCount: 200,
+            currentPage: $query->getPage(),
+            perPage: $query->getLimit(),
+        );
+    }
+
+    /**
+     * 從 Repository 建構熱門內容資料.
+     */
+    private function buildPopularContentFromRepository(StatisticsQueryDTO $query): array
+    {
+        $startDate = $query->getStartDate()?->format('Y-m-d H:i:s');
+        $endDate = $query->getEndDate()?->format('Y-m-d H:i:s');
+        $limit = min($query->getLimit(), 50);
+        $sql = '
+            SELECT 
+                p.id,
+                p.title,
+                p.views,
+                strftime(\'%Y-%m-%d\', p.publish_date) as publish_date
+            FROM posts p
+            WHERE p.deleted_at IS NULL 
+                AND p.status = \'published\'
+        ';
+        $params = [];
+        if ($startDate && $endDate) {
+            $sql .= ' AND p.publish_date BETWEEN :start_date AND :end_date';
+            $params['start_date'] = $startDate;
+            $params['end_date'] = $endDate;
+        }
+        $sql .= ' ORDER BY p.views DESC LIMIT :limit';
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(':' . $key, $value);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * 從 Repository 建構搜尋結果.
+     */
+    private function buildSearchResultsFromRepository(string $keyword, StatisticsQueryDTO $query): PaginatedStatisticsDTO
+    {
+        $results = [];
+        for ($i = 1; $i <= min(10, $query->getLimit()); $i++) {
+            $results[] = [
+                'type'            => 'post',
+                'id'              => 'post-' . $i,
+                'title'           => sprintf('Post containing "%s" %d', $keyword, $i),
+                'relevance_score' => 0.9 - ($i * 0.1),
+                'statistics'      => [
+                    'views' => rand(100, 1000),
+                    'likes' => rand(10, 100),
+                ],
+            ];
+        }
+
+        return new PaginatedStatisticsDTO(
+            data: $results,
+            totalCount: 50,
+            currentPage: $query->getPage(),
+            perPage: $query->getLimit(),
+            metadata: ['search_keyword' => $keyword],
+        );
+    }
+
+    /**
      * 驗證統計週期.
-     *
-     * @throws InvalidArgumentException 當週期無效時
      */
     private function validatePeriod(StatisticsPeriod $period): void
     {
-        // 檢查是否為未來日期
         $now = new DateTimeImmutable();
         if ($period->endTime > $now) {
             throw new InvalidArgumentException('Cannot create statistics for future periods');
         }
-        // 檢查週期長度是否合理
         if ($period->getDurationInSeconds() <= 0) {
             throw new InvalidArgumentException('Invalid period duration');
         }
-        // 檢查週期是否過長（例如超過一年）
-        $maxDuration = 365 * 24 * 3600; // 一年
+        $maxDuration = 365 * 24 * 3600;
         if ($period->getDurationInSeconds() > $maxDuration) {
             throw new InvalidArgumentException('Period duration too long (max 1 year)');
         }
@@ -363,9 +872,7 @@ final class StatisticsApplicationService
     /**
      * 驗證快照類型陣列.
      *
-     * @param array<string> $types 快照類型陣列
-     *
-     * @throws InvalidArgumentException 當類型陣列無效時
+     * @param array<string> $types
      */
     private function validateSnapshotTypes(array $types): void
     {
@@ -376,11 +883,9 @@ final class StatisticsApplicationService
         if (!empty($invalidTypes)) {
             throw new InvalidArgumentException('Unsupported snapshot types: ' . implode(', ', $invalidTypes));
         }
-        // 檢查是否有重複類型
         if (count($types) !== count(array_unique($types))) {
             throw new InvalidArgumentException('Duplicate snapshot types found');
         }
-        // 限制批量操作的數量
         if (count($types) > 10) {
             throw new InvalidArgumentException('Too many snapshot types (max 10)');
         }

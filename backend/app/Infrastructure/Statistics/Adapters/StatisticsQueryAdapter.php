@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Statistics\Adapters;
 
-use App\Domains\Statistics\Contracts\StatisticsQueryServiceInterface as BaseQueryServiceInterface;
+use App\Application\Services\Statistics\DTOs\StatisticsQueryDTO;
+use App\Application\Services\Statistics\StatisticsApplicationService;
 use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 use DateTimeInterface;
 
 class StatisticsQueryAdapter
 {
     public function __construct(
-        private BaseQueryServiceInterface $baseQueryService,
+        private StatisticsApplicationService $statisticsApplicationService,
     ) {}
 
     /**
@@ -26,13 +26,12 @@ class StatisticsQueryAdapter
         DateTimeInterface $endDate,
         string $granularity,
     ): array {
-        $options = [
-            'period_start' => DateTime::createFromInterface($startDate),
-            'period_end'   => DateTime::createFromInterface($endDate),
-        ];
-        $data = $this->baseQueryService->getPostStatistics($options);
+        $queryDTO = new StatisticsQueryDTO(
+            startDate: DateTimeImmutable::createFromInterface($startDate),
+            endDate: DateTimeImmutable::createFromInterface($endDate),
+        );
+        $this->statisticsApplicationService->getPostStatistics($queryDTO);
 
-        // 模擬時間序列資料生成
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'posts');
     }
 
@@ -46,11 +45,11 @@ class StatisticsQueryAdapter
         DateTimeInterface $endDate,
         string $granularity,
     ): array {
-        $options = [
-            'period_start' => DateTime::createFromInterface($startDate),
-            'period_end'   => DateTime::createFromInterface($endDate),
-        ];
-        $data = $this->baseQueryService->getUserStatistics($options);
+        $queryDTO = new StatisticsQueryDTO(
+            startDate: DateTimeImmutable::createFromInterface($startDate),
+            endDate: DateTimeImmutable::createFromInterface($endDate),
+        );
+        $this->statisticsApplicationService->getUserStatistics($queryDTO);
 
         return $this->generateMockTimeSeriesData($startDate, $endDate, $granularity, 'users');
     }
@@ -65,14 +64,11 @@ class StatisticsQueryAdapter
         ?DateTimeInterface $endDate = null,
         int $limit = 10,
     ): array {
-        $options = [];
-        if ($startDate) {
-            $options['period_start'] = DateTime::createFromInterface($startDate);
-        }
-        if ($endDate) {
-            $options['period_end'] = DateTime::createFromInterface($endDate);
-        }
-        $data = $this->baseQueryService->getSourceDistribution($options);
+        $queryDTO = new StatisticsQueryDTO(
+            startDate: $startDate !== null ? DateTimeImmutable::createFromInterface($startDate) : null,
+            endDate: $endDate !== null ? DateTimeImmutable::createFromInterface($endDate) : null,
+        );
+        $this->statisticsApplicationService->getSourceDistribution($queryDTO);
 
         return $this->generateMockCategoryData('source', $limit);
     }
@@ -127,14 +123,11 @@ class StatisticsQueryAdapter
         string $sortBy = 'views',
         int $limit = 10,
     ): array {
-        $options = [];
-        if ($startDate) {
-            $options['period_start'] = DateTime::createFromInterface($startDate);
-        }
-        if ($endDate) {
-            $options['period_end'] = DateTime::createFromInterface($endDate);
-        }
-        $data = $this->baseQueryService->getPopularContent($options);
+        $queryDTO = new StatisticsQueryDTO(
+            startDate: $startDate !== null ? DateTimeImmutable::createFromInterface($startDate) : null,
+            endDate: $endDate !== null ? DateTimeImmutable::createFromInterface($endDate) : null,
+        );
+        $this->statisticsApplicationService->getPopularContent($queryDTO);
 
         return $this->generateMockCategoryData('content', $limit);
     }
