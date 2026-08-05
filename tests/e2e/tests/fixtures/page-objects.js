@@ -30,11 +30,55 @@ const test = base.extend({
   /**
    * 已登入的管理員頁面 fixture
    */
-  adminPage: async ({ page }, use) => {
-    // 執行登入流程
-    const loginPage = new LoginPage(page);
-    await loginPage.goto();
-    await loginPage.loginWithFallback([TEST_USER, FALLBACK_TEST_USER]);
+  adminPage: async ({ page, request }, use) => {
+    let apiLoginSuccess = false;
+    try {
+      const response = await request.post("/api/auth/login", {
+        data: {
+          email: TEST_USER.email,
+          password: TEST_USER.password,
+        },
+        timeout: 5000,
+      });
+
+      if (response.ok()) {
+        const body = await response.json().catch(() => null);
+        const token = body?.data?.access_token || body?.access_token;
+        const refreshToken = body?.data?.refresh_token || body?.refresh_token;
+
+        if (token) {
+          await page.addInitScript(
+            ({ token, refreshToken }) => {
+              localStorage.setItem(
+                "alleynote_access_token",
+                JSON.stringify(token),
+              );
+              if (refreshToken) {
+                localStorage.setItem(
+                  "alleynote_refresh_token",
+                  JSON.stringify(refreshToken),
+                );
+              }
+            },
+            { token, refreshToken },
+          );
+          await page.goto("/admin/dashboard", {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          apiLoginSuccess = true;
+        }
+      }
+    } catch {
+      apiLoginSuccess = false;
+    }
+
+    if (!apiLoginSuccess) {
+      // 快速 API 登入未成功時退回 UI 登入流程
+      const loginPage = new LoginPage(page);
+      await loginPage.goto();
+      await loginPage.loginWithFallback([TEST_USER, FALLBACK_TEST_USER]);
+    }
 
     // 提供頁面給測試使用
     await use(page);
