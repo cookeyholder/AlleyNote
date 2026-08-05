@@ -3,6 +3,7 @@ name: E2E Tests
 permissions:
   contents: read
   issues: write
+  pull-requests: write
   actions: write
 
 on:
@@ -44,6 +45,13 @@ jobs:
           php-version: "8.4"
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
           coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
 
       - name: Install PHP dependencies
         working-directory: backend
@@ -99,17 +107,35 @@ jobs:
         working-directory: frontend
         run: |
           node ../dev-server.js . --port 3000 --proxy /api:http://127.0.0.1:8080/api > /tmp/frontend-server.log 2>&1 &
-          sleep 10
-          echo "--- Frontend server log (startup) ---"
-          cat /tmp/frontend-server.log
-          echo "--- Checking port 3000 ---"
-          nc -zv 127.0.0.1 3000 || (echo "Frontend server failed to start!" && exit 1)
+
+          for i in {1..20}; do
+            if curl -sS "http://127.0.0.1:3000/" >/dev/null 2>&1; then
+              echo "Frontend server is ready"
+              break
+            fi
+
+            if [ "$i" -eq 20 ]; then
+              echo "Frontend server failed to start"
+              tail -n 200 /tmp/frontend-server.log || true
+              exit 1
+            fi
+
+            sleep 0.5
+          done
 
       - name: Install test dependencies
         working-directory: tests/e2e
         run: npm ci
 
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('tests/e2e/package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         working-directory: tests/e2e
         run: npx playwright install --with-deps chromium
 
