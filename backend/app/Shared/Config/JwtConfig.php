@@ -323,6 +323,19 @@ final class JwtConfig
             }
         }
 
+        // 若指定的檔案不存在，但環境變數有直接提供 KEY 內容，則降級由直接變數讀取
+        $fallbackKeyMap = [
+            'JWT_PRIVATE_KEY_PATH' => 'JWT_PRIVATE_KEY',
+            'JWT_PUBLIC_KEY_PATH'  => 'JWT_PUBLIC_KEY',
+        ];
+        $fallbackKey = $fallbackKeyMap[$pathEnvKey] ?? null;
+        if ($fallbackKey !== null) {
+            $directKey = $_ENV[$fallbackKey] ?? getenv($fallbackKey);
+            if (is_string($directKey) && $directKey !== '') {
+                return null;
+            }
+        }
+
         // Only throw if the path was specified but no file was found/readable.
         throw new InvalidArgumentException(
             sprintf('%s 指定的金鑰檔案不存在或不可讀: %s', $pathEnvKey, $pathEnv),

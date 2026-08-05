@@ -56,7 +56,12 @@ if [[ ! -f "$BACKUP_FILE" ]]; then
 fi
 
 # 檢查備份檔案是否為有效的 SQLite 資料庫
-if ! file "$BACKUP_FILE" | grep -q "SQLite"; then
+if command -v file >/dev/null 2>&1; then
+    IS_SQLITE=$(file "$BACKUP_FILE" | grep -q "^SQLite" && echo "yes" || echo "no")
+else
+    IS_SQLITE=$(head -c 16 "$BACKUP_FILE" 2>/dev/null | grep -q "SQLite format 3" && echo "yes" || echo "no")
+fi
+if [[ "$IS_SQLITE" != "yes" ]]; then
     echo "錯誤: 指定的檔案不是有效的 SQLite 資料庫: $BACKUP_FILE" >&2
     exit 1
 fi

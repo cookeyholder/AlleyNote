@@ -477,7 +477,7 @@ final class RefreshTokenService
         try {
             $payload = $this->jwtTokenService->extractPayload($token);
             $expiresAt = new DateTimeImmutable();
-            $expiresAt->setTimestamp($payload->getExpiresAt()->getTimestamp());
+            $expiresAt = $expiresAt->setTimestamp($payload->getExpiresAt()->getTimestamp());
             $entry = new TokenBlacklistEntry(
                 $payload->getJti(),
                 TokenBlacklistEntry::TOKEN_TYPE_REFRESH,
