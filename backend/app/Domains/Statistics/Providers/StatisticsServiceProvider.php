@@ -16,6 +16,7 @@ use App\Domains\Statistics\Contracts\StatisticsCacheServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\StatisticsRepositoryInterface;
 use App\Domains\Statistics\Contracts\StatisticsVisualizationServiceInterface;
+use App\Domains\Statistics\Contracts\SystemMonitoringServiceInterface;
 use App\Domains\Statistics\Contracts\UserStatisticsRepositoryInterface;
 use App\Domains\Statistics\Listeners\PostViewedListener;
 use App\Domains\Statistics\Listeners\StatisticsSnapshotCreatedListener;
@@ -37,6 +38,7 @@ use App\Infrastructure\Statistics\Services\SlowQueryMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsCacheService;
 use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
 use App\Infrastructure\Statistics\Services\StatisticsVisualizationService;
+use App\Infrastructure\Statistics\Services\SystemMonitoringService;
 use App\Shared\Contracts\CacheServiceInterface;
 use App\Shared\Events\Contracts\EventDispatcherInterface;
 use App\Shared\Events\SimpleEventDispatcher;
@@ -180,6 +182,13 @@ class StatisticsServiceProvider
                     $container->get(StatisticsCacheServiceInterface::class),
                     $container->get(PostStatisticsRepositoryInterface::class),
                 );
+            }),
+            // 主機與系統監控服務
+            SystemMonitoringServiceInterface::class => \DI\factory(function (ContainerInterface $container): SystemMonitoringServiceInterface {
+                /** @var PDO $pdo */
+                $pdo = $container->get(PDO::class);
+
+                return new SystemMonitoringService($pdo);
             }),
             // 文章瀏覽統計服務
             PostViewStatisticsService::class => \DI\factory(function (ContainerInterface $container): PostViewStatisticsService {

@@ -405,7 +405,7 @@ class StatisticsQueryService
             SELECT COUNT(DISTINCT user_id) 
             FROM (
                 SELECT user_id FROM user_activity_logs 
-                WHERE occurred_at BETWEEN :start_date AND :end_date
+                WHERE COALESCE(occurred_at, created_at) BETWEEN :start_date AND :end_date
                     AND user_id IS NOT NULL
                 UNION
                 SELECT user_id FROM posts 

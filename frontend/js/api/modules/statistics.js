@@ -49,13 +49,10 @@ class StatisticsAPI {
   }
 
   /**
-   * 取得系統統計資料
-   * 注意：此端點尚未完全實作
+   * 取得主機與系統監控狀態（需管理員權限）
    */
   async getSystem() {
-    console.warn("系統統計端點尚未完全實作");
-    // 可以組合多個端點的資料
-    return await this.getOverview();
+    return await apiClient.get("/admin/statistics/system");
   }
 
   /**

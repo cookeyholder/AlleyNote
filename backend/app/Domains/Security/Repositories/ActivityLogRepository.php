@@ -787,14 +787,14 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         // 取得登入失敗帳號統計
         $accountSql = '
             SELECT
-                metadata->>"$.email" as email,
-                metadata->>"$.username" as username,
+                json_extract(COALESCE(metadata, request_data, \'{}\'), \'$.email\') as email,
+                json_extract(COALESCE(metadata, request_data, \'{}\'), \'$.username\') as username,
                 COUNT(*) as count,
-                MAX(occurred_at) as latest_attempt
+                MAX(COALESCE(occurred_at, created_at)) as latest_attempt
             FROM ' . self::TABLE_NAME . "
-            WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
-                AND occurred_at BETWEEN :start_time AND :end_time
-            GROUP BY COALESCE(metadata->\"$.email\", metadata->\"$.username\")
+            WHERE (action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed', 'auth.login_failed') OR (action_type = 'auth.login' AND status != 'success'))
+                AND COALESCE(occurred_at, created_at) BETWEEN :start_time AND :end_time
+            GROUP BY COALESCE(json_extract(COALESCE(metadata, request_data, '{}'), '$.email'), json_extract(COALESCE(metadata, request_data, '{}'), '$.username'))
             ORDER BY count DESC
             LIMIT :limit
         ";
@@ -809,8 +809,8 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         $totalSql = '
             SELECT COUNT(*) as total
             FROM ' . self::TABLE_NAME . "
-            WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
-                AND occurred_at BETWEEN :start_time AND :end_time
+            WHERE (action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed', 'auth.login_failed') OR (action_type = 'auth.login' AND status != 'success'))
+                AND COALESCE(occurred_at, created_at) BETWEEN :start_time AND :end_time
         ";
         $totalStmt = $this->db->prepare($totalSql);
         $totalStmt->bindValue(':start_time', $startTime->format('Y-m-d H:i:s'));
@@ -825,12 +825,12 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         // 取得趨勢資料
         $trendSql = '
             SELECT
-                DATE(occurred_at) as date,
+                DATE(COALESCE(occurred_at, created_at)) as date,
                 COUNT(*) as count
             FROM ' . self::TABLE_NAME . "
-            WHERE action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed')
-                AND occurred_at BETWEEN :start_time AND :end_time
-            GROUP BY DATE(occurred_at)
+            WHERE (action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed', 'auth.login_failed') OR (action_type = 'auth.login' AND status != 'success'))
+                AND COALESCE(occurred_at, created_at) BETWEEN :start_time AND :end_time
+            GROUP BY DATE(COALESCE(occurred_at, created_at))
             ORDER BY date ASC
         ";
         $trendStmt = $this->db->prepare($trendSql);

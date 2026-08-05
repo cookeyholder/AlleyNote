@@ -530,8 +530,8 @@ class StatisticsController extends BaseController
     {
         // 檢查角色權限
         $userRole = $request->getAttribute('role', '');
-        // super_admin 角色擁有所有權限
-        if ($userRole === 'super_admin') {
+        // super_admin 與 admin 角色擁有統計查詢權限
+        if ($userRole === 'super_admin' || $userRole === 'admin') {
             return;
         }
         $userPermissions = $request->getAttribute('permissions', []);
