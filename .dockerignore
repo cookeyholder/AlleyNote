@@ -7,8 +7,11 @@ node_modules
 vendor
 backend/vendor
 backend/storage
+backend/app/storage
+**/storage/logs
+**/storage/*.log
 *.log
-*.sqlite
+*.sqlite*
 .DS_Store
 .vscode
 .idea

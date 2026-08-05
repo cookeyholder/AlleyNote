@@ -1,64 +1,77 @@
-FROM php:8.4-fpm AS base
+# Stage 1: Builder (Alpine)
+FROM php:8.4-fpm-alpine AS builder
 
-# 安裝基礎套件
-RUN apt-get update && apt-get install -y \
-    zip \
-    unzip \
+# 安裝編譯依賴套件與 strip 工具
+RUN apk add --no-cache \
+    $PHPIZE_DEPS \
+    freetype-dev \
+    libjpeg-turbo-dev \
     libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    sqlite3 \
-    libsqlite3-dev \
-    && rm -rf /var/lib/apt/lists/*
+    sqlite-dev \
+    libzip-dev \
+    icu-dev \
+    binutils
 
-# 設定 GD 擴充功能
+# 編譯安裝 PHP 擴充功能
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo pdo_sqlite
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_sqlite opcache intl zip
 
-# 安裝 Composer
+# 剝離 C/C++ 擴充功能模組之除除錯符號以減小體積
+RUN strip --strip-unneeded /usr/local/lib/php/extensions/*/*.so
+
+# 複製 Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# 設定工作目錄
 WORKDIR /var/www/html
+COPY backend/composer.json backend/composer.lock ./
+COPY backend/app/ ./app/
+COPY backend/bootstrap/ ./bootstrap/
+COPY backend/config/ ./config/
+COPY backend/database/ ./database/
+COPY backend/public/ ./public/
+COPY backend/resources/ ./resources/
+COPY backend/scripts/ ./scripts/
+COPY backend/init_db.php backend/phinx.php ./
 
-# 複製 composer 檔案
-COPY composer.json composer.lock ./
+# 安裝生產環境套件並清理開發用的非必要檔案（測試、說明文件等）
+RUN composer install --no-dev --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader \
+    && find vendor/ -type d \( -name "test" -o -name "tests" -o -name "doc" -o -name "docs" -o -name ".git" \) -exec rm -rf {} + 2>/dev/null || true \
+    && find vendor/ -type f \( -name "*.md" -o -name "CHANGELOG*" -o -name "LICENSE*" \) -exec rm -f {} + 2>/dev/null || true
 
-# 複製應用程式原始碼
-COPY src/ ./src/
-COPY public/ ./public/
-COPY database/ ./database/
-COPY scripts/ ./scripts/
+# Stage 2: Production Runner (Slim Alpine)
+FROM php:8.4-fpm-alpine AS runner
 
-# 不複製 .env.example 作為 .env，生產環境應使用 Docker secrets 或環境變數注入
-# COPY .env.example ./.env
+# 只安裝執行期必要的輕量動態函式庫
+RUN apk add --no-cache \
+    freetype \
+    libjpeg-turbo \
+    libpng \
+    sqlite-libs \
+    libzip \
+    icu-libs \
+    && rm -rf /var/cache/apk/* /tmp/*
 
-# 複製並設定啟動腳本
-COPY scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY --from=builder /usr/local/lib/php/extensions /usr/local/lib/php/extensions
+COPY --from=builder /usr/local/etc/php/conf.d /usr/local/etc/php/conf.d
 
-# 安裝生產環境相依套件
-RUN composer install --no-dev --no-interaction --no-scripts --no-progress --prefer-dist --optimize-autoloader
+# 生產環境 OPcache 最佳化配置
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "opcache.enable_cli=1" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "opcache.memory_consumption=128" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "opcache.interned_strings_buffer=8" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "opcache.max_accelerated_files=10000" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini \
+    && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
-# 建立必要的目錄
-RUN mkdir -p storage/app storage/backups storage/logs storage/cache storage/files \
-    && mkdir -p public/storage
+WORKDIR /var/www/html
+COPY --from=builder /var/www/html /var/www/html
 
-# 設定正確的權限
-RUN chown -R www-data:www-data /var/www/html \
+RUN mkdir -p storage/app storage/backups storage/logs storage/cache storage/files public/storage \
+    && chown -R www-data:www-data /var/www/html \
     && chmod -R 755 storage public/storage \
-    && find src/ -type d -exec chmod 755 {} \; \
-    && find src/ -type f -exec chmod 644 {} \; \
+    && find app/ -type d -exec chmod 755 {} \; \
+    && find app/ -type f -exec chmod 644 {} \; \
     && chmod 755 public/index.php
 
-# 切換到非 root 使用者
 USER www-data
-
-# 暴露埠口
 EXPOSE 9000
-
-# 設定啟動腳本為入口點
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-
-# 預設執行 Web 伺服器
-CMD ["web"]
+CMD ["php-fpm"]
