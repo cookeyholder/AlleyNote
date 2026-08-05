@@ -325,11 +325,11 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'monitoring_endpoint' => null, // 可設定外部監控服務端點
                 'directives'          => [
                     'default-src'               => ["'self'"],
-                    'script-src'                => ["'self'", 'https://cdn.tailwindcss.com'], // 移除 unsafe-inline，使用 nonce 策略
-                    'style-src'                 => ["'self'", 'https://cdn.tailwindcss.com'], // 移除 unsafe-inline，使用 nonce 策略
-                    'img-src'                   => ["'self'", 'data:', 'https:'],
-                    'font-src'                  => ["'self'"],
-                    'connect-src'               => ["'self'"],
+                    'script-src'                => ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.tailwindcss.com', 'https://cdn.ckeditor.com', 'https://cdn.jsdelivr.net'],
+                    'style-src'                 => ["'self'", "'unsafe-inline'", 'https://cdn.tailwindcss.com', 'https://cdn.ckeditor.com', 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+                    'img-src'                   => ["'self'", 'data:', 'blob:', 'https:', 'http:'],
+                    'font-src'                  => ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com', 'https://cdn.ckeditor.com'],
+                    'connect-src'               => ["'self'", 'http://localhost:3000', 'http://localhost:8081'],
                     'media-src'                 => ["'self'"],
                     'object-src'                => ["'none'"],
                     'child-src'                 => ["'self'"],
