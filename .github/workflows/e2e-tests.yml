@@ -3,6 +3,7 @@ name: E2E Tests
 permissions:
   contents: read
   issues: write
+  pull-requests: write
   actions: write
 
 on:
