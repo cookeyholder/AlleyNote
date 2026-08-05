@@ -114,7 +114,11 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
                 if (preg_match('/MemTotal:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
                     $totalMemory = (int) $matches[1] * 1024;
                 }
-                if (preg_match('/MemFree:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
+                $hasAvailable = false;
+                if (preg_match('/MemAvailable:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
+                    $freeMemory = (int) $matches[1] * 1024;
+                    $hasAvailable = true;
+                } elseif (preg_match('/MemFree:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
                     $freeMemory = (int) $matches[1] * 1024;
                 }
                 if (preg_match('/Buffers:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
@@ -122,6 +126,12 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
                 }
                 if (preg_match('/^Cached:\s+(\d+)\s+kB/im', $meminfo, $matches)) {
                     $cached = (int) $matches[1] * 1024;
+                }
+                if ($hasAvailable) {
+                    $usedMemory = max(0, $totalMemory - $freeMemory);
+                } else {
+                    $realFree = $freeMemory + $buffers + $cached;
+                    $usedMemory = max(0, $totalMemory - $realFree);
                 }
             }
         }
