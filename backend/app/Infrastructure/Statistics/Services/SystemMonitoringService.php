@@ -22,9 +22,6 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         private readonly ?RedisClientInterface $redis = null,
     ) {}
 
-    /**
-     * {@inheritdoc}
-     */
     public function getSystemHealthStatus(): array
     {
         $cpu = $this->getCpuMetrics();
@@ -92,10 +89,10 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         $usagePercent = min(100.0, round(($loadAvg[0] / $cpuCores) * 100, 1));
 
         return [
-            'load_average'      => $loadAvg,
-            'cores'             => $cpuCores,
-            'usage_percent'     => $usagePercent,
-            'status'            => $usagePercent > 85 ? 'danger' : ($usagePercent > 70 ? 'warning' : 'healthy'),
+            'load_average'  => $loadAvg,
+            'cores'         => $cpuCores,
+            'usage_percent' => $usagePercent,
+            'status'        => $usagePercent > 85 ? 'danger' : ($usagePercent > 70 ? 'warning' : 'healthy'),
         ];
     }
 
@@ -143,14 +140,14 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         $usagePercent = $totalMemory > 0 ? round(($usedMemory / $totalMemory) * 100, 1) : 0.0;
 
         return [
-            'total_bytes'       => $totalMemory,
-            'used_bytes'        => $usedMemory,
-            'free_bytes'        => max(0, $totalMemory - $usedMemory),
-            'usage_percent'     => $usagePercent,
-            'php_used_bytes'    => memory_get_usage(true),
-            'php_peak_bytes'    => memory_get_peak_usage(true),
-            'php_memory_limit'  => (string) ini_get('memory_limit'),
-            'status'            => $usagePercent > 90 ? 'danger' : ($usagePercent > 75 ? 'warning' : 'healthy'),
+            'total_bytes'      => $totalMemory,
+            'used_bytes'       => $usedMemory,
+            'free_bytes'       => max(0, $totalMemory - $usedMemory),
+            'usage_percent'    => $usagePercent,
+            'php_used_bytes'   => memory_get_usage(true),
+            'php_peak_bytes'   => memory_get_peak_usage(true),
+            'php_memory_limit' => (string) ini_get('memory_limit'),
+            'status'           => $usagePercent > 90 ? 'danger' : ($usagePercent > 75 ? 'warning' : 'healthy'),
         ];
     }
 
