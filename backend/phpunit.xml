@@ -51,8 +51,6 @@
         <env name="JWT_AUDIENCE" value="alleynote-client-test"/>
         <env name="JWT_ACCESS_TOKEN_TTL" value="3600"/>
         <env name="JWT_REFRESH_TOKEN_TTL" value="2592000"/>
-        <env name="JWT_PRIVATE_KEY_PATH" value="test_private_key.pem"/>
-        <env name="JWT_PUBLIC_KEY_PATH" value="test_public_key.pem"/>
         <env name="JWT_PRIVATE_KEY" value="-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7bjwmxz3eqbfh
 x2FiapDublS2Qx78RwQJCquPopfQKj1BxoGH7VQl65FU1Dytu+Q4E8o6FpjobU1i

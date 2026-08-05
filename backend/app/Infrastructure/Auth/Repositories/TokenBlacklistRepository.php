@@ -639,9 +639,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 TokenBlacklistEntry::REASON_DEVICE_LOST,
                 TokenBlacklistEntry::REASON_INVALID_SIGNATURE,
             ];
-            $securitySql = 'SELECT COUNT(*) FROM token_blacklist WHERE reason IN ("' . implode('","', $securityReasons) . '")';
+            $securityPlaceholders = implode(',', array_fill(0, count($securityReasons), '?'));
+            $securitySql = "SELECT COUNT(*) FROM token_blacklist WHERE reason IN ({$securityPlaceholders})";
             $securityStmt = $this->pdo->prepare($securitySql);
-            $securityStmt->execute();
+            $securityStmt->execute($securityReasons);
             $securityRelated = (int) $securityStmt->fetchColumn();
             // 使用者主動的項目
             $userReasons = [
@@ -649,9 +650,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
                 TokenBlacklistEntry::REASON_MANUAL_REVOCATION,
                 TokenBlacklistEntry::REASON_DEVICE_LOST,
             ];
-            $userSql = 'SELECT COUNT(*) FROM token_blacklist WHERE reason IN ("' . implode('","', $userReasons) . '")';
+            $userPlaceholders = implode(',', array_fill(0, count($userReasons), '?'));
+            $userSql = "SELECT COUNT(*) FROM token_blacklist WHERE reason IN ({$userPlaceholders})";
             $userStmt = $this->pdo->prepare($userSql);
-            $userStmt->execute();
+            $userStmt->execute($userReasons);
             $userInitiated = (int) $userStmt->fetchColumn();
             // 系統主動的項目
             $systemInitiated = $total - $userInitiated;

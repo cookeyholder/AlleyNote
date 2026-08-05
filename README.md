@@ -104,6 +104,7 @@ AlleyNote/
 ## 相關連結
 
 - [📖 文件總索引](docs/INDEX.md)
+- [🔍 程式碼審查報告](docs/CODE_REVIEW_REPORT.md)
 - [📋 變更記錄](CHANGELOG.md)
 - [🤝 貢獻指南](CONTRIBUTING.md)
 - [🛡️ 文件治理規範](docs/DOCUMENTATION_GOVERNANCE.md)
