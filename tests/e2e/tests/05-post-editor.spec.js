@@ -115,14 +115,9 @@ test.describe("文章編輯功能測試", () => {
     // 導航到編輯現有文章（需要有文章 ID）
     await page.goto("/admin/posts");
 
-    const postsCount = await page.locator("tbody tr").count();
-
-    if (postsCount > 0) {
-      await page
-        .locator("tbody tr")
-        .first()
-        .locator('button:has-text("編輯")')
-        .click();
+    const editBtn = page.locator('tbody tr button:has-text("編輯")').first();
+    if (await editBtn.isVisible({ timeout: 5000 }).catch(() => false)) {
+      await editBtn.click();
       await page.waitForURL(/\/admin\/posts\/\d+\/edit/);
 
       // 檢查自動儲存提示
