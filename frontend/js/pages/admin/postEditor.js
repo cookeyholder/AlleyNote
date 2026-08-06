@@ -155,9 +155,25 @@ export async function renderPostEditor(postId = null) {
                 </div>
 
                 <div>
-                  <label class="block text-sm font-bold text-modern-700 mb-3">
-                    關聯標籤設定
-                  </label>
+                  <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-bold text-modern-700">
+                      關聯標籤設定
+                    </label>
+                    <button type="button" id="quick-add-tag-toggle-btn" class="text-xs font-bold text-accent-600 hover:text-accent-700 transition-colors flex items-center gap-1">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                      快速建立新標籤
+                    </button>
+                  </div>
+
+                  <div id="quick-add-tag-panel" class="hidden mb-3 p-3 bg-accent-50/50 rounded-xl border border-accent-100 animate-fade-in">
+                    <div class="flex items-center gap-2">
+                      <input type="text" id="quick-tag-name-input" placeholder="輸入新標籤名稱..." class="flex-1 px-3 py-2 text-xs bg-white border border-modern-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500" />
+                      <button type="button" id="quick-create-tag-btn" class="px-3.5 py-2 bg-accent-600 hover:bg-accent-700 text-white font-bold text-xs rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                        新增並選用
+                      </button>
+                    </div>
+                  </div>
+
                   <div id="tags-container" class="flex flex-wrap gap-2 mb-4 p-4 bg-modern-50 rounded-2xl border border-modern-100 min-h-[60px]">
                     <!-- 已選標籤 -->
                   </div>
@@ -586,6 +602,86 @@ function initTagSelector() {
       hasUnsavedChanges = true;
     }
   });
+
+  // 綁定快速新增標籤按鈕與事件
+  const toggleBtn = document.getElementById("quick-add-tag-toggle-btn");
+  const panel = document.getElementById("quick-add-tag-panel");
+  const nameInput = document.getElementById("quick-tag-name-input");
+  const createBtn = document.getElementById("quick-create-tag-btn");
+
+  if (toggleBtn && panel) {
+    toggleBtn.addEventListener("click", () => {
+      panel.classList.toggle("hidden");
+      if (!panel.classList.contains("hidden") && nameInput) {
+        nameInput.focus();
+      }
+    });
+  }
+
+  const handleQuickCreateTag = async () => {
+    if (!nameInput) return;
+    const tagName = nameInput.value.trim();
+    if (!tagName) {
+      notification.warning("請輸入標籤名稱");
+      return;
+    }
+
+    // 檢查是否已有同名標籤
+    const existing = availableTags.find(
+      (t) => t.name.toLowerCase() === tagName.toLowerCase(),
+    );
+    if (existing) {
+      if (!selectedTagIds.includes(existing.id)) {
+        selectedTagIds.push(existing.id);
+        renderSelectedTags();
+        hasUnsavedChanges = true;
+      }
+      notification.info(`已選用現有標籤「${existing.name}」`);
+      nameInput.value = "";
+      panel?.classList.add("hidden");
+      return;
+    }
+
+    try {
+      if (createBtn) createBtn.disabled = true;
+      const res = await apiClient.post("/tags", { name: tagName });
+      const newTag = res.data || res;
+      if (newTag && newTag.id) {
+        availableTags.push(newTag);
+        const option = document.createElement("option");
+        option.value = newTag.id;
+        option.textContent = newTag.name;
+        selector.appendChild(option);
+
+        if (!selectedTagIds.includes(newTag.id)) {
+          selectedTagIds.push(newTag.id);
+          renderSelectedTags();
+          hasUnsavedChanges = true;
+        }
+
+        notification.success(`標籤「${newTag.name}」建立成功並已選用`);
+        nameInput.value = "";
+        panel?.classList.add("hidden");
+      }
+    } catch (err) {
+      notification.error(err.message || "建立標籤失敗");
+    } finally {
+      if (createBtn) createBtn.disabled = false;
+    }
+  };
+
+  if (createBtn) {
+    createBtn.addEventListener("click", handleQuickCreateTag);
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleQuickCreateTag();
+      }
+    });
+  }
 }
 
 /**

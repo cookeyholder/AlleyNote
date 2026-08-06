@@ -33,6 +33,8 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         $system = $this->getSystemMetrics();
         $activitySummary = $this->getActivitySummaryMetrics();
 
+        $container = $this->getContainerMetrics();
+
         return [
             'cpu'              => $cpu,
             'memory'           => $memory,
@@ -42,6 +44,7 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
             'php_runtime'      => $phpRuntime,
             'system'           => $system,
             'activity_summary' => $activitySummary,
+            'container'        => $container,
             'timestamp'        => new DateTimeImmutable()->format('Y-m-d H:i:s'),
         ];
     }
@@ -427,5 +430,107 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         }
 
         return (int) round($cleanSize);
+    }
+
+    /**
+     * 取得 Docker 容器自身資源與配額資訊 (cgroups).
+     *
+     * @return array<string, mixed>
+     */
+    private function getContainerMetrics(): array
+    {
+        $isContainer = file_exists('/.dockerenv') || file_exists('/proc/1/cgroup');
+
+        $memUsed = 0;
+        $memLimit = 0; // 0 = unlimited
+        $memLimitFormatted = '無限制 (共享 Host)';
+        $memUsedFormatted = '0 B';
+        $memUsagePercent = 0.0;
+
+        $cpuQuotaCores = null;
+        $cpuQuotaFormatted = '無限制 (共享 Host CPU)';
+
+        if ($isContainer) {
+            // 1. 記憶體使用量 (cgroups v2 或 v1)
+            $cgroupMemCurrent = null;
+            if (is_readable('/sys/fs/cgroup/memory.current')) {
+                $cgroupMemCurrent = trim((string) file_get_contents('/sys/fs/cgroup/memory.current'));
+            } elseif (is_readable('/sys/fs/cgroup/memory/memory.usage_in_bytes')) {
+                $cgroupMemCurrent = trim((string) file_get_contents('/sys/fs/cgroup/memory/memory.usage_in_bytes'));
+            }
+
+            if ($cgroupMemCurrent !== null && is_numeric($cgroupMemCurrent)) {
+                $memUsed = (int) $cgroupMemCurrent;
+                $memUsedFormatted = $this->formatBytes($memUsed);
+            }
+
+            // 2. 記憶體配額上限 (cgroups v2 或 v1)
+            $cgroupMemMax = null;
+            if (is_readable('/sys/fs/cgroup/memory.max')) {
+                $cgroupMemMax = trim((string) file_get_contents('/sys/fs/cgroup/memory.max'));
+            } elseif (is_readable('/sys/fs/cgroup/memory/memory.limit_in_bytes')) {
+                $cgroupMemMax = trim((string) file_get_contents('/sys/fs/cgroup/memory/memory.limit_in_bytes'));
+            }
+
+            if ($cgroupMemMax !== null && $cgroupMemMax !== 'max' && is_numeric($cgroupMemMax)) {
+                $limitVal = (int) $cgroupMemMax;
+                if ($limitVal < 100 * 1024 * 1024 * 1024 * 1024) {
+                    $memLimit = $limitVal;
+                    $memLimitFormatted = $this->formatBytes($memLimit);
+                    if ($memLimit > 0) {
+                        $memUsagePercent = round(($memUsed / $memLimit) * 100, 1);
+                    }
+                }
+            }
+
+            // 3. CPU 限額 (cgroups v2 或 v1)
+            if (is_readable('/sys/fs/cgroup/cpu.max')) {
+                $cpuMaxContent = trim((string) file_get_contents('/sys/fs/cgroup/cpu.max'));
+                $parts = explode(' ', $cpuMaxContent);
+                if (count($parts) >= 2 && $parts[0] !== 'max' && is_numeric($parts[0]) && is_numeric($parts[1]) && (int) $parts[1] > 0) {
+                    $quota = (int) $parts[0];
+                    $period = (int) $parts[1];
+                    $cpuQuotaCores = round($quota / $period, 2);
+                    $cpuQuotaFormatted = "限額 {$cpuQuotaCores} 核";
+                }
+            } elseif (is_readable('/sys/fs/cgroup/cpu/cpu.cfs_quota_us') && is_readable('/sys/fs/cgroup/cpu/cpu.cfs_period_us')) {
+                $quotaStr = trim((string) file_get_contents('/sys/fs/cgroup/cpu/cpu.cfs_quota_us'));
+                $periodStr = trim((string) file_get_contents('/sys/fs/cgroup/cpu/cpu.cfs_period_us'));
+                if (is_numeric($quotaStr) && is_numeric($periodStr) && (int) $quotaStr > 0 && (int) $periodStr > 0) {
+                    $cpuQuotaCores = round(((int) $quotaStr) / ((int) $periodStr), 2);
+                    $cpuQuotaFormatted = "限額 {$cpuQuotaCores} 核";
+                }
+            }
+        }
+
+        return [
+            'is_container' => $isContainer,
+            'memory'       => [
+                'used_bytes'      => $memUsed,
+                'used_formatted'  => $memUsedFormatted,
+                'limit_bytes'     => $memLimit,
+                'limit_formatted' => $memLimitFormatted,
+                'usage_percent'   => $memUsagePercent,
+            ],
+            'cpu' => [
+                'quota_cores'     => $cpuQuotaCores,
+                'quota_formatted' => $cpuQuotaFormatted,
+            ],
+        ];
+    }
+
+    /**
+     * 格式化位元組數字為可讀字串.
+     */
+    private function formatBytes(int $bytes, int $precision = 2): string
+    {
+        if ($bytes <= 0) {
+            return '0 B';
+        }
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $pow = min((int) floor(log($bytes, 1024)), count($units) - 1);
+        $val = $bytes / (1024 ** $pow);
+
+        return round($val, $precision) . ' ' . $units[$pow];
     }
 }

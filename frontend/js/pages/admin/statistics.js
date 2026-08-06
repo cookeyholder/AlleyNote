@@ -388,6 +388,20 @@ export default class StatisticsPage extends BaseAdminPage {
     if (diskUsageEl) diskUsageEl.innerText = `${disk.usage_percent || 0}%`;
     if (diskBarEl)
       diskBarEl.style.width = `${Math.min(100, disk.usage_percent || 0)}%`;
+
+    const container = this.systemHealth.container || {};
+    const containerMemUsedEl = document.getElementById("container-mem-used");
+    const containerMemLimitEl = document.getElementById("container-mem-limit");
+    const containerCpuQuotaEl = document.getElementById("container-cpu-quota");
+
+    if (containerMemUsedEl)
+      containerMemUsedEl.innerText = container.memory?.used_formatted || "0 B";
+    if (containerMemLimitEl)
+      containerMemLimitEl.innerText =
+        container.memory?.limit_formatted || "無限制";
+    if (containerCpuQuotaEl)
+      containerCpuQuotaEl.innerText =
+        container.cpu?.quota_formatted || "無限制";
   }
 
   render() {
@@ -537,7 +551,6 @@ export default class StatisticsPage extends BaseAdminPage {
               <div class="p-2 bg-red-50 text-red-600 rounded-xl">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
               </div>
-            </div>
             ${this.renderLoginFailures()}
           </div>
         </div>
@@ -576,6 +589,7 @@ export default class StatisticsPage extends BaseAdminPage {
     const cache = (sys && sys.cache) || {};
     const php = (sys && sys.php_runtime) || {};
     const os = (sys && sys.system) || {};
+    const container = (sys && sys.container) || {};
 
     const formatBytes = (bytes) => {
       if (!bytes || bytes === 0) return "0 MB";
@@ -676,6 +690,54 @@ export default class StatisticsPage extends BaseAdminPage {
             </div>
           </div>
         </div>
+
+        <!-- Docker 容器專屬資源配額與監控卡片 (Docker Container Quotas & Usage) -->
+        ${
+          container.is_container
+            ? `
+          <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl border border-indigo-900 shadow-md">
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center border border-blue-500/30">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="text-sm font-bold tracking-wide">Docker 容器自身資源限額 (Container cgroups)</h3>
+                  <p class="text-[11px] text-slate-400">獨立監控本 Docker 容器內部所消耗的真實記憶體與系統配額上限</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Docker Container</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+              <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-slate-400 uppercase">容器記憶體使用 (Container RAM Used)</p>
+                  <p id="container-mem-used" class="text-lg font-extrabold text-white mt-0.5 tabular-nums">${container.memory?.used_formatted || "0 B"}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[11px] font-bold text-slate-400 uppercase">容器記憶體上限 (Quota Limit)</p>
+                  <p id="container-mem-limit" class="text-xs font-bold text-blue-300 mt-0.5">${container.memory?.limit_formatted || "無限制"}</p>
+                </div>
+              </div>
+
+              <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between">
+                <div>
+                  <p class="text-[11px] font-bold text-slate-400 uppercase">容器 CPU 配額 (Container CPU Quota)</p>
+                  <p id="container-cpu-quota" class="text-base font-extrabold text-white mt-0.5">${container.cpu?.quota_formatted || "無限制"}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-[11px] font-bold text-slate-400 uppercase">運作模式 (Mode)</p>
+                  <p class="text-xs font-bold text-emerald-400 mt-0.5">Isolated Container</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+            : ""
+        }
 
         <!-- 軟體服務與 Runtime 細節小卡格 -->
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
