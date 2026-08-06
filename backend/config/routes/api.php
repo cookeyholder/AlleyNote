@@ -101,12 +101,33 @@ return [
         'name' => 'api.docs.ui'
     ],
 
+    'api.swagger-ui' => [
+        'methods' => ['GET'],
+        'path' => '/api/swagger-ui',
+        'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'ui'],
+        'name' => 'api.swagger-ui'
+    ],
+
     // OpenAPI JSON 規格
     'api.docs' => [
         'methods' => ['GET'],
         'path' => '/api/docs',
         'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'docs'],
         'name' => 'api.docs'
+    ],
+
+    'api.openapi.json' => [
+        'methods' => ['GET'],
+        'path' => '/api/openapi.json',
+        'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'docs'],
+        'name' => 'api.openapi.json'
+    ],
+
+    'api.openapi.yaml' => [
+        'methods' => ['GET'],
+        'path' => '/api/openapi.yaml',
+        'handler' => [\App\Application\Controllers\Web\SwaggerController::class, 'yaml'],
+        'name' => 'api.openapi.yaml'
     ],
 
     // ========================================

@@ -15,7 +15,6 @@ parameters:
         - app/Infrastructure/OpenApi
         - app/Domains/Statistics/Services/StatisticsConfigService.php
         - app/Domains/Post/Models/Tag.php
-        - app/Domains/Setting/Models/Setting.php
         - vendor
         - tests/Factory
         - coverage-reports (?)
