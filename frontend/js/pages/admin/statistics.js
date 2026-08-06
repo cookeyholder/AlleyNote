@@ -414,6 +414,12 @@ export default class StatisticsPage extends BaseAdminPage {
 
     return `
       <div class="max-w-7xl mx-auto pb-12 space-y-8">
+        <!-- 頁面標題區 -->
+        <div class="flex flex-col gap-1">
+          <h1 class="text-3xl font-bold text-modern-900 tracking-tight">系統統計</h1>
+          <p class="text-sm text-modern-500">即時掌握全站流量數據、熱門內容與主機硬體運作狀態</p>
+        </div>
+
         <!-- 控制與視圖切換列 -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 rounded-2xl border border-modern-200 shadow-sm">
           <div class="flex items-center gap-3">
@@ -422,7 +428,7 @@ export default class StatisticsPage extends BaseAdminPage {
               <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
             </span>
             <div>
-              <h2 class="text-lg font-bold text-modern-900">系統即時監控儀表板</h2>
+              <h2 class="text-lg font-bold text-modern-900">系統統計與即時監控儀表板</h2>
               <p class="text-xs text-modern-500">掌握主機硬體資源、數據庫、Redis 及應用程式數據</p>
             </div>
           </div>
