@@ -59,6 +59,40 @@ class SwaggerController
     }
 
     /**
+     * 產生並傳回 OpenAPI YAML 規格
+     */
+    public function yaml(Request $request, Response $response): Response
+    {
+        try {
+            ob_start();
+            $basePath = dirname(__DIR__, 3);
+            $openapi = new Generator()->generate([
+                $basePath . '/Application/Controllers',
+                $basePath . '/Application/Contracts',
+                $basePath . '/Domains',
+                $basePath . '/Infrastructure',
+            ]);
+            ob_end_clean();
+            $yaml = $openapi?->toYaml();
+            $response->getBody()->write(($yaml ?? ''));
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'text/yaml; charset=UTF-8')
+                ->withHeader('Access-Control-Allow-Origin', '*');
+        } catch (Throwable $e) {
+            if (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+            $response->getBody()->write("openapi: 3.0.0\ninfo:\n  title: AlleyNote API\n  version: 1.0.0\n");
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'text/yaml; charset=UTF-8');
+        }
+    }
+
+    /**
      * 顯示 Swagger UI 介面.
      */
     public function ui(Request $request, Response $response): Response
