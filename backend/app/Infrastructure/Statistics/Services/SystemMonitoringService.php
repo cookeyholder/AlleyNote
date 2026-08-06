@@ -107,6 +107,7 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         $freeMemory = 0;
         $buffers = 0;
         $cached = 0;
+        $hasAvailable = false;
 
         if (is_readable('/proc/meminfo')) {
             $meminfo = file_get_contents('/proc/meminfo');
@@ -114,7 +115,6 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
                 if (preg_match('/MemTotal:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
                     $totalMemory = (int) $matches[1] * 1024;
                 }
-                $hasAvailable = false;
                 if (preg_match('/MemAvailable:\s+(\d+)\s+kB/i', $meminfo, $matches)) {
                     $freeMemory = (int) $matches[1] * 1024;
                     $hasAvailable = true;
@@ -127,27 +127,25 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
                 if (preg_match('/^Cached:\s+(\d+)\s+kB/im', $meminfo, $matches)) {
                     $cached = (int) $matches[1] * 1024;
                 }
-                if ($hasAvailable) {
-                    $usedMemory = max(0, $totalMemory - $freeMemory);
-                } else {
-                    $realFree = $freeMemory + $buffers + $cached;
-                    $usedMemory = max(0, $totalMemory - $realFree);
-                }
             }
         }
 
-        if ($totalMemory === 0) {
+        if ($totalMemory > 0) {
+            if ($hasAvailable) {
+                $usedMemory = max(0, $totalMemory - $freeMemory);
+            } else {
+                $realFree = $freeMemory + $buffers + $cached;
+                $usedMemory = max(0, $totalMemory - $realFree);
+            }
+        } else {
             // 回退使用 PHP 記憶體限制與記憶體使用量估算
             $phpLimitStr = ini_get('memory_limit');
             $phpLimit = is_string($phpLimitStr) ? $this->parseSize($phpLimitStr) : 0;
             $totalMemory = $phpLimit > 0 ? $phpLimit : 512 * 1024 * 1024;
             $usedMemory = memory_get_usage(true);
-        } else {
-            $realFree = $freeMemory + $buffers + $cached;
-            $usedMemory = max(0, $totalMemory - $realFree);
         }
 
-        $usagePercent = $totalMemory > 0 ? round(($usedMemory / $totalMemory) * 100, 1) : 0.0;
+        $usagePercent = round(($usedMemory / $totalMemory) * 100, 1);
 
         return [
             'total_bytes'      => $totalMemory,
