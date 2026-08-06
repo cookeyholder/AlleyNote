@@ -339,7 +339,7 @@ export default class StatisticsPage extends BaseAdminPage {
       this.initCharts();
 
       if (manual) {
-        notification.success("統計與主機數據已更新");
+        notification.success("統計資料已刷新");
       }
     } catch (error) {
       console.error("更新數據失敗:", error);
@@ -428,7 +428,7 @@ export default class StatisticsPage extends BaseAdminPage {
               <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
             </span>
             <div>
-              <h2 class="text-lg font-bold text-modern-900">系統統計與即時監控儀表板</h2>
+              <h2 class="text-lg font-bold text-modern-900">系統即時監控儀表板</h2>
               <p class="text-xs text-modern-500">掌握主機硬體資源、數據庫、Redis 及應用程式數據</p>
             </div>
           </div>
@@ -474,7 +474,7 @@ export default class StatisticsPage extends BaseAdminPage {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           ${this.renderStatCard("總文章數", overview.total_posts || 0, `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2z"/>`, "accent")}
           ${this.renderStatCard("活躍使用者", overview.active_users || 0, `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>`, "emerald")}
-          ${this.renderStatCard("新註冊使用者", overview.new_users || 0, `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>`, "amber")}
+          ${this.renderStatCard("新註冊", overview.new_users || 0, `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>`, "amber")}
           ${this.renderStatCard("總瀏覽量", overview.total_views || 0, `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`, "blue")}
         </div>
 
@@ -502,7 +502,7 @@ export default class StatisticsPage extends BaseAdminPage {
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-3">
                 <div class="w-1.5 h-6 bg-accent-600 rounded-full"></div>
-                <h2 class="text-lg font-bold text-modern-900">全站流量與訪客趨勢</h2>
+                <h2 class="text-lg font-bold text-modern-900">全站流量趨勢分析</h2>
               </div>
               <span class="text-xs font-bold text-modern-400">歷史統計</span>
             </div>
@@ -533,7 +533,7 @@ export default class StatisticsPage extends BaseAdminPage {
             <div class="flex items-center justify-between mb-6">
               <div class="flex items-center gap-3">
                 <div class="w-1.5 h-6 bg-red-600 rounded-full"></div>
-                <h2 class="text-lg font-bold text-modern-900">異常登入與安全活動審計</h2>
+                <h2 class="text-lg font-bold text-modern-900">異常登入統計與安全審計</h2>
               </div>
               <div class="p-2 bg-red-50 text-red-600 rounded-xl">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
@@ -548,7 +548,7 @@ export default class StatisticsPage extends BaseAdminPage {
           <div class="lg:col-span-2 card bg-white border-modern-200 shadow-sm p-6 rounded-2xl">
             <div class="flex items-center gap-3 mb-6">
               <div class="w-1.5 h-6 bg-red-600 rounded-full"></div>
-              <h2 class="text-lg font-bold text-modern-900">異常登入歷史趨勢</h2>
+              <h2 class="text-lg font-bold text-modern-900">登入失敗趨勢圖表</h2>
             </div>
             <div class="h-64">
               <canvas id="loginFailuresChart"></canvas>
@@ -724,7 +724,7 @@ export default class StatisticsPage extends BaseAdminPage {
         <div class="flex items-center justify-between">
           <div>
             <p class="text-[11px] font-bold text-modern-400 uppercase tracking-wider mb-1">${title}</p>
-            <p class="text-2xl font-extrabold text-modern-900 tabular-nums">${Number(value).toLocaleString()}</p>
+            <p class="text-3xl font-extrabold text-modern-900 tabular-nums">${Number(value).toLocaleString()}</p>
           </div>
           <div class="w-11 h-11 ${config.bg} ${config.text} rounded-xl flex items-center justify-center">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
