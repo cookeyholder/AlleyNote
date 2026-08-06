@@ -695,42 +695,37 @@ export default class StatisticsPage extends BaseAdminPage {
         ${
           container.is_container
             ? `
-          <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl border border-indigo-900 shadow-md">
+          <div class="p-5 bg-modern-50 rounded-2xl border border-modern-200">
             <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-blue-500/20 text-blue-400 rounded-lg flex items-center justify-center border border-blue-500/30">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                  </svg>
-                </div>
-                <div>
-                  <h3 class="text-sm font-bold tracking-wide">Docker 容器自身資源限額 (Container cgroups)</h3>
-                  <p class="text-[11px] text-slate-400">獨立監控本 Docker 容器內部所消耗的真實記憶體與系統配額上限</p>
-                </div>
+              <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                </svg>
+                <span class="text-sm font-bold text-modern-800">Docker 容器自身資源限額 (Container cgroups)</span>
               </div>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">Docker Container</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">Docker Container</span>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-              <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="p-3.5 bg-white rounded-xl border border-modern-200 flex items-center justify-between">
                 <div>
-                  <p class="text-[11px] font-bold text-slate-400 uppercase">容器記憶體使用 (Container RAM Used)</p>
-                  <p id="container-mem-used" class="text-lg font-extrabold text-white mt-0.5 tabular-nums">${container.memory?.used_formatted || "0 B"}</p>
+                  <p class="text-[11px] font-bold text-modern-500 uppercase">容器記憶體使用 (Container RAM Used)</p>
+                  <p id="container-mem-used" class="text-base font-extrabold text-modern-900 mt-0.5 tabular-nums">${container.memory?.used_formatted || "0 B"}</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-[11px] font-bold text-slate-400 uppercase">容器記憶體上限 (Quota Limit)</p>
-                  <p id="container-mem-limit" class="text-xs font-bold text-blue-300 mt-0.5">${container.memory?.limit_formatted || "無限制"}</p>
+                  <p class="text-[11px] font-bold text-modern-500 uppercase">記憶體上限 (Quota Limit)</p>
+                  <p id="container-mem-limit" class="text-xs font-bold text-modern-700 mt-0.5">${container.memory?.limit_formatted || "無限制"}</p>
                 </div>
               </div>
 
-              <div class="p-3.5 bg-white/5 rounded-xl border border-white/10 flex items-center justify-between">
+              <div class="p-3.5 bg-white rounded-xl border border-modern-200 flex items-center justify-between">
                 <div>
-                  <p class="text-[11px] font-bold text-slate-400 uppercase">容器 CPU 配額 (Container CPU Quota)</p>
-                  <p id="container-cpu-quota" class="text-base font-extrabold text-white mt-0.5">${container.cpu?.quota_formatted || "無限制"}</p>
+                  <p class="text-[11px] font-bold text-modern-500 uppercase">容器 CPU 配額 (Container CPU Quota)</p>
+                  <p id="container-cpu-quota" class="text-base font-extrabold text-modern-900 mt-0.5">${container.cpu?.quota_formatted || "無限制"}</p>
                 </div>
                 <div class="text-right">
-                  <p class="text-[11px] font-bold text-slate-400 uppercase">運作模式 (Mode)</p>
-                  <p class="text-xs font-bold text-emerald-400 mt-0.5">Isolated Container</p>
+                  <p class="text-[11px] font-bold text-modern-500 uppercase">運作模式 (Mode)</p>
+                  <p class="text-xs font-bold text-emerald-700 mt-0.5">Isolated Container</p>
                 </div>
               </div>
             </div>
