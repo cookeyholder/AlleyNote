@@ -89,16 +89,20 @@ class JwtAuthorizationMiddleware implements MiddlewareInterface
 
     private function extractResource(ServerRequestInterface $request): string
     {
+        $routeResource = $request->getAttribute('route_resource');
+        if (is_string($routeResource) && $routeResource !== '') {
+            return $routeResource;
+        }
+
         $path = trim($request->getUri()->getPath(), '/');
         $segments = explode('/', $path);
 
-        if (count($segments) >= 3 && $segments[0] === 'api') {
-            return $segments[2];
-        }
+        if (count($segments) >= 2 && $segments[0] === 'api') {
+            if (count($segments) >= 3 && in_array($segments[1], ['v1', 'v2', 'admin'], true)) {
+                return $segments[2];
+            }
 
-        $routeResource = $request->getAttribute('route_resource');
-        if ($routeResource !== null) {
-            return $routeResource;
+            return $segments[1];
         }
 
         return 'unknown';
