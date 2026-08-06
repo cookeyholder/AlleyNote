@@ -416,7 +416,7 @@ export default class StatisticsPage extends BaseAdminPage {
       <div class="max-w-7xl mx-auto pb-12 space-y-8">
         <!-- 頁面標題區 -->
         <div class="flex flex-col gap-1">
-          <h1 class="text-3xl font-bold text-modern-900 tracking-tight">系統統計</h1>
+          <h1 class="text-4xl font-bold text-modern-900 tracking-tight">系統統計</h1>
           <p class="text-sm text-modern-500">即時掌握全站流量數據、熱門內容與主機硬體運作狀態</p>
         </div>
 
@@ -629,7 +629,7 @@ export default class StatisticsPage extends BaseAdminPage {
               ${getStatusPill(cpu.status || "healthy")}
             </div>
             <div class="flex items-baseline justify-between mb-2">
-              <span id="sys-cpu-usage" class="text-3xl font-extrabold text-modern-900 tabular-nums">${cpu.usage_percent || 0}%</span>
+              <span id="sys-cpu-usage" class="text-2xl font-extrabold text-modern-900 tabular-nums">${cpu.usage_percent || 0}%</span>
               <span class="text-xs text-modern-500 font-bold">${cpu.cores || 1} Cores / Load: ${cpu.load_average ? cpu.load_average.join(", ") : "0.0, 0.0, 0.0"}</span>
             </div>
             <div class="w-full bg-modern-200 h-2.5 rounded-full overflow-hidden">
@@ -649,7 +649,7 @@ export default class StatisticsPage extends BaseAdminPage {
               ${getStatusPill(memory.status || "healthy")}
             </div>
             <div class="flex items-baseline justify-between mb-2">
-              <span id="sys-mem-usage" class="text-3xl font-extrabold text-modern-900 tabular-nums">${memory.usage_percent || 0}%</span>
+              <span id="sys-mem-usage" class="text-2xl font-extrabold text-modern-900 tabular-nums">${memory.usage_percent || 0}%</span>
               <span class="text-xs text-modern-500 font-bold">${formatBytes(memory.used_bytes)} / ${formatBytes(memory.total_bytes)}</span>
             </div>
             <div class="w-full bg-modern-200 h-2.5 rounded-full overflow-hidden">
@@ -669,7 +669,7 @@ export default class StatisticsPage extends BaseAdminPage {
               ${getStatusPill(disk.status || "healthy")}
             </div>
             <div class="flex items-baseline justify-between mb-2">
-              <span id="sys-disk-usage" class="text-3xl font-extrabold text-modern-900 tabular-nums">${disk.usage_percent || 0}%</span>
+              <span id="sys-disk-usage" class="text-2xl font-extrabold text-modern-900 tabular-nums">${disk.usage_percent || 0}%</span>
               <span class="text-xs text-modern-500 font-bold">${formatBytes(disk.used_bytes)} / ${formatBytes(disk.total_bytes)}</span>
             </div>
             <div class="w-full bg-modern-200 h-2.5 rounded-full overflow-hidden">
