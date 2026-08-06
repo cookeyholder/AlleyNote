@@ -504,15 +504,15 @@ class SystemMonitoringService implements SystemMonitoringServiceInterface
         }
 
         return [
-            'is_container'       => $isContainer,
-            'memory'             => [
+            'is_container' => $isContainer,
+            'memory'       => [
                 'used_bytes'      => $memUsed,
                 'used_formatted'  => $memUsedFormatted,
                 'limit_bytes'     => $memLimit,
                 'limit_formatted' => $memLimitFormatted,
                 'usage_percent'   => $memUsagePercent,
             ],
-            'cpu'                => [
+            'cpu' => [
                 'quota_cores'     => $cpuQuotaCores,
                 'quota_formatted' => $cpuQuotaFormatted,
             ],
