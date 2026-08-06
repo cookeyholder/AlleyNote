@@ -210,10 +210,15 @@ export async function renderHome() {
   if (footerCopyright) footerCopyright.textContent = safeFooterCopyright;
   if (adminUsername) adminUsername.textContent = safeUsername;
 
-  // 設置頁腳描述（純文字，避免 XSS）
+  // 設置頁腳描述（使用 DOMPurify 防範 XSS 並正常渲染富文本）
   const footerDescElement = document.getElementById("footer-description");
   if (footerDescElement && siteSettings.footer_description) {
-    footerDescElement.textContent = String(siteSettings.footer_description);
+    const rawDesc = String(siteSettings.footer_description);
+    if (typeof window !== "undefined" && window.DOMPurify?.sanitize) {
+      footerDescElement.innerHTML = window.DOMPurify.sanitize(rawDesc);
+    } else {
+      footerDescElement.textContent = rawDesc.replace(/<[^>]*>?/gm, "");
+    }
   }
 
   // 綁定搜尋事件
