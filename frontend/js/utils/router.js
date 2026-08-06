@@ -72,7 +72,17 @@ export async function requireRole(allowedRoles = []) {
   }
 
   const user = globalGetters.getUser();
-  const userRole = user?.role || "user";
+  const getUserRole = (u) => {
+    if (!u) return "user";
+    if (typeof u.role === "string" && u.role) return u.role;
+    if (Array.isArray(u.roles) && u.roles.length > 0) {
+      const first = u.roles[0];
+      if (typeof first === "string") return first;
+      if (typeof first === "object" && first?.name) return first.name;
+    }
+    return "admin";
+  };
+  const userRole = getUserRole(user);
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
     const router = await getRouter();
