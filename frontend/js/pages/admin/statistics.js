@@ -1009,6 +1009,12 @@ export default class StatisticsPage extends BaseAdminPage {
           scales: {
             y: {
               beginAtZero: true,
+              title: {
+                display: true,
+                text: "瀏覽次數 (Views)",
+                color: "#64748b",
+                font: { size: 11, weight: "bold" },
+              },
               ticks: { precision: 0 },
             },
           },
