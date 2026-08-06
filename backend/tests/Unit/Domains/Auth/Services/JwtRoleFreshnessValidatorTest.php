@@ -122,7 +122,7 @@ final class JwtRoleFreshnessValidatorTest extends UnitTestCase
 
         $result = $this->validator->getUserRoleUpdatedAt(1);
 
-        $this->assertSame(1735689600, $result);
+        $this->assertSame(strtotime('2025-01-01 00:00:00'), $result);
     }
 
     public function testGetUserRoleUpdatedAtReturnsTimestampForIntTimestamp(): void

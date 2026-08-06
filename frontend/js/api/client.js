@@ -80,7 +80,11 @@ class ApiClient {
   }
 
   getCsrfToken() {
-    return this.getCookie("csrf_token") || this.getMetaContent("csrf-token");
+    return (
+      this._inMemoryCsrfToken ||
+      this.getCookie("csrf_token") ||
+      this.getMetaContent("csrf-token")
+    );
   }
 
   async ensureCsrfToken() {
@@ -97,9 +101,19 @@ class ApiClient {
       method: "GET",
       credentials: this.withCredentials ? "include" : "same-origin",
       headers: this.buildHeaders({}, "GET"),
-    }).finally(() => {
-      this._csrfInitPromise = null;
-    });
+    })
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.token) {
+            this._inMemoryCsrfToken = data.token;
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        this._csrfInitPromise = null;
+      });
 
     await this._csrfInitPromise;
   }
@@ -134,14 +148,16 @@ class ApiClient {
 
     if (error instanceof ApiError) {
       if (
-        error.status === 403 &&
+        (error.status === 403 || error.status === 400) &&
         originalRequest &&
         !originalRequest.options?._csrfRetried &&
-        error.data?.code === "CSRF_INVALID"
+        (error.data?.code === "CSRF_INVALID" ||
+          (typeof error.message === "string" && error.message.includes("CSRF")))
       ) {
         try {
           originalRequest.options = originalRequest.options || {};
           originalRequest.options._csrfRetried = true;
+          this._inMemoryCsrfToken = null;
           await this.ensureCsrfToken();
           return this.request(originalRequest.url, originalRequest.options);
         } catch (csrfRetryError) {

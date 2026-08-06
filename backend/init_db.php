@@ -265,6 +265,8 @@ try {
     $ensureColumn($pdo, 'user_activity_logs', 'action_type', 'VARCHAR(50)');
     $ensureColumn($pdo, 'user_activity_logs', 'action_category', 'VARCHAR(50)');
     $ensureColumn($pdo, 'user_activity_logs', 'status', "VARCHAR(20) NOT NULL DEFAULT 'success'");
+    $ensureColumn($pdo, 'user_activity_logs', 'occurred_at', "DATETIME DEFAULT CURRENT_TIMESTAMP");
+    $ensureColumn($pdo, 'user_activity_logs', 'metadata', "TEXT");
 
     // comments 表
     $pdo->exec("

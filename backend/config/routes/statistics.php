@@ -14,6 +14,7 @@ use App\Application\Controllers\Api\V1\StatisticsChartController;
 use App\Application\Controllers\Api\V1\PostViewController;
 use App\Application\Controllers\Api\V1\AdvancedAnalyticsController;
 use App\Application\Controllers\Api\V1\StatisticsExportController;
+use App\Application\Controllers\Api\V1\SystemMonitoringController;
 
 return [
     // =========================================
@@ -106,6 +107,15 @@ return [
         'path' => '/api/admin/statistics/health',
         'handler' => [StatisticsAdminController::class, 'health'],
         'name' => 'statistics.admin.health',
+        'middleware' => ['jwt.auth']
+    ],
+
+    // 主機與系統監控狀態
+    'statistics.admin.system' => [
+        'methods' => ['GET'],
+        'path' => '/api/admin/statistics/system',
+        'handler' => [SystemMonitoringController::class, 'getSystemStatus'],
+        'name' => 'statistics.admin.system',
         'middleware' => ['jwt.auth']
     ],
 
