@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 namespace App\Domains\Auth\Services;
 
+use App\Domains\Auth\Models\Permission;
+use App\Domains\Auth\Models\Role;
+use App\Domains\Auth\Repositories\PermissionRepository;
+use App\Domains\Auth\Repositories\RoleRepository;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\ValidationException;
 use RuntimeException;
 
 class RoleManagementService
@@ -44,6 +50,8 @@ class RoleManagementService
 
     /**
      * 建立角色.
+     *
+     * @param array<mixed> $permissionIds
      */
     public function createRole(string $name, string $displayName, ?string $description = null, array $permissionIds = []): Role
     {
@@ -54,7 +62,13 @@ class RoleManagementService
         $role = $this->roleRepository->create($name, $displayName, $description);
         // 分配權限
         if (!empty($permissionIds)) {
-            $this->roleRepository->setRolePermissions($role->getId(), $permissionIds);
+            $intPermissionIds = [];
+            foreach ($permissionIds as $id) {
+                if (is_numeric($id) || is_string($id)) {
+                    $intPermissionIds[] = (int) $id;
+                }
+            }
+            $this->roleRepository->setRolePermissions($role->getId(), $intPermissionIds);
         }
 
         return $role;
