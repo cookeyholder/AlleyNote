@@ -64,6 +64,36 @@ export async function requireAuth() {
 }
 
 /**
+ * 路由守衛 - 需要特定角色
+ */
+export async function requireRole(allowedRoles = []) {
+  if (!(await requireAuth())) {
+    return false;
+  }
+
+  const user = globalGetters.getUser();
+  const getUserRole = (u) => {
+    if (!u) return "user";
+    if (typeof u.role === "string" && u.role) return u.role;
+    if (Array.isArray(u.roles) && u.roles.length > 0) {
+      const first = u.roles[0];
+      if (typeof first === "string") return first;
+      if (typeof first === "object" && first?.name) return first.name;
+    }
+    return "admin";
+  };
+  const userRole = getUserRole(user);
+
+  if (allowedRoles.length > 0 && !allowedRoles.includes(userRole)) {
+    const router = await getRouter();
+    router.navigate("/403");
+    return false;
+  }
+
+  return true;
+}
+
+/**
  * 路由守衛 - 僅訪客
  */
 export async function guestOnly() {
@@ -181,7 +211,7 @@ export async function initRouter() {
 
   // 後台使用者管理
   router.on("/admin/users", async () => {
-    if (await requireAuth()) {
+    if (await requireRole(["super_admin", "admin"])) {
       await loadAdminPage(async () => {
         const module = await import("../pages/admin/users.js");
         await module.renderUsers();
@@ -191,7 +221,7 @@ export async function initRouter() {
 
   // 後台角色管理
   router.on("/admin/roles", async () => {
-    if (await requireAuth()) {
+    if (await requireRole(["super_admin", "admin"])) {
       await loadAdminPage(async () => {
         const module = await import("../pages/admin/roles.js");
         await module.renderRoles();
@@ -201,7 +231,7 @@ export async function initRouter() {
 
   // 後台標籤管理
   router.on("/admin/tags", async () => {
-    if (await requireAuth()) {
+    if (await requireRole(["super_admin", "admin", "editor"])) {
       await loadAdminPage(async () => {
         const module = await import("../pages/admin/tags.js");
         await module.renderTags();
@@ -211,7 +241,7 @@ export async function initRouter() {
 
   // 後台系統統計
   router.on("/admin/statistics", async () => {
-    if (await requireAuth()) {
+    if (await requireRole(["super_admin", "admin"])) {
       await loadAdminPage(async () => {
         const module = await import("../pages/admin/statistics.js");
         await module.renderStatistics();
@@ -221,7 +251,7 @@ export async function initRouter() {
 
   // 後台系統設定
   router.on("/admin/settings", async () => {
-    if (await requireAuth()) {
+    if (await requireRole(["super_admin", "admin"])) {
       await loadAdminPage(async () => {
         const module = await import("../pages/admin/settings.js");
         await module.renderSettings();

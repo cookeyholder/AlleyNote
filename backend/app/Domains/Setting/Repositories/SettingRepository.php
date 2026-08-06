@@ -93,12 +93,14 @@ class SettingRepository
     public function updateValue(string $key, mixed $value, string $type): ?array
     {
         $storedValue = $this->prepareValue($value, $type);
+        $existing = $this->findByKey($key);
+        if ($existing === null) {
+            return $this->create($key, $value, $type, $key);
+        }
+
         $sql = 'UPDATE settings SET value = :value, updated_at = CURRENT_TIMESTAMP WHERE key = :key';
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['value' => $storedValue, 'key' => $key]);
-        if ($stmt->rowCount() === 0) {
-            return null;
-        }
 
         return $this->findByKey($key);
     }

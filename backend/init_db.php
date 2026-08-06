@@ -423,6 +423,19 @@ try {
     ");
     echo "✓ user_permissions 表已創建\n";
 
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS settings (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            key VARCHAR(255) NOT NULL UNIQUE,
+            value TEXT NOT NULL,
+            type VARCHAR(50) NOT NULL DEFAULT 'string',
+            description VARCHAR(255),
+            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+        )
+    ");
+    echo "✓ settings 表已創建\n";
+
     // 創建索引
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status)");
     if ($hasColumn($pdo, 'posts', 'user_id')) {
@@ -525,6 +538,22 @@ try {
         FROM roles r
         JOIN permissions p
         WHERE r.name IN ('admin', 'super_admin')
+    ");
+
+    // 建立預設系統設定值
+    $pdo->exec("
+        INSERT OR IGNORE INTO settings (key, value, type, description) VALUES
+        ('site_name', 'AlleyNote', 'string', '網站名稱'),
+        ('site_description', 'AlleyNote 公布欄系統', 'string', '網站描述'),
+        ('posts_per_page', '20', 'integer', '每頁文章數量'),
+        ('enable_registration', '1', 'boolean', '允許使用者註冊'),
+        ('enable_comments', '1', 'boolean', '允許留言'),
+        ('max_upload_size', '10485760', 'integer', '最大上傳限制(Bytes)'),
+        ('max_attachments_per_post', '10', 'integer', '單篇文章附件數量上限'),
+        ('site_timezone', 'Asia/Taipei', 'string', '網站主要時區'),
+        ('footer_copyright', '© 2024 AlleyNote. All rights reserved.', 'string', '頁腳版權文字'),
+        ('footer_description', '基於 Domain-Driven Design 的企業級公布欄系統', 'string', '頁腳描述文字'),
+        ('allowed_file_types', '[\"jpg\",\"png\",\"gif\",\"pdf\",\"docx\",\"xlsx\",\"pptx\",\"txt\",\"zip\"]', 'json', '允許上傳副檔名')
     ");
 
     echo "\n✅ 資料庫初始化完成！\n";

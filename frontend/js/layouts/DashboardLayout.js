@@ -127,6 +127,33 @@ function renderSidebar(user) {
     },
   ];
 
+  const getUserRole = (u) => {
+    if (!u) return "user";
+    if (typeof u.role === "string" && u.role) return u.role;
+    if (Array.isArray(u.roles) && u.roles.length > 0) {
+      const first = u.roles[0];
+      if (typeof first === "string") return first;
+      if (typeof first === "object" && first?.name) return first.name;
+    }
+    return "admin";
+  };
+
+  const userRole = getUserRole(user);
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (["super_admin", "admin"].includes(userRole)) {
+      return true;
+    }
+    if (userRole === "editor") {
+      return ["/admin/dashboard", "/admin/posts", "/admin/tags"].includes(
+        item.path,
+      );
+    }
+    if (userRole === "author") {
+      return ["/admin/dashboard", "/admin/posts"].includes(item.path);
+    }
+    return ["/admin/dashboard"].includes(item.path);
+  });
+
   return `
     <aside id="sidebar" class="sidebar bg-white border-r border-modern-200">
       <div class="p-6">
@@ -140,7 +167,7 @@ function renderSidebar(user) {
       </div>
 
       <nav class="flex-1 px-4 py-4 space-y-1">
-        ${menuItems
+        ${filteredMenuItems
           .map((item) => {
             const isActive = currentPath === item.path;
             return `
