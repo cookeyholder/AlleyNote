@@ -254,6 +254,11 @@ export default class RolesPage extends BaseAdminPage {
     `;
   }
 
+  reRender() {
+    this.render();
+    this.attachEventListeners();
+  }
+
   attachEventListeners() {
     // 新增角色按鈕
     const addRoleBtn = document.getElementById("addRoleBtn");
@@ -289,7 +294,7 @@ export default class RolesPage extends BaseAdminPage {
     if (cancelEditBtn) {
       cancelEditBtn.addEventListener("click", () => {
         this.selectedRole = null;
-        this.render();
+        this.reRender();
       });
     }
 
@@ -307,7 +312,7 @@ export default class RolesPage extends BaseAdminPage {
     try {
       const result = await rolesAPI.get(roleId);
       this.selectedRole = result.data;
-      this.render();
+      this.reRender();
     } catch (error) {
       console.error("載入角色權限失敗:", error);
       notification.error("載入角色權限失敗");
