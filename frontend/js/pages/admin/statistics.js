@@ -47,7 +47,6 @@ export default class StatisticsPage extends BaseAdminPage {
 
   afterRender() {
     this.initCharts();
-    this.attachEventListeners();
   }
 
   async loadStatistics() {
