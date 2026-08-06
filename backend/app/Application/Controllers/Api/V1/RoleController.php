@@ -212,7 +212,8 @@ class RoleController
             $name = $data['name'] ?? '';
             $displayName = $data['display_name'] ?? '';
             $description = $data['description'] ?? null;
-            $permissionIds = $data['permission_ids'] ?? [];
+            /** @var array<mixed> $permissionIds */
+            $permissionIds = is_array($data['permission_ids'] ?? null) ? $data['permission_ids'] : [];
             $role = $this->roleManagementService->createRole($name, $displayName, $description, $permissionIds);
             $responseData = json_encode([
                 'success' => true,
