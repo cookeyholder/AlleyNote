@@ -759,7 +759,7 @@ export default class StatisticsPage extends BaseAdminPage {
               </div>
             </div>
             <div class="text-right ml-4">
-              <p class="text-base font-bold text-modern-900 tabular-nums">${post.views || 0}</p>
+              <p class="text-base font-bold text-accent-600 tabular-nums">${post.views || 0}</p>
               <p class="text-[9px] font-bold text-modern-400 uppercase tracking-tighter">VIEWS</p>
             </div>
           </div>
@@ -780,7 +780,7 @@ export default class StatisticsPage extends BaseAdminPage {
       <div>
         <div class="mb-6 p-5 bg-red-50/60 border border-red-100 rounded-2xl flex items-center justify-between">
           <div>
-            <p class="text-xs font-bold text-red-500 uppercase tracking-widest mb-1">24小時內失敗登入嘗試</p>
+            <p class="text-xs font-bold text-red-500 uppercase tracking-widest mb-1">總失敗次數 (24小時嘗試)</p>
             <p class="text-3xl font-extrabold text-red-900 tabular-nums">${failures.total || 0}</p>
           </div>
           <div class="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-red-600">
