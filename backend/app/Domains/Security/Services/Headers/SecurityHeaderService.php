@@ -325,8 +325,8 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
                 'monitoring_endpoint' => null, // 可設定外部監控服務端點
                 'directives'          => [
                     'default-src'               => ["'self'"],
-                    'script-src'                => ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.tailwindcss.com', 'https://cdn.ckeditor.com', 'https://cdn.jsdelivr.net'],
-                    'style-src'                 => ["'self'", "'unsafe-inline'", 'https://cdn.tailwindcss.com', 'https://cdn.ckeditor.com', 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+                    'script-src'                => ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.tailwindcss.com', 'https://cdn.ckeditor.com', 'https://cdn.jsdelivr.net', 'https://unpkg.com'],
+                    'style-src'                 => ["'self'", "'unsafe-inline'", 'https://cdn.tailwindcss.com', 'https://cdn.ckeditor.com', 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com', 'https://cdn.jsdelivr.net', 'https://unpkg.com'],
                     'img-src'                   => ["'self'", 'data:', 'blob:', 'https:', 'http:'],
                     'font-src'                  => ["'self'", 'data:', 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com', 'https://cdn.ckeditor.com'],
                     'connect-src'               => ["'self'", 'http://localhost:3000', 'http://localhost:8081'],

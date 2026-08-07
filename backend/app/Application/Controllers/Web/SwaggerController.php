@@ -97,7 +97,9 @@ class SwaggerController
      */
     public function ui(Request $request, Response $response): Response
     {
-        $html = $this->generateSwaggerUiHtml();
+        $rawNonce = $request->getAttribute('csp_nonce');
+        $nonce = is_string($rawNonce) ? $rawNonce : '';
+        $html = $this->generateSwaggerUiHtml($nonce);
         $response->getBody()->write(($html ?: ''));
 
         return $response
@@ -108,15 +110,17 @@ class SwaggerController
     /**
      * 產生 Swagger UI HTML.
      */
-    private function generateSwaggerUiHtml(): string
+    private function generateSwaggerUiHtml(string $nonce = ''): string
     {
+        $nonceAttr = $nonce !== '' ? ' nonce="' . htmlspecialchars($nonce, ENT_QUOTES, 'UTF-8') . '"' : '';
+
         return <<<HTML
             <!DOCTYPE html>
             <html>
             <head>
                 <title>AlleyNote API Documentation</title>
                 <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css" />
-                <style>
+                <style{$nonceAttr}>
                     .swagger-ui .topbar { display: none; }
                     .swagger-ui .info { margin: 30px 0; }
                 </style>
@@ -125,7 +129,7 @@ class SwaggerController
                 <div id="swagger-ui"></div>
                 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js"></script>
                 <script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-standalone-preset.js"></script>
-                <script>
+                <script{$nonceAttr}>
                 window.onload = function() {
                     SwaggerUIBundle({
                         url: '/api/docs',
