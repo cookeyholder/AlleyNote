@@ -29,6 +29,11 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         ServerRequestInterface $request,
         RequestHandlerInterface $handler,
     ): ResponseInterface {
+        if ($this->enabled) {
+            $nonce = $this->headerService->generateNonce();
+            $request = $request->withAttribute('csp_nonce', $nonce);
+        }
+
         $response = $handler->handle($request);
 
         if (!$this->enabled) {
