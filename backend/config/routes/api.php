@@ -46,6 +46,20 @@ return [
         'name' => 'posts.index'
     ],
 
+    'posts.export_markdown' => [
+        'methods' => ['GET'],
+        'path' => '/api/posts/export/markdown',
+        'handler' => [PostController::class, 'exportMarkdown'],
+        'name' => 'posts.export_markdown'
+    ],
+
+    'posts.export_single_markdown' => [
+        'methods' => ['GET'],
+        'path' => '/api/posts/{id}/export/markdown',
+        'handler' => [PostController::class, 'exportSingleMarkdown'],
+        'name' => 'posts.export_single_markdown'
+    ],
+
     'posts.show' => [
         'methods' => ['GET'],
         'path' => '/api/posts/{id}',

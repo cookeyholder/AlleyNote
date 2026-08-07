@@ -23,6 +23,7 @@ use App\Shared\Exceptions\StateTransitionException;
 use App\Shared\Exceptions\Validation\RequestValidationException;
 use App\Shared\Exceptions\ValidationException;
 use App\Shared\Helpers\NetworkHelper;
+use OpenApi\Attributes as OA;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Throwable;
@@ -831,5 +832,127 @@ class PostController extends BaseController implements PostApiInterface
     {
         return $this->authService->can($userId, 'post', 'manage')
             || $this->authService->can($userId, 'post', 'update');
+    }
+
+    #[OA\Get(
+        path: '/api/posts/export/markdown',
+        operationId: 'exportPostsMarkdown',
+        summary: '匯出多篇文章為 Markdown 格式',
+        tags: ['posts'],
+        parameters: [
+            new OA\Parameter(name: 'ids', in: 'query', schema: new OA\Schema(type: 'string'), description: '文章 ID 清單（逗號分隔）'),
+            new OA\Parameter(name: 'status', in: 'query', schema: new OA\Schema(type: 'string'), description: '篩選狀態'),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: '成功下載 Markdown 檔案'),
+        ],
+    )]
+    public function exportMarkdown(Request $request, Response $response): Response
+    {
+        try {
+            $queryParams = $request->getQueryParams();
+            $filters = [];
+            if (!empty($queryParams['ids']) && is_string($queryParams['ids'])) {
+                $rawIds = explode(',', $queryParams['ids']);
+                $filters['ids'] = array_filter(array_map('intval', $rawIds), static fn(int $id): bool => $id > 0);
+            }
+            if (!empty($queryParams['status']) && is_string($queryParams['status'])) {
+                $filters['status'] = trim($queryParams['status']);
+            }
+
+            $result = $this->postService->listPosts(1, 1000, $filters);
+            /** @var array<int, Post> $posts */
+            $posts = $result['items'];
+            $markdown = '';
+
+            foreach ($posts as $post) {
+                $markdown .= $this->formatPostToMarkdown($post) . "\n\n---\n\n";
+            }
+
+            $response->getBody()->write($markdown);
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'text/markdown; charset=UTF-8')
+                ->withHeader('Content-Disposition', 'attachment; filename="posts_export.md"');
+        } catch (Throwable $e) {
+            $responseData = $this->handleException($e);
+            $response->getBody()->write($responseData);
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    #[OA\Get(
+        path: '/api/posts/{id}/export/markdown',
+        operationId: 'exportSinglePostMarkdown',
+        summary: '匯出單篇文章為 Markdown 格式',
+        tags: ['posts'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: '成功下載單篇 Markdown 檔案'),
+            new OA\Response(response: 404, description: '貼文不存在'),
+        ],
+    )]
+    public function exportSingleMarkdown(Request $request, Response $response): Response
+    {
+        try {
+            $idAttr = $request->getAttribute('id');
+            $id = is_numeric($idAttr) ? (int) $idAttr : 0;
+            $post = $this->postService->findById($id);
+
+            $markdown = $this->formatPostToMarkdown($post);
+            $filename = sprintf('post_%d.md', $id);
+
+            $response->getBody()->write($markdown);
+
+            return $response
+                ->withStatus(200)
+                ->withHeader('Content-Type', 'text/markdown; charset=UTF-8')
+                ->withHeader('Content-Disposition', sprintf('attachment; filename="%s"', $filename));
+        } catch (PostNotFoundException $e) {
+            $errorResponse = $this->errorResponse('貼文不存在', 404);
+            $response->getBody()->write($errorResponse);
+
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(404);
+        } catch (Throwable $e) {
+            $responseData = $this->handleException($e);
+            $response->getBody()->write($responseData);
+
+            return $response->withStatus(500)->withHeader('Content-Type', 'application/json');
+        }
+    }
+
+    private function formatPostToMarkdown(Post $post): string
+    {
+        $title = $post->getTitle();
+        $author = $post->getAuthor() ?: '系統管理員';
+        $createdAt = $post->getCreatedAt();
+        $statusStr = $post->getStatus()->value;
+        $content = $post->getContent();
+
+        $mdContent = preg_replace('/<h1[^>]*>(.*?)<\/h1>/i', "# $1\n\n", $content) ?? $content;
+        $mdContent = preg_replace('/<h2[^>]*>(.*?)<\/h2>/i', "## $1\n\n", $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<h3[^>]*>(.*?)<\/h3>/i', "### $1\n\n", $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<strong[^>]*>(.*?)<\/strong>/i', '**$1**', $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<b[^>]*>(.*?)<\/b>/i', '**$1**', $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<em[^>]*>(.*?)<\/em>/i', '*$1*', $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<i[^>]*>(.*?)<\/i>/i', '*$1*', $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<li[^>]*>(.*?)<\/li>/i', "- $1\n", $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<p[^>]*>(.*?)<\/p>/i', "$1\n\n", $mdContent) ?? $mdContent;
+        $mdContent = preg_replace('/<br\s*\/?>/i', "\n", $mdContent) ?? $mdContent;
+        $cleanContent = trim(html_entity_decode(strip_tags($mdContent), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+
+        return sprintf(
+            "# %s\n\n- **文章 ID**: %d\n- **作者**: %s\n- **發佈時間**: %s\n- **狀態**: %s\n\n---\n\n%s",
+            $title,
+            $post->getId(),
+            $author,
+            $createdAt,
+            $statusStr,
+            $cleanContent,
+        );
     }
 }
