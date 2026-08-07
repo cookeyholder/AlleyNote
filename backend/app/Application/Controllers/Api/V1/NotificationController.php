@@ -36,8 +36,7 @@ class NotificationController extends BaseController
     public function index(Request $request, Response $response): Response
     {
         try {
-            $user = $request->getAttribute('user');
-            $userId = is_array($user) && isset($user['id']) && is_numeric($user['id']) ? (int) $user['id'] : null;
+            $userId = $this->getUserIdFromRequest($request);
 
             $params = $request->getQueryParams();
             $unreadOnly = !empty($params['unread_only']) && filter_var($params['unread_only'], FILTER_VALIDATE_BOOLEAN);
@@ -78,8 +77,7 @@ class NotificationController extends BaseController
     public function unreadCount(Request $request, Response $response): Response
     {
         try {
-            $user = $request->getAttribute('user');
-            $userId = is_array($user) && isset($user['id']) && is_numeric($user['id']) ? (int) $user['id'] : null;
+            $userId = $this->getUserIdFromRequest($request);
             $count = $this->notificationService->getUnreadCount($userId);
 
             return $this->json($response, [
@@ -114,8 +112,7 @@ class NotificationController extends BaseController
         try {
             $idAttr = $request->getAttribute('id');
             $id = is_numeric($idAttr) ? (int) $idAttr : 0;
-            $user = $request->getAttribute('user');
-            $userId = is_array($user) && isset($user['id']) && is_numeric($user['id']) ? (int) $user['id'] : null;
+            $userId = $this->getUserIdFromRequest($request);
 
             $this->notificationService->markAsRead($id, $userId);
 
@@ -143,8 +140,7 @@ class NotificationController extends BaseController
     public function markAllAsRead(Request $request, Response $response): Response
     {
         try {
-            $user = $request->getAttribute('user');
-            $userId = is_array($user) && isset($user['id']) && is_numeric($user['id']) ? (int) $user['id'] : null;
+            $userId = $this->getUserIdFromRequest($request);
             $count = $this->notificationService->markAllAsRead($userId);
 
             return $this->json($response, [
@@ -208,5 +204,20 @@ class NotificationController extends BaseController
                 'message' => $e->getMessage(),
             ], 400);
         }
+    }
+
+    private function getUserIdFromRequest(Request $request): ?int
+    {
+        $userIdAttr = $request->getAttribute('user_id');
+        if (is_numeric($userIdAttr)) {
+            return (int) $userIdAttr;
+        }
+
+        $userAttr = $request->getAttribute('user');
+        if (is_array($userAttr) && isset($userAttr['id']) && is_numeric($userAttr['id'])) {
+            return (int) $userAttr['id'];
+        }
+
+        return null;
     }
 }
