@@ -268,8 +268,17 @@ export async function initRouter() {
     import("../pages/public/errors.js").then((module) => module.render500());
   });
 
-  // 404 頁面
+  // 404 頁面（對後端 API / Swagger / OpenAPI 路由自動讓渡給瀏覽器請求）
   router.notFound(() => {
+    const path = window.location.pathname;
+    if (
+      path.startsWith("/api/") ||
+      path.startsWith("/swagger") ||
+      path.startsWith("/openapi")
+    ) {
+      window.location.href = path + window.location.search;
+      return;
+    }
     import("../pages/public/errors.js").then((module) => module.render404());
   });
 
