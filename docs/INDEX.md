@@ -7,15 +7,15 @@
 | 目錄 | 說明 | 適合對象 |
 |------|------|----------|
 | `decisions/` | 架構決策記錄 (ADR) | 後端開發者、架構師 |
-| `domains/` | 領域概述與設計 | 後端開發者 |
+| `domains/` | 7 大領域 (Auth, Post, Notification, Statistics, Security, Setting, Attachment) 概述與設計 | 後端開發者 |
 | `architecture/` | 設計文件與模式說明 | 後端開發者 |
-| `frontend/` | 前端架構與實作 | 前端開發者 |
+| `frontend/` | 前端無建構 SPA 架構與實作 | 前端開發者 |
 | `guides/content-creators/` | 內容管理者操作手冊 | 內容管理者 |
 | `guides/admin/` | 系統管理員指南 | 系統管理員 |
 | `guides/developer/` | 開發者指南 | 後端開發者 |
 | `guides/frontend/` | 前端開發技術指南 | 前端開發者 |
 | `guides/deployment/` | 部署與維運 | 系統管理員 |
-| `api/` | API 文件 | API 整合者 |
+| `api/` | API 文件 (OpenAPI 3.0 & Swagger UI) | API 整合者 |
 | `runbooks/` | 開發與維運 runbook | 開發者、管理員 |
 | `archive/` | 歷史歸檔文件 | 所有人 |
 
