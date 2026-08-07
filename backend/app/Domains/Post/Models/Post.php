@@ -167,6 +167,11 @@ class Post implements JsonSerializable
         return $this->creationSourceDetail;
     }
 
+    public function getAuthor(): ?string
+    {
+        return $this->author;
+    }
+
     /**
      * @return list<array{id: int, name: string}>
      */

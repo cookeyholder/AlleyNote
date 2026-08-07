@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 use App\Application\Controllers\Admin\CacheMonitorController;
 use App\Application\Controllers\Admin\TagManagementController;
+use App\Application\Controllers\Api\V1\NotificationController;
 use App\Application\Controllers\Api\V1\PostViewController;
 use App\Application\Controllers\Api\V1\RoleController;
 use App\Application\Controllers\Api\V1\UserController;
@@ -24,6 +25,10 @@ use App\Domains\Auth\Repositories\UserRepository;
 use App\Domains\Auth\Services\AuthorizationService;
 use App\Domains\Auth\Services\RoleManagementService;
 use App\Domains\Auth\Services\UserManagementService;
+use App\Domains\Notification\Contracts\NotificationRepositoryInterface;
+use App\Domains\Notification\Contracts\NotificationServiceInterface;
+use App\Domains\Notification\Repositories\NotificationRepository;
+use App\Domains\Notification\Services\NotificationService;
 use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Contracts\TagRepositoryInterface;
@@ -351,6 +356,18 @@ return array_merge(
 
         RoleController::class => \DI\autowire(RoleController::class)
             ->constructorParameter('roleManagementService', \DI\get(RoleManagementService::class)),
+
+        // ========================================
+        // 站內通知模組
+        // ========================================
+        NotificationRepositoryInterface::class => \DI\autowire(NotificationRepository::class)
+            ->constructorParameter('db', \DI\get(PDO::class)),
+
+        NotificationServiceInterface::class => \DI\autowire(NotificationService::class)
+            ->constructorParameter('repository', \DI\get(NotificationRepositoryInterface::class)),
+
+        NotificationController::class => \DI\autowire(NotificationController::class)
+            ->constructorParameter('notificationService', \DI\get(NotificationServiceInterface::class)),
     ],
 
     // 監控服務
