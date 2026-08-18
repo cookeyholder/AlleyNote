@@ -217,7 +217,7 @@ export async function renderHome() {
     if (typeof window !== "undefined" && window.DOMPurify?.sanitize) {
       footerDescElement.innerHTML = window.DOMPurify.sanitize(rawDesc);
     } else {
-      footerDescElement.textContent = rawDesc.replace(/<[^>]*>?/gm, "");
+      footerDescElement.textContent = rawDesc;
     }
   }
 
