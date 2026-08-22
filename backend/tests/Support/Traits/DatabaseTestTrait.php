@@ -32,10 +32,12 @@ trait DatabaseTestTrait
             $this->db = new PDO('sqlite::memory:', null, null, [
                 PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
                 PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_TIMEOUT            => 5,
             ]);
 
-            // 啟用外鍵約束
-            $this->db->exec('PRAGMA foreign_keys = ON');
+            // 啟用外鍵約束與效能設定
+            DatabaseConnection::applySqlitePragmas($this->db, true);
 
             // 建立測試用資料表
             $this->createTestTables();

@@ -98,9 +98,20 @@ return array_merge(
 
         // 資料庫連線
         PDO::class => \DI\factory(function (ContainerInterface $c) {
-            $dbPath = $c->get('db.path');
+            $dbPath = (string) $c->get('db.path');
+            $isMemory = ($dbPath === ':memory:');
 
-            return new PDO('sqlite:' . $dbPath);
+            $options = [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_TIMEOUT            => 5,
+            ];
+
+            $pdo = new PDO('sqlite:' . $dbPath, null, null, $options);
+            \App\Infrastructure\Database\DatabaseConnection::applySqlitePragmas($pdo, $isMemory);
+
+            return $pdo;
         }),
     ],
 

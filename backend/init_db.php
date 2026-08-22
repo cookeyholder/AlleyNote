@@ -16,9 +16,21 @@ try {
     }
 
     // 連接資料庫
-    $pdo = new PDO('sqlite:' . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = new PDO('sqlite:' . $dbPath, null, null, [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_TIMEOUT            => 5,
+    ]);
+
+    // 套用 SQLite3 效能與約束 PRAGMA 參數
     $pdo->exec('PRAGMA foreign_keys = ON');
+    $pdo->exec('PRAGMA journal_mode = WAL');
+    $pdo->exec('PRAGMA synchronous = NORMAL');
+    $pdo->exec('PRAGMA busy_timeout = 5000');
+    $pdo->exec('PRAGMA temp_store = MEMORY');
+    $pdo->exec('PRAGMA cache_size = -64000');
+    $pdo->exec('PRAGMA mmap_size = 268435456');
 
     echo "正在初始化資料庫...\n";
 
@@ -555,6 +567,9 @@ try {
         ('footer_description', '基於 Domain-Driven Design 的企業級公布欄系統', 'string', '頁腳描述文字'),
         ('allowed_file_types', '[\"jpg\",\"png\",\"gif\",\"pdf\",\"docx\",\"xlsx\",\"pptx\",\"txt\",\"zip\"]', 'json', '允許上傳副檔名')
     ");
+
+    // 執行查詢規劃器最佳化
+    $pdo->exec('PRAGMA optimize');
 
     echo "\n✅ 資料庫初始化完成！\n";
     echo "\n您現在可以使用以下帳號登入：\n";

@@ -400,6 +400,18 @@ perform_restore() {
     # 設定適當的權限
     chmod 664 "$target_db" 2>/dev/null || true
     
+    # 執行效能最佳化
+    sqlite3 "$target_db" "
+        PRAGMA foreign_keys=ON;
+        PRAGMA journal_mode=WAL;
+        PRAGMA synchronous=NORMAL;
+        PRAGMA busy_timeout=5000;
+        PRAGMA temp_store=MEMORY;
+        PRAGMA cache_size=-64000;
+        PRAGMA mmap_size=268435456;
+        PRAGMA optimize;
+    " 2>/dev/null || true
+    
     # 驗證還原的資料庫
     if [[ "$verify_after" == true ]]; then
         if verify_restored_database "$target_db"; then
