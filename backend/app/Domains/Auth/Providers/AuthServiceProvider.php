@@ -10,6 +10,7 @@ use App\Domains\Auth\Contracts\AuthenticationServiceInterface;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
+use App\Domains\Auth\Contracts\UserRepositoryInterface;
 use App\Domains\Auth\Services\AuthenticationService;
 use App\Domains\Auth\Services\Authorization\AttributeAuthorizationStrategy;
 use App\Domains\Auth\Services\Authorization\AuthorizationOrchestratorService;
@@ -72,10 +73,14 @@ class AuthServiceProvider
 
     public static function createJwtTokenService(ContainerInterface $container): JwtTokenService
     {
-        $jwtProvider = $container->get(FirebaseJwtProvider::class);
+        $jwtProvider = $container->get(JwtProviderInterface::class);
+        assert($jwtProvider instanceof JwtProviderInterface);
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
         $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
         $config = $container->get(JwtConfig::class);
+        assert($config instanceof JwtConfig);
 
         return new JwtTokenService($jwtProvider, $refreshTokenRepository, $blacklistRepository, $config);
     }
@@ -83,18 +88,25 @@ class AuthServiceProvider
     public static function createAuthenticationService(ContainerInterface $container): AuthenticationService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
-        $refreshTokenService = $container->get(RefreshTokenService::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
+        $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+        $userRepository = $container->get(UserRepositoryInterface::class);
+        assert($userRepository instanceof UserRepositoryInterface);
 
-        return new AuthenticationService($jwtTokenService, $refreshTokenService, null);
+        return new AuthenticationService($jwtTokenService, $refreshTokenRepository, $userRepository);
     }
 
     public static function createRefreshTokenService(ContainerInterface $container): RefreshTokenService
     {
         $jwtTokenService = $container->get(JwtTokenServiceInterface::class);
+        assert($jwtTokenService instanceof JwtTokenServiceInterface);
         $refreshTokenRepository = $container->get(RefreshTokenRepositoryInterface::class);
-        $blacklistService = $container->get(TokenBlacklistService::class);
+        assert($refreshTokenRepository instanceof RefreshTokenRepositoryInterface);
+        $blacklistRepository = $container->get(TokenBlacklistRepositoryInterface::class);
+        assert($blacklistRepository instanceof TokenBlacklistRepositoryInterface);
 
-        return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistService);
+        return new RefreshTokenService($jwtTokenService, $refreshTokenRepository, $blacklistRepository);
     }
 
     public static function createTokenBlacklistService(ContainerInterface $container): TokenBlacklistService

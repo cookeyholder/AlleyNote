@@ -82,9 +82,9 @@ final class RoleTagRelationIntegrationTest extends IntegrationTestCase
     public function testRolePermissionsCanBeReplacedWithoutResidualLinks(): void
     {
         $this->db->exec("INSERT INTO roles (name, display_name, description, created_at, updated_at) VALUES ('editor','Editor','desc',datetime('now'),datetime('now'))");
-        $this->db->exec("INSERT INTO permissions (name, display_name) VALUES ('post.read','Read')");
-        $this->db->exec("INSERT INTO permissions (name, display_name) VALUES ('post.write','Write')");
-        $this->db->exec("INSERT INTO permissions (name, display_name) VALUES ('post.delete','Delete')");
+        $this->db->exec("INSERT INTO permissions (name, display_name, resource) VALUES ('post.read','Read','post')");
+        $this->db->exec("INSERT INTO permissions (name, display_name, resource) VALUES ('post.write','Write','post')");
+        $this->db->exec("INSERT INTO permissions (name, display_name, resource) VALUES ('post.delete','Delete','post')");
 
         $this->assertTrue($this->roleRepository->setRolePermissions(1, [1, 2]));
         $this->assertSame([1, 2], $this->roleRepository->getRolePermissionIds(1));
