@@ -101,22 +101,28 @@ final class CSVStatisticsFormatter implements StatisticsFormatterInterface
      */
     private function flattenData(array $data): array
     {
+        if ($this->isSequentialArrayOfAssociativeArrays($data)) {
+            /** @var array<array<string, mixed>> $data */
+            return $this->normalizeRows($data);
+        }
+
         $flattened = [];
         foreach ($data as $key => $value) {
+            $keyStr = (string) $key;
             if (is_array($value)) {
                 if ($this->isAssociativeArray($value)) {
                     // 如果是關聯陣列，展開為多個欄位
-                    $flattened = array_merge($flattened, $this->expandAssociativeArray($key, $value));
+                    $flattened = array_merge($flattened, $this->expandAssociativeArray($keyStr, $value));
                 } elseif ($this->isSequentialArrayOfAssociativeArrays($value)) {
                     // 如果是關聯陣列的順序陣列，直接使用
                     $flattened = array_merge($flattened, $value);
                 } else {
                     // 其他情況，轉換為字串
-                    $flattened[] = [$key => $this->arrayToString($value)];
+                    $flattened[] = [$keyStr => $this->arrayToString($value)];
                 }
             } else {
                 // 純量值
-                $flattened[] = [$key => $value];
+                $flattened[] = [$keyStr => $value];
             }
         }
 

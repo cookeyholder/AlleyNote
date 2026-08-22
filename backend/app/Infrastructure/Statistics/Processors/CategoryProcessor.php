@@ -159,8 +159,9 @@ class CategoryProcessor
         foreach ($rawData as $item) {
             $percentage = ($item['value'] / $total) * 100;
             $percentageData[] = [
-                'category' => $item['category'],
-                'value'    => $percentage,
+                'category'  => $item['category'],
+                'value'     => $percentage,
+                'raw_value' => $item['value'],
             ];
         }
         $processedData = $this->sortAndProcessData($percentageData, 'desc');
@@ -171,7 +172,7 @@ class CategoryProcessor
             $color = $colors[$index % count($colors)];
             $dataPoints[] = CategoryDataPoint::withPercentage(
                 category: $item['category'],
-                value: $rawData[$index]['value'], // 使用原始值計算百分比
+                value: (float) ($item['raw_value'] ?? $item['value']),
                 total: $total,
                 color: $color,
             );
@@ -281,7 +282,7 @@ class CategoryProcessor
             }
             $color = $colors[$colorIndex % count($colors)];
             $datasets[] = ChartDataset::forBarChart(
-                $seriesLabel,
+                (string) $seriesLabel,
                 $seriesValues,
                 [$color],
             );

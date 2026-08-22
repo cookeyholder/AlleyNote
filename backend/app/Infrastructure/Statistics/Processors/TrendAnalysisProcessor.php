@@ -173,14 +173,14 @@ class TrendAnalysisProcessor
         $growthRates = [];
         for ($i = 0; $i < $n; $i++) {
             if ($i === 0) {
-                $growthRates[] = 0; // 第一個點沒有成長率
+                $growthRates[] = 0.0; // 第一個點沒有成長率
             } else {
                 $prevValue = $data[$i - 1];
-                if ($prevValue !== 0) {
+                if ((float) $prevValue !== 0.0) {
                     $growthRate = (($data[$i] - $prevValue) / $prevValue) * 100;
                     $growthRates[] = $growthRate;
                 } else {
-                    $growthRates[] = 0;
+                    $growthRates[] = 0.0;
                 }
             }
         }
