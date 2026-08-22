@@ -393,7 +393,7 @@ return array_merge(
             ->constructorParameter('attachmentRepo', \DI\get(\App\Domains\Attachment\Repositories\AttachmentRepository::class))
             ->constructorParameter('postRepo', \DI\get(PostRepositoryInterface::class))
             ->constructorParameter('authService', \DI\get(AuthorizationServiceInterface::class))
-            ->constructorParameter('activityLogger', \DI\get(LoggingSecurityServiceInterface::class))
+            ->constructorParameter('activityLogger', \DI\get(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class))
             ->constructorParameter('uploadDir', __DIR__ . '/../storage/uploads'),
 
         \App\Domains\Attachment\Contracts\AttachmentServiceInterface::class => \DI\get(\App\Domains\Attachment\Services\AttachmentService::class),

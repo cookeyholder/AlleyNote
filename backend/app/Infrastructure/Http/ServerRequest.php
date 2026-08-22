@@ -26,6 +26,11 @@ class ServerRequest implements ServerRequestInterface
 
     private array $attributes = [];
 
+    /**
+     * @var array<int|string, mixed>
+     */
+    private array $uploadedFiles = [];
+
     private string $protocolVersion = '1.1';
 
     private StreamInterface $body;
@@ -126,14 +131,21 @@ class ServerRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getUploadedFiles(): array
     {
-        return [];
+        return $this->uploadedFiles;
     }
 
+    /**
+     * @param array<int|string, mixed> $uploadedFiles
+     */
     public function withUploadedFiles(array $uploadedFiles): self
     {
         $new = clone $this;
+        $new->uploadedFiles = $uploadedFiles;
 
         return $new;
     }
