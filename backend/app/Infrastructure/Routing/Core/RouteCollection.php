@@ -47,7 +47,19 @@ class RouteCollection implements RouteCollectionInterface
 
     public function getByName(string $name): ?RouteInterface
     {
-        return $this->namedRoutes[$name] ?? null;
+        if (isset($this->namedRoutes[$name])) {
+            return $this->namedRoutes[$name];
+        }
+
+        foreach ($this->routes as $route) {
+            if ($route->getName() === $name) {
+                $this->namedRoutes[$name] = $route;
+
+                return $route;
+            }
+        }
+
+        return null;
     }
 
     public function all(): array
@@ -78,7 +90,7 @@ class RouteCollection implements RouteCollectionInterface
 
     public function has(string $name): bool
     {
-        return isset($this->namedRoutes[$name]);
+        return $this->getByName($name) !== null;
     }
 
     public function remove(string $name): bool

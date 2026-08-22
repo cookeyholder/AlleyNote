@@ -58,8 +58,9 @@ class RouteLoader
      */
     private function loadRouteFile(RouterInterface $router, string $filePath, string $group): void
     {
+        $initialObLevel = ob_get_level();
+
         try {
-            // 使用輸出緩衝區來防止路由檔案輸出任何內容
             ob_start();
             // 在受保護的範圍內載入路由檔案
             $routes = $this->requireRouteFile($filePath, $router);
@@ -69,8 +70,15 @@ class RouteLoader
                 $this->processArrayRoutes($router, $routes, $group, $filePath);
             }
         } catch (ParseError $e) {
+            while (ob_get_level() > $initialObLevel) {
+                ob_end_clean();
+            }
+
             throw RouteConfigurationException::syntaxError($filePath, $e->getMessage());
         } catch (Throwable $e) {
+            while (ob_get_level() > $initialObLevel) {
+                ob_end_clean();
+            }
             if ($e instanceof RouteConfigurationException) {
                 throw $e;
             }

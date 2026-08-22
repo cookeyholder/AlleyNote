@@ -99,12 +99,13 @@ return [
     AttachmentService::class => DI\autowire(AttachmentService::class)
         ->constructorParameter('attachmentRepo', DI\get(AttachmentRepositoryInterface::class))
         ->constructorParameter('postRepo', DI\get(PostRepositoryInterface::class))
-        ->constructorParameter('cache', DI\get(CacheServiceInterface::class))
         ->constructorParameter('authService', DI\get(AuthorizationServiceInterface::class))
+        ->constructorParameter('activityLogger', DI\get(ActivityLoggingServiceInterface::class))
         ->constructorParameter('uploadDir', __DIR__ . '/../../../storage/uploads'),
 
     IpService::class => DI\autowire(IpService::class)
-        ->constructorParameter('ipRepository', DI\get(IpRepositoryInterface::class)),
+        ->constructorParameter('repository', DI\get(IpRepositoryInterface::class))
+        ->constructorParameter('activityLogger', DI\get(LoggingSecurityServiceInterface::class)),
 
     RateLimitService::class => DI\autowire(RateLimitService::class)
         ->constructorParameter('cache', DI\get(CacheServiceInterface::class)),
