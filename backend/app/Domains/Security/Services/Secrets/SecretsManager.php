@@ -76,7 +76,9 @@ class SecretsManager implements SecretsManagerInterface
     {
         $value = $this->get($key);
         if ($value === null || $value === '') {
-            throw new ValidationException("必需的環境變數 '{$key}' 未設定");
+            $message = "必需的環境變數 '{$key}' 未設定";
+
+            throw ValidationException::fromSingleError('secrets', $message);
         }
 
         return (string) $value;
@@ -94,7 +96,8 @@ class SecretsManager implements SecretsManagerInterface
             }
         }
         if (!empty($missing)) {
-            throw new ValidationException(
+            throw ValidationException::fromSingleError(
+                'secrets',
                 '缺少必需的環境變數: ' . implode(', ', $missing),
             );
         }
@@ -221,7 +224,10 @@ class SecretsManager implements SecretsManagerInterface
     private function loadFromFile(string $filePath): void
     {
         if (!is_readable($filePath)) {
-            throw new ValidationException("無法讀取環境設定檔案: {$filePath}");
+            throw ValidationException::fromSingleError(
+                'env_file',
+                "無法讀取環境設定檔案: {$filePath}",
+            );
         }
         $content = file_get_contents($filePath);
         $lines = explode("\n", $content);
