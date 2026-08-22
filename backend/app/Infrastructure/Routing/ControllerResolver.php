@@ -128,7 +128,7 @@ class ControllerResolver
     private function resolveController(string $controllerClass): object
     {
         // 確保類別名稱是完整的命名空間
-        if (!str_starts_with($controllerClass, 'App\\')) {
+        if (!class_exists($controllerClass) && !str_starts_with($controllerClass, 'App\\')) {
             $controllerClass = 'App\\Application\\Controllers\\' . $controllerClass;
         }
         // 檢查類別是否存在
@@ -222,6 +222,11 @@ class ControllerResolver
             // 處理 PSR-7 回應物件
             if ($type && $type instanceof ReflectionNamedType && $type->getName() === ResponseInterface::class) {
                 $args[] = $this->createResponse();
+                continue;
+            }
+            // 處理路由參數字典 (如 array $args 或名為 $args 的參數)
+            if ($paramName === 'args' || ($type && $type instanceof ReflectionNamedType && $type->getName() === 'array' && !isset($routeParameters[$paramName]))) {
+                $args[] = $routeParameters;
                 continue;
             }
             // 處理路由參數
