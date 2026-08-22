@@ -88,6 +88,21 @@ class Application
     private function initializeContainer(): void
     {
         $builder = new ContainerBuilder();
+
+        $appEnv = getenv('APP_ENV') ?: 'production';
+        $compileContainer = filter_var(getenv('APP_COMPILE_CONTAINER') ?: ($appEnv === 'production'), FILTER_VALIDATE_BOOLEAN);
+
+        if ($compileContainer) {
+            $cacheDir = __DIR__ . '/../storage/cache/container';
+            if (!is_dir($cacheDir)) {
+                @mkdir($cacheDir, 0o775, true);
+            }
+            if (is_dir($cacheDir) && is_writable($cacheDir)) {
+                $builder->enableCompilation($cacheDir);
+                $builder->writeProxiesToFile(true, $cacheDir . '/proxies');
+            }
+        }
+
         // 載入容器配置檔案
         $containerConfig = require __DIR__ . '/../config/container.php';
         $builder->addDefinitions($containerConfig);

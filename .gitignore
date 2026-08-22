@@ -28,6 +28,7 @@
 /backend/storage/logs/*
 /backend/storage/phpstan/
 /backend/storage/di-cache/
+/backend/storage/cache/
 
 # 資料庫檔案
 *.sqlite

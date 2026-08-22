@@ -52,7 +52,7 @@ final class AuthenticationService implements AuthenticationServiceInterface
             $userWithRoles = $this->userRepository->findByIdWithRoles($userId);
             /** @var array<string, mixed> $userWithRoles */
             $roles = is_array($userWithRoles['roles'] ?? null) ? $userWithRoles['roles'] : [];
-            $userRole = $this->resolveUserRole($roles);
+            $userRole = $this->resolveUserRole($roles) ?? ($user['role'] ?? null);
             // 6. 產生 JWT token 對（包含儲存 refresh token 和角色資訊）
             $tokenPair = $this->jwtTokenService->generateTokenPair($userId, $deviceInfo, [
                 'username' => $userName,
@@ -279,12 +279,18 @@ final class AuthenticationService implements AuthenticationServiceInterface
 
     private function resolveUserRole(array $roles): ?string
     {
-        if (!empty($roles) && isset($roles[0]) && is_array($roles[0])) {
-            $roleName = $roles[0]['name'] ?? null;
-
-            return is_string($roleName) ? $roleName : null;
+        $roleNames = [];
+        foreach ($roles as $role) {
+            if (is_array($role) && !empty($role['name']) && is_string($role['name'])) {
+                $roleNames[] = $role['name'];
+            }
+        }
+        foreach (['super_admin', 'system_admin', 'admin', 'moderator', 'editor', 'author', 'user', 'guest'] as $priorityRole) {
+            if (in_array($priorityRole, $roleNames, true)) {
+                return $priorityRole;
+            }
         }
 
-        return null;
+        return $roleNames[0] ?? null;
     }
 }

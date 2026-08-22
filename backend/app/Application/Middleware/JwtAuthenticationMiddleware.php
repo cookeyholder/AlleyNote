@@ -203,11 +203,30 @@ class JwtAuthenticationMiddleware implements MiddlewareInterface
             return false;
         }
         $skipPaths = [
+            '/api/auth/login',
+            '/api/auth/register',
+            '/api/auth/refresh',
+            '/api/auth/forgot-password',
+            '/api/auth/reset-password',
+            '/api/auth/validate-password',
+            '/api/health',
+            '/api/status',
+            '/api/csrf-token',
+            '/api/docs',
+            '/api/openapi',
+            '/api/swagger-ui',
             '/auth/login',
             '/auth/register',
             '/auth/refresh',
+            '/auth/forgot-password',
+            '/auth/reset-password',
+            '/auth/validate-password',
             '/health',
             '/status',
+            '/csrf-token',
+            '/docs',
+            '/openapi',
+            '/swagger-ui',
             '/favicon.ico',
         ];
         $path = $request->getUri()->getPath();

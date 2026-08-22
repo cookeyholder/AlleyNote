@@ -4,7 +4,7 @@ import { PasswordValidator } from "./passwordValidator.js";
  * 安全密碼生成器
  */
 export class PasswordGenerator {
-  static DEFAULT_LENGTH = 12;
+  static DEFAULT_LENGTH = 20;
   static LOWERCASE = "abcdefghjkmnpqrstuvwxyz"; // 移除易混淆字元 i, l, o
   static UPPERCASE = "ABCDEFGHJKLMNPQRSTUVWXYZ"; // 移除易混淆字元 I, O
   static NUMBERS = "23456789"; // 移除易混淆數字 0, 1

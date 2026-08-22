@@ -197,6 +197,13 @@ export default class UsersPage extends BaseAdminPage {
         <td class="px-6 py-4 text-right">
           <div class="flex items-center justify-end gap-1">
             <button
+              class="reset-password-btn p-2 text-modern-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition-all"
+              title="重設密碼"
+              data-user-id="${user.id}"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+            </button>
+            <button
               class="edit-user-btn p-2 text-modern-400 hover:text-accent-600 hover:bg-accent-50 rounded-xl transition-all"
               title="編輯資料"
               data-user-id="${user.id}"
@@ -250,6 +257,18 @@ export default class UsersPage extends BaseAdminPage {
     if (addUserBtn) {
       addUserBtn.addEventListener("click", () => this.showUserModal());
     }
+
+    // 重設密碼按鈕
+    const resetBtns = document.querySelectorAll(".reset-password-btn");
+    resetBtns.forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const userId = parseInt(btn.dataset.userId);
+        const user = this.users.find((u) => u.id === userId);
+        if (user) {
+          this.showResetPasswordModal(user);
+        }
+      });
+    });
 
     // 編輯使用者按鈕
     const editBtns = document.querySelectorAll(".edit-user-btn");
@@ -505,7 +524,7 @@ export default class UsersPage extends BaseAdminPage {
         generatePasswordBtn.addEventListener("click", () => {
           try {
             const generatedPassword = PasswordGenerator.generate({
-              length: 12,
+              length: 20,
               lowercase: true,
               uppercase: true,
               numbers: true,
@@ -650,6 +669,147 @@ export default class UsersPage extends BaseAdminPage {
     } catch (error) {
       console.error("刪除使用者失敗:", error);
       notification.error(error.message || "刪除使用者失敗");
+    }
+  }
+
+  showResetPasswordModal(user) {
+    const modalContent = `
+      <form id="resetPasswordForm" class="space-y-6">
+        <div class="p-4 bg-modern-50 rounded-2xl border border-modern-100">
+          <div class="text-sm font-bold text-modern-900">${this.escapeHtml(user.username)}</div>
+          <div class="text-xs text-modern-500">${this.escapeHtml(user.email)}</div>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label for="new_password" class="block text-sm font-bold text-modern-700">
+              新密碼 *
+            </label>
+            <button
+              type="button"
+              id="generateResetPasswordBtn"
+              class="flex items-center gap-1 text-xs text-accent-600 hover:text-accent-700 font-bold bg-white px-3 py-1.5 rounded-lg shadow-sm border border-accent-100 transition-all"
+            >
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+              自動生成密碼
+            </button>
+          </div>
+          <div class="relative">
+            <input
+              type="password"
+              id="new_password"
+              name="password"
+              class="w-full px-4 py-3 rounded-lg border border-modern-300 focus:outline-none focus:ring-2 focus:ring-accent-500 pr-10"
+              required
+              minlength="8"
+              placeholder="請輸入至少 8 位新密碼"
+            />
+            <button
+              type="button"
+              id="toggleResetPasswordBtn"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-modern-400 hover:text-modern-600 p-1"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-6 border-t border-modern-100">
+          <button
+            type="button"
+            id="cancelResetModalBtn"
+            class="px-6 py-2.5 text-sm font-bold text-modern-500 hover:text-modern-800 transition-colors"
+          >
+            取消
+          </button>
+          <button
+            type="submit"
+            class="px-8 py-2.5 text-sm font-bold text-white bg-amber-600 rounded-xl hover:bg-amber-700 shadow-lg shadow-amber-600/20 transition-all"
+          >
+            確認重設密碼
+          </button>
+        </div>
+      </form>
+    `;
+
+    this.modal = new Modal({
+      title: `重設密碼 - ${user.username}`,
+      content: modalContent,
+      size: "md",
+      showFooter: false,
+    });
+    this.modal.show();
+
+    const passwordInput = document.getElementById("new_password");
+    if (passwordInput) {
+      if (this.passwordIndicator) {
+        this.passwordIndicator.destroy();
+      }
+      this.passwordIndicator = new PasswordStrengthIndicator(passwordInput, {
+        username: user.username,
+        email: user.email,
+        showRequirements: true,
+        showSuggestions: true,
+      });
+    }
+
+    const toggleBtn = document.getElementById("toggleResetPasswordBtn");
+    if (toggleBtn && passwordInput) {
+      toggleBtn.addEventListener("click", () => {
+        const type = passwordInput.type === "password" ? "text" : "password";
+        passwordInput.type = type;
+      });
+    }
+
+    const generateBtn = document.getElementById("generateResetPasswordBtn");
+    if (generateBtn && passwordInput) {
+      generateBtn.addEventListener("click", () => {
+        const generated = PasswordGenerator.generate({
+          length: 20,
+          numbers: true,
+          special: true,
+          uppercase: true,
+          lowercase: true,
+        });
+        passwordInput.value = generated;
+        passwordInput.type = "text";
+        passwordInput.dispatchEvent(new Event("input", { bubbles: true }));
+        notification.info(`已生成密碼: ${generated}`);
+      });
+    }
+
+    const cancelBtn = document.getElementById("cancelResetModalBtn");
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => {
+        this.modal.hide();
+      });
+    }
+
+    const form = document.getElementById("resetPasswordForm");
+    if (form) {
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const newPassword = passwordInput.value;
+        if (!newPassword || newPassword.length < 8) {
+          notification.error("密碼長度至少需 8 個字元");
+          return;
+        }
+
+        try {
+          const res = await usersAPI.resetPassword(user.id, newPassword);
+          if (res.success) {
+            notification.success("使用者密碼已成功重設！");
+            this.modal.hide();
+          } else {
+            notification.error(res.message || "重設密碼失敗");
+          }
+        } catch (err) {
+          notification.error("重設密碼失敗：" + (err.message || "未知錯誤"));
+        }
+      });
     }
   }
 

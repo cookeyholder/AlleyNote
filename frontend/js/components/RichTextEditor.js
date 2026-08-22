@@ -2,6 +2,8 @@
  * CKEditor 5 富文本編輯器組件
  */
 
+import { loadCKEditor } from "../utils/scriptLoader.js";
+
 // 編輯器實例映射
 const editorInstances = new Map();
 
@@ -12,9 +14,9 @@ const editorInstances = new Map();
  * @returns {Promise<Object>} - 編輯器實例
  */
 export async function initRichTextEditor(elementId, options = {}) {
-  // 確保 CKEditor 5 已載入
+  // 確保 CKEditor 5 已載入（若尚未載入則動態載入）
   if (typeof CKEDITOR === "undefined") {
-    throw new Error("CKEditor 5 尚未載入，請先在 HTML 中引入 CKEditor 5 CDN");
+    await loadCKEditor();
   }
 
   const element = document.getElementById(elementId);
