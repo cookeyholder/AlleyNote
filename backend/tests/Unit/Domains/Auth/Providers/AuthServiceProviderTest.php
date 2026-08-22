@@ -7,6 +7,7 @@ namespace Tests\Unit\Domains\Auth\Providers;
 use App\Application\Middleware\JwtAuthenticationMiddleware;
 use App\Application\Middleware\JwtAuthorizationMiddleware;
 use App\Domains\Auth\Contracts\JwtTokenServiceInterface;
+use App\Domains\Auth\Contracts\JwtProviderInterface;
 use App\Domains\Auth\Contracts\RefreshTokenRepositoryInterface;
 use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\Contracts\UserRepositoryInterface;
@@ -78,6 +79,7 @@ final class AuthServiceProviderTest extends UnitTestCase
         $blacklistRepo = Mockery::mock(TokenBlacklistRepositoryInterface::class);
 
         $container->shouldReceive('get')->with(FirebaseJwtProvider::class)->andReturn($jwtProvider);
+        $container->shouldReceive('get')->with(JwtProviderInterface::class)->andReturn($jwtProvider);
         $container->shouldReceive('get')->with(RefreshTokenRepositoryInterface::class)->andReturn($refreshTokenRepo);
         $container->shouldReceive('get')->with(TokenBlacklistRepositoryInterface::class)->andReturn($blacklistRepo);
 
@@ -90,7 +92,6 @@ final class AuthServiceProviderTest extends UnitTestCase
 
         // 5. RefreshTokenService
         $container->shouldReceive('get')->with(JwtTokenServiceInterface::class)->andReturn($jwtTokenService);
-        $container->shouldReceive('get')->with(TokenBlacklistRepositoryInterface::class)->andReturn($blacklistRepository);
 
         $refreshTokenService = AuthServiceProvider::createRefreshTokenService($container);
         $this->assertInstanceOf(RefreshTokenService::class, $refreshTokenService);
