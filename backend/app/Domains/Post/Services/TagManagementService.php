@@ -81,7 +81,7 @@ class TagManagementService
             $errors['slug'] = ['標籤 slug 已存在'];
         }
         if (!empty($errors)) {
-            throw new ValidationException('標籤資料驗證失敗', $errors);
+            throw ValidationException::fromMultipleErrors($errors, '標籤資料驗證失敗');
         }
         // 建立標籤
         $tag = $this->tagRepository->create([
@@ -129,7 +129,7 @@ class TagManagementService
             }
         }
         if (!empty($errors)) {
-            throw new ValidationException('標籤資料驗證失敗', $errors);
+            throw ValidationException::fromMultipleErrors($errors, '標籤資料驗證失敗');
         }
         // 更新標籤
         $updateData = [];

@@ -10,22 +10,16 @@ use App\Domains\Post\DTOs\UpdateTagDTO;
 use App\Domains\Post\Models\Tag;
 use App\Domains\Post\Services\TagManagementService;
 use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\ValidationException;
 use DateTimeImmutable;
 use Mockery;
 use Mockery\MockInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Support\UnitTestCase;
-use TypeError;
 
 /**
  * TagManagementService 單元測試.
- *
- * 已知生產碼缺陷：createTag 與 updateTag 在驗證失敗時以
- * new ValidationException('標籤資料驗證失敗', $errors) 建構例外，
- * 但 ValidationException 建構子第一個參數需要 ValidationResult，
- * 因此實際執行時會擲出 TypeError。以下測試記錄此現狀行為，
- * 修正後應將預期改回 ValidationException。
  */
 #[CoversClass(TagManagementService::class)]
 final class TagManagementServiceTest extends UnitTestCase
@@ -143,48 +137,48 @@ final class TagManagementServiceTest extends UnitTestCase
     }
 
     #[Test]
-    public function test_createTag名稱為空時擲出TypeError(): void
+    public function test_createTag名稱為空時驗證失敗(): void
     {
         // 名稱為空仍會以自動產生的 slug 檢查重複
         $this->tagRepository->shouldReceive('findBySlug')->andReturn(null);
 
-        $this->expectException(TypeError::class);
+        $this->expectException(ValidationException::class);
 
         $this->service->createTag(new CreateTagDTO(name: ''));
     }
 
     #[Test]
-    public function test_createTag名稱超過五十字元時擲出TypeError(): void
+    public function test_createTag名稱超過五十字元時驗證失敗(): void
     {
         $this->tagRepository->shouldReceive('findByName')->andReturn(null);
         $this->tagRepository->shouldReceive('findBySlug')->andReturn(null);
         $this->tagRepository->shouldNotReceive('create');
 
-        $this->expectException(TypeError::class);
+        $this->expectException(ValidationException::class);
 
         $this->service->createTag(new CreateTagDTO(name: str_repeat('長', 51)));
     }
 
     #[Test]
-    public function test_createTag名稱重複時擲出TypeError(): void
+    public function test_createTag名稱重複時驗證失敗(): void
     {
         $this->tagRepository->shouldReceive('findByName')->andReturn($this->makeTag(1, '既有'));
         $this->tagRepository->shouldReceive('findBySlug')->andReturn(null);
         $this->tagRepository->shouldNotReceive('create');
 
-        $this->expectException(TypeError::class);
+        $this->expectException(ValidationException::class);
 
         $this->service->createTag(new CreateTagDTO(name: '既有'));
     }
 
     #[Test]
-    public function test_createTag_slug重複時擲出TypeError(): void
+    public function test_createTag_slug重複時驗證失敗(): void
     {
         $this->tagRepository->shouldReceive('findByName')->andReturn(null);
         $this->tagRepository->shouldReceive('findBySlug')->andReturn($this->makeTag(2, '其他', 'dup'));
         $this->tagRepository->shouldNotReceive('create');
 
-        $this->expectException(TypeError::class);
+        $this->expectException(ValidationException::class);
 
         $this->service->createTag(new CreateTagDTO(name: '新標籤', slug: 'dup'));
     }
@@ -253,25 +247,25 @@ final class TagManagementServiceTest extends UnitTestCase
     }
 
     #[Test]
-    public function test_updateTag名稱被其他標籤使用時擲出TypeError(): void
+    public function test_updateTag名稱被其他標籤使用時驗證失敗(): void
     {
         $this->tagRepository->shouldReceive('findById')->andReturn($this->makeTag(5, '自己'));
         $this->tagRepository->shouldReceive('findByName')->andReturn($this->makeTag(9, '別人'));
         $this->tagRepository->shouldNotReceive('update');
 
-        $this->expectException(TypeError::class);
+        $this->expectException(ValidationException::class);
 
         $this->service->updateTag(new UpdateTagDTO(id: 5, name: '別人'));
     }
 
     #[Test]
-    public function test_updateTag_slug被其他標籤使用時擲出TypeError(): void
+    public function test_updateTag_slug被其他標籤使用時驗證失敗(): void
     {
         $this->tagRepository->shouldReceive('findById')->andReturn($this->makeTag(5, '自己', 'mine'));
         $this->tagRepository->shouldReceive('findBySlug')->andReturn($this->makeTag(9, '別人', 'taken'));
         $this->tagRepository->shouldNotReceive('update');
 
-        $this->expectException(TypeError::class);
+        $this->expectException(ValidationException::class);
 
         $this->service->updateTag(new UpdateTagDTO(id: 5, slug: 'taken'));
     }
