@@ -44,7 +44,7 @@ jobs:
           extensions: pdo, sqlite3, json, gd, curl, pcov
           tools: composer
           coverage: pcov
-          ini-values: pcov.enabled=1, memory_limit=512M
+          ini-values: pcov.enabled=1, pcov.directory=app, memory_limit=1G
 
       - name: Cache Composer packages
         uses: actions/cache@v4
@@ -55,6 +55,14 @@ jobs:
           key: ${{ runner.os }}-php-${{ matrix.php-versions }}-composer-${{ hashFiles('backend/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-${{ matrix.php-versions }}-composer-
+
+      - name: Cache PHP-CS-Fixer
+        uses: actions/cache@v4
+        with:
+          path: backend/.php-cs-fixer.cache
+          key: ${{ runner.os }}-cs-fixer-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-cs-fixer-
 
       - name: Cache PHPStan result
         uses: actions/cache@v4
