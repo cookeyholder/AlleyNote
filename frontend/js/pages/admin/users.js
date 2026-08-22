@@ -524,7 +524,7 @@ export default class UsersPage extends BaseAdminPage {
         generatePasswordBtn.addEventListener("click", () => {
           try {
             const generatedPassword = PasswordGenerator.generate({
-              length: 12,
+              length: 20,
               lowercase: true,
               uppercase: true,
               numbers: true,
@@ -768,9 +768,9 @@ export default class UsersPage extends BaseAdminPage {
     if (generateBtn && passwordInput) {
       generateBtn.addEventListener("click", () => {
         const generated = PasswordGenerator.generate({
-          length: 16,
+          length: 20,
           numbers: true,
-          symbols: true,
+          special: true,
           uppercase: true,
           lowercase: true,
         });
