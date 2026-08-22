@@ -59,7 +59,7 @@ jobs:
       - name: Cache PHPStan result
         uses: actions/cache@v4
         with:
-          path: /tmp/phpstan
+          path: backend/storage/phpstan
           key: ${{ runner.os }}-phpstan-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-phpstan-
