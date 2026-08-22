@@ -7,6 +7,7 @@ namespace Tests\Unit\Domains\Auth\ValueObjects;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateInterval;
 use DateTimeImmutable;
+use DateTimeZone;
 use InvalidArgumentException;
 use Tests\Support\UnitTestCase;
 
@@ -429,10 +430,12 @@ final class TokenBlacklistEntryTest extends UnitTestCase
 
         $dbArray = $entry->toDatabaseArray();
 
+        // 資料庫儲存格式統一轉換為 UTC，與 TokenBlacklistRepository 的過期比對一致
+        $utc = new DateTimeZone('UTC');
         $this->assertSame($this->validJti, $dbArray['jti']);
         $this->assertSame(TokenBlacklistEntry::TOKEN_TYPE_ACCESS, $dbArray['token_type']);
-        $this->assertSame($this->futureExpiry->format('Y-m-d H:i:s'), $dbArray['expires_at']);
-        $this->assertSame($this->blacklistedTime->format('Y-m-d H:i:s'), $dbArray['blacklisted_at']);
+        $this->assertSame($this->futureExpiry->setTimezone($utc)->format('Y-m-d H:i:s'), $dbArray['expires_at']);
+        $this->assertSame($this->blacklistedTime->setTimezone($utc)->format('Y-m-d H:i:s'), $dbArray['blacklisted_at']);
         $this->assertSame(TokenBlacklistEntry::REASON_LOGOUT, $dbArray['reason']);
         $this->assertSame(42, $dbArray['user_id']);
         $this->assertSame('device-123', $dbArray['device_id']);

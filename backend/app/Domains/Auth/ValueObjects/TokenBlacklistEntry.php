@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domains\Auth\ValueObjects;
 
 use DateTimeImmutable;
+use DateTimeZone;
 use InvalidArgumentException;
 use JsonException;
 use JsonSerializable;
@@ -438,15 +439,20 @@ final readonly class TokenBlacklistEntry implements JsonSerializable
     /**
      * 轉換為資料庫儲存格式.
      *
+     * 時間欄位統一以 UTC 儲存：JWT 的 exp 為 epoch 時間戳（UTC），
+     * TokenBlacklistRepository 也以 UTC 進行過期比對，避免非 UTC 時區部署時產生偏移。
+     *
      * @return array<string, mixed>
      */
     public function toDatabaseArray(): array
     {
+        $utc = new DateTimeZone('UTC');
+
         return [
             'jti'            => $this->jti,
             'token_type'     => $this->tokenType,
-            'expires_at'     => $this->expiresAt->format('Y-m-d H:i:s'),
-            'blacklisted_at' => $this->blacklistedAt->format('Y-m-d H:i:s'),
+            'expires_at'     => $this->expiresAt->setTimezone($utc)->format('Y-m-d H:i:s'),
+            'blacklisted_at' => $this->blacklistedAt->setTimezone($utc)->format('Y-m-d H:i:s'),
             'reason'         => $this->reason,
             'user_id'        => $this->userId,
             'device_id'      => $this->deviceId,
