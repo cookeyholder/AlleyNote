@@ -39,7 +39,7 @@ final class JwtAuthenticationMiddlewareTest extends UnitTestCase
 
     public function testShouldSkipProcessingForPublicPaths(): void
     {
-        $publicPaths = ['/auth/login', '/auth/register', '/health'];
+        $publicPaths = ['/auth/login', '/auth/register', '/health', '/api/auth/login', '/api/auth/register', '/api/health'];
 
         foreach ($publicPaths as $path) {
             // 使用新工具建立真實請求
