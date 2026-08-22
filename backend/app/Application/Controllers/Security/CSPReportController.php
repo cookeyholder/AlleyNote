@@ -89,8 +89,10 @@ class CSPReportController
      */
     private function logViolation(array $report, Request $request): void
     {
+        $clientIp = $this->getClientIP($request);
         $logData = [
-            'client_ip'       => $this->getClientIP($request),
+            'client_ip'       => $clientIp,
+            'ip'              => $clientIp,
             'user_agent_hash' => hash('sha256', $request->getHeaderLine('User-Agent')),
             'referer'         => $request->getHeaderLine('Referer'),
             'csp_report'      => $report['csp-report'],

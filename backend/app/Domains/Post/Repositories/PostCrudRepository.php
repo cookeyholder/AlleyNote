@@ -255,7 +255,10 @@ class PostCrudRepository extends PostBaseRepository
         $params = [];
         if (!empty($conditions)) {
             foreach ($conditions as $key => $value) {
-                if (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
+                if ($key === 'search' && is_string($value) && $value !== '') {
+                    $where[] = '(p.title LIKE :search_kw OR p.content LIKE :search_kw)';
+                    $params['search_kw'] = '%' . $value . '%';
+                } elseif (in_array($key, self::ALLOWED_CONDITION_FIELDS, true)) {
                     $where[] = "p.{$key} = :{$key}";
                     $params[$key] = $value;
                 } else {

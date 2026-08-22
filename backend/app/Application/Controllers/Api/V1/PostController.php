@@ -750,7 +750,11 @@ class PostController extends BaseController implements PostApiInterface
 
             return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
         }
-        $body = json_decode($request->getBody()->getContents(), true);
+        $body = $request->getParsedBody();
+        if (!is_array($body) || empty($body)) {
+            $raw = (string) $request->getBody();
+            $body = json_decode($raw, true);
+        }
         $ids = is_array($body) ? ($body['ids'] ?? []) : [];
         if (empty($ids) || !is_array($ids)) {
             $errorResponse = $this->errorResponse('請提供有效的文章 ID 列表', 400);

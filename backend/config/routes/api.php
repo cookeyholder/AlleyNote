@@ -14,6 +14,8 @@ use App\Application\Controllers\Api\V1\UserController;
 use App\Application\Controllers\Api\V1\RoleController;
 use App\Application\Controllers\Api\V1\SettingController;
 use App\Application\Controllers\Api\V1\TagController;
+use App\Application\Controllers\Api\V1\AttachmentController;
+use App\Application\Controllers\Security\CSPReportController;
 
 return [
     // API 健康檢查
@@ -346,5 +348,48 @@ return [
         'handler' => [TagController::class, 'destroy'],
         'middleware' => ['auth', 'csrf'],
         'name' => 'tags.destroy'
+    ],
+
+    // ========================================
+    // 附件管理 API
+    // ========================================
+    'attachments.upload' => [
+        'methods' => ['POST'],
+        'path' => '/api/posts/{post_id}/attachments',
+        'handler' => [AttachmentController::class, 'upload'],
+        'middleware' => ['auth'],
+        'name' => 'attachments.upload'
+    ],
+
+    'attachments.list' => [
+        'methods' => ['GET'],
+        'path' => '/api/posts/{post_id}/attachments',
+        'handler' => [AttachmentController::class, 'list'],
+        'name' => 'attachments.list'
+    ],
+
+    'attachments.download' => [
+        'methods' => ['GET'],
+        'path' => '/api/attachments/{id}/download',
+        'handler' => [AttachmentController::class, 'download'],
+        'name' => 'attachments.download'
+    ],
+
+    'attachments.delete' => [
+        'methods' => ['DELETE'],
+        'path' => '/api/attachments/{id}',
+        'handler' => [AttachmentController::class, 'delete'],
+        'middleware' => ['auth'],
+        'name' => 'attachments.delete'
+    ],
+
+    // ========================================
+    // 安全報告 API
+    // ========================================
+    'api.csp-report' => [
+        'methods' => ['POST'],
+        'path' => '/api/csp-report',
+        'handler' => [CSPReportController::class, 'handleReport'],
+        'name' => 'api.csp-report'
     ]
 ];
