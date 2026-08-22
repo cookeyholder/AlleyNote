@@ -375,11 +375,14 @@ performance_optimization() {
     
     # SQLite 最佳化設定
     local optimization_sql="
+    PRAGMA foreign_keys=ON;
     PRAGMA journal_mode=WAL;
     PRAGMA synchronous=NORMAL;
-    PRAGMA cache_size=10000;
-    PRAGMA temp_store=memory;
+    PRAGMA busy_timeout=5000;
+    PRAGMA temp_store=MEMORY;
+    PRAGMA cache_size=-64000;
     PRAGMA mmap_size=268435456;
+    PRAGMA optimize;
     VACUUM;
     "
     
