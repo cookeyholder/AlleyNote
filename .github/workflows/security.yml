@@ -7,11 +7,25 @@ permissions:
 on:
   push:
     branches: [main, develop, feature/*, feat/*]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".gitignore"
+      - "LICENSE"
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - "**.md"
+      - "docs/**"
+      - ".gitignore"
+      - "LICENSE"
   schedule:
     # 每週一早上 9:00 執行
     - cron: "0 9 * * 1"
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   security-audit:
@@ -20,7 +34,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -30,17 +44,19 @@ jobs:
           tools: composer
 
       - name: Cache Composer packages
-        uses: actions/cache@v6
+        uses: actions/cache@v4
         with:
-          path: backend/vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('backend/composer.lock') }}
+          path: |
+            ~/.cache/composer
+            backend/vendor
+          key: ${{ runner.os }}-security-php-${{ hashFiles('backend/composer.lock') }}
           restore-keys: |
-            ${{ runner.os }}-php-
+            ${{ runner.os }}-security-php-
 
       - name: Install dependencies
         run: |
           cd backend
-          composer install --prefer-dist --no-progress --no-interaction
+          composer install --prefer-dist --no-progress --no-interaction --optimize-autoloader
 
       - name: Run Composer Security Audit
         run: |

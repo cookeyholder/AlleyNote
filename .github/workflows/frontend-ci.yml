@@ -20,6 +20,10 @@ on:
     paths:
       - "frontend/**"
 
+concurrency:
+  group: frontend-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   frontend_ci:
     name: Frontend CI
