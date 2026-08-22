@@ -468,6 +468,8 @@ try {
     if ($hasColumn($pdo, 'posts', 'deleted_at')) {
         $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_deleted_at ON posts(deleted_at)");
     }
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_feed ON posts(status, deleted_at, is_pinned, published_at)");
+    $pdo->exec("CREATE INDEX IF NOT EXISTS idx_posts_admin_list ON posts(deleted_at, status, created_at)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_attachments_post ON attachments(post_id)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user ON refresh_tokens(user_id)");
     $pdo->exec("CREATE INDEX IF NOT EXISTS idx_refresh_tokens_jti ON refresh_tokens(jti)");

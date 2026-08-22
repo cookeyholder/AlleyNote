@@ -5,6 +5,7 @@ import {
 import BaseAdminPage from "../../components/BaseAdminPage.js";
 import { apiClient } from "../../api/client.js";
 import { notification } from "../../utils/notification.js";
+import { loadChartJs } from "../../utils/scriptLoader.js";
 
 /**
  * 系統與主機監控統計頁面（使用 Chart.js）
@@ -884,7 +885,14 @@ export default class StatisticsPage extends BaseAdminPage {
     `;
   }
 
-  initCharts() {
+  async initCharts() {
+    try {
+      await loadChartJs();
+    } catch (e) {
+      console.error("[StatisticsPage] 載入 Chart.js 失敗:", e);
+      return;
+    }
+
     setTimeout(() => {
       Object.keys(this.charts).forEach((k) => {
         if (this.charts[k]) {
