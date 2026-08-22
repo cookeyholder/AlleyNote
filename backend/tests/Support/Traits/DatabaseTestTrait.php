@@ -160,16 +160,24 @@ trait DatabaseTestTrait
 
     /**
      * 建立使用者資料表.
+     *
+     * 欄位需與 UserRepository 的查詢對齊（uuid、role、is_active、last_login、deleted_at），
+     * 否則登入流程（findByIdWithRoles、updateLastLogin）會因缺欄位而失敗。
      */
     protected function createUsersTable(): void
     {
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT,
                 username TEXT NOT NULL UNIQUE,
                 email TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
+                role TEXT,
+                is_active INTEGER NOT NULL DEFAULT 1,
                 status INTEGER NOT NULL DEFAULT 1,
+                last_login TEXT,
+                deleted_at TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
