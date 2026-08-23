@@ -29,6 +29,8 @@
 /backend/storage/phpstan/
 /backend/storage/di-cache/
 /backend/storage/cache/
+/backend/storage/reports/
+/backend/storage/tmp/
 
 # 資料庫檔案
 *.sqlite
@@ -62,6 +64,7 @@ coverage/
 
 # 暫存檔案
 _migration_backup/
+/backend/tmp_head_check/
 
 # SSL 憑證
 ssl-data/

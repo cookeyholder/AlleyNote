@@ -766,4 +766,122 @@ class ValidatorTest extends UnitTestCase
         // 記憶體增加應該在合理範圍內
         $this->assertLessThan(1024 * 100, $memoryIncrease, '記憶體洩漏檢測：記憶體增加應該少於 100KB');
     }
+
+    /**
+     * 測試 checkRule 方法與自訂規則.
+     */
+    public function test_check_rule_with_custom_rule(): void
+    {
+        // 添加自訂規則
+        $this->validator->addRule('custom_test', function ($value, array $parameters): bool {
+            return is_string($value) && strlen(trim($value)) > 0;
+        });
+
+        // 測試 checkRule 與自訂規則
+        $this->assertTrue($this->validator->checkRule('hello', 'custom_test'));
+        $this->assertFalse($this->validator->checkRule('', 'custom_test'));
+        $this->assertFalse($this->validator->checkRule(null, 'custom_test'));
+        $this->assertFalse($this->validator->checkRule(123, 'custom_test'));
+    }
+
+    /**
+     * 測試 validateOrFail 異常情境.
+     */
+    public function test_validate_or_fail_exception_message(): void
+    {
+        $this->expectException(ValidationException::class);
+        $this->validator->validateOrFail([], ['name' => 'required']);
+    }
+
+    /**
+     * 測試停止於第一個失敗 進階情境.
+     */
+    public function test_stop_on_first_failure_advanced(): void
+    {
+        $data = ['name' => '', 'email' => 'invalid', 'age' => 'abc'];
+        $rules = [
+            'name'  => 'required',
+            'email' => 'required|email',
+            'age'   => 'required|integer',
+        ];
+
+        // 測試預設行為（不停止在第一個錯誤）
+        $validator = clone $this->validator;
+        $result = $validator->validate($data, $rules);
+        $errors = $result->getErrors();
+        $this->assertGreaterThanOrEqual(3, count($errors), '預設應該有 3 個欄位產生錯誤');
+
+        // 測試停止在第一個錯誤
+        $validator->stopOnFirstFailure(true);
+        $result = $validator->validate($data, $rules);
+        $errors = $result->getErrors();
+        $this->assertEquals(1, count($errors), '停止於第一個錯誤時應該只有 1 個欄位產生錯誤');
+        $this->assertArrayHasKey('name', $errors, '第一個產生錯誤的欄位應該是 name');
+    }
+
+    /**
+     * 測試多組規則組合邊界情境.
+     */
+    public function test_multiple_rules_boundary(): void
+    {
+        // 測試一組規則中有多個條件的情境
+        $data = ['title' => 'valid-name'];
+        $rules = [
+            'title' => 'required|string|min_length:1|max_length:10|alpha_dash',
+        ];
+
+        $result = $this->validator->validate($data, $rules);
+        $this->assertTrue($result->isValid(), '標題 應該通過所有條件驗證');
+
+        // 測試 max_length 邊界（11 個字元應該失效）
+        $data['title'] = str_repeat('A', 11);
+        $result = $this->validator->validate($data, $rules);
+        $this->assertFalse($result->isValid(), '標題 11 個字元應該因 max_length 而失效');
+        $this->assertArrayHasKey('title', $result->getErrors());
+
+        // 測試移除 min_length 後的邊界行為
+        $rules_no_min = [
+            'title' => 'string|max_length:10|alpha_dash',
+        ];
+        $data['title'] = str_repeat('A', 12);
+        $result = $this->validator->validate($data, $rules_no_min);
+        $this->assertFalse($result->isValid(), '無 min_length 時 12 個字元 懵該因 max_length 而失效');
+    }
+
+    /**
+     * 測試驗證器與 ValidationResult 互動.
+     */
+    public function test_validator_result_interaction(): void
+    {
+        // 測驗有效資料
+        $result = $this->validator->validate(['field' => 'value'], ['field' => 'required']);
+        $this->assertTrue($result->isValid());
+        $this->assertEquals('value', $result->getValidatedData()['field']);
+        $this->assertEmpty($result->getErrors());
+
+        // 測驗無效資料
+        $result = $this->validator->validate([], ['field' => 'required']);
+        $this->assertFalse($result->isValid());
+        $this->assertArrayHasKey('field', $result->getErrors());
+        $this->assertLessThan(100, count($result->getErrors()['field']), '應該有錯誤訊息');
+    }
+
+    /**
+     * 測試驗證器重複執行效能.
+     */
+    public function test_validator_rerun_performance(): void
+    {
+        $startTime = microtime(true);
+
+        for ($i = 0; $i < 100; $i++) {
+            $result = $this->validator->validate(['name' => 'test'], ['name' => 'required']);
+            $this->assertTrue($result->isValid());
+        }
+
+        $endTime = microtime(true);
+        $executionTime = $endTime - $startTime;
+
+        // 確保 100 次驗證在 0.5 秒內完成
+        $this->assertLessThan(0.5, $executionTime, '100 次驗證操作應該在 0.5 秒內完成');
+    }
 }
