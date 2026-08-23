@@ -169,6 +169,36 @@ final class StatisticsQueryAdapterTest extends UnitTestCase
     }
 
     #[Test]
+    public function getCustomMetricDataFallsBackToDefaultLimitWhenLimitInvalid(): void
+    {
+        // 型別不符且 limit 非數值時，應使用預設上限 10（實際筆數受類別數量封頂）
+        $categories = $this->adapter->getCustomMetricData('custom.invalid-limit', [
+            'start_date' => 42,
+            'end_date'   => null,
+            'limit'      => 'not-numeric',
+        ]);
+
+        $this->assertCount(5, $categories);
+    }
+
+    #[Test]
+    public function timeSeriesHandlesUnknownGranularityAndThroughputMetric(): void
+    {
+        // 未知的粒度應退回每日間隔
+        $data = $this->adapter->getPerformanceMetricData(
+            'throughput',
+            new DateTimeImmutable('2025-01-01'),
+            new DateTimeImmutable('2025-01-03'),
+            'decade',
+        );
+        $this->assertCount(3, $data);
+        foreach ($data as $point) {
+            $this->assertArrayHasKey('timestamp', $point);
+            $this->assertArrayHasKey('value', $point);
+        }
+    }
+
+    #[Test]
     public function getMetricTimeSeriesDefaultsToLastThirtyDays(): void
     {
         $data = $this->adapter->getMetricTimeSeriesData('metric.daily');

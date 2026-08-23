@@ -196,4 +196,32 @@ final class CategoryProcessorTest extends UnitTestCase
         $this->assertSame(['Top Post'], $rankChart->labels);
         $this->assertSame([1000.0], $rankChart->datasets[0]->data);
     }
+
+    public function testProcessHorizontalBarChartDataSkipsInvalidItems(): void
+    {
+        /** @phpstan-ignore-next-line argument.type */
+        $chart = $this->processor->processHorizontalBarChartData([
+            ['category' => 'Valid', 'value' => 10.0],
+            ['invalid' => true],
+        ], 'Mixed');
+
+        $this->assertSame(['Valid'], $chart->labels);
+        $this->assertSame([10.0], $chart->datasets[0]->data);
+    }
+
+    public function testProcessCategoryDataHandlesNonArrayItems(): void
+    {
+        $chart = $this->processor->processCategoryData([123], 'Fallback');
+
+        $this->assertSame(['Unknown'], $chart->labels);
+        $this->assertSame([0.0], $chart->datasets[0]->data);
+    }
+
+    public function testProcessRankingDataHandlesNonArrayItems(): void
+    {
+        $chart = $this->processor->processRankingData(['not-an-array'], 'Ranking');
+
+        $this->assertSame(['Unknown'], $chart->labels);
+        $this->assertSame([0.0], $chart->datasets[0]->data);
+    }
 }

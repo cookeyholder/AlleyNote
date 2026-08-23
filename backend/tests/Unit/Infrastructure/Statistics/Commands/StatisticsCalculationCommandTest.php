@@ -570,4 +570,51 @@ final class StatisticsCalculationCommandTest extends UnitTestCase
         // 鎖定文件應該被清理
         $this->assertFileDoesNotExist($lockFile, '異常發生時鎖定文件應該被自動清理');
     }
+
+    /**
+     * 測試過期的鎖定檔案（內容損毀）會被清除並重新執行.
+     */
+    public function testExecuteRemovesStaleLockFileWithInvalidContent(): void
+    {
+        // Arrange: 建立內容無效的鎖定檔案，模擬殘留的過期鎖
+        $lockFile = '/tmp/statistics_calculation_' . md5('daily') . '.lock';
+        file_put_contents($lockFile, 'not-valid-json');
+
+        $this->mockRepository->shouldReceive('exists')->andReturn(true)->byDefault();
+
+        try {
+            // Act
+            $result = $this->command->execute(['daily']);
+
+            // Assert: 過期鎖被清除且任務正常完成
+            $this->assertFileDoesNotExist($lockFile);
+            $this->assertArrayHasKey('total_snapshots', $result);
+        } finally {
+            if (file_exists($lockFile)) {
+                unlink($lockFile);
+            }
+        }
+    }
+
+    /**
+     * 測試鎖定檔案目錄不存在時拋出例外.
+     */
+    public function testExecuteThrowsExceptionWhenLockDirectoryMissing(): void
+    {
+        $command = new StatisticsCalculationCommand(
+            /** @phpstan-ignore-next-line argument.type */
+            $this->mockAggregationService,
+            /** @phpstan-ignore-next-line argument.type */
+            $this->mockRepository,
+            /** @phpstan-ignore-next-line argument.type */
+            $this->mockCacheService,
+            $this->mockLogger,
+            '/tmp/nonexistent-lock-dir-for-statistics',
+        );
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('無法建立執行鎖定文件');
+
+        $command->execute(['daily']);
+    }
 }

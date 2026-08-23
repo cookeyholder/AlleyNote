@@ -140,4 +140,33 @@ final class TrendAnalysisProcessorTest extends UnitTestCase
         $result = $this->processor->processTrendAnalysis($baseChart, 'trend');
         $this->assertCount(2, $result->datasets);
     }
+
+    public function testAddTrendAnalysisWithUnknownTypeFallsBackToLinearTrend(): void
+    {
+        $dataset = new ChartDataset('Original', [10.0, 20.0, 30.0]);
+        $baseChart = new ChartData(['D1', 'D2', 'D3'], [$dataset]);
+
+        $result = $this->processor->addTrendAnalysis($baseChart, 'unknown-type');
+
+        // 未知分析類型退回線性趨性趨勢，僅附加一條資料集
+        $this->assertCount(2, $result->datasets);
+    }
+
+    public function testAddTrendAnalysisSeasonalWithAllZeroData(): void
+    {
+        // 全為零的資料會讓整體平均為 0，季節調整係數應設為 1.0（資料 × 1.0 仍為 0）
+        $dataset = new ChartDataset('Zeros', array_fill(0, 12, 0.0));
+        $baseChart = new ChartData(
+            ['D1', 'D2', 'D3', 'D4', 'D5', 'D6', 'D7', 'D8', 'D9', 'D10', 'D11', 'D12'],
+            [$dataset],
+        );
+
+        $result = $this->processor->addTrendAnalysis($baseChart, 'seasonal');
+
+        $this->assertCount(2, $result->datasets);
+        $this->assertSame('季節性調整', $result->datasets[1]->label);
+        foreach ($result->datasets[1]->data as $value) {
+            $this->assertSame(0.0, $value);
+        }
+    }
 }

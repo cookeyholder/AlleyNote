@@ -9,8 +9,10 @@ namespace Tests\Unit\Domains\Statistics\Entities;
 
 use App\Domains\Statistics\Entities\StatisticsSnapshot;
 use App\Domains\Statistics\ValueObjects\StatisticsPeriod;
+use App\Shared\Contracts\OutputSanitizerInterface;
 use DateTime;
 use InvalidArgumentException;
+use Mockery;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Support\UnitTestCase;
@@ -454,5 +456,55 @@ class StatisticsSnapshotTest extends UnitTestCase
         $this->assertNull($snapshot->getExpiresAt());
         $this->assertInstanceOf(DateTime::class, $snapshot->getCreatedAt());
         $this->assertInstanceOf(DateTime::class, $snapshot->getUpdatedAt());
+    }
+
+    public function testGetGrowthRateWithNullValue(): void
+    {
+        $data = $this->validData;
+        $statisticsData = $this->validStatisticsData;
+        $statisticsData['trends'] = ['growth_rate' => null];
+        $data['statistics_data'] = json_encode($statisticsData);
+
+        /** @var array<string, mixed> $data */
+        $snapshot = new StatisticsSnapshot($data);
+
+        $this->assertNull($snapshot->getGrowthRate());
+    }
+
+    public function testGetGrowthRateWithIntegerValue(): void
+    {
+        $data = $this->validData;
+        $statisticsData = $this->validStatisticsData;
+        $statisticsData['trends'] = ['growth_rate' => 5];
+        $data['statistics_data'] = json_encode($statisticsData);
+
+        /** @var array<string, mixed> $data */
+        $snapshot = new StatisticsSnapshot($data);
+
+        $this->assertSame(5.0, $snapshot->getGrowthRate());
+    }
+
+    public function testToSafeArrayReturnsSameAsArray(): void
+    {
+        $sanitizer = Mockery::mock(OutputSanitizerInterface::class);
+        $sanitizer->shouldIgnoreMissing();
+
+        /** @var array<string, mixed> $validData */
+        $validData = $this->validData;
+        $snapshot = new StatisticsSnapshot($validData);
+
+        $this->assertSame($snapshot->toArray(), $snapshot->toSafeArray($sanitizer));
+    }
+
+    public function testConstructorThrowsExceptionWithInvalidDateTime(): void
+    {
+        $data = $this->validData;
+        $data['expires_at'] = 'this-is-not-a-valid-date';
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('無效的日期時間格式');
+
+        /** @var array<string, mixed> $data */
+        new StatisticsSnapshot($data);
     }
 }

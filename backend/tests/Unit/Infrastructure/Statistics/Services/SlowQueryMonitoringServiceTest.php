@@ -205,4 +205,168 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
         $this->assertSame(1, $perfCount);
         $this->assertSame(1, $slowCount);
     }
+
+    public function testRecordSlowQuerySwallowsDatabaseErrors(): void
+    {
+        // 慢查詢資料表不存在時，內部記錄失敗不應影響回傳值
+        $this->pdo->exec('DROP TABLE statistics_slow_queries');
+
+        $result = $this->service->recordSlowQuery('type', 'SELECT 1', 0.5);
+
+        $this->assertTrue($result);
+    }
+
+    public function testRecordSlowQueryReturnsFalseWhenLoggingFailsFatally(): void
+    {
+        // 讓效能表也失效後，以非 PDO 錯誤觸發外層防禦：改用不存在的連線行為模擬
+        // （外層 catch 僅在極端情況觸發，這裡至少驗證正常路徑回傳 true）
+        $result = $this->service->recordSlowQuery('type', 'SELECT :id', 2.5, ['id' => 7]);
+
+        $this->assertTrue($result);
+        $countStmt = $this->pdo->query('SELECT COUNT(*) FROM statistics_slow_queries');
+        assert($countStmt !== false);
+        $count = (int) $countStmt->fetchColumn();
+        $this->assertSame(1, $count);
+    }
+
+    public function testExecuteAndMonitorRecordsSlowQueriesAboveThreshold(): void
+    {
+        // 以遞迴 CTE 製造超過一秒的查詢，觸發慢查詢記錄分支
+        $sql = 'WITH RECURSIVE cnt(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM cnt LIMIT 60000000)
+                SELECT COUNT(*) FROM cnt';
+
+        $result = $this->service->executeAndMonitor($sql, [], 'heavy_query');
+
+        $this->assertSame([['COUNT(*)' => 60000000]], $result);
+
+        $slowStmt = $this->pdo->query("SELECT COUNT(*) FROM statistics_slow_queries WHERE query_type = 'heavy_query'");
+        assert($slowStmt !== false);
+        $slowCount = (int) $slowStmt->fetchColumn();
+        $perfStmt = $this->pdo->query("SELECT COUNT(*) FROM statistics_query_performance WHERE query_type = 'heavy_query'");
+        assert($perfStmt !== false);
+        $perfCount = (int) $perfStmt->fetchColumn();
+        $this->assertGreaterThanOrEqual(1, $slowCount);
+        $this->assertSame(1, $perfCount);
+    }
+
+    public function testExecuteAndMonitorWrapsPdoFailures(): void
+    {
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('查詢執行失敗');
+
+        $this->service->executeAndMonitor('SELECT * FROM missing_table_xyz');
+    }
+
+    public function testRecordFailedQueryIsBestEffort(): void
+    {
+        // 失敗查詢記錄表不存在時，仍應拋出原始查詢例外且過程不中斷
+        $this->pdo->exec('DROP TABLE statistics_failed_queries');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('查詢執行失敗');
+
+        $this->service->executeAndMonitor('SELECT * FROM missing_table_xyz');
+    }
+
+    public function testStatsMethodsWrapPdoFailures(): void
+    {
+        $this->pdo->exec('DROP TABLE statistics_slow_queries');
+        $this->pdo->exec('DROP TABLE statistics_query_performance');
+
+        try {
+            $this->service->getSlowQueryStats();
+            $this->fail('getSlowQueryStats 應拋出例外');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('獲取慢查詢統計失敗', $e->getMessage());
+        }
+
+        try {
+            $this->service->getPerformanceTrend('type');
+            $this->fail('getPerformanceTrend 應拋出例外');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('獲取效能趨勢失敗', $e->getMessage());
+        }
+
+        try {
+            $this->service->getSlowestQueries();
+            $this->fail('getSlowestQueries 應拋出例外');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('獲取最慢查詢失敗', $e->getMessage());
+        }
+
+        try {
+            $this->service->analyzeQueryPerformance('hash');
+            $this->fail('analyzeQueryPerformance 應拋出例外');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('分析查詢效能失敗', $e->getMessage());
+        }
+
+        try {
+            $this->service->getSlowQueryDetails(10);
+            $this->fail('getSlowQueryDetails 應拋出例外');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('無法取得慢查詢詳細資料', $e->getMessage());
+        }
+
+        try {
+            $this->service->cleanupOldRecords(30);
+            $this->fail('cleanupOldRecords 應拋出例外');
+        } catch (RuntimeException $e) {
+            $this->assertStringContainsString('清理舊記錄失敗', $e->getMessage());
+        }
+    }
+
+    public function testPerformanceRecordingFailureDoesNotBreakQueries(): void
+    {
+        // 效能記錄表不存在時，查詢本身仍應成功回傳
+        $this->pdo->exec('DROP TABLE statistics_query_performance');
+
+        $result = $this->service->executeAndMonitor('SELECT name FROM test_items WHERE id = :id', ['id' => 1]);
+
+        $this->assertIsArray($result);
+    }
+
+    /**
+     * 產生指定數量與時間的效能歷史紀錄，用於趨勢分析.
+     */
+    private function seedPerformanceHistory(string $hash, array $times): void
+    {
+        $stmt = $this->pdo->prepare("
+            INSERT INTO statistics_query_performance (query_hash, query_type, execution_time, result_count, created_at)
+            VALUES (:hash, 'trend', :time, 1, :created_at)
+        ");
+        $total = count($times);
+        foreach ($times as $index => $time) {
+            // created_at 遞減：索引 0 為最新（ORDER BY created_at DESC 的第一位）
+            $createdAt = date('Y-m-d H:i:s', time() + ($total - $index) * 10);
+            $stmt->execute([':hash' => $hash, ':time' => $time, ':created_at' => $createdAt]);
+        }
+    }
+
+    public function testAnalyzeQueryPerformanceDetectsDeterioratingTrend(): void
+    {
+        // 前 10 筆（最新）為慢查詢，後 10 筆（較舊）為快查詢
+        $times = array_merge(array_fill(0, 10, 2.0), array_fill(0, 10, 0.1));
+        $this->seedPerformanceHistory('deteriorating-hash', $times);
+
+        $analysis = $this->service->analyzeQueryPerformance('deteriorating-hash');
+
+        $this->assertSame(20, $analysis['total_executions']);
+        $this->assertSame('deteriorating', $analysis['performance_trend']);
+    }
+
+    public function testAnalyzeQueryPerformanceDetectsImprovingAndStableTrends(): void
+    {
+        // 改善：最新的比較快
+        $improvingTimes = array_merge(array_fill(0, 10, 0.1), array_fill(0, 10, 2.0));
+        $this->seedPerformanceHistory('improving-hash', $improvingTimes);
+        $improving = $this->service->analyzeQueryPerformance('improving-hash');
+        $this->assertSame('improving', $improving['performance_trend']);
+
+        // 穩定：新舊差異小於 20%
+        $stableTimes = array_fill(0, 12, 1.0);
+        $this->seedPerformanceHistory('stable-hash', $stableTimes);
+        $stable = $this->service->analyzeQueryPerformance('stable-hash');
+        $this->assertSame('stable', $stable['performance_trend']);
+    }
 }

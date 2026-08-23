@@ -421,4 +421,26 @@ class SourceDistributionDTOTest extends UnitTestCase
             trends: [],
         );
     }
+
+    public function testTopGettersReturnNullWhenKeysMissing(): void
+    {
+        $dto = SourceDistributionDTO::fromArray([]);
+
+        $this->assertNull($dto->getTopSearchEngine());
+        $this->assertNull($dto->getTopSocialPlatform());
+        $this->assertNull($dto->getTopReferralSite());
+        $this->assertNull($dto->getTopGeographicLocation());
+    }
+
+    public function testTopSocialPlatformAndReferralSiteWhenEmpty(): void
+    {
+        $dto = SourceDistributionDTO::fromArray([
+            'search_engines' => ['total_traffic' => 0],
+            'social_media'   => ['platforms' => []],
+            'referral_sites' => ['sites' => []],
+        ]);
+
+        $this->assertNull($dto->getTopSocialPlatform());
+        $this->assertNull($dto->getTopReferralSite());
+    }
 }

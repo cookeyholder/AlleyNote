@@ -13,6 +13,7 @@ use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
 use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
+use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
@@ -183,7 +184,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
         $this->assertTrue($result->hasFailures());
         $this->assertCount(2, $result->results);
         $this->assertCount(1, $result->errors);
-        $this->assertArrayHasKey('overview', $result->errors);
+        /** @var array<string, string> $errors */
+        $errors = $result->errors;
+        $this->assertArrayHasKey('overview', $errors);
     }
 
     public function test應該能取得支援的格式列表(): void
@@ -455,5 +458,63 @@ final class StatisticsExportServiceTest extends UnitTestCase
             'csv'  => $csvFormatter,
             'pdf'  => $pdfFormatter,
         ];
+    }
+
+    public function testExportMethodsWrapQueryFailures(): void
+    {
+        $failing = Mockery::mock(StatisticsQueryService::class);
+        $failing->shouldReceive('getOverview')->andThrow(new RuntimeException('overview boom'));
+        $failing->shouldReceive('getPostStatistics')->andThrow(new RuntimeException('posts boom'));
+        $failing->shouldReceive('getSourceDistribution')->andThrow(new RuntimeException('sources boom'));
+        $failing->shouldReceive('getUserStatistics')->andThrow(new RuntimeException('users boom'));
+        $failing->shouldReceive('getPopularContent')->andThrow(new RuntimeException('popular boom'));
+
+        $service = new StatisticsExportService($failing, $this->formatters);
+
+        $cases = [
+            'exportOverview'           => ['匯出概覽統計失敗', 'overview boom'],
+            'exportPostStatistics'     => ['匯出文章統計失敗', 'posts boom'],
+            'exportSourceDistribution' => ['匯出來源分布統計失敗', 'sources boom'],
+            'exportUserStatistics'     => ['匯出使用者統計失敗', 'users boom'],
+            'exportPopularContent'     => ['匯出熱門內容統計失敗', 'popular boom'],
+        ];
+
+        foreach ($cases as $method => [$expectedMessage, $expectedCause]) {
+            try {
+                $this->assertSame($service, $service);
+                $service->{$method}(['format' => 'json']);
+                $this->fail("{$method} 應拋出例外");
+            } catch (RuntimeException $e) {
+                $this->assertStringContainsString($expectedMessage, $e->getMessage());
+                $this->assertStringContainsString($expectedCause, $e->getMessage());
+            }
+        }
+    }
+
+    public function testExportBatchCoversAllTypesAndInvalidType(): void
+    {
+        // 全部支援的類型一次匯出
+        $result = $this->exportService->exportBatch(
+            ['overview', 'posts', 'sources', 'users', 'popular'],
+            [
+                'format' => 'json',
+                /** @phpstan-ignore-next-line argument.type */
+                'period_start' => new DateTimeImmutable('2025-09-01'),
+                /** @phpstan-ignore-next-line argument.type */
+                'period_end' => new DateTimeImmutable('2025-09-30 23:59:59'),
+            ],
+        );
+
+        $this->assertSame(5, $result->successCount);
+        $this->assertSame(0, $result->failureCount);
+
+        // 含不支援的類型時應記錄錯誤而不中斷批次
+        /** @phpstan-ignore argument.type */
+        $batchWithInvalid = $this->exportService->exportBatch(['overview', 'unknown_type'], ['format' => 'json']);
+
+        $this->assertSame(1, $batchWithInvalid->successCount);
+        $this->assertSame(1, $batchWithInvalid->failureCount);
+        $this->assertArrayHasKey('unknown_type', $batchWithInvalid->errors);
+        $this->assertStringContainsString('不支援的統計類型: unknown_type', $batchWithInvalid->errors['unknown_type']);
     }
 }

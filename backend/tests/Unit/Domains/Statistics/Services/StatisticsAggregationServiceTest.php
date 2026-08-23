@@ -251,6 +251,34 @@ class StatisticsAggregationServiceTest extends UnitTestCase
         $this->service->createBatchSnapshots($this->testPeriod, $types);
     }
 
+    public function testCreateBatchSnapshotsWithPopularType(): void
+    {
+        // Arrange
+        $types = [StatisticsSnapshot::TYPE_POPULAR, StatisticsSnapshot::TYPE_OVERVIEW];
+
+        $this->postStatisticsRepository->method('hasDataForPeriod')->willReturn(true);
+        $this->userStatisticsRepository->method('hasDataForPeriod')->willReturn(true);
+
+        $this->setupPostStatisticsMocks();
+        $this->setupUserStatisticsMocks();
+
+        $popularSnapshot = $this->createTestSnapshot(StatisticsSnapshot::TYPE_POPULAR);
+        $overviewSnapshot = $this->createTestSnapshot(StatisticsSnapshot::TYPE_OVERVIEW);
+
+        $this->statisticsRepository
+            ->expects($this->exactly(2))
+            ->method('save')
+            ->willReturnOnConsecutiveCalls($popularSnapshot, $overviewSnapshot);
+
+        // Act
+        $result = $this->service->createBatchSnapshots($this->testPeriod, $types);
+
+        // Assert
+        $this->assertCount(2, $result);
+        $this->assertArrayHasKey(StatisticsSnapshot::TYPE_POPULAR, $result);
+        $this->assertSame(StatisticsSnapshot::TYPE_POPULAR, $result[StatisticsSnapshot::TYPE_POPULAR]->getSnapshotType());
+    }
+
     public function testUpdateSnapshotSuccessfully(): void
     {
         // Arrange

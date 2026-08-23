@@ -283,4 +283,65 @@ final class StatisticsVisualizationServiceTest extends UnitTestCase
         // Assert
         $this->assertEquals($expectedData, $result);
     }
+
+    /**
+     * 讓 remember 直接執行回呼，驗證各 getter 的資料取得與處理流程.
+     */
+    private function executeRememberCallbacks(): void
+    {
+        $chart = new ChartData(['label'], []);
+        $this->mockCacheService
+            ->method('remember')
+            ->willReturnCallback(static fn(string $key, callable $callback): mixed => $callback());
+    }
+
+    public function testTimeSeriesGettersFetchAndProcessData(): void
+    {
+        $this->executeRememberCallbacks();
+
+        $rawRows = [['date' => '2023-01-01', 'value' => 10]];
+        $processed = new ChartData(['2023-01-01'], []);
+
+        $matcher = $this->mockQueryAdapter->expects($this->exactly(6))->method('getTimeSeriesData');
+        $matcher->willReturn($rawRows);
+
+        $processorMatcher = $this->mockTimeSeriesProcessor->expects($this->exactly(4))->method('processTimeSeriesData');
+        $processorMatcher->willReturn($processed);
+
+        $this->assertSame($processed, $this->service->getPostsTimeSeriesData($this->startDate, $this->endDate));
+        $this->assertSame($processed, $this->service->getUserActivityTimeSeriesData($this->startDate, $this->endDate));
+        $this->assertSame($processed, $this->service->getUserRegistrationTrendData($this->startDate, $this->endDate));
+
+        // 內容成長趨勢會查詢 posts、comments、attachments 三個指標
+        $growth = $this->service->getContentGrowthTrendData($this->startDate, $this->endDate);
+        $this->assertInstanceOf(ChartData::class, $growth);
+    }
+
+    public function testCategoryDistributionGettersFetchAndProcessData(): void
+    {
+        $this->executeRememberCallbacks();
+
+        $processed = new ChartData(['Web'], []);
+        $categoryMatcher = $this->mockQueryAdapter->expects($this->exactly(3))->method('getCategoryDistributionData');
+        $categoryMatcher->willReturn([['category' => 'Web', 'value' => 1.0]]);
+        $this->mockCategoryProcessor
+            ->method('processCategoryData')
+            ->willReturn($processed);
+
+        $this->assertSame($processed, $this->service->getPostSourceDistributionData($this->startDate, $this->endDate, 3));
+        $this->assertSame($processed, $this->service->getPopularTagsDistributionData(null, null, 7));
+        $this->assertSame($processed, $this->service->getUserEngagementDistributionData());
+
+        // 排行榜走 getTopContentData + processRankingData
+        $this->mockQueryAdapter
+            ->expects($this->once())
+            ->method('getTopContentData')
+            ->with(5, ['start' => null, 'end' => null], 'views')
+            ->willReturn([['title' => 'A', 'views' => 9]]);
+        $this->mockCategoryProcessor
+            ->expects($this->once())
+            ->method('processRankingData')
+            ->willReturn($processed);
+        $this->assertSame($processed, $this->service->getPopularContentRankingData(null, null, 'views', 5));
+    }
 }

@@ -241,4 +241,86 @@ final class StatisticsRepositoryLoggingAdapterTest extends UnitTestCase
         // Mockery 期望已驗證四種等級的呼叫
         $this->addToAssertionCount(4);
     }
+
+    #[Test]
+    public function allOperationsLogErrorAndRethrowOnFailure(): void
+    {
+        $period = new StatisticsPeriod(
+            PeriodType::DAILY,
+            new DateTimeImmutable('2025-01-01 00:00:00'),
+            new DateTimeImmutable('2025-01-01 23:59:59'),
+        );
+        $start = new DateTimeImmutable('2025-01-01');
+        $end = new DateTimeImmutable('2025-01-31');
+        $failure = new RuntimeException('repository failure');
+
+        $cases = [
+            'findByUuid' => function () use ($failure): void {
+                $this->repository->shouldReceive('findByUuid')->once()->andThrow($failure);
+                $this->adapter->findByUuid('boom');
+            },
+            'findByTypeAndPeriod' => function () use ($failure, $period): void {
+                $this->repository->shouldReceive('findByTypeAndPeriod')->once()->andThrow($failure);
+                $this->adapter->findByTypeAndPeriod(StatisticsSnapshot::TYPE_OVERVIEW, $period);
+            },
+            'findLatestByType' => function () use ($failure): void {
+                $this->repository->shouldReceive('findLatestByType')->once()->andThrow($failure);
+                $this->adapter->findLatestByType(StatisticsSnapshot::TYPE_USERS);
+            },
+            'findByTypeAndDateRange' => function () use ($failure, $start, $end): void {
+                $this->repository->shouldReceive('findByTypeAndDateRange')->once()->andThrow($failure);
+                $this->adapter->findByTypeAndDateRange(StatisticsSnapshot::TYPE_POSTS, $start, $end);
+            },
+            'findExpiredSnapshots' => function () use ($failure): void {
+                $this->repository->shouldReceive('findExpiredSnapshots')->once()->andThrow($failure);
+                $this->adapter->findExpiredSnapshots();
+            },
+            'save' => function () use ($failure): void {
+                $this->repository->shouldReceive('save')->once()->andThrow($failure);
+                $this->adapter->save($this->snapshot);
+            },
+            'update' => function () use ($failure): void {
+                $this->repository->shouldReceive('update')->once()->andThrow($failure);
+                $this->adapter->update($this->snapshot);
+            },
+            'delete' => function () use ($failure): void {
+                $this->repository->shouldReceive('delete')->once()->andThrow($failure);
+                $this->adapter->delete($this->snapshot);
+            },
+            'deleteById' => function () use ($failure): void {
+                $this->repository->shouldReceive('deleteById')->once()->andThrow($failure);
+                $this->adapter->deleteById(1);
+            },
+            'deleteExpiredSnapshots' => function () use ($failure): void {
+                $this->repository->shouldReceive('deleteExpiredSnapshots')->once()->andThrow($failure);
+                $this->adapter->deleteExpiredSnapshots();
+            },
+            'exists' => function () use ($failure, $period): void {
+                $this->repository->shouldReceive('exists')->once()->andThrow($failure);
+                $this->adapter->exists(StatisticsSnapshot::TYPE_SOURCES, $period);
+            },
+            'count' => function () use ($failure): void {
+                $this->repository->shouldReceive('count')->once()->andThrow($failure);
+                $this->adapter->count();
+            },
+            'findByTypeWithPagination' => function () use ($failure): void {
+                $this->repository->shouldReceive('findByTypeWithPagination')->once()->andThrow($failure);
+                $this->adapter->findByTypeWithPagination(StatisticsSnapshot::TYPE_POPULAR);
+            },
+        ];
+
+        // 每個操作失敗時都應以 error 等級記錄並重新拋出例外
+        foreach ($cases as $operation => $invoke) {
+            $this->logger->shouldReceive('error')
+                ->with(Mockery::pattern('/' . $operation . '/'), Mockery::type('array'))
+                ->once();
+
+            try {
+                $invoke();
+                $this->fail("{$operation} 應重新拋出例外");
+            } catch (RuntimeException $e) {
+                $this->assertSame('repository failure', $e->getMessage(), $operation);
+            }
+        }
+    }
 }

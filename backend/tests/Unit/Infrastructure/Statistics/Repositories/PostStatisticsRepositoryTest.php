@@ -11,6 +11,7 @@ use App\Infrastructure\Statistics\Repositories\PostStatisticsRepository;
 use DateTimeImmutable;
 use InvalidArgumentException;
 use PDO;
+use RuntimeException;
 use Tests\Support\UnitTestCase;
 
 /**
@@ -342,5 +343,103 @@ final class PostStatisticsRepositoryTest extends UnitTestCase
 
         $monthly = $this->repository->getViewTimeSeriesData($start, $end, 'month');
         $this->assertNotEmpty($monthly);
+    }
+
+    // ========== 錯誤處理與邊界情況 ==========
+
+    public function testUnknownCreationSourceIsReportedSeparately(): void
+    {
+        // 來源不在預設清單時應動態加入結果
+        $this->pdo->exec("
+            INSERT INTO posts (title, content, views, status, creation_source, user_id, is_pinned, created_at)
+            VALUES ('Post X', 'x', 1, '1', 'partner_feed', 3, 0, '2025-01-20 12:00:00')
+        ");
+
+        $sources = $this->repository->getPostsCountBySource($this->period);
+
+        $this->assertArrayHasKey('partner_feed', $sources);
+        $this->assertSame(1, $sources['partner_feed']);
+    }
+
+    public function testNullCreationSourceIsCountedAsUnknown(): void
+    {
+        // creation_source 為 NULL 時應歸類為 unknown
+        $this->pdo->exec("
+            INSERT INTO posts (title, content, views, status, creation_source, user_id, is_pinned, created_at)
+            VALUES ('Post Y', 'y', 1, '1', NULL, 3, 0, '2025-01-21 12:00:00')
+        ");
+
+        $sources = $this->repository->getPostsCountBySource($this->period);
+
+        $this->assertSame(1, $sources['unknown']);
+    }
+
+    public function testGetViewTimeSeriesDataWithUnknownGranularityFallsBackToDay(): void
+    {
+        $start = new DateTimeImmutable('2025-01-05');
+        $end = new DateTimeImmutable('2025-01-06');
+
+        $result = $this->repository->getViewTimeSeriesData($start, $end, 'year');
+
+        $this->assertNotEmpty($result);
+    }
+
+    public function testGetPostsCountByLengthRangeValidationBranches(): void
+    {
+        // 範圍鍵必須為字串
+        try {
+            /** @phpstan-ignore-next-line argument.type */
+            $this->repository->getPostsCountByLengthRange($this->period, [123 => ['min' => 0, 'max' => 10]]);
+            $this->fail('數字鍵應拋出例外');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('字數範圍鍵必須為字串', $e->getMessage());
+        }
+
+        // 缺少 min 或 max 應拋出例外
+        try {
+            /** @phpstan-ignore-next-line argument.type */
+            $this->repository->getPostsCountByLengthRange($this->period, ['short' => ['min' => 0]]);
+            $this->fail('缺少 max 應拋出例外');
+        } catch (InvalidArgumentException $e) {
+            $this->assertStringContainsString('必須包含 min 和 max 值', $e->getMessage());
+        }
+    }
+
+    public function testAllMethodsWrapUnexpectedPdoErrors(): void
+    {
+        // 移除資料表讓所有查詢拋出 PDOException
+        $this->pdo->exec('DROP TABLE post_views');
+        $this->pdo->exec('DROP TABLE posts');
+
+        $ranges = ['short' => ['min' => 0, 'max' => 100]];
+        $sourceType = SourceType::createWeb();
+        $start = new DateTimeImmutable('2025-01-01');
+
+        $cases = [
+            'getTotalPostsCount'         => fn() => $this->repository->getTotalPostsCount($this->period),
+            'getPostsCountByStatus'      => fn() => $this->repository->getPostsCountByStatus($this->period),
+            'getPostsCountBySource'      => fn() => $this->repository->getPostsCountBySource($this->period),
+            'getPostsCountBySourceType'  => fn() => $this->repository->getPostsCountBySourceType($this->period, $sourceType),
+            'getPostViewsStatistics'     => fn() => $this->repository->getPostViewsStatistics($this->period),
+            'getPopularPosts'            => fn() => $this->repository->getPopularPosts($this->period),
+            'getPostsCountByUser'        => fn() => $this->repository->getPostsCountByUser($this->period),
+            'getPublishTimeDistribution' => fn() => $this->repository->getPostsPublishTimeDistribution($this->period),
+            'getPostsGrowthTrend'        => fn() => $this->repository->getPostsGrowthTrend($this->period, $this->period),
+            'getPostsLengthStatistics'   => fn() => $this->repository->getPostsLengthStatistics($this->period),
+            'getPostsCountByLengthRange' => fn() => $this->repository->getPostsCountByLengthRange($this->period, $ranges),
+            'getPinnedPostsStatistics'   => fn() => $this->repository->getPinnedPostsStatistics($this->period),
+            'hasDataForPeriod'           => fn() => $this->repository->hasDataForPeriod($this->period),
+            'getPostActivitySummary'     => fn() => $this->repository->getPostActivitySummary($this->period),
+            'getViewTimeSeriesData'      => fn() => $this->repository->getViewTimeSeriesData($start, $start, 'day'),
+        ];
+
+        foreach ($cases as $name => $invoke) {
+            try {
+                $invoke();
+                $this->fail("{$name} 在資料表不存在時應拋出 RuntimeException");
+            } catch (RuntimeException) {
+                $this->addToAssertionCount(1);
+            }
+        }
     }
 }

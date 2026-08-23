@@ -431,4 +431,31 @@ class ContentInsightsDTOTest extends UnitTestCase
             contentOptimization: [],
         );
     }
+
+    public function testValidationFailsWithNonNumericReadingPatternValue(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('閱讀模式統計值必須是數字');
+
+        new ContentInsightsDTO(
+            topPerformingContent: [],
+            contentPerformanceMetrics: [],
+            popularTopics: [],
+            contentFormats: [],
+            userEngagementPatterns: [],
+            contentLifecycleAnalysis: [],
+            /** @phpstan-ignore-next-line argument.type */
+            readingPatterns: ['avg_scroll_depth' => 'not-numeric'],
+            shareability: [],
+            seasonalTrends: [],
+            contentOptimization: [],
+        );
+    }
+
+    public function testGetMostPopularFormatWhenEmpty(): void
+    {
+        $dto = ContentInsightsDTO::fromArray([]);
+
+        $this->assertNull($dto->getMostPopularFormat());
+    }
 }

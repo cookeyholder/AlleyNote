@@ -95,4 +95,29 @@ final class CSVStatisticsFormatterTest extends UnitTestCase
         $csv = $this->formatter->format($data, ['encoding' => 'UTF-8']);
         $this->assertStringContainsString('中文測試', $csv);
     }
+
+    public function testFormatWithNonUtf8EncodingConvertsOutput(): void
+    {
+        $data = [
+            ['name' => '中文測試'],
+        ];
+
+        /** @phpstan-ignore-next-line argument.type */
+        $csv = $this->formatter->format($data, ['encoding' => 'Big5']);
+
+        $this->assertNotSame('', $csv);
+        // Big5 編碼後不應保留 UTF-8 位元組序列
+        $this->assertStringNotContainsString('中文測試', $csv);
+    }
+
+    public function testFormatWithEmptyNestedArrayTreatsAsScalar(): void
+    {
+        // 空巢狀陣列會觸發關聯陣列檢查的空陣列分支，並以 JSON 字串呈現
+        /** @var array<string, mixed> $data */
+        $data = ['key' => []];
+        $csv = $this->formatter->format($data);
+
+        $this->assertStringContainsString('key', $csv);
+        $this->assertStringContainsString('[]', $csv);
+    }
 }

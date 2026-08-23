@@ -101,4 +101,17 @@ final class TimeSeriesProcessorTest extends UnitTestCase
         $this->assertIsArray($colors);
         $this->assertContains('#FF6384', $colors);
     }
+
+    public function testProcessMultiSeriesDataFallsBackToLast30DaysWithoutDates(): void
+    {
+        // 無法從空資料推斷日期範圍時，應退回最近 30 天
+        $chart = $this->processor->processMultiSeriesData(
+            ['Empty Series' => []],
+            'Fallback Range',
+            'day',
+        );
+
+        $this->assertCount(1, $chart->datasets);
+        $this->assertSame('Empty Series', $chart->datasets[0]->label);
+    }
 }

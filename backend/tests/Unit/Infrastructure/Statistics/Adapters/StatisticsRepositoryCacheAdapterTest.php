@@ -282,4 +282,91 @@ final class StatisticsRepositoryCacheAdapterTest extends UnitTestCase
         $results = $this->adapter->findByTypeWithPagination($type, 2);
         $this->assertCount(1, $results);
     }
+
+    #[Test]
+    public function findByUuidReturnsCachedSnapshot(): void
+    {
+        $uuid = 'uuid-cached';
+        $this->cache->shouldReceive('get')
+            ->with(self::PREFIX . ':uuid:' . $uuid)
+            ->once()
+            ->andReturn($this->snapshot);
+
+        $this->repository->shouldNotReceive('findByUuid');
+
+        $this->assertSame($this->snapshot, $this->adapter->findByUuid($uuid));
+    }
+
+    #[Test]
+    public function findByUuidCachesRepositoryResult(): void
+    {
+        $uuid = 'uuid-from-repo';
+        $this->cache->shouldReceive('get')->with(self::PREFIX . ':uuid:' . $uuid)->once()->andReturn(null);
+        $this->repository->shouldReceive('findByUuid')->with($uuid)->once()->andReturn($this->snapshot);
+        $this->cache->shouldReceive('set')
+            ->with(self::PREFIX . ':uuid:' . $uuid, $this->snapshot, 3600)
+            ->once()
+            ->andReturn(true);
+
+        $this->assertSame($this->snapshot, $this->adapter->findByUuid($uuid));
+    }
+
+    #[Test]
+    public function findByTypeAndPeriodReturnsCachedSnapshot(): void
+    {
+        $key = self::PREFIX . ':type_period:overview_daily_2025-01-01-00-00_2025-01-01-23-59';
+        $this->cache->shouldReceive('get')->with($key)->once()->andReturn($this->snapshot);
+
+        $this->repository->shouldNotReceive('findByTypeAndPeriod');
+
+        $period = new StatisticsPeriod(
+            PeriodType::DAILY,
+            new DateTimeImmutable('2025-01-01 00:00:00'),
+            new DateTimeImmutable('2025-01-01 23:59:59'),
+        );
+        $this->assertSame($this->snapshot, $this->adapter->findByTypeAndPeriod(StatisticsSnapshot::TYPE_OVERVIEW, $period));
+    }
+
+    #[Test]
+    public function findLatestByTypeReturnsCachedSnapshot(): void
+    {
+        $type = StatisticsSnapshot::TYPE_USERS;
+        $this->cache->shouldReceive('get')
+            ->with(self::PREFIX . ':latest_type:' . $type)
+            ->once()
+            ->andReturn($this->snapshot);
+
+        $this->repository->shouldNotReceive('findLatestByType');
+
+        $this->assertSame($this->snapshot, $this->adapter->findLatestByType($type));
+    }
+
+    #[Test]
+    public function existsReturnsCachedValue(): void
+    {
+        $key = self::PREFIX . ':exists:posts_daily_2025-01-01-00-00_2025-01-01-23-59';
+        $this->cache->shouldReceive('get')->with($key)->once()->andReturn(false);
+
+        $this->repository->shouldNotReceive('exists');
+
+        $period = new StatisticsPeriod(
+            PeriodType::DAILY,
+            new DateTimeImmutable('2025-01-01 00:00:00'),
+            new DateTimeImmutable('2025-01-01 23:59:59'),
+        );
+        $this->assertFalse($this->adapter->exists(StatisticsSnapshot::TYPE_POSTS, $period));
+    }
+
+    #[Test]
+    public function findByTypeWithPaginationReturnsCachedResult(): void
+    {
+        $type = StatisticsSnapshot::TYPE_SOURCES;
+        $key = self::PREFIX . ':paginated:' . $type . '_1_20_created_at_desc';
+
+        $this->cache->shouldReceive('get')->with($key)->once()->andReturn([$this->snapshot]);
+        $this->repository->shouldNotReceive('findByTypeWithPagination');
+
+        $results = $this->adapter->findByTypeWithPagination($type);
+        $this->assertCount(1, $results);
+    }
 }

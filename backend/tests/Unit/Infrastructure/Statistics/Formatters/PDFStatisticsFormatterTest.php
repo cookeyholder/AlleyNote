@@ -65,4 +65,29 @@ final class PDFStatisticsFormatterTest extends UnitTestCase
         $pdf = $this->formatter->format($data);
         $this->assertStringContainsString('%PDF-1.4', $pdf);
     }
+
+    public function testFormatWithNonArrayTableRowsFallsBackToSummary(): void
+    {
+        // 順序陣列中包含非陣列元素，不視為表格資料
+        $data = [
+            'mixed_section' => ['純文字一', '純文字二'],
+        ];
+
+        $pdf = $this->formatter->format($data);
+
+        $this->assertStringContainsString('%PDF-1.4', $pdf);
+        $this->assertStringEndsWith("%%EOF\n", $pdf);
+    }
+
+    public function testFormatWithNonStringKeysRowsFallsBackToSummary(): void
+    {
+        // 資料列使用數字鍵，不符合表格資料結構
+        $data = [
+            'list_section' => [['第一項'], ['第二項']],
+        ];
+
+        $pdf = $this->formatter->format($data);
+
+        $this->assertStringContainsString('%PDF-1.4', $pdf);
+    }
 }

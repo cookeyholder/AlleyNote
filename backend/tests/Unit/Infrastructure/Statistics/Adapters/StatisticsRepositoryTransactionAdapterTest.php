@@ -67,6 +67,21 @@ final class StatisticsRepositoryTransactionAdapterTest extends UnitTestCase
         $this->repository->shouldReceive('findByUuid')->with('u')->once()->andReturn(null);
         $this->assertNull($this->adapter->findByUuid('u'));
 
+        $this->repository->shouldReceive('findByTypeAndPeriod')
+            ->with(StatisticsSnapshot::TYPE_OVERVIEW, $this->snapshot->getPeriod())
+            ->once()
+            ->andReturn($this->snapshot);
+        $this->assertSame(
+            $this->snapshot,
+            $this->adapter->findByTypeAndPeriod(StatisticsSnapshot::TYPE_OVERVIEW, $this->snapshot->getPeriod()),
+        );
+
+        $this->repository->shouldReceive('findLatestByType')
+            ->with(StatisticsSnapshot::TYPE_USERS)
+            ->once()
+            ->andReturn(null);
+        $this->assertNull($this->adapter->findLatestByType(StatisticsSnapshot::TYPE_USERS));
+
         $start = new DateTimeImmutable('2025-02-01');
         $end = new DateTimeImmutable('2025-02-28');
         $this->repository->shouldReceive('findByTypeAndDateRange')->once()->andReturn([]);
@@ -143,6 +158,22 @@ final class StatisticsRepositoryTransactionAdapterTest extends UnitTestCase
 
         $results = $this->adapter->batchSave([$first, $second]);
         $this->assertSame([$savedFirst, $savedSecond], $results);
+    }
+
+    #[Test]
+    public function batchUpdateReturnsUpdatedSnapshots(): void
+    {
+        $first = $this->snapshot;
+        $second = $this->createSnapshot();
+        $updatedFirst = $this->createSnapshot();
+        $updatedSecond = $this->createSnapshot();
+
+        $matcher = $this->repository->shouldReceive('update')->times(2);
+        $matcher->andReturn($updatedFirst, $updatedSecond);
+
+        $results = $this->adapter->batchUpdate([$first, $second]);
+        $this->assertSame([$updatedFirst, $updatedSecond], $results);
+        $this->assertFalse($this->pdo->inTransaction());
     }
 
     #[Test]

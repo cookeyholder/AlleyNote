@@ -93,4 +93,14 @@ class UserAgentParserServiceTest extends UnitTestCase
         $this->assertEquals('Safari', $results[1]['browser']);
         $this->assertEquals('Unknown', $results[2]['browser']);
     }
+
+    public function testParseUnknownUserAgent(): void
+    {
+        $result = $this->parser->parse('SomeRandomBot/1.0 (unknown crawler)');
+
+        $this->assertEquals('Other', $result['browser']);
+        $this->assertEquals('', $result['browser_version']);
+        $this->assertEquals('Desktop', $result['device_type']);
+        $this->assertEquals('Other', $result['os']);
+    }
 }

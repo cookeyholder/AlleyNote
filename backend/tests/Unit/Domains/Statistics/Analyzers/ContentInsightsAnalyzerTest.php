@@ -8,6 +8,7 @@ use App\Domains\Statistics\Analyzers\ContentInsightsAnalyzer;
 use App\Domains\Statistics\Analyzers\ContentInsightsResult;
 use App\Domains\Statistics\DTOs\ContentInsightsDTO;
 use App\Domains\Statistics\Enums\PerformanceGrade;
+use ReflectionMethod;
 use Tests\Support\UnitTestCase;
 
 /**
@@ -164,5 +165,37 @@ class ContentInsightsAnalyzerTest extends UnitTestCase
 
         $this->assertInstanceOf(ContentInsightsResult::class, $result);
         $this->assertInstanceOf(PerformanceGrade::class, $result->getPerformanceGrade());
+    }
+
+    /**
+     * 驗證各季節的內容行事曆建議.
+     *
+     * generateContentCalendarSuggestions 為私有方法且依賴當前月份，
+     * 這裡透過反射逐一驅動所有季節分支。
+     */
+    public function testContentCalendarSuggestionsForAllSeasons(): void
+    {
+        $method = new ReflectionMethod(ContentInsightsAnalyzer::class, 'generateContentCalendarSuggestions');
+        $method->setAccessible(true);
+
+        /** @var array<string> $spring */
+        $spring = $method->invoke($this->analyzer, 'spring');
+        $this->assertContains('新年目標相關內容', $spring);
+
+        /** @var array<string> $summer */
+        $summer = $method->invoke($this->analyzer, 'summer');
+        $this->assertContains('度假和旅遊內容', $summer);
+
+        /** @var array<string> $autumn */
+        $autumn = $method->invoke($this->analyzer, 'autumn');
+        $this->assertContains('回到學校內容', $autumn);
+
+        /** @var array<string> $winter */
+        $winter = $method->invoke($this->analyzer, 'winter');
+        $this->assertContains('年終總結', $winter);
+
+        /** @var array<string> $fallback */
+        $fallback = $method->invoke($this->analyzer, 'unknown');
+        $this->assertSame(['通用主題內容'], $fallback);
     }
 }

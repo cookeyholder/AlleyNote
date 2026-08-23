@@ -374,4 +374,82 @@ final class StatisticsRecalculationCommandTest extends UnitTestCase
 
         $this->assertEquals(0, $this->commandTester->getStatusCode());
     }
+
+    public function testInteractiveCancelAbortsOperation(): void
+    {
+        // 非強制模式下以互動確認回答 no，應取消操作且不執行聚合
+        $this->mockAggregationService->expects($this->never())->method('createOverviewSnapshot');
+        $this->commandTester->setInputs(['no']);
+
+        $this->commandTester->execute([
+            'type'       => 'overview',
+            'start_date' => '2023-01-01',
+            'end_date'   => '2023-01-02',
+        ], ['interactive' => true]);
+
+        $output = $this->commandTester->getDisplay();
+
+        $this->assertStringContainsString('操作已取消', $output);
+        $this->assertEquals(0, $this->commandTester->getStatusCode());
+    }
+
+    public function testInteractiveConfirmProceedsWithForceWarning(): void
+    {
+        $this->mockAggregationService->method('createOverviewSnapshot');
+        $this->commandTester->setInputs(['yes']);
+
+        $this->commandTester->execute([
+            'type'       => 'overview',
+            'start_date' => '2023-01-01',
+            'end_date'   => '2023-01-02',
+            '--force'    => true,
+        ], ['interactive' => true]);
+
+        $output = $this->commandTester->getDisplay();
+
+        // 強制覆蓋時應顯示警告並繼續執行
+        $this->assertStringContainsString('強制覆蓋', $output);
+        $this->assertStringContainsString('開始執行統計回填', $output);
+        $this->assertEquals(0, $this->commandTester->getStatusCode());
+    }
+
+    public function testInteractiveConfirmShowsLongRangeWarning(): void
+    {
+        $this->mockAggregationService->method('createOverviewSnapshot');
+        $this->commandTester->setInputs(['yes']);
+
+        $this->commandTester->execute([
+            'type'         => 'overview',
+            'start_date'   => '2023-01-01',
+            'end_date'     => '2023-06-30',
+            '--batch-size' => '365',
+        ], ['interactive' => true]);
+
+        $output = $this->commandTester->getDisplay();
+
+        // 超過 90 天應顯示耗時警告
+        $this->assertStringContainsString('超過 90 天', $output);
+        $this->assertEquals(0, $this->commandTester->getStatusCode());
+    }
+
+    public function testOuterExceptionHandlerReturnsFailure(): void
+    {
+        // 讓結果輸出階段的日誌呼叫拋出例外，觸發 execute 最外層的 catch
+        $this->mockAggregationService->method('createOverviewSnapshot');
+        $this->mockLogger->method('info')->willThrowException(new Exception('logger exploded'));
+        $this->mockLogger->expects($this->once())->method('error');
+
+        $this->commandTester->execute([
+            'type'       => 'overview',
+            'start_date' => '2023-01-01',
+            'end_date'   => '2023-01-01',
+            '--force'    => true,
+        ], ['interactive' => false]);
+
+        $output = $this->commandTester->getDisplay();
+
+        $this->assertStringContainsString('指令執行失敗', $output);
+        $this->assertStringContainsString('logger exploded', $output);
+        $this->assertEquals(1, $this->commandTester->getStatusCode());
+    }
 }

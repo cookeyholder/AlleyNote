@@ -9,6 +9,7 @@ use Exception;
 use Mockery;
 use PDO;
 use Predis\ClientInterface as RedisClientInterface;
+use ReflectionMethod;
 use Tests\Support\UnitTestCase;
 
 /**
@@ -117,5 +118,33 @@ final class SystemMonitoringServiceTest extends UnitTestCase
 
         $this->assertFalse($status['cache']['redis_connected']);
         $this->assertSame('warning', $status['cache']['status']);
+    }
+
+    public function testGetSystemHealthStatusToleratesMissingTables(): void
+    {
+        // 空資料庫缺少所有資料表時，各項統計應優雅降級而不拋出例外
+        $emptyPdo = new PDO('sqlite::memory:');
+        $emptyPdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $service = new SystemMonitoringService($emptyPdo, null);
+
+        $status = $service->getSystemHealthStatus();
+        assert(is_array($status['database']) && is_array($status['cache']) && is_array($status['activity_summary']));
+
+        $this->assertSame(0, $status['database']['table_count']);
+        $this->assertSame(0, $status['cache']['active_sessions']);
+        $this->assertSame(0, $status['activity_summary']['total_activities_24h']);
+    }
+
+    public function testParseSizeConvertsCommonFormats(): void
+    {
+        $service = new SystemMonitoringService($this->pdo, null);
+        $method = new ReflectionMethod(SystemMonitoringService::class, 'parseSize');
+        $method->setAccessible(true);
+
+        $this->assertSame(268435456, $method->invoke($service, '256M'));
+        $this->assertSame(2147483648, $method->invoke($service, '2G'));
+        $this->assertSame(1024, $method->invoke($service, '1K'));
+        $this->assertSame(512, $method->invoke($service, '512'));
+        $this->assertSame(0, $method->invoke($service, ''));
     }
 }

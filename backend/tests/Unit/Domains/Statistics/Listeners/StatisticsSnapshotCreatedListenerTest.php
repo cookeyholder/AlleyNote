@@ -15,6 +15,7 @@ use App\Infrastructure\Statistics\Services\StatisticsMonitoringService;
 use App\Shared\Events\Contracts\DomainEventInterface;
 use DateTimeImmutable;
 use Mockery;
+use Mockery\MockInterface;
 use PDO;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -31,6 +32,7 @@ final class StatisticsSnapshotCreatedListenerTest extends UnitTestCase
 
     private SlowQueryMonitoringServiceInterface $slowQueryService;
 
+    /** @var LoggerInterface&MockInterface */
     private LoggerInterface $logger;
 
     private StatisticsSnapshotCreatedListener $listener;
@@ -181,5 +183,27 @@ final class StatisticsSnapshotCreatedListenerTest extends UnitTestCase
 
         $this->listener->handle($event);
         $this->addToAssertionCount(1);
+    }
+
+    public function testHandleRethrowsWhenProcessingFails(): void
+    {
+        // 讓第一個 info 日誌日誌拋出例外，驗證 handle 的 catch 區塊會記錄並重新拋出
+        $snapshot = $this->createSnapshot('overview');
+        $event = StatisticsSnapshotCreated::forNewSnapshot($snapshot);
+
+        $loggerFailure = new RuntimeException('logger failure');
+        /** @phpstan-ignore-next-line method.nonObject */
+        $this->logger->shouldReceive('info')
+            ->once()
+            ->andThrow($loggerFailure);
+        /** @phpstan-ignore-next-line method.nonObject */
+        $this->logger->shouldReceive('error')
+            ->once()
+            ->with('Failed to handle StatisticsSnapshotCreated event', Mockery::type('array'));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('logger failure');
+
+        $this->listener->handle($event);
     }
 }

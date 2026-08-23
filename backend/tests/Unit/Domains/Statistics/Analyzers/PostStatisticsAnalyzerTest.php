@@ -99,4 +99,60 @@ class PostStatisticsAnalyzerTest extends UnitTestCase
         $this->assertArrayHasKey('content_analysis', $result->toArray());
         $this->assertArrayHasKey('content_quality', $result->toArray());
     }
+
+    public function testAuthorProductivityWithoutAuthors(): void
+    {
+        $data = $this->validData;
+        $data['top_authors'] = [];
+        $dto = PostStatisticsDTO::fromArray($data);
+        $metrics = $this->analyzer->getEngagementMetrics($dto);
+
+        $this->assertSame(0.0, $metrics['author_productivity']);
+    }
+
+    public function testAuthorProductivityIgnoresInvalidEntries(): void
+    {
+        $data = $this->validData;
+        $data['top_authors'] = [
+            ['author_id' => 1, 'name' => 'John Doe', 'posts_count' => 45],
+            ['author_id' => 2, 'name' => 'Jane Smith', 'posts_count' => 'invalid'],
+        ];
+        $dto = PostStatisticsDTO::fromArray($data);
+        $metrics = $this->analyzer->getEngagementMetrics($dto);
+
+        $this->assertSame(22.5, $metrics['author_productivity']);
+    }
+
+    public function testOptimalLengthScoreBelowOptimalRange(): void
+    {
+        $data = $this->validData;
+        $data['length_statistics'] = ['avg_length' => 250, 'min_length' => 100, 'max_length' => 400];
+        $dto = PostStatisticsDTO::fromArray($data);
+        $analysis = $this->analyzer->getContentAnalysis($dto);
+
+        $this->assertSame(0.5, $analysis['optimal_length_score']);
+    }
+
+    public function testOptimalLengthScoreAboveOptimalRange(): void
+    {
+        $data = $this->validData;
+        $data['length_statistics'] = ['avg_length' => 3000, 'min_length' => 500, 'max_length' => 6000];
+        $dto = PostStatisticsDTO::fromArray($data);
+        $analysis = $this->analyzer->getContentAnalysis($dto);
+
+        $excess = 3000 - 2000;
+        $penalty = min($excess / 2000, 0.5);
+        $expected = max(0.5, 1.0 - $penalty);
+        $this->assertEqualsWithDelta($expected, $analysis['optimal_length_score'], 0.001);
+    }
+
+    public function testContentDiversityWithIdenticalLengths(): void
+    {
+        $data = $this->validData;
+        $data['length_statistics'] = ['avg_length' => 800, 'min_length' => 800, 'max_length' => 800];
+        $dto = PostStatisticsDTO::fromArray($data);
+        $analysis = $this->analyzer->getContentAnalysis($dto);
+
+        $this->assertSame(0.0, $analysis['content_diversity']);
+    }
 }
