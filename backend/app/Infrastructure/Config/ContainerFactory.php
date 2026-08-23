@@ -33,7 +33,7 @@ class ContainerFactory
             $builder->enableCompilation($cacheDir);
             $builder->writeProxiesToFile(true, $proxiesDir);
             // 設定快取效能優化選項（如果 APCu 可用）
-            if (extension_loaded('apcu') && ini_get('apc.enabled')) {
+            if (function_exists('apcu_enabled') && apcu_enabled()) {
                 $builder->enableDefinitionCache();
             }
             // 在生產環境啟用更積極的快取

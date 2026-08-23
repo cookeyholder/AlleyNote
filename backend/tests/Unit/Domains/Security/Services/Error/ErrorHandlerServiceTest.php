@@ -260,7 +260,7 @@ class ErrorHandlerServiceTest extends UnitTestCase
             <?php
             declare(strict_types=1);
             ini_set('display_errors', '0');
-            require '/var/www/html/vendor/autoload.php';
+            require %s;
             $service = new App\Domains\Security\Services\Error\ErrorHandlerService(%s, false);
             undefined_function_that_does_not_exist();
             PHP, true);
@@ -275,7 +275,7 @@ class ErrorHandlerServiceTest extends UnitTestCase
             <?php
             declare(strict_types=1);
             ini_set('display_errors', '0');
-            require '/var/www/html/vendor/autoload.php';
+            require %s;
             $service = new App\Domains\Security\Services\Error\ErrorHandlerService(%s, false);
             $service->globalErrorHandler(E_ERROR, 'Simulated fatal', __FILE__, 42);
             echo 'SHOULD_NOT_BE_REACHED';
@@ -296,7 +296,9 @@ class ErrorHandlerServiceTest extends UnitTestCase
         } else {
             $childDir = $this->logDir;
         }
-        $script = sprintf($template, var_export($childDir, true));
+        // 以動態路徑解析 autoload，避免子進程腳本依賴特定掛載位置
+        $autoloadPath = dirname(__DIR__, 6) . '/vendor/autoload.php';
+        $script = sprintf($template, var_export($autoloadPath, true), var_export($childDir, true));
 
         $path = tempnam(sys_get_temp_dir(), 'fatal_probe_');
         if ($path === false) {

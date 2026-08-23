@@ -289,11 +289,12 @@ namespace Tests\Unit\Shared\Cache\Drivers {
                 ->andReturn(1);
             $this->assertFalse($this->driver->forgetMany(['a', 'b']));
 
-            // del 回傳非整數（交易情境）回傳 false
+            // del 回傳非整數（交易情境）回傳 false；
+            // 以 false 取代 null，相容 phpredis 6.x 的 Redis|int|false 回傳型別
             $this->redis->shouldReceive('del')
                 ->with($prefixed)
                 ->once()
-                ->andReturnNull();
+                ->andReturn(false);
             $this->assertFalse($this->driver->forgetMany(['a', 'b']));
 
             // 例外時回退到單一操作

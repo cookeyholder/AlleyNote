@@ -76,6 +76,11 @@ abstract class AuthApiIntegrationTestCase extends IntegrationTestCase
 
     private static int $ipSequence = 0;
 
+    /**
+     * 測試金鑰暫存目錄（每個 PHP 行程一組，供以路徑優先的金鑰載入使用）.
+     */
+    private static ?string $keyCacheDir = null;
+
     protected Application $app;
 
     protected function setUp(): void
@@ -88,9 +93,13 @@ abstract class AuthApiIntegrationTestCase extends IntegrationTestCase
         $_ENV['JWT_PUBLIC_KEY'] = self::TEST_PUBLIC_KEY;
         putenv('JWT_PRIVATE_KEY=' . self::TEST_PRIVATE_KEY);
         putenv('JWT_PUBLIC_KEY=' . self::TEST_PUBLIC_KEY);
-        unset($_ENV['JWT_PRIVATE_KEY_PATH'], $_ENV['JWT_PUBLIC_KEY_PATH']);
-        putenv('JWT_PRIVATE_KEY_PATH');
-        putenv('JWT_PUBLIC_KEY_PATH');
+        // 金鑰載入以「路徑優先」：CI 環境可能存在內容不同的金鑰檔，
+        // 故將成對常數寫入暫存檔並覆寫路徑設定，確保兩種來源完全一致
+        $paths = self::writeTestKeyFiles();
+        $_ENV['JWT_PRIVATE_KEY_PATH'] = $paths['private'];
+        $_ENV['JWT_PUBLIC_KEY_PATH'] = $paths['public'];
+        putenv('JWT_PRIVATE_KEY_PATH=' . $paths['private']);
+        putenv('JWT_PUBLIC_KEY_PATH=' . $paths['public']);
 
         $this->app = new Application();
         $this->clearAppCache();
@@ -117,6 +126,34 @@ abstract class AuthApiIntegrationTestCase extends IntegrationTestCase
         } catch (Throwable) {
             // 快取清理失敗不影響測試執行
         }
+    }
+
+    /**
+     * 將測試金鑰常數寫入暫存檔並回傳路徑（每個行程僅寫入一次）.
+     *
+     * @return array{private: string, public: string}
+     */
+    private static function writeTestKeyFiles(): array
+    {
+        if (self::$keyCacheDir !== null && is_file(self::$keyCacheDir . '/test_private_key.pem')) {
+            return [
+                'private' => self::$keyCacheDir . '/test_private_key.pem',
+                'public'  => self::$keyCacheDir . '/test_public_key.pem',
+            ];
+        }
+
+        $dir = sys_get_temp_dir() . '/alleynote_jwt_test_keys_' . getmypid();
+        if (!is_dir($dir) && !mkdir($dir, 0o700, true)) {
+            self::fail('無法建立測試金鑰暫存目錄');
+        }
+        file_put_contents($dir . '/test_private_key.pem', self::TEST_PRIVATE_KEY);
+        file_put_contents($dir . '/test_public_key.pem', self::TEST_PUBLIC_KEY);
+        self::$keyCacheDir = $dir;
+
+        return [
+            'private' => $dir . '/test_private_key.pem',
+            'public'  => $dir . '/test_public_key.pem',
+        ];
     }
 
     /**

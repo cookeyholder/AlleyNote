@@ -271,11 +271,13 @@ class SecurityHeaderServiceTest extends UnitTestCase
     private function probeCspEndpoint(string $reportBody, array $config): string
     {
         $encodedConfig = var_export($config, true);
+        // 以動態路徑解析 autoload，避免子進程腳本依賴特定掛載位置
+        $autoloadPath = var_export(dirname(__DIR__, 6) . '/vendor/autoload.php', true);
         $router = <<<PHP
             <?php
             declare(strict_types=1);
             ini_set('display_errors', '0');
-            require '/var/www/html/vendor/autoload.php';
+            require {$autoloadPath};
             // 將警告轉為例外，使 sendToMonitoring 的 catch(Throwable) 可被觸發
             set_error_handler(static function (int \$severity, string \$message, string \$file, int \$line): bool {
                 throw new ErrorException(\$message, 0, \$severity, \$file, \$line);
