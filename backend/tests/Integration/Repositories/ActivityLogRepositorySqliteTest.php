@@ -46,13 +46,13 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
     {
         /** @var array<string, mixed> $args */
         $args = array_merge([
-            'actionType' => ActivityType::LOGIN_SUCCESS,
-            'userId'     => 1,
-            'status'     => ActivityStatus::SUCCESS,
+            'actionType'  => ActivityType::LOGIN_SUCCESS,
+            'userId'      => 1,
+            'status'      => ActivityStatus::SUCCESS,
             'description' => '測試活動',
-            'metadata'   => null,
-            'ipAddress'  => '192.168.1.1',
-            'occurredAt' => new DateTimeImmutable('2026-01-01 10:00:00'),
+            'metadata'    => null,
+            'ipAddress'   => '192.168.1.1',
+            'occurredAt'  => new DateTimeImmutable('2026-01-01 10:00:00'),
         ], $overrides);
 
         return new CreateActivityLogDTO(
@@ -351,7 +351,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
     #[Test]
     public function suspicious_ip_addresses_require_threshold_within_window(): void
     {
-        for ($i = 0; $i < 3; ++$i) {
+        for ($i = 0; $i < 3; $i++) {
             $this->seed([
                 'actionType' => ActivityType::LOGIN_FAILED,
                 'status'     => ActivityStatus::FAILED,
@@ -380,7 +380,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
     #[Test]
     public function legacy_suspicious_ip_query_uses_login_failed_actions(): void
     {
-        for ($i = 0; $i < 2; ++$i) {
+        for ($i = 0; $i < 2; $i++) {
             $this->seed([
                 'actionType' => ActivityType::LOGIN_FAILED,
                 'status'     => ActivityStatus::FAILED,
@@ -406,6 +406,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Conditions cannot be empty for safety');
+
         try {
             $this->repository->deleteByConditions([]);
         } finally {
@@ -498,7 +499,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
     #[Test]
     public function range_queries_for_user_and_ip_apply_limits(): void
     {
-        for ($i = 0; $i < 3; ++$i) {
+        for ($i = 0; $i < 3; $i++) {
             $minute = str_pad((string) ($i + 1), 2, '0', STR_PAD_LEFT);
             $this->seed([
                 'userId'     => 31,
@@ -568,7 +569,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
     public function entities_round_trip_through_database(): void
     {
         $dto = $this->makeDto([
-            'metadata' => ['round' => 'trip'],
+            'metadata'   => ['round' => 'trip'],
             'targetType' => 'post',
             'targetId'   => '42',
         ]);

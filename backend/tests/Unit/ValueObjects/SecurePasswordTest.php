@@ -210,89 +210,84 @@ final class SecurePasswordTest extends UnitTestCase
     }
 
     /**
-     * 測試 calculateScore 各項目得分.
+     * 測試 calculateScore 得分組成.
+     *
+     * 建構子強制要求小寫、大寫與數字，因此有效密碼的最低得分為
+     * 長度 20 + 三類字元 45 = 65；含符號再加 15。
      */
     public function test_calculate_score_components(): void
     {
-        // 只包含長度得分（8字元）：20分
-        $password = new SecurePassword('aB1!');
-        $this->assertEquals(20, $password->calculateScore(), '8字元應該得到 20 分的長度得分');
+        // 8 字元純英數：20 + 15 + 15 + 15 = 65 分
+        $password = new SecurePassword('Km7Tx2Qb');
+        $this->assertSame(65, $password->calculateScore(), '8字元純英數應為 65 分');
 
-        // 只包含長度得分（12字元）：20 + 10 = 30 分
-        $password = new SecurePassword('aB1!xyzt');
-        $this->assertEquals(30, $password->calculateScore(), '12字元應該得到 30 分');
+        // 10 字元含符號：20 + 60 = 80 分（未達 12 字元不加長度分）
+        $password = new SecurePassword('Tq7#Wz2$Km');
+        $this->assertSame(80, $password->calculateScore(), '10字元全類型應為 80 分');
 
-        // 只包含長度得分（16字元）：20 + 10 + 10 = 40 分
-        $password = new SecurePassword('aB1!xyzt9#');
-        $this->assertEquals(40, $password->calculateScore(), '16字元應該得到 40 分');
+        // 12 字元含符號：20 + 10 + 60 = 90 分
+        $password = new SecurePassword('Vb5&Nt8*Rq1%');
+        $this->assertSame(90, $password->calculateScore(), '12字元全類型應為 90 分');
 
-        // 加入字母類型得分
-        $password = new SecurePassword('Ab1!');
-        $this->assertEquals(35, $password->calculateScore(), '有小寫、大寫、數字的 4字元應該是 20+15=35');
+        // 16 字元含符號：20 + 10 + 10 + 60 = 100 分
+        $password = new SecurePassword('Hn4@Jk7!Rt2#Mv8$');
+        $this->assertSame(100, $password->calculateScore(), '16字元全類型應為滿分 100');
 
-        // 加入符號得分
-        $password = new SecurePassword('Ab1!@');
-        $this->assertEquals(50, $password->calculateScore(), '有小寫、大寫、數字、符號的 5字元應該是 20+15+15=50');
-
-        // 扣分：連續字元
-        $password = new SecurePassword('Ab1!cdef');
-        $this->assertEquals(40, $password->calculateScore(), '有連續字母扣 10 分：50-10=40');
-
-        // 扣分：重複字元
-        $password = new SecurePassword('Ab1!!');
-        // '!' 重複 2 次不符合 /(.)\\1{2,}/ 至少 3 次，所以不扣分
-        // 改用真正的重複：aaa
-        $password = new SecurePassword('Aa1!aaa');
-        // 這裡很複雜，改直接測 score 是否為預期值
-        $this->assertGreaterThanOrEqual(0, $password->calculateScore());
+        // 8 字元全類型：20 + 60 = 80 分
+        $password = new SecurePassword('Xk9@Ps1!');
+        $this->assertSame(80, $password->calculateScore(), '8字元全類型應為 80 分');
     }
 
     /**
-     * 測試 getStrengthLevel 特定分數對應.
+     * 測試 getStrengthLevel 等級對應.
+     *
+     * 建構子限制使 very-weak、weak、medium 無法透過合法密碼產生
+     * （最低得分為 65），因此僅能驗證 strong 與 very-strong 兩級。
      */
     public function test_strength_level_at_boundaries(): void
     {
-        // 0-19 分：very-weak
-        $password = new SecurePassword('a!');
-        $this->assertEquals('very-weak', $password->getStrengthLevel());
+        // 65 分落在 strong 區間（60-79）
+        $password = new SecurePassword('Km7Tx2Qb');
+        $this->assertSame('strong', $password->getStrengthLevel());
 
-        // 20-39 分：weak
-        $password = new SecurePassword('aB1!');
-        $this->assertEquals('weak', $password->getStrengthLevel());
-
-        // 40-59 分：medium
-        $password = new SecurePassword('aB1!@');
-        $this->assertEquals('medium', $password->getStrengthLevel());
-
-        // 60-79 分：strong
-        $password = new SecurePassword('aB1!@#');
-        $this->assertEquals('strong', $password->getStrengthLevel());
-
-        // 80-100 分：very-strong
-        $password = new SecurePassword('aB1!@#C');
-        $this->assertEquals('very-strong', $password->getStrengthLevel());
+        // 80 分落在 very-strong 區間（80 以上）
+        $password = new SecurePassword('Xk9@Ps1!');
+        $this->assertSame('very-strong', $password->getStrengthLevel());
     }
 
     /**
-     * 測試 constructor 邊界情境.
+     * 測試 constructor 長度邊界.
      */
     public function test_constructor_edge_cases(): void
     {
-        // 正確長度下限：8字元
-        $password = new SecurePassword('aB1!cde2');
-        $this->assertEquals('aB1!cde2', $password->getValue());
+        // 下限：恰好 8 字元可通過
+        $password = new SecurePassword('Xk9@Ps1!');
+        $this->assertSame('Xk9@Ps1!', $password->getValue());
 
-        // 正確長度上限：128字元
-        $password = new SecurePassword(str_repeat('a', 128));
-        $this->assertEquals(str_repeat('a', 128), $password->getValue());
+        // 上限：恰好 128 字元可通過（重複片段不形成連續或重複字元）
+        $long = str_repeat('aB1!', 32);
+        $password = new SecurePassword($long);
+        $this->assertSame($long, $password->getValue());
 
-        // 低於下限：7字元
-        $this->expectException(ValidationException::class);
-        new SecurePassword('aB1!c'); // 只有 7 字元
+        // 低於下限：7 字元拋出長度錯誤
+        try {
+            new SecurePassword('aB1!ab');
+            $this->fail('7 字元密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertNotEmpty($errors);
+            $this->assertStringContainsString('至少需要 8', (string) $errors[0]);
+        }
 
-        // 超過上限：129字元
-        $this->expectException(ValidationException::class);
-        new SecurePassword(str_repeat('a', 129));
+        // 超過上限：129 字元拋出長度錯誤
+        try {
+            new SecurePassword(str_repeat('aB1!', 32) . 'aB1!');
+            $this->fail('129 字元密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertNotEmpty($errors);
+            $this->assertStringContainsString('不能超過 128', (string) $errors[0]);
+        }
     }
 
     /**
@@ -300,21 +295,35 @@ final class SecurePasswordTest extends UnitTestCase
      */
     public function test_sequential_chars_boundary(): void
     {
-        // '1abcdef2' 是 8 字元以上，包含連續字母 'abcdef'
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('密碼不能包含連續的英文字母或數字');
-        new SecurePassword('1abcdef2');
+        // 遞增字母序列 abcdefg 應被拒絕，且為第一筆錯誤
+        try {
+            new SecurePassword('Abcdefg1');
+            $this->fail('含遞增字母序列的密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertStringContainsString('連續', (string) ($errors[0] ?? ''));
+        }
 
-        // '12345678' 是連續數字 (8字元)
-        $this->expectException(ValidationException::class);
-        new SecurePassword('12345678!');
+        // 遞減字母序列 zyxwvu 應被拒絕
+        try {
+            new SecurePassword('Azyxwvu9');
+            $this->fail('含遞減字母序列的密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertStringContainsString('連續', (string) ($errors[0] ?? ''));
+        }
 
-        // 'cba' 是連續遞減字母 (需搭配足夠長度)
-        $this->expectException(ValidationException::class);
-        new SecurePassword('1cba2!!'); // 7字元... 不夠，改 '1cba2!!!' 8字元
+        // 遞增數字序列 123456 應被拒絕
+        try {
+            new SecurePassword('Qw123456!');
+            $this->fail('含遞增數字序列的密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertStringContainsString('連續', (string) ($errors[0] ?? ''));
+        }
 
-        // 沒有連續字元
-        $password = new SecurePassword('a1b2c3d!');
+        // 相鄰但不連續的字元（m-n-p 跳過 o）應可通過
+        $password = new SecurePassword('aB1!mnp!');
         $this->assertInstanceOf(SecurePassword::class, $password);
     }
 
@@ -323,16 +332,26 @@ final class SecurePasswordTest extends UnitTestCase
      */
     public function test_repeating_chars_boundary(): void
     {
-        // 3 個相同字元
-        $this->expectException(ValidationException::class);
-        new SecurePassword('aB1!aaa');
+        // 3 個相同字元應被拒絕，且為第一筆錯誤
+        try {
+            new SecurePassword('aB1!aaa!');
+            $this->fail('含 3 個相同字元的密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertStringContainsString('重複', (string) ($errors[0] ?? ''));
+        }
 
-        // 4 個相同字元
-        $this->expectException(ValidationException::class);
-        new SecurePassword('aB1!aaaa');
+        // 4 個相同字元同樣應被拒絕
+        try {
+            new SecurePassword('aB1!aaaa!');
+            $this->fail('含 4 個相同字元的密碼應被拒絕');
+        } catch (ValidationException $e) {
+            $errors = $e->getErrors()['password'] ?? [];
+            $this->assertStringContainsString('重複', (string) ($errors[0] ?? ''));
+        }
 
-        // 沒有重複的 3+ 個字元
-        $password = new SecurePassword('aB1!abc!');
+        // 僅 2 個相同字元不觸發規則，可通過
+        $password = new SecurePassword('aB1!mnp!');
         $this->assertInstanceOf(SecurePassword::class, $password);
     }
 
@@ -341,36 +360,18 @@ final class SecurePasswordTest extends UnitTestCase
      */
     public function test_strength_consistency(): void
     {
-        // 同一把密碼，calculateScore 與 getStrengthLevel 應該一致
-        $passwords = [
-            'a!'        => 'very-weak',
-            'aB1!'      => 'weak',
-            'aB1!@'     => 'medium',
-            'aB1!@#'    => 'strong',
-            'aB1!@#C'   => 'very-strong',
+        // 分數與等級必須對應到相同的區間定義
+        $cases = [
+            'Km7Tx2Qb'         => ['score' => 65, 'level' => 'strong'],
+            'Tq7#Wz2$Km'       => ['score' => 80, 'level' => 'very-strong'],
+            'Vb5&Nt8*Rq1%'     => ['score' => 90, 'level' => 'very-strong'],
+            'Hn4@Jk7!Rt2#Mv8$' => ['score' => 100, 'level' => 'very-strong'],
         ];
 
-        foreach ($passwords as $pw => $expectedLevel) {
+        foreach ($cases as $pw => $expected) {
             $obj = new SecurePassword($pw);
-            $score = $obj->calculateScore();
-            $level = $obj->getStrengthLevel();
-            $this->assertGreaterThanOrEqual(0, $score);
-            $this->assertContains($level, ['very-weak', 'weak', 'medium', 'strong', 'very-strong']);
-            // 驗證分數與等級的區間一致性
-            if ($level === 'very-weak') {
-                $this->assertLessThan(20, $score);
-            } elseif ($level === 'weak') {
-                $this->assertGreaterThanOrEqual(20, $score);
-                $this->assertLessThan(40, $score);
-            } elseif ($level === 'medium') {
-                $this->assertGreaterThanOrEqual(40, $score);
-                $this->assertLessThan(60, $score);
-            } elseif ($level === 'strong') {
-                $this->assertGreaterThanOrEqual(60, $score);
-                $this->assertLessThan(80, $score);
-            } elseif ($level === 'very-strong') {
-                $this->assertGreaterThanOrEqual(80, $score);
-            }
+            $this->assertSame($expected['score'], $obj->calculateScore(), "{$pw} 分數不符");
+            $this->assertSame($expected['level'], $obj->getStrengthLevel(), "{$pw} 等級不符");
         }
     }
 }

@@ -224,8 +224,8 @@ class TrendAnalysisProcessor
         $overallMean = array_sum($pattern) / $seasonLength;
         // 轉換為調整係數
         for ($i = 0; $i < $seasonLength; $i++) {
-            // 使用寬鬆比較，避免 0.0 !== 0 導致除以零
-            if ($overallMean != 0) {
+            // 以 epsilon 判斷零值，避免 0.0 與 0 型別差異導致除以零
+            if (abs($overallMean) > PHP_FLOAT_EPSILON) {
                 $pattern[$i] = $pattern[$i] / $overallMean;
             } else {
                 $pattern[$i] = 1.0;
