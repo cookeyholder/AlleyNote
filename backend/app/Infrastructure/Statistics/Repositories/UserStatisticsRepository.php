@@ -187,7 +187,7 @@ final class UserStatisticsRepository implements UserStatisticsRepositoryInterfac
             $sql = 'SELECT
                         COUNT(*) as total_logins,
                         COUNT(DISTINCT user_id) as unique_users,
-                        ROUND(COUNT(*) / NULLIF(COUNT(DISTINCT user_id), 0), 2) as avg_logins_per_user
+                        ROUND(CAST(COUNT(*) AS REAL) / NULLIF(COUNT(DISTINCT user_id), 0), 2) as avg_logins_per_user
                     FROM user_activity_logs
                     WHERE action_type = "login"
                     AND created_at >= :start_date AND created_at <= :end_date';

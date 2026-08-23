@@ -312,7 +312,7 @@ class SecurityHeaderService implements SecurityHeaderServiceInterface
     private function isHTTPS(): bool
     {
         return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            || ($_SERVER['SERVER_PORT'] ?? null) === '443'
+            || (string) ($_SERVER['SERVER_PORT'] ?? '') === '443'
             || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
 
