@@ -68,9 +68,13 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
         $this->assertTrue($result);
 
         $stmt = $this->pdo->query('SELECT * FROM statistics_slow_queries');
+        assert($stmt !== false);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $this->assertCount(1, $rows);
+        assert(isset($rows[0]) && is_array($rows[0]));
+        $this->assertIsString($rows[0]['query_type']);
         $this->assertSame('posts_query', $rows[0]['query_type']);
+        $this->assertIsNumeric($rows[0]['execution_time']);
         $this->assertSame(1.5, (float) $rows[0]['execution_time']);
     }
 
@@ -79,13 +83,19 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
         $this->pdo->exec("INSERT INTO test_items (name) VALUES ('Item A'), ('Item B')");
 
         $results = $this->service->executeAndMonitor('SELECT * FROM test_items WHERE name = :name', ['name' => 'Item A'], 'items_fetch');
+        assert(is_array($results));
         $this->assertCount(1, $results);
+        assert(isset($results[0]) && is_array($results[0]));
         $this->assertSame('Item A', $results[0]['name']);
 
         $stmt = $this->pdo->query('SELECT * FROM statistics_query_performance');
+        assert($stmt !== false);
         $perf = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $this->assertCount(1, $perf);
+        assert(isset($perf[0]) && is_array($perf[0]));
+        $this->assertIsString($perf[0]['query_type']);
         $this->assertSame('items_fetch', $perf[0]['query_type']);
+        $this->assertIsNumeric($perf[0]['result_count']);
         $this->assertSame(1, (int) $perf[0]['result_count']);
     }
 
@@ -103,9 +113,13 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
         $this->service->recordSlowQuery('type_a', 'SELECT 2', 2.0);
         $this->service->recordSlowQuery('type_b', 'SELECT 3', 1.5);
 
+        /** @var list<array<string, mixed>> $stats */
         $stats = $this->service->getSlowQueryStats(7);
         $this->assertCount(2, $stats);
+        assert(count($stats) === 2);
+        $this->assertIsString($stats[0]['query_type']);
         $this->assertSame('type_a', $stats[0]['query_type']);
+        $this->assertIsNumeric($stats[0]['slow_query_count']);
         $this->assertSame(2, (int) $stats[0]['slow_query_count']);
     }
 
@@ -118,9 +132,13 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
                 ('hash1', 'post_type', 1.5, 10, datetime('now'))
         ");
 
+        /** @var list<array<string, mixed>> $trend */
         $trend = $this->service->getPerformanceTrend('post_type', 30);
         $this->assertNotEmpty($trend);
+        assert($trend !== []);
+        $this->assertIsNumeric($trend[0]['query_count']);
         $this->assertSame(2, (int) $trend[0]['query_count']);
+        $this->assertIsNumeric($trend[0]['slow_count']);
         $this->assertSame(1, (int) $trend[0]['slow_count']);
     }
 
@@ -129,8 +147,11 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
         $this->service->recordSlowQuery('type1', 'SELECT 1', 1.2, ['p' => 1]);
         $this->service->recordSlowQuery('type2', 'SELECT 2', 3.5, ['p' => 2]);
 
+        /** @var list<array<string, mixed>> $slowest */
         $slowest = $this->service->getSlowestQueries(5, 7);
         $this->assertCount(2, $slowest);
+        assert(count($slowest) === 2);
+        $this->assertIsNumeric($slowest[0]['execution_time']);
         $this->assertSame(3.5, (float) $slowest[0]['execution_time']);
     }
 
@@ -199,8 +220,12 @@ final class SlowQueryMonitoringServiceTest extends UnitTestCase
         $deleted = $this->service->cleanupOldRecords(30);
         $this->assertSame(2, $deleted);
 
-        $perfCount = (int) $this->pdo->query('SELECT COUNT(*) FROM statistics_query_performance')->fetchColumn();
-        $slowCount = (int) $this->pdo->query('SELECT COUNT(*) FROM statistics_slow_queries')->fetchColumn();
+        $perfStmt = $this->pdo->query('SELECT COUNT(*) FROM statistics_query_performance');
+        assert($perfStmt !== false);
+        $perfCount = (int) $perfStmt->fetchColumn();
+        $slowStmt = $this->pdo->query('SELECT COUNT(*) FROM statistics_slow_queries');
+        assert($slowStmt !== false);
+        $slowCount = (int) $slowStmt->fetchColumn();
 
         $this->assertSame(1, $perfCount);
         $this->assertSame(1, $slowCount);

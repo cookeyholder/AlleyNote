@@ -58,7 +58,7 @@ class RouteTest extends UnitTestCase
 
         // 測試 addMiddlewares 混用字串與實例
         $middlewareMock2 = Mockery::mock(MiddlewareInterface::class);
-        $route->addMiddlewares(['auth', $middlewareMock2]);
+        $route->addMiddlewares(['auth', $middlewareMock2]); // @phpstan-ignore argument.type (刻意混用字串別名與實例，驗證實作支援的行為)
 
         $this->assertCount(3, $route->getMiddlewares());
         $this->assertEquals('auth', $route->getMiddlewares()[1]);
@@ -153,7 +153,7 @@ class RouteTest extends UnitTestCase
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage("參數 'id' 必須是純量值");
-        $route->generateUrl(['id' => ['not', 'scalar']]);
+        $route->generateUrl(['id' => ['not', 'scalar']]); // @phpstan-ignore argument.type (刻意傳入非純量參數以測試例外路徑)
     }
 
     /**

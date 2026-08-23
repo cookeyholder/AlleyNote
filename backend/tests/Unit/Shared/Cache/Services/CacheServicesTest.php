@@ -279,7 +279,6 @@ class CacheServicesTest extends UnitTestCase
 
             // 測試統計
             $stats = $strategy->getStats();
-            $this->assertIsArray($stats);
             $this->assertArrayHasKey('cache_decisions', $stats);
             $strategy->resetStats();
             $this->assertEquals(0, $strategy->getStats()['cache_decisions']);

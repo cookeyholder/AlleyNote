@@ -28,6 +28,7 @@ use App\Domains\Post\Contracts\PostRepositoryInterface;
 use App\Domains\Post\Contracts\PostServiceInterface;
 use App\Domains\Post\Repositories\PostRepository;
 use App\Domains\Post\Services\PostService;
+use App\Domains\Security\Contracts\ActivityLoggingServiceInterface;
 use App\Domains\Security\Contracts\CsrfProtectionServiceInterface;
 use App\Domains\Security\Contracts\IpRepositoryInterface;
 use App\Domains\Security\Contracts\LoggingSecurityServiceInterface;

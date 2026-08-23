@@ -112,7 +112,11 @@ final class StatisticsPerformanceReportGeneratorTest extends UnitTestCase
         $this->assertArrayHasKey('recommendations', $report);
         $this->assertArrayHasKey('generated_at', $report);
 
+        $this->assertIsArray($report['test_metadata']);
         $this->assertSame(10, $report['test_metadata']['test_data_count']);
+
+        $this->assertIsArray($report['query_performance']);
+        $this->assertIsArray($report['query_performance']['query_tests']);
         $this->assertNotEmpty($report['query_performance']['query_tests']);
         $this->assertArrayHasKey('posts_count_by_source', $report['query_performance']['query_tests']);
         $this->assertArrayHasKey('overall_performance', $report['query_performance']);

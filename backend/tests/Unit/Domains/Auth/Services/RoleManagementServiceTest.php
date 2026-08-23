@@ -87,9 +87,13 @@ final class RoleManagementServiceTest extends UnitTestCase
             ->andReturn($permissions);
 
         $result = $this->service->getRole(1);
-        $this->assertSame('editor', $result['role']['name']);
+        $roleData = $result['role'];
+        $this->assertIsArray($roleData);
+        $this->assertSame('editor', $roleData['name']);
         $this->assertSame([10], $result['permission_ids']);
-        $this->assertCount(1, $result['permissions']);
+        $permissions = $result['permissions'];
+        $this->assertIsArray($permissions);
+        $this->assertCount(1, $permissions);
     }
 
     /**

@@ -121,8 +121,9 @@ final class UserManagementServiceTest extends UnitTestCase
         $this->userRepository
             ->shouldReceive('create')
             ->once()
-            ->with(Mockery::on(function ($data) {
-                return $data['username'] === 'newuser'
+            ->with(Mockery::on(function ($data): bool {
+                return is_array($data)
+                    && $data['username'] === 'newuser'
                     && $data['email'] === 'newuser@example.com'
                     && !empty($data['password']);
             }))
@@ -232,8 +233,9 @@ final class UserManagementServiceTest extends UnitTestCase
         $this->userRepository
             ->shouldReceive('update')
             ->once()
-            ->with('1', Mockery::on(function ($data) {
-                return $data['username'] === 'updatedname'
+            ->with('1', Mockery::on(function ($data): bool {
+                return is_array($data)
+                    && $data['username'] === 'updatedname'
                     && $data['email'] === 'updated@example.com'
                     && !empty($data['password']);
             }))
@@ -508,7 +510,7 @@ final class UserManagementServiceTest extends UnitTestCase
         $this->userRepository
             ->shouldReceive('update')
             ->once()
-            ->with('1', Mockery::on(fn($data) => !empty($data['password'])))
+            ->with('1', Mockery::on(fn($data): bool => is_array($data) && !empty($data['password'])))
             ->andReturn(['id' => 1]);
 
         $result = $this->service->resetPassword(1, 'NewValidPass123!');
@@ -561,7 +563,7 @@ final class UserManagementServiceTest extends UnitTestCase
         $this->userRepository
             ->shouldReceive('update')
             ->once()
-            ->with('1', Mockery::on(fn($data) => !empty($data['password'])))
+            ->with('1', Mockery::on(fn($data): bool => is_array($data) && !empty($data['password'])))
             ->andReturn(['id' => 1]);
 
         $result = $this->service->changePassword(1, 'OldPassword123!', 'NewPassword456!');

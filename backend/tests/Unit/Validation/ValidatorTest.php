@@ -863,7 +863,9 @@ class ValidatorTest extends UnitTestCase
         $result = $this->validator->validate([], ['field' => 'required']);
         $this->assertFalse($result->isValid());
         $this->assertArrayHasKey('field', $result->getErrors());
-        $this->assertLessThan(100, count($result->getErrors()['field']), '應該有錯誤訊息');
+        $fieldErrors = $result->getErrors()['field'];
+        $this->assertIsArray($fieldErrors);
+        $this->assertLessThan(100, count($fieldErrors), '應該有錯誤訊息');
     }
 
     /**

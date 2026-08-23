@@ -55,20 +55,78 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
             'occurredAt'  => new DateTimeImmutable('2026-01-01 10:00:00'),
         ], $overrides);
 
+        // 型別窄化：合併 overrides 後值為 mixed，先以斷言收斂再傳入 DTO
+        $actionType = $args['actionType'];
+        $this->assertInstanceOf(ActivityType::class, $actionType);
+
+        $userId = $args['userId'];
+        if ($userId !== null) {
+            $this->assertIsInt($userId);
+        }
+
+        $sessionId = $args['sessionId'] ?? null;
+        if ($sessionId !== null) {
+            $this->assertIsString($sessionId);
+        }
+
+        $status = $args['status'];
+        $this->assertInstanceOf(ActivityStatus::class, $status);
+
+        $targetType = $args['targetType'] ?? null;
+        if ($targetType !== null) {
+            $this->assertIsString($targetType);
+        }
+
+        $targetId = $args['targetId'] ?? null;
+        if ($targetId !== null) {
+            $this->assertIsString($targetId);
+        }
+
+        $description = $args['description'];
+        if ($description !== null) {
+            $this->assertIsString($description);
+        }
+
+        /** @var array<string, mixed>|null $metadata */
+        $metadata = $args['metadata'];
+        if ($metadata !== null) {
+            $this->assertIsArray($metadata);
+        }
+
+        $ipAddress = $args['ipAddress'];
+        if ($ipAddress !== null) {
+            $this->assertIsString($ipAddress);
+        }
+
+        // 有非空字串預設值，型別必不為 null，直接斷言字串即可
+        $userAgent = $args['userAgent'] ?? 'PHPUnit';
+        $this->assertIsString($userAgent);
+
+        $requestMethod = $args['requestMethod'] ?? 'GET';
+        $this->assertIsString($requestMethod);
+
+        $requestPath = $args['requestPath'] ?? '/test';
+        $this->assertIsString($requestPath);
+
+        $occurredAt = $args['occurredAt'];
+        if ($occurredAt !== null) {
+            $this->assertInstanceOf(DateTimeImmutable::class, $occurredAt);
+        }
+
         return new CreateActivityLogDTO(
-            actionType: $args['actionType'],
-            userId: $args['userId'],
-            sessionId: $args['sessionId'] ?? null,
-            status: $args['status'],
-            targetType: $args['targetType'] ?? null,
-            targetId: $args['targetId'] ?? null,
-            description: $args['description'],
-            metadata: $args['metadata'],
-            ipAddress: $args['ipAddress'],
-            userAgent: $args['userAgent'] ?? 'PHPUnit',
-            requestMethod: $args['requestMethod'] ?? 'GET',
-            requestPath: $args['requestPath'] ?? '/test',
-            occurredAt: $args['occurredAt'],
+            actionType: $actionType,
+            userId: $userId,
+            sessionId: $sessionId,
+            status: $status,
+            targetType: $targetType,
+            targetId: $targetId,
+            description: $description,
+            metadata: $metadata,
+            ipAddress: $ipAddress,
+            userAgent: $userAgent,
+            requestMethod: $requestMethod,
+            requestPath: $requestPath,
+            occurredAt: $occurredAt,
         );
     }
 
@@ -81,6 +139,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
      */
     private function seed(array $overrides = []): array
     {
+        /** @var array<string, mixed>|null $created */
         $created = $this->repository->create($this->makeDto($overrides));
         if ($created === null) {
             throw new RuntimeException('seed 失敗');
@@ -111,8 +170,11 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $this->assertSame('/test', $result['request_path']);
 
         // 驗證資料庫內容確實存在
-        $count = (int) $this->db->query('SELECT COUNT(*) FROM user_activity_logs')->fetchColumn();
-        $this->assertSame(1, $count);
+        $stmt = $this->db->query('SELECT COUNT(*) FROM user_activity_logs');
+        $this->assertNotFalse($stmt);
+        $countColumn = $stmt->fetchColumn();
+        $this->assertIsInt($countColumn);
+        $this->assertSame(1, $countColumn);
     }
 
     #[Test]
@@ -136,8 +198,11 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $this->assertSame(3, $this->repository->createBatch($dtos));
         $this->assertSame(0, $this->repository->createBatch([]));
 
-        $count = (int) $this->db->query('SELECT COUNT(*) FROM user_activity_logs')->fetchColumn();
-        $this->assertSame(3, $count);
+        $stmt = $this->db->query('SELECT COUNT(*) FROM user_activity_logs');
+        $this->assertNotFalse($stmt);
+        $countColumn = $stmt->fetchColumn();
+        $this->assertIsInt($countColumn);
+        $this->assertSame(3, $countColumn);
     }
 
     #[Test]
@@ -161,11 +226,17 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
     {
         $row = $this->seed();
 
-        $foundById = $this->repository->findById((int) $row['id']);
+        $rowId = $row['id'];
+        $this->assertIsInt($rowId);
+
+        $foundById = $this->repository->findById($rowId);
         $this->assertNotNull($foundById);
         $this->assertSame($row['uuid'], $foundById['uuid']);
 
-        $foundByUuid = $this->repository->findByUuid((string) $row['uuid']);
+        $rowUuid = $row['uuid'];
+        $this->assertIsString($rowUuid);
+
+        $foundByUuid = $this->repository->findByUuid($rowUuid);
         $this->assertNotNull($foundByUuid);
         $this->assertSame($row['id'], $foundByUuid['id']);
 
@@ -184,9 +255,13 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $pageTwo = $this->repository->findAll(2, 2);
 
         $this->assertCount(2, $pageOne);
-        $this->assertSame('newest', $pageOne[0]['description']);
+        $pageOneFirst = $pageOne[0];
+        $this->assertIsArray($pageOneFirst);
+        $this->assertSame('newest', $pageOneFirst['description']);
         $this->assertCount(1, $pageTwo);
-        $this->assertSame('oldest', $pageTwo[0]['description']);
+        $pageTwoFirst = $pageTwo[0];
+        $this->assertIsArray($pageTwoFirst);
+        $this->assertSame('oldest', $pageTwoFirst['description']);
     }
 
     #[Test]
@@ -325,12 +400,15 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $this->assertCount(2, $stats);
         $loginRow = null;
         foreach ($stats as $stat) {
+            $this->assertIsArray($stat);
             if ($stat['action_type'] === 'login_success') {
                 $loginRow = $stat;
             }
         }
         $this->assertNotNull($loginRow);
-        $this->assertSame(2, (int) ($loginRow['count'] ?? 0));
+        $loginRowCount = $loginRow['count'] ?? 0;
+        $this->assertIsInt($loginRowCount);
+        $this->assertSame(2, $loginRowCount);
     }
 
     #[Test]
@@ -344,8 +422,12 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $popular = $this->repository->getPopularActivityTypes(1);
 
         $this->assertCount(1, $popular);
-        $this->assertSame('login_success', $popular[0]['action_type']);
-        $this->assertSame(3, (int) ($popular[0]['count'] ?? 0));
+        $topRow = $popular[0];
+        $this->assertIsArray($topRow);
+        $this->assertSame('login_success', $topRow['action_type']);
+        $topRowCount = $topRow['count'] ?? 0;
+        $this->assertIsInt($topRowCount);
+        $this->assertSame(3, $topRowCount);
     }
 
     #[Test]
@@ -369,8 +451,12 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $suspicious = $this->repository->getSuspiciousIpAddresses(3, new DateTimeImmutable('2026-06-01 00:00:00'));
 
         $this->assertCount(1, $suspicious);
-        $this->assertSame('203.0.113.77', $suspicious[0]['ip_address']);
-        $this->assertSame(3, (int) ($suspicious[0]['failure_count'] ?? 0));
+        $suspiciousFirst = $suspicious[0];
+        $this->assertIsArray($suspiciousFirst);
+        $this->assertSame('203.0.113.77', $suspiciousFirst['ip_address']);
+        $failureCount = $suspiciousFirst['failure_count'] ?? 0;
+        $this->assertIsInt($failureCount);
+        $this->assertSame(3, $failureCount);
 
         // 時間窗口之外的失敗不計入
         $outsideWindow = $this->repository->getSuspiciousIpAddresses(1, new DateTimeImmutable('2026-07-01 00:00:00'));
@@ -391,18 +477,24 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         $results = $this->repository->getSuspiciousIPs(2);
 
         $this->assertCount(1, $results);
-        $this->assertSame('192.0.2.66', $results[0]['ip_address']);
-        $this->assertSame(2, (int) ($results[0]['failed_attempts'] ?? 0));
+        $legacyFirst = $results[0];
+        $this->assertIsArray($legacyFirst);
+        $this->assertSame('192.0.2.66', $legacyFirst['ip_address']);
+        $failedAttempts = $legacyFirst['failed_attempts'] ?? 0;
+        $this->assertIsInt($failedAttempts);
+        $this->assertSame(2, $failedAttempts);
     }
 
     #[Test]
     public function delete_helpers_remove_expected_rows_only(): void
     {
         $this->seed(['description' => 'keep-me']);
-        $failedId = $this->seed([
+        $failedRow = $this->seed([
             'actionType' => ActivityType::ACCESS_DENIED,
             'status'     => ActivityStatus::FAILED,
-        ])['id'];
+        ]);
+        $failedId = $failedRow['id'];
+        $this->assertIsInt($failedId);
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Conditions cannot be empty for safety');
@@ -418,7 +510,7 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         // 條件刪除僅移除符合的列
         $removed = $this->repository->deleteByConditions(['status' => 'failed']);
         $this->assertSame(1, $removed);
-        $this->assertNull($this->repository->findById((int) $failedId));
+        $this->assertNull($this->repository->findById($failedId));
 
         // 刪除「未來之前」的所有紀錄
         $remaining = $this->repository->deleteOldRecords(new DateTimeImmutable('+1 day'));
@@ -455,7 +547,9 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
         );
 
         $this->assertCount(1, $results);
-        $this->assertSame($match['uuid'], $results[0]['uuid']);
+        $searchFirst = $results[0];
+        $this->assertIsArray($searchFirst);
+        $this->assertSame($match['uuid'], $searchFirst['uuid']);
 
         $count = $this->repository->getSearchCount(
             searchTerm: '特徵字串',
@@ -481,7 +575,9 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
 
         $allForUser = $this->repository->findByUserIdAndTimeWindow(21);
         $this->assertCount(1, $allForUser);
-        $this->assertSame(21, $allForUser[0]['user_id']);
+        $allForUserFirst = $allForUser[0];
+        $this->assertIsArray($allForUserFirst);
+        $this->assertSame(21, $allForUserFirst['user_id']);
 
         $withinWindow = $this->repository->findByUserIdAndTimeWindow(
             21,
@@ -516,7 +612,11 @@ class ActivityLogRepositorySqliteTest extends IntegrationTestCase
             0,
         );
         $this->assertCount(2, $userRange);
-        $this->assertSame('10:03:00', substr((string) $userRange[0]['occurred_at'], 11));
+        $userRangeFirst = $userRange[0];
+        $this->assertIsArray($userRangeFirst);
+        $occurredAtValue = $userRangeFirst['occurred_at'];
+        $this->assertIsString($occurredAtValue);
+        $this->assertSame('10:03:00', substr($occurredAtValue, 11));
 
         $ipRange = $this->repository->findByIpAddressAndTimeRange(
             '198.51.100.90',

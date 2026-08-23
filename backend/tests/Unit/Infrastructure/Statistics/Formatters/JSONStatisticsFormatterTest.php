@@ -40,6 +40,8 @@ final class JSONStatisticsFormatterTest extends UnitTestCase
 
         $this->assertStringContainsString("\n", $json);
         $decoded = json_decode($json, true);
+        $this->assertIsArray($decoded);
+        $this->assertIsArray($decoded['metadata']);
         $this->assertSame('json', $decoded['metadata']['format']);
         $this->assertSame($data, $decoded['data']);
     }
@@ -51,6 +53,7 @@ final class JSONStatisticsFormatterTest extends UnitTestCase
 
         $this->assertStringNotContainsString("\n", $json);
         $decoded = json_decode($json, true);
+        $this->assertIsArray($decoded);
         $this->assertSame($data, $decoded['data']);
     }
 

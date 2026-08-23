@@ -98,7 +98,6 @@ final class TimeSeriesProcessorTest extends UnitTestCase
     public function testGetDefaultColors(): void
     {
         $colors = $this->processor->getDefaultColors();
-        $this->assertIsArray($colors);
         $this->assertContains('#FF6384', $colors);
     }
 

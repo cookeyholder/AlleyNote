@@ -243,7 +243,7 @@ class CategoryProcessor
     /**
      * 處理比較分析資料（多個分類系列）.
      *
-     * @param array<string, array<array{category: string, value: float}>> $multiSeriesData
+     * @param array<int|string, array<array{category: string, value: float}>> $multiSeriesData
      * @param array<string, mixed> $options
      */
     public function processComparisonData(
@@ -299,7 +299,7 @@ class CategoryProcessor
     /**
      * 處理分組堆疊長條圖資料.
      *
-     * @param array<string, array<array{category: string, value: float}>> $stackedData
+     * @param array<int|string, array<array{category: string, value: float}>> $stackedData
      * @param array<string, mixed> $options
      */
     public function processStackedBarData(

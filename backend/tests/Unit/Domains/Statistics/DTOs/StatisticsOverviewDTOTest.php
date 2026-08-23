@@ -16,6 +16,11 @@ use Tests\Support\UnitTestCase;
  */
 final class StatisticsOverviewDTOTest extends UnitTestCase
 {
+    /**
+     * 取得有效的統計概覽測試資料.
+     *
+     * @return array<string, mixed>
+     */
     private function getValidData(): array
     {
         return [
@@ -143,7 +148,10 @@ final class StatisticsOverviewDTOTest extends UnitTestCase
     public function testMissingArrayStructureKeysValidation(): void
     {
         $raw = $this->getValidData();
-        unset($raw['post_activity']['published_posts']);
+        $postActivity = $raw['post_activity'];
+        $this->assertIsArray($postActivity);
+        unset($postActivity['published_posts']);
+        $raw['post_activity'] = $postActivity;
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('post_activity 缺少必要的鍵: published_posts');

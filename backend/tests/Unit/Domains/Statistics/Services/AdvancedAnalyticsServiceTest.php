@@ -78,9 +78,9 @@ final class AdvancedAnalyticsServiceTest extends UnitTestCase
         $this->assertArrayHasKey('Safari', $stats);
         $this->assertArrayHasKey('Firefox', $stats);
 
-        // 指定條件
-        $statsFiltered = $this->service->getBrowserStats(1, '2025-01-01', '2025-01-02');
-        $this->assertIsArray($statsFiltered);
+        // 指定條件（僅驗證查詢可正常執行）
+        $this->service->getBrowserStats(1, '2025-01-01', '2025-01-02');
+        $this->addToAssertionCount(1);
     }
 
     public function testGetOSStats(): void
@@ -91,9 +91,9 @@ final class AdvancedAnalyticsServiceTest extends UnitTestCase
         $this->assertArrayHasKey('Windows 10', $stats);
         $this->assertArrayHasKey('iOS', $stats);
 
-        // 指定條件
-        $statsFiltered = $this->service->getOSStats(2, '2025-01-01', '2025-01-05');
-        $this->assertIsArray($statsFiltered);
+        // 指定條件（僅驗證查詢可正常執行）
+        $this->service->getOSStats(2, '2025-01-01', '2025-01-05');
+        $this->addToAssertionCount(1);
     }
 
     public function testGetReferrerStats(): void

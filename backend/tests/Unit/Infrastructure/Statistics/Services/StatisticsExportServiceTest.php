@@ -13,7 +13,6 @@ use App\Domains\Statistics\DTOs\StatisticsQueryDTO;
 use App\Domains\Statistics\Services\StatisticsQueryService;
 use App\Infrastructure\Statistics\Services\StatisticsExportService;
 use DateTime;
-use DateTimeImmutable;
 use InvalidArgumentException;
 use Mockery;
 use Mockery\MockInterface;
@@ -497,11 +496,9 @@ final class StatisticsExportServiceTest extends UnitTestCase
         $result = $this->exportService->exportBatch(
             ['overview', 'posts', 'sources', 'users', 'popular'],
             [
-                'format' => 'json',
-                /** @phpstan-ignore-next-line argument.type */
-                'period_start' => new DateTimeImmutable('2025-09-01'),
-                /** @phpstan-ignore-next-line argument.type */
-                'period_end' => new DateTimeImmutable('2025-09-30 23:59:59'),
+                'format'       => 'json',
+                'period_start' => new DateTime('2025-09-01'),
+                'period_end'   => new DateTime('2025-09-30 23:59:59'),
             ],
         );
 

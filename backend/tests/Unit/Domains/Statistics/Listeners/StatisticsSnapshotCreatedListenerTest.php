@@ -26,6 +26,7 @@ use Tests\Support\UnitTestCase;
  */
 final class StatisticsSnapshotCreatedListenerTest extends UnitTestCase
 {
+    /** @var StatisticsCacheServiceInterface&MockInterface */
     private StatisticsCacheServiceInterface $cacheService;
 
     private StatisticsMonitoringService $monitoringService;
@@ -125,6 +126,7 @@ final class StatisticsSnapshotCreatedListenerTest extends UnitTestCase
 
         // 驗證監控表記錄
         $stmt = $this->pdo->query("SELECT * FROM statistics_query_monitoring WHERE query_type = 'snapshot_created'");
+        $this->assertNotFalse($stmt);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         $this->assertIsArray($row);
     }

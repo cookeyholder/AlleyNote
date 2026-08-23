@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 namespace {
-    if (!class_exists('RedisException')) {
-        class RedisException extends Exception {}
-    }
-    if (!class_exists('Redis')) {
-        class Redis {}
-    }
+    // 載入 phpredis 相容 stub；stub 檔已自 PHPStan 分析排除，
+    // 避免空類別定義污染全專案的靜態分析結果
+    require_once __DIR__ . '/../../../../Support/Stubs/redis.php';
 }
 
 namespace Tests\Unit\Shared\Cache\Drivers {

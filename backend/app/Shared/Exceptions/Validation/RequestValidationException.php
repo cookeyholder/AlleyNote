@@ -16,8 +16,18 @@ class RequestValidationException extends ValidationException
         }
         $formattedErrors = [];
         foreach ($errors as $field => $error) {
-            $formattedErrors[$field] = is_array($error) ? $error : [(string) $error];
+            if (is_array($error)) {
+                /** @var array<int, string> $error */
+                $formattedErrors[$field] = array_map(
+                    static fn($item): string => is_scalar($item) ? (string) $item : get_debug_type($item),
+                    $error,
+                );
+
+                continue;
+            }
+            $formattedErrors[$field] = [is_scalar($error) ? (string) $error : get_debug_type($error)];
         }
+        /** @var array<string, array<int, string>> $formattedErrors */
         $validationResult = empty($formattedErrors) && !empty($message)
             ? ValidationResult::failure(['request' => [$message]])
             : ValidationResult::failure($formattedErrors);

@@ -157,7 +157,9 @@ class RouterTest extends UnitTestCase
         $result = $this->router->dispatch($request);
 
         $this->assertTrue($result->isMatched());
-        $this->assertEquals('/cached-path', $result->getRoute()->getPattern());
+        $cachedRoute = $result->getRoute();
+        $this->assertNotNull($cachedRoute);
+        $this->assertEquals('/cached-path', $cachedRoute->getPattern());
     }
 
     /**

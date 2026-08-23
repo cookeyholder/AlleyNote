@@ -51,7 +51,6 @@ final class SimpleAuthServiceProviderTest extends UnitTestCase
     public function testGetDefinitions(): void
     {
         $definitions = SimpleAuthServiceProvider::getDefinitions();
-        $this->assertIsArray($definitions);
         $this->assertArrayHasKey(JwtConfig::class, $definitions);
         $this->assertArrayHasKey(UserRepositoryInterface::class, $definitions);
         $this->assertArrayHasKey('jwt.auth', $definitions);

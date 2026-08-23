@@ -68,7 +68,7 @@ class RouteCollectionTest extends UnitTestCase
         $route1 = new Route(['GET'], '/a', 'Controller@a');
         $route2 = new Route(['GET'], '/b', 'Controller@b');
 
-        $this->collection->addRoutes([$route1, $route2, 'invalid_route_item']);
+        $this->collection->addRoutes([$route1, $route2, 'invalid_route_item']); // @phpstan-ignore argument.type (刻意混入非法項目以測試過濾行為)
         $this->assertEquals(2, $this->collection->count());
     }
 
@@ -156,14 +156,21 @@ class RouteCollectionTest extends UnitTestCase
             'middleware' => ['auth'],
         ], $array[0]);
 
-        $this->assertEquals(['PostController', 'store'], $array[1]['handler']);
-        $this->assertEquals('callable', $array[2]['handler']);
+        $route2Data = $array[1];
+        $this->assertIsArray($route2Data);
+        $this->assertEquals(['PostController', 'store'], $route2Data['handler']);
+
+        $route3Data = $array[2];
+        $this->assertIsArray($route3Data);
+        $this->assertEquals('callable', $route3Data['handler']);
 
         // 從陣列重建
         $restoredCollection = RouteCollection::fromArray($array);
         $this->assertEquals(3, $restoredCollection->count());
         $this->assertTrue($restoredCollection->has('posts.index'));
         $this->assertTrue($restoredCollection->has('posts.store'));
-        $this->assertEquals(['auth'], $restoredCollection->getByName('posts.index')->getMiddlewares());
+        $restoredRoute = $restoredCollection->getByName('posts.index');
+        $this->assertNotNull($restoredRoute);
+        $this->assertEquals(['auth'], $restoredRoute->getMiddlewares());
     }
 }

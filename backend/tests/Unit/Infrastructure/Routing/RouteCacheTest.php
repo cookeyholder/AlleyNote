@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 namespace {
-    if (!class_exists('RedisException')) {
-        class RedisException extends Exception {}
-    }
-    if (!class_exists('Redis')) {
-        class Redis {}
-    }
+    // 載入 phpredis 相容 stub；stub 檔已自 PHPStan 分析排除，
+    // 避免空類別定義污染全專案的靜態分析結果
+    require_once __DIR__ . '/../../../Support/Stubs/redis.php';
 }
 
 namespace Tests\Unit\Infrastructure\Routing {
@@ -65,7 +62,8 @@ namespace Tests\Unit\Infrastructure\Routing {
             $this->assertEquals(1800, $cache->getTtl());
 
             $this->assertFalse($cache->isValid());
-            $this->assertNull($cache->load());
+            $missedLoad = $cache->load();
+            $this->assertNull($missedLoad);
 
             $routes = new RouteCollection();
             $routes->add(new Route(['GET'], '/test', 'TestController@index'));
@@ -129,7 +127,8 @@ namespace Tests\Unit\Infrastructure\Routing {
             $this->assertEquals(7200, $cache->getTtl());
 
             $this->assertFalse($cache->isValid());
-            $this->assertNull($cache->load());
+            $missedLoad = $cache->load();
+            $this->assertNull($missedLoad);
 
             $routes = new RouteCollection();
             $routes->add(new Route(['GET'], '/file-route', 'FileController@index'));
@@ -249,8 +248,6 @@ namespace Tests\Unit\Infrastructure\Routing {
             // 測試 clear 拋出例外
             $redisMock->shouldReceive('multi')->once()->andThrow(new RedisException('Multi error'));
             $this->assertFalse($cache->clear());
-
-            $this->assertIsArray($cache->getStats());
         }
 
         /**
@@ -303,7 +300,7 @@ namespace Tests\Unit\Infrastructure\Routing {
             $this->assertEmpty($errors);
 
             // 缺少 driver
-            $errors = $factory->validateConfig([]);
+            $errors = $factory->validateConfig([]); // @phpstan-ignore argument.type (刻意省略 driver 以測試驗證錯誤訊息)
             $this->assertContains('Cache driver is required', $errors);
 
             // 不支援的 driver

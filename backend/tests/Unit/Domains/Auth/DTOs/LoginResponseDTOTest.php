@@ -47,10 +47,12 @@ final class LoginResponseDTOTest extends UnitTestCase
         $this->assertSame($validRefresh, $array['refresh_token']);
         $this->assertSame('Bearer', $array['token_type']);
         $this->assertSame($expiresAt, $array['expires_at']);
-        $this->assertSame(1, $array['user']['id']);
-        $this->assertSame('user@example.com', $array['user']['email']);
-        $this->assertSame('JohnDoe', $array['user']['name']);
-        $this->assertSame('admin', $array['user']['role']);
+        $user = $array['user'];
+        $this->assertIsArray($user);
+        $this->assertSame(1, $user['id']);
+        $this->assertSame('user@example.com', $user['email']);
+        $this->assertSame('JohnDoe', $user['name']);
+        $this->assertSame('admin', $user['role']);
         $this->assertSame('sess-123', $array['session_id']);
         $this->assertSame(['posts.view'], $array['permissions']);
     }

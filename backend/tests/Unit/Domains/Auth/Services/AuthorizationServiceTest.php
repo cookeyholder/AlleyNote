@@ -218,7 +218,11 @@ final class AuthorizationServiceTest extends UnitTestCase
 
         $roles = $this->service->getUserRoles(10);
         $this->assertCount(2, $roles);
-        $this->assertSame('role1', $roles[0]['name']);
-        $this->assertSame('role2', $roles[1]['name']);
+        $firstRole = $roles[0];
+        $this->assertIsArray($firstRole);
+        $this->assertSame('role1', $firstRole['name']);
+        $secondRole = $roles[1];
+        $this->assertIsArray($secondRole);
+        $this->assertSame('role2', $secondRole['name']);
     }
 }

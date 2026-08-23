@@ -39,14 +39,16 @@ final class PaginatedStatisticsDTOTest extends UnitTestCase
 
         $array = $dto->toArray();
         $this->assertSame($data, $array['data']);
-        $this->assertSame(2, $array['pagination']['current_page']);
-        $this->assertSame(20, $array['pagination']['per_page']);
-        $this->assertSame(45, $array['pagination']['total_count']);
-        $this->assertSame(3, $array['pagination']['total_pages']);
-        $this->assertTrue($array['pagination']['has_next_page']);
-        $this->assertTrue($array['pagination']['has_previous_page']);
-        $this->assertSame(21, $array['pagination']['from']);
-        $this->assertSame(40, $array['pagination']['to']);
+        $pagination = $array['pagination'];
+        $this->assertIsArray($pagination);
+        $this->assertSame(2, $pagination['current_page']);
+        $this->assertSame(20, $pagination['per_page']);
+        $this->assertSame(45, $pagination['total_count']);
+        $this->assertSame(3, $pagination['total_pages']);
+        $this->assertTrue($pagination['has_next_page']);
+        $this->assertTrue($pagination['has_previous_page']);
+        $this->assertSame(21, $pagination['from']);
+        $this->assertSame(40, $pagination['to']);
         $this->assertSame($metadata, $array['metadata']);
     }
 

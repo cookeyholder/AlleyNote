@@ -47,7 +47,6 @@ final class AuthServiceProviderTest extends UnitTestCase
     public function testGetDefinitionsAndMiddlewareAliases(): void
     {
         $definitions = AuthServiceProvider::getDefinitions();
-        $this->assertIsArray($definitions);
         $this->assertArrayHasKey(JwtConfig::class, $definitions);
         $this->assertArrayHasKey(AuthenticationService::class, $definitions);
 

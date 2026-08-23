@@ -136,7 +136,10 @@ final class CategoryProcessorTest extends UnitTestCase
         // 堆疊長條圖
         $stackedChart = $this->processor->processStackedBarData($multiSeries, 'Stacked');
         $this->assertArrayHasKey('scales', $stackedChart->options);
+        $this->assertIsArray($stackedChart->options['scales']);
+        $this->assertIsArray($stackedChart->options['scales']['x']);
         $this->assertTrue($stackedChart->options['scales']['x']['stacked']);
+        $this->assertIsArray($stackedChart->options['scales']['y']);
         $this->assertTrue($stackedChart->options['scales']['y']['stacked']);
     }
 

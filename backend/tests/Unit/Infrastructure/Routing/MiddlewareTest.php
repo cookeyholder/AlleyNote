@@ -62,7 +62,7 @@ class MiddlewareTest extends UnitTestCase
         $responseMock = Mockery::mock(ResponseInterface::class);
 
         $handlerMock->shouldReceive('handle')
-            ->with(Mockery::on(fn($req) => $req->getAttribute('executed') === true))
+            ->with(Mockery::on(fn($req): bool => $req instanceof ServerRequestInterface && $req->getAttribute('executed') === true))
             ->once()
             ->andReturn($responseMock);
 
@@ -105,7 +105,8 @@ class MiddlewareTest extends UnitTestCase
         $mw1 = new class('mw1', 10) extends AbstractMiddleware {
             protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
             {
-                $req = $request->withAttribute('order', array_merge($request->getAttribute('order', []), ['mw1']));
+                $order = $request->getAttribute('order', []);
+                $req = $request->withAttribute('order', array_merge(is_array($order) ? $order : [], ['mw1']));
 
                 return $handler->handle($req);
             }
@@ -114,7 +115,8 @@ class MiddlewareTest extends UnitTestCase
         $mw2 = new class('mw2', 20) extends AbstractMiddleware {
             protected function execute(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
             {
-                $req = $request->withAttribute('order', array_merge($request->getAttribute('order', []), ['mw2']));
+                $order = $request->getAttribute('order', []);
+                $req = $request->withAttribute('order', array_merge(is_array($order) ? $order : [], ['mw2']));
 
                 return $handler->handle($req);
             }
@@ -124,8 +126,12 @@ class MiddlewareTest extends UnitTestCase
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 $order = $request->getAttribute('order', []);
+                $parts = is_array($order) ? array_map(
+                    static fn($value): string => is_scalar($value) ? (string) $value : '',
+                    $order,
+                ) : [];
 
-                return new Response(200, ['X-Order' => implode(',', $order)]);
+                return new Response(200, ['X-Order' => implode(',', $parts)]);
             }
         };
 
@@ -166,7 +172,7 @@ class MiddlewareTest extends UnitTestCase
         $this->assertSame($mw1, $manager->get('mw1'));
         $this->assertNull($manager->get('nonexistent'));
 
-        $manager->addMultiple([$mw2, 'invalid_item']);
+        $manager->addMultiple([$mw2, 'invalid_item']); // @phpstan-ignore argument.type (刻意混入非 MiddlewareInterface 項目以測試過濾行為)
         $this->assertEquals(2, $manager->count());
         $this->assertEquals(['mw1', 'mw2'], $manager->getNames());
         $this->assertCount(2, $manager->getAll());
@@ -231,9 +237,12 @@ class MiddlewareTest extends UnitTestCase
         $handler = new class implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
+                $id = $request->getAttribute('id');
+                $routeParameters = $request->getAttribute('route_parameters');
+
                 return new Response(200, [
-                    'X-Param-Id' => (string) $request->getAttribute('id'),
-                    'X-Has-All'  => isset($request->getAttribute('route_parameters')['id']) ? 'yes' : 'no',
+                    'X-Param-Id' => is_scalar($id) ? (string) $id : '',
+                    'X-Has-All'  => is_array($routeParameters) && isset($routeParameters['id']) ? 'yes' : 'no',
                 ]);
             }
         };
@@ -337,11 +346,11 @@ class MiddlewareTest extends UnitTestCase
         $containerMock = Mockery::mock(ContainerInterface::class);
         $resolver = new MiddlewareResolver($containerMock);
 
-        $this->assertFalse($resolver->canResolve(12345));
+        $this->assertFalse($resolver->canResolve(12345)); // @phpstan-ignore argument.type (刻意傳入非法型別以測試防禦邏輯)
 
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Middleware must be a string or MiddlewareInterface instance');
-        $resolver->resolve(12345);
+        $resolver->resolve(12345); // @phpstan-ignore argument.type (刻意傳入非法型別以測試例外路徑)
     }
 
     /**

@@ -43,7 +43,6 @@ final class StatisticsServiceProviderTest extends UnitTestCase
     public function testGetDefinitionsReturnsValidArray(): void
     {
         $definitions = StatisticsServiceProvider::getDefinitions();
-        $this->assertIsArray($definitions);
         $this->assertArrayHasKey(StatisticsRepositoryInterface::class, $definitions);
         $this->assertArrayHasKey(PostStatisticsRepositoryInterface::class, $definitions);
         $this->assertArrayHasKey(UserStatisticsRepositoryInterface::class, $definitions);

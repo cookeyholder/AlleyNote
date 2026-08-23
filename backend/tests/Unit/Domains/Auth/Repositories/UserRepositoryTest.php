@@ -81,11 +81,13 @@ final class UserRepositoryTest extends UnitTestCase
         $this->assertSame('alice@example.com', $user['email']);
 
         // findById
+        $this->assertIsInt($user['id']);
         $byId = $this->repository->findById((int) $user['id']);
         $this->assertNotNull($byId);
         $this->assertSame('alice', $byId['username']);
 
         // findByUuid
+        $this->assertIsString($user['uuid']);
         $byUuid = $this->repository->findByUuid($user['uuid']);
         $this->assertNotNull($byUuid);
         $this->assertSame('alice', $byUuid['username']);
@@ -118,6 +120,7 @@ final class UserRepositoryTest extends UnitTestCase
             'password' => 'hashed',
         ]);
 
+        $this->assertIsInt($user['id']);
         $id = (string) $user['id'];
 
         // 空欄位更新直接返回現有資料
@@ -135,6 +138,7 @@ final class UserRepositoryTest extends UnitTestCase
         // 更新最後登入時間
         $this->assertTrue($this->repository->updateLastLogin($id));
         $reloaded = $this->repository->findById((int) $id);
+        $this->assertNotNull($reloaded);
         $this->assertNotNull($reloaded['last_login']);
 
         // 刪除使用者
@@ -153,6 +157,7 @@ final class UserRepositoryTest extends UnitTestCase
             'email'    => 'charlie@example.com',
             'password' => $oldHash,
         ]);
+        $this->assertIsInt($user['id']);
         $id = (int) $user['id'];
 
         // 1. 使用者不存在
@@ -172,6 +177,7 @@ final class UserRepositoryTest extends UnitTestCase
             'email'    => 'david@example.com',
             'password' => $oldHash,
         ]);
+        $this->assertIsInt($user['id']);
         $id = (int) $user['id'];
 
         $this->passwordService->shouldReceive('validatePassword')->once()->with('SamePassword123!');
@@ -192,6 +198,7 @@ final class UserRepositoryTest extends UnitTestCase
             'email'    => 'eve@example.com',
             'password' => $oldHash,
         ]);
+        $this->assertIsInt($user['id']);
         $id = (int) $user['id'];
 
         $this->passwordService->shouldReceive('validatePassword')->once()->with('NewPassword456!');
@@ -200,6 +207,7 @@ final class UserRepositoryTest extends UnitTestCase
         $this->assertTrue($this->repository->updatePassword($id, 'NewPassword456!'));
 
         $updatedUser = $this->repository->findById($id);
+        $this->assertNotNull($updatedUser);
         $this->assertSame('argon_hashed_new', $updatedUser['password_hash']);
     }
 
@@ -219,7 +227,9 @@ final class UserRepositoryTest extends UnitTestCase
         // 第 1 頁，每頁 10 筆
         $page1 = $this->repository->paginate(1, 10);
         $this->assertSame(15, $page1['total']);
+        $this->assertIsArray($page1['items']);
         $this->assertCount(10, $page1['items']);
+        $this->assertIsNumeric($page1['last_page']);
         $this->assertSame(2.0, (float) $page1['last_page']);
 
         // 搜尋篩選
@@ -244,6 +254,7 @@ final class UserRepositoryTest extends UnitTestCase
             'email'    => 'frank@example.com',
             'password' => 'hash',
         ]);
+        $this->assertIsInt($user['id']);
         $id = (int) $user['id'];
 
         $this->assertSame([], $this->repository->getUserRoleIds($id));
@@ -255,8 +266,12 @@ final class UserRepositoryTest extends UnitTestCase
         // findByIdWithRoles
         $withRoles = $this->repository->findByIdWithRoles($id);
         $this->assertNotNull($withRoles);
-        $this->assertCount(2, $withRoles['roles']);
-        $this->assertSame('admin', $withRoles['roles'][0]['name']);
+        $roles = $withRoles['roles'];
+        $this->assertIsArray($roles);
+        $this->assertCount(2, $roles);
+        $firstRole = $roles[0];
+        $this->assertIsArray($firstRole);
+        $this->assertSame('admin', $firstRole['name']);
         $this->assertArrayNotHasKey('password_hash', $withRoles);
 
         // 查無資料

@@ -99,7 +99,9 @@ final class ChartDataTest extends UnitTestCase
         $this->assertArrayHasKey('datasets', $json);
         $this->assertArrayHasKey('options', $json);
         $this->assertSame(['L1', 'L2'], $json['labels']);
-        $this->assertCount(1, $json['datasets']);
+        $datasets = $json['datasets'];
+        $this->assertIsArray($datasets);
+        $this->assertCount(1, $datasets);
         $this->assertSame(['opt' => 1], $json['options']);
     }
 }

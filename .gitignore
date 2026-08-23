@@ -75,6 +75,9 @@ phpstan-errors.json
 backend/app/storage/cache/*.cache
 backend/app/storage/cache/_index.json
 backend/app/storage/cache/_index_buckets/
+backend/app/storage/di-cache/
+backend/app/storage/logs/
+backend/.tmp-main-verify/
 # PEM key files
 *.pem
 

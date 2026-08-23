@@ -25,7 +25,7 @@ final class PostStatisticsResultTest extends UnitTestCase
         );
 
         $this->assertSame($quality, $result->getContentQualityMetrics());
-        $this->assertSame($engagementMetrics ?? $engagement, $result->getEngagementMetrics());
+        $this->assertSame($engagement, $result->getEngagementMetrics());
         $this->assertSame($content, $result->getContentAnalysis());
 
         $expectedArray = [

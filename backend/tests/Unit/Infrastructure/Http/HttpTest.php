@@ -126,6 +126,7 @@ class HttpTest extends UnitTestCase
 
         // 測試以 resource 建立
         $resource = fopen('php://memory', 'r+');
+        $this->assertNotFalse($resource);
         fwrite($resource, 'Resource test');
         rewind($resource);
         $resourceStream = new Stream($resource);

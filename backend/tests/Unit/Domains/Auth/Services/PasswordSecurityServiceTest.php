@@ -158,7 +158,9 @@ final class PasswordSecurityServiceTest extends UnitTestCase
             ]);
 
         $result = $this->service->calculatePasswordStrength('password');
-        $this->assertTrue(in_array('這是常見的弱密碼', $result['feedback'], true));
+        $feedback = $result['feedback'];
+        $this->assertIsArray($feedback);
+        $this->assertTrue(in_array('這是常見的弱密碼', $feedback, true));
     }
 
     /**
@@ -245,7 +247,9 @@ final class PasswordSecurityServiceTest extends UnitTestCase
             ->andReturn(['api_available' => true, 'is_leaked' => true, 'count' => 500]);
 
         $leaked = $this->service->calculatePasswordStrength('LeakedPass12!@#');
-        $this->assertTrue(in_array('此密碼已在 500 次資料外洩中被發現', $leaked['feedback'], true));
+        $leakedFeedback = $leaked['feedback'];
+        $this->assertIsArray($leakedFeedback);
+        $this->assertTrue(in_array('此密碼已在 500 次資料外洩中被發現', $leakedFeedback, true));
 
         // 4. 重複字元與連續字元扣分
         $this->pwnedService
@@ -254,7 +258,9 @@ final class PasswordSecurityServiceTest extends UnitTestCase
             ->andReturn(['api_available' => true, 'is_leaked' => false, 'count' => 0]);
 
         $penalized = $this->service->calculatePasswordStrength('AAAA1234abcd!@#$');
-        $this->assertTrue(in_array('避免重複字元', $penalized['feedback'], true));
-        $this->assertTrue(in_array('避免使用連續字元', $penalized['feedback'], true));
+        $penalizedFeedback = $penalized['feedback'];
+        $this->assertIsArray($penalizedFeedback);
+        $this->assertTrue(in_array('避免重複字元', $penalizedFeedback, true));
+        $this->assertTrue(in_array('避免使用連續字元', $penalizedFeedback, true));
     }
 }

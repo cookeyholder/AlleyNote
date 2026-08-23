@@ -74,14 +74,17 @@ final class SystemMonitoringServiceTest extends UnitTestCase
         $this->assertArrayHasKey('timestamp', $status);
 
         // 驗證 database 指標
+        $this->assertIsArray($status['database']);
         $this->assertSame('sqlite', $status['database']['driver']);
         $this->assertSame('healthy', $status['database']['status']);
 
         // 驗證 cache 指標 (無 redis)
+        $this->assertIsArray($status['cache']);
         $this->assertFalse($status['cache']['redis_connected']);
         $this->assertSame(1, $status['cache']['active_sessions']);
 
         // 驗證 activity summary
+        $this->assertIsArray($status['activity_summary']);
         $this->assertSame(3, $status['activity_summary']['total_activities_24h']);
         $this->assertSame(1, $status['activity_summary']['login_success_24h']);
         $this->assertSame(2, $status['activity_summary']['login_failure_24h']);
@@ -100,6 +103,7 @@ final class SystemMonitoringServiceTest extends UnitTestCase
         $service = new SystemMonitoringService($this->pdo, $redis);
         $status = $service->getSystemHealthStatus();
 
+        $this->assertIsArray($status['cache']);
         $this->assertTrue($status['cache']['redis_connected']);
         $this->assertSame(10485760, $status['cache']['redis_used_memory']);
         $this->assertSame(2.0, $status['cache']['redis_uptime_days']);
@@ -116,6 +120,7 @@ final class SystemMonitoringServiceTest extends UnitTestCase
         $service = new SystemMonitoringService($this->pdo, $redis);
         $status = $service->getSystemHealthStatus();
 
+        $this->assertIsArray($status['cache']);
         $this->assertFalse($status['cache']['redis_connected']);
         $this->assertSame('warning', $status['cache']['status']);
     }

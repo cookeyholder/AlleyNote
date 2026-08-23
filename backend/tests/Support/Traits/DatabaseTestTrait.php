@@ -8,6 +8,7 @@ use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
 use PDOException;
 use RuntimeException;
+use ValueError;
 
 /**
  * 資料庫測試功能 Trait.
@@ -621,7 +622,8 @@ trait DatabaseTestTrait
         ];
 
         $postData = array_merge($defaultData, $data);
-        $userId = (int) $postData['user_id'];
+        $userId = $postData['user_id'];
+        $this->assertIsInt($userId);
 
         // 確保使用者存在以滿足外鍵約束
         $userCheck = $this->db->prepare('SELECT COUNT(*) FROM users WHERE id = ?');
@@ -672,12 +674,24 @@ trait DatabaseTestTrait
 
         $stmt->execute($userData);
 
-        return isset($userData['id']) ? (int) $userData['id'] : (int) $this->db->lastInsertId();
+        if (isset($userData['id'])) {
+            $requestedId = $userData['id'];
+            $this->assertIsInt($requestedId);
+
+            return $requestedId;
+        }
+
+        return (int) $this->db->lastInsertId();
     }
 
     protected function generateRandomString(int $length = 10): string
     {
-        return substr(bin2hex(random_bytes((int) ceil($length / 2))), 0, $length);
+        $byteLength = (int) ceil($length / 2);
+        if ($byteLength < 1) {
+            throw new ValueError('隨機位元組長度必須至少為 1');
+        }
+
+        return substr(bin2hex(random_bytes($byteLength)), 0, $length);
     }
 
     protected function generateTestEmail(): string

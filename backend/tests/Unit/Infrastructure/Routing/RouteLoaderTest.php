@@ -93,8 +93,10 @@ class RouteLoaderTest extends UnitTestCase
         $stats = $this->loader->getRouteStats();
         $this->assertEquals(3, $stats['total_routes']);
         $this->assertEquals(2, $stats['files_loaded']);
-        $this->assertEquals(2, $stats['groups']['api']);
-        $this->assertEquals(1, $stats['groups']['admin']);
+        $groups = $stats['groups'];
+        $this->assertIsArray($groups);
+        $this->assertEquals(2, $groups['api']);
+        $this->assertEquals(1, $groups['admin']);
 
         // 測試根據群組篩選
         $apiRoutes = $this->loader->getRoutesByGroup('api');
@@ -104,7 +106,7 @@ class RouteLoaderTest extends UnitTestCase
         $this->assertCount(1, $adminRoutes);
 
         // 測試 findRoutes
-        $findResult = $this->loader->findRoutes(fn($r) => $r['path'] === '/admin/dashboard');
+        $findResult = $this->loader->findRoutes(fn($r): bool => is_array($r) && ($r['path'] ?? null) === '/admin/dashboard');
         $this->assertCount(1, $findResult);
 
         // 測試 clearRoutes

@@ -2,6 +2,7 @@ parameters:
     excludePaths:
         - tests/Integration/Application/Controllers/Admin/TagManagementControllerTest.php
         - tests/E2E/
+        - tests/Support/Stubs/
         - tests/Integration/Cache/CacheMonitoringIntegrationTest.php
         - tests/Unit/Shared/Monitoring/Services/ErrorTrackerServiceTest.php
         - tests/Unit/Shared/Monitoring/CacheMonitorTest.php

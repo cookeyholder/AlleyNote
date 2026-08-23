@@ -275,8 +275,11 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('7 字元密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
+            $this->assertIsArray($errors);
             $this->assertNotEmpty($errors);
-            $this->assertStringContainsString('至少需要 8', (string) $errors[0]);
+            $firstError = $errors[0];
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('至少需要 8', $firstError);
         }
 
         // 超過上限：129 字元拋出長度錯誤
@@ -285,8 +288,11 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('129 字元密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
+            $this->assertIsArray($errors);
             $this->assertNotEmpty($errors);
-            $this->assertStringContainsString('不能超過 128', (string) $errors[0]);
+            $firstError = $errors[0];
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('不能超過 128', $firstError);
         }
     }
 
@@ -301,7 +307,10 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('含遞增字母序列的密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
-            $this->assertStringContainsString('連續', (string) ($errors[0] ?? ''));
+            $this->assertIsArray($errors);
+            $firstError = $errors[0] ?? '';
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('連續', $firstError);
         }
 
         // 遞減字母序列 zyxwvu 應被拒絕
@@ -310,7 +319,10 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('含遞減字母序列的密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
-            $this->assertStringContainsString('連續', (string) ($errors[0] ?? ''));
+            $this->assertIsArray($errors);
+            $firstError = $errors[0] ?? '';
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('連續', $firstError);
         }
 
         // 遞增數字序列 123456 應被拒絕
@@ -319,7 +331,10 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('含遞增數字序列的密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
-            $this->assertStringContainsString('連續', (string) ($errors[0] ?? ''));
+            $this->assertIsArray($errors);
+            $firstError = $errors[0] ?? '';
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('連續', $firstError);
         }
 
         // 相鄰但不連續的字元（m-n-p 跳過 o）應可通過
@@ -338,7 +353,10 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('含 3 個相同字元的密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
-            $this->assertStringContainsString('重複', (string) ($errors[0] ?? ''));
+            $this->assertIsArray($errors);
+            $firstError = $errors[0] ?? '';
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('重複', $firstError);
         }
 
         // 4 個相同字元同樣應被拒絕
@@ -347,7 +365,10 @@ final class SecurePasswordTest extends UnitTestCase
             $this->fail('含 4 個相同字元的密碼應被拒絕');
         } catch (ValidationException $e) {
             $errors = $e->getErrors()['password'] ?? [];
-            $this->assertStringContainsString('重複', (string) ($errors[0] ?? ''));
+            $this->assertIsArray($errors);
+            $firstError = $errors[0] ?? '';
+            $this->assertIsString($firstError);
+            $this->assertStringContainsString('重複', $firstError);
         }
 
         // 僅 2 個相同字元不觸發規則，可通過

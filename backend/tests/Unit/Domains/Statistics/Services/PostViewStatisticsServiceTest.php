@@ -100,15 +100,19 @@ final class PostViewStatisticsServiceTest extends UnitTestCase
         $this->assertTrue($success);
 
         $stmt = $this->pdo->query('SELECT * FROM post_views WHERE post_id = 42');
+        $this->assertNotFalse($stmt);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $this->assertIsArray($row);
-        $this->assertSame(42, (int) $row['post_id']);
-        $this->assertSame(5, (int) $row['user_id']);
+        $this->assertIsInt($row['post_id']);
+        $this->assertIsInt($row['user_id']);
+        $this->assertSame(42, $row['post_id']);
+        $this->assertSame(5, $row['user_id']);
         $this->assertSame('10.0.0.1', $row['user_ip']);
         $this->assertSame('CustomAgent/1.0', $row['user_agent']);
         $this->assertSame('https://example.com', $row['referrer']);
         $this->assertNotEmpty($row['uuid']);
+        $this->assertIsString($row['uuid']);
         $this->assertMatchesRegularExpression(
             '/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i',
             $row['uuid'],
