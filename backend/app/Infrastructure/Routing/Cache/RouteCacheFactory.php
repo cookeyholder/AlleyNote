@@ -127,7 +127,7 @@ class RouteCacheFactory
         if (array_key_exists('ttl', $config) && (!is_int($config['ttl']) || $config['ttl'] < 0)) {
             $errors[] = 'Cache TTL must be a non-negative integer';
         }
-        if ($config['driver'] === 'file') {
+        if (($config['driver'] ?? '') === 'file') {
             if (array_key_exists('path', $config)) {
                 $path = $config['path'];
                 if (!is_string($path) || empty($path)) {

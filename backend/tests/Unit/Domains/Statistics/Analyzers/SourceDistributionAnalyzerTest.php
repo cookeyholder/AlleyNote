@@ -178,4 +178,24 @@ class SourceDistributionAnalyzerTest extends UnitTestCase
         $this->assertArrayHasKey('device_usage_pattern', $result->toArray());
         $this->assertArrayHasKey('trend_insights', $result->toArray());
     }
+
+    public function testMixedDevicePattern(): void
+    {
+        $this->validData['by_device'] = ['mobile' => 1400, 'desktop' => 400, 'tablet' => 200];
+        $dto = $this->createDTO();
+        $pattern = $this->analyzer->getDeviceUsagePattern($dto);
+
+        $this->assertSame('mixed', $pattern['pattern']);
+    }
+
+    public function testChannelDiversityWithZeroTraffic(): void
+    {
+        $data = $this->validData;
+        $data['by_channel'] = [];
+        $dto = SourceDistributionDTO::fromArray($data);
+        $analysis = $this->analyzer->getChannelPerformanceAnalysis($dto);
+
+        $this->assertSame(0.0, $analysis['diversity_score']);
+        $this->assertNull($analysis['top_performer']);
+    }
 }

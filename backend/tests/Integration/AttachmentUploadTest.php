@@ -230,8 +230,9 @@ class AttachmentUploadTest extends IntegrationTestCase
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
+        // 使用可通過 MIME 驗證的有效 JPEG 內容，確保失敗點落在 moveTo
         $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
+        $stream->shouldReceive('getContents')->andReturn($this->validJpegBytes());
         $stream->shouldReceive('rewind')->andReturn(true);
         $file->shouldReceive('getStream')->andReturn($stream);
 
@@ -254,8 +255,9 @@ class AttachmentUploadTest extends IntegrationTestCase
         $file->shouldReceive('getClientMediaType')->andReturn('image/jpeg');
         $file->shouldReceive('getSize')->andReturn(1024);
 
+        // 使用可通過 MIME 驗證的有效 JPEG 內容，確保失敗點落在 moveTo
         $stream = Mockery::mock(StreamInterface::class);
-        $stream->shouldReceive('getContents')->andReturn(str_repeat('x', 1024));
+        $stream->shouldReceive('getContents')->andReturn($this->validJpegBytes());
         $stream->shouldReceive('rewind')->andReturn(true);
         $file->shouldReceive('getStream')->andReturn($stream);
 
@@ -267,6 +269,19 @@ class AttachmentUploadTest extends IntegrationTestCase
         $this->expectExceptionMessage('檔案上傳失敗');
 
         $this->attachmentService->upload($postId, $file, 1);
+    }
+
+    /**
+     * 取得最小有效 JPEG 位元組內容（1x1 像素）.
+     */
+    private function validJpegBytes(): string
+    {
+        $bytes = base64_decode('/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/2wBDAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQH/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAX/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxAPwA/wA==');
+        if ($bytes === false) {
+            $this->fail('無法解碼測試用 JPEG 內容');
+        }
+
+        return $bytes;
     }
 
     protected function tearDown(): void

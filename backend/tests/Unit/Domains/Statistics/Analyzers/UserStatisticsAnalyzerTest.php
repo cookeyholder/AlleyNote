@@ -92,4 +92,15 @@ class UserStatisticsAnalyzerTest extends UnitTestCase
         $this->assertArrayHasKey('engagement_analysis', $result->toArray());
         $this->assertArrayHasKey('activity_insights', $result->toArray());
     }
+
+    public function testActivityInsightsWithoutTimeDistribution(): void
+    {
+        $data = $this->validData;
+        $data['activity_time_distribution'] = [];
+        $dto = UserStatisticsDTO::fromArray($data);
+        $insights = $this->analyzer->getActivityInsights($dto);
+
+        $this->assertNull($insights['peak_activity_hour']);
+        $this->assertSame('inactive', $insights['activity_pattern']);
+    }
 }

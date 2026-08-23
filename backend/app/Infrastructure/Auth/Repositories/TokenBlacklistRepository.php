@@ -8,6 +8,7 @@ use App\Domains\Auth\Contracts\TokenBlacklistRepositoryInterface;
 use App\Domains\Auth\ValueObjects\TokenBlacklistEntry;
 use DateTime;
 use DateTimeImmutable;
+use DateTimeZone;
 use PDO;
 use PDOException;
 use Throwable;
@@ -73,11 +74,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function isBlacklisted(string $jti): bool
     {
         try {
-            $currentTime = new DateTime();
+            $currentTime = $this->utcNow();
             $sql = '
-                SELECT COUNT(*) 
-                FROM token_blacklist 
-                WHERE jti = :jti 
+                SELECT COUNT(*)
+                FROM token_blacklist
+                WHERE jti = :jti
                 AND expires_at > :current_time
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -102,12 +103,12 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function isTokenHashBlacklisted(string $tokenHash): bool
     {
         try {
-            $currentTime = new DateTime();
+            $currentTime = $this->utcNow();
             // 假設我們在 metadata 中儲存 token_hash
             $sql = '
-                SELECT COUNT(*) 
-                FROM token_blacklist 
-                WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash 
+                SELECT COUNT(*)
+                FROM token_blacklist
+                WHERE JSON_EXTRACT(metadata, "$.token_hash") = :token_hash
                 AND expires_at > :current_time
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -388,11 +389,11 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
         }
 
         try {
-            $currentTime = new DateTime();
+            $currentTime = $this->utcNow();
             $placeholders = str_repeat('?,', count($jtis) - 1) . '?';
             $sql = "
-                SELECT jti 
-                FROM token_blacklist 
+                SELECT jti
+                FROM token_blacklist
                 WHERE jti IN ({$placeholders}) 
                 AND expires_at > ?
             ";
@@ -558,7 +559,7 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     {
         try {
             if ($beforeDate === null) {
-                $currentTime = new DateTime();
+                $currentTime = $this->utcNow();
                 $sql = 'DELETE FROM token_blacklist WHERE expires_at <= :current_time';
                 $stmt = $this->pdo->prepare($sql);
                 $stmt->execute(['current_time' => $currentTime->format('Y-m-d H:i:s')]);
@@ -594,10 +595,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function cleanupOldEntries(int $days = 90): int
     {
         try {
-            $cutoffDate = new DateTime();
+            $cutoffDate = $this->utcNow();
             $cutoffDate->modify("-{$days} days");
             $sql = '
-                DELETE FROM token_blacklist 
+                DELETE FROM token_blacklist
                 WHERE blacklisted_at <= :cutoff_date
             ';
             $stmt = $this->pdo->prepare($sql);
@@ -935,10 +936,10 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     public function getSizeInfo(): array
     {
         try {
-            $currentTime = new DateTime();
+            $currentTime = $this->utcNow();
             $formattedTime = $currentTime->format('Y-m-d H:i:s');
             $sql = '
-                SELECT 
+                SELECT
                     COUNT(*) as total_entries,
                     COUNT(CASE WHEN expires_at > :current_time_1 THEN 1 END) as active_entries,
                     COUNT(CASE WHEN expires_at <= :current_time_2 THEN 1 END) as expired_entries
@@ -1062,5 +1063,16 @@ class TokenBlacklistRepository implements TokenBlacklistRepositoryInterface
     {
         // SQLite 的重複鍵值錯誤碼
         return $e->getCode() === '23000' && str_contains($e->getMessage(), 'UNIQUE constraint failed');
+    }
+
+    /**
+     * 取得目前的 UTC 時間.
+     *
+     * token_blacklist 的 expires_at 與 blacklisted_at 由 JWT epoch 時間戳（UTC）格式化而來，
+     * 比較時必須使用 UTC 當前時間，否則在非 UTC 時區部署時黑名單判斷會產生時區偏移錯誤。
+     */
+    private function utcNow(): DateTime
+    {
+        return new DateTime('now', new DateTimeZone('UTC'));
     }
 }

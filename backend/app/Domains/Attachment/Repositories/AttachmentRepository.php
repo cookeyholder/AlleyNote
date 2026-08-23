@@ -47,7 +47,9 @@ class AttachmentRepository
 
     public function find(int $id): ?Attachment
     {
-        return $this->cache->remember("attachment:{$id}", function () use ($id) {
+        // 快取原始資料列（陣列）而非模型物件，避免快取序列化破壞型別
+        /** @var array<string, mixed>|null $data */
+        $data = $this->cache->remember("attachment:{$id}", function () use ($id) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -55,15 +57,20 @@ class AttachmentRepository
             ';
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['id' => $id]);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            /** @var array<string, mixed>|false $row */
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            return is_array($row) ? $row : null;
         });
+
+        return is_array($data) ? new Attachment($data) : null;
     }
 
     public function findByUuid(string $uuid): ?Attachment
     {
-        return $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
+        // 快取原始資料列（陣列）而非模型物件，避免快取序列化破壞型別
+        /** @var array<string, mixed>|null $data */
+        $data = $this->cache->remember("attachment:uuid:{$uuid}", function () use ($uuid) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -71,15 +78,23 @@ class AttachmentRepository
             ';
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['uuid' => $uuid]);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
+            /** @var array<string, mixed>|false $row */
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $data ? new Attachment($data) : null;
+            return is_array($row) ? $row : null;
         });
+
+        return is_array($data) ? new Attachment($data) : null;
     }
 
+    /**
+     * @return array<int, Attachment>
+     */
     public function getByPostId(int $postId): array
     {
-        return $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
+        // 快取原始資料列（陣列）而非模型物件，避免快取序列化破壞型別
+        /** @var list<array<string, mixed>> $rows */
+        $rows = $this->cache->remember("attachments:post:{$postId}", function () use ($postId) {
             $sql = '
                 SELECT *
                 FROM attachments
@@ -89,13 +104,20 @@ class AttachmentRepository
             ';
             $stmt = $this->db->prepare($sql);
             $stmt->execute(['post_id' => $postId]);
-            $attachments = [];
-            while ($data = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $attachments[] = new Attachment($data);
-            }
+            /** @var list<array<string, mixed>> $rows */
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $attachments;
+            return $rows;
         });
+
+        $attachments = [];
+        foreach ($rows as $row) {
+            if (is_array($row)) {
+                $attachments[] = new Attachment($row);
+            }
+        }
+
+        return $attachments;
     }
 
     /**

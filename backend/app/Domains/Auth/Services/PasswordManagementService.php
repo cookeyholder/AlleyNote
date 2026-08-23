@@ -29,7 +29,7 @@ class PasswordManagementService
     public function changePassword(int $userId, string $currentPassword, string $newPassword): bool
     {
         // 驗證使用者身分
-        $user = $this->userRepository->findById((string) $userId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
             throw new InvalidArgumentException('找不到指定的使用者');
         }
@@ -107,7 +107,7 @@ class PasswordManagementService
      */
     public function upgradePasswordHash(int $userId, string $plainPassword): bool
     {
-        $user = $this->userRepository->findById((string) $userId);
+        $user = $this->userRepository->findById($userId);
         if (!$user) {
             return false;
         }

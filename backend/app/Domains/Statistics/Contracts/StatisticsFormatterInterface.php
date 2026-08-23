@@ -24,7 +24,7 @@ interface StatisticsFormatterInterface
     /**
      * 格式化統計資料.
      *
-     * @param array<string, mixed> $data 統計資料
+     * @param array<string, mixed>|array<int, array<string, mixed>> $data 統計資料（單一關聯陣列或多列紀錄）
      * @param array<string, mixed> $options 格式化選項
      */
     public function format(array $data, array $options = []): string;

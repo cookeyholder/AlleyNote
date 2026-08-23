@@ -98,20 +98,7 @@ return array_merge(
 
         // 資料庫連線
         PDO::class => \DI\factory(function (ContainerInterface $c) {
-            $dbPath = (string) $c->get('db.path');
-            $isMemory = ($dbPath === ':memory:');
-
-            $options = [
-                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES   => false,
-                PDO::ATTR_TIMEOUT            => 5,
-            ];
-
-            $pdo = new PDO('sqlite:' . $dbPath, null, null, $options);
-            \App\Infrastructure\Database\DatabaseConnection::applySqlitePragmas($pdo, $isMemory);
-
-            return $pdo;
+            return \App\Infrastructure\Database\DatabaseConnection::getInstance();
         }),
     ],
 
@@ -371,6 +358,8 @@ return array_merge(
         // ========================================
         // 站內通知模組
         // ========================================
+        // 站內通知模組
+        // ========================================
         NotificationRepositoryInterface::class => \DI\autowire(NotificationRepository::class)
             ->constructorParameter('db', \DI\get(PDO::class)),
 
@@ -379,6 +368,49 @@ return array_merge(
 
         NotificationController::class => \DI\autowire(NotificationController::class)
             ->constructorParameter('notificationService', \DI\get(NotificationServiceInterface::class)),
+
+        // ========================================
+        // 系統設定模組
+        // ========================================
+        \App\Domains\Setting\Repositories\SettingRepository::class => \DI\autowire(\App\Domains\Setting\Repositories\SettingRepository::class)
+            ->constructorParameter('db', \DI\get(PDO::class)),
+
+        \App\Domains\Setting\Services\SettingManagementService::class => \DI\autowire(\App\Domains\Setting\Services\SettingManagementService::class)
+            ->constructorParameter('settingRepository', \DI\get(\App\Domains\Setting\Repositories\SettingRepository::class)),
+
+        \App\Application\Controllers\Api\V1\SettingController::class => \DI\autowire(\App\Application\Controllers\Api\V1\SettingController::class)
+            ->constructorParameter('settingManagementService', \DI\get(\App\Domains\Setting\Services\SettingManagementService::class)),
+
+        // ========================================
+        // 附件管理模組
+        // ========================================
+        \App\Domains\Attachment\Repositories\AttachmentRepository::class => \DI\autowire(\App\Domains\Attachment\Repositories\AttachmentRepository::class)
+            ->constructorParameter('db', \DI\get(PDO::class)),
+
+        \App\Domains\Attachment\Contracts\AttachmentRepositoryInterface::class => \DI\get(\App\Domains\Attachment\Repositories\AttachmentRepository::class),
+
+        \App\Domains\Attachment\Services\AttachmentService::class => \DI\autowire(\App\Domains\Attachment\Services\AttachmentService::class)
+            ->constructorParameter('attachmentRepo', \DI\get(\App\Domains\Attachment\Repositories\AttachmentRepository::class))
+            ->constructorParameter('postRepo', \DI\get(PostRepositoryInterface::class))
+            ->constructorParameter('authService', \DI\get(AuthorizationServiceInterface::class))
+            ->constructorParameter('activityLogger', \DI\get(\App\Domains\Security\Contracts\ActivityLoggingServiceInterface::class))
+            ->constructorParameter('uploadDir', __DIR__ . '/../storage/uploads'),
+
+        \App\Domains\Attachment\Contracts\AttachmentServiceInterface::class => \DI\get(\App\Domains\Attachment\Services\AttachmentService::class),
+
+        \App\Application\Controllers\Api\V1\AttachmentController::class => \DI\autowire(\App\Application\Controllers\Api\V1\AttachmentController::class),
+
+        // ========================================
+        // 標籤管理模組
+        // ========================================
+        \App\Application\Controllers\Api\V1\TagController::class => \DI\autowire(\App\Application\Controllers\Api\V1\TagController::class)
+            ->constructorParameter('tagManagementService', \DI\get(TagManagementService::class)),
+
+        // ========================================
+        // 安全報告模組
+        // ========================================
+        \App\Application\Controllers\Security\CSPReportController::class => \DI\autowire(\App\Application\Controllers\Security\CSPReportController::class)
+            ->constructorParameter('logger', \DI\get(LoggingSecurityServiceInterface::class)),
     ],
 
     // 監控服務

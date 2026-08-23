@@ -115,6 +115,8 @@ class PerformanceMonitorService implements PerformanceMonitorInterface
             'memory_peak' => memory_get_peak_usage(true),
             'context'     => $context,
         ]);
+        // 移除已結束的監控會話，避免活躍會話統計失真與記憶體持續累積
+        unset($this->activeMonitoringSessions[$monitoringId]);
     }
 
     /**

@@ -425,4 +425,168 @@ final class StatisticsCacheServiceTest extends UnitTestCase
         // Assert - void 方法成功執行
         $this->addToAssertionCount(1);
     }
+
+    public function testRememberExecutesCallbackAndCachesResult(): void
+    {
+        // 未命中時執行回呼並寫入快取
+        $this->mockCacheService->method('get')->willReturn(null);
+        $this->mockCacheService->expects($this->once())->method('set')->willReturn(true);
+
+        $calls = 0;
+        $value = $this->cacheService->remember('stats_key', function () use (&$calls): array {
+            $calls++;
+
+            return ['computed' => true];
+        });
+
+        $this->assertSame(['computed' => true], $value);
+        $this->assertSame(1, $calls);
+    }
+
+    public function testRememberRethrowsCallbackException(): void
+    {
+        $this->mockCacheService->method('get')->willReturn(null);
+        $this->mockLogger->expects($this->once())->method('error');
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('callback exploded');
+
+        $this->cacheService->remember('bad_key', static fn(): string => throw new RuntimeException('callback exploded'));
+    }
+
+    public function testFlushByTagsIgnoresUnsupportedTags(): void
+    {
+        // 全部標籤皆不支援時直接返回，不操作底層快取
+        $this->mockCacheService->expects($this->never())->method('delete');
+        $this->cacheService->flushByTags(['not_a_tag']);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testFlushByTagsWrapsErrors(): void
+    {
+        $this->mockCacheService->method('get')->willThrowException(new RuntimeException('redis down'));
+        $this->mockLogger->expects($this->once())->method('error')->with('按標籤清除快取失敗', $this->callback(static fn($c): bool => is_array($c)));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('redis down');
+
+        $this->cacheService->flushByTags(['posts']);
+    }
+
+    public function testForgetWrapsErrors(): void
+    {
+        $this->mockCacheService->method('delete')->willThrowException(new RuntimeException('delete failed'));
+        $this->mockLogger->expects($this->once())->method('error')->with('刪除快取失敗', $this->callback(static fn($c): bool => is_array($c)));
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('delete failed');
+
+        $this->cacheService->forget('some_key');
+    }
+
+    public function testFlushClearsAllPatterns(): void
+    {
+        $this->mockCacheService
+            ->expects($this->exactly(2))
+            ->method('deletePattern')
+            ->willReturn(5);
+
+        $this->assertTrue($this->cacheService->flush());
+
+        // 底層失敗時回傳 false
+        $failing = $this->createMock(CacheServiceInterface::class);
+        $failing->method('deletePattern')->willThrowException(new RuntimeException('flush failed'));
+        $service = new StatisticsCacheService($failing, $this->mockLogger);
+
+        $this->assertFalse($service->flush());
+    }
+
+    public function testWarmupHandlesSuccessesAndFailures(): void
+    {
+        // 成功項目：主快取 1 次 + statistics/prewarmed 兩個標籤索引各 1 次
+        $matcher = $this->mockCacheService->expects($this->exactly(3))->method('set');
+        $matcher->willReturn(true);
+
+        $results = $this->cacheService->warmup([
+            'overview_stats' => static fn(): array => ['total' => 1],
+            'broken_stats'   => static fn(): array => throw new RuntimeException('boom'),
+        ]);
+
+        $this->assertTrue($results['overview_stats']['success']);
+        $this->assertArrayHasKey('duration', $results['overview_stats']);
+        $this->assertFalse($results['broken_stats']['success']);
+        /** @var array{success: bool, duration?: float, error?: string} $brokenResult */
+        $brokenResult = $results['broken_stats'];
+        $this->assertSame('boom', $brokenResult['error'] ?? 'no-error');
+    }
+
+    public function testCleanupReturnsDeletedCountAndSwallowsErrors(): void
+    {
+        $this->mockCacheService->expects($this->once())
+            ->method('deletePattern')
+            ->with('tags:*')
+            ->willReturn(3);
+
+        $this->assertSame(3, $this->cacheService->cleanup());
+
+        $failing = $this->createMock(CacheServiceInterface::class);
+        $failing->method('deletePattern')->willThrowException(new RuntimeException('cleanup failed'));
+        $service = new StatisticsCacheService($failing, $this->mockLogger);
+
+        $this->assertSame(0, $service->cleanup());
+    }
+
+    public function testTagIndexMaintenanceFlows(): void
+    {
+        // put：既有標籤索引為非陣列值時應重置後寫入
+        $this->mockCacheService
+            ->method('get')
+            ->willReturnCallback(static fn(string $key): mixed => str_starts_with($key, 'tags:') ? 'garbage' : null);
+        $setCalls = [];
+        $this->mockCacheService
+            ->method('set')
+            ->willReturnCallback(function (string $key, $value) use (&$setCalls): bool {
+                $setCalls[$key] = $value;
+
+                return true;
+            });
+
+        $this->cacheService->put('main_key', ['v'], 600, ['posts']);
+
+        $this->assertArrayHasKey('tags:posts', $setCalls);
+        $this->assertSame(['main_key'], $setCalls['tags:posts']);
+    }
+
+    public function testFlushByTagsHandlesMissingTagIndex(): void
+    {
+        // 標籤索引不存在時直接結束，不刪除任何鍵
+        $this->mockCacheService->method('get')->willReturn(null);
+        $this->mockCacheService->expects($this->never())->method('delete');
+
+        $this->cacheService->flushByTags(['posts']);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testForgetRemovesKeyFromTagIndexes(): void
+    {
+        // forget 時應從含該鍵的標籤索引中移除並回寫
+        $this->mockCacheService
+            ->method('get')
+            ->willReturnCallback(static fn(string $key): ?array => match ($key) {
+                'tags:posts', 'tags:users' => ['stale_key', 'other_key'],
+                default                    => null,
+            });
+        $this->mockCacheService->method('delete')->willReturn(true);
+
+        $this->mockCacheService
+            ->expects($this->exactly(2))
+            ->method('set')
+            ->with(
+                $this->logicalOr($this->equalTo('tags:posts'), $this->equalTo('tags:users')),
+                ['other_key'],
+                $this->anything(),
+            );
+
+        $this->cacheService->forget('stale_key');
+    }
 }

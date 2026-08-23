@@ -1334,4 +1334,122 @@ final class RefreshTokenRepositoryTest extends UnitTestCase
         // Act
         $this->repository->getTokensNearExpiry();
     }
+
+    // ========== TOKEN FAMILY 測試 ==========
+
+    public function testGetTokenFamily_ShouldReturnFamilyRows_WhenRecursiveQuerySucceeds(): void
+    {
+        // Arrange
+        $familyRows = [
+            ['jti' => 'root-jti', 'parent_token_jti' => null, 'status' => 'active'],
+            ['jti' => 'child-jti', 'parent_token_jti' => 'root-jti', 'status' => 'active'],
+        ];
+
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute')
+            ->with(['root-jti', 'root-jti']);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->willReturn($familyRows);
+
+        // Act
+        $result = $this->repository->getTokenFamily('root-jti');
+
+        // Assert
+        $this->assertSame($familyRows, $result);
+    }
+
+    public function testGetTokenFamily_ShouldFallbackToSimpleQuery_WhenRecursiveQueryFails(): void
+    {
+        // Arrange：第一次 prepare（遞迴 CTE）拋出 PDOException，第二次（簡化查詢）成功
+        $simpleRows = [
+            ['jti' => 'root-jti', 'parent_token_jti' => null],
+        ];
+
+        $this->mockPdo
+            ->expects($this->exactly(2))
+            ->method('prepare')
+            ->willReturnCallback(function (string $sql): PDOStatement {
+                if (str_contains($sql, 'WITH RECURSIVE')) {
+                    throw new PDOException('CTE not supported');
+                }
+
+                return $this->mockStatement;
+            });
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('execute');
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->willReturn($simpleRows);
+
+        // Act
+        $result = $this->repository->getTokenFamily('root-jti');
+
+        // Assert：應回傳簡化查詢的結果
+        $this->assertSame($simpleRows, $result);
+    }
+
+    public function testRevokeTokenFamily_ShouldReturnRevokedCount_WhenFamilyExists(): void
+    {
+        // Arrange
+        $familyRows = [
+            ['jti' => 'root-jti'],
+            ['jti' => 'child-jti'],
+        ];
+
+        // 第一次 prepare 供 getTokenFamily 查詢使用，第二次供 UPDATE 使用
+        $updateStatement = $this->createMock(PDOStatement::class);
+
+        $this->mockPdo
+            ->expects($this->exactly(2))
+            ->method('prepare')
+            ->willReturnCallback(function (string $sql) use ($updateStatement): PDOStatement {
+                return str_contains($sql, 'UPDATE') ? $updateStatement : $this->mockStatement;
+            });
+
+        $this->mockStatement->method('fetchAll')->willReturn($familyRows);
+        $updateStatement
+            ->expects($this->once())
+            ->method('execute')
+            ->with($this->callback(fn(array $params): bool => count($params) === 6 && $params[4] === 'root-jti' && $params[5] === 'child-jti'));
+        $updateStatement->expects($this->once())->method('rowCount')->willReturn(2);
+
+        // Act
+        $count = $this->repository->revokeTokenFamily('root-jti', 'security_breach');
+
+        // Assert
+        $this->assertSame(2, $count);
+    }
+
+    public function testRevokeTokenFamily_ShouldReturnZero_WhenFamilyIsEmpty(): void
+    {
+        // Arrange：家族查詢無結果時不應執行 UPDATE
+        $this->mockPdo
+            ->expects($this->once())
+            ->method('prepare')
+            ->willReturn($this->mockStatement);
+
+        $this->mockStatement
+            ->expects($this->once())
+            ->method('fetchAll')
+            ->willReturn([]);
+
+        // Act
+        $count = $this->repository->revokeTokenFamily('unknown-root');
+
+        // Assert
+        $this->assertSame(0, $count);
+    }
 }

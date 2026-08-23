@@ -72,11 +72,21 @@ final class StatisticsConfigServiceTest extends UnitTestCase
                     ],
                     'response_timeout' => 50,
                 ],
+                'database' => [
+                    'connection_timeout'   => 15,
+                    'query_timeout'        => 45,
+                    'slow_query_threshold' => 1.5,
+                ],
             ],
             'retention' => [
                 'snapshots' => [
                     'daily'  => 30,
                     'weekly' => 180,
+                ],
+                'cleanup' => [
+                    'enabled'    => true,
+                    'schedule'   => '0 3 * * *',
+                    'batch_size' => 300,
                 ],
             ],
             'features' => [
@@ -247,6 +257,24 @@ final class StatisticsConfigServiceTest extends UnitTestCase
         $this->assertSame(10, $config['max_files']);
     }
 
+    public function testGetDatabaseConfig(): void
+    {
+        $config = $this->configService->getDatabaseConfig();
+
+        $this->assertSame(15, $config['connection_timeout']);
+        $this->assertSame(45, $config['query_timeout']);
+        $this->assertSame(1.5, $config['slow_query_threshold']);
+    }
+
+    public function testGetCleanupConfig(): void
+    {
+        $config = $this->configService->getCleanupConfig();
+
+        $this->assertTrue($config['enabled']);
+        $this->assertSame('0 3 * * *', $config['schedule']);
+        $this->assertSame(300, $config['batch_size']);
+    }
+
     public function testGetEnvironment(): void
     {
         $this->assertSame('production', $this->configService->getEnvironment());
@@ -279,5 +307,169 @@ final class StatisticsConfigServiceTest extends UnitTestCase
         $this->assertArrayHasKey('cache', $config);
         $this->assertArrayHasKey('calculation', $config);
         $this->assertArrayHasKey('performance', $config);
+    }
+
+    public function testDefaultConstructorLoadsFromFileAndDetectsEnvironment(): void
+    {
+        $_ENV['APP_ENV'] = 'testing';
+        $service = new StatisticsConfigService();
+        $this->assertSame('testing', $service->getEnvironment());
+        $this->assertNotEmpty($service->getAllConfig());
+
+        unset($_ENV['APP_ENV']);
+        $_SERVER['APP_ENV'] = 'staging';
+        $service2 = new StatisticsConfigService();
+        $this->assertSame('staging', $service2->getEnvironment());
+        unset($_SERVER['APP_ENV']);
+
+        $_ENV['DEBUG'] = 'true';
+        $service3 = new StatisticsConfigService();
+        $this->assertSame('development', $service3->getEnvironment());
+        unset($_ENV['DEBUG']);
+    }
+
+    public function testFallbackWhenConfigSectionsAreMissingOrEmpty(): void
+    {
+        $nonArrayConfigService = new StatisticsConfigService([
+            'cache'       => false,
+            'calculation' => false,
+            'performance' => false,
+            'retention'   => false,
+            'monitoring'  => false,
+            'environment' => false,
+        ], 'unknown');
+
+        $this->assertSame(3600, $nonArrayConfigService->getCacheTtl('medium'));
+        $this->assertSame(3600, $nonArrayConfigService->getStatisticsTypeTtl('overview'));
+        $this->assertSame('0 * * * *', $nonArrayConfigService->getCalculationSchedule('daily'));
+        $this->assertSame([], $nonArrayConfigService->getCalculationTaskConfig());
+
+        $parallel = $nonArrayConfigService->getParallelConfig();
+        $this->assertFalse($parallel['enabled']);
+        $this->assertSame(1, $parallel['max_workers']);
+
+        $this->assertSame(90, $nonArrayConfigService->getRetentionDays('daily'));
+
+        $apiLimits = $nonArrayConfigService->getApiLimits();
+        $this->assertSame(90, $apiLimits['max_date_range']);
+
+        $trackingLimit = $nonArrayConfigService->getViewTrackingRateLimit('anonymous');
+        $this->assertSame(120, $trackingLimit['requests']);
+
+        $this->assertSame(100, $nonArrayConfigService->getResponseTimeout());
+
+        $health = $nonArrayConfigService->getHealthCheckConfig();
+        $this->assertTrue($health['enabled']);
+
+        $warmup = $nonArrayConfigService->getCacheWarmupConfig();
+        $this->assertTrue($warmup['enabled']);
+        $this->assertSame(7200, $warmup['ttl']);
+
+        $tags = $nonArrayConfigService->getSupportedCacheTags();
+        $this->assertContains('statistics', $tags);
+
+        $this->assertFalse($nonArrayConfigService->isFeatureEnabled('any_feature'));
+
+        $logging = $nonArrayConfigService->getLoggingConfig();
+        $this->assertSame('info', $logging['level']);
+
+        $db = $nonArrayConfigService->getDatabaseConfig();
+        $this->assertSame(30, $db['connection_timeout']);
+
+        $cleanup = $nonArrayConfigService->getCleanupConfig();
+        $this->assertTrue($cleanup['enabled']);
+    }
+
+    public function testGetViewTrackingRateLimitWithInvalidViewTrackingConfig(): void
+    {
+        $service = new StatisticsConfigService([
+            'performance' => ['view_tracking' => 'invalid'],
+        ]);
+
+        $this->assertSame(['requests' => 120, 'window' => 60], $service->getViewTrackingRateLimit('anonymous'));
+    }
+
+    public function testGetResponseTimeoutFallsBackToDefault(): void
+    {
+        $service = new StatisticsConfigService([
+            'performance' => [],
+        ]);
+
+        $this->assertSame(100, $service->getResponseTimeout());
+    }
+
+    public function testGetSupportedCacheTagsFallsBackToDefaults(): void
+    {
+        $service = new StatisticsConfigService([
+            'cache' => ['supported_tags' => 'invalid'],
+        ]);
+
+        $tags = $service->getSupportedCacheTags();
+        $this->assertSame([
+            'statistics',
+            'overview',
+            'posts',
+            'users',
+            'popular',
+            'trends',
+            'sources',
+            'prewarmed',
+        ], $tags);
+    }
+
+    /**
+     * 檢測環境：無 APP_ENV 但有 TESTING 環境變數時回傳 testing.
+     */
+    public function testDetectEnvironmentFallsBackToTesting(): void
+    {
+        $originalEnv = $_ENV['APP_ENV'] ?? null;
+        $originalServer = $_SERVER['APP_ENV'] ?? null;
+        unset($_ENV['APP_ENV'], $_SERVER['APP_ENV']);
+        $_ENV['TESTING'] = '1';
+
+        try {
+            $service = new StatisticsConfigService([]);
+            $this->assertSame('testing', $service->getEnvironment());
+        } finally {
+            if ($originalEnv !== null) {
+                $_ENV['APP_ENV'] = $originalEnv;
+            }
+            if ($originalServer !== null) {
+                $_SERVER['APP_ENV'] = $originalServer;
+            } else {
+                unset($_ENV['TESTING']);
+            }
+        }
+    }
+
+    /**
+     * 檢測環境：所有環境變數皆未設定時回傳 production.
+     */
+    public function testDetectEnvironmentFallsBackToProduction(): void
+    {
+        $backup = [$_ENV, $_SERVER];
+        $savedEnvVars = [
+            'APP_ENV' => [$_ENV['APP_ENV'] ?? null, $_SERVER['APP_ENV'] ?? null],
+            'TESTING' => [$_ENV['TESTING'] ?? null, $_SERVER['TESTING'] ?? null],
+            'DEBUG'   => [$_ENV['DEBUG'] ?? null, $_SERVER['DEBUG'] ?? null],
+        ];
+        foreach (['APP_ENV', 'TESTING', 'DEBUG'] as $key) {
+            unset($_ENV[$key], $_SERVER[$key]);
+        }
+
+        try {
+            $service = new StatisticsConfigService([]);
+            $this->assertSame('production', $service->getEnvironment());
+        } finally {
+            foreach ($savedEnvVars as $key => [$envValue, $serverValue]) {
+                if ($envValue !== null) {
+                    $_ENV[$key] = $envValue;
+                }
+                if ($serverValue !== null) {
+                    $_SERVER[$key] = $serverValue;
+                }
+            }
+            unset($backup);
+        }
     }
 }

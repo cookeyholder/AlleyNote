@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Exceptions\Validation;
 
 use App\Shared\Exceptions\ValidationException;
+use App\Shared\Validation\ValidationResult;
 
 class RequestValidationException extends ValidationException
 {
@@ -13,7 +14,25 @@ class RequestValidationException extends ValidationException
         if (empty($message) && !empty($errors)) {
             $message = '請求資料驗證失敗';
         }
-        parent::__construct($message, $errors);
+        $formattedErrors = [];
+        foreach ($errors as $field => $error) {
+            if (is_array($error)) {
+                /** @var array<int, string> $error */
+                $formattedErrors[$field] = array_map(
+                    static fn($item): string => is_scalar($item) ? (string) $item : get_debug_type($item),
+                    $error,
+                );
+
+                continue;
+            }
+            $formattedErrors[$field] = [is_scalar($error) ? (string) $error : get_debug_type($error)];
+        }
+        /** @var array<string, array<int, string>> $formattedErrors */
+        $validationResult = empty($formattedErrors) && !empty($message)
+            ? ValidationResult::failure(['request' => [$message]])
+            : ValidationResult::failure($formattedErrors);
+
+        parent::__construct($validationResult, $message);
     }
 
     public static function invalidJson(): self

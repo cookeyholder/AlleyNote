@@ -448,4 +448,73 @@ class PostStatisticsDTOTest extends UnitTestCase
         $this->assertSame([], $dto->getBySource());
         $this->assertSame([], $dto->getTimeDistribution());
     }
+
+    public function testCalculatedMetricsWithEmptyData(): void
+    {
+        $dto = PostStatisticsDTO::fromArray([]);
+
+        $this->assertSame(0.0, $dto->getPublishRate());
+        $this->assertNull($dto->getMostPopularSource());
+        $this->assertNull($dto->getPeakHour());
+    }
+
+    public function testValidationFailsWithNonArrayTopPost(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('熱門文章資料結構不正確');
+
+        /** @phpstan-ignore-next-line argument.type */
+        new PostStatisticsDTO(
+            totalPosts: 1,
+            byStatus: [],
+            bySource: [],
+            viewsStatistics: [],
+            /** @phpstan-ignore-next-line argument.type */
+            topPosts: ['not-an-array'],
+            lengthStatistics: [],
+            timeDistribution: [],
+            topAuthors: [],
+            pinnedStats: [],
+        );
+    }
+
+    public function testValidationFailsWithNonNumericLengthStatistic(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('長度統計 avg_length 必須是數值');
+
+        PostStatisticsDTO::fromArray([
+            'length_statistics' => ['avg_length' => 'not-numeric'],
+        ]);
+    }
+
+    public function testValidationFailsWithNonArrayTopAuthor(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('熱門作者資料結構不正確');
+
+        /** @phpstan-ignore-next-line argument.type */
+        new PostStatisticsDTO(
+            totalPosts: 1,
+            byStatus: [],
+            bySource: [],
+            viewsStatistics: [],
+            topPosts: [],
+            lengthStatistics: [],
+            timeDistribution: [],
+            /** @phpstan-ignore-next-line argument.type */
+            topAuthors: ['not-an-array'],
+            pinnedStats: [],
+        );
+    }
+
+    public function testValidationFailsWithNonNumericPinnedStat(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('置頂統計 total_pinned 必須是數值');
+
+        PostStatisticsDTO::fromArray([
+            'pinned_stats' => ['total_pinned' => 'not-numeric'],
+        ]);
+    }
 }

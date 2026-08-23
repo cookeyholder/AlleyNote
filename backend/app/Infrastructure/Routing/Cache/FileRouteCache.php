@@ -58,7 +58,7 @@ class FileRouteCache implements RouteCacheInterface
 
             return null;
         }
-        $data = unserialize($content);
+        $data = @unserialize($content);
         if (!$data instanceof RouteCollectionInterface) {
             $this->stats['misses']++;
             $this->saveStats();

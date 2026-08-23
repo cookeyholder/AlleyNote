@@ -625,4 +625,241 @@ class UserStatisticsRepositoryTest extends UnitTestCase
         $this->assertArrayHasKey('user_activity_rate', $result);
         $this->assertArrayHasKey('top_active_hours', $result);
     }
+
+    // ========== 以下使用真實 SQLite 資料庫驗證完整查詢與錯誤處理 ==========
+
+    private PDO $realDb;
+
+    /**
+     * 建立真實 SQLite 連線與使用者統計相關資料表.
+     */
+    private function createRealRepository(): UserStatisticsRepository
+    {
+        $pdo = new PDO('sqlite::memory:');
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $pdo->exec('
+            CREATE TABLE users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL,
+                role TEXT DEFAULT "user",
+                registration_source TEXT DEFAULT "website",
+                location TEXT,
+                created_at DATETIME NOT NULL
+            );
+            CREATE TABLE posts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT NOT NULL DEFAULT "",
+                user_id INTEGER,
+                status TEXT DEFAULT "1",
+                creation_source TEXT DEFAULT "web",
+                views INTEGER DEFAULT 0,
+                is_pinned INTEGER DEFAULT 0,
+                content TEXT,
+                comments_count INTEGER DEFAULT 0,
+                likes_count INTEGER DEFAULT 0,
+                created_at DATETIME NOT NULL
+            );
+            CREATE TABLE comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                created_at DATETIME NOT NULL
+            );
+            CREATE TABLE user_activity_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER,
+                action_type TEXT,
+                action TEXT,
+                occurred_at DATETIME,
+                created_at DATETIME NOT NULL
+            );
+        ');
+        $this->realDb = $pdo;
+
+        return new UserStatisticsRepository($pdo);
+    }
+
+    private function seedRealDatabase(): void
+    {
+        $this->realDb->exec("
+            INSERT INTO users (username, role, registration_source, location, created_at) VALUES
+            ('alice', 'admin', 'website', 'Taipei', '2023-01-01 08:00:00'),
+            ('bob',   'user',  'referral', 'Kaohsiung', '2023-01-15 12:00:00')
+        ");
+        $this->realDb->exec("
+            INSERT INTO posts (title, user_id, status, views, created_at) VALUES
+            ('Post A', 1, '1', 100, '2023-01-10 09:00:00'),
+            ('Post B', 1, '1', 50, '2023-01-20 10:00:00'),
+            ('Post C', 2, '0', 30, '2023-01-21 11:00:00')
+        ");
+        $this->realDb->exec("
+            INSERT INTO comments (user_id, created_at) VALUES
+            (2, '2023-01-22 13:00:00'),
+            (2, '2023-01-22 14:00:00')
+        ");
+        $this->realDb->exec("
+            INSERT INTO user_activity_logs (user_id, action_type, action, created_at) VALUES
+            (1, 'login', 'login', '2023-01-16 07:00:00'),
+            (1, 'view',  'view',  '2023-01-16 07:05:00'),
+            (1, 'login', 'login', '2023-01-17 08:00:00'),
+            (2, 'login', 'login', '2023-01-18 08:30:00'),
+            (2, 'view',  'view',  '2023-01-18 21:00:00')
+        ");
+    }
+
+    public function testRealDatabaseReturnsAggregatedUserStatistics(): void
+    {
+        $repository = $this->createRealRepository();
+        $this->seedRealDatabase();
+
+        $period = new StatisticsPeriod(
+            PeriodType::MONTHLY,
+            new DateTimeImmutable('2023-01-01 00:00:00'),
+            new DateTimeImmutable('2023-01-31 23:59:59'),
+        );
+
+        $this->assertSame(2, $repository->getNewUsersCount($period));
+        $this->assertSame(2, $repository->getTotalUsersCount($period));
+        $activity = $repository->getActiveUsersByActivityType($period);
+        $this->assertSame(2, $activity['login']);
+        $this->assertSame(2, $activity['post']);
+
+        $mostActive = $repository->getMostActiveUsers($period, 10);
+        $this->assertSame('alice', $mostActive[0]['username']);
+        $byLogins = $repository->getMostActiveUsers($period, 5, 'logins');
+        $this->assertNotEmpty($byLogins);
+        $byViews = $repository->getMostActiveUsers($period, 5, 'views');
+        $this->assertNotEmpty($byViews);
+        $byScore = $repository->getMostActiveUsers($period, 5, 'activity_score');
+        $this->assertSame(1, $byScore[0]['rank']);
+
+        $engagement = $repository->getUserEngagementStatistics($period);
+        $this->assertSame(0, $engagement['inactive']);
+        $this->assertGreaterThan(0.0, $engagement['avg_engagement_score']);
+
+        $roles = $repository->getUsersCountByRole($period);
+        $this->assertSame(1, $roles['admin']);
+
+        $sources = $repository->getUserRegistrationSources($period);
+        $this->assertSame(1, $sources['referral']);
+
+        $geo = $repository->getUserGeographicalDistribution($period);
+        $this->assertCount(2, $geo);
+
+        $retention = $repository->getUserRetentionAnalysis($period, 7);
+        $this->assertSame(2, $retention['cohort_size']);
+        $this->assertSame(100.0, $retention['churn_rate']);
+
+        $trend = $repository->getUserRegistrationTrend(
+            new StatisticsPeriod(PeriodType::MONTHLY, new DateTimeImmutable('2023-02-01'), new DateTimeImmutable('2023-02-28 23:59:59')),
+            $period,
+        );
+        $this->assertSame(-2, $trend['growth_count']);
+
+        $this->assertTrue($repository->hasDataForPeriod($period));
+    }
+
+    public function testGetUserLoginActivityWithRealDatabase(): void
+    {
+        $repository = $this->createRealRepository();
+        $this->seedRealDatabase();
+
+        $period = new StatisticsPeriod(
+            PeriodType::MONTHLY,
+            new DateTimeImmutable('2023-01-01 00:00:00'),
+            new DateTimeImmutable('2023-01-31 23:59:59'),
+        );
+
+        $loginStats = $repository->getUserLoginActivity($period);
+
+        $this->assertSame(3, $loginStats['total_logins']);
+        $this->assertSame(2, $loginStats['unique_users']);
+        $this->assertSame(1.5, $loginStats['avg_logins_per_user']);
+        $this->assertSame(8, $loginStats['peak_hour']);
+        $this->assertArrayHasKey('2-5次', $loginStats['login_frequency_distribution']);
+        $this->assertArrayHasKey('1次', $loginStats['login_frequency_distribution']);
+    }
+
+    public function testAllMethodsWrapUnexpectedPdoErrors(): void
+    {
+        $repository = $this->createRealRepository();
+        $period = new StatisticsPeriod(
+            PeriodType::MONTHLY,
+            new DateTimeImmutable('2023-01-01 00:00:00'),
+            new DateTimeImmutable('2023-01-31 23:59:59'),
+        );
+
+        // 移除所有資料表讓查詢失敗
+        foreach (['user_activity_logs', 'comments', 'posts', 'users'] as $table) {
+            $this->realDb->exec("DROP TABLE {$table}");
+        }
+
+        $cases = [
+            'getActiveUsersCountLogin'   => static fn() => $repository->getActiveUsersCount($period, 'login'),
+            'getActiveUsersCountComment' => static fn() => $repository->getActiveUsersCount($period, 'comment'),
+            'getNewUsersCount'           => static fn() => $repository->getNewUsersCount($period),
+            'getTotalUsersCount'         => static fn() => $repository->getTotalUsersCount($period),
+            'getActiveUsersByType'       => static fn() => $repository->getActiveUsersByActivityType($period),
+            'getMostActivePosts'         => static fn() => $repository->getMostActiveUsers($period, 10, 'posts'),
+            'getMostActiveLogins'        => static fn() => $repository->getMostActiveUsers($period, 10, 'logins'),
+            'getMostActiveScore'         => static fn() => $repository->getMostActiveUsers($period, 10, 'activity_score'),
+            'getLoginActivity'           => static fn() => $repository->getUserLoginActivity($period),
+            'getRegistrationTrend'       => static fn() => $repository->getUserRegistrationTrend($period, $period),
+            'getTimeDistributionHour'    => static fn() => $repository->getUserActivityTimeDistribution($period, 'hour'),
+            'getTimeDistributionDay'     => static fn() => $repository->getUserActivityTimeDistribution($period, 'day'),
+            'getRetentionAnalysis'       => static fn() => $repository->getUserRetentionAnalysis($period, 7),
+            'getUsersByRole'             => static fn() => $repository->getUsersCountByRole($period),
+            'getEngagement'              => static fn() => $repository->getUserEngagementStatistics($period),
+            'getRegistrationSources'     => static fn() => $repository->getUserRegistrationSources($period),
+            'getGeographical'            => static fn() => $repository->getUserGeographicalDistribution($period),
+            'hasDataForPeriod'           => static fn() => $repository->hasDataForPeriod($period),
+            'getActivitySummary'         => static fn() => $repository->getUserActivitySummary($period),
+        ];
+
+        foreach ($cases as $name => $invoke) {
+            try {
+                $invoke();
+                $this->fail("{$name} 在資料表不存在時應拋出 RuntimeException");
+            } catch (RuntimeException $e) {
+                $this->addToAssertionCount(1);
+            }
+        }
+    }
+
+    public function testEdgeCasesWithEmptyAndPartialData(): void
+    {
+        // 空資料庫：留存分析與參與度統計應回傳全零結果
+        $repository = $this->createRealRepository();
+
+        $emptyPeriod = new StatisticsPeriod(
+            PeriodType::MONTHLY,
+            new DateTimeImmutable('2030-01-01 00:00:00'),
+            new DateTimeImmutable('2030-01-31 23:59:59'),
+        );
+
+        $retention = $repository->getUserRetentionAnalysis($emptyPeriod, 7);
+        $this->assertSame(0, $retention['cohort_size']);
+        $this->assertSame(0.0, $retention['retention_rate']);
+
+        $engagement = $repository->getUserEngagementStatistics($emptyPeriod);
+        $this->assertSame(['high_engagement' => 0, 'medium_engagement' => 0, 'low_engagement' => 0, 'inactive' => 0, 'avg_engagement_score' => 0.0], $engagement);
+
+        // week 分組會組出 YEARWEEK 查詢，在 SQLite 上拋出 PDOException
+        $period = new StatisticsPeriod(
+            PeriodType::MONTHLY,
+            new DateTimeImmutable('2023-01-01 00:00:00'),
+            new DateTimeImmutable('2023-01-31 23:59:59'),
+        );
+
+        try {
+            $repository->getUserActivityTimeDistribution($period, 'week');
+            $this->fail('YEARWEEK 在 SQLite 應導致查詢失敗');
+        } catch (RuntimeException) {
+            $this->addToAssertionCount(1);
+        }
+
+        // 摘要中的「最活躍時段」查詢使用 HOUR()，在 SQLite 上必然失敗並被包裝
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('取得使用者活動摘要失敗');
+        $repository->getUserActivitySummary($period);
+    }
 }

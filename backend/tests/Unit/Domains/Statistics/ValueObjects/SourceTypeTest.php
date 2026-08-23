@@ -182,12 +182,14 @@ final class SourceTypeTest extends UnitTestCase
         $apiType = SourceType::fromCode('API'); // 測試大寫
         $mobileType = SourceType::fromCode('Mobile');
         $importType = SourceType::fromCode('Import'); // 測試混合大小寫
+        $migrationType = SourceType::fromCode('MIGRATION'); // 測試大寫遷移
 
         // Assert
         $this->assertSame('web', $webType->code);
         $this->assertSame('api', $apiType->code);
         $this->assertSame('mobile', $mobileType->code);
         $this->assertSame('import', $importType->code);
+        $this->assertSame('migration', $migrationType->code);
     }
 
     #[Test]

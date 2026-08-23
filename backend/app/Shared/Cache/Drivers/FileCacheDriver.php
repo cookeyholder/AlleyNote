@@ -283,13 +283,15 @@ class FileCacheDriver implements CacheDriverInterface
 
     /**
      * 取得快取檔案路徑。
+     *
+     * 快取檔案直接存放於快取目錄頂層，與 flush()、cleanup()、
+     * forgetPattern() 與統計方法所使用的 glob 掃描路徑保持一致。
      */
     private function getCacheFilePath(string $key): string
     {
         $hash = hash('sha256', $key);
-        $subDir = substr($hash, 0, 2);
 
-        return $this->cachePath . '/' . $subDir . '/' . $hash . self::CACHE_EXTENSION;
+        return $this->cachePath . '/' . $hash . self::CACHE_EXTENSION;
     }
 
     /**

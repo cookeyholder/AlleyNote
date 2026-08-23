@@ -86,4 +86,14 @@ class PostSlugTest extends UnitTestCase
 
         $this->assertEquals('"json-slug"', json_encode($slug));
     }
+
+    public function test_can_convert_to_array(): void
+    {
+        $slug = new PostSlug('array-slug');
+
+        $this->assertSame([
+            'slug'   => 'array-slug',
+            'length' => 10,
+        ], $slug->toArray());
+    }
 }

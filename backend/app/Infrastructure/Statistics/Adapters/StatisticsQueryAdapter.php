@@ -273,17 +273,23 @@ class StatisticsQueryAdapter
         $data = [];
         $totalValue = 1000;
         $remainingValue = $totalValue;
-        for ($i = 0; $i < min($limit, count($categories)); $i++) {
-            $maxValue = $i === $limit - 1 ? $remainingValue : $remainingValue * 0.6;
-            $value = max(10, mt_rand(10, (int) $maxValue));
+        $count = min(max(1, $limit), count($categories));
+        for ($i = 0; $i < $count; $i++) {
+            $isLast = $i === $count - 1;
+            if ($isLast) {
+                $value = max(10, $remainingValue);
+            } else {
+                $slotsLeft = $count - $i - 1;
+                $upperBound = max(10, (int) ($remainingValue * 0.6));
+                $value = max(10, mt_rand(10, $upperBound));
+                // 保留足夠剩餘量，確保後續類別至少各有 10
+                $value = min($value, max(10, $remainingValue - 10 * $slotsLeft));
+            }
             $data[] = [
                 'category' => $categories[$i],
                 'value'    => (float) $value,
             ];
             $remainingValue -= $value;
-            if ($remainingValue <= 0) {
-                break;
-            }
         }
 
         return $data;

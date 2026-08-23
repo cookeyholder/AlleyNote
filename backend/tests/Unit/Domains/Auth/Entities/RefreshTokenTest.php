@@ -849,4 +849,43 @@ class RefreshTokenTest extends UnitTestCase
             deviceInfo: $this->deviceInfo,
         );
     }
+
+    public function test_get_parent_token_jti_returns_rotated_parent(): void
+    {
+        // Arrange
+        $createdAt = new DateTime('2026-01-02 03:04:05');
+
+        // Act
+        $token = new RefreshToken(
+            id: 7,
+            jti: 'rotated-jti-0001',
+            userId: 9,
+            tokenHash: hash('sha256', 'rotated'),
+            expiresAt: new DateTime('+1 hour'),
+            deviceInfo: $this->deviceInfo,
+            parentTokenJti: 'parent-jti-00001',
+            createdAt: $createdAt,
+        );
+
+        // Assert
+        $this->assertSame('parent-jti-00001', $token->getParentTokenJti());
+        $this->assertEquals($createdAt, $token->getCreatedAt());
+    }
+
+    public function test_get_parent_token_jti_and_created_at_default_to_null(): void
+    {
+        // Arrange & Act
+        $token = new RefreshToken(
+            id: null,
+            jti: 'root-token-00001',
+            userId: 9,
+            tokenHash: hash('sha256', 'root'),
+            expiresAt: new DateTime('+1 hour'),
+            deviceInfo: $this->deviceInfo,
+        );
+
+        // Assert
+        $this->assertNull($token->getParentTokenJti());
+        $this->assertNull($token->getCreatedAt());
+    }
 }

@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Domains\Security\Services\Error;
 
 use App\Domains\Security\Contracts\ErrorHandlerServiceInterface;
+use App\Shared\Exceptions\CsrfTokenException;
+use App\Shared\Exceptions\NotFoundException;
+use App\Shared\Exceptions\StateTransitionException;
+use App\Shared\Exceptions\ValidationException;
 use ErrorException;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RotatingFileHandler;
@@ -237,22 +241,22 @@ class ErrorHandlerService implements ErrorHandlerServiceInterface
     private function getPublicErrorMessage(Throwable $e): string
     {
         return match (get_class($e)) {
-            'App\\Exceptions\\ValidationException'      => $e->getMessage(),
-            'App\\Exceptions\\NotFoundException'        => '請求的資源不存在',
-            'App\\Exceptions\\CsrfTokenException'       => '安全驗證失敗，請重新載入頁面',
-            'App\\Exceptions\\StateTransitionException' => '操作失敗，請稍後再試',
-            default                                     => '系統暫時無法處理您的請求，請稍後再試'
+            ValidationException::class      => $e->getMessage(),
+            NotFoundException::class        => '請求的資源不存在',
+            CsrfTokenException::class       => '安全驗證失敗，請重新載入頁面',
+            StateTransitionException::class => '操作失敗，請稍後再試',
+            default                         => '系統暫時無法處理您的請求，請稍後再試'
         };
     }
 
     private function getErrorCode(Throwable $e): string
     {
         return match (get_class($e)) {
-            'App\\Exceptions\\ValidationException'      => 'VALIDATION_ERROR',
-            'App\\Exceptions\\NotFoundException'        => 'NOT_FOUND',
-            'App\\Exceptions\\CsrfTokenException'       => 'CSRF_ERROR',
-            'App\\Exceptions\\StateTransitionException' => 'STATE_ERROR',
-            default                                     => 'INTERNAL_ERROR'
+            ValidationException::class      => 'VALIDATION_ERROR',
+            NotFoundException::class        => 'NOT_FOUND',
+            CsrfTokenException::class       => 'CSRF_ERROR',
+            StateTransitionException::class => 'STATE_ERROR',
+            default                         => 'INTERNAL_ERROR'
         };
     }
 

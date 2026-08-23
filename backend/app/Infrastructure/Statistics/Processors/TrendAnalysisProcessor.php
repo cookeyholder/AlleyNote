@@ -173,14 +173,14 @@ class TrendAnalysisProcessor
         $growthRates = [];
         for ($i = 0; $i < $n; $i++) {
             if ($i === 0) {
-                $growthRates[] = 0; // 第一個點沒有成長率
+                $growthRates[] = 0.0; // 第一個點沒有成長率
             } else {
                 $prevValue = $data[$i - 1];
-                if ($prevValue !== 0) {
+                if ((float) $prevValue !== 0.0) {
                     $growthRate = (($data[$i] - $prevValue) / $prevValue) * 100;
                     $growthRates[] = $growthRate;
                 } else {
-                    $growthRates[] = 0;
+                    $growthRates[] = 0.0;
                 }
             }
         }
@@ -224,7 +224,8 @@ class TrendAnalysisProcessor
         $overallMean = array_sum($pattern) / $seasonLength;
         // 轉換為調整係數
         for ($i = 0; $i < $seasonLength; $i++) {
-            if ($overallMean !== 0) {
+            // 以 epsilon 判斷零值，避免 0.0 與 0 型別差異導致除以零
+            if (abs($overallMean) > PHP_FLOAT_EPSILON) {
                 $pattern[$i] = $pattern[$i] / $overallMean;
             } else {
                 $pattern[$i] = 1.0;

@@ -484,10 +484,10 @@ class AttachmentService implements AttachmentServiceInterface
         $tempPath = $tempDir . '/' . $newFilename;
 
         try {
+            // 先於移動前完成串流內容驗證（PSR-7 檔案一經 moveTo 後串流即不可再讀取）
+            $this->validateFile($file);
             // 移動上傳檔案到安全的臨時位置
             $file->moveTo($tempPath);
-            // 在臨時位置進行所有驗證
-            $this->validateFile($file);
             // 重新驗證檔案類型（基於實際內容）
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $actualMimeType = finfo_file($finfo, $tempPath);
@@ -638,13 +638,14 @@ class AttachmentService implements AttachmentServiceInterface
             // 清理臨時目錄
             rmdir($fileInfo['temp_dir']);
             // 儲存到資料庫
+            // 儲存相對路徑（檔名），下載與刪除時再與上傳目錄組合
             $attachmentData = [
                 'post_id'       => $postId,
                 'filename'      => $fileInfo['filename'],
                 'original_name' => $fileInfo['original_name'],
                 'file_size'     => $fileInfo['file_size'],
                 'mime_type'     => $fileInfo['mime_type'],
-                'storage_path'  => $finalPath,
+                'storage_path'  => $fileInfo['filename'],
             ];
             $attachment = $this->attachmentRepo->create($attachmentData);
             // 記錄成功上傳

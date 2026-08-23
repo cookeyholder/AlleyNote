@@ -271,4 +271,172 @@ final class StatisticsDatabaseAdapterFactoryTest extends UnitTestCase
 
         $this->assertEquals(['base'], $types);
     }
+
+    public function testCreateCachedWithLoggingThrowsExceptionWhenLoggerNotProvided(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+            null,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Logger is required for logging adapter');
+
+        $factory->createCachedWithLogging();
+    }
+
+    public function testCreateTransactionalWithLoggingThrowsExceptionWhenDbNotProvided(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            null,
+            $this->mockLogger,
+            null,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('PDO connection is required for transaction adapter');
+
+        $factory->createTransactionalWithLogging();
+    }
+
+    public function testCreateTransactionalWithLoggingThrowsExceptionWhenLoggerNotProvided(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            null,
+            null,
+            $this->mockDb,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Logger is required for logging adapter');
+
+        $factory->createTransactionalWithLogging();
+    }
+
+    public function testCreateFullThrowsExceptionWhenLoggerMissing(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+            null,
+            $this->mockDb,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Logger is required for full adapter');
+
+        $factory->createFull();
+    }
+
+    public function testCreateFullThrowsExceptionWhenDbMissing(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+            $this->mockLogger,
+            null,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('PDO connection is required for full adapter');
+
+        $factory->createFull();
+    }
+
+    public function testCreateByConfigThrowsExceptionWhenCacheDependencyMissing(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory($this->mockRepository);
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cache service is required when cache is enabled');
+
+        $factory->createByConfig(['cache' => true]);
+    }
+
+    public function testCreateByConfigThrowsExceptionWhenTransactionDependencyMissing(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('PDO connection is required when transaction is enabled');
+
+        $factory->createByConfig(['cache' => true, 'transaction' => true]);
+    }
+
+    public function testCreateByConfigThrowsExceptionWhenLoggingDependencyMissing(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+            null,
+            $this->mockDb,
+        );
+
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Logger is required when logging is enabled');
+
+        $factory->createByConfig(['transaction' => true, 'logging' => true]);
+    }
+
+    public function testCanCreateCompositeTypes(): void
+    {
+        // 具備所有相依時，組合類型皆可用
+        $fullFactory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+            $this->mockLogger,
+            $this->mockDb,
+        );
+        $this->assertTrue($fullFactory->canCreate('cached_logging'));
+        $this->assertTrue($fullFactory->canCreate('transactional_logging'));
+        $this->assertTrue($fullFactory->canCreate('full'));
+
+        // 缺少相依時，組合類型不可用
+        $partialFactory = new StatisticsDatabaseAdapterFactory($this->mockRepository);
+        $this->assertFalse($partialFactory->canCreate('cached_logging'));
+        $this->assertFalse($partialFactory->canCreate('transactional_logging'));
+        $this->assertFalse($partialFactory->canCreate('unknown_type'));
+    }
+
+    public function testGetAvailableTypesWithAllDependencies(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            $this->mockCache,
+            $this->mockLogger,
+            $this->mockDb,
+        );
+
+        $types = $factory->getAvailableTypes();
+
+        $this->assertEquals([
+            'base',
+            'cache',
+            'logging',
+            'transaction',
+            'cached_logging',
+            'transactional_logging',
+            'full',
+        ], $types);
+    }
+
+    public function testGetAvailableTypesWithLoggerAndDbOnly(): void
+    {
+        $factory = new StatisticsDatabaseAdapterFactory(
+            $this->mockRepository,
+            null,
+            $this->mockLogger,
+            $this->mockDb,
+        );
+
+        $types = $factory->getAvailableTypes();
+
+        $this->assertEquals(['base', 'logging', 'transaction', 'transactional_logging'], $types);
+    }
 }

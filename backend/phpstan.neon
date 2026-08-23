@@ -17,6 +17,7 @@ parameters:
         - app/Domains/Post/Models/Tag.php
         - vendor
         - tests/Factory
+        - app/storage/di-cache (?)
         - coverage-reports (?)
         - ../coverage-reports (?)
     tmpDir: storage/phpstan

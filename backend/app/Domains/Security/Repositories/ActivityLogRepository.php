@@ -787,14 +787,14 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
         // 取得登入失敗帳號統計
         $accountSql = '
             SELECT
-                json_extract(COALESCE(metadata, request_data, \'{}\'), \'$.email\') as email,
-                json_extract(COALESCE(metadata, request_data, \'{}\'), \'$.username\') as username,
+                json_extract(COALESCE(metadata, \'{}\'), \'$.email\') as email,
+                json_extract(COALESCE(metadata, \'{}\'), \'$.username\') as username,
                 COUNT(*) as count,
                 MAX(COALESCE(occurred_at, created_at)) as latest_attempt
             FROM ' . self::TABLE_NAME . "
             WHERE (action_type IN ('LOGIN_FAILED', 'login_failed', 'auth_failed', 'auth.login_failed') OR (action_type = 'auth.login' AND status != 'success'))
                 AND COALESCE(occurred_at, created_at) BETWEEN :start_time AND :end_time
-            GROUP BY COALESCE(json_extract(COALESCE(metadata, request_data, '{}'), '$.email'), json_extract(COALESCE(metadata, request_data, '{}'), '$.username'))
+            GROUP BY COALESCE(json_extract(COALESCE(metadata, '{}'), '$.email'), json_extract(COALESCE(metadata, '{}'), '$.username'))
             ORDER BY count DESC
             LIMIT :limit
         ";

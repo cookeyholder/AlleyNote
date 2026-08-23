@@ -159,8 +159,9 @@ class CategoryProcessor
         foreach ($rawData as $item) {
             $percentage = ($item['value'] / $total) * 100;
             $percentageData[] = [
-                'category' => $item['category'],
-                'value'    => $percentage,
+                'category'  => $item['category'],
+                'value'     => $percentage,
+                'raw_value' => $item['value'],
             ];
         }
         $processedData = $this->sortAndProcessData($percentageData, 'desc');
@@ -171,7 +172,7 @@ class CategoryProcessor
             $color = $colors[$index % count($colors)];
             $dataPoints[] = CategoryDataPoint::withPercentage(
                 category: $item['category'],
-                value: $rawData[$index]['value'], // 使用原始值計算百分比
+                value: (float) ($item['raw_value'] ?? $item['value']),
                 total: $total,
                 color: $color,
             );
@@ -242,7 +243,7 @@ class CategoryProcessor
     /**
      * 處理比較分析資料（多個分類系列）.
      *
-     * @param array<string, array<array{category: string, value: float}>> $multiSeriesData
+     * @param array<int|string, array<array{category: string, value: float}>> $multiSeriesData
      * @param array<string, mixed> $options
      */
     public function processComparisonData(
@@ -281,7 +282,7 @@ class CategoryProcessor
             }
             $color = $colors[$colorIndex % count($colors)];
             $datasets[] = ChartDataset::forBarChart(
-                $seriesLabel,
+                (string) $seriesLabel,
                 $seriesValues,
                 [$color],
             );
@@ -298,7 +299,7 @@ class CategoryProcessor
     /**
      * 處理分組堆疊長條圖資料.
      *
-     * @param array<string, array<array{category: string, value: float}>> $stackedData
+     * @param array<int|string, array<array{category: string, value: float}>> $stackedData
      * @param array<string, mixed> $options
      */
     public function processStackedBarData(

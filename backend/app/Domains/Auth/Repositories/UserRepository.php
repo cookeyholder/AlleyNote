@@ -62,7 +62,7 @@ class UserRepository
             }
         }
         if (empty($fields)) {
-            return $this->findById($id);
+            return $this->findById((int) $id);
         }
         $fields[] = 'updated_at = CURRENT_TIMESTAMP';
         $sql = 'UPDATE users SET ' . implode(', ', $fields) . ' WHERE id = :id';

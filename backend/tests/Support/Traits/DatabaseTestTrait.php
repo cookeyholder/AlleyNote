@@ -8,6 +8,7 @@ use App\Infrastructure\Database\DatabaseConnection;
 use PDO;
 use PDOException;
 use RuntimeException;
+use ValueError;
 
 /**
  * 資料庫測試功能 Trait.
@@ -75,6 +76,15 @@ trait DatabaseTestTrait
         $this->createCommentsTable();
         $this->createPostViewsTable();
         $this->createStatisticsSnapshotsTable();
+        $this->createTagsTable();
+        $this->createPostTagsTable();
+        $this->createRolesTable();
+        $this->createPermissionsTable();
+        $this->createUserRolesTable();
+        $this->createRolePermissionsTable();
+        $this->createUserPermissionsTable();
+        $this->createSettingsTable();
+        $this->createNotificationsTable();
         $this->createIndices();
     }
 
@@ -151,16 +161,24 @@ trait DatabaseTestTrait
 
     /**
      * 建立使用者資料表.
+     *
+     * 欄位需與 UserRepository 的查詢對齊（uuid、role、is_active、last_login、deleted_at），
+     * 否則登入流程（findByIdWithRoles、updateLastLogin）會因缺欄位而失敗。
      */
     protected function createUsersTable(): void
     {
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT,
                 username TEXT NOT NULL UNIQUE,
                 email TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
+                role TEXT,
+                is_active INTEGER NOT NULL DEFAULT 1,
                 status INTEGER NOT NULL DEFAULT 1,
+                last_login TEXT,
+                deleted_at TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             )
@@ -309,6 +327,197 @@ trait DatabaseTestTrait
     }
 
     /**
+     * 建立標籤資料表.
+     */
+    protected function createTagsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS tags (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                slug TEXT UNIQUE,
+                description TEXT,
+                color TEXT,
+                usage_count INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT
+            )
+        ');
+    }
+
+    /**
+     * 建立貼文標籤關聯資料表.
+     */
+    protected function createPostTagsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS post_tags (
+                post_id INTEGER NOT NULL,
+                tag_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (post_id, tag_id),
+                FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE,
+                FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+            )
+        ');
+    }
+
+    /**
+     * 建立角色資料表.
+     */
+    protected function createRolesTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS roles (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                display_name TEXT NOT NULL,
+                description TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT
+            )
+        ');
+
+        $this->db->exec("
+            INSERT OR IGNORE INTO roles (id, name, display_name, description) VALUES
+            (1, 'admin', '系統管理員', '擁有系統所有權限'),
+            (2, 'user', '一般使用者', '一般使用者權限')
+        ");
+    }
+
+    /**
+     * 建立權限資料表.
+     */
+    protected function createPermissionsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS permissions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL UNIQUE,
+                display_name TEXT NOT NULL,
+                description TEXT,
+                resource TEXT NOT NULL,
+                action TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        ');
+    }
+
+    /**
+     * 建立使用者角色關聯資料表.
+     */
+    protected function createUserRolesTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS user_roles (
+                user_id INTEGER NOT NULL,
+                role_id INTEGER NOT NULL,
+                assigned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                assigned_by INTEGER,
+                PRIMARY KEY (user_id, role_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+                FOREIGN KEY (assigned_by) REFERENCES users(id) ON DELETE SET NULL
+            )
+        ');
+    }
+
+    /**
+     * 建立角色權限關聯資料表.
+     */
+    protected function createRolePermissionsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS role_permissions (
+                role_id INTEGER NOT NULL,
+                permission_id INTEGER NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (role_id, permission_id),
+                FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+                FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+            )
+        ');
+    }
+
+    /**
+     * 建立使用者直接權限關聯資料表.
+     */
+    protected function createUserPermissionsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS user_permissions (
+                user_id INTEGER NOT NULL,
+                permission_id INTEGER NOT NULL,
+                assigned_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (user_id, permission_id),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+            )
+        ');
+    }
+
+    /**
+     * 建立系統設定資料表並填入預設設定.
+     */
+    protected function createSettingsTable(): void
+    {
+        $this->db->exec("
+            CREATE TABLE IF NOT EXISTS settings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                key TEXT NOT NULL UNIQUE,
+                value TEXT,
+                type TEXT NOT NULL DEFAULT 'string',
+                description TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        ");
+
+        $stmt = $this->db->prepare("
+            INSERT OR IGNORE INTO settings (key, value, type, description) VALUES
+            (:k1, :v1, 'string', '網站名稱'),
+            (:k2, :v2, 'string', '網站描述'),
+            (:k3, :v3, 'integer', '每頁文章數量'),
+            (:k4, :v4, 'boolean', '允許使用者註冊'),
+            (:k5, :v5, 'boolean', '允許留言'),
+            (:k6, :v6, 'integer', '最大上傳檔案大小（位元組）'),
+            (:k7, :v7, 'json', '允許的檔案類型')
+        ");
+        $stmt->execute([
+            'k1' => 'site_name', 'v1' => 'AlleyNote',
+            'k2' => 'site_description', 'v2' => 'AlleyNote 公布欄系統',
+            'k3' => 'posts_per_page', 'v3' => '20',
+            'k4' => 'enable_registration', 'v4' => '1',
+            'k5' => 'enable_comments', 'v5' => '1',
+            'k6' => 'max_upload_size', 'v6' => '10485760',
+            'k7' => 'allowed_file_types', 'v7' => json_encode(['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx']),
+        ]);
+    }
+
+    /**
+     * 建立通知資料表.
+     */
+    protected function createNotificationsTable(): void
+    {
+        $this->db->exec('
+            CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                uuid TEXT NOT NULL UNIQUE,
+                user_id INTEGER NOT NULL,
+                type TEXT NOT NULL,
+                title TEXT NOT NULL,
+                content TEXT NOT NULL,
+                data TEXT,
+                is_read INTEGER NOT NULL DEFAULT 0,
+                read_at TEXT,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        ');
+    }
+
+    /**
      * 建立資料表索引.
      */
     protected function createIndices(): void
@@ -367,6 +576,25 @@ trait DatabaseTestTrait
             CREATE INDEX IF NOT EXISTS idx_activity_logs_created_at ON user_activity_logs(created_at);
             CREATE INDEX IF NOT EXISTS idx_activity_logs_occurred_at ON user_activity_logs(occurred_at)
         ');
+
+        // Tags 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_tags_name ON tags(name);
+            CREATE INDEX IF NOT EXISTS idx_tags_slug ON tags(slug);
+            CREATE INDEX IF NOT EXISTS idx_post_tags_tag_id ON post_tags(tag_id)
+        ');
+
+        // Settings 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_settings_key ON settings(key)
+        ');
+
+        // Notifications 索引
+        $this->db->exec('
+            CREATE INDEX IF NOT EXISTS idx_notifications_uuid ON notifications(uuid);
+            CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON notifications(user_id);
+            CREATE INDEX IF NOT EXISTS idx_notifications_is_read ON notifications(is_read)
+        ');
     }
 
     /**
@@ -378,22 +606,31 @@ trait DatabaseTestTrait
     {
         $defaultData = [
             'uuid'                   => $this->generateTestUuid(),
-            'seq_number'             => rand(1, 9999),
+            'seq_number'             => rand(1, 99999),
             'title'                  => 'Test Post ' . $this->generateRandomString(5),
             'content'                => 'Test content for post ' . $this->generateRandomString(10),
             'user_id'                => 1,
             'user_ip'                => '127.0.0.1',
             'views'                  => 0,
             'is_pinned'              => 0,
-            'status'                 => 1,
-            'publish_date'           => date('Y-m-d H:i:s'),
-            'created_at'             => date('Y-m-d H:i:s'),
-            'updated_at'             => date('Y-m-d H:i:s'),
+            'status'                 => 'published',
+            'publish_date'           => gmdate('Y-m-d H:i:s', time() - 3600),
+            'created_at'             => gmdate('Y-m-d H:i:s', time() - 3600),
+            'updated_at'             => gmdate('Y-m-d H:i:s', time() - 3600),
             'creation_source'        => 'unknown',
             'creation_source_detail' => null,
         ];
 
         $postData = array_merge($defaultData, $data);
+        $userId = $postData['user_id'];
+        $this->assertIsInt($userId);
+
+        // 確保使用者存在以滿足外鍵約束
+        $userCheck = $this->db->prepare('SELECT COUNT(*) FROM users WHERE id = ?');
+        $userCheck->execute([$userId]);
+        if ((int) $userCheck->fetchColumn() === 0) {
+            $this->insertTestUser(['id' => $userId, 'username' => 'user_' . $userId]);
+        }
 
         $stmt = $this->db->prepare('
             INSERT INTO posts (uuid, seq_number, title, content, user_id, user_ip, views, is_pinned, status, publish_date, created_at, updated_at, creation_source, creation_source_detail)
@@ -423,13 +660,51 @@ trait DatabaseTestTrait
 
         $userData = array_merge($defaultData, $data);
 
-        $stmt = $this->db->prepare('
-            INSERT INTO users (username, email, password, status, created_at, updated_at)
-            VALUES (:username, :email, :password, :status, :created_at, :updated_at)
-        ');
+        if (isset($userData['id'])) {
+            $stmt = $this->db->prepare('
+                INSERT INTO users (id, username, email, password, status, created_at, updated_at)
+                VALUES (:id, :username, :email, :password, :status, :created_at, :updated_at)
+            ');
+        } else {
+            $stmt = $this->db->prepare('
+                INSERT INTO users (username, email, password, status, created_at, updated_at)
+                VALUES (:username, :email, :password, :status, :created_at, :updated_at)
+            ');
+        }
 
         $stmt->execute($userData);
 
+        if (isset($userData['id'])) {
+            $requestedId = $userData['id'];
+            $this->assertIsInt($requestedId);
+
+            return $requestedId;
+        }
+
         return (int) $this->db->lastInsertId();
+    }
+
+    protected function generateRandomString(int $length = 10): string
+    {
+        $byteLength = (int) ceil($length / 2);
+        if ($byteLength < 1) {
+            throw new ValueError('隨機位元組長度必須至少為 1');
+        }
+
+        return substr(bin2hex(random_bytes($byteLength)), 0, $length);
+    }
+
+    protected function generateTestEmail(): string
+    {
+        return 'test_' . $this->generateRandomString(8) . '@example.com';
+    }
+
+    protected function generateTestUuid(): string
+    {
+        $data = random_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 }

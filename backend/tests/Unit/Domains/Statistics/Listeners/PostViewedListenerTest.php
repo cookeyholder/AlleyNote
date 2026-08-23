@@ -283,4 +283,63 @@ class PostViewedListenerTest extends UnitTestCase
         // Assert
         $this->assertTrue(true);
     }
+
+    public function testHandleRethrowsWhenProcessingFails(): void
+    {
+        // Arrange: 讓第一個 info 日誌呼叫拋出例外，觸發 handle 的 catch 區塊
+        $event = PostViewed::createAnonymous(1, '127.0.0.1');
+
+        $this->logger
+            ->shouldReceive('info')
+            ->once()
+            ->andThrow(new RuntimeException('logger failure'));
+        $this->logger
+            ->shouldReceive('error')
+            ->once()
+            ->with('Failed to handle PostViewed event', Mockery::type('array'));
+
+        $this->postViewStatsService->shouldNotReceive('recordView');
+        $this->monitoringService->shouldNotReceive('logStatisticsEvent');
+
+        // Assert
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('logger failure');
+
+        // Act
+        $this->listener->handle($event);
+    }
+
+    public function testHandleContinuesWhenRecordViewFails(): void
+    {
+        // Arrange: recordView 拋出例外時應記錄錯誤並繼續處理
+        $event = PostViewed::createAuthenticated(
+            postId: 555,
+            userId: 666,
+            userIp: '192.168.0.5',
+            userAgent: 'Chrome/120.0',
+        );
+
+        $this->logger
+            ->shouldReceive('info')->twice()->with(Mockery::type('string'), Mockery::type('array'));
+        $this->logger
+            ->shouldReceive('error')
+            ->once()
+            ->with('Failed to record view in database', Mockery::type('array'));
+
+        $this->postViewStatsService
+            ->shouldReceive('recordView')
+            ->once()
+            ->andThrow(new RuntimeException('database unavailable'));
+
+        $this->monitoringService
+            ->shouldReceive('logStatisticsEvent')
+            ->once()
+            ->with('post_viewed', Mockery::type('array'));
+
+        // Act - 不應拋出例外
+        $this->listener->handle($event);
+
+        // Assert
+        $this->assertTrue(true);
+    }
 }

@@ -191,7 +191,7 @@ final class PostStatisticsRepository implements PostStatisticsRepositoryInterfac
             $sql = "SELECT id as post_id, title, {$orderField} as metric_value
                     FROM posts
                     WHERE created_at >= :start_date AND created_at <= :end_date
-                    AND status = 'published'
+                    AND status IN ('1', 'published')
                     ORDER BY {$orderField} DESC, created_at DESC
                     LIMIT :limit";
             $stmt = $this->db->prepare($sql);
