@@ -94,6 +94,9 @@ final class PasswordTest extends UnitTestCase
         $plain = 'ValidP@ssword123';
         $password = Password::fromPlainText($plain);
 
+        // Argon2id 雜湊不需要重新雜湊
+        $this->assertFalse($password->needsRehash());
+
         // 成功 rehash
         $rehashed = $password->rehash($plain);
         $this->assertInstanceOf(Password::class, $rehashed);
